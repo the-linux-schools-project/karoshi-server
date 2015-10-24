@@ -39,7 +39,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -69,14 +69,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -92,10 +92,16 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server name cannot be blank."
-show_status
+	MESSAGE=$"The server name cannot be blank."
+	show_status
+fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
 fi
 
 #Generate navigation bar
@@ -109,8 +115,14 @@ echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_smbwebclien
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files to their home areas."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files to their home areas."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
 <tr><td valign="middle" style="width: 180px;">'$"Web Domain"'</td><td>'

@@ -91,10 +91,16 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
 	MESSAGE=$"The server cannot be blank."
 	show_status
+fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodleserver ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
 fi
 
 #Generate navigation bar
@@ -108,8 +114,14 @@ echo '<form  id="form1" name="combobox" action="/cgi-bin/admin/module_moodle.cgi
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup the moodle E-Learning system for your users. The moodle authentication is configured to recognise members of staff and allow access to them to create courses."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will setup the moodle E-Learning system for your users. The moodle authentication is configured to recognise members of staff and allow access to them to create courses."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
 <tbody><tr><td valign="middle" style="width: 180px;">'$"Moodle Domain"'</td><td>'
 

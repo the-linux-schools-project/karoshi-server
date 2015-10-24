@@ -69,14 +69,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -95,10 +95,16 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server cannot be blank."
-show_status
+	MESSAGE=$"The server cannot be blank."
+	show_status
+fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
 fi
 
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox">
@@ -110,20 +116,26 @@ echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam."' '$"Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$"Emails can also be accessed via an imap or pop3 email client."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam."' '$"Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$"Emails can also be accessed via an imap or pop3 email client."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>'
 
 #Check to see if an email server has already been assigned
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-CURRENTEMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver | sed 's/ //g'`
-if [ $CURRENTEMAILSERVER != $SERVERNAME ]
-then
-echo '<tr><td style="width: 180px;">'$"Current Email Server"'</td><td>'$CURRENTEMAILSERVER'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A server is already being used for E-Mail."'</span></a></td></tr>
-<tr><td>'$"Copy existing E-Mail"'</td><td><input name="_COPYEMAIL_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enabling this will migrate your existing email, Egroupware, and Squirrrelmail to the new server."'</span></a></td></tr>'
-fi
+	CURRENTEMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver | sed 's/ //g'`
+	if [ $CURRENTEMAILSERVER != $SERVERNAME ]
+	then
+		echo '<tr><td style="width: 180px;">'$"Current Email Server"'</td><td>'$CURRENTEMAILSERVER'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A server is already being used for E-Mail."'</span></a></td></tr>
+	<tr><td>'$"Copy existing E-Mail"'</td><td><input name="_COPYEMAIL_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enabling this will migrate your existing email, Egroupware, and Squirrrelmail to the new server."'</span></a></td></tr>'
+	fi
 fi
 
 echo '<tr><td valign="top" style="width: 180px;">

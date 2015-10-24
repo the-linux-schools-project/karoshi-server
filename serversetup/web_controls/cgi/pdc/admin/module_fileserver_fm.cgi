@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -66,14 +66,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -89,14 +89,20 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The servername cannot be blank."
-show_status
+	MESSAGE=$"The servername cannot be blank."
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
+fi
 
 echo '
 <form action="/cgi-bin/admin/module_fileserver.cgi" method="post">
@@ -104,8 +110,14 @@ echo '
 <div class="sectiontitle">'$"Setup a File Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up a server to be an additional file server for your network."' '$"This is useful for increasing the network and storage capacity of your network."' '$"Once you have added your file server you will be able to assign groups to this server in the web management."' '$"Existing user folders can be automatically copied to the new server and home folders for each user are automatically created."'
-</div>
+'$"This will set up a server to be an additional file server for your network."' '$"This is useful for increasing the network and storage capacity of your network."' '$"Once you have added your file server you will be able to assign groups to this server in the web management."' '$"Existing user folders can be automatically copied to the new server and home folders for each user are automatically created."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '</div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">
 </div>

@@ -97,6 +97,12 @@ then
 	show_status
 fi
 
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/xerte ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -108,8 +114,14 @@ echo '<form  id="form1" name="combobox" action="/cgi-bin/admin/module_xerte.cgi"
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
 <tbody><tr><td valign="middle" style="width: 180px;">'$"Xerte Domain"'</td><td>'
 

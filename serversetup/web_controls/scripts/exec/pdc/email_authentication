@@ -240,8 +240,8 @@ then
 	
 	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">'
 
-	echo "<table class="$TABLECLASS" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"width: $WIDTH1\px;\"><b>"$"TCPIP""</b></td><td style=\"width: $WIDTH2\px;\"><b>"$"Comment""</td></td></tr>"
+	echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead>
+	<tr><th style=\"width: $WIDTH1\px;\"><b>"$"TCPIP""</b></th><th style=\"width: $WIDTH2\px;\"><b>"$"Comment""</b></th><td></td></tr></thead><tbody>"
 	#Show all allowed tcpip addresses
 	for ALLOWED in $ALLOWED_LIST
 	do
@@ -255,6 +255,8 @@ then
 		if [ $ALLOWED != 127.0.0.1 ]
 		then
 			echo '<td><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____TCPIP____'$ALLOWED'____COMMENT____'$COMMENT'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Remove"'<br>'$ALLOWED'</span></a></td>'
+		else
+			'echo <td></td>'
 		fi
 		echo '</tr>'
 	done

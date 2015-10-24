@@ -90,11 +90,10 @@ TABLECLASS=standard
 WIDTH1=180
 WIDTH2=200
 WIDTH3=180
-WIDTH4=210
+WIDTH4=180
 WIDTH5=90
 WIDTH6=300
-WIDTH7=402
-WIDTH8=75
+WIDTH7=410
 ICON1=/images/submenus/internet/remove_group.png
 ICON2=/images/submenus/internet/allowed_sites.png
 ICON3=/images/submenus/internet/banned_sites.png
@@ -110,7 +109,6 @@ then
 	WIDTH5=180
 	WIDTH6=130
 	WIDTH7=180
-	WIDTH8=70
 	ICON1=/images/submenus/internet/remove_groupm.png
 	ICON2=/images/submenus/internet/allowed_sitesm.png
 	ICON3=/images/submenus/internet/banned_sitesm.png
@@ -514,7 +512,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input typ
 echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'">
 <table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-<tr><th style="width: '$WIDTH7'px;"><b>'$"Filter Group Options"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
+<tr><th style="width: '$WIDTH3'px;"><b>'$"Filter Group Options"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
 <tr><td>'$"Custom Allowed Sites"'</td><td style="vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_viewcustomsites_FILTERDATA_allowed_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Custom Allowed Sites"'</span></a>
 </td></tr>
@@ -556,7 +554,7 @@ then
 	#Show any existing groups that have been assigned.
 	if [ -d /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups ]
 	then
-		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: '$WIDTH7'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: '$WIDTH3'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: 70px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
 		'
 		for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/*
 		do
@@ -660,10 +658,10 @@ source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
-<tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br>'
+<tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br><br>'
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-<tr><th style="width: '$WIDTH7'px;"><b>'$"Filter Category"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
+<tr><th style="width: 180px;"><b>'$"Filter Category"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
 
 #Show categories that are currently active
 for CATEGORIES in `grep ^".Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
@@ -919,8 +917,8 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 #Show lists of filter groups to add the site to
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
-	FILTERGROUP=`basename $FILTERGROUPS`
-	echo "$FILTERGROUP<input type=\"checkbox\" name=\"_FILTERDATA4_\" value=\"$FILTERGROUP\" checked>"
+FILTERGROUP=`basename $FILTERGROUPS`
+echo "$FILTERGROUP<input type=\"checkbox\" name=\"_FILTERDATA4_\" value=\"$FILTERGROUP\" checked>"
 done
 
 echo '</td></tr></tbody></table></form>
@@ -941,7 +939,7 @@ echo '</td></tr></tbody></table></form>
 '
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-<tr><th style="width: '$WIDTH7'px;"><b>'$"Site"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH3'px;"><b>'$"Site"'</b></th><th style="width: 70px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 for SITE in `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE2 | sort | grep "$SEARCH"`
 do
 	echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_FILTERDATA2_'$SITE'_" type="image" class="images" src="'$ICON5'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'

@@ -99,60 +99,49 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-
-
-
-
-
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
 if [ $EMAILSERVER = `hostname-fqdn` ]
 then
+	EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
+	EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
 
-EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
-EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
+	echo  '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<thead>
+	<tr><th style="width: 180px;"><b>'$"E-Mail Domain"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
-echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody>
-<tr><td style="width: 180px;"><b>'$"E-Mail Domain"'</b></td><td><b>'$"Delete"'</b></td></tr>'
-
-COUNTER=0
-while [ $COUNTER -lt $EMAILARRAYCOUNT ]
-do
-echo '<tr><td>'${EMAILARRAY[$COUNTER]}'</td><td>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span></a>
-</td></tr>'
-let COUNTER=$COUNTER+1
-done
-
-echo "</tbody></table>"
-
+	COUNTER=0
+	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
+	do
+		echo '<tr><td>'${EMAILARRAY[$COUNTER]}'</td><td>
+		<a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span></a>
+		</td></tr>'
+		let COUNTER=$COUNTER+1
+	done
+	echo "</tbody></table>"
 else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
+	EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
 
-EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
-EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
+	echo  "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+	<thead>
+	<tr><th style=\"width: 180px;\"><b>'$"E-Mail Domain"'</b></th><th style=\"width: 80px;\"><b>'$"Delete"'</h></td></tr></thead><tbody>"
 
-echo  "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-<tbody>
-<tr><td style=\"width: 180px;\"><b>'$"E-Mail Domain"'</b></td><td><b>'$"Delete"'</b></td></tr>"
+	COUNTER=0
+	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
+	do
+		echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
+		<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"' - ${EMAILARRAY[$COUNTER]}</span></a>
+		</td></tr>"
+		let COUNTER=$COUNTER+1
+	done
 
-COUNTER=0
-while [ $COUNTER -lt $EMAILARRAYCOUNT ]
-do
-echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
-<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"' - ${EMAILARRAY[$COUNTER]}</span></a>
-</td></tr>"
-let COUNTER=$COUNTER+1
-done
+	echo "</tbody></table>"
 
-echo "</tbody></table>"
-
-'
+	'
 fi
-
-
 exit
 
 

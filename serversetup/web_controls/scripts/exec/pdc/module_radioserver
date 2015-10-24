@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_radioserver_cgi
 then
-echo `date`: module_radioserver - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_radioserver_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_radioserver.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $module_radioserver_cgi'check' ]
 then
-echo `date`: module_radioserver - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,16 +48,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: module_radioserver - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: module_radioserver - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -71,38 +71,38 @@ RELAYPASS=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: module_radioserver - Not called by module_radioserver.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Not called by module_radioserver.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: module_radioserver - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: module_radioserver - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: module_radioserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $ADMINPASS'null' = null ]
+if [ -z "$ADMINPASS" ]
 then
-echo `date`: module_radioserver - Blank admin password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank admin password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SOURCEPASS'null' = null ]
+if [ -z "$SOURCEPASS" ]
 then
-echo `date`: module_radioserver - Blank "source" password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank "source" password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $RELAYPASS'null' = null ]
+if [ -z "$RELAYPASS" ]
 then
-echo `date`: module_radioserver - Blank relay password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: module_radioserver - Blank relay password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: module_radioserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -114,140 +114,138 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
 #Check that the server is running ubuntu
-if [ `uname -a | grep -c Ubuntu` = 0 ]
-then
-echo This module currently only works with ubuntu."<br><br>"
-uname -a"<br><br>"
-sleep 10
-exit 101
-fi
+	if [ `uname -a | grep -c Ubuntu` = 0 ]
+	then
+		echo This module currently only works with ubuntu."<br><br>"
+		uname -a"<br><br>"
+		sleep 10
+		exit 101
+	fi
 
-###########################
-#Check that software is installed
-###########################
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/radioserver/software
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop 1>/dev/null
+	###########################
+	#Check that software is installed
+	###########################
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/radioserver/software
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop 1>/dev/null
 
-#Modify icecast.xml with new passwords
-ADMINLINENUM=`grep -n "<admin-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $ADMINLINENUM"c""<admin-password>"$ADMINPASS"</admin-password>" /etc/icecast2/icecast.xml
+	#Modify icecast.xml with new passwords
+	ADMINLINENUM=`grep -n "<admin-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $ADMINLINENUM"c""<admin-password>"$ADMINPASS"</admin-password>" /etc/icecast2/icecast.xml
 
-SOURCELINENUM=`grep -n "<source-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $SOURCELINENUM"c""<source-password>"$SOURCEPASS"</source-password>" /etc/icecast2/icecast.xml
+	SOURCELINENUM=`grep -n "<source-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $SOURCELINENUM"c""<source-password>"$SOURCEPASS"</source-password>" /etc/icecast2/icecast.xml
 
-RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $RELAYLINENUM"c""<relay-password>"$RELAYPASS"</relay-password>" /etc/icecast2/icecast.xml
-sleep 3
+	RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $RELAYLINENUM"c""<relay-password>"$RELAYPASS"</relay-password>" /etc/icecast2/icecast.xml
+	sleep 3
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 
-###########################
-#Open shorewall ports
-###########################
-RESTART_SHOREWALL=no
-MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	###########################
+	#Open shorewall ports
+	###########################
+	RESTART_SHOREWALL=no
+	MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
 
-######################
-#Restart shorewall
-######################
-if [ $RESTART_SHOREWALL = yes ]
-then
-echo $RESTARTSWMSG"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo "<br><br>"
-fi
+	######################
+	#Restart shorewall
+	######################
+	if [ $RESTART_SHOREWALL = yes ]
+	then
+		echo $RESTARTSWMSG"<br><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		echo "<br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		echo "<br><br>"
+	fi
 else
 
-#Copy module files to remote server
-scp -p -r /opt/karoshi/serversetup/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+	#Copy module files to remote server
+	scp -p -r /opt/karoshi/serversetup/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-#Check that the server is running ubuntu
-if [ `uname -a | grep -c Ubuntu` = 0 ]
-then
-echo This module currently only works with ubuntu."<br><br>"
-uname -a"<br><br>"
-sleep 10
-exit 101
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	source /opt/karoshi/serversetup/variables/distro
+	#Check that the server is running ubuntu
+	if [ `uname -a | grep -c Ubuntu` = 0 ]
+	then
+		echo This module currently only works with ubuntu."<br><br>"
+		uname -a"<br><br>"
+		sleep 10
+		exit 101
+	fi
+
+	###########################
+	#Check that software is installed
+	###########################
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/radioserver/software
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
+
+	#Modify icecast.xml with new passwords
+	ADMINLINENUM=`grep -n "<admin-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $ADMINLINENUM"c""<admin-password>"'$ADMINPASS'"</admin-password>" /etc/icecast2/icecast.xml
+
+	SOURCELINENUM=`grep -n "<source-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $SOURCELINENUM"c""<source-password>"'$SOURCEPASS'"</source-password>" /etc/icecast2/icecast.xml
+
+	RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
+	sed -i $RELAYLINENUM"c""<relay-password>"'$RELAYPASS'"</relay-password>" /etc/icecast2/icecast.xml
+
+	sleep 3
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/icecast 2>/dev/null
+
+	###########################
+	#Open shorewall ports
+	###########################
+	RESTART_SHOREWALL=no
+	MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
+
+	######################
+	#Restart shorewall
+	######################
+	if [ $RESTART_SHOREWALL = yes ]
+	then
+		echo '$RESTARTSWMSG'"<br><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		echo "<br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		echo "<br><br>"
+	fi
+	'
 fi
-
-###########################
-#Check that software is installed
-###########################
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/radioserver/software
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
-
-#Modify icecast.xml with new passwords
-ADMINLINENUM=`grep -n "<admin-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $ADMINLINENUM"c""<admin-password>"'$ADMINPASS'"</admin-password>" /etc/icecast2/icecast.xml
-
-SOURCELINENUM=`grep -n "<source-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $SOURCELINENUM"c""<source-password>"'$SOURCEPASS'"</source-password>" /etc/icecast2/icecast.xml
-
-RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
-sed -i $RELAYLINENUM"c""<relay-password>"'$RELAYPASS'"</relay-password>" /etc/icecast2/icecast.xml
-
-sleep 3
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/icecast 2>/dev/null
-
-###########################
-#Open shorewall ports
-###########################
-RESTART_SHOREWALL=no
-MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
+if [ $? = 0 ]
 then
-RESTART_SHOREWALL=yes
-echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
-
-######################
-#Restart shorewall
-######################
-if [ $RESTART_SHOREWALL = yes ]
-then
-echo '$RESTARTSWMSG'"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-echo "<br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-echo "<br><br>"
-fi
-'
-fi
-if [ `echo $?` = 0 ]
-then
-#Add role information
-SERVERIP=`net lookup $SERVERNAME`
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
-echo '<a href="http://'$SERVERIP':8000" target="_blank">http://'$SERVERIP':8000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
-
-
-echo $SERVERNAME > /opt/karoshi/server_network/radioserver
+	#Add role information
+	SERVERIP=`net lookup $SERVERNAME`
+	[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+	echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	echo '<a href="http://'$SERVERIP':8000" target="_blank">http://'$SERVERIP':8000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	echo $SERVERNAME > /opt/karoshi/server_network/radioserver
 fi
 exit
 

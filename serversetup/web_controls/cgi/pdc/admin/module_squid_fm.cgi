@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -65,14 +65,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -88,10 +88,16 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"You have not chosen a server."
-show_status
+	MESSAGE=$"You have not chosen a server."
+	show_status
+fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
 fi
 
 #Generate navigation bar
@@ -103,8 +109,14 @@ echo '
 <div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup a a squid proxy server for providing access to the internet for the client computers on the network."' '$"Internet filtering is provided by E2Guardian and all internet access through the system is logged."' '$"Logs for all user internet access can be viewed in the web management."'
-</div>
+'$"This will setup a a squid proxy server for providing access to the internet for the client computers on the network."' '$"Internet filtering is provided by E2Guardian and all internet access through the system is logged."' '$"Logs for all user internet access can be viewed in the web management."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '</div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">
 </div>

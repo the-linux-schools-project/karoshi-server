@@ -101,11 +101,23 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/kanboardserver ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
+fi
+
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_kanboard.cgi" method="post"><div id="actionbox"><b>'$"Setup Kanboard"' - '$SERVERNAME'</b>
   <br><br><input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup the Kanboard project management system."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will setup the Kanboard project management system."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
 <tr><td valign="middle" style="width: 180px;">'$"Web Domain"'</td><td>'

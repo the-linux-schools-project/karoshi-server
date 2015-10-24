@@ -265,7 +265,7 @@ do
 	echo "<option>"$MINUTECHOICE"</option>"
 done
 
-echo '</td>
+echo '</select></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Search_E-Mail_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want to search the logs for."' '$"These can be left blank."'</span></a></td>
 </tr>
 <tr><td>'$"Search"' 1</td><td><input tabindex= "3" name="_SEARCH1_" value="'$SEARCH1'" size="14" style="width: 200px;" type="text"></td>
@@ -275,9 +275,10 @@ echo '</td>
 </tr>
 <tr><td>'$"Search"' 3</td><td><input tabindex= "4" name="_SEARCH3_" value="'$SEARCH3'" size="14" style="width: 200px;" type="text"></td></tr>
 <tr><td>'$"Search"' 4</td><td><input tabindex= "4" name="_SEARCH4_" value="'$SEARCH4'" size="14" style="width: 200px;" type="text"></td></tr>
-</tbody></table></div>
-<div id="submitbox">
+<tr><td></td><td>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</td>
+</tbody></table>
 </div><div id="infobox">'
 
 #Show search results

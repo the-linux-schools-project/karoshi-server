@@ -57,7 +57,7 @@ $(document).ready(function()
         $("#myTable").tablesorter({
 	headers: {
 	2: { sorter: "ipAddress" },
-	1: { sorter: "MAC" }
+	3: { sorter: "MAC" }
     		}
 		});
     } 
@@ -101,14 +101,14 @@ END_POINT=6
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -145,7 +145,7 @@ if [ $MOBILE = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
-	WIDTH=60
+	WIDTH=70
 	WIDTH2=120
 	WIDTH3=120
 	TABLETITLE=''$"Client Internet Controls"' - '$LOCATION''
@@ -158,7 +158,7 @@ then
 else
 	DIV_ID=menubox
 	TABLECLASS=mobilestandard
-	WIDTH=60
+	WIDTH=70
 	WIDTH2=90
 	WIDTH3=110
 	TABLETITLE="$LOCATION"
@@ -211,9 +211,9 @@ then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 		<thead><tr><th style="width: '$WIDTH'px;"><b>'$"Asset"'</b></th>'
 
-		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></th>'
+		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></th>'
 
-		echo '<th style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></th><th><b>'$"Access"'</b></th><th><b>'$"Media Access"'</b></th></tr></thead><tbody>'
+		echo '<th><b>'$"Access"'</b></th><th><b>'$"Media Access"'</b></th></tr></thead><tbody>'
 
 		for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
 		do

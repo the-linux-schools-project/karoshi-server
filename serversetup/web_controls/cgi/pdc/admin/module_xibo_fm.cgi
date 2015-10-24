@@ -39,7 +39,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -97,6 +97,12 @@ then
 	show_status
 fi
 
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/xibo ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -108,8 +114,14 @@ echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_xibo.cgi" m
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will setup the Xibo Digital Signage system for your site."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"This will setup the Xibo Digital Signage system for your site."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
   <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
     <tbody>
       <tr>

@@ -89,10 +89,16 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
 	MESSAGE=$"The servername cannot be blank."
 	show_status
+fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
 fi
 
 #Generate navigation bar
@@ -107,8 +113,14 @@ echo '<form name="combobox" action="/cgi-bin/admin/module_reverse_proxy.cgi" met
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"The reverse proxy allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash and folder name after the end of the domain of your site."' '$"Web sites to be redirected are added in on the web management."'<br><br>
-<b>'$"Parameters"'</b><br><br>
+'$"The reverse proxy allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash and folder name after the end of the domain of your site."' '$"Web sites to be redirected are added in on the web management."'<br><br>'
+
+if [ ! -z "$STATUSMSG" ]
+then
+	echo ''$STATUSMSG'<br><br>'
+fi
+
+echo '<b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
 <tbody><tr><td valign="middle" style="width: 180px;">'$"Reverse Proxy Domain"'</td><td>'
 

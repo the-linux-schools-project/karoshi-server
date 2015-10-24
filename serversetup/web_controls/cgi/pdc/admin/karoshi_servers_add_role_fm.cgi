@@ -65,14 +65,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -94,21 +94,63 @@ fi
 ICON=/images/warnings/server.png
 ICON2=/images/warnings/server_no_config.png
 
+#Get status of installed modules
+DHCPSTATUS=""
+[ -f /opt/karoshi/server_network/dhcp_servers/$SERVERNAME ] && DHCPSTATUS=$"Installed"
+FILESERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && FILESERVERSTATUS=$"Installed"
+PRINTSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && PRINTSERVERSTATUS=$"Installed"
+BACKUPSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver ] && BACKUPSERVERSTATUS=$"Installed"
+REVERSEPROXYSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && REVERSEPROXYSERVERSTATUS=$"Installed"
+SQUIDPROXYSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && SQUIDPROXYSERVERSTATUS=$"Installed"
+EMAILSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && EMAILSERVERSTATUS=$"Installed"
+HOMEACCESSSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && HOMEACCESSSTATUS=$"Installed"
+MOODLESTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && MOODLESTATUS=$"Installed"
+OWNCLOUDSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && OWNCLOUDSTATUS=$"Installed"
+RADIUSSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && RADIUSSTATUS=$"Installed"
+DISTROSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DISTROSERVERSTATUS=$"Installed"
+MONITORSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && MONITORSERVERSTATUS=$"Installed"
+JOOMLASTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/joomla ] && JOOMLASTATUS=$"Installed"
+RADIOSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && RADIOSTATUS=$"Installed"
+XIBOSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/xibo ] && XIBOSTATUS=$"Installed"
+KANBOARDSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/kanboard ] && KANBOARDSTATUS=$"Installed"
+XERTESTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/xerte ] && XERTESTATUS=$"Installed"
+WEBSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && WEBSERVERSTATUS=$"Installed"
+SSHSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && SSHSERVERSTATUS=$"Installed"
+VPNSERVERSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && VPNSERVERSTATUS=$"Installed"
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-
-echo '<div id="actionbox3"><div id="titlebox">'
-
-
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Add Server Role"' - '$SERVERNAME'</div></td>
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Role"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the module that you want to add to the server."'</span></a>
 </td></tr></tbody></table></div><div id="infobox">
 <br>
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"DHCP Server"'</td>
+<tr><td style="vertical-align: top; width: 160px; height: 40px;">'$"DHCP Server"'</td>
+<td style="vertical-align: top; width: 60px;">'$DHCPSTATUS'</td>
 <td style="vertical-align: top; width: 80px;">
 '
 
@@ -120,7 +162,7 @@ else
 	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will provide a DHCP server for your network."'<br><br>'$"This module can only be applied to the main server."'</span></a>'
 fi
 
-echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"File Server"'</td><td style="vertical-align: top;">'
+echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"File Server"'</td><td style="vertical-align: top; width: 60px;">'$FILESERVERSTATUS'</td><td style="vertical-align: top;">'
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
 then
@@ -131,7 +173,7 @@ fi
 
 echo '</td></tr>'
 
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Print Server"'</td>
+echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Print Server"'</td><td style="vertical-align: top;">'$PRINTSERVERSTATUS'</td>
 <td style="vertical-align: top;">'
 
 if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
@@ -143,7 +185,7 @@ fi
 echo '</td>'
 
 
-echo '<td style="vertical-align: top; height: 40px;">'$"Backup Server"'</td><td style="vertical-align: top; height: 40px;">'
+echo '<td style="vertical-align: top; height: 40px;">'$"Backup Server"'</td><td style="vertical-align: top;">'$BACKUPSERVERSTATUS'</td><td style="vertical-align: top; height: 40px;">'
 
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
@@ -157,47 +199,47 @@ echo '</td></tr>'
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'</span></a></form></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top;">'$REVERSEPROXYSERVERSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_reverse_proxy_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'</span></a></form></td>'
 else
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'<br><br>'$"This module cannot be applied to a server running modules that use the apache web server."'</span></a></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Reverse Proxy Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."' '$"The redirect is based on the trailing slash after the end of the domain of your site."'<br><br>'$"This module cannot be applied to a server running modules that use the apache web server."'</span></a></td>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Squid Internet Proxy"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_squid_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup squid and dansguardian to provide filtered internet access for the client computers."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Squid Internet Proxy"'</td><td style="vertical-align: top;">'$SQUIDPROXYSERVERSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_squid_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup squid and dansguardian to provide filtered internet access for the client computers."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Squid Internet Proxy"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup squid and dansguardian to provide filtered internet access for the client computers."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Squid Internet Proxy"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup squid and dansguardian to provide filtered internet access for the client computers."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"E-Mail Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_email_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide E-Mail services."'</span></a></form></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"E-Mail Server"'</td><td style="vertical-align: top;">'$EMAILSERVERSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_email_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide E-Mail services."'</span></a></form></td>'
 else
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"E-Mail Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"E-Mail Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Home Access Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_smbwebclient_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide web based access to home areas."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Home Access Server"'</td><td style="vertical-align: top;">'$HOMEACCESSSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_smbwebclient_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide web based access to home areas."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Home Access Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide web based access to home areas."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Home Access Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide web based access to home areas."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Moodle Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_moodle_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the moodle E-Learning system."'</span></a></form></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Moodle Server"'</td><td style="vertical-align: top;">'$MOODLESTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_moodle_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the moodle E-Learning system."'</span></a></form></td>'
 else
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Moodle Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the moodle E-Learning system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Moodle Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the moodle E-Learning system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will provide a cloud file storage system for web access to files."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top;">'$OWNCLOUDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will provide a cloud file storage system for web access to files."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
-echo '<tr><td style="vertical-align: top; height: 40px;">'$"Radius Server"'</td><td style="vertical-align: top; height: 40px;">'
+echo '<tr><td style="vertical-align: top; height: 40px;">'$"Radius Server"'</td><td style="vertical-align: top;">'$RADIUSSTATUS'</td><td style="vertical-align: top; height: 40px;">'
 
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 then
@@ -207,7 +249,7 @@ else
 fi
 echo '</td>'
 
-echo '<td style="vertical-align: top; height: 40px;">'$"Distribution Server"'</td>
+echo '<td style="vertical-align: top; height: 40px;">'$"Distribution Server"'</td><td style="vertical-align: top;">'$DISTROSERVERSTATUS'</td>
 <td style="vertical-align: top; height: 40px;">'
 
 if [ -f /opt/karoshi/server_network/dhcpserver ]
@@ -219,7 +261,7 @@ fi
 
 echo '</td></tr>'  
 
-echo '<tr><td style="vertical-align: top; height: 40px;">'$"Monitor Server"'</td>
+echo '<tr><td style="vertical-align: top; height: 40px;">'$"Monitor Server"'</td><td style="vertical-align: top;">'$MONITORSERVERSTATUS'</td>
 <td style="vertical-align: top; height: 40px;">
 '
 if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
@@ -235,36 +277,36 @@ echo '</td>'
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Joomla"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_joomla_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide Joomla content management."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Joomla"'</td><td style="vertical-align: top;">'$JOOMLASTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_joomla_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide Joomla content management."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Joomla"'</td>
+	echo '<td style="vertical-align: top; height: 40px;">'$"Joomla"'</td><td></td>
 	<td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide Joomla content management."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
-echo '<tr><td style="vertical-align: top; height: 40px;">'$"Internet Radio Server"'</td>
+echo '<tr><td style="vertical-align: top; height: 40px;">'$"Internet Radio Server"'</td><td style="vertical-align: top;">'$RADIOSTATUS'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will set up the server to act as an internet radio server using icecast."'</span></a></form></td>'
 
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Xibo Server"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xibo_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Xibo Digital Signage system."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xibo Server"'</td><td style="vertical-align: top;">'$XIBOSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xibo_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Xibo Digital Signage system."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Xibo Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Xibo Digital Signage system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xibo Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Xibo Digital Signage system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup Kanboard which is a web based project management system."'</span></a></form></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top;">'$KANBOARDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup Kanboard which is a web based project management system."'</span></a></form></td>'
 else
-	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup Kanboard which is a web based project management system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup Kanboard which is a web based project management system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
 fi
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xerte_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Xerte E-Learning development environment for your users."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td><td style="vertical-align: top;">'$XERTESTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_xerte_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Xerte E-Learning development environment for your users."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; height: 40px;">'$"Xerte"'</td>td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
 #if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
@@ -281,19 +323,19 @@ echo '</tbody></table><br>'
 
 #Advanced Modules
 echo '<div class="sectiontitle">'$"Add Advanced Server Role"' - '$SERVERNAME'</div><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Custom application"'</td>
+<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Custom application"'</td><td style="vertical-align: top; width: 60px; height: 40px;"></td>
 <td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_custom_fm.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will add in a name of a non Karoshi application for your server."'</span></a></form></td>'
 
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"Web Server"'</td><td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_web_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide LAMP web services with ftp access."'</span></a></form></td></tr>'
+	echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"Web Server"'</td><td style="vertical-align: top; width: 60px; height: 40px;">'$WEBSERVERSTATUS'</td><td style="vertical-align: top; width: 80px;"><form action="/cgi-bin/admin/module_web_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup a server to provide LAMP web services with ftp access."'</span></a></form></td></tr>'
 else
-	echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"Web Server"'</td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide LAMP web services with ftp access."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
+	echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"Web Server"'</td><td style="vertical-align: top; width: 60px; height: 40px;"></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a server to provide LAMP web services with ftp access."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td></tr>'
 fi
 
-echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remote SSH Access"'</td>
+echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remote SSH Access"'</td><td style="vertical-align: top;">'$SSHSERVERSTATUS'</td>
 <td style="vertical-align: top; width: 80px;">
 '
 
@@ -317,7 +359,7 @@ fi
 #fi
 #echo '</td>'
 
-echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"VPN Server"'</td>
+echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"VPN Server"'</td><td style="vertical-align: top;">'$VPNSERVERSTATUS'</td>
 <td style="vertical-align: top; width: 80px;">
 '
 
