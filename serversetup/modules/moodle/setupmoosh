@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#Remove any existing moosh versions
+if [ -d /opt/utils/moosh ]
+then
+	rm -f -R /opt/utils/moosh
+fi
+
+if [ -f /bin/moosh ]
+then
+	rm -f /bin/moosh
+fi
+
+[ ! -d /opt/utils ] && mkdir /opt/utils
+tar -xvzf /opt/karoshi/serversetup/modules/moodle/moosh.tar.gz --directory /opt/utils/ 1>/dev/null
+ln -s /opt/utils/moosh/moosh.php /bin/moosh
+

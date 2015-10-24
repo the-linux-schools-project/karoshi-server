@@ -257,6 +257,24 @@ then
 	fi 
 fi
 
+#Delete the user from moodle
+if [ -f /opt/karoshi/server_network/moodleserver ]
+then
+	MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
+	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+	CITY=`cat /etc/timezone | cut -d/ -f2`
+
+	if [ $MOODLESERVER - $(hostname-fqdn) ]
+	then
+		sudo -u www-data moosh -p /var/www/html/moodle user-delete $DELETEUSER
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MOODLESERVER '
+		sudo -u www-data moosh -p /var/www/html/moodle user-delete '$DELETEUSER'
+		'
+	fi
+fi
+
+
 #######################
 #Delete the account on any federated ldap servers
 #######################
