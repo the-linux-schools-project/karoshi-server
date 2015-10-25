@@ -60,7 +60,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Use E-mail relay"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-mail relay"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -74,7 +74,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/email_relay2.cgi" method="post">'
-echo '<div id="actionbox"><div class="sectiontitle">'$"Use E-mail relay"'</div><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"E-mail relay"'</div><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_relay_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'

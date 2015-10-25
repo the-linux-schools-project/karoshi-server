@@ -49,8 +49,8 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: email_aliases - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_aliases - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
@@ -121,19 +121,19 @@ TEXTDOMAIN=karoshi-server
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 if [ $MOBILE = no ]
 then
-TABLECLASS=standard
-WIDTH1=200
-HEIGHT=20
-ICON1="/images/submenus/email/email_delete.png"
-ICON2="/images/submenus/email/alias_add.png"
-ICON3="/images/submenus/email/alias_view.png"
+	TABLECLASS=standard
+	WIDTH1=200
+	HEIGHT=25
+	ICON1="/images/submenus/email/email_delete.png"
+	ICON2="/images/submenus/email/alias_add.png"
+	ICON3="/images/submenus/email/alias_view.png"
 else
 TABLECLASS=mobilestandard
-WIDTH1=160
-HEIGHT=30
-ICON1="/images/submenus/email/email_deletem.png"
-ICON2="/images/submenus/email/alias_addm.png"
-ICON3="/images/submenus/email/alias_viewm.png"
+	WIDTH1=160
+	HEIGHT=30
+	ICON1="/images/submenus/email/email_deletem.png"
+	ICON2="/images/submenus/email/alias_addm.png"
+	ICON3="/images/submenus/email/alias_viewm.png"
 fi
 
 function completed_status {
@@ -148,7 +148,7 @@ exit
 if [ $ACTION = view ]
 then
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 120px;"><b>'$"Alias"'</b></td><td style="width: 120px;"><b>'$"Username"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Alias"'</b></th><th style="width: 60px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
 	#Check that alias file is there
@@ -161,7 +161,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 		do
 		ALIAS=`echo $ENTRY | cut -d: -f1`
 		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$ALIAS"</td><td>"$USERNAME"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
 		done
 	else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
@@ -174,7 +174,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadd
 		do
 		ALIAS=`echo $ENTRY | cut -d: -f1`
 		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$ALIAS"</td><td>"$USERNAME"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
 		done
 	'
 	fi
@@ -183,66 +183,85 @@ fi
 
 if [ $ACTION = delete ]
 then
-echo `date`: "email_aliases - deleting alias for $ALIAS by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $EMAILSERVER = `hostname-fqdn` ]
-then
-sed -i "/^$ALIAS/d" /etc/postfix/aliases
-newaliases
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-sed -i "/^'$ALIAS'/d" /etc/postfix/aliases
-newaliases
-'
-fi
-completed_status
+	echo `date`: "email_aliases - deleting alias for $ALIAS by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		sed -i "/^$ALIAS:/d" /etc/postfix/aliases
+		newaliases
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		sed -i "/^'$ALIAS':/d" /etc/postfix/aliases
+		newaliases
+	'
+	fi
+
+	#Get samba 4 database password
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	#Get realm information
+	source /opt/karoshi/server_network/domain_information/domain_name
+	#Delete entry from samba4 ldap
+	USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+	echo -e "$USERDN\nchangetype: modify\ndelete: proxyAddresses\nproxyAddresses: $ALIAS@$REALM\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+	completed_status
 fi
 
 if [ $ACTION = add ]
 then
-echo '
+	echo '
 <input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: '$WIDTH1'px;">'$"Username"'</td>
-<td><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" size="20" type="text"></td><td>
+<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
 </td></tr>
  <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
 </tbody></table>'
 
-if [ $MOBILE = yes ]
-then
-echo "<br>"
-else
-echo '</div> <div id="submitbox">'
-fi
-echo '<input class="button" value="'$"Submit"'" type="submit">'
+	if [ $MOBILE = yes ]
+	then
+		echo "<br>"
+	else
+		echo '</div> <div id="submitbox">'
+	fi
+	echo '<input class="button" value="'$"Submit"'" type="submit">'
 fi
 
 if [ $ACTION = reallyadd ]
 then
-echo `date`: "email_aliases - adding  alias $ALIAS for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $EMAILSERVER = `hostname-fqdn` ]
-then
-	if [ `grep -c ^$ALIAS: /etc/postfix/aliases` = 0 ]
+	echo `date`: "email_aliases - adding  alias $ALIAS for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	#Add entry to postfix alias map.
+	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
-	echo -e "$ALIAS:\t\t$USERNAME" >> /etc/postfix/aliases
-	cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
-	rm /etc/postfix/aliases
-	mv /etc/postfix/aliases1 /etc/postfix/aliases
-	newaliases
+		if [ `grep -c ^$ALIAS: /etc/postfix/aliases` = 0 ]
+		then
+			echo -e "$ALIAS:\t\t$USERNAME" >> /etc/postfix/aliases
+			cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+			rm /etc/postfix/aliases
+			mv /etc/postfix/aliases1 /etc/postfix/aliases
+			newaliases
+		fi
+	else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		if [ `grep -c ^'$ALIAS': /etc/postfix/aliases` = 0 ]
+		then
+			echo -e "'$ALIAS':\t\t'$USERNAME'" >> /etc/postfix/aliases
+			cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+			rm /etc/postfix/aliases
+			mv /etc/postfix/aliases1 /etc/postfix/aliases
+			newaliases
+		fi
+	'
 	fi
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-	if [ `grep -c ^'$ALIAS': /etc/postfix/aliases` = 0 ]
-	then
-	echo -e "'$ALIAS':\t\t'$USERNAME'" >> /etc/postfix/aliases
-	cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
-	rm /etc/postfix/aliases
-	mv /etc/postfix/aliases1 /etc/postfix/aliases
-	newaliases
-	fi
-'
-fi
-completed_status
+
+	
+	#Get samba 4 database password
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	#Get realm information
+	source /opt/karoshi/server_network/domain_information/domain_name
+	#Add entry to samba4 ldap
+	USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+	echo -e "$USERDN\nchangetype: modify\nadd: proxyAddresses\nproxyAddresses: $ALIAS@$REALM\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+	completed_status
 fi
 
 exit

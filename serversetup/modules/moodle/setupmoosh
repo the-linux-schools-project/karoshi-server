@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #Remove any existing moosh versions
+if [ -e /bin/moosh ]
+then
+	rm -f /bin/moosh
+fi
+
 if [ -d /opt/utils/moosh ]
 then
 	rm -f -R /opt/utils/moosh
-fi
-
-if [ -f /bin/moosh ]
-then
-	rm -f /bin/moosh
 fi
 
 [ ! -d /opt/utils ] && mkdir /opt/utils

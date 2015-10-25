@@ -49,7 +49,18 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Aliases"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/script.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -209,7 +220,7 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"E-Mail Aliases"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -220,10 +231,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </tbody></table><br>
 '
 else
-ICON2="/images/submenus/email/alias_add.png"
-ICON3="/images/submenus/email/alias_view.png"
+	ICON2="/images/submenus/email/alias_add.png"
+	ICON3="/images/submenus/email/alias_view.png"
 
-echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
+	echo '<form action="/cgi-bin/admin/email_aliases.cgi" method="post"><div id="'$DIV_ID'">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
@@ -235,4 +246,4 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
 #Show aliases
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ALIAS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
-echo '</form></div></div></body></html>'
+echo '</div></form></div></body></html>'
