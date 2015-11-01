@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################

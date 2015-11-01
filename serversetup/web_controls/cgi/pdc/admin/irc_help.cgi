@@ -79,7 +79,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox3
+	DIV_ID=actionbox
 	WIDTH=1000
 	HEIGHT=600
 	#Generate navigation bar
@@ -101,6 +101,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 fi
 
-echo '<iframe src="https://webchat.freenode.net?nick='$REALM2'_'$REMOTE_USER'&channels=%23karoshi&prompt=1&uio=MTE9MjM20f" width="100%" height="650px"></iframe></div></div></div></div></body></html>'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+
+echo '<iframe src="https://webchat.freenode.net?nick='$REALM2'_'$REMOTE_USER'&channels=%23karoshi&prompt=1&uio=MTE9MjM20f" width="100%" height="650px" frameBorder="0"></iframe></div></div></div></div></body></html>'
 exit
 

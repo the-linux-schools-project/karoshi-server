@@ -360,6 +360,8 @@ groupdel staff
 [ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
 [ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
 
+#Copy in ssl.conf
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/ssl.conf /etc/apache2/mods-available/
 
 if [ $INSTALL_REMASTERSYS = yes ]
 then

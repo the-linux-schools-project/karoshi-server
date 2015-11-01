@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#Get moodle server
+MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
+
+#Add all users to a new moodle installation using moosh
+
+COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
+CITY=`cat /etc/timezone | cut -d/ -f2`
+
+source /opt/karoshi/server_network/domain_information/domain_name
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Get a lists of all users.
+for USERNAME in `getent passwd | grep /home/users | sed "s/ /_/g" | cut -d: -f1`
+do
+	#Get ldap data for each user.
+	LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | sed "s/[\]/BACKSLASH/g"`
+	FIRSTNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
+	EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
+	SURNAME=`echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g'`
+
+	#Check we have enough data.
+	if [ ! -z "$USERNAME" ] && [ ! -z "$FIRSTNAME" ] && [ ! -z "$SURNAME" ]
+	then
+		#Check to see if we have an employee number.
+		if [ $MOODLESERVER = `hostname-fqdn` ]
+		then
+			if [ ! -z "$EMPLOYEENUMBER" ]
+			then
+				sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname $FIRSTNAME --lastname $SURNAME --email $USERNAME@$REALM --city $CITY --country $COUNTRY --auth ldap --idnumber $EMPLOYEENUMBER $USERNAME 1>/dev/null
+			else
+				sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname $FIRSTNAME --lastname $SURNAME --email $USERNAME@$REALM --city $CITY --country $COUNTRY --auth ldap $USERNAME 1>/dev/null
+			fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MOODLESERVER '
+			if [ ! -z "'$EMPLOYEENUMBER'" ]
+			then
+				sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '$FIRSTNAME' --lastname '$SURNAME' --email '$USERNAME'@'$REALM' --city '$CITY' --country '$COUNTRY' --auth ldap --idnumber '$EMPLOYEENUMBER' '$USERNAME' 1>/dev/null
+			else
+				sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '$FIRSTNAME' --lastname '$SURNAME' --email '$USERNAME'@'$REALM' --city '$CITY' --country '$COUNTRY' --auth ldap '$USERNAME' 1>/dev/null
+			fi
+			'
+		fi
+	fi
+done
+
+
+
+
+
+	

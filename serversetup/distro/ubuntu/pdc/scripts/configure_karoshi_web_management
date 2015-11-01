@@ -2,20 +2,20 @@
 
 #Dont run this script again if apache has already been configured.
 if [ -d /etc/apache2/sites-karoshi-enabled ]
-then
-exit
+	then
+	exit
 fi
 
 COPYPATH=/opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management
 #Create apache_karoshi user and group
 if [ `grep -c apache_karoshi /etc/group` = 0 ]
 then
-groupadd apache_karoshi
-groupmod -g 998 apache_karoshi
+	groupadd apache_karoshi
+	groupmod -g 998 apache_karoshi
 fi
 if [ `grep -c apache_karoshi /etc/passwd` = 0 ]
 then
-useradd -u 998 -g apache_karoshi -d /var/www -c "system user for apache_karoshi" -K PASS_MAX_DAYS=-1 -s /bin/sh -M apache_karoshi
+	useradd -u 998 -g apache_karoshi -d /var/www -c "system user for apache_karoshi" -K PASS_MAX_DAYS=-1 -s /bin/sh -M apache_karoshi
 fi
 #Copy in init.d startup script
 cp -f $COPYPATH/apache2_karoshi /etc/init.d/
@@ -32,8 +32,8 @@ cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
 #Add in servername to apache2_karoshi.conf
 if [ `grep -c manage.$REALM /etc/apache2/apache2_karoshi.conf` = 0 ]
 then
-source /opt/karoshi/server_network/domain_information/domain_name
-echo ServerName manage.$REALM >> /etc/apache2/apache2_karoshi.conf
+	source /opt/karoshi/server_network/domain_information/domain_name
+	echo ServerName manage.$REALM >> /etc/apache2/apache2_karoshi.conf
 fi
 
 [ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
@@ -93,20 +93,20 @@ fi
 #Modify logrotate to reload apache2_karoshi
 if [ -f /etc/logrotate.d/apache2 ]
 then
-echo "/var/log/apache2/*.log {" > /etc/logrotate.d/apache2
-echo "	weekly" >> /etc/logrotate.d/apache2
-echo "	missingok" >> /etc/logrotate.d/apache2
-echo "	rotate 52" >> /etc/logrotate.d/apache2
-echo "	compress" >> /etc/logrotate.d/apache2
-echo "	delaycompress" >> /etc/logrotate.d/apache2
-echo "	notifempty" >> /etc/logrotate.d/apache2
-echo "	create 640 root adm" >> /etc/logrotate.d/apache2
-echo "	sharedscripts" >> /etc/logrotate.d/apache2
-echo "	postrotate" >> /etc/logrotate.d/apache2
-echo "		/etc/init.d/apache2 reload > /dev/null" >> /etc/logrotate.d/apache2
-echo "		/etc/init.d/apache2_karoshi reload >/dev/null" >> /etc/logrotate.d/apache2
-echo "	endscript" >> /etc/logrotate.d/apache2
-echo "}" >> /etc/logrotate.d/apache2
+	echo "/var/log/apache2/*.log {" > /etc/logrotate.d/apache2
+	echo "	weekly" >> /etc/logrotate.d/apache2
+	echo "	missingok" >> /etc/logrotate.d/apache2
+	echo "	rotate 52" >> /etc/logrotate.d/apache2
+	echo "	compress" >> /etc/logrotate.d/apache2
+	echo "	delaycompress" >> /etc/logrotate.d/apache2
+	echo "	notifempty" >> /etc/logrotate.d/apache2
+	echo "	create 640 root adm" >> /etc/logrotate.d/apache2
+	echo "	sharedscripts" >> /etc/logrotate.d/apache2
+	echo "	postrotate" >> /etc/logrotate.d/apache2
+	echo "		/etc/init.d/apache2 reload > /dev/null" >> /etc/logrotate.d/apache2
+	echo "		/etc/init.d/apache2_karoshi reload >/dev/null" >> /etc/logrotate.d/apache2
+	echo "	endscript" >> /etc/logrotate.d/apache2
+	echo "}" >> /etc/logrotate.d/apache2
 fi
 
 #Start httpd_karoshi if it is not running

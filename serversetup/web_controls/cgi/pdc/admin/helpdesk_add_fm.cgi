@@ -82,22 +82,22 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH1=200
-WIDTH2=200
-WIDTH3=400
-COLS=70
-ROWS=6
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=200
+	WIDTH3=400
+	COLS=70
+	ROWS=6
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
-WIDTH1=140
-WIDTH2=140
-WIDTH3=140
-COLS=18
-ROWS=4
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
+	WIDTH1=140
+	WIDTH2=140
+	WIDTH3=140
+	COLS=18
+	ROWS=4
 fi
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 

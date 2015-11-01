@@ -696,7 +696,7 @@ then
 	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 	CITY=`cat /etc/timezone | cut -d/ -f2`
 
-	if [ $MOODLESERVER - $(hostname-fqdn) ]
+	if [ $MOODLESERVER = $(hostname-fqdn) ]
 	then
 		if [ ! -z $ENROLLMENTNUMBER ]
 		then

@@ -88,7 +88,7 @@ while [ $COUNTER -le $NOOFLINES ]
 do
 	DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt`
 	#Assign data entry to an array
-	if [ -z "$DATAENTRY" ]
+	if [ ! -z "$DATAENTRY" ]
 	then
 		DATARRAY=( `echo $DATAENTRY | sed 's/,/ /g'` )
 		ARRAYCOUNT=${#DATARRAY[@]}
@@ -121,8 +121,8 @@ do
 		done
 		#Clear array
 		unset DATARRAY
-		let COUNTER=$COUNTER+1
 	fi
+	let COUNTER=$COUNTER+1
 done
 #End table
 echo '</tbody></table></div></form></div></body></html>'

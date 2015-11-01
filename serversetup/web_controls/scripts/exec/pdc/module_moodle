@@ -262,6 +262,11 @@ Icon=moodle
 URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all/Moodle.desktop
 }
 
+function add_moodle_users {
+echo '<li>'$"Adding users to the moodle database"'</li>'
+/opt/karoshi/serversetup/modules/moodle/moodle_add_all_users
+}
+
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
@@ -270,6 +275,7 @@ add_dns_entry
 install_moodle
 add_role_information
 create_linux_client_icon
+add_moodle_users
 
 
 ########################
@@ -321,6 +327,13 @@ if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
+
+###########################
+#Show completed message
+###########################
+echo '<br>'$"Moodle has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
+echo '<br>'$"username":admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 
 exit
 
