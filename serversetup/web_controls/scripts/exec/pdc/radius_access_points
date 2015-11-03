@@ -75,6 +75,7 @@ WIDTH1=180
 WIDTH2=90
 WIDTH3=200
 WIDTH4=320
+WIDTH5=70
 HEIGHT=25
 TABLECLASS=standard
 if [ "$MOBILE" = yes ]
@@ -83,6 +84,7 @@ then
 	WIDTH2=90
 	WIDTH3=120
 	WIDTH4=120
+	WIDTH5=70
 	HEIGHT=30
 	TABLECLASS=mobilestandard
 fi
@@ -246,8 +248,8 @@ then
 		exit
 	fi
 	#Show access points
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Short name"'</b></td><td style="width: '$WIDTH2'px; "><b>'$"TCPIP"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Short name"'</b></th><th style="width: '$WIDTH2'px; "><b>'$"TCPIP"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Edit"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	for ACCESSPOINTS in /opt/karoshi/server_network/radius/wireless_access_points/*
 	do
 		ACCESSPOINT=`basename "$ACCESSPOINTS"`

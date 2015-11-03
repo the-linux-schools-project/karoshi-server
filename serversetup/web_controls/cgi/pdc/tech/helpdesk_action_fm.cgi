@@ -43,7 +43,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Technical Support"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -151,11 +151,11 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Help Desk"' - '$"Action Request"'</span>
+	<span>'$"Technical Support"' - '$"Action Request"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Helpdesk"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$"Help Desk"' - '$"Action Request"'</b><br><br>'
+echo '<b>'$"Technical Support"' - '$"Action Request"'</b><br><br>'
 fi
 
 

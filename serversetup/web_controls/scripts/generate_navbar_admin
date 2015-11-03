@@ -23,10 +23,12 @@
 ##########################
 #Section Control
 ##########################
+#Website: http://www.karoshi.org.uk
+
 source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
-#Website: http://www.karoshi.org.uk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
@@ -105,12 +107,12 @@ echo '</div><div id="navbar">
 
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Helpdesk"'</span></a>
+	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_view_completed_fm.cgi">'$"View Completed Requests"'</a></li>
-			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set defaults"'</a></li>
+			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set Defaults"'</a></li>
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users" class="top_link"><span class="down">'$"Users and Groups"'</span></a>

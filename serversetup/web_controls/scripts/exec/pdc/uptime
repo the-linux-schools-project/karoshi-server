@@ -151,11 +151,11 @@ fi
 
 if [ $MOBILE = yes ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 90px;"><b>'$"Server"'</b></td><td style="width: 80px;"><b>'$"Uptime"'</b></td></tr>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: 90px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th></tr></thead><tbody>'
 else
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 250px;"><b>'$"Server"'</b></td><td style="width: 80px;"><b>'$"Uptime"'</b></td><td style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></td><td><b>'$"Start Date"'</b></td><td>'$"Reset"'</tr>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: 250px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th><th style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></th><th><b>'$"Start Date"'</b></th><th><b>'$"Reset"'</b></th></thead><tbody>'
 fi
 }
 
@@ -228,7 +228,7 @@ echo '<td valign="top">
 }
 
 function offline {
-echo '<tr><td> '$DISPLAY_NAME'</td><td>'$"Offline"'</td><td>'$"Offline"'</td><td>'$"Offline"'</td></tr>'
+echo '<tr><td> '$DISPLAY_NAME'</td><td>'$"Offline"'</td><td>'$"Offline"'</td><td>'$"Offline"'</td><td></td></tr>'
 }
 
 #Show uptime this server

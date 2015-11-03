@@ -36,7 +36,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title></head><body><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Technical Support"'</title></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -50,14 +50,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = JOBNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-JOBNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = JOBNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		JOBNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -73,16 +73,16 @@ exit
 #Check data
 #########################
 #Check to see that JOBNAME is not blank
-if [ $JOBNAME'null' = null ]
+if [ -z "$JOBNAME" ]
 then
-MESSAGE=$"The job name cannot be blank."
-show_status
+	MESSAGE=$"The job name cannot be blank."
+	show_status
 fi
 
 if [ ! -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ]
 then
-MESSAGE=$"This job does not exist."
-show_status
+	MESSAGE=$"This job does not exist."
+	show_status
 fi
 
 
@@ -93,7 +93,7 @@ fi
 source /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 
 #Show job data
-echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>
+echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="actionbox"><b>'$"Technical Support"' - '$"Action Request"'</b><br><br>
 
 <table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
 <tbody>

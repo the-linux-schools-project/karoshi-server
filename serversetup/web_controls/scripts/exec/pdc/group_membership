@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/group_membership_cgi
 then
-echo `date`: group_membership - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/group_membership_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $group_membership_cgi'check' ]
 then
-echo `date`: group_membership - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,16 +48,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: group_membership - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: group_membership - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,48 +69,48 @@ MOBILE=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: group_membership - Not called by group_membership.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - Not called by group_membership.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: group_membership - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: group_membership - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: group_membership - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: group_membership - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: group_membership - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: group_membership - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: group_membership - showing group information "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 if [ $MOBILE = no ]
 then
-ICON1=/images/submenus/user/group_yes.png
-ICON2=/images/submenus/user/group_no.png
+	ICON1=/images/submenus/user/group_yes.png
+	ICON2=/images/submenus/user/group_no.png
 else
-ICON1=/images/submenus/user/group_yes_m.png
-ICON2=/images/submenus/user/group_no_m.png
+	ICON1=/images/submenus/user/group_yes_m.png
+	ICON2=/images/submenus/user/group_no_m.png
 fi
 
 TABLECLASS=standard
 WIDTH=180
 if [ $MOBILE = yes ]
 then
-TABLECLASS=mobilestandard
-WIDTH=140
+	TABLECLASS=mobilestandard
+	WIDTH=140
 fi
 
 function check_group_membership {
@@ -134,29 +134,38 @@ CURRENTGROUPS=`id -G -n $USERNAME`
 echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
 echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="width: '$WIDTH'px;"><b>'$"Group"'</b></td><td><b>'$"Group ID"'</b></td><td><b>'$"Status"'</b></td></tr>'
-#Get database password
-GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+
+
+
+
 #GROUPLIST=( `ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" objectclass=posixGroup | grep ^cn: | cut -d' ' -f2-| sed 's/ /____/g' | sort` )
-GROUPCOUNT=${#GROUPLIST[@]}  
+
 
 function check_groups {
 COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
-GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
-GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
-if [ $GROUPID -ge 1000 ] || [ $GROUPID = 512 ]
-then
-check_group_membership
-fi
-let COUNTER=$COUNTER+1
+	GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+	if [ `echo "$DYNAMIC_GROUP_LIST" | grep -c "$GROUPNAME"` = 0 ]
+	then
+		#Get the group id
+		GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
+		check_group_membership
+	fi
+	let COUNTER=$COUNTER+1
 done
 }
+#Show groups that the user is a member of
 USERGROUPS=yes
 AVAILABLEGROUPS=no
+GROUPLIST=( $CURRENTGROUPS )
+GROUPCOUNT=${#GROUPLIST[@]}
 check_groups
+#Show potential groups
 USERGROUPS=no
 AVAILABLEGROUPS=yes
+GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information` `ls -1 /opt/karoshi/server_network/group_information_secondary` )
+GROUPCOUNT=${#GROUPLIST[@]}
 check_groups
 echo '</tbody></table></form>'
 exit

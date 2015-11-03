@@ -36,8 +36,9 @@ NOTIMEOUT=127.0.0.1
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
+
 ############################
 #Show page
 ############################
@@ -48,7 +49,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Help Desk"'</title>
+  <title>'$"Technical Support"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
@@ -57,11 +58,11 @@ echo '
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_staff
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_staff
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 
@@ -70,11 +71,11 @@ echo '<form action="/cgi-bin/staff/helpdesk_add.cgi" method="post"><div id="'$DI
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/staff/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/staff/mobile_user_menu.cgi"><b>'$"Help Desk"'</b></a></td></tr></tbody></table><br>'
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/staff/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
+	<td style="vertical-align: middle;"><a href="/cgi-bin/staff/mobile_user_menu.cgi"><b>'$"Technical Support"'</b></a></td></tr></tbody></table><br>'
 else
-echo '<b>'$"Help Desk"'</b><br><br>'
+	echo '<b>'$"Technical Support"' - '$"Add Request"'</b><br><br>'
 fi
 
 echo '<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">

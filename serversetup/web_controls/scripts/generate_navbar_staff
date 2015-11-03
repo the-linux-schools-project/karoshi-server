@@ -23,12 +23,17 @@
 ##########################
 #Section Control
 ##########################
-source /opt/karoshi/server_network/web_controls/menusettings
-source /opt/karoshi/web_controls/version
-source /opt/karoshi/server_network/domain_information/domain_name
+
 #Website: http://www.karoshi.org.uk
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+
+HELPDESK=$"Helpdesk"
+
+source /opt/karoshi/server_network/web_controls/menusettings
+source /opt/karoshi/web_controls/version
+source /opt/karoshi/server_network/domain_information/domain_name
+
 
 echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
 '$"Version"' : '$VERSION'
@@ -44,7 +49,7 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/staff/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Helpdesk"'</span></a>
+	<li class="top"><a href="/cgi-bin/staff/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$HELPDESK'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/staff/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
 			<li><a href="/cgi-bin/staff/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>

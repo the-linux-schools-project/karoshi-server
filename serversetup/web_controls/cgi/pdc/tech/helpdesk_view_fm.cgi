@@ -45,7 +45,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Help Desk"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
+  <title>'$"Technical Support"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
@@ -79,12 +79,12 @@ MOBILE=no
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-/opt/karoshi/web_controls/generate_navbar_admin_mobile
+	DIV_ID=actionbox2
+	/opt/karoshi/web_controls/generate_navbar_admin_mobile
 fi
 
 echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">'
@@ -95,25 +95,25 @@ if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
-<td style="vertical-align: middle;"><b>'$"Help Desk"' - '$"Requests"'</b></td>
+<td style="vertical-align: middle;"><b>'$"Technical Support"' - '$"Requests"'</b></td>
 <td style="vertical-align: middle;"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form></td>
 </tr></tbody></table><br>'
 else
-echo '<b>'$"Help Desk"' - '$"Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
+echo '<b>'$"Technical Support"' - '$"Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 fi
 
-[ $SEARCHCRITERIA'null' = null ] && SEARCHCRITERIA=ASSIGNED
+[ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
 then
-echo $"There are no new requests to view."'</div></form></div></body></html>'
-exit
+	echo $"There are no new requests to view."'</div></form></div></body></html>'
+	exit
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/helpdesk/todo/ | wc -l` = 0 ]
 then
-echo $"There are no new requests to view."'</div></form></div></body></html>'
-exit
+	echo $"There are no new requests to view."'</div></form></div></body></html>'
+	exit
 fi
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">

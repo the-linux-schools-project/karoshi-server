@@ -198,8 +198,8 @@ then
 	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
 	then
 		#Show all users in the group.
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-	      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td style="width: '$WIDTH1'px;"><b>'$"Full Name"'</b></td><td><b>'$"Remove"'</b></td></tr>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Full Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
 			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
@@ -277,9 +277,9 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 		#Main server
 		if [ ! -d /home/applications/profiles/$GROUPNAME ]
 		then
-		cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$GROUPNAME 
-		chmod 0644 /home/applications/profiles/$GROUPNAME
-		chmod u+X,g+X,o+X /home/applications/profiles/$GROUPNAME
+			cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$GROUPNAME 
+			chmod 0644 /home/applications/profiles/$GROUPNAME
+			chmod u+X,g+X,o+X /home/applications/profiles/$GROUPNAME
 		fi
 
 		if [ -d /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME.V2 ]
@@ -336,6 +336,9 @@ add: gidnumber
 gidnumber: $GIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
 
+	#Add flag file for the secondary group
+	[ ! -d /opt/karoshi/server_network/group_information_secondary ] && mkdir -p /opt/karoshi/server_network/group_information_secondary
+	echo "$GROUPNAME" > /opt/karoshi/server_network/group_information_secondary/$GROUPNAME
 	fi
 
 	if [ $FEDERATED_LDAP_SERVERS = yes ]

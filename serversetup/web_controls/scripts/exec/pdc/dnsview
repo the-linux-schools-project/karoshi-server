@@ -162,7 +162,7 @@ then
 
 		echo '<th style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th>'
 
-		[ $MONITORSERVER = yes ] && echo '<th><b>'$"Monitor"'</b></th>'
+		[ $MONITORSERVER = yes ] && echo '<th style="width: '$WIDTH4'px;"><b>'$"Monitor"'</b></th>'
 		echo '</tr></thead><tbody>'
 
 		#Get dns entry names

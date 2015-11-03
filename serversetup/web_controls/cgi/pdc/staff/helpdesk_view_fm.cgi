@@ -43,7 +43,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Help Desk"' - '$"Requests"'</title>
+  <title>'$"Technical Support"' - '$"Requests"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
@@ -82,7 +82,7 @@ done
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
-echo '<div id="actionbox"><b>'$"Help Desk"' - '$"Requests"'</b><br><br>'
+echo '<div id="actionbox"><b>'$"Technical Support"' - '$"Requests"'</b><br><br>'
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]

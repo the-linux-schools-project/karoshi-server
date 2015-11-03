@@ -48,7 +48,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Help Desk"' - '$"Requests"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Technical Support"' - '$"Requests"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
@@ -86,7 +86,7 @@ done
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><form action="/cgi-bin/admin/helpdesk_view_completed_fm.cgi" method="post"><b>'$"Help Desk"' - '$"Completed Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form><br>'
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/helpdesk_view_completed_fm.cgi" method="post"><b>'$TITLE' - '$"Completed Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form></div><div id="infobox"><br>'
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any completed jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/completed/ ]

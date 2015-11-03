@@ -29,6 +29,12 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+TITLE=$"Help Desk"
+if [ -f /opt/karoshi/helpdesk/settings ]
+then
+	source /opt/karoshi/helpdesk/settings
+fi
+
 ##########################
 #Show page
 ##########################
@@ -38,7 +44,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"><title>'$"Help Desk"'</title></head><body><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"><title>'$TITLE'</title></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

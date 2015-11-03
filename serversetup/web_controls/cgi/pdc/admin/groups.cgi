@@ -335,6 +335,7 @@ then
 	WIDTH1=200
 	WIDTH2=90
 	WIDTH3=200
+	WIDTH4=70
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
@@ -346,6 +347,7 @@ else
 	WIDTH1=120
 	WIDTH2=70
 	WIDTH3=150
+	WIDTH4=60
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/usersm.png
@@ -538,10 +540,39 @@ fi
 if [ $ACTION = view ]
 then
 	#Show list of groups
-	GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+
+	[ "$TYPE" = notset ] && TYPE=primary
+
+	#Get a list of groups
+	if [ $TYPE = primary ]
+	then
+		GROUPTYPE=$"Primary"
+		GTYPE=primary
+		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information` )
+	fi
+
+	if [ $TYPE = secondary ]
+	then
+		GROUPTYPE=$"Secondary"
+		GTYPE=secondary
+		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information_secondary` )
+	fi
+
+	if [ $TYPE = dynamic ] || [ $TYPE = all ]
+	then
+		GROUPTYPE=$"Dynamic"
+		GTYPE=dynamic
+		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information_dynamic` )
+	fi
+
+	if [ $TYPE = all ]
+	then
+		GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )	
+	fi
+
+	#Get the number of groups in the array
 	GROUPCOUNT=${#GROUPLIST[@]} 
 	COUNTER=0
-	[ "$TYPE" = notset ] && TYPE=primary
 
 	echo  '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group name"'</b></th>'
@@ -563,7 +594,7 @@ then
 	<noscript><input type="submit" value="Submit"></noscript>'
 
 [ $MOBILE = no ] && echo '</td><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
-echo '<th style="vertical-align:top;"><b>'$"Members"'</b></th><th style="vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 	while [ $COUNTER -lt $GROUPCOUNT ]
 	do
@@ -573,54 +604,49 @@ echo '<th style="vertical-align:top;"><b>'$"Members"'</b></th><th style="vertica
 		if [ $GROUPID -ge 1000 ] && [ $GROUPNAME != nogroup ]
 		then
 
-			GROUPTYPE=$"Secondary"
-			GTYPE=secondary
-			if [ -f /opt/karoshi/server_network/group_information/"$GROUPNAME" ]
+			if [ $TYPE = all ]
 			then
-				GROUPTYPE=$"Primary"
-				GTYPE=primary
+				GROUPTYPE=$"Secondary"
+				GTYPE=secondary
+				if [ -f /opt/karoshi/server_network/group_information/"$GROUPNAME" ]
+				then
+					GROUPTYPE=$"Primary"
+					GTYPE=primary
+				fi
+				if [ -f /opt/karoshi/server_network/group_information_dynamic/"$GROUPNAME" ]
+				then
+					GROUPTYPE=$"Dynamic"
+					GTYPE=dynamic
+				fi
 			fi
-			if [ -f /opt/karoshi/server_network/group_information_dynamic/"$GROUPNAME" ]
-			then
-				GROUPTYPE=$"Dynamic"
-				GTYPE=dynamic
-			fi
-
 			#Show primary, secondary, dynamic, or all groups
-
-			if [ "$TYPE" = "$GTYPE" ] || [ "$TYPE" = all ]
+			MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
+			echo '<tr><td>'$GROUPNAME'</td><td>'
+			[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
+		
+			echo ''$GROUPTYPE'</td>'
+			if [ $MOBILE = no ]
 			then
-				MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
-
-
-			
-				echo '<tr><td>'$GROUPNAME'</td><td>'
-				[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
-			
-				echo ''$GROUPTYPE'</td>'
-				if [ $MOBILE = no ]
+				echo '<td>'
+				if [ $GTYPE = primary ]
 				then
-					echo '<td>'
-					if [ $GTYPE = primary ]
-					then
-						source /opt/karoshi/server_network/group_information/"$GROUPNAME"
-						echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$GTYPE'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Change the extra groups associated with this group."' '$GROUPNAME'</span></a> '$SECONDARYGROUP''
-					fi
-					echo '</td>'
+					source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+					echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$GTYPE'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Change the extra groups associated with this group."' '$GROUPNAME'</span></a> '$SECONDARYGROUP''
 				fi
-
-				echo '<td><a class="info" href="javascript:void(0)"><input name="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON3'" value=""><span>'$GROUPNAME' - '$"Show users in this group."'</span></a></td><td>'
-				PROTECTED=no
-				[ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
-				if [ "$PROTECTED" = no ]
-				then
-					if [ "$MEMBERCOUNT" = 0 ] || [ "$GTYPE" = secondary ] || [ "$GTYPE" = dynamic ] 
-					then
-						echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPNAME' - '$"delete this group."'</span></a>'
-					fi
-				fi
-				echo '</td></tr>'
+				echo '</td>'
 			fi
+
+			echo '<td><a class="info" href="javascript:void(0)"><input name="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON3'" value=""><span>'$GROUPNAME' - '$"Show users in this group."'</span></a></td><td>'
+			PROTECTED=no
+			[ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
+			if [ "$PROTECTED" = no ]
+			then
+				if [ "$MEMBERCOUNT" = 0 ] || [ "$GTYPE" = secondary ] || [ "$GTYPE" = dynamic ] 
+				then
+					echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPNAME' - '$"delete this group."'</span></a>'
+				fi
+			fi
+			echo '</td></tr>'
 		fi
 		let COUNTER=$COUNTER+1
 	done

@@ -46,7 +46,7 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Technical Support"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -81,14 +81,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = JOBNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-JOBNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = JOBNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		JOBNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -104,45 +104,45 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #########################
 #Check data
 #########################
 #Check to see that JOBNAME is not blank
-if [ $JOBNAME'null' = null ]
+if [ -z "$JOBNAME" ]
 then
-MESSAGE=$"The job name cannot be blank."
-show_status
+	MESSAGE=$"The job name cannot be blank."
+	show_status
 fi
 
 if [ ! -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ]
 then
-MESSAGE=$"This job does not exist."
-show_status
+	MESSAGE=$"This job does not exist."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH1=180
-WIDTH2=200
-WIDTH3=600
-COLS=70
-ROWS=6
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH1=180
+	WIDTH2=200
+	WIDTH3=600
+	COLS=70
+	ROWS=6
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
-WIDTH1=120
-WIDTH2=140
-WIDTH3=140
-COLS=18
-ROWS=4
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
+	WIDTH1=120
+	WIDTH2=140
+	WIDTH3=140
+	COLS=18
+	ROWS=4
 fi
 
 echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post">'
@@ -151,14 +151,14 @@ echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
-then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Help Desk"' - '$"Action Request"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">'
+	then
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Technical Support"' - '$"Action Request"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
-echo '<b>'$"Help Desk"' - '$"Action Request"'</b><br><br>'
+	echo '<b>'$"Technical Support"' - '$"Action Request"'</b><br><br>'
 fi
 
 

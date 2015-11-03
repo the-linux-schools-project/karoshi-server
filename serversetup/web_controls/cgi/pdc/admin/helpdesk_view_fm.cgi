@@ -53,7 +53,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Help Desk"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
+  <title>'$TITLE' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
@@ -126,12 +126,12 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Help Desk"' - '$"Requests"'</span>
+	<span>'$"Technical Support"' - '$"Requests"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 else
-	echo '<b>'$"Help Desk"' - '$"Requests"'</b> </div><div id="infobox"><br>'
+	echo '<b>'$"Technical Support"' - '$"Requests"'</b> </div><div id="infobox"><br>'
 fi
 
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
