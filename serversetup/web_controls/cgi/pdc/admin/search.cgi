@@ -88,17 +88,17 @@ fi
 #########################
 
 #Check to see that SEARCH is not blank
-if [ $SEARCH'null' = null ]
+if [ -z "$SEARCH" ]
 then
-echo "</div></body></html>"
-exit
+	echo "</div></body></html>"
+	exit
 fi
 
 #make sure that the search criteria has at least three spaces
 if [ ${#SEARCH} -le 2 ]
 then
-echo "</div></body></html>"
-exit
+	echo "</div></body></html>"
+	exit
 fi
 
 #Sort out spaces
@@ -108,10 +108,28 @@ echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Search"' '$"Web Management"' - '$SEARCH'</div></td></tr></tbody></table><br>
-</div><div id="infobox">'
+</div><div id="infobox"><table class="standard"><tbody><tr>'
 
-/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*$SEARCH | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g'
+COUNTER=1
+for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*$SEARCH | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
+do
+	echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
+	if [ $COUNTER = 6 ]
+	then
+		echo "</tr><tr>"
+	fi
+	let COUNTER=$COUNTER+1
+done
 
-echo '</div></div></div></body></html>'
+
+
+
+
+echo '</tr></tbody></table></div></div></div></body></html>'
 exit
 
+
+########################
+#Unique key
+########################
+#lqOicbJMXiKkQblPYeTzBr..v

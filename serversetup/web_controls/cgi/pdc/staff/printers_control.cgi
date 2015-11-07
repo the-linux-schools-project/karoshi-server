@@ -55,7 +55,7 @@ TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$TITLE'</title><meta http-equiv='"'REFRESH'"' content='"'2; URL=printers.cgi'"'></head>'
+echo '<html><head><title>'$TITLE'</title><meta http-equiv='"'REFRESH'"' content='"'0; URL=printers.cgi'"'></head>'
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 echo '</head>'
 echo '<body><div id="pagecontainer">'
@@ -69,18 +69,16 @@ PRINTDATA=$DATA
 #Check to see that the member of staff is not restricted
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
-if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
-then
-sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
-sleep $SLEEPTIME
-MESSAGE=$ERRORMSG10
-show_status
-fi
+	if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
+	then
+		sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
+		sleep $SLEEPTIME
+		MESSAGE=$ERRORMSG10
+		show_status
+	fi
 fi
 
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_staff
-echo '<div id="actionbox">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers_control.cgi | cut -d' ' -f1`
 COUNTER=0
 
@@ -90,56 +88,50 @@ PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2 | sed 's/123456789/_/g'`
 #Check to see what action needs to be carried out
 if [ `echo $PRINTDATA | grep -c _enable_` = 1 ]
 then
-PRINTER_ACTION=enable
-PRINTMSG=$ENABLEMSG
+	PRINTER_ACTION=enable
+	PRINTMSG=$ENABLEMSG
 fi
 if [ `echo $PRINTDATA | grep -c _disable_` = 1 ]
 then
-PRINTER_ACTION=disable
-PRINTMSG=$DISABLEMSG
+	PRINTER_ACTION=disable
+	PRINTMSG=$DISABLEMSG
 fi
 if [ `echo $PRINTDATA | grep -c _test_` = 1 ]
 then
-PRINTER_ACTION=test
-PRINTMSG=$TESTMSG
+	PRINTER_ACTION=test
+	PRINTMSG=$TESTMSG
 fi
 if [ `echo $PRINTDATA | grep -c _clearqueue_` = 1 ]
 then
-PRINTER_ACTION=clearqueue
-PRINTMSG=$CLEARQUEUEMSG
+	PRINTER_ACTION=clearqueue
+	PRINTMSG=$CLEARQUEUEMSG
 fi
 if [ `echo $PRINTDATA | grep -c _removejobid_` = 1 ]
 then
-END_POINT=6
-#Assign jobid
-JOBCOUNTER=2
-while [ $JOBCOUNTER -le $END_POINT ]
-do
-if [ `echo $DATA | cut -s -d'_' -f$JOBCOUNTER` = jobid$PRINTERNAME ]
-then
-let JOBCOUNTER=$JOBCOUNTER+1
-JOBID=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
-PRINTER_ACTION=removejobid
-break
-fi
-let JOBCOUNTER=$JOBCOUNTER+1
-done
-if [ $JOBID'null' != null ]
-then
-PRINTMSG=`echo $DELETEPRINTMSG $JOBID.`
-fi
+	END_POINT=6
+	#Assign jobid
+	JOBCOUNTER=2
+	while [ $JOBCOUNTER -le $END_POINT ]
+	do
+	if [ `echo $DATA | cut -s -d'_' -f$JOBCOUNTER` = jobid$PRINTERNAME ]
+	then
+		let JOBCOUNTER=$JOBCOUNTER+1
+		JOBID=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
+		PRINTER_ACTION=removejobid
+		break
+	fi
+	let JOBCOUNTER=$JOBCOUNTER+1
+	done
+	if [ -z "$JOBID" ]
+	then
+		PRINTMSG=`echo $DELETEPRINTMSG $JOBID.`
+	fi
 fi
 #Show action to be taken
 if [ $PRINTER_ACTION != none ]
 then
-echo '<table class="headings" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">'
-echo '<tbody><tr><td>'
-echo '<span style="font-weight: bold;">'$PRINTERNAME'</span></td>'
-echo '</tr></tbody></table>'
-echo $PRINTMSG'<br>'
-sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
+	sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
 fi
 
-echo "</div>"
 echo "</div></body></html>"
 exit

@@ -51,7 +51,17 @@ exit
 TCPIP_ADDR=$REMOTE_ADDR
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><META HTTP-EQUIV="refresh" CONTENT="60"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><META HTTP-EQUIV="refresh" CONTENT="60"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -73,37 +83,61 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body><div id="pagecontainer">'
+
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=2
+#Assign PRINTER
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_tech ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_tech
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_tech
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 #Check that a print server has been declared
@@ -123,22 +157,32 @@ exit
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Manage Print Queues"'</span>
-<a href="/cgi-bin/tech/mobile_menu.cgi">'$"Infrastructure"'</a>
-</div></div>
-'
-
+	<span>'$"Manage Print Queues"'</span>'
+	if [ -z "$PRINTER" ]
+	then
+		echo '<a href="/cgi-bin/tech/mobile_menu.cgi">'$"Menu"'</a>'
+	else
+		echo '<a href="/cgi-bin/tech/printers.cgi">'$"View Print Queues"'</a>'
+	fi
+	echo '</div></div>'
 else
-echo '<div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Manage Print Queues"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></td></tr></tbody></table><br></div><div id="infobox">
+	echo '<div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top; height:30px"><b>'$"Manage Print Queues"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></td>'
+
+	if [ ! -z "$PRINTER" ]
+	then
+		echo '<td style="vertical-align: top;"><a href="printers.cgi"><input class="button" type="button" name="" value="'$"View Print Queues"'"></a></td>'
+	fi
+
+ echo '</tr></tbody></table></div><div id="infobox">
 '
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/tech/printers.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/printers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
+sudo -H /opt/karoshi/web_controls/exec/printers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

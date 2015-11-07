@@ -30,22 +30,22 @@ LOG_DATE=`date +%F`
 
 function add_warning {
 echo `date`: check_reboot - $SERVER: reboot required after an upgrade. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi "$ERRORALERT" 3
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi $"A Reboot is required." 3
 }
 
 #Check servers for reboot
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-SERVER=`basename $SERVERS`
-if [ $SERVER = `hostname-fqdn` ]
-then
-[ -f /var/run/reboot-required ] && add_warning
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-[ -f /var/run/reboot-required ] && exit 105
-'
-[ `echo $?` = 105 ] && add_warning
-fi
+	SERVER=`basename $SERVERS`
+	if [ $SERVER = `hostname-fqdn` ]
+	then
+		[ -f /var/run/reboot-required ] && add_warning
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		[ -f /var/run/reboot-required ] && exit 105
+		'
+		[ `echo $?` = 105 ] && add_warning
+	fi
 done
 
 #Check federated servers for reboot
@@ -54,49 +54,49 @@ done
 #Show list of federated servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-[ -f /var/run/reboot-required ] && exit 105
-'
-[ `echo $?` = 105 ] && add_warning
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+			[ -f /var/run/reboot-required ] && exit 105
+			'
+			[ `echo $?` = 105 ] && add_warning
+		done
+	fi
 fi
 
 #Check federated slave servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_MASTERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_MASTER=`basename $FEDERATED_MASTERS`
-for SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_MASTER/servers/*
-do
-SERVER=`basename $SERVERS`
-echo server is $SERVER master is $FEDERATED_MASTER
-if [ $SERVER = $FEDERATED_MASTER ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-[ -f /var/run/reboot-required ] && exit 105
-'
-[ `echo $?` = 105 ] && add_warning
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_MASTER '
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
-[ -f /var/run/reboot-required ] && exit 105
-'\''
-[ `echo $?` = 105 ] && exit 105
-'
-[ `echo $?` = 105 ] && add_warning
-fi
-done
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		for FEDERATED_MASTERS in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			FEDERATED_MASTER=`basename $FEDERATED_MASTERS`
+			for SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_MASTER/servers/*
+			do
+				SERVER=`basename $SERVERS`
+				echo server is $SERVER master is $FEDERATED_MASTER
+				if [ $SERVER = $FEDERATED_MASTER ]
+				then
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+					[ -f /var/run/reboot-required ] && exit 105
+					'
+					[ `echo $?` = 105 ] && add_warning
+				else
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_MASTER '
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
+					[ -f /var/run/reboot-required ] && exit 105
+					'\''
+					[ `echo $?` = 105 ] && exit 105
+					'
+					[ `echo $?` = 105 ] && add_warning
+				fi
+			done
+		done
+	fi
 fi
 
 exit

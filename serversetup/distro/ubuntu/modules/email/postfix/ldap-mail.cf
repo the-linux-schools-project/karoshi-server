@@ -1,5 +1,5 @@
 search_base = OU=People,CHANGETHISDN
-query_filter = mail=%s
+query_filter = (|(mail=%s)(proxyAddresses=%s))
 result_attribute = cn
 server_host = CHANGETHISLDAPSERVER
 

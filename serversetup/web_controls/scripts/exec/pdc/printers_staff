@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 SSHWARNMSG="SSH is not enabled for this server."
 ########################
@@ -32,16 +32,16 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/printers_cgi
 then
-echo `date`: printers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/printers_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_cgi'check' ]
 then
-echo `date`: printers_staff - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_staff - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -50,26 +50,27 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: printers_staff - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_staff - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4`
+PRINTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: printers_staff - Not called by printers_staff.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_staff - Not called by printers_staff.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printers_staff - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_staff - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Get Printer location data
@@ -86,7 +87,7 @@ LOCATIONDATA=`echo $LOCATIONDATA | sed 's/ /123SPACE123/g'`
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER = `hostname-fqdn` ]
 then
-/opt/karoshi/"useful scripts"/printer_info staff $LOCATIONDATA $MOBILE
+	/opt/karoshi/"useful scripts"/printer_info staff $LOCATIONDATA $MOBILE $PRINTER
 else
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '/opt/karoshi/"useful scripts"/printer_info staff '$LOCATIONDATA' '$MOBILE'' 2>&1
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '/opt/karoshi/"useful scripts"/printer_info staff '$LOCATIONDATA' '$MOBILE' '$PRINTER'' 2>&1
 fi

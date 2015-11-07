@@ -81,7 +81,7 @@ fi
 FOLDER_SHORT=`basename "$FOLDER"`
 
 #Copy in data to the gluster volume or create an empty folder
-echo "<li>"$SERVER - $"Copying" $FOLDER"</li><br>"
+echo "<br><li>"$SERVER - $"Copying" $FOLDER"</li><br>"
 if [ "$SERVER" = `hostname-fqdn` ]
 then
 	if [ "$ACTION" = copydata ]

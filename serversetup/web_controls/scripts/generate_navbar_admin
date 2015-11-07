@@ -41,8 +41,10 @@ echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top">
 </form></div>'
 
 #Check for warning messages
+SHOW_WARNINGS=no
 if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
 then
+SHOW_WARNINGS=yes
 echo '<div id="tickerbar">'
 
 echo "<SCRIPT type=\"text/javascript\" LANGUAGE=\"JavaScript\">
@@ -106,8 +108,15 @@ echo '</div><div id="navbar">
 <span class="preload2"></span>
 
 <ul id="nav">
-	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
+	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>'
+
+#Show any warning messages
+if [ $SHOW_WARNINGS = yes ]
+then
+	echo '<li class="top"><a href="/cgi-bin/admin/alerts.cgi" class="top_link"><span class="warnings">'$"Warning Messages"'</span></a></li>'
+fi
+
+echo '	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>

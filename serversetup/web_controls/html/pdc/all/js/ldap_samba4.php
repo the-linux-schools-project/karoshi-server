@@ -29,7 +29,7 @@
                                 
 				if($ldapconnected == 1){
 	         					$attributes= array("gidNumber","cn","name");
-                                                        $lookupString = "cn=$queryString*";                               
+                                                        $lookupString = "userPrincipalName=$queryString*";                               
 	         					if($userresults=@ldap_search($ldapconnection, "OU=People,LDAPBASE",$lookupString, $attributes)){
                                                             // While there are results loop through them - fetching an Object.
                                                            $info=@ldap_get_entries($ldapconnection, $userresults);

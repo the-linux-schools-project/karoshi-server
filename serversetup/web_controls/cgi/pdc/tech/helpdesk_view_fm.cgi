@@ -33,7 +33,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -62,14 +62,14 @@ END_POINT=7
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SEARCHCRITERIAcheck ]
-then
-let COUNTER=$COUNTER+1
-SEARCHCRITERIA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3D/=/g'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SEARCHCRITERIAcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SEARCHCRITERIA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3D/=/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Detect mobile browser
@@ -103,6 +103,19 @@ echo '<b>'$"Technical Support"' - '$"Requests"'</b> <a class="info" href="javasc
 fi
 
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
+
+#Reload the page every 3 minutes
+echo '
+<form id="refresh_form" action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
+ <input type="hidden" name="_SEARCHCRITERIA_'$SEARCHCRITERIA'_" value="_SEARCHCRITERIA_'$SEARCHCRITERIA'_"> 
+</form>
+<script type="text/javascript">
+setTimeout(function(){
+document.getElementById("refresh_form").submit();
+}, 180000);
+</script>
+'
+
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
 then

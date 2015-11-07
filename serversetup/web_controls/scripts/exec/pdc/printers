@@ -71,6 +71,7 @@ REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+PRINTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
@@ -117,7 +118,7 @@ LOCATIONDATA=`echo $LOCATIONDATA | sed 's/ /123SPACE123/g'`
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER = `hostname-fqdn` ]
 then
-	/opt/karoshi/"useful scripts"/printer_info admin $LOCATIONDATA $MOBILE
+	/opt/karoshi/"useful scripts"/printer_info admin $LOCATIONDATA $MOBILE $PRINTER
 else
-	ssh -x -o PasswordAuthentication=no $PRINTSERVER '/opt/karoshi/"useful scripts"/printer_info admin '$LOCATIONDATA' '$MOBILE'' 2>&1
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '/opt/karoshi/"useful scripts"/printer_info admin '$LOCATIONDATA' '$MOBILE' '$PRINTER'' 2>&1
 fi

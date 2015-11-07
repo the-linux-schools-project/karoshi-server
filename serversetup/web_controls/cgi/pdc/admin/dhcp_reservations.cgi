@@ -321,7 +321,7 @@ then
 		then
 		SHOWENTRIES=yes
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th></tr>'
+		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th></tr></thead><tbody>'
 
 		for CLIENTHOSTNAMES in /opt/karoshi/server_network/dhcp/reservations/*
 			do

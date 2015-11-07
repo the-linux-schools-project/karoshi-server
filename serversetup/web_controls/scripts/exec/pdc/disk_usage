@@ -138,7 +138,7 @@ fi
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-	if [ -f /opt/karoshi/server_network/disk_usage/"'$CHOICE'".html ]
+	if [ -f /opt/karoshi/server_network/disk_usage/'$SERVERNAME'/"'$CHOICE'".html ]
 	then
 		if [ '$MOBILE' = no ]
 		then

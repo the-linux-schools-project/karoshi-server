@@ -53,7 +53,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
+  <title>'$TITLE' - '$"Requests"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
@@ -135,6 +135,19 @@ else
 fi
 
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
+
+#Reload the page every 3 minutes
+echo '
+<form id="refresh_form" action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
+ <input type="hidden" name="_SEARCHCRITERIA_'$SEARCHCRITERIA'_" value="_SEARCHCRITERIA_'$SEARCHCRITERIA'_"> 
+</form>
+<script type="text/javascript">
+setTimeout(function(){
+document.getElementById("refresh_form").submit();
+}, 180000);
+</script>
+'
+
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
 then
@@ -231,10 +244,12 @@ do
 		echo '<tr><td style="vertical-align: top;">'$DATE' '$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED2'</td><td>
 	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
 	fi
-
 done
+
+echo '</tbody></table>'
+
 [ $MOBILE = no ] && echo '</div>'
-echo '</tbody></table></div></html>'
+echo '</div></div></body></html>'
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 exit
 
