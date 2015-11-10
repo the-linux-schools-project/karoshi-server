@@ -138,318 +138,341 @@ fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
-#Show free space
+	#Show free space
 
-#Get partition info
-DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
-MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: $WIDTH1"px";\"><b>Mount point</b></td>"
-[ $MOBILE = no ] && echo "<td style=\"width: $WIDTH2"px";\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
-echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
-COUNTER=1
-while [ $COUNTER -le $MOUNTCOUNT ]
-do
-MOUNTDATA=`echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p"`
-FILESYSTEM=`echo $MOUNTDATA | cut -d" " -f1`
-SIZE=`echo $MOUNTDATA | cut -d" " -f2`
-USED=`echo $MOUNTDATA | cut -d" " -f3`
-AVAIL=`echo $MOUNTDATA | cut -d" " -f4`
-USE=`echo $MOUNTDATA | cut -d" " -f5`
-USE2=`echo $USE | sed "s/%//g"`
-MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
+	#Get partition info
+	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
+	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
+	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: $WIDTH1"px";\"><b>Mount point</b></td>"
+	[ $MOBILE = no ] && echo "<td style=\"width: $WIDTH2"px";\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+	echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
+	COUNTER=1
+	while [ $COUNTER -le $MOUNTCOUNT ]
+	do
+		MOUNTDATA=`echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p"`
+		FILESYSTEM=`echo $MOUNTDATA | cut -d" " -f1`
+		SIZE=`echo $MOUNTDATA | cut -d" " -f2`
+		USED=`echo $MOUNTDATA | cut -d" " -f3`
+		AVAIL=`echo $MOUNTDATA | cut -d" " -f4`
+		USE=`echo $MOUNTDATA | cut -d" " -f5`
+		USE2=`echo $USE | sed "s/%//g"`
+		MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
 
-if [ $USE2 -gt 90 ]
-then
-ALERTCOL=red
-BARCOL=red
-elif [ $USE2 -gt 70 ]
-then
-ALERTCOL=orange
-BARCOL=orange
-else
-ALERTCOL=green
-BARCOL=green
-fi
-let USE2=$USE2*$MULTI
-echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
-echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+		if [ $USE2 -gt 90 ]
+		then
+			ALERTCOL=red
+			BARCOL=red
+		elif [ $USE2 -gt 70 ]
+		then
+			ALERTCOL=orange
+			BARCOL=orange
+		else
+			ALERTCOL=green
+			BARCOL=green
+		fi
+		let USE2=$USE2*$MULTI
+		echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
+		[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+		echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
-let COUNTER=$COUNTER+1
-done
-echo "</tbody></table><br>"
+		let COUNTER=$COUNTER+1
+	done
+	echo "</tbody></table><br>"
 
-#Get list of disks
-DISKLIST=`fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g"`
-for DISK in $DISKLIST
-do
-echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>"$DISK"</b><br>"
+	#Get list of disks
+	DISKLIST=`fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g"`
+	for DISK in $DISKLIST
+	do
+	echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>"$DISK"</b><br>"
 
-#Enable smart
-smartctl --smart=on $DISK 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Enable smart
+	smartctl --smart=on $DISK 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#Get Disk information
-UUID=
-SMARTINFO=`smartctl -i $DISK | tr -cd "A-Za-z0-9:=,/\n "`
-MODELFAMILY=`echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g"`
-DEVICEMODEL=`echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g"`
-SERIALNO=`echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g"`
-FIRMWARE=`echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g"`
-CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9"`
-SMARTENABLED=`echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g"`
-SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
-EXTRASMARTINFO=`smartctl -a $DISK`
-DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+	#Get Disk information
+	UUID=
+	SMARTINFO=`smartctl -i $DISK | tr -cd "A-Za-z0-9:=,/\n "`
+	MODELFAMILY=`echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g"`
+	DEVICEMODEL=`echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g"`
+	SERIALNO=`echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g"`
+	FIRMWARE=`echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g"`
+	CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9"`
+	SMARTENABLED=`echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g"`
+	SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
+	EXTRASMARTINFO=`smartctl -a $DISK`
+	DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+	PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	#Convert disk age to days
+	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
+	DISK_AGE_UNIT=$"Days"
+	#Convert disk age to years
+	if [ "$DISK_AGE" -gt 365 ]
+	then
+		DISK_AGE=`echo "scale=2; "$DISK_AGE"/365" | bc`
+		DISK_AGE_UNIT=$"Years"
+	fi
 
-#Convert capacity to gigabytes
-CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [[ $CAPACITY > 1000 ]]
-then
-#Covert capacity to terabytes
-CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-DRIVESCALE=TB
-fi
+	#Convert capacity to gigabytes
+	CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
+	DRIVESCALE=GB
+	if [[ $CAPACITY > 1000 ]]
+	then
+		#Covert capacity to terabytes
+		CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+		DRIVESCALE=TB
+	fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
-<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
-<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
-<tr><td>'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
-<tr><td>'$"Capacity"'</td><td>'$CAPACITY $DRIVESCALE'</td></tr>
-<tr><td>'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
-<tr><td>'$"Smart Status"'</td><td>'$SMARTSTATUS'</td></tr>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
+	<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
+	<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
+	<tr><td>'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
+	<tr><td>'$"Capacity"'</td><td>'$CAPACITY $DRIVESCALE'</td></tr>
+	<tr><td>'$"Disk Age"'</td><td>'$DISK_AGE' '$DISK_AGE_UNIT'</td></tr>
+	<tr><td>'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
+	<tr><td>'$"Smart Status"'</td><td>'$SMARTSTATUS'</td></tr>'
 
-if [ ! -z "$PENDINGSECTORS" ]
-then
-if [ $PENDINGSECTORS -gt 0 ]
-then
-echo '<tr><td><FONT COLOR="red"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR="red"><b>'$PENDINGSECTORS'</b></font></td></tr>'
-else
-echo '<tr><td>'$"Pending Sectors"'</td><td>'$PENDINGSECTORS'</td></tr>'
-fi
-fi
+	if [ ! -z "$PENDINGSECTORS" ]
+	then
+		if [ $PENDINGSECTORS -gt 0 ]
+		then
+			echo '<tr><td><FONT COLOR="red"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR="red"><b>'$PENDINGSECTORS'</b></font></td></tr>'
+		else
+			echo '<tr><td>'$"Pending Sectors"'</td><td>'$PENDINGSECTORS'</td></tr>'
+		fi
+	fi
 
-if [[ $DISKTEMP > 50 ]]
-then
-echo '<tr><td><FONT COLOR="red"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR="red"><b>'$DISKTEMP' <sup>o</sup>C</b></font></td></tr>'
-elif [[ $DISKTEMP > 40 ]]
-then
-echo '<tr><td><FONT COLOR="orange">'$"Disk temperature"'</font></td><td><FONT COLOR="orange">'$DISKTEMP' <sup>o</sup>C</font></td></tr>'
-else
-echo '<tr><td>'$"Disk temperature"'</td><td>'$DISKTEMP' <sup>o</sup>C</td></tr>'
-fi
+	if [[ $DISKTEMP > 50 ]]
+	then
+		echo '<tr><td><FONT COLOR="red"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR="red"><b>'$DISKTEMP' <sup>o</sup>C</b></font></td></tr>'
+	elif [[ $DISKTEMP > 40 ]]
+	then
+		echo '<tr><td><FONT COLOR="orange">'$"Disk temperature"'</font></td><td><FONT COLOR="orange">'$DISKTEMP' <sup>o</sup>C</font></td></tr>'
+	else
+		echo '<tr><td>'$"Disk temperature"'</td><td>'$DISKTEMP' <sup>o</sup>C</td></tr>'
+	fi
 
-echo "</tbody></table><br>"
+	echo "</tbody></table><br>"
 
-done
+	done
 
-#Show software raid information
-if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
-then
-RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo '<img src="/images/submenus/system/raid.png" alt="Software Raid"> <b>'$"Software Raid"'</b><br>'
+	#Show software raid information
+	if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
+	then
+		RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
+		echo '<img src="/images/submenus/system/raid.png" alt="Software Raid"> <b>'$"Software Raid"'</b><br>'
 
-MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
-ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
-REBUILDING_RAID_DISKS=`echo -e "$MDADMDATA" | grep "spare rebuilding " | sed "s/ * / /g" | cut -d" " -f8`
-SPARE_RAID_DISKS=`echo -e "$MDADMDATA" | sed "s/ * / /g" | grep "\- spare" | cut -d" " -f7`
-REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDLEVEL=`echo -e "$MDADMDATA" | grep "Raid Level :" | cut -d: -f2 | sed "s/^ //g"`
-ARRAYSIZE=`echo -e "$MDADMDATA" | grep "Array Size :" | cut -d: -f2 | sed "s/^ //g"`
-USEDSIZE=`echo -e "$MDADMDATA" | grep "Used Dev Size :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDDEVICES=`echo -e "$MDADMDATA" | grep "Raid Devices :" | cut -d: -f2 | sed "s/^ //g"`
-TOTALDEVICES=`echo -e "$MDADMDATA" | grep "Total Devices :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDSTATUS=`echo -e "$MDADMDATA" | grep "State :" | cut -d: -f2 | sed "s/^ //g"`
-ACTIVEDEVICES=`echo -e "$MDADMDATA" | grep "Active Devices :" | cut -d: -f2 | sed "s/^ //g"`
-WORKINGDEVICES=`echo -e "$MDADMDATA" | grep "Working Devices :" | cut -d: -f2 | sed "s/^ //g"`
-FAILEDDEVICES=`echo -e "$MDADMDATA" | grep "Failed Devices :" | cut -d: -f2 | sed "s/^ //g"`
-SPAREDEVICES=`echo -e "$MDADMDATA" | grep "Spare Devices :" | cut -d: -f2 | sed "s/^ //g"`
-LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
-CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
-UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
+		MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
+		ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
+		REBUILDING_RAID_DISKS=`echo -e "$MDADMDATA" | grep "spare rebuilding " | sed "s/ * / /g" | cut -d" " -f8`
+		SPARE_RAID_DISKS=`echo -e "$MDADMDATA" | sed "s/ * / /g" | grep "\- spare" | cut -d" " -f7`
+		REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
+		RAIDLEVEL=`echo -e "$MDADMDATA" | grep "Raid Level :" | cut -d: -f2 | sed "s/^ //g"`
+		ARRAYSIZE=`echo -e "$MDADMDATA" | grep "Array Size :" | cut -d: -f2 | sed "s/^ //g"`
+		USEDSIZE=`echo -e "$MDADMDATA" | grep "Used Dev Size :" | cut -d: -f2 | sed "s/^ //g"`
+		RAIDDEVICES=`echo -e "$MDADMDATA" | grep "Raid Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		TOTALDEVICES=`echo -e "$MDADMDATA" | grep "Total Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		RAIDSTATUS=`echo -e "$MDADMDATA" | grep "State :" | cut -d: -f2 | sed "s/^ //g"`
+		ACTIVEDEVICES=`echo -e "$MDADMDATA" | grep "Active Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		WORKINGDEVICES=`echo -e "$MDADMDATA" | grep "Working Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		FAILEDDEVICES=`echo -e "$MDADMDATA" | grep "Failed Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		SPAREDEVICES=`echo -e "$MDADMDATA" | grep "Spare Devices :" | cut -d: -f2 | sed "s/^ //g"`
+		LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
+		CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
+		UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: '$WIDTH3'"px";">'$"Raid Level"'</td><td>'$RAIDLEVEL'</td></tr>
-<tr><td>'$"Raid Size"'</td><td>'$ARRAYSIZE'</td></tr>
-<tr><td>'$"Used Size"'</td><td>'$USEDSIZE'</td></tr>
-<tr><td>'$"Raid Status"'</td><td>'$RAIDSTATUS'</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>'$"Rebuild Status"'</td><td>'$REBUILDSTATUS'</td></tr>"
-echo "<tr><td>'$"Raid Drives"'</td><td>'$RAIDDEVICES'</td></tr>
-<tr><td>'$"Used Drives"'</td><td>'$TOTALDEVICES'</td></tr>
-<tr><td>'$"Active Devices"'</td><td>'$ACTIVEDEVICES'</td></tr>
-<tr><td>'$"Working Devices"'</td><td>'$WORKINGDEVICES'</td></tr>
-<tr><td>'$"Failed Devices"'</td><td>'$FAILEDDEVICES'</td></tr>
-<tr><td>'$"Spare Devices"'</td><td>'$SPAREDEVICES'</td></tr>
-<tr><td>'$"Layout"'</td><td>'$LAYOUT'</td></tr>
-<tr><td>'$"Chunk Size"'</td><td>'$CHUNKSIZE'</td></tr>
-<tr><td>'$"Active Disks"'</td><td>'$ACTIVE_RAID_DISKS'</td></tr>
-<tr><td>'$"Rebuilding Disks"'</td><td>'$REBUILDING_RAID_DISKS'</td></tr>
-<tr><td>'$"Spare Disks"'</td><td>'$SPARE_RAID_DISKS'</td></tr>
-<tr><td>UUID</td><td>'$UUID'</td></tr>
-</tbody></table>'
-fi
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<tr><td style="width: '$WIDTH3'"px";">'$"Raid Level"'</td><td>'$RAIDLEVEL'</td></tr>
+		<tr><td>'$"Raid Size"'</td><td>'$ARRAYSIZE'</td></tr>
+		<tr><td>'$"Used Size"'</td><td>'$USEDSIZE'</td></tr>
+		<tr><td>'$"Raid Status"'</td><td>'$RAIDSTATUS'</td></tr>"
+		[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>'$"Rebuild Status"'</td><td>'$REBUILDSTATUS'</td></tr>"
+		echo "<tr><td>'$"Raid Drives"'</td><td>'$RAIDDEVICES'</td></tr>
+		<tr><td>'$"Used Drives"'</td><td>'$TOTALDEVICES'</td></tr>
+		<tr><td>'$"Active Devices"'</td><td>'$ACTIVEDEVICES'</td></tr>
+		<tr><td>'$"Working Devices"'</td><td>'$WORKINGDEVICES'</td></tr>
+		<tr><td>'$"Failed Devices"'</td><td>'$FAILEDDEVICES'</td></tr>
+		<tr><td>'$"Spare Devices"'</td><td>'$SPAREDEVICES'</td></tr>
+		<tr><td>'$"Layout"'</td><td>'$LAYOUT'</td></tr>
+		<tr><td>'$"Chunk Size"'</td><td>'$CHUNKSIZE'</td></tr>
+		<tr><td>'$"Active Disks"'</td><td>'$ACTIVE_RAID_DISKS'</td></tr>
+		<tr><td>'$"Rebuilding Disks"'</td><td>'$REBUILDING_RAID_DISKS'</td></tr>
+		<tr><td>'$"Spare Disks"'</td><td>'$SPARE_RAID_DISKS'</td></tr>
+		<tr><td>UUID</td><td>'$UUID'</td></tr>
+		</tbody></table>'
+	fi
 fi
 
 
 if [ $KAROSHI_SERVER != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER '
-#Show free space
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER '
+	#Show free space
 
-#Get partition info
-DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
-MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
-[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
-echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
-COUNTER=1
-while [ $COUNTER -le $MOUNTCOUNT ]
-do
-MOUNTDATA=`echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p"`
-FILESYSTEM=`echo $MOUNTDATA | cut -d" " -f1`
-SIZE=`echo $MOUNTDATA | cut -d" " -f2`
-USED=`echo $MOUNTDATA | cut -d" " -f3`
-AVAIL=`echo $MOUNTDATA | cut -d" " -f4`
-USE=`echo $MOUNTDATA | cut -d" " -f5`
-USE2=`echo $USE | sed "s/%//g"`
+	#Get partition info
+	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
+	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
+	[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+	echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
+	COUNTER=1
+	while [ $COUNTER -le $MOUNTCOUNT ]
+	do
+	MOUNTDATA=`echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p"`
+	FILESYSTEM=`echo $MOUNTDATA | cut -d" " -f1`
+	SIZE=`echo $MOUNTDATA | cut -d" " -f2`
+	USED=`echo $MOUNTDATA | cut -d" " -f3`
+	AVAIL=`echo $MOUNTDATA | cut -d" " -f4`
+	USE=`echo $MOUNTDATA | cut -d" " -f5`
+	USE2=`echo $USE | sed "s/%//g"`
 
-MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
+	MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
 
-if [ $USE2 -gt 90 ]
-then
-ALERTCOL=red
-BARCOL=red
-elif [ $USE2 -gt 70 ]
-then
-ALERTCOL=orange
-BARCOL=orange
-else
-ALERTCOL=green
-BARCOL=green
-fi
-let USE2=$USE2*'$MULTI'
-echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
-echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+	if [ $USE2 -gt 90 ]
+	then
+	ALERTCOL=red
+	BARCOL=red
+	elif [ $USE2 -gt 70 ]
+	then
+	ALERTCOL=orange
+	BARCOL=orange
+	else
+	ALERTCOL=green
+	BARCOL=green
+	fi
+	let USE2=$USE2*'$MULTI'
+	echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
+	[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
+	echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
-let COUNTER=$COUNTER+1
-done
-echo "</tbody></table><br>"
+	let COUNTER=$COUNTER+1
+	done
+	echo "</tbody></table><br>"
 
-#Get list of disks
-DISKLIST=`fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g"`
-for DISK in $DISKLIST
-do
-echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>"$DISK"</b><br>"
+	#Get list of disks
+	DISKLIST=`fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g"`
+	for DISK in $DISKLIST
+	do
+	echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>"$DISK"</b><br>"
 
-#Enable smart
-smartctl --smart=on $DISK 1>/dev/null 2>>/dev/null
+	#Enable smart
+	smartctl --smart=on $DISK 1>/dev/null 2>>/dev/null
 
-#Get Disk information
-UUID=
-SMARTINFO=`smartctl -i $DISK | tr -cd "A-Za-z0-9:=,/\n "`
-MODELFAMILY=`echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g"`
-DEVICEMODEL=`echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g"`
-SERIALNO=`echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g"`
-FIRMWARE=`echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g"`
-CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9"`
-SMARTENABLED=`echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g"`
-SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
-EXTRASMARTINFO=`smartctl -a $DISK`
-DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-#Convert capacity to gigabytes
-CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [[ $CAPACITY > 1000 ]]
-then
-#Covert capacity to terabytes
-CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-DRIVESCALE=TB
-fi
+	#Get Disk information
+	UUID=
+	SMARTINFO=`smartctl -i $DISK | tr -cd "A-Za-z0-9:=,/\n "`
+	MODELFAMILY=`echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g"`
+	DEVICEMODEL=`echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g"`
+	SERIALNO=`echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g"`
+	FIRMWARE=`echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g"`
+	CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9"`
+	SMARTENABLED=`echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g"`
+	SMARTSTATUS=`smartctl -H $DISK | sed 1,4d`
+	EXTRASMARTINFO=`smartctl -a $DISK`
+	DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
+	PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
+	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	#Convert disk age to days
+	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
+	DISK_AGE_UNIT=$"Days"
+	#Convert disk age to years
+	if [ "$DISK_AGE" -gt 365 ]
+	then
+		DISK_AGE=`echo "scale=2; "$DISK_AGE"/365" | bc`
+		DISK_AGE_UNIT=$"Years"
+	fi
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
-<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
-<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
-<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
-<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
-<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
+	#Convert capacity to gigabytes
+	CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
+	DRIVESCALE=GB
+	if [[ $CAPACITY > 1000 ]]
+	then
+	#Covert capacity to terabytes
+	CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+	DRIVESCALE=TB
+	fi
 
-if [ ! -z "$PENDINGSECTORS" ]
-then
-if [ $PENDINGSECTORS -gt 0 ]
-then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
-else
-echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
-fi
-fi
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
+	<tr><td>'$"Disk Age"'</td><td>$DISK_AGE $DISK_AGE_UNIT</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
 
-if [[ $DISKTEMP > 50 ]]
-then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
-elif [[ $DISKTEMP > 40 ]]
-then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
-else
-echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
-fi
+	if [ ! -z "$PENDINGSECTORS" ]
+	then
+	if [ $PENDINGSECTORS -gt 0 ]
+	then
+	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+	else
+	echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
+	fi
+	fi
 
-echo "</tbody></table><br>"
+	if [[ $DISKTEMP > 50 ]]
+	then
+	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+	elif [[ $DISKTEMP > 40 ]]
+	then
+	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+	else
+	echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+	fi
 
-done
+	echo "</tbody></table><br>"
 
-#Show software raid information
-if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
-then
-RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
-echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
+	done
 
-MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
-ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
-REBUILDING_RAID_DISKS=`echo -e "$MDADMDATA" | grep "spare rebuilding " | sed "s/ * / /g" | cut -d" " -f8`
-SPARE_RAID_DISKS=`echo -e "$MDADMDATA" | sed "s/ * / /g" | grep "\- spare" | cut -d" " -f7`
-REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDLEVEL=`echo -e "$MDADMDATA" | grep "Raid Level :" | cut -d: -f2 | sed "s/^ //g"`
-ARRAYSIZE=`echo -e "$MDADMDATA" | grep "Array Size :" | cut -d: -f2 | sed "s/^ //g"`
-USEDSIZE=`echo -e "$MDADMDATA" | grep "Used Dev Size :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDDEVICES=`echo -e "$MDADMDATA" | grep "Raid Devices :" | cut -d: -f2 | sed "s/^ //g"`
-TOTALDEVICES=`echo -e "$MDADMDATA" | grep "Total Devices :" | cut -d: -f2 | sed "s/^ //g"`
-RAIDSTATUS=`echo -e "$MDADMDATA" | grep "State :" | cut -d: -f2 | sed "s/^ //g"`
-ACTIVEDEVICES=`echo -e "$MDADMDATA" | grep "Active Devices :" | cut -d: -f2 | sed "s/^ //g"`
-WORKINGDEVICES=`echo -e "$MDADMDATA" | grep "Working Devices :" | cut -d: -f2 | sed "s/^ //g"`
-FAILEDDEVICES=`echo -e "$MDADMDATA" | grep "Failed Devices :" | cut -d: -f2 | sed "s/^ //g"`
-SPAREDEVICES=`echo -e "$MDADMDATA" | grep "Spare Devices :" | cut -d: -f2 | sed "s/^ //g"`
-LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
-CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
-UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
+	#Show software raid information
+	if [ `grep -c ^"#Software raid" /etc/fstab` -gt 0 ]
+	then
+	RAIDMOUNTPOINT=`mdadm --detail --scan 2>/dev/null | cut -d" " -f2`
+	echo "<img src=\"/images/submenus/system/raid.png\" alt=\"Software Raid\"> <b>'$"Software Raid"'</b><br>"
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
-<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
-<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
-<tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
-[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td>'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
-<tr><td>'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
-<tr><td>'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td>'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
-<tr><td>'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
-<tr><td>'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
-<tr><td>'$"Layout"'</td><td>$LAYOUT</td></tr>
-<tr><td>'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
-<tr><td>'$"Active Disks"'</td><td>$ACTIVE_RAID_DISKS</td></tr>
-<tr><td>'$"Rebuilding Disks"'</td><td>$REBUILDING_RAID_DISKS</td></tr>
-<tr><td>'$"Spare Disks"'</td><td>$SPARE_RAID_DISKS</td></tr>
-<tr><td>UUID</td><td>$UUID</td></tr>
-</tbody></table>"
-fi
+	MDADMDATA=`mdadm --detail $RAIDMOUNTPOINT`
+	ACTIVE_RAID_DISKS=`echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8`
+	REBUILDING_RAID_DISKS=`echo -e "$MDADMDATA" | grep "spare rebuilding " | sed "s/ * / /g" | cut -d" " -f8`
+	SPARE_RAID_DISKS=`echo -e "$MDADMDATA" | sed "s/ * / /g" | grep "\- spare" | cut -d" " -f7`
+	REBUILDSTATUS=`echo -e "$MDADMDATA" | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
+	RAIDLEVEL=`echo -e "$MDADMDATA" | grep "Raid Level :" | cut -d: -f2 | sed "s/^ //g"`
+	ARRAYSIZE=`echo -e "$MDADMDATA" | grep "Array Size :" | cut -d: -f2 | sed "s/^ //g"`
+	USEDSIZE=`echo -e "$MDADMDATA" | grep "Used Dev Size :" | cut -d: -f2 | sed "s/^ //g"`
+	RAIDDEVICES=`echo -e "$MDADMDATA" | grep "Raid Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	TOTALDEVICES=`echo -e "$MDADMDATA" | grep "Total Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	RAIDSTATUS=`echo -e "$MDADMDATA" | grep "State :" | cut -d: -f2 | sed "s/^ //g"`
+	ACTIVEDEVICES=`echo -e "$MDADMDATA" | grep "Active Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	WORKINGDEVICES=`echo -e "$MDADMDATA" | grep "Working Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	FAILEDDEVICES=`echo -e "$MDADMDATA" | grep "Failed Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	SPAREDEVICES=`echo -e "$MDADMDATA" | grep "Spare Devices :" | cut -d: -f2 | sed "s/^ //g"`
+	LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
+	CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
+	UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
+
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+	<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
+	<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
+	<tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
+	[ ! -z "$REBUILDSTATUS" ] && echo "<tr><td>Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
+	echo "<tr><td>'$"Raid Drives"'</td><td>$RAIDDEVICES</td></tr>
+	<tr><td>'$"Used Drives"'</td><td>$TOTALDEVICES</td></tr>
+	<tr><td>'$"Active Devices"'</td><td>$ACTIVEDEVICES</td></tr>
+	<tr><td>'$"Working Devices"'</td><td>$WORKINGDEVICES</td></tr>
+	<tr><td>'$"Failed Devices"'</td><td>$FAILEDDEVICES</td></tr>
+	<tr><td>'$"Spare Devices"'</td><td>$SPAREDEVICES</td></tr>
+	<tr><td>'$"Layout"'</td><td>$LAYOUT</td></tr>
+	<tr><td>'$"Chunk Size"'</td><td>$CHUNKSIZE</td></tr>
+	<tr><td>'$"Active Disks"'</td><td>$ACTIVE_RAID_DISKS</td></tr>
+	<tr><td>'$"Rebuilding Disks"'</td><td>$REBUILDING_RAID_DISKS</td></tr>
+	<tr><td>'$"Spare Disks"'</td><td>$SPARE_RAID_DISKS</td></tr>
+	<tr><td>UUID</td><td>$UUID</td></tr>
+	</tbody></table>"
+	fi
 '
 
 fi

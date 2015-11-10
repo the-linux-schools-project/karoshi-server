@@ -24,54 +24,54 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 #Admin checksum
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_control_cgi
 then
-echo `date`: printers_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_control_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_control_cgi'check' ]
 then
-echo `date`: printers_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Tech checksum
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/printers_control_cgi
 then
-echo `date`: printers_control - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/printers_control_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/printers_control.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $printers_control_cgi'check' ]
 then
-echo `date`: printers_control - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Staff checksum
 if [ -f /var/www/cgi-bin_karoshi/staff/printers_control.cgi ]
 then
-if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/printers_control_cgi
-then
-echo `date`: printers_control - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-source /opt/karoshi/web_controls/checksums/staff_checksums/printers_control_cgi
-MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/staff/printers_control.cgi | cut -d' ' -f1`
-[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
-if [ $MD5SUM3'check' != $printers_control_cgi'check' ]
-then
-echo `date`: printers_control - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/printers_control_cgi
+	then
+		echo `date`: printers_control - No staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	source /opt/karoshi/web_controls/checksums/staff_checksums/printers_control_cgi
+	MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/staff/printers_control.cgi | cut -d' ' -f1`
+	[ -z "$MD5SUM3" ] && MD5SUM3=not_set
+	if [ $MD5SUM3'check' != $printers_control_cgi'check' ]
+	then
+		echo `date`: printers_control - Incorrect staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 ########################
 #Get variables
@@ -79,8 +79,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: printers_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -93,140 +93,140 @@ JOBID=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
 then
-echo `date`: printers_control - Not called by printers_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Not called by printers_control.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: printers_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printers_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $PRINTERNAME'null' = null ]
+if [ -z "$PRINTERNAME" ]
 then
-echo `date`: printers_control - Blank printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Blank printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $PRINTER_ACTION'null' = null ]
+if [ -z "$PRINTER_ACTION" ]
 then
-echo `date`: printers_control - Blank printer action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Blank printer action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $PRINTER_ACTION != enable ] && [ $PRINTER_ACTION != disable ] && [ $PRINTER_ACTION != test ] && [ $PRINTER_ACTION != clearqueue ] && [ $PRINTER_ACTION != removejobid ] && [ $PRINTER_ACTION != setppd ] && [ $PRINTER_ACTION != setlocation ]
 then
-echo `date`: printers_control - Incorrect printer action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_control - Incorrect printer action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $PRINTER_ACTION = removejobid ]
 then
-if [ $JOBID'null' = null ]
-then
-echo `date`: printers_control - Blank jobid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$JOBID" ]
+	then
+		echo `date`: printers_control - Blank jobid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 
 if [ $PRINTER_ACTION = setppd ]
 then
-echo '<form name="setppd" action="/cgi-bin/admin/printers_ppd_assign1.cgi" method="post">
-<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
-</form>
-<script>
-document.setppd.submit();
-</script>'
-exit
+	echo '<form name="setppd" action="/cgi-bin/admin/printers_ppd_assign1.cgi" method="post">
+	<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
+	</form>
+	<script>
+	document.setppd.submit();
+	</script>'
+	exit
 fi
 
 if [ $PRINTER_ACTION = setlocation ]
 then
-echo '<form name="setppd" action="/cgi-bin/admin/printers_assign_fm.cgi" method="post">
-<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
-</form>
-<script>
-document.setppd.submit();
-</script>'
-exit
+	echo '<form name="setppd" action="/cgi-bin/admin/printers_assign_fm.cgi" method="post">
+	<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
+	</form>
+	<script>
+	document.setppd.submit();
+	</script>'
+	exit
 fi
 
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != `hostname-fqdn` ]
 then
-USESSH=yes
+	USESSH=yes
 else
-USESSH=no
+	USESSH=no
 fi
 #Enable printer
 if [ $PRINTER_ACTION = enable ]
 then
-echo `date`: printers_control - enabling $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-accept '$PRINTERNAME' 2&>1
-cupsenable '$PRINTERNAME' 2&>1
-'
-else
-accept $PRINTERNAME 2&>1
-cupsenable $PRINTERNAME 2&>1
-fi
+	echo `date`: printers_control - enabling $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+		accept '$PRINTERNAME' 2&>1
+		cupsenable '$PRINTERNAME' 2&>1
+		'
+	else
+		accept $PRINTERNAME 2&>1
+		cupsenable $PRINTERNAME 2&>1
+	fi
 fi
 #Disable printer
 if [ $PRINTER_ACTION = disable ]
 then
-echo `date`: printers_control - disabling $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-reject '$PRINTERNAME' 2&>1
-cupsdisable '$PRINTERNAME' 2&>1
-'
-else
-reject $PRINTERNAME 2&>1
-cupsdisable $PRINTERNAME 2&>1
-fi
+	echo `date`: printers_control - disabling $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+		reject '$PRINTERNAME' 2&>1
+		cupsdisable '$PRINTERNAME' 2&>1
+		'
+	else
+		reject $PRINTERNAME 2&>1
+		cupsdisable $PRINTERNAME 2&>1
+	fi
 fi
 #Test printer
 if [ $PRINTER_ACTION = test ]
 then
-echo `date`: printers_control - testing $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-lp -d '$PRINTERNAME' /usr/share/cups/data/testprint.ps 1>/dev/null
-'
-else
-lp -d $PRINTERNAME /usr/share/cups/data/testprint.ps 1>/dev/null
-fi
+	echo `date`: printers_control - testing $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+		lp -d '$PRINTERNAME' /usr/share/cups/data/testprint.ps 1>/dev/null
+		'
+	else
+		lp -d $PRINTERNAME /usr/share/cups/data/testprint.ps 1>/dev/null
+	fi
 fi
 #Clear printer queue
 if [ $PRINTER_ACTION = clearqueue ]
 then
-echo `date`: printers_control - Clearing queue "for" $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-cancel -a '$PRINTERNAME' 2&>1
-'
-else
-cancel -a $PRINTERNAME 2&>1
-fi
+	echo `date`: printers_control - Clearing queue "for" $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+		cancel -a '$PRINTERNAME' 2&>1
+		'
+	else
+		cancel -a $PRINTERNAME 2&>1
+	fi
 fi
 #Remove job
 if [ $PRINTER_ACTION = removejobid ]
 then
-echo `date`: printers_control - removing job$JOBID by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $USESSH = yes ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-cancel '$JOBID' 2&>1
-'
-else
-cancel $JOBID 2&>1
-fi
+	echo `date`: printers_control - removing job$JOBID by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $USESSH = yes ]
+	then
+		ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+		cancel '$JOBID' 2&>1
+		'
+	else
+		cancel $JOBID 2&>1
+	fi
 fi
 exit

@@ -56,7 +56,26 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 <script type="text/javascript" id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
+        $("#myTable").tablesorter({
+	headers: {
+	3: { sorter: false},
+	4: { sorter: false}
+    		}
+		});
+    }
+);
+</script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable2").tablesorter(); 
+    } 
+);
+</script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable2").tablesorter(); 
     } 
 );
 </script>
