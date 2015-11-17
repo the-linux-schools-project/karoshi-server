@@ -341,5 +341,9 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
+#Set sysctl -w net.netfilter.nf_conntrack_max=196608
+sysctl -w net.netfilter.nf_conntrack_max=196608 1>/dev/null
+echo net.ipv4.netfilter.ip_conntrack_max = 196608 >> /etc/sysctl.conf
+
 exit
 

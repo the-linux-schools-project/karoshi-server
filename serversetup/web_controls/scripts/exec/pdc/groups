@@ -132,6 +132,7 @@ then
 	WIDTH1=200
 	WIDTH2=90
 	WIDTH3=300
+	WIDTH4=100
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
@@ -140,6 +141,7 @@ else
 	WIDTH1=120
 	WIDTH2=70
 	WIDTH3=200
+	WIDTH4=90
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/users.png
@@ -199,11 +201,13 @@ then
 	then
 		#Show all users in the group.
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Full Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
+	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
 			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
-			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FULLNAME'</td><td>
+			FIRSTNAME=`echo "$FULLNAME" | cut -d" " -f1`
+			LASTNAME=`echo "$FULLNAME" | cut -d" " -f2`
+			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>
 	<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></a>
 	</td></tr>'
 		done

@@ -206,6 +206,20 @@ then
 	#Convert disk age to days
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
+
+
+	#Check disk age
+	DISK_AGE_WARN=0
+	if [ $DISK_AGE -gt 1460 ]
+	then
+		DISK_AGE_WARN=1
+	fi
+
+	if [ $DISK_AGE -gt 1825 ]
+	then
+		DISK_AGE_WARN=2
+	fi
+
 	#Convert disk age to years
 	if [ "$DISK_AGE" -gt 365 ]
 	then
@@ -228,9 +242,20 @@ then
 	<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
 	<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
 	<tr><td>'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
-	<tr><td>'$"Capacity"'</td><td>'$CAPACITY $DRIVESCALE'</td></tr>
-	<tr><td>'$"Disk Age"'</td><td>'$DISK_AGE' '$DISK_AGE_UNIT'</td></tr>
-	<tr><td>'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
+	<tr><td>'$"Capacity"'</td><td>'$CAPACITY $DRIVESCALE'</td></tr>'
+
+
+	if [[ $DISK_AGE_WARN = 2 ]]
+	then
+		echo '<tr><td><FONT COLOR="red"><b>'$"Disk Age"'</b></font></td><td><FONT COLOR="red"><b>'$DISK_AGE' '$DISK_AGE_UNIT'</b></font></td></tr>'
+	elif [[ $DISK_AGE_WARN = 1 ]]
+	then
+		echo '<tr><td><FONT COLOR="orange">'$"Disk Age"'</b></font></td><td><FONT COLOR="orange">'$DISK_AGE' '$DISK_AGE_UNIT'</b></font></td></tr>'
+	else
+		echo '<tr><td>'$"Disk Age"'</td><td>'$DISK_AGE' '$DISK_AGE_UNIT'</td></tr>'
+	fi
+
+	echo '<tr><td>'$"Smart Enabled"'</td><td>'$SMARTENABLED'</td></tr>
 	<tr><td>'$"Smart Status"'</td><td>'$SMARTSTATUS'</td></tr>'
 
 	if [ ! -z "$PENDINGSECTORS" ]
@@ -377,6 +402,19 @@ then
 	#Convert disk age to days
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
+
+	#Check disk age
+	DISK_AGE_WARN=0
+	if [ $DISK_AGE -gt 1460 ]
+	then
+		DISK_AGE_WARN=1
+	fi
+
+	if [ $DISK_AGE -gt 1825 ]
+	then
+		DISK_AGE_WARN=2
+	fi
+
 	#Convert disk age to years
 	if [ "$DISK_AGE" -gt 365 ]
 	then
@@ -398,9 +436,19 @@ then
 	<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>
-	<tr><td>'$"Disk Age"'</td><td>$DISK_AGE $DISK_AGE_UNIT</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+	<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>"
+
+	if [[ $DISK_AGE_WARN = 2 ]]
+	then
+		echo "<tr><td><FONT COLOR=\"red\"><b>'$"Disk Age"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISK_AGE $DISK_AGE_UNIT</b></font></td></tr>"
+	elif [[ $DISK_AGE_WARN = 1 ]]
+	then
+		echo "<tr><td><FONT COLOR=\"orange\">'$"Disk Age"'</b></font></td><td><FONT COLOR=\"orange\">$DISK_AGE $DISK_AGE_UNIT</b></font></td></tr>"
+	else
+		echo "<tr><td>'$"Disk Age"'</td><td>$DISK_AGE $DISK_AGE_UNIT</td></tr>"
+	fi
+
+	echo "<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
 

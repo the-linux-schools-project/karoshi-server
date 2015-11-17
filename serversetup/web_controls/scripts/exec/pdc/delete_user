@@ -201,7 +201,18 @@ then
 	if [ $EMAILSERVER != `hostname-fqdn` ]
 	then 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		rm -f -R /home/users/email/'$DELETEUSER'
+		if [ '$ARCHIVE' = yes ]
+		then
+			if [ ! -d /home/users/archive/email/ ]
+			then
+				mkdir -p /home/users/archive/email/
+				chmod 0770 /home/users/archive/email/
+				chown root.itadmin /home/users/archive/email/
+			fi
+			mv /home/users/email/'$DELETEUSER' /home/users/archive/email/
+		else
+			rm -f -R /home/users/email/'$DELETEUSER'
+		fi
 		rm -f -R '$HOMEPATH''/''$DELETEUSER'
 
 		#Remove the username from all restriction lists.
@@ -233,7 +244,18 @@ then
 			FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
 		fi
 	else
-		rm -f -R /home/users/email/$DELETEUSER
+		if [ "$ARCHIVE" = yes ]
+		then
+			if [ ! -d /home/users/archive/email/ ]
+			then
+				mkdir -p /home/users/archive/email/
+				chmod 0770 /home/users/archive/email/
+				chown root.itadmin /home/users/archive/email/
+			fi
+			mv /home/users/email/$DELETEUSER /home/users/archive/email/
+		else
+			rm -f -R /home/users/email/$DELETEUSER
+		fi
 
 		#Remove the username from all restriction lists.
 		if [ $(grep -c -w ^$DELETEUSER /etc/postfix/restricted_accounts) -gt 0 ]
