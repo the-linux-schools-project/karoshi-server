@@ -53,7 +53,7 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$TITLE' - '$"Requests"'</title>
+  <title>'$"Technical Support"' - '$"Requests"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>

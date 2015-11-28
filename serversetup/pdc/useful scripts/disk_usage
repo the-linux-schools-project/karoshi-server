@@ -30,15 +30,24 @@ RAIDWARNMSG="Raid Warning"
 BAD_SECTOR_WARN=10
 
 function warning_alert {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" 3
+#/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" 3
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER '/cgi-bin/admin/view_disk_usage_logs.cgi?_SERVERNAME_'$SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_' "$ERRORALERT" 3
 }
 
 function warning_alert2 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
+#/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add raid_warning_$SERVER '/cgi-bin/admin/disk_information.cgi?_SERVERNAME_'$SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_' "$ERRORALERT" 3
 }
 
 function warning_alert3 {
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
+#/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER /cgi-bin/admin/disk_information_fm.cgi "$ERRORALERT" 3
+
+
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add smart_warning_$SERVER '/cgi-bin/admin/disk_information.cgi?_SERVERNAME_'$SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_' "$ERRORALERT" 3
+
+
 }
 
 function warning_alert4 {

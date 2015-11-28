@@ -77,7 +77,7 @@ BACKUPSTATUS="Disable Backup"
 BACKUP_ICON=/images/submenus/system/backup_enabled.png
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>'
-echo '<tr><th style="width: 180px;"><b>'$"Server"'</b></th><th style="width: 180px;"><b>'$"Backup Server"'</b></th><th><b>'$"Status"'</b></th></tr></thead><tbody>'
+echo '<tr><th style="width: 180px;"><b>'$"Server"'</b></th><th style="width: 180px;"><b>'$"Backup Server"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 #Get backup status for the servers
 

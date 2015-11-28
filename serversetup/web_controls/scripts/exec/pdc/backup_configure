@@ -52,7 +52,7 @@ then
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
 if [ -z "$DATA" ]
 then
 	echo `date`: backup_configure - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -265,7 +265,7 @@ then
 	fi
 
 	#Get backup time
-	BACKUPTIME=`sed -n 1,1p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/backup_servers_master.cron | cut -d" " -f1-2`
+	BACKUPTIME=$(sed -n 1,1p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/backup_servers_master.cron | cut -d" " -f1-2)
 	BACKUPTIME_MINS=`echo $BACKUPTIME | cut -d" " -f1`
 	BACKUPTIME_HOURS=`echo $BACKUPTIME | cut -d" " -f2`
 	

@@ -136,6 +136,14 @@ else
 	TABLECLASS=standard
 fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Clear any smart warning messages.
+if [ -f /opt/karoshi/web_controls/warnings/messages/smart_warning_$KAROSHI_SERVER ]
+then
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete smart_warning_$KAROSHI_SERVER
+fi
+
+
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 	#Show free space
@@ -207,6 +215,11 @@ then
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
 
+	#If disk age is stupidly big reset it to 0 show a wrong value
+	if [ $DISK_AGE -gt 7300 ]
+	then
+		DISK_AGE=0
+	fi
 
 	#Check disk age
 	DISK_AGE_WARN=0
@@ -402,6 +415,12 @@ then
 	#Convert disk age to days
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
+
+	#If disk age is stupidly big reset it to 0 show a wrong value
+	if [ $DISK_AGE -gt 7300 ]
+	then
+		DISK_AGE=0
+	fi
 
 	#Check disk age
 	DISK_AGE_WARN=0

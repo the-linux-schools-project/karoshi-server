@@ -251,7 +251,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 <a href="/cgi-bin/admin/backup_configure_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
 </td>'
 
-if [ "$ACTION" = view ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
+if [ "$ACTION" = view ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
 then
 	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
 	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup Folder"'"></form></td>

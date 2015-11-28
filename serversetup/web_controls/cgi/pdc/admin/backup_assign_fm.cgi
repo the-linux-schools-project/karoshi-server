@@ -130,7 +130,7 @@ CURRENTBSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_se
 
 echo '<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 <tbody>
-<tr><td style="width: 10px; vertical-align: top; text-align: left;"></td><td style="width: 250px; vertical-align: top; text-align: left;">'$"Current backup server"'</td><td style="width: 250px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
+<tr><td style="width: 200px; vertical-align: top; text-align: left;">'$"Current backup server"'</td><td style="width: 200px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
 <input name="_SERVERNAME_removebackupoption_" type="submit" class="button" value="'$"Un-assign"'">
 </td></tr></tbody></table><br><br>'
 fi

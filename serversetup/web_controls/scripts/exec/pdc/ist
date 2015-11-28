@@ -1,0 +1,210 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+FAILED_SERVER=no
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ist_cgi
+then
+	echo `date`: ist - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ist_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1`
+[[ -z "$MD5SUM" ]] && MD5SUM=not_set
+if [[ $MD5SUM'check' != $ist_cgi'check' ]]
+then
+	echo `date`: ist - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [[ $numArgs != 0 ]]
+then
+	echo `date`: ist - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [[ -z "$DATA" ]]
+then
+	echo `date`: ist - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+CATEGORY=`echo "$DATA" | cut -s -d: -f6`
+SEARCHTERMS=`echo "$DATA" | cut -s -d: -f7`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: ist - Not called by ist.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: ist - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: ist - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: ist - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$CATEGORY" ]
+then
+	echo `date`: ist - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ $CATEGORY = addcategory ]
+then
+	if [ -z "$SEARCHTERMS" ]
+	then
+		echo `date`: ist - Blank searchterms by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+##########################
+#Language
+##########################
+
+TEXTDOMAIN=karoshi-server
+
+if [ $ACTION = reallydeletecategory ]
+then
+	if [ -f "/opt/karoshi/server_network/ist/categories/$CATEGORY" ]
+	then
+		echo `date`: ist - Removing category: "$CATEGORY" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		rm -f "/opt/karoshi/server_network/ist/categories/$CATEGORY"
+	fi
+fi
+
+if [ $ACTION = reallyaddcategory ]
+then
+	if [ ! -d /opt/karoshi/server_network/ist/categories ]
+	then
+		mkdir -p /opt/karoshi/server_network/ist/categories
+		chmod 0750 /opt/karoshi/server_network/ist/categories
+		chown root.apache_karoshi /opt/karoshi/server_network/ist/categories
+	fi
+	echo `date`: ist - Addding category: "$CATEGORY" searchterms: "$SEARCHTERMS" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$SEARCHTERMS" | sed 's/+/\\|/g' > "/opt/karoshi/server_network/ist/categories/$CATEGORY"
+fi
+
+if [ $ACTION = viewdata ]
+then
+	#Get the date to do the search on
+	TODAY=$(date +%Y-%m-%d)
+	SEARCHDATE=21-11-2015
+	DATE_RANGE=5
+	#Default to getting data for the last 5 days
+	for d in $(seq 0 $DATE_RANGE)
+	do
+		SEARCHDATE=$(date -d "$TODAY - $d days" +'%d-%m-%Y')
+
+		CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
+		CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
+
+		#Get the search criteria for the category
+		CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
+		CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
+
+		#Do the search on each proxy server and collate the info
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers/`
+		do
+			if [ $PROXYSERVER = $(hostname-fqdn) ]
+			then
+				#Check if the folder log exists for the day we are searching on.
+				if [ -d /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed ]
+				then
+					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/* | cut -d"/" -f8 | sed 's/.tar.gz//g' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
+				fi
+			else
+				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+				#Check if the folder log exists for the day we are searching on.
+				if [ -d /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed ]
+				then
+					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/* | cut -d"/" -f8 | sed "s/.tar.gz//g"
+				fi' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
+			fi
+		done
+	done
+	#Sort the raw data
+	for DATALINE in $(sort /opt/karoshi/server_network/ist/temp-$CATEGORY.$$ ; echo "LASTLINE")
+	do
+		LASTUSER="$CURRENTUSER"
+		LASTSCORE="$CURRENTSCORE"
+		CURRENTUSER="${DATALINE%:*}"
+		CURRENTSCORE="${DATALINE#*:}"
+		if [[ $CURRENTUSER == $LASTUSER ]]
+		then
+			#Need to add lastscore to current score
+			CURRENTSCORE=$(( $LASTSCORE+$CURRENTSCORE ))
+		else
+			#We have finished processing that user so output the data
+			if [ ! -z "$LASTUSER" ] && [ "$LASTUSER" != 0 ] && [ "$LASTUSER" != - ]
+			then
+				echo "$LASTUSER,$LASTSCORE" >> /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$
+			fi
+		fi
+	done
+
+	#View the data
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
+	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
+	<tr><td><b>'$"Search Date"'</b></td><td>'$SEARCHDATE'</td></tr>
+	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE'</td></tr>
+	</tbody></table><br>
+	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th></tr></thead><tbody>'
+	for SORTDATA in $(sort -k2 -n -r /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
+	do
+		USERNAME=$(echo "$SORTDATA" | cut -d, -f1)
+		SCORE=$(echo "$SORTDATA" | cut -d, -f2)
+		echo '<tr><td>'$USERNAME'</td><td>'$SCORE'</td></tr>'
+	done
+	echo '</tbody></table>'
+	rm -f /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
+	rm -f /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$	
+fi

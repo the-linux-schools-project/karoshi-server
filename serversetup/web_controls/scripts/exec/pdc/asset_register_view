@@ -300,7 +300,7 @@ then
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 	echo '<textarea rows="100" cols="150">'
-	echo $"Name",$"Location",$"Type",$"Description",$"Tcpip",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
+	echo $"ID Number",$"Name",$"Location",$"Type",$"Description",$"Tcpip",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
 	for LOCATIONS in /opt/karoshi/asset_register/locations/*
 	do
 		LOCATION=`basename $LOCATIONS`
@@ -309,7 +309,7 @@ then
 			ASSET=`basename $ASSETS`
 			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 			assign_asset_labels
-			echo $IDENTITY,$LOCATION,$ASSETLABEL,$DESCRIPTION,$TCPIP1 $TCPIP2 $TCPIP3,$MAC1 $MAC2 $MAC3,$SERIAL,$PURCHASEDATE,$VALUE,$SUPPLIER,$BUDGET,$ASSIGNED
+			echo $ASSET,$IDENTITY,$LOCATION,$ASSETLABEL,$DESCRIPTION,$TCPIP1 $TCPIP2 $TCPIP3,$MAC1 $MAC2 $MAC3,$SERIAL,$PURCHASEDATE,$VALUE,$SUPPLIER,$BUDGET,$ASSIGNED
 		done
 	done
 	echo '</textarea>'

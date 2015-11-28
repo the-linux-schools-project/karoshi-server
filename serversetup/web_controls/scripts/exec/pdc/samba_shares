@@ -806,7 +806,7 @@ fi
 if [ "$ACTION" = view ]
 then
 	echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-<tr><th style="width: '$WIDTH1'px;">'$"Server"'</th><th style="width: '$WIDTH1'px;"><b>'$"Network Share"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Server Path"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Permissions"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Map Drive"'</b></th><th style="vertical-align:top; width: '$WIDTH5'px;"><b>'$"Drive Letter"'</b></th></tr></thead><tbody>
+<tr><th style="width: '$WIDTH1'px;">'$"Server"'</th><th style="width: '$WIDTH1'px;"><b>'$"Network Share"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Server Path"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Permissions"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Map Drive"'</b></th><th style="vertical-align:top; width: '$WIDTH5'px;"><b>'$"Drive Letter"'</b></th><th></th><th></th></tr></thead><tbody>
 '
 	for SERVERS in /opt/karoshi/server_network/network_shares/*
 	do
@@ -826,7 +826,7 @@ then
 				echo '<tr><td style="vertical-align:top">'$SERVER'</td><td style="vertical-align:top">'$NETSHARE'</td><td style="vertical-align:top">'$SHAREPATH'</td><td style="vertical-align:top">'`echo "$GROUPLIST" | sed "s/,/<br>/g"`'</td><td style="vertical-align:top">'$GROUPPERMS'</td><td style="vertical-align:top">'$MAP_DRIVE'</td><td style="vertical-align:top">'$DRIVELETTER'</td>'
 				if [ "$NETSHARE" != sysvol ] && [ "$NETSHARE" != netlogon ] && [ "$NETSHARE" != applications ]
 				then
-					echo '<td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="____ACTION____edit____SHARENAME____'$NETSHARE'____SERVERTYPE____'$SERVERTYPE'____SERVERNAME____'$SERVER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'<br>'$NETSHARE'</span></a></td><td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____SHARENAME____'$NETSHARE'____SERVERTYPE____'$SERVERTYPE'____SERVERNAME____'$SERVER'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$NETSHARE'</span></a></td>'
+					echo '<td style="vertical-align:top"><a class="info infoleft" href="javascript:void(0)"><input name="____ACTION____edit____SHARENAME____'$NETSHARE'____SERVERTYPE____'$SERVERTYPE'____SERVERNAME____'$SERVER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'<br>'$NETSHARE'</span></a></td><td style="vertical-align:top"><a class="info infoleft" href="javascript:void(0)"><input name="____ACTION____delete____SHARENAME____'$NETSHARE'____SERVERTYPE____'$SERVERTYPE'____SERVERNAME____'$SERVER'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$NETSHARE'</span></a></td>'
 				else
 					echo '<td></td><td></td>'
 				fi

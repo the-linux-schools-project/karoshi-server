@@ -140,7 +140,7 @@ fi
 if [ -z "$PRINTER" ]
 then
 	#Get total job count
-	TOTALJOBS=$(lpstat | wc -l)
+	TOTALJOBS=$(lpstat -o | wc -l)
 
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
 	<thead><tr><th style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th>'

@@ -109,6 +109,7 @@ then
 fi
 
 WIDTH1=180
+WIDTH2=80
 TABLECLASS=standard
 ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
@@ -116,6 +117,7 @@ if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
 	WIDTH1=120
+	WIDTH2=70
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
 fi
@@ -236,8 +238,8 @@ then
 	#Show a list of logs
 	if [ "$LOGCOUNT" -gt 0 ]
 	then
-		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	    <tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Date"'</b></td><td><b>'$"Time"'</b></td><td><b>'$"View Log"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		if [ "$SERVERNAME" = `hostname-fqdn` ]
 		then
 			for EVENT in $(ls -1 /opt/karoshi/logs/errors/ | sort -r)

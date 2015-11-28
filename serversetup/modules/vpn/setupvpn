@@ -72,6 +72,26 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
+#Add dnat to zones file
+if [ grep -c ^dnat /etc/shorewall/zones = 0 ]
+then
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/zones | cut -d: -f1`
+	sed -i $LINENUM"c"\dnat"	"ipv4 /etc/shorewall/zones
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/zones
+fi   
+
+#Add dnat to hosts file
+if [ `grep -c ^dnat /etc/shorewall/hosts` = 0 ]
+then
+	source /opt/karoshi/serversetup/variables/network_card_info
+	SERVERIP=$(dig `hostname-fqdn` +short)
+	SUBNETMASK=`ifconfig $NETWORK_INT | grep Mask | cut -d":" -f4`
+	SUBNET=`ipcalc -n $SERVERIP/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/hosts | cut -d: -f1`
+	sed -i $LINENUM"c"\dnat"	"$NETWORK_INT:$SUBNET /etc/shorewall/hosts
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/hosts
+fi
+
 #Create Certificate
 
 #Make storage directory

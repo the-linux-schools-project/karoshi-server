@@ -54,8 +54,13 @@ echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Asset Register"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
+ICON1=/images/assets/edit.png
+ICON2=/images/assets/client_logs.png
+
 if [ $MOBILE = yes ]
 then
+ICON1=/images/assets/editm.png
+ICON2=/images/assets/client_logsm.png
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -173,9 +178,9 @@ echo '<b>'$"Asset Register"'</b><br><br>'
 echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td></tr>
 <tr><td>'$"Asset Number"'</td><td>'$ASSET'</td></tr>
-<tr><td>'$"View asset"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/edit.png" value=""><span>'$"View asset"'</span></a></td></tr>
+<tr><td>'$"View asset"'</td><td style="vertical-align: top;"><a class="info infoleft" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View asset"'</span></a></td></tr>
 <tr><td>'$"View internet logs"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="/images/assets/client_logs.png" value=""><span>View internet logs</span></a></td></tr>
+<a class="info infoleft" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>View internet logs</span></a></td></tr>
 </tbody></table></form></div></div></body></html>'
 exit
 

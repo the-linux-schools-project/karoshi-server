@@ -189,7 +189,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 </tr>
       <tr>
         <td>
-'$"Enter in the password needed to connect to the proxy server."'</td>
+'$"Password"'</td>
         <td><input tabindex= "4" style="width: 200px;" value="'$PASSWORD'" name="_PASSWORD_" size="20" type="password"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"The following special characters are allowed"':<br><br>space ! # $ & ( ) + - =  %</span></a></td>
       </tr>
     </tbody>
