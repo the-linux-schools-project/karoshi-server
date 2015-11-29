@@ -198,7 +198,7 @@ then
 	</tbody></table><br>
 	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
 	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th></tr></thead><tbody>'
-	for SORTDATA in $(sort -k2 -n -r /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
+	for SORTDATA in $(sort -k2 -n -r --field-separator=',' /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
 	do
 		USERNAME=$(echo "$SORTDATA" | cut -d, -f1)
 		SCORE=$(echo "$SORTDATA" | cut -d, -f2)
