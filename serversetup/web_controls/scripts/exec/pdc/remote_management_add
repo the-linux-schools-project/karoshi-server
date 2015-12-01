@@ -156,6 +156,10 @@ if [ $PRIMARYADMIN = 3 ]
 then
 	htpasswd -b /opt/karoshi/web_controls/web_access_tech $USERNAME $PASSWORD 2>/dev/null
 fi
+
+#Create combined htpassword file for any features that require both admin and tech access.
+cat /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech > /opt/karoshi/web_controls/web_access_combined
+
 #Copy in user prefs
 if [ -f /opt/karoshi/web_controls/global_prefs ]
 then

@@ -137,6 +137,7 @@ fi
 [ -d /var/www/html_karoshi/ ] || mkdir /var/www/html_karoshi/
 [ -d /var/www/cgi-bin_karoshi/admin ] || mkdir /var/www/cgi-bin_karoshi/admin
 [ -d /var/www/cgi-bin_karoshi/tech ] || mkdir /var/www/cgi-bin_karoshi/tech
+[ -d /var/www/cgi-bin_karoshi/combined ] || mkdir /var/www/cgi-bin_karoshi/combined
 [ -d /var/www/cgi-bin_karoshi/staff ] || mkdir /var/www/cgi-bin_karoshi/staff
 [ -d /var/www/cgi-bin_karoshi/all ] || mkdir /var/www/cgi-bin_karoshi/all
 [ -d /var/www/html_karoshi/ ] || mkdir /var/www/html_karoshi/
@@ -220,6 +221,7 @@ fi
 ######################
 cp -f /opt/karoshi/serversetup/web_controls/htaccess/admin/.htaccess /var/www/cgi-bin_karoshi/admin/
 cp -f /opt/karoshi/serversetup/web_controls/htaccess/tech/.htaccess /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/htaccess/combined/.htaccess /var/www/cgi-bin_karoshi/combined/
 cp -f /opt/karoshi/serversetup/web_controls/htaccess/staff/.htaccess /var/www/cgi-bin_karoshi/staff/
 #cp -f /opt/karoshi/serversetup/web_controls/htaccess/all/.htaccess /var/www/cgi-bin_karoshi/all/
 cp -f /opt/karoshi/serversetup/web_controls/htaccess/admin/.htaccess /var/www/html_karoshi/admin/
@@ -373,6 +375,7 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/user_image_process.cgi
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/bulk_user_creation_import_enrollment_numbers_process.cgi /var/www/cgi-bin_karoshi/tech/
+cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/asset_register_search.cgi  /var/www/cgi-bin_karoshi/combined/
 
 #Replace admin with tech paths
 for CGISCRIPT in /var/www/cgi-bin_karoshi/tech/*;
@@ -535,6 +538,10 @@ touch /opt/karoshi/web_controls/web_access_admin
 chmod 0640 /opt/karoshi/web_controls/web_access_admin
 chown root:apache_karoshi /opt/karoshi/web_controls/web_access_admin
 
+touch /opt/karoshi/web_controls/web_access_combined
+chmod 0640 /opt/karoshi/web_controls/web_access_combined
+chown root:apache_karoshi /opt/karoshi/web_controls/web_access_combined
+
 ###########################
 #Create admin htpassword file for web management access
 ###########################
@@ -602,6 +609,9 @@ then
 		echo $NEWUSERNAME:::Network_Manager:yes:1 >> /opt/karoshi/web_controls/remote_management_users
 	fi
 fi
+
+#Create combined htpassword file for any features that require both admin and tech access.
+cat /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech > /opt/karoshi/web_controls/web_access_combined
 
 #Generate sudo
 [ -f /etc/sudoers_karoshi_web_backup ] || cp /etc/sudoers /etc/sudoers_karoshi_web_backup
