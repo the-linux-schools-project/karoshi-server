@@ -190,6 +190,10 @@ echo >> /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 sed -i '/^$/d' /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 CSVFILE_LINES=`cat /var/www/karoshi/bulk_user_creation/"$CSVFILE" | wc -l`
 [ -f /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv ] && rm -f /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
+
+#Convert Windows line returns
+dos2unix /var/www/karoshi/bulk_user_creation/"$CSVFILE"
+
 COUNTER=1
 while [ $COUNTER -le $CSVFILE_LINES ]
 do

@@ -23,13 +23,10 @@
 ##########################
 #Section Control
 ##########################
-
-#Website: http://www.karoshi.org.uk
-
 source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
-
+#Website: http://www.karoshi.org.uk
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
@@ -46,23 +43,16 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/tech/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
+	<li class="top"><a href="/cgi-bin/tech/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Helpdesk"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
 			<li><a href="/cgi-bin/tech/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/tech/change_password_fm.cgi" id="menu" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
-		<ul class="sub">'
+		<ul class="sub">
 
-if [ $ADDUSERCTRL = yes ]
-then
-echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>
-			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
-'
-fi
-
-echo '			<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="fly">'$"Modify Users"'</a>
+		<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="fly">'$"Modify Users"'</a>
 					<ul>
 						<li><a href="/cgi-bin/tech/change_password_fm.cgi">'$"Change Password"'</a></li>
 						<li><a href="/cgi-bin/tech/reset_password_fm.cgi">'$"Reset Password"'</a></li>
@@ -72,13 +62,18 @@ echo '			<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="f
 						<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi">'$"Primary Group"'</a></li>
 						<li><a href="/cgi-bin/tech/user_image_upload_fm.cgi">'$"User Images"'</a></li>
 					</ul>
-			</li>
-			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>
-
-			<li><a href="/cgi-bin/tech/change_username_fm.cgi">'$"Change Username"'</a></li>	
-
+			</li>'
+if [ $ADDUSERCTRL = yes ]
+then
+echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>	
+'
+fi
+echo '			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
+			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>	
 			<li><a href="/cgi-bin/tech/incident_log_add.cgi">'$"Record Incident"'</a></li>
 			<li><a href="/cgi-bin/tech/incident_log_view_fm.cgi">'$"View Incident Logs"'</a></li>
+
+
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/tech/remote_management_change_password_fm.cgi" id="System" class="top_link"><span class="down">'$"System"'</span></a>
@@ -135,7 +130,6 @@ if [ $PRINTERCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
 			<li class="mid"><a href="/cgi-bin/tech/printer_accounting_status_fm.cgi" class="fly">'$"Printer Accounting"'</a>
 					<ul>
 					<li><a href="/cgi-bin/tech/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a></li>
@@ -145,6 +139,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="
 					<li><a href="/cgi-bin/tech/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a></li>
 					</ul>
 			</li>
+					<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
 		</ul>
 	</li>'
 fi

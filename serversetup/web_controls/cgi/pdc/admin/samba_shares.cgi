@@ -558,7 +558,7 @@ then
 	#Check that the network drive letter has not already been allocated to a share.
 	if [ ! -z "$DRIVELETTER" ]
 	then
-		if [ `grep -r -c ^DRIVELETTER="$DRIVELETTER" /opt/karoshi/server_network/network_shares` ]
+		if [ `grep -r -c ^DRIVELETTER="$DRIVELETTER" /opt/karoshi/server_network/network_shares` | -gt 0 ]
 		then
 			MESSAGE=$"This drive letter is already in use."
 			show_status

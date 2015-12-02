@@ -21,15 +21,28 @@ ln -s /bin/true /tmp/fake/service
 export PATH=/tmp/fake:$PATH
 export DEBIAN_FRONTEND=noninteractive
 
+function check_status {
+if [ $? != 0 ]
+then
+	echo -e "\nChroot: There was a problem installing packages for the live system\n\nPress a key to continue.\n"
+	read pause
+fi
+}
+
 #Make sure that dpkg is happy
 dpkg --configure -a
+check_status
 
 echo -e "Chroot: updating apt\n"
 sleep 1	
 apt-get update
+check_status
+
 echo -e "\nChroot: installing dbus\n"
 sleep 1	
 apt-get install --yes dbus
+check_status
+
 dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 
@@ -37,14 +50,17 @@ dpkg-divert --local --rename --add /sbin/initctl
 echo -e "\nChroot: Installing packages for the live system\n"
 sleep 1	
 apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu-gnome
+check_status
 
 echo -e "\nChroot: Installing discover and os-prober\n"
 sleep 1	
 apt-get install --yes discover os-prober
+check_status
 
 echo -e "\nChroot: Installing linux-generic\n"
 sleep 1	
 apt-get install --yes linux-generic
+check_status
 
 echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
 sleep 1	
@@ -54,10 +70,12 @@ apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpaylo
 echo -e "\nChroot: Installing python-software-properties\n"
 sleep 1	
 apt-get install --yes software-properties-common python-software-properties
+check_status
  
 echo -e "\nChroot: Installing wget\n"
 sleep 1	
 apt-get install --yes wget
+check_status
 
 #Install and configure Karoshi
 TMOUT=5
@@ -69,6 +87,7 @@ read choice
 echo -e "\nChroot: ubiquity-frontend-gtk\n"
 sleep 1
 apt-get install --yes ubiquity-frontend-gtk
+check_status
 
 #Add the ubuntu user for casper
 #echo -e "\nChroot: Creating karoshi user\n"
