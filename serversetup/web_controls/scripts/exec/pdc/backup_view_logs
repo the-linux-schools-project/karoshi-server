@@ -25,7 +25,6 @@
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
 
-
 ########################
 #Check md5checksum
 ########################
@@ -109,7 +108,7 @@ then
 	exit 101
 fi
 
-LOG_DATE=`echo $YEAR-$MONTH-$DAY`
+BACKUP_LOG_DATE=`echo $YEAR-$MONTH-$DAY`
 ############################
 #Language
 ############################
@@ -122,10 +121,10 @@ TEXTDOMAIN=karoshi-server
 
 function view_logs_pdc {
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log ]
+if [ -f /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/backup_log ]
 then
 	echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
-	cat /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	cat /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/backup_log
 	echo "</pre>"
 else
 	echo '<br>'$"No log avaiable."'<br>'
@@ -137,9 +136,9 @@ function view_logs_other_servers {
 echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
 ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log ]
+if [ -f /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/backup_log ]
 then
-	cat /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log
+	cat /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/backup_log
 else
 	echo '$"No log avaiable."'\<br\>
 fi

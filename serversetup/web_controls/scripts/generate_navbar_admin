@@ -105,12 +105,12 @@ echo '</div><div id="navbar">
 
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
-	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Helpdesk"'</span></a>
+	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_view_completed_fm.cgi">'$"View Completed Requests"'</a></li>
-			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set defaults"'</a></li>
+			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set Defaults"'</a></li>
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
@@ -461,7 +461,8 @@ echo '	<li class="top"><a href="/cgi-bin/admin/e2g_filtergroups.cgi" id="Interne
 			<li><a href="/cgi-bin/admin/user_internet_access.cgi">'$"Ban User"'</a></li>
 			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$"Client Bypass Controls"'</a></li>
 			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Room controls"'</a></li>
-</ul></li>
+			<li><a href="/cgi-bin/admin/ist.cgi">'$"Internet Usage Trends"'</a></li>
+		</ul></li>
 '
 fi
 

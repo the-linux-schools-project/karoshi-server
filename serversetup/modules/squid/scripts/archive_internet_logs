@@ -18,6 +18,9 @@
 #The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
+
+DATE=`date +%F`
+
 [ -d /home/internetdata/rawinternetlogs ] || mkdir /home/internetdata/rawinternetlogs
 chmod 0640 /home/internetdata/rawinternetlogs
 chmod u+X,g+X -R /home/internetdata/rawinternetlogs
