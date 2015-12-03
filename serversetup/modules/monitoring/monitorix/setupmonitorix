@@ -6,8 +6,8 @@ cp -f /opt/karoshi/serversetup/modules/monitoring/monitorix/monitorix.conf /etc/
 #Modify monitorix.conf with the correct network interface.
 if [ -f /opt/karoshi/serversetup/variables/network_card_info ]
 then
-source /opt/karoshi/serversetup/variables/network_card_info
-sed -i "s/eth0/'$NETWORK_INT'/g" /etc/monitorix/monitorix.conf
+	source /opt/karoshi/serversetup/variables/network_card_info
+	sed -i "s/eth0/'$NETWORK_INT'/g" /etc/monitorix/monitorix.conf
 fi
 
 sed -i "s/changethishostname/$HOSTNAME/g" /etc/monitorix/monitorix.conf

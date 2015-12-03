@@ -428,7 +428,10 @@ getent group sogo 1>/dev/null
 [ $? != 0 ] && echo sogo:x:134: >> /etc/group
 [ ! -d /var/run/sogo ] && mkdir -p /var/run/sogo
 chown sogo:sogo /var/run/sogo
-
+if [ -e /etc/apache2/conf-enabled/SOGo.conf ]
+then
+	rm -f /etc/apache2/conf-enabled/SOGo.conf
+fi
 #Configure php
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php5/apache2/
 

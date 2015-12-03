@@ -71,6 +71,11 @@ fi
 
 #Copy certificate to netlogon for use on client computers
 echo `date`: "Copying the certificate to netlogon for use on client computers" >> /opt/karoshi/serversetup/install_log
+if [ ! -d /var/lib/samba/netlogon/domain_information ]
+then
+	mkdir /var/lib/samba/netlogon/domain_information
+fi
+
 cp -f /etc/ssl/root-ca/cacert.pem /var/lib/samba/netlogon/domain_information/
 chmod 0644 /var/lib/samba/netlogon/domain_information/cacert.pem
 

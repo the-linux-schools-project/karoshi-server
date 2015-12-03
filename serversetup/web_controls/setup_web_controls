@@ -868,6 +868,11 @@ fi
 SHELLCTRL=no
 [ -f /opt/karoshi/server_network/shellserver ] && SHELLCTRL=yes
 
+if [ ! -d /opt/karoshi/server_network/web_controls ]
+then
+	mkdir -p /opt/karoshi/server_network/web_controls
+fi
+
 echo ADDUSERCTRL=$ADDUSERCTRL > /opt/karoshi/server_network/web_controls/menusettings
 echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
