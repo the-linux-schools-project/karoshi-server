@@ -135,7 +135,6 @@ if [ $ACTION = viewdata ]
 then
 	#Get the date to do the search on
 	TODAY=$(date +%Y-%m-%d)
-	SEARCHDATE=21-11-2015
 	DATE_RANGE=5
 	#Default to getting data for the last 5 days
 	for d in $(seq 0 $DATE_RANGE)
@@ -193,7 +192,7 @@ then
 	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
 	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
-	<tr><td><b>'$"Search Date"'</b></td><td>'$SEARCHDATE'</td></tr>
+	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
 	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE'</td></tr>
 	</tbody></table><br>
 	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
