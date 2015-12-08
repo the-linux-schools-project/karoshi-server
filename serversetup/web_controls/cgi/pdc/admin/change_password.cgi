@@ -123,22 +123,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1`
 #########################
@@ -195,23 +195,28 @@ then
 	fi
 fi
 
-#Check to see that password fields are not blank
+
+
+SHOW_PASSWORD=no
+#Create a random password if password1 has not been set.
 if [ -z "$PASSWORD1" ]
 then
-	MESSAGE=$"The password must not be blank."
-	show_status
+	PASSWORD1="$RANDOM"
+	SHOW_PASSWORD=yes
 fi
-if [ -z "$PASSWORD2" ]
+
+#Check to see that password fields match if they are not blank.
+if [ ! -z "$PASSWORD1" ] && [ ! -z "$PASSWORD2" ]
 then
-	MESSAGE=$"The password must not be blank."
-	show_status
+	#Check that password has been entered correctly
+	if [ "$PASSWORD1" != "$PASSWORD2" ]
+	then
+		MESSAGE=$"The passwords do not match."
+		show_status
+	fi
 fi
-#Check that password has been entered correctly
-if [ $PASSWORD1 != $PASSWORD2 ]
-then
-	MESSAGE=$"The passwords do not match."
-	show_status
-fi
+
+
 
 #Check that there are no spaces in the password
 #if [ `echo $PASSWORD1 | grep -c +` != 0 ]
@@ -226,6 +231,10 @@ EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
 	MESSAGE=`echo $"Password changed for" $USERNAME.`
+	if [ $SHOW_PASSWORD = yes ]
+	then
+		MESSAGE=`echo $MESSAGE"\n\n"$"Password": "$PASSWORD1"`
+	fi
 else
 	MESSAGE=`echo $"The password was not changed for" $USERNAME.`
 fi

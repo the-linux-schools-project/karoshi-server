@@ -107,6 +107,21 @@ touch /etc/ssl/root-ca/index.txt
 [ -d /etc/ssl/webmanagement ] && rm -f -R  /etc/ssl/webmanagement
 mkdir /etc/ssl/webmanagement
 cd /etc/ssl/webmanagement
+
+touch /etc/ssl/webmanagement/server_web_management.pem
+touch /etc/ssl/webmanagement/server_web_management.key
+touch /etc/ssl/webmanagement/server_web_management_50002.crt
+touch /etc/ssl/webmanagement/server_web_management_50002.key
+touch /etc/ssl/webmanagement/server_web_management.req
+touch /etc/ssl/webmanagement/server_web_management_50002.srl
+
+chmod 0600 /etc/ssl/webmanagement/server_web_management.pem
+chmod 0600 /etc/ssl/webmanagement/server_web_management.key
+chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.crt
+chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.key
+chmod 0600 /etc/ssl/webmanagement/server_web_management.req
+chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.srl
+
 echo "<li>Creating Host Certificate</li>"
 #Create host certificate
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
@@ -118,13 +133,6 @@ echo "<li>Creating Client csr</li>"
 #Create self signed for 50002 access
 echo "<li>Creating key for 50002 access</li>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n" | openssl req -new -x509 -days 3650 -nodes -out server_web_management_50002.crt -keyout server_web_management_50002.key
-
-chmod 0600 /etc/ssl/webmanagement/server_web_management.pem
-chmod 0600 /etc/ssl/webmanagement/server_web_management.key
-chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.crt
-chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.key
-chmod 0600 /etc/ssl/webmanagement/server_web_management.req
-chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.srl
 
 #Create client certificate
 echo "<li>Creating client key</li>"

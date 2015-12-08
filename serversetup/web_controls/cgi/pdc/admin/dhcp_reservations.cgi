@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -60,7 +60,9 @@ $(document).ready(function()
         $("#myTable").tablesorter({
 	headers: {
 	2: { sorter: "ipAddress" },
-	1: { sorter: "MAC" }
+	1: { sorter: "MAC" },
+	3: { sorter: false},
+	4: { sorter: false}
     		}
 		});
     } 
@@ -321,7 +323,7 @@ then
 		then
 		SHOWENTRIES=yes
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th><th></th><th></th></tr></thead><tbody>'
 
 		for CLIENTHOSTNAMES in /opt/karoshi/server_network/dhcp/reservations/*
 			do

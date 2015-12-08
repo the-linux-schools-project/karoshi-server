@@ -58,14 +58,14 @@ END_POINT=3
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
-then
-let COUNTER=$COUNTER+1
-SEARCH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SEARCH=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 echo "Content-type: text/html"
@@ -79,8 +79,8 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #########################
@@ -111,7 +111,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 </div><div id="infobox"><table class="standard"><tbody><tr>'
 
 COUNTER=1
-for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*$SEARCH | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
+for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*"$SEARCH" | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
 do
 	echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
 	if [ $COUNTER = 6 ]
