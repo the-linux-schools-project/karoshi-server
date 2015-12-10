@@ -12,12 +12,14 @@ if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVE
 then
 	echo `date`: backup_servers - no server backup folder information.
 	echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 	exit
 fi
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backupserver ]
 then
 	echo `date`: backup_servers - no server backup folder information.
 	echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 	exit
 fi
 #Get server to backup to
@@ -27,6 +29,7 @@ if [ -z "$BACKUP_SERVER" ]
 then
 	echo `date`: backup_servers - backup server not set.
 	echo `date`: backup_servers - backup server not set. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	echo `date`: backup_servers - backup server not set. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 	exit
 fi
 
@@ -37,12 +40,14 @@ if [ $SSHSTATUS != 0 ]
 then
 	echo `date`: backup_servers - ssh connection failed "for" $BACKUP_SERVER.
 	echo `date`: backup_servers - ssh connection failed "for" $BACKUP_SERVER. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	echo `date`: backup_servers - ssh connection failed "for" $BACKUP_SERVER. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 	exit
 fi
 
 #backup folder
 function backup_folder {
 echo -e ''`date`': '$BACKUPNAME' - '$"started"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e ''`date`': '$BACKUPNAME' - '$"started"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $BACKUPNAME - $"started"
 YESTERDAY=`date -d "-1 day" +"%Y-%m-%d"`
 ssh -x -o PasswordAuthentication=no $BACKUP_SERVER '
@@ -63,6 +68,7 @@ echo '$BACKUPPATH' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_inform
 #Do rsync backup
 rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --acls --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
 echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $BACKUPNAME - $"completed"
 }
 
@@ -83,16 +89,19 @@ do
 	if [ -z "$BACKUPPATH" ]
 	then
 		echo `date`: backup_servers - no backup path >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+		echo `date`: backup_servers - no backup path >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 		DO_BACKUP=no
 	fi
 	if [ -z "$BACKUPNAME" ]
 	then
 		echo `date`: backup_servers - no backup name >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+		echo `date`: backup_servers - no backup name >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 		DO_BACKUP=no
 	fi
 	if [ -z "$BACKUPDEPTH" ]
 	then
 		echo `date`: backup_servers - no backup duration >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+		echo `date`: backup_servers - no backup duration >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 		DO_BACKUP=no
 	fi
 	#Check backup path exists
@@ -108,6 +117,7 @@ do
 	let COUNTER=$COUNTER+1
 done
 echo -e ''`date`': '$"All backups completed"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e ''`date`': '$"All backups completed"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $"All backups completed"
 }
 get_backup_paths

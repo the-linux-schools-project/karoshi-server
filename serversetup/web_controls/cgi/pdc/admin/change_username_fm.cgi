@@ -54,6 +54,29 @@ echo '
 <script type="text/javascript" src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\--'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=7
+#Assign USERNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 if [ $MOBILE = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -116,7 +139,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" borde
       <tr>
         <td style="width: '$WIDTH1'px;">
 '$"Username"'</td>
-        <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="20" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+        <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" value="'$USERNAME'" size="20" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
 </td></tr>
 <tr><td>'$"New Username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>

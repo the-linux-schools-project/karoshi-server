@@ -405,9 +405,6 @@ apt-mark manual thunar
 #sed -i ''$LINE_NO'c\	LIVEUSER=karoshi' /usr/bin/remastersys
 #fi
 
-#Set mysql root password to a random password
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-
 #Plymouth boot waiting for dhcp
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/failsafe.conf /etc/init/
 

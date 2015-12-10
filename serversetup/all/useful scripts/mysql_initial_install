@@ -1,0 +1,8 @@
+#!/bin/bash
+source /opt/karoshi/serversetup/variables/distro
+if [ -f /etc/mysql.secret ]
+then
+	rm -f /etc/mysql.secret
+fi
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_stop 1>/dev/null

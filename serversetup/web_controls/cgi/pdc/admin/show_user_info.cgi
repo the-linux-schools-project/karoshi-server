@@ -200,6 +200,21 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"User Information"'</b></td>
+<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
+	<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Change Username"'">
+	</form>
+</td>
+<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
+	<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Change Primary Group"'">
+	</form>
+</td>
+<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/group_membership.cgi" method="post">
+	<input name="____USERNAME____'$USERNAME'____" type="submit" class="button" value="'$"Group Membership"'">
+	</form>
+</td>
 <td style="vertical-align: top;"><a href="/cgi-bin/admin/show_user_info_fm.cgi"><input class="button" type="button" name="" value="'$"Choose user"'"></a></td>
 </tr></table></div><div id="infobox">'
 

@@ -69,15 +69,15 @@ $(document).ready(function()
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
 fi
 
 echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
@@ -99,7 +99,7 @@ echo '<div class="sectiontitle">'$"Show User Information"'</div>
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-/opt/karoshi/web_controls/show_servers $MOBILE adc $"Show user info"
+/opt/karoshi/web_controls/show_servers $MOBILE pdc $"Show user info"
 
 echo '</div></form></div></body></html>'
 exit

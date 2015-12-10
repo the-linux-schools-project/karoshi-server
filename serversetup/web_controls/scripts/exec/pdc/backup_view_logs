@@ -64,6 +64,7 @@ DAY=`echo "$DATA" | cut -s -d: -f4`
 MONTH=`echo "$DATA" | cut -s -d: -f5`
 YEAR=`echo "$DATA" | cut -s -d: -f6`
 KAROSHI_SERVER=`echo "$DATA" | cut -s -d: -f7`
+LOGTYPE=`echo "$DATA" | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -107,6 +108,17 @@ then
 	echo `date`: backup_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+if [ -z "$LOGTYPE" ]
+then
+	LOGTYPE=summary
+fi
+
+if [ "$LOGTYPE" = summary ]
+then
+	LOGFILE=backup_log_summary
+else
+	LOGFILE=backup_log
+fi
 
 BACKUP_LOG_DATE=`echo $YEAR-$MONTH-$DAY`
 ############################
@@ -116,15 +128,14 @@ BACKUP_LOG_DATE=`echo $YEAR-$MONTH-$DAY`
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
 TEXTDOMAIN=karoshi-server
 
-
 [ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
 
 function view_logs_pdc {
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/backup_log ]
+if [ -f /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/$LOGFILE ]
 then
 	echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
-	cat /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/backup_log
+	cat /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/$LOGFILE
 	echo "</pre>"
 else
 	echo '<br>'$"No log avaiable."'<br>'
@@ -136,9 +147,9 @@ function view_logs_other_servers {
 echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
 ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/backup_log ]
+if [ -f /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/'$LOGFILE' ]
 then
-	cat /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/backup_log
+	cat /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/'$LOGFILE'
 else
 	echo '$"No log avaiable."'\<br\>
 fi

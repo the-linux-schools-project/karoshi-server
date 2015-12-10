@@ -111,7 +111,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 </div><div id="infobox"><table class="standard"><tbody><tr>'
 
 COUNTER=1
-for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep \"*"$SEARCH" | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
+for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
 do
 	echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
 	if [ $COUNTER = 6 ]
@@ -128,8 +128,3 @@ done
 echo '</tr></tbody></table></div></div></div></body></html>'
 exit
 
-
-########################
-#Unique key
-########################
-#lqOicbJMXiKkQblPYeTzBr..v

@@ -1023,7 +1023,7 @@ if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
 fi
 }
 
-#Check for duplicate tcpip and mac addresses
+#Check for duplicate serial numbers,tcpip and mac addresses
 function check_duplicate_data {
 if [ ! -z "$SEARCHITEM" ]
 then
@@ -1065,7 +1065,7 @@ then
 	#Add asset
 	get_asset_data
 
-	#Check that tcpip and mac addresses are not already in use.
+	#Check that serial numbers, tcpip and mac addresses are not already in use.
 	if [ ! -z "$TCPIP1" ]
 	then
 		SEARCHITEM=$TCPIP1
@@ -1096,6 +1096,11 @@ then
 		SEARCHITEM=$MAC3
 		check_duplicate_data
 	fi
+	if [ ! -z "$SERIALKEY" ]
+	then
+		SEARCHITEM=$SERIALKEY
+		check_duplicate_data
+	fi
 
 	get_asset_number
 
@@ -1121,7 +1126,7 @@ then
 
 		[ -f $CURRENT_ASSETPATH ] && rm -f $CURRENT_ASSETPATH 
 
-		#Check that tcpip and mac addresses are not already in use.
+		#Check that serial numbers, tcpip and mac addresses are not already in use.
 		if [ ! -z "$TCPIP1" ]
 		then
 			SEARCHITEM=$TCPIP1
@@ -1150,6 +1155,11 @@ then
 		if [ ! -z "$MAC3" ]
 		then
 			SEARCHITEM=$MAC3
+			check_duplicate_data
+		fi
+		if [ ! -z "$SERIALKEY" ]
+		then
+			SEARCHITEM=$SERIALKEY
 			check_duplicate_data
 		fi
 

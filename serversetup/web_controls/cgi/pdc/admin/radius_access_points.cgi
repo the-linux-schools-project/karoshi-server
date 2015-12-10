@@ -53,6 +53,7 @@ $(document).ready(function()
     { 
         $("#myTable").tablesorter({
 	headers: {
+	1: { sorter: "ipAddress" },
 	2: { sorter: false},
 	3: { sorter: false}
     		}

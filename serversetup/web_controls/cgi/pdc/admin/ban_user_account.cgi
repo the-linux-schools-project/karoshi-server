@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -51,135 +51,135 @@ echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' != null ]
+if [ ! -z "$DATA" ]
 then
-END_POINT=18
-#Assign HOUR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = HOURcheck ]
-then
-let COUNTER=$COUNTER+1
-HOUR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign MINUTES
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = MINUTEScheck ]
-then
-let COUNTER=$COUNTER+1
-MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign DAY
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = DAYcheck ]
-then
-let COUNTER=$COUNTER+1
-DAY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign MONTH
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = MONTHcheck ]
-then
-let COUNTER=$COUNTER+1
-MONTH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign YEAR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = YEARcheck ]
-then
-let COUNTER=$COUNTER+1
-YEAR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign INCIDENT
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = INCIDENTcheck ]
-then
-let COUNTER=$COUNTER+1
-INCIDENT=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign ACTIONTAKEN
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = ACTIONTAKENcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTIONTAKEN=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign STUDENTS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = STUDENTScheck ]
-then
-let COUNTER=$COUNTER+1
-STUDENTS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign BANLENGTH
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = BANLENGTHcheck ]
-then
-let COUNTER=$COUNTER+1
-BANLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+	END_POINT=18
+	#Assign HOUR
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = HOURcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			HOUR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign MINUTES
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = MINUTEScheck ]
+		then
+			let COUNTER=$COUNTER+1
+			MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign DAY
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = DAYcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			DAY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign MONTH
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = MONTHcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			MONTH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign YEAR
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = YEARcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			YEAR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign INCIDENT
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = INCIDENTcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			INCIDENT=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign ACTIONTAKEN
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = ACTIONTAKENcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			ACTIONTAKEN=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign STUDENTS
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = STUDENTScheck ]
+		then
+			let COUNTER=$COUNTER+1
+			STUDENTS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+	#Assign BANLENGTH
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAENTRY'check'` = BANLENGTHcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BANLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 DATE_INFO=`date +%F`
-[ $DAY'null' = null ] && DAY=`echo $DATE_INFO | cut -d- -f3`
-[ $MONTH'null' = null ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
-[ $YEAR'null' = null ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
+[ -z "$DAY" ] && DAY=`echo $DATE_INFO | cut -d- -f3`
+[ -z "$MONTH" ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
+[ -z "$YEAR" ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
 
 TIME_INFO=`date +%T`
-[ $HOUR'null' = null ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
-[ $MINUTES'null' = null ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
+[ -z "$HOUR" ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
+[ -z "$MINUTES" ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -194,32 +194,37 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">'
-echo '<div id="actionbox">'
-echo '<div class="sectiontitle">'$"Ban User Account"'</div>'
-echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="0" cellspacing="0">'
-echo '<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
+echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">
+<div id="actionbox">'
+
+echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Ban User Account"'</div></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/banned_users_view_fm.cgi"><input class="button" type="button" name="" value="'$"View Banned Users"'"></a></td>
+</tbody></table>
+
+<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
 echo '<input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:'
 echo '<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text">'

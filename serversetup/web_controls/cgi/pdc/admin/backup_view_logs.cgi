@@ -75,6 +75,20 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign LOGTYPE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOGTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOGTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -109,7 +123,7 @@ fi
 #Check data
 #########################
 #Check to see that a SERVERNAME has been chosen
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
 	MESSAGE=$"You must choose a server to enable or disable."
 	show_status
@@ -120,6 +134,11 @@ if [ -z "$DATE" ]
 then
 	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
 	show_status
+fi
+
+if [ -z "$LOGTYPE" ]
+then
+	LOGTYPE=summary
 fi
 
 #Check that date is valid
@@ -155,7 +174,17 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$SERVERNAME: $"Backup logs" $DAY-$MONTH-$YEAR'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$SERVERNAME: $"Backup logs" $DAY-$MONTH-$YEAR'</div></td>
+
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/backup_view_logs.cgi" name="testform" method="post">'
+if [ $LOGTYPE = summary ]
+then
+	echo '<input name="_SERVERNAME_'$SERVERNAME'_LOGTYPE_detailed_DATE_'$DATE'_" type="submit" class="button" value="'$"Detailed logs"'">'
+else
+	echo '<input name="_SERVERNAME_'$SERVERNAME'_LOGTYPE_summary_DATE_'$DATE'_" type="submit" class="button" value="'$"Summary logs"'">'
+fi
+echo '</form></td>
+<td style="vertical-align: top;">
 <a href="/cgi-bin/admin/backup_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
 </td></tr></tbody></table>
 
@@ -164,6 +193,6 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVERNAME:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
 echo "</div></div></div></body></html>"
 exit

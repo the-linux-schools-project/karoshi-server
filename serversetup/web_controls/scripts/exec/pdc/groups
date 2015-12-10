@@ -195,20 +195,25 @@ then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
       	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Users"'</b></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
 <input tabindex= "1" style="width: '$WIDTH1'px;" name="____ACTION____adduser____GROUPNAME____'$GROUPNAME'____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br><br></form><form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">'
+ value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br><br></form>'
 	#Check how many users there are in the group before showing any users.
 	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
 	then
+		SERVERNAME=`hostname-fqdn`
 		#Show all users in the group.
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
+	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Edit User"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
 			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
 			FIRSTNAME=`echo "$FULLNAME" | cut -d" " -f1`
 			LASTNAME=`echo "$FULLNAME" | cut -d" " -f2`
 			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>
-	<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></a>
+			<form action="show_user_info.cgi" target="_blank" method="post">
+			<a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$GROUPMEMBER'</span></a>
+			</form>
+			</td><td><form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+			<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></form></a>
 	</td></tr>'
 		done
 		echo '</tbody></table>'

@@ -65,6 +65,9 @@ else
 	exit
 fi
 
+#Set mysql root password so that it is not blank.
+/opt/karoshi/serversetup/all/"useful scripts"/mysql_initial_install &
+
 while [ -z "$CHOICE" ]
 do
 

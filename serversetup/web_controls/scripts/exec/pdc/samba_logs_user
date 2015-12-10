@@ -30,30 +30,30 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_user_cgi
 then
-echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_user_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_logs_user.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $samba_logs_user_cgi'check' ]
 then
-echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_user_cgi
 then
-echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_user_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/samba_logs_user.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $samba_logs_user_cgi'check' ]
 then
-echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -61,16 +61,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: samba_logs_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: samba_logs_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -85,30 +85,30 @@ YEAR=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: samba_logs_user - Not called by samba_logs_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - Not called by samba_logs_user.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: samba_logs_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: samba_logs_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: samba_logs_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: samba_logs_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: samba_logs_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: samba_logs_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 SEARCHDATE=`echo $DAY $MONTH $YEAR | sed 's/ /:/g'`
@@ -125,27 +125,27 @@ source /opt/karoshi/server_network/group_information/$PRI_GROUP
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 <tr><td style="width: 180px;"><b>'$"Username"'</b></td><td>'$USERNAME'</td></tr>
 <tr><td><b>'$"Home Server"'</b></td><td>'$SERVER'</td></tr>'
-[ $SEARCHDATE'null' != null ] && echo '<tr><td><b>'$"Log Date"'</b></td><td>'$SEARCHDATE'</td></tr>'
+[ -z "$SEARCHDATE" ] && echo '<tr><td><b>'$"Log Date"'</b></td><td>'$SEARCHDATE'</td></tr>'
 
 echo '</tbody></table><br>
 <b>'$"Log Results"'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 if [ $SERVER = `hostname-fqdn` ]
 then
-if [ $DAY'null' = null ]
-then
-grep -h -B 1 $USERNAME /var/log/samba/*
+	if [ ! -z "$DAY" ]
+	then
+		grep -r -h -B 1 $USERNAME /var/log/samba/*
+	else
+		grep -r -h -B 1 $USERNAME /var/log/samba/* | grep -A 1 $YEAR/$MONTH/$DAY
+	fi
 else
-grep -h -B 1 $USERNAME /var/log/samba/* | grep -A 1 $YEAR/$MONTH/$DAY
-fi
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-if [ '$DAY'"null" = null ]
-then
-grep -h -B 1 '$USERNAME' /var/log/samba/*
-else
-grep -A 1 '$YEAR'/'$MONTH'/'$DAY' /var/log/samba/* | grep -h -B 1 '$USERNAME'
-fi
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	if [ ! -z "'$DAY'" ]
+	then
+		grep -h -B 1 '$USERNAME' /var/log/samba/*
+	else
+		grep -A 1 '$YEAR'/'$MONTH'/'$DAY' /var/log/samba/* | grep -h -B 1 '$USERNAME'
+	fi
 '
 fi
 echo "</pre>"

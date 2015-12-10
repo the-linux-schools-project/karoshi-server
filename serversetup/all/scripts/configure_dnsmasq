@@ -98,7 +98,7 @@ do
 				'
 				#Add in a flag for dnsmasq service
 				[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-				echo Dnsmasq - DNS Service"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
+				echo > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
 			fi
 		done
 	fi

@@ -161,20 +161,28 @@ function get_drive_info {
 SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
 CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
 #Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
+if [ ! -z "$CAPACITYBYTES" ]
 then
-	#Covert capacity to terabytes
-	CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-	DRIVESCALE=TB
+	CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+	DRIVESCALE=GB
+	if [ $CAPACITY -gt 1000 ]
+	then
+		#Covert capacity to terabytes
+		CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+		DRIVESCALE=TB
+	fi
+	else
+	CAPACITY=0
 fi
 
 DISKSIZE=`echo $CAPACITY$DRIVESCALE`
 DRIVE_STATUS=ok
 smartctl -H $DRIVE 1>/dev/null 2>/dev/null
 SMARTSTATUS=`echo $?`
-HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+if [ -e $DRIVE ]
+then
+	HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+fi
 MAKER=`echo -e "$HDDATA" | grep Model= | cut -d= -f2`
 DRIVE_SN=`echo -e "$HDDATA" | grep SerialNo= | cut -d= -f2`
 
@@ -203,34 +211,51 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 
 while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
-DRIVE=${ALL_DRIVES[$COUNTER]}
-DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+	DRIVE=${ALL_DRIVES[$COUNTER]}
+	DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"`
+	#Try and get by-id identifier
+	DRIVEBYID=`ls -l /dev/disk/by-id | sed "s/ * / /g" | grep -w $DRIVE_SHORT | cut -d" " -f9`
 
+	if [ -z "$DRIVEBYID" ]
+	then
+		DRIVEBYID="$DRIVE_SHORT"
+	fi
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
-then
-get_drive_info
-
-
-#Show drive information
-if [ $DRIVE_STATUS = ok ]
-then
-	echo '<tr><td style="width: '$WIDTH1'px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
-#Create list of drives in array to replace
-	echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
-
-	for RAIDDISK in $ZPOOLDRIVES
+	#Get all uuid identifiers for the drive.
+	UUIDS=`ls -l /dev/disk/by-uuid | sed "s/ * / /g" | grep "$DRIVE_SHORT" | cut -d" " -f9`
+	UUIDCHECK=no
+	for UUID in `echo "$UUIDS"`
 	do
-	#RAIDDISK=`echo /dev/$RAIDDISK`
-	echo '<option value="_POOL_'$POOLNAME'_ACTION_replace_DRIVE_'$DRIVE'_DRIVE2_'$RAIDDISK'_">'$"Replace"' - '$RAIDDISK'</option>'
-done
+		if [ `mount | grep -c $UUID` != 0 ]
+		then
+			UUIDCHECK=yes
+		fi
+	done
 
-echo '</select></td><td><a class="info" href="javascript:void(0)"><input name="submit" type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td></tr>'
-else
-echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
-fi
-fi
-let COUNTER=$COUNTER+1
+	if [ $UUIDCHECK = no ] && [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w $DRIVEBYID` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
+	then
+		get_drive_info
+
+
+		#Show drive information
+		if [ $DRIVE_STATUS = ok ]
+		then
+			echo '<tr><td style="width: '$WIDTH1'px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$DISKICON'"><span>'$DRIVE' - '$DISKSIZE'</span></a> '$"Available Drive"'</td><td style="width: 260px;">'$MAKER $DRIVE_SN'</td><td>'
+		#Create list of drives in array to replace
+			echo '<select name="select"><option value="_POOL_'$POOLNAME'_ACTION_addspare_DRIVE_'$DRIVE'_DRIVE2_notset_">'$"Add spare"'</option>'
+
+			for RAIDDISK in $ZPOOLDRIVES
+			do
+				#RAIDDISK=`echo /dev/$RAIDDISK`
+				echo '<option value="_POOL_'$POOLNAME'_ACTION_replace_DRIVE_'$DRIVE'_DRIVE2_'$RAIDDISK'_">'$"Replace"' - '$RAIDDISK'</option>'
+			done
+
+		echo '</select></td><td><a class="info" href="javascript:void(0)"><input name="submit" type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td></tr>'
+		else
+		echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+		fi
+	fi
+	let COUNTER=$COUNTER+1
 done
 echo "</tbody></table><br><br>"
 }
@@ -263,7 +288,7 @@ do
 	fi
 	echo '<b>'$"Raid Information"'</b><br><br>
 	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
+	<tr><td style="min-width: '$WIDTH1'px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
 	<tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
 	<tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
 	<tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
@@ -335,21 +360,29 @@ ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 function get_drive_info {
 SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
 CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
-#Convert capacity to gigabytes
-CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
-DRIVESCALE=GB
-if [ $CAPACITY -gt 1000 ]
+if [ ! -z "$CAPACITYBYTES" ]
 then
-	#Covert capacity to terabytes
-	CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-	DRIVESCALE=TB
+	#Convert capacity to gigabytes
+	CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
+	DRIVESCALE=GB
+	if [ $CAPACITY -gt 1000 ]
+	then
+		#Covert capacity to terabytes
+		CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+		DRIVESCALE=TB
+	fi
+else
+	CAPACITY=0
 fi
 
 DISKSIZE=`echo $CAPACITY$DRIVESCALE`
 DRIVE_STATUS=ok
 smartctl -H $DRIVE 1>/dev/null 2>/dev/null
 SMARTSTATUS=`echo $?`
-HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+if [ -e $DRIVE ]
+then
+	HDDATA=`hdparm -i $DRIVE | grep SerialNo= | sed "s/,/\n/g"`
+fi
 MAKER=`echo -e "$HDDATA" | grep Model= | cut -d= -f2`
 DRIVE_SN=`echo -e "$HDDATA" | grep SerialNo= | cut -d= -f2`
 
@@ -378,35 +411,51 @@ echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpad
 
 while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
-DRIVE=${ALL_DRIVES[$COUNTER]}
-DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+	DRIVE=${ALL_DRIVES[$COUNTER]}
+	DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
+	#Try and get by-id identifier
+	DRIVEBYID=`ls -l /dev/disk/by-id | sed "s/ * / /g" | grep -w "$DRIVE_SHORT" | cut -d" " -f9`
+	if [ -z "$DRIVEBYID" ]
+	then
+		DRIVEBYID="$DRIVE_SHORT"
+	fi
+
+	#Get all uuid identifiers for the drive.
+	UUIDS=`ls -l /dev/disk/by-uuid | sed "s/ * / /g" | grep "$DRIVE_SHORT" | cut -d" " -f9`
+	UUIDCHECK=no
+	for UUID in `echo "$UUIDS"`
+	do
+		if [ `mount | grep -c $UUID` != 0 ]
+		then
+			UUIDCHECK=yes
+		fi
+	done
+
+	if [ $UUIDCHECK = no ] && [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `zpool status | grep -c -w "$DRIVEBYID"` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
+	then
+	get_drive_info
 
 
-if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status | grep -c -w $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ] || [ `zpool status | grep -w $DRIVE_SHORT | grep -c UNAVAIL` -gt 0 ]
-then
-get_drive_info
+		#Show drive information
+		if [ $DRIVE_STATUS = ok ]
+		then
+			echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
+			#Create list of drives in array to replace
+			echo "<select name=\"select\"><option value=\"_POOL_$POOLNAME"_"ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset_\">'$"Add spare"'</option>"
 
+			for RAIDDISK in $ZPOOLDRIVES
+			do
+				#RAIDDISK=`echo /dev/$RAIDDISK`
+				echo "<option value="_POOL_$POOLNAME\_ACTION_replace_DRIVE_$DRIVE\_DRIVE2_$RAIDDISK\_">'$"Replace"' - $RAIDDISK</option>"
+			done
 
-#Show drive information
-if [ $DRIVE_STATUS = ok ]
-then
-echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a> '$"Available Drive"'</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td><td>"
-#Create list of drives in array to replace
-echo "<select name=\"select\"><option value=\"_POOL_$POOLNAME"_"ACTION_addspare_DRIVE_$DRIVE"_"DRIVE2_notset_\">'$"Add spare"'</option>"
-
-for RAIDDISK in $ZPOOLDRIVES
-do
-	#RAIDDISK=`echo /dev/$RAIDDISK`
-	echo "<option value="_POOL_$POOLNAME\_ACTION_replace_DRIVE_$DRIVE\_DRIVE2_$RAIDDISK\_">'$"Replace"' - $RAIDDISK</option>"
-done
-
-echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td></tr>"
-else
-echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
-fi
-fi
-let COUNTER=$COUNTER+1
-done
+			echo "</select></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"submit\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Add this disk to a raid."'</span></a></td></tr>"
+		else
+			echo "<tr><td style=\"width: '$WIDTH1'px;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$DRIVE - $DISKSIZE</span></a>$DRIVE</td><td style=\"width: 260px;\">$MAKER $DRIVE_SN</td></tr>"
+		fi
+	fi
+	let COUNTER=$COUNTER+1
+	done
 echo "</tbody></table><br><br>"
 }
 
@@ -440,7 +489,7 @@ then
 fi
 echo "<b>'$"Raid Information"'</b><br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: '$WIDTH1'px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
+<tr><td style=\"min-width: '$WIDTH1'px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
 <tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
 <tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>

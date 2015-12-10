@@ -54,53 +54,53 @@ END_POINT=11
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign NEWUSERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NEWUSERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NEWUSERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NEWUSERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NEWUSERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign FIRSTNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FIRSTNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-FIRSTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FIRSTNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FIRSTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SURNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -115,22 +115,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -138,47 +138,47 @@ fi
 #Check to see that username is not blank
 if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 #Check to see if the user exists
 getent passwd $USERNAME 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$"The username does not exist."
-show_status
+	MESSAGE=$"The username does not exist."
+	show_status
 fi
 #Check to see that newusername is not blank
 if [ -z "$NEWUSERNAME"  ]
 then
-MESSAGE=$"The new username must not be blank."
-show_status
+	MESSAGE=$"The new username must not be blank."
+	show_status
 fi
 #Check to see if the newusername exists
 getent passwd $NEWUSERNAME 1>/dev/null
 if [ $? = 0 ]
 then
-MESSAGE=$"The new username is already in use."
-show_status
+	MESSAGE=$"The new username is already in use."
+	show_status
 fi
 #Check to see that firstname is not blank
 if [ -z $FIRSTNAME ]
 then
-MESSAGE=$"You have not entered in a forename."
-show_status
+	MESSAGE=$"You have not entered in a forename."
+	show_status
 fi
 #Check to see that surname is not blank
 if [ -z "$SURNAME" ]
 then
-MESSAGE=$"You have not entered in a surname."
-show_status
+	MESSAGE=$"You have not entered in a surname."
+	show_status
 fi
 
 #Don't change username for certain users
 if [ $USERNAME = root ] || [ $USERNAME = karoshi ]
 then
-MESSAGE=$"You cannot change that username."
-show_status
+	MESSAGE=$"You cannot change that username."
+	show_status
 fi
 
 #Check that the user is not a system user
@@ -186,9 +186,9 @@ USER_ID=`id -g $USERNAME`
 
 if [ $USER_ID -lt 500 ]
 then
-MESSAGE=$"You cannot change the name of a system user."
-show_status
-exit
+	MESSAGE=$"You cannot change the name of a system user."
+	show_status
+	exit
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_username.cgi | cut -d' ' -f1`
@@ -197,8 +197,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$FIRSTNAME:$SURNA
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $"Username changed": $USERNAME - $NEWUSERNAME`
+	MESSAGE=`echo $"Username changed": $USERNAME - $NEWUSERNAME`
 else
-MESSAGE=`echo $"There was a problem changing the username." $USERNAME`
+	MESSAGE=`echo $"There was a problem changing the username." $USERNAME`
 fi
 show_status

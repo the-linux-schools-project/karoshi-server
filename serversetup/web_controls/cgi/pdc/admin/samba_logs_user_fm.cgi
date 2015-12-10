@@ -62,8 +62,8 @@ echo '<form action="/cgi-bin/admin/samba_logs_user.cgi" name="testform" method="
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
     <tbody>
 <tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" name="_USER_" size="14" style="width: 200px;" type="text"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the logs for."'</span></a></td></tr>'
-echo "<tr><td>$"Log Date"</td><td>
-<!-- calendar attaches to existing form element -->
+echo '<tr><td>'$"Log Date"'</td><td>'
+echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 style=\"width: 200px;\" name=\"_DATE_\"></td><td style=\"vertical-align: top;\">
 	<script language=\"JavaScript\" type=\"text/javascript\">
 	new tcal ({
@@ -71,11 +71,9 @@ echo "<tr><td>$"Log Date"</td><td>
 		'formname': 'testform',
 		// input name
 		'controlname': '_DATE_'
-	});
+	});"
 
-	</script></td><td style=\"vertical-align: top; text-align: center;\"><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$"Leave the date blank to search for all dates."</span></a></td></tr>"
-
-
+echo '	</script></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave the date blank to search for all dates."'</span></a></td></tr>'
 
 echo '</tbody></table>
   </div>

@@ -81,14 +81,14 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
 fi
 
 echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">'

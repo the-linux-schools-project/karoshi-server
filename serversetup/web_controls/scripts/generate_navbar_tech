@@ -23,10 +23,13 @@
 ##########################
 #Section Control
 ##########################
+
+#Website: http://www.karoshi.org.uk
+
 source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
-#Website: http://www.karoshi.org.uk
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
@@ -40,7 +43,6 @@ echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top">
 
 echo '</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
-
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
 	<li class="top"><a href="/cgi-bin/tech/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
@@ -51,29 +53,21 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 	</li>
 	<li class="top"><a href="/cgi-bin/tech/change_password_fm.cgi" id="menu" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
 		<ul class="sub">
+			<li><a href="/cgi-bin/tech/change_password_fm.cgi">'$"Change Password"'</a></li>
+'
 
-		<li class="mid"><a href="/cgi-bin/tech/change_password_fm.cgi" class="fly">'$"Modify Users"'</a>
-					<ul>
-						<li><a href="/cgi-bin/tech/change_password_fm.cgi">'$"Change Password"'</a></li>
-						<li><a href="/cgi-bin/tech/reset_password_fm.cgi">'$"Reset Password"'</a></li>
-						<li><a href="/cgi-bin/tech/ban_user_account.cgi">'$"Ban User Accounts"'</a></li>
-						<li><a href="/cgi-bin/tech/banned_users_view_fm.cgi">'$"View-Enable banned users"'</a></li>
-						<li><a href="/cgi-bin/tech/change_username_fm.cgi">'$"Change Username"'</a></li>
-						<li><a href="/cgi-bin/tech/change_primary_group_fm.cgi">'$"Primary Group"'</a></li>
-						<li><a href="/cgi-bin/tech/user_image_upload_fm.cgi">'$"User Images"'</a></li>
-					</ul>
-			</li>'
 if [ $ADDUSERCTRL = yes ]
 then
-echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>	
+echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>
+			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
 '
 fi
-echo '			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
-			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>	
+
+echo '
+			<li><a href="/cgi-bin/tech/ban_user_account.cgi">'$"Ban User Accounts"'</a></li>
+			<li><a href="/cgi-bin/tech/user_image_upload_fm.cgi">'$"User Images"'</a></li>
 			<li><a href="/cgi-bin/tech/incident_log_add.cgi">'$"Record Incident"'</a></li>
 			<li><a href="/cgi-bin/tech/incident_log_view_fm.cgi">'$"View Incident Logs"'</a></li>
-
-
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/tech/remote_management_change_password_fm.cgi" id="System" class="top_link"><span class="down">'$"System"'</span></a>
@@ -86,8 +80,6 @@ echo '			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a><
 			
 		</ul>
 	</li>
-
-
 	<li class="top"><a href="/cgi-bin/tech/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$"Infrastructure"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/asset_register_view.cgi">'$"Asset Register"'</a></li>'
@@ -98,9 +90,6 @@ echo '			<li><a href="/cgi-bin/tech/mon_status.cgi">'$"Network Monitoring"'</a><
 fi
 echo '			</ul>
 	</li>
-
-
-
 	<li class="top"><a href="/cgi-bin/tech/domain_information.cgi" id="Client" class="top_link"><span class="down">'$"Client"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/domain_information.cgi">'$"Domain Information"'</a></li>'
@@ -130,6 +119,7 @@ if [ $PRINTERCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
+			<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
 			<li class="mid"><a href="/cgi-bin/tech/printer_accounting_status_fm.cgi" class="fly">'$"Printer Accounting"'</a>
 					<ul>
 					<li><a href="/cgi-bin/tech/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a></li>
@@ -139,7 +129,6 @@ echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="
 					<li><a href="/cgi-bin/tech/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a></li>
 					</ul>
 			</li>
-					<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
 		</ul>
 	</li>'
 fi
@@ -176,6 +165,5 @@ echo '<li class="top"><a href="http://www.linuxschools.com/karoshi/documentation
 	</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/logout.cgi" class="top_link"><span>'$"Logout"'</span></a></li>
-
 </ul></div>'
 

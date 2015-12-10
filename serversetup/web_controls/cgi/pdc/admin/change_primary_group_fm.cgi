@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -54,6 +54,29 @@ echo '
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\--'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=7
+#Assign USERNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -64,7 +87,7 @@ echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div 
       <tr>
         <td style="width: 180px;">
 '$"Username"'</td>
-        <td><div id="suggestions"></div> <input name="_USERNAME_" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username that you want to change the primary group for."'</span></a>
+        <td><div id="suggestions"></div> <input name="_USERNAME_" value="'$USERNAME'" size="20" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username that you want to change the primary group for."'</span></a>
 
 </td>
       </tr>

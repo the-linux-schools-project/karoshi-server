@@ -121,8 +121,18 @@ echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
         <a href="/cgi-bin/admin/server_info_fm.cgi">'$"Server Information"'</a>
         <a href="/cgi-bin/admin/update_servers_fm.cgi">'$"Update Servers"'</a>
         <a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$"Update logs"'</a>
-        <a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a>
-        <a href="/cgi-bin/admin/uptime_fm.cgi">'$"Uptime"'</a>
+        <a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a>'
+
+	if [ $BACKUPCTRL = notyetinuse ]
+	then
+	echo '
+		<a href="/cgi-bin/admin/backup_configure_fm.cgi">'$"Configure Backup"'</a>
+		<a href="/cgi-bin/admin/backup_enable_disable_fm.cgi">'$"Enable - Disable Backup"'</a>
+		<a href="/cgi-bin/admin/backup_view_logs_fm.cgi">'$"View Backup Logs"'</a>
+		<a href="/cgi-bin/admin/restore_files_fm.cgi">'$"Restore Files"'</a>'
+	fi
+	
+        echo '<a href="/cgi-bin/admin/uptime_fm.cgi">'$"Uptime"'</a>
         <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$"Management Logs"'</a>
         <a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Cron"'</a>
         <a href="/cgi-bin/admin/remote_management_change_language.cgi">'$"Change Language"'</a>
