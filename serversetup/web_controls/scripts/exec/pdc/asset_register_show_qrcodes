@@ -120,9 +120,10 @@ source /opt/karoshi/server_network/domain_information/domain_name
 for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
 do
 	ASSET=`basename $ASSETS`
+	source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 	[  ! -f /opt/karoshi/asset_register/qrcodes/$ASSET ] && qrencode -s 3 https://manage.$REALM:50001/cgi-bin/combined/asset_register_search.cgi?$ASSET -o /opt/karoshi/asset_register/qrcodes/$ASSET.png
 	#Show qr codes
-	echo '<div class="label"><table class="standard"><tbody><tr><td><img src="/images/qrcodes/'$ASSET'.png" /></td><td><b>'$"Asset"': '$ASSET'<br><br>'$"Property of"'<br>'$LONGNAME'</b></td></tr></tbody></table></div>'
+	echo '<div class="label"><table class="standard"><tbody><tr><td><img src="/images/qrcodes/'$ASSET'.png" /></td><td><b>'$"Asset"': '$ASSET'<br>'$"Name"':'$IDENTITY'<br>'$"Property of"'<br>'$LONGNAME'</b></td></tr></tbody></table></div>'
 done
 exit
 
