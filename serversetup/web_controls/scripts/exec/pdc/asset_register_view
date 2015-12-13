@@ -150,9 +150,9 @@ then
 	ICON16=/images/assets/importm.png
 	ICON17=/images/assets/client_logsm.png
 	ICON18=/images/assets/qrcodem.png
-	WIDTH1=100
+	WIDTH1=120
 	WIDTH2=100
-	WIDTH3=100
+	WIDTH3=160
 else
 	TABLECLASS=standard
 	ICON1=/images/assets/location.png
@@ -321,14 +321,22 @@ then
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 	touch /opt/karoshi/asset_register/tcpip_addresses
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"TCPIP Number"'</th><th style="width: '$WIDTH2'px;">'$"Location"'</th><th></th><th style="width: '$WIDTH3'px;">'$"Category"'</th></tr></thead><tbody>'
+	<tr><th style="width: '$WIDTH1'px;">'$"TCPIP"'</th>'
+
+	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;">'$"Location"'</th>'
+
+	echo '<th></th><th style="width: '$WIDTH3'px;">'$"Category"'</th></tr></thead><tbody>'
 	for TCPIPDATA in $(cat /opt/karoshi/asset_register/tcpip_addresses | tr -cd 'A-Za-z0-9\.,\n' )
 	do
 		TCPIPADDRESS=$(echo $TCPIPDATA | cut -d, -f1)
 		LOCATION=$(echo $TCPIPDATA | cut -d, -f2)
 		ASSETTYPE=$(echo $TCPIPDATA | cut -d, -f3)
 		assign_asset_labels
-		echo '<tr><td style="background-color:'$COLOR'">'$TCPIPADDRESS'</td><td style="background-color:'$COLOR'">'$LOCATION'</td><td style="background-color:'$COLOR'"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>View Assets<br>CM1</span></a></td><td style="background-color:'$COLOR'">'$ASSETLABEL'</td></tr>'
+		echo '<tr><td style="background-color:'$COLOR'">'$TCPIPADDRESS'</td>'
+
+		[ $MOBILE = no ] && echo '<td style="background-color:'$COLOR'">'$LOCATION'</td>'
+
+		echo '<td style="background-color:'$COLOR'"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>View Assets<br>CM1</span></a></td><td style="background-color:'$COLOR'">'$ASSETLABEL'</td></tr>'
 	done
 	echo '</tbody></table>'
 fi
