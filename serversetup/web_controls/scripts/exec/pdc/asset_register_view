@@ -109,6 +109,25 @@ then
 	exit 101
 fi
 
+COLOR1="#FFCCC7"
+COLOR2="#FFF4D4"
+COLOR3="#FFF4D4"
+COLOR4="#EBFFCC"
+COLOR5="#DFFDFF"
+COLOR6="#DFEEFF"
+COLOR7="#E3E2FF"
+COLOR8="#F6E5FF"
+COLOR9="#FFE5FE"
+COLOR10="#FFE9ED"
+COLOR11="#E7FFA2"
+COLOR12="#C0E1FF"
+COLOR13="#DEFFF8"
+COLOR14="#FFD2DF"
+COLOR15="#C3E3FF"
+COLOR16="#FCFFDE"
+COLOR17="#E5D7FF"
+COLOR18="#BEFFF5"
+
 
 if [ $MOBILE = yes ]
 then
@@ -131,6 +150,9 @@ then
 	ICON16=/images/assets/importm.png
 	ICON17=/images/assets/client_logsm.png
 	ICON18=/images/assets/qrcodem.png
+	WIDTH1=100
+	WIDTH2=100
+	WIDTH3=100
 else
 	TABLECLASS=standard
 	ICON1=/images/assets/location.png
@@ -151,6 +173,9 @@ else
 	ICON16=/images/assets/import.png
 	ICON17=/images/assets/client_logs.png
 	ICON18=/images/assets/qrcode.png
+	WIDTH1=200
+	WIDTH2=100
+	WIDTH3=300
 fi
 
 
@@ -164,89 +189,94 @@ fi
 #echo location is $LOCATION"<br>"
 #echo asset is $ASSET"<br>"
 
-
-if [ $ACTION = qrcodes ]
-then
-	#Load asset_register_show_qrcodes.cgi
-	echo '</form><form METHOD=POST ACTION="asset_register_show_qrcodes.cgi" target="_top" name="frm">
-	<input type="hidden" name="_LOCATION_" value="'$LOCATION'">
-	</form>
-	<script>
-	document.frm.submit();
-	</script><form>
-	'
-fi
-
 function assign_asset_labels {
 ASSETLABEL=$"Curriculum Computer"
 ASSETICON=/images/assets/curriculum_computer.png
+COLOR=$COLOR1
 if [ $ASSETTYPE = 2 ]
 then
 	ASSETICON=/images/assets/admin_computer.png ; ASSETLABEL=$"Admin Computer"
+	COLOR=$COLOR2
 fi
 if [ $ASSETTYPE = 3 ]
 then
 	ASSETICON=/images/assets/curriculum_laptop.png ; ASSETLABEL=$"Curriculum Laptop"
+	COLOR=$COLOR3
 fi
 if [ $ASSETTYPE = 4 ]
 then
 	ASSETICON=/images/assets/admin_laptop.png ; ASSETLABEL=$"Admin Laptop"
+	COLOR=$COLOR4
 fi
 if [ $ASSETTYPE = 5 ]
 then
 	ASSETICON=/images/assets/curriculum_tablet.png ; ASSETLABEL=$"Curriculum Tablet"
+	COLOR=$COLOR5
 fi
 if [ $ASSETTYPE = 6 ]
 then
 	ASSETICON=/images/assets/admin_tablet.png ; ASSETLABEL=$"Admin Tablet"
+	COLOR=$COLOR6
 fi
 if [ $ASSETTYPE = 7 ]
 then
 	ASSETICON=/images/assets/curriculum_pda.png ; ASSETLABEL=$"Curriculum PDA"
+	COLOR=$COLOR7
 fi
 if [ $ASSETTYPE = 8 ]
 then
 	ASSETICON=/images/assets/admin_pda.png ; ASSETLABEL=$"Admin PDA"
+	COLOR=$COLOR8
 fi
 if [ $ASSETTYPE = 9 ]
 then
 	ASSETICON=/images/assets/curriculum_thinclient.png ; ASSETLABEL=$"Curriculum Thin Client"
+	COLOR=$COLOR9
 fi
 if [ $ASSETTYPE = 10 ]
 then
-ASSETICON=/images/assets/admin_thinclient.png ; ASSETLABEL=$"Admin Thin Client"
+	ASSETICON=/images/assets/admin_thinclient.png ; ASSETLABEL=$"Admin Thin Client"
+	COLOR=$COLOR10
 fi
 if [ $ASSETTYPE = 11 ]
 then
-ASSETICON=/images/assets/printer.png ; ASSETLABEL=$"Printer"
+	ASSETICON=/images/assets/printer.png ; ASSETLABEL=$"Printer"
+	COLOR=$COLOR11
 fi
 if [ $ASSETTYPE = 12 ]
 then
-ASSETICON=/images/assets/scanner.png ; ASSETLABEL=$"Scanner"
+	ASSETICON=/images/assets/scanner.png ; ASSETLABEL=$"Scanner"
+	COLOR=$COLOR12
 fi
 if [ $ASSETTYPE = 13 ]
 then
 	ASSETICON=/images/assets/projector.png ; ASSETLABEL=$"Projector"
+	COLOR=$COLOR13
 fi
 if [ $ASSETTYPE = 14 ]
 then
 	ASSETICON=/images/assets/whiteboard.png ; ASSETLABEL=$"Whiteboard"
+	COLOR=$COLOR14
 fi
 if [ $ASSETTYPE = 15 ]
 then
-ASSETICON=/images/assets/network_switch.png ; ASSETLABEL=$"Network Switch"
+	ASSETICON=/images/assets/network_switch.png ; ASSETLABEL=$"Network Switch"
+	COLOR=$COLOR15
 fi
 if [ $ASSETTYPE = 16 ]
 then
-ASSETICON=/images/assets/network_device.png ; ASSETLABEL=$"Network Device"
+	ASSETICON=/images/assets/network_device.png ; ASSETLABEL=$"Network Device"
+	COLOR=$COLOR16
 fi
 if [ $ASSETTYPE = 17 ]
 then
 	ASSETICON=/images/assets/wireless.png ; ASSETLABEL=$"Wireless Access Point"
+	COLOR=$COLOR17
 fi
 if [ $ASSETTYPE = 18 ]
 then
-ASSETICON=/images/assets/audio_visual.png ; ASSETLABEL=$"Audio Visual"
+	ASSETICON=/images/assets/audio_visual.png ; ASSETLABEL=$"Audio Visual"
+	COLOR=$COLOR18
 fi
 if [ $ASSETTYPE = 19 ]
 then
@@ -261,6 +291,59 @@ then
 	SSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
 fi
 }
+
+function sorttcpiplist {
+sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n /opt/karoshi/asset_register/tcpip_addresses > /opt/karoshi/asset_register/tcpip_addresses.$$
+mv -f /opt/karoshi/asset_register/tcpip_addresses.$$ /opt/karoshi/asset_register/tcpip_addresses
+}
+
+function deletefromtcpiplist {
+if [ ! -z "$TCPIP1" ]
+then
+	sed -i '/^'$TCPIP1',/d' /opt/karoshi/asset_register/tcpip_addresses
+fi
+if [ ! -z "$TCPIP2" ]
+then
+	sed -i '/^'$TCPIP2',/d' /opt/karoshi/asset_register/tcpip_addresses
+fi
+if [ ! -z "$TCPIP3" ]
+then
+	sed -i '/^'$TCPIP3',/d' /opt/karoshi/asset_register/tcpip_addresses
+fi
+}
+
+if [ $ACTION = viewtcpip ]
+then
+	echo '<b>'$"Asset Register"' - '$"Allocated TCPIP Numbers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
+	</tr></tbody></table>'
+
+	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+	touch /opt/karoshi/asset_register/tcpip_addresses
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<tr><th style="width: '$WIDTH1'px;">'$"TCPIP Number"'</th><th style="width: '$WIDTH2'px;">'$"Location"'</th><th></th><th style="width: '$WIDTH3'px;">'$"Category"'</th></tr></thead><tbody>'
+	for TCPIPDATA in $(cat /opt/karoshi/asset_register/tcpip_addresses | tr -cd 'A-Za-z0-9\.,\n' )
+	do
+		TCPIPADDRESS=$(echo $TCPIPDATA | cut -d, -f1)
+		LOCATION=$(echo $TCPIPDATA | cut -d, -f2)
+		ASSETTYPE=$(echo $TCPIPDATA | cut -d, -f3)
+		assign_asset_labels
+		echo '<tr><td style="background-color:'$COLOR'">'$TCPIPADDRESS'</td><td style="background-color:'$COLOR'">'$LOCATION'</td><td style="background-color:'$COLOR'"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>View Assets<br>CM1</span></a></td><td style="background-color:'$COLOR'">'$ASSETLABEL'</td></tr>'
+	done
+	echo '</tbody></table>'
+fi
+
+if [ $ACTION = qrcodes ]
+then
+	#Load asset_register_show_qrcodes.cgi
+	echo '</form><form METHOD=POST ACTION="asset_register_show_qrcodes.cgi" target="_top" name="frm">
+	<input type="hidden" name="_LOCATION_" value="'$LOCATION'">
+	</form>
+	<script>
+	document.frm.submit();
+	</script><form>
+	'
+fi
 
 ##########################
 #Show logs
@@ -695,49 +778,52 @@ fi
 
 if [ $LOCATION = showchoice ]
 then
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
+	ROWCOUNT=6
+	[ $MOBILE = yes ] && ROWCOUNT=3
+	WIDTH=90
+	[ $MOBILE = yes ] && WIDTH=70
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Statistics"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Search"'</b></td>
-<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Import"'</b></td>
-<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Export"'</b></td></tr>
-<tr><td style="vertical-align: top; height: 30px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_showstats_LOCATION_notset_" type="image" class="images" src="'$ICON5'" value=""><span>'$"Statistics"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_search_LOCATION_notset_" type="image" class="images" src="'$ICON6'" value=""><span>'$"Search"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_import_LOCATION_notset_" type="image" class="images" src="'$ICON16'" value=""><span>'$"Import"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_export_LOCATION_notset_" type="image" class="images" src="'$ICON15'" value=""><span>'$"Export"'</span></a></td>
-</tr><tr>
-<td style="vertical-align: top; height: 30px;"><b>'$"Add Asset"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Descriptions"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Suppliers"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Budgets"'</b></td>
-</tr><tr>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_notset_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Add Asset"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewdescriptions_LOCATION_notset_" type="image" class="images" src="'$ICON7'" value=""><span>'$"Description"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewsuppliers_LOCATION_notset_" type="image" class="images" src="'$ICON9'" value=""><span>'$"Suppliers"'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewbudgets_LOCATION_notset_" type="image" class="images" src="'$ICON12'" value=""><span>'$"Budgets"'</span></a></td>
-</tr></tbody></table><br>'
-if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><b>'$"View Assets"' - Choose Location</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Statistics"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Search"'</b></td>
+	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Import"'</b></td>
+	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Export"'</b></td>
+	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"TCPIP"'</b></td>
+	</tr>
+	<tr><td style="vertical-align: top; height: 30px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_showstats_LOCATION_notset_" type="image" class="images" src="'$ICON5'" value=""><span>'$"Statistics"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_search_LOCATION_notset_" type="image" class="images" src="'$ICON6'" value=""><span>'$"Search"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_import_LOCATION_notset_" type="image" class="images" src="'$ICON16'" value=""><span>'$"Import"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_export_LOCATION_notset_" type="image" class="images" src="'$ICON15'" value=""><span>'$"Export"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewtcpip_LOCATION_notset_" type="image" class="images" src="'$ICON16'" value=""><span>'$"View Allocated TCPIP Addresses"'</span></a></td>
+	</tr><tr>
+	<td style="vertical-align: top; height: 30px;"><b>'$"Add Asset"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Descriptions"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Suppliers"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Budgets"'</b></td>
+	</tr><tr>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_notset_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Add Asset"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewdescriptions_LOCATION_notset_" type="image" class="images" src="'$ICON7'" value=""><span>'$"Description"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewsuppliers_LOCATION_notset_" type="image" class="images" src="'$ICON9'" value=""><span>'$"Suppliers"'</span></a></td>
+	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewbudgets_LOCATION_notset_" type="image" class="images" src="'$ICON12'" value=""><span>'$"Budgets"'</span></a></td>
+	</tr></tbody></table><br>'
+	if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><b>'$"View Assets"' - Choose Location</b></td></tr></tbody></table><br>'
 
-[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+		[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
-LOCCOUNTER=1
-LOCATIONARRAY=( `ls /opt/karoshi/asset_register/locations/ | sort -f` )
-ARRAYCOUNT=0
-ARRAYMAX=${#LOCATIONARRAY[@]}
-while [ $ARRAYCOUNT -lt $ARRAYMAX ]
-do
-LOCATION=${LOCATIONARRAY[$ARRAYCOUNT]}
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
-[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-let LOCCOUNTER=$LOCCOUNTER+1
-[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
-let ARRAYCOUNT=$ARRAYCOUNT+1
-done
-echo "</tr></tbody></table><br>"
-LOCATION=showchoice
-fi
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+		LOCCOUNTER=1
+		LOCATIONARRAY=( `ls /opt/karoshi/asset_register/locations/ | sort -f` )
+		ARRAYCOUNT=0
+		ARRAYMAX=${#LOCATIONARRAY[@]}
+		while [ $ARRAYCOUNT -lt $ARRAYMAX ]
+		do
+			LOCATION=${LOCATIONARRAY[$ARRAYCOUNT]}
+			echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+			[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
+			let LOCCOUNTER=$LOCCOUNTER+1
+			[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
+			let ARRAYCOUNT=$ARRAYCOUNT+1
+		done
+		echo "</tr></tbody></table><br>"
+		LOCATION=showchoice
+	fi
 fi
 
 ##########################
@@ -775,10 +861,14 @@ then
 			#Move entry to deleted folder
 			mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
 			echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			#Delete entry from tcpip list
+			deletefromtcpiplist
+			#Sort the tcpiplist
+			sorttcpiplist
+			
 		fi
 	fi
 fi
-
 
 function asset_form {
 
@@ -962,6 +1052,31 @@ echo SUPPLIER=\""$SUPPLIER"\" >> "/opt/karoshi/asset_register/locations/$LOCATIO
 echo BUDGET=\""$BUDGET"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 echo EXTRAINFO=\""$EXTRAINFO"\" >> "/opt/karoshi/asset_register/locations/$LOCATION/$ASSET"
 
+#Add entry to /opt/karoshi/asset_register/tcpip_addresses
+touch  /opt/karoshi/asset_register/tcpip_addresses
+if [ ! -z "$TCPIP1" ]
+then
+	if [ $(grep -c -w ^"$TCPIP1" /opt/karoshi/asset_register/tcpip_addresses) = 0 ]
+	then
+		echo "$TCPIP1","$LOCATION","$ASSETTYPE" >> /opt/karoshi/asset_register/tcpip_addresses
+	fi
+fi
+if [ ! -z "$TCPIP2" ]
+then
+	if [ $(grep -c -w ^"$TCPIP2" /opt/karoshi/asset_register/tcpip_addresses) = 0 ]
+	then
+		echo "$TCPIP2","$LOCATION","$ASSETTYPE" >> /opt/karoshi/asset_register/tcpip_addresses
+	fi
+fi
+if [ ! -z "$TCPIP3" ]
+then
+	if [ $(grep -c -w ^"$TCPIP3" /opt/karoshi/asset_register/tcpip_addresses) = 0 ]
+	then
+		echo "$TCPIP3","$LOCATION","$ASSETTYPE" >> /opt/karoshi/asset_register/tcpip_addresses
+	fi
+fi
+sorttcpiplist
+
 #Add details to netlogon
 if [ ! -z "$MAC1" ]
 then
@@ -1116,15 +1231,10 @@ then
 	ACTION=view
 	if [ ! -z "$ASSET" ]
 	then
+		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 		#Edit asset
 		get_asset_data
-
-		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		#Delete asset 
-
-		CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
-
-		[ -f $CURRENT_ASSETPATH ] && rm -f $CURRENT_ASSETPATH 
 
 		#Check that serial numbers, tcpip and mac addresses are not already in use.
 		if [ ! -z "$TCPIP1" ]
@@ -1162,6 +1272,20 @@ then
 			SEARCHITEM=$SERIALKEY
 			check_duplicate_data
 		fi
+
+		#Delete current asset data 
+		CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
+		if [ -f $CURRENT_ASSETPATH ]
+		then
+			#Delete any existing tcpip information
+			source $CURRENT_ASSETPATH
+			deletefromtcpiplist
+			sorttcpiplist
+			rm -f $CURRENT_ASSETPATH
+		fi
+
+		#Edit asset
+		get_asset_data
 
 		#Write asset 
 		write_asset_data
