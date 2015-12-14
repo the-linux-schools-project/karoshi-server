@@ -1154,6 +1154,13 @@ then
 	then
 		#Show error message and back button.
 		echo ''$SEARCHITEM' - '$"This is already in use in the asset register."'<br><br><a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br><br>'
+		if [ ! -z "$CURRENT_ASSETPATH" ] && [ ! -z "$CURRENT_ASSET" ]
+		then
+			if [ -f /opt/karoshi/.tempdata/"$CURRENT_ASSET" ]
+			then
+				mv /opt/karoshi/.tempdata/"$CURRENT_ASSET" "$CURRENT_ASSETPATH"
+			fi
+		fi
 		exit
 	fi
 fi
@@ -1241,6 +1248,19 @@ then
 	then
 		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+
+		#Delete current asset data 
+		CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
+		CURRENT_ASSET=$(basename $CURRENT_ASSETPATH)
+		if [ -f $CURRENT_ASSETPATH ]
+		then
+			#Delete any existing tcpip information
+			source $CURRENT_ASSETPATH
+			deletefromtcpiplist
+			sorttcpiplist
+			mv -f $CURRENT_ASSETPATH /opt/karoshi/.tempdata/
+		fi
+
 		#Edit asset
 		get_asset_data
 
@@ -1280,20 +1300,6 @@ then
 			SEARCHITEM=$SERIALKEY
 			check_duplicate_data
 		fi
-
-		#Delete current asset data 
-		CURRENT_ASSETPATH=`find /opt/karoshi/asset_register/locations -name $ASSET`
-		if [ -f $CURRENT_ASSETPATH ]
-		then
-			#Delete any existing tcpip information
-			source $CURRENT_ASSETPATH
-			deletefromtcpiplist
-			sorttcpiplist
-			rm -f $CURRENT_ASSETPATH
-		fi
-
-		#Edit asset
-		get_asset_data
 
 		#Write asset 
 		write_asset_data
