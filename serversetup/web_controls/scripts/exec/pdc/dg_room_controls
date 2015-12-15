@@ -333,13 +333,13 @@ fi
 function add_media_asset {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
-	if [ `grep -c ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
+	if [ `grep -c -w ^$TCPIP1 /etc/squid/location_tcpip.list` = 0 ]
 	then
 		echo $TCPIP1 >> /etc/squid/location_tcpip.list
 	fi
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PROXYSERVER '
-	if [ `grep -c ^'$TCPIP1' /etc/squid/location_tcpip.list` = 0 ]
+	if [ `grep -c -w ^'$TCPIP1' /etc/squid/location_tcpip.list` = 0 ]
 	then
 		echo '$TCPIP1' >> /etc/squid/location_tcpip.list
 	fi

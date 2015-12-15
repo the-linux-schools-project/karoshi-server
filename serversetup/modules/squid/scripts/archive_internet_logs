@@ -21,19 +21,29 @@
 
 DATE=`date +%F`
 
-[ -d /home/internetdata/rawinternetlogs ] || mkdir /home/internetdata/rawinternetlogs
+[ ! -d /home/internetdata/rawinternetlogs ] && mkdir -p /home/internetdata/rawinternetlogs
 chmod 0640 /home/internetdata/rawinternetlogs
 chmod u+X,g+X -R /home/internetdata/rawinternetlogs
 chown -R root.itadmin /home/internetdata/rawinternetlogs
 
-DURATION=365
+#Default to keeping logs for 5 years.
+DURATION=1825
 
-#Clear any logs older that one year
+#Clear out old logs
 find /home/internetdata/rawinternetlogs/* -mtime +$DURATION -exec rm {} \;
 
-#Copy in log files
+#Copy logs to archive folder
 cp /var/log/squid3/access.log /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log
 cp /var/log/e2guardian/access.log /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log
+
+#Compress log files in archive folder - this avoids tar moaning if the log file is still being written to.
+
+tar --force-local -z -c -f /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log.tar.gz /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log
+tar --force-local -z -c -f /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log.tar.gz /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log
+
+#Delete copied files
+rm -f /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log
+rm -f /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log
 
 ############################
 #Clear logs

@@ -66,6 +66,7 @@ MOBILE=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f5`
 CATEGORY=`echo "$DATA" | cut -s -d: -f6`
 SEARCHTERMS=`echo "$DATA" | cut -s -d: -f7`
+USERNAME=`echo "$DATA" | cut -s -d: -f8`
 
 ########################
 #Check data
@@ -131,23 +132,89 @@ then
 	echo "$SEARCHTERMS" | sed 's/+/\\|/g' > "/opt/karoshi/server_network/ist/categories/$CATEGORY"
 fi
 
-if [ $ACTION = viewdata ]
+if [ $ACTION = viewuserdata ]
 then
 	#Get the date to do the search on
 	TODAY=$(date +%Y-%m-%d)
-	DATE_RANGE=5
+	CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
+	CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
+
+	#Get the search criteria for the category
+	CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
+	CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
+
 	#Default to getting data for the last 5 days
+	DATE_RANGE=4
+	let DATE_RANGE_VIEW=$DATE_RANGE+1
+
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
+	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
+	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
+	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE_VIEW'</td></tr>
+	<tr><td><b>'$"Username"'</b></td><td>'$USERNAME'</td></tr>
+	</tbody></table><br>'
+
+
+
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<tr><th style="width: 70px;"><b>Filter</b></th><th style="width: 90px;"><b>Time</b></th><th></th><th style="width: 110px;"><b>Client</b></th><th></th><th style="width: 600px;"><b>Website</b></th></tr></thead><tbody>
+	'
 	for d in $(seq 0 $DATE_RANGE)
 	do
 		SEARCHDATE=$(date -d "$TODAY - $d days" +'%d-%m-%Y')
+		#Do the search on each proxy server and collate the info
+		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers/`
+		do
+			if [ $PROXYSERVER = $(hostname-fqdn) ]
+			then
+				#Check if the folder log exists for the day we are searching on.
+				if [ -f /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/$USERNAME ]
+				then
+					zgrep -i "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/$USERNAME | cut -d"/" -f8 | sed 's/.tar.gz//g' >> /opt/karoshi/server_network/ist/temp-user-data-$CATEGORY.$$
+				fi
+				#Check if the folder log exists for the day we are searching on.
+				if [ -f /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/$USERNAME.tar.gz ]
+				then
+					zgrep -i "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/$USERNAME.tar.gz | cut -d"/" -f8 | sed 's/.tar.gz//g'
+				fi
+			else
+				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+				#Check if the folder log exists for the day we are searching on.
+				if [ -f /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/'$USERNAME' ]
+				then
+					zgrep -a -i "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/'$USERNAME'
+				fi
+				if [ -f /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/'$USERNAME'.tar.gz ]
+				then
+					zgrep -a -i "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/'$USERNAME'.tar.gz
+				fi'
+			fi
+		done
+	done
+	echo '</tbody></table>'
+fi
 
-		CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
-		CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
+if [ $ACTION = viewdata ]
+then
+	ICON3=/images/submenus/internet/detailed_logs.png
 
-		#Get the search criteria for the category
-		CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
-		CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
+	#Get the date to do the search on
+	TODAY=$(date +%Y-%m-%d)
+	CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
+	CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
 
+	#Get the search criteria for the category
+	CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
+	CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
+
+	#Default to getting data for the last 5 days
+	DATE_RANGE=4
+	let DATE_RANGE_VIEW=$DATE_RANGE+1
+
+	for d in $(seq 0 $DATE_RANGE)
+	do
+		SEARCHDATE=$(date -d "$TODAY - $d days" +'%d-%m-%Y')
 		#Do the search on each proxy server and collate the info
 		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers/`
 		do
@@ -189,21 +256,25 @@ then
 	done
 
 	#View the data
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '</form><form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
 	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
 	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
-	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE'</td></tr>
+	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE_VIEW'</td></tr>
 	</tbody></table><br>
 	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th></tr></thead><tbody>'
+	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th><th></th></tr></thead><tbody>'
 	for SORTDATA in $(sort -k2 -n -r --field-separator=',' /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
 	do
 		USERNAME=$(echo "$SORTDATA" | cut -d, -f1)
 		SCORE=$(echo "$SORTDATA" | cut -d, -f2)
-		echo '<tr><td>'$USERNAME'</td><td>'$SCORE'</td></tr>'
+		echo '<tr><td>'$USERNAME'</td><td>'$SCORE'</td><td>
+		<a class="info" href="javascript:void(0)"><input name="_ACTION_viewuserdata_CATEGORY_'$CATEGORY2'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View"'<br>'$USERNAME'</span></a>
+		</tr>'
 	done
 	echo '</tbody></table>'
 	rm -f /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
 	rm -f /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$	
 fi
+
+

@@ -49,48 +49,11 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Internet Usage Trends"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
-$(document).ready(function() 
-    { 
-        $("#myTable").tablesorter(); 
-    } 
-);
-</script>
-<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-if [ "$MOBILE" = yes ]
-then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
-		/***********************************************
-		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-		***********************************************/
-	</script>
-	<script type="text/javascript">
-	// <![CDATA[
-	var myMenu;
-	window.onload = function() {
-		myMenu = new SDMenu("my_menu");
-		myMenu.init();
-	};
-	// ]]>
-	</script>'
-fi
-echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html>'
 
+TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 
-ICON1=/images/submenus/system/edit.png
-ICON2=/images/submenus/system/delete.png
-ICON3=/images/submenus/internet/detailed_logs.png
 #########################
 #Assign data to variables
 #########################
@@ -137,6 +100,85 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign USERNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>'$"Internet Usage Trends"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>'
+
+
+
+
+if [ ! -z "$ACTION" ] && [ "$ACTION" = viewuserdata ]
+then
+
+	echo '<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: false},
+	2: { sorter: false},
+	3: { sorter: "ipAddress" },
+	4: { sorter: false}
+    		}
+		});
+    } 
+);
+</script>'
+else
+	echo '<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>'
+
+fi
+
+echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+if [ "$MOBILE" = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		***********************************************/
+	</script>
+	<script type="text/javascript">
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+echo '</head><body onLoad="start()"><div id="pagecontainer">'
+
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+ICON3=/images/submenus/internet/detailed_logs.png
+
 function show_status {
 echo '<script language="Javascript">
 alert("'$MESSAGE'");
@@ -177,7 +219,7 @@ fi
 #########################
 #Check data
 #########################
-if [ $ACTION != viewcategories ] && [ $ACTION != addcategory ] && [ $ACTION != reallyaddcategory ] && [ $ACTION != editcategory ] && [ $ACTION != deletecategory ] && [ $ACTION != reallydeletecategory ] && [ $ACTION != viewdata ]
+if [ $ACTION != viewcategories ] && [ $ACTION != addcategory ] && [ $ACTION != reallyaddcategory ] && [ $ACTION != editcategory ] && [ $ACTION != deletecategory ] && [ $ACTION != reallydeletecategory ] && [ $ACTION != viewdata ] && [ $ACTION != viewuserdata ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -193,8 +235,6 @@ then
 else
 	DIV_ID=mobileactionbox
 fi
-
-echo '<form action="/cgi-bin/admin/ist.cgi" method="post">'
 
 if [ $ACTION = viewcategories ] || [ $ACTION = reallyaddcategory ] || [ $ACTION = reallydeletecategory ]
 then
@@ -223,6 +263,7 @@ then
 
 	else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
+	<form action="/cgi-bin/admin/ist.cgi" method="post">
 	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr>
 	<td style="vertical-align: top;"><div class="sectiontitle">'$"Internet Usage Trends"'</div></td>
@@ -230,6 +271,7 @@ then
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage Trends"'</span></a></td>
 	</tr>
 	</tbody></table>
+	</form>
 	</div><div id="infobox">'
 fi
 
@@ -237,8 +279,8 @@ if [ $ACTION = deletecategory ]
 then
 	#Prompt to delete the category
 	CATEGORY=$(echo "$CATEGORY" | sed 's/%2B/ /g')
-	echo '<input type="hidden" name="_ACTION_" value="reallydeletecategory"><input type="hidden" name="_CATEGORY_" value="'$CATEGORY'">
-	'"$CATEGORY"': Are you sure you want to delete this category?<br><br><input value="'$"Submit"'" class="button" type="submit">'
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallydeletecategory"><input type="hidden" name="_CATEGORY_" value="'$CATEGORY'">
+	'"$CATEGORY"': Are you sure you want to delete this category?<br><br><input value="'$"Submit"'" class="button" type="submit"></form>'
 	
 fi
 
@@ -260,7 +302,7 @@ then
 	fi
 
 	#Show for for adding catergories
-	echo '<input type="hidden" name="_ACTION_" value="reallyaddcategory"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyaddcategory"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: 180px;" colspan="2"><b>'$"Add an Internet Trend Category"'</b></td><td></td></tr>
 	<tr><td>'$"Category"'</td><td>'
 	if [ -z "$CATEGORY" ]
@@ -272,13 +314,13 @@ then
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for the category you want to add."'</span></a></td></tr>
 	<tr><td style="width: 180px;">'$"Search Criteria"'</td><td><input tabindex= "2" value="'$SEARCHTERMS'" name="_SEARCHTERMS_" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the key words to be searched for separated by spaces."'</span></a></td></tr>
 	</tbody></table><br>
-	<input value="'$"Submit"'" class="button" type="submit">
+	<input value="'$"Submit"'" class="button" type="submit"></form>
 	'
 fi
 
 if [ $ACTION = viewcategories ]
 then
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
 <tr><th style="width: 180px;"><b>'$"Category"'</b></th><th style="width: 250px;"><b>'$"Search Criteria"'</b></th><th style="width: 60px;"><b>'$"Edit"'</b></th><th style="width: 60px;"><b>'$"Delete"'</b></th><th style="width: 60px;"><b>'$"View"'</b></th></tr></thead><tbody>'
 	for CATEGORY in $(ls -1 /opt/karoshi/server_network/ist/categories/)
 	do
@@ -286,16 +328,16 @@ then
 		SEARCH=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY" | sed 's/\\|/ /g')
 		echo '<tr><td>'"$CATEGORY2"'</td><td>'"$SEARCH"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_editcategory_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'<br>'$CATEGORY2'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_deletecategory_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$CATEGORY2'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewdata_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View"'<br>'$CATEGORY2'</span></a></td></tr>'
 	done
-	echo '</tbody></table>'
+	echo '</tbody></table></form>'
 fi
 
-if [ $ACTION = viewdata ]
+if [ $ACTION = viewdata ] || [ $ACTION = viewuserdata ]
 then
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:" | sudo -H /opt/karoshi/web_controls/exec/ist
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ist
 fi
 
 [ $MOBILE = no ] && echo '</div>'
-echo '</div></form></div></body></html>'
+echo '</div></div></body></html>'
 exit
 
