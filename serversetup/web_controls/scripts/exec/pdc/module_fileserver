@@ -109,10 +109,10 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:members:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 if [ $? = 101 ]
 then
-echo $"This server does not have the correct authentication set up on it.""<br><br>"
-echo `date`: module_fileserver - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-sleep 2
-exit 101
+	echo $"This server does not have the correct authentication set up on it.""<br><br>"
+	echo `date`: module_fileserver - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sleep 2
+	exit 101
 fi
 
 ##########################
@@ -140,6 +140,6 @@ echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/file
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
 

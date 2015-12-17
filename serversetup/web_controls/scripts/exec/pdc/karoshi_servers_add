@@ -666,7 +666,7 @@ then
 		fi
 
 		echo SERVER='"'"$SERVER.$REALM"'"' > /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo HOMEPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
 		echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
 		echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
 		echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME

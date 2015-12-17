@@ -28,8 +28,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupfileserver - incorrect number of arguments."<br>"
-exit 101
+	echo `date`: setupfileserver - incorrect number of arguments."<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -42,33 +42,33 @@ PDCIP=`echo "$DATA" | cut -s -d: -f5`
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupfileserver - Blank remote user."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank remote user."<br>"
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupfileserver - Blank remote tcpip address."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank remote tcpip address."<br>"
+	exit 101
 fi
 
 if [ -z "$PDCSERVER" ]
 then
-echo `date`: setupfileserver - Blank PDC."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank PDC."<br>"
+	exit 101
 fi
 
 if [ -z "$PDCIP" ]
 then
-echo `date`: setupfileserver - Blank TCPIP."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank TCPIP."<br>"
+	exit 101
 fi
 
 #Check to see that we can ping the PDC
 ping -c 2 $PDCIP 1>/dev/null
 if [ `echo $?` != 0 ]
 then
-echo `date` : setupfileserver - Cannot ping the PDC."<br>"
-exit 101
+	echo `date` : setupfileserver - Cannot ping the PDC."<br>"
+	exit 101
 fi
 
 
@@ -78,16 +78,6 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
-
-######################
-#Final samba Install check
-######################
-if ! test -f /etc/init.d/$SMBVER
-then
-echo /etc/init.d/$SMBVER does not exist >> /opt/karoshi/serversetup/install_log
-echo $"Samba is not installed"'<br><br>'
-exit 101
-fi
 
 #############################
 #Ensure that samba is running on boot

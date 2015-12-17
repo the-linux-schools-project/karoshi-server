@@ -19,6 +19,10 @@ done
 [ ! -d /var/lib/samba/netlogon/windows_settings/drives/ ] && mkdir /var/lib/samba/netlogon/windows_settings/drives/
 cat /opt/karoshi/serversetup/pdc/linuxclient/pam_mount/pam_mount_header_xml > /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
+#Create mac client mount-home-areas header
+[ ! -d /var/lib/samba/netlogon/mac_client/scripts ] && mkdir -p /var/lib/samba/netlogon/mac_client/scripts
+cp /opt/karoshi/serversetup/pdc/mac_client/scripts/mount-shares.sh /var/lib/samba/netlogon/mac_client/scripts/
+
 #Get primary group
 function get_pri_group_number {
 GROUPNUM=`getent group "$GROUPNAME" | cut -d: -f3`
@@ -59,7 +63,7 @@ else
 fi
 }
 
-function add_drive_map_linux {
+function add_drive_map_linux_and_mac {
 #Set paths to shares
 if [ "$DFS" = yes ]
 then
@@ -77,18 +81,38 @@ if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
 
-	#Check if line is uniqie and add linux drive map
+	#Linux - Check if line is unique and add linux drive map
 	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
 	then 
 		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	fi
+	#Mac
+	echo '
+#'$SHARE'
+[ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
+mount_smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
 else
 	get_pri_group_number
-	#Check if line is uniqie and add linux drive map
+	#Linux - check if line is uniqie and add linux drive map
 	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
 	then
 		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	fi
+	
+	#Mac
+	echo '
+#'$SHARE'
+if [ $PrimaryGroup = '$GROUPNAME' ]
+then
+	[ ! -d /tmp/'$LoggedInUser'/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
+	if [ $(mount | grep -c "/tmp/$LoggedInUser/'$SHARE'/") = 0 ]
+	then
+		mount_smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+	fi
+fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
 fi
 }
 
@@ -129,11 +153,13 @@ do
 					#add_drive_map for windows
 					add_drive_map_windows
 					#Add drive map for linux due to broken dfs in mount.cfs
-					for SERVER2 in $SERVERLIST
-					do
-						add_drive_map_linux
-					done
 
+					#Get server(s) that the share is on in case it it gluster aware
+					for DFSSERVER in $(ls -l /var/lib/samba/dfs/$SHARE | cut -d: -f3 | sed 's/,/ /g')
+					do
+						SERVER2=$(echo $DFSSERVER | cut -d"\\" -f1)
+						add_drive_map_linux_and_mac
+					done
 				fi
 
 			done
@@ -144,7 +170,7 @@ done
 
 get_shares 
 
-#Add in paths for home share on linux clients
+#Add in paths for home share on linux and mac clients
 #Not needed on windows clients - handled by logonform.kix
 if [ "$DFS" = yes ]
 then
@@ -160,6 +186,17 @@ then
 		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
 		do
 			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+		#Mac
+		#echo '
+#'$SHARE'
+#if [ $PrimaryGroup = '$GROUPNAME' ]
+#then
+#	[ ! -d /tmp/$LoggedInUser/home/ ] && mkdir -p /tmp/$LoggedInUser/home/
+#	mount_smbfs "//'$HOMESERVER'/$LoggedInUser/" /tmp/$LoggedInUser/home/
+#fi
+#' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
 		done
 	done
 
@@ -170,6 +207,17 @@ else
 		source /opt/karoshi/server_network/group_information/$GROUPNAME
 		get_pri_group_number
 		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+		#Mac - disable for now - have to have home parameter set in ldap
+#		echo '
+#'$SHARE'
+#if [ $PrimaryGroup = '$GROUPNAME' ]
+#then
+#	[ ! -d /tmp/$LoggedInUser/home/ ] && mkdir -p /tmp/$LoggedInUser/home/
+#	mount_smbfs "//'$SERVER'/$LoggedInUser/" /tmp/$LoggedInUser/home/
+#fi
+#' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
 	done
 fi
 
