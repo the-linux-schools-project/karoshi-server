@@ -106,7 +106,7 @@ else
 #'$SHARE'
 if [ $PrimaryGroup = '$GROUPNAME' ]
 then
-	[ ! -d /tmp/'$LoggedInUser'/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
+	[ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
 	if [ $(mount | grep -c "/tmp/$LoggedInUser/'$SHARE'/") = 0 ]
 	then
 		mount_smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
@@ -208,18 +208,22 @@ else
 		get_pri_group_number
 		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
-		#Mac - disable for now - have to have home parameter set in ldap
-#		echo '
-#'$SHARE'
-#if [ $PrimaryGroup = '$GROUPNAME' ]
-#then
-#	[ ! -d /tmp/$LoggedInUser/home/ ] && mkdir -p /tmp/$LoggedInUser/home/
-#	mount_smbfs "//'$SERVER'/$LoggedInUser/" /tmp/$LoggedInUser/home/
-#fi
-#' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+		#Mac
+		echo '
+#Network home area
+if [ $PrimaryGroup = '$GROUPNAME' ]
+then
+	HOMESERVER='$SERVER'
+fi
+' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 	done
 fi
+
+echo 'if [ ! -z "$HOMESERVER" ]
+then
+	mount_smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
+fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 #Complete pam_mount.conf.xml.krb5
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
