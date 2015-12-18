@@ -21,7 +21,19 @@ cat /opt/karoshi/serversetup/pdc/linuxclient/pam_mount/pam_mount_header_xml > /v
 
 #Create mac client mount-home-areas header
 [ ! -d /var/lib/samba/netlogon/mac_client/scripts ] && mkdir -p /var/lib/samba/netlogon/mac_client/scripts
-cp /opt/karoshi/serversetup/pdc/mac_client/scripts/mount-shares.sh /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/mount-shares.sh /var/lib/samba/netlogon/mac_client/scripts/
+
+#Copy in mac scripts
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/install-script.sh /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/com.update-script.sh.plist /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/update-scripts.sh /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/com.mount-shares.sh.plist /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/detect-user.sh /var/lib/samba/netlogon/mac_client/scripts/
+chmod 0555 /var/lib/samba/netlogon/mac_client/scripts/install-script.sh
+
+#Set domain on install-script
+sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/update-scripts.sh
+sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/install-script.sh
 
 #Get primary group
 function get_pri_group_number {
