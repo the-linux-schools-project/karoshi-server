@@ -17,7 +17,7 @@
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-#The Karoshi Team can be contacted at: 
+#The Karoshi Team can be contacted at:
 #mpsharrad@karoshi.org.uk
 #jsharrad@karoshi.org.uk
 
@@ -164,6 +164,12 @@ case "$ROLE_FILE" in
 	ROLE_NAME=$"Moodle Server"
 	ROLE_NAME_STATUS=set
 	CONSEQUENCES=$"Unflags this server as a moodle server. Deletes all moodle files and the moodle database."
+	MODULES=yes
+	;;
+	gitlab)
+	ROLE_NAME=$"Gitlab Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a gitlab server. Deletes all gitlab files, repositories and user data."
 	MODULES=yes
 	;;
 	ocsserver)

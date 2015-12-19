@@ -17,7 +17,7 @@
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-#The Karoshi Team can be contacted at: 
+#The Karoshi Team can be contacted at:
 #mpsharrad@karoshi.org.uk
 #jsharrad@karoshi.org.uk
 
@@ -151,7 +151,7 @@ fi
 if [ -z "$ACTION" ]
 then
 	ACTION=viewmodules
-fi 
+fi
 
 #Check to see that SERVERNAME is not blank
 if [ -z "$SERVERNAME" ]
@@ -279,6 +279,12 @@ case "$ROLE_FILE" in
 	CONSEQUENCES=$"Unflags this server as a moodle server. Deletes all moodle files and the moodle database."
 	MODULES=yes
 	;;
+	gitlab)
+	ROLE_NAME=$"Gitlab Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a gitlab server. Deletes all gitlab files, repositories and user data."
+	MODULES=yes
+	;;
 	ocsserver)
 	ROLE_NAME=$"OCS Inventory"
 	ROLE_NAME_STATUS=set
@@ -396,4 +402,3 @@ then
 	echo '</tbody></table><br></form>'
 fi
 echo '</div></div></body></html>'
-

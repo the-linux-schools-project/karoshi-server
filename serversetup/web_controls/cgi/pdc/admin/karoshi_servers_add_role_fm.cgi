@@ -17,7 +17,7 @@
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-#The Karoshi Team can be contacted at: 
+#The Karoshi Team can be contacted at:
 #mpsharrad@karoshi.org.uk
 #jsharrad@karoshi.org.uk
 
@@ -113,6 +113,8 @@ HOMEACCESSSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && HOMEACCESSSTATUS=$"Installed"
 MOODLESTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && MOODLESTATUS=$"Installed"
+GITLABSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && GITLABSTATUS=$"Installed"
 OWNCLOUDSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && OWNCLOUDSTATUS=$"Installed"
 RADIUSSTATUS=""
@@ -232,6 +234,13 @@ else
 	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Moodle Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the moodle E-Learning system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span></a></td>'
 fi
 
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ]
+then
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Gitlab Server"'</td><td style="vertical-align: top;">'$GITLABSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_gitlab_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup the Gitlab module."'</span></a></form></td>'
+else
+	echo '<tr><td style="vertical-align: top; height: 40px;">'$"Gitlab Server"'</td><td></td><td style="vertical-align: top; height: 40px;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup the Gitlab Server."'<br><br>'$"This module cannot be applied to a server without the web server module."'</span></a></td>'
+fi
+
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
 then
 	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top;">'$OWNCLOUDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post"><input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will provide a cloud file storage system for web access to files."'</span></a></form></td></tr>'
@@ -259,7 +268,7 @@ else
 	echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup a distribution server for centralised linux client installations."'<br><br>'$"This module needs the DHCP module functioning to allow the clients to be able to network boot."'</span></a>'
 fi
 
-echo '</td></tr>'  
+echo '</td></tr>'
 
 echo '<tr><td style="vertical-align: top; height: 40px;">'$"Monitor Server"'</td><td style="vertical-align: top;">'$MONITORSERVERSTATUS'</td>
 <td style="vertical-align: top; height: 40px;">
@@ -384,6 +393,3 @@ fi
 
 echo '</td></tr></tbody></table></div></div></div></body></html>'
 exit
-
-
-

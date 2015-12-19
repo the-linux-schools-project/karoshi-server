@@ -17,7 +17,7 @@
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-#The Karoshi Team can be contacted at: 
+#The Karoshi Team can be contacted at:
 #mpsharrad@karoshi.org.uk
 #jsharrad@karoshi.org.uk
 
@@ -300,7 +300,7 @@ then
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop 1>/dev/null
 
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs 
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/tftpd
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/rpcbind
 		'
@@ -371,7 +371,7 @@ then
 fi
 
 ##########################
-#Home Access 
+#Home Access
 #Unflags this server as a Home Access Server. Deletes the home access files.
 ##########################
 if [ $MODULE = homeaccess ]
@@ -655,6 +655,215 @@ then
 	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed.""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 	[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
+	completed
+fi
+
+##########################
+#gitlabserver
+# Unflags this server as a gitlab server.
+# Deletes all files, including repositories.
+# Modifies shorewall and SSH configuration.
+##########################
+
+if [ "$MODULE" = "gitlab" ]
+then
+	echo "<li>"$SERVERNAME: $"Removing Gitlab.""</li><br>"
+	if [ $SERVERNAME = `hostname-fqdn` ]; then
+		# Stop gitlab
+		echo "<li>Stopping Gitlab.</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
+
+		# Remove init script from boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
+
+		echo "<li>Removing files and repositories.</li><br>"
+		# Remove gitlab files
+		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
+		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
+		[ -d /etc/gitlab ] && rm -f -R /etc/gitlab
+
+		# Remove gitlab repositories
+		[ -d /home/gitlab ] && rm -f -R /home/gitlab
+
+		echo "<li>Revoking apache site.</li><br>"
+		# Remove and revoke apache site
+		a2dissite gitlab &>/dev/null
+		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
+
+		echo "<li>Restarting apache.</li><br>"
+		# Restart apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+
+		echo "<li>Removing symlinks and users.</li><br>"
+		# Remove symlinks
+		[ -f /usr/bin/gitlab-ci-rails ] && rm -f /usr/bin/gitlab-ci-rails
+		[ -f /usr/bin/gitlab-ci-rake ] && rm -f /usr/bin/gitlab-ci-rake
+		[ -f /usr/bin/gitlab-ctl ] && rm -f /usr/bin/gitlab-ctl
+		[ -f /usr/bin/gitlab-rails ] && rm -f /usr/bin/gitlab-rails
+		[ -f /usr/bin/gitlab-rake ] && rm -f /usr/bin/gitlab-rake
+
+		# Remove users and groups
+		userdel gitlab-www &>/dev/null
+		userdel git &>/dev/null
+		userdel gitlab-redis &>/dev/null
+		userdel gitlab-psql &>/dev/null
+
+		groupdel gitlab-www &>/dev/null
+		groupdel git &>/dev/null
+		groupdel gitlab-redis &>/dev/null
+		groupdel gitlab-psql &>/dev/null
+
+		# Change firewall rules to stop public ssh access
+		RESTART_SHOREWALL=no
+
+		# The current server is the main server
+		if  [ $(grep -c "pdc_ssh_rule" /etc/shorewall/rules) != 0 ]; then
+			# Remove old rule
+			LINENUM=$(grep -n "pdc_ssh_rule" /etc/shorewall/rules | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		fi
+
+		if  [ $(grep -c "gitlab_server_rule" /etc/shorewall/rules) != 0 ]; then
+			# Change rules to restrict gitlab access
+			LINENUM=$(grep -n "gitlab_server_rule" /etc/shorewall/rules | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		fi
+
+		if [ $RESTART_SHOREWALL = yes ]; then
+			# Restart shorewall
+			echo "<li>Restarting shorewall.</li><br>"
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
+
+		# Remove ssh user restriction
+		RESTART_SHH=no
+		if [ `grep -c "AllowUsers" /etc/ssh/sshd_config` != 0 ]; then
+			LINENUM=$(grep -n "AllowUsers" /etc/ssh/sshd_config | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/ssh/sshd_config
+			RETSART_SSH=yes
+		fi
+
+		if [ $RESTART_SSH == yes ]; then
+			#Restart ssh
+			echo "<li>Restarting SSH.</li><br>"
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start
+		fi
+
+	else
+		# Store working directory
+		DIRECTORY=$(pwd)
+		[! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
+		cd /opt/karoshi/.tempdata/
+		# Store main/current server into a sourceable file
+		echo "MAINSERVERIP="$(hostname --ip-address) >> sshvar
+		# Copy the file onto the server in a tempfolder
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '[! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/'
+		scp -p -r sshvar root@$SERVERNAME:/opt/karoshi/.tempdata/ 1> /dev/null
+		ssh -x -o PasswordAuthentication=no $SERVERNAME 'chmod 755 /opt/karoshi/.tempdata/sshvar'
+		# Remove file locally
+		rm -f /opt/karoshi/.tempdata/sshvar
+		# Move back into working directory
+		cd $DIRECTORY
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		# Stop gitlab
+		echo "<li>Stopping Gitlab.</li><br>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
+		# Remove init script from boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
+		echo "<li>Removing files and repositories.</li><br>"
+		# Remove gitlab files
+		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
+		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
+		[ -d /etc/gitlab ] && rm -f -R /etc/gitlab
+		# Remove gitlab repositories
+		[ -d /home/gitlab ] && rm -f -R /home/gitlab
+		echo "<li>Revoking apache site.</li><br>"
+		# Remove and revoke apache site
+		a2dissite gitlab &>/dev/null
+		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
+		echo "<li>Restarting apache.</li><br>"
+		# Restart apache
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+		echo "<li>Removing symlinks and users.</li><br>"
+		# Remove symlinks
+		[ -f /usr/bin/gitlab-ci-rails ] && rm -f /usr/bin/gitlab-ci-rails
+		[ -f /usr/bin/gitlab-ci-rake ] && rm -f /usr/bin/gitlab-ci-rake
+		[ -f /usr/bin/gitlab-ctl ] && rm -f /usr/bin/gitlab-ctl
+		[ -f /usr/bin/gitlab-rails ] && rm -f /usr/bin/gitlab-rails
+		[ -f /usr/bin/gitlab-rake ] && rm -f /usr/bin/gitlab-rake
+		# Remove users and groups
+		userdel gitlab-www &>/dev/null
+		userdel git &>/dev/null
+		userdel gitlab-redis &>/dev/null
+		userdel gitlab-psql &>/dev/null
+		groupdel gitlab-www &>/dev/null
+		groupdel git &>/dev/null
+		groupdel gitlab-redis &>/dev/null
+		groupdel gitlab-psql &>/dev/null
+		# Change firewall rules to stop public ssh access
+		RESTART_SHOREWALL=no
+		# Get MAINSERVERIP
+		source /opt/karoshi/.tempdata/sshvar
+		# The current server is an extra server
+		if  [ $(grep -c "pdc_ssh_rule" /etc/shorewall/rules) != 0 ]; then
+			# Remove old rule
+			LINENUM=$(grep -n "pdc_ssh_rule" /etc/shorewall/rules | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			# Restrict SSH access to the Main Server
+			LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | grep -Eo '^[^:]+')
+			sed -i "${LINENUM}s/.*/ACCEPT	net:$MAINSERVERIP	fw	tcp	22	-#pdc_ssh_rule/" /etc/shorewall/rules
+			echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		fi
+		# Remove tempfile holding MAINSERVERIP
+		rm -f /opt/karoshi/.tempdata/sshvar
+		if  [ $(grep -c "gitlab_server_rule" /etc/shorewall/rules) != 0 ]; then
+			# Change rules to restrict gitlab access
+			LINENUM=$(grep -n "gitlab_server_rule" /etc/shorewall/rules | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/shorewall/rules
+			RESTART_SHOREWALL=yes
+		fi
+		if [ $RESTART_SHOREWALL = yes ]; then
+			# Restart shorewall
+			echo "<li>Restarting shorewall.</li><br>"
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
+		# Remove ssh user restriction
+		RESTART_SHH=no
+		if [ `grep -c "AllowUsers" /etc/ssh/sshd_config` != 0 ]; then
+			LINENUM=$(grep -n "AllowUsers" /etc/ssh/sshd_config | grep -Eo '^[^:]+')
+			sed -i $LINENUM"d" /etc/ssh/sshd_config
+			RETSART_SSH=yes
+		fi
+		if [ $RESTART_SSH == yes ]; then
+			#Restart ssh
+			echo "<li>Restarting SSH.</li><br>"
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start
+		fi
+		'
+	fi
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Gitlab Server" - $"Designation removed.""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab
+	[ -f /opt/karoshi/server_network/gitlabserver ] && rm -f /opt/karoshi/server_network/gitlabserver
 	completed
 fi
 
@@ -1008,4 +1217,3 @@ echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE
 
 completed
-

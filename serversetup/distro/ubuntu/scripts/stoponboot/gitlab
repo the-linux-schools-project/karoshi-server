@@ -1,0 +1,4 @@
+#!/bin/bash
+#Stop gitlab from starting at boot
+
+[ -f /etc/init/gitlab-runsvdir.conf ] && rm -f /etc/init/gitlab-runsvdir.conf

@@ -1,0 +1,469 @@
+#!/bin/bash
+#setupgitlab
+#Copyright (C) 2015 Matthew Jowett
+#
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 0 ]; then
+	echo $(date)": setupgitlab - incorrect number of arguments<br>"
+	exit 101
+fi
+
+read -t 3 DATA
+DATA=$(echo $DATA | tr -cd 'A-Za-z0-9\._:\-/')
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+ALIAS=$(echo "$DATA" | cut -s -d: -f5)
+
+if [ -z "$REMOTE_USER" ]; then
+	echo $(date)": setupgitlab - Blank remote user<br>"
+	exit 101
+fi
+
+if [ -z "$REMOTE_ADDR" ]; then
+	echo $(date)": setupgitlab - Blank remote tcpip address<br>"
+	exit 101
+fi
+
+if [ -z "$SERVERNAME" ]; then
+	echo $(date)": setupgitlab - Blank servername<br>"
+	exit 101
+fi
+
+if [ -z "$ALIAS" ]; then
+	echo $(date)": setupgitlab - Blank alias<br>"
+	exit 101
+fi
+
+[ ! -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/server_network/domain_information/domain_name
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] || source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+
+LDAPSERVER=127.0.0.1
+#Get ldap server to use
+if [ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]; then
+	LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
+fi
+
+#############################
+#Ensure that apache, postfix, openssh-server and fail2ban are running at boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/postfix
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ssh
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
+
+#####################
+#Add gitlab virtual host to apache
+#####################
+RESTARTAPACHE=no
+
+[! -f /etc/apache2/sites-available/gitlab-ssl.conf ] || echo >> /etc/apache2/sites-available/gitlab-ssl.conf
+
+if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ssl.conf) == 0 ]; then
+	echo '<li>Configuring Gitlab apache virtual host.</li><br>'
+	echo -e "#gitlab-ssl virtual host
+
+# Modules required:
+#  rewrite
+#  headers
+#  proxy
+#  proxy_http
+#  ssl
+
+# Based on the Gitlab Apache Recipes:
+# https://gitlab.com/gitlab-org/gitlab-recipes/tree/stable-8-1/web-server/apache
+
+# gitlab-rails is hosted on port 50009
+# gitlab-git-http-server is hosted on port 50010
+
+<IfModule ssl_module>
+<VirtualHost _default_:443>" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "	ServerName $ALIAS.$REALM" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e '	ServerSignature Off
+	ServerAdmin webmaster@localhost
+
+	DocumentRoot /opt/gitlab/embedded/service/gitlab-rails/public
+
+	# Apache log directory
+  LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b" common_forwarded
+  ErrorLog  ${APACHE_LOG_DIR}/gitlab_error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+  CustomLog ${APACHE_LOG_DIR}/gitlab_forwarded.log common_forwarded
+  CustomLog ${APACHE_LOG_DIR}/gitlab_access.log combined env=!dontlog
+	CustomLog ${APACHE_LOG_DIR}/gitlab.log combined
+
+  	# SSL Engine Switch: Enable/Disable SSL for this virtual host.
+  	SSLEngine on
+		SSLProtocol all -SSLv2
+  	SSLHonorCipherOrder on
+  	SSLCipherSuite "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+  	Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+  	SSLCompression Off' >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "  	SSLCertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "  	SSLCertificateKeyFile /etc/ssl/apache/$REALM.key" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "  	SSLCACertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e '  	ProxyPreserveHost On
+
+  	# Leave slashed encoded
+  	AllowEncodedSlashes NoDecode
+
+  	<Location />
+  	  	# Authorisation apache 2.4+
+      	Require all granted
+
+      	# Allow forwarding to gitlab-git-http-server (unicorn)
+      	ProxyPassReverse http://127.0.0.1:50010
+
+      	# Allow forwarding to gitlab rails (unicorn)
+      	ProxyPassReverse http://127.0.0.1:50009' >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "  	  	ProxyPassReverse http://$ALIAS.$REALM/" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "  	</Location>
+
+  	# Apache equivalent of ngix try files
+  	RewriteEngine on
+
+  	# Forward these requests to gitlab-git-http-server
+		RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/repository/archive.* [OR]
+		RewriteCond %{REQUEST_URI} ^/api/v3/projects/.*/repository/archive.* [OR]
+		RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/(info/refs|git-upload-pack|git-receive-pack)$
+		RewriteRule .* http://127.0.0.1:50010%{REQUEST_URI} [P,QSA]
+
+		# Forward any other requests to GitLab Rails app (Unicorn)
+		RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f [OR]
+		RewriteCond %{REQUEST_URI} ^/uploads
+		RewriteRule .* http://127.0.0.1:50009%{REQUEST_URI} [P,QSA,NE]
+		RequestHeader set X_FORWARDED_PROTO 'https'
+		RequestHeader set X-Forwarded-Ssl on
+
+		# Apache error webpages
+		ErrorDocument 404 /404.html
+		ErrorDocument 422 /422.html
+		ErrorDocument 500 /500.html
+		ErrorDocument 503 /deploy.html
+
+</VirtualHost>
+</IfModule>" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	RESTARTAPACHE=yes
+fi
+
+if [ $(grep -c "<IfModule ssl_module>" /etc/apache2/ports.conf) == 0 ]; then
+	sed -i 's/#vim syntax=apache ts=4 sw=4 sts=4 sr noet//g' /etc/apache2/ports.conf
+	echo -e "<IfModule ssl_module>
+	Listen 443
+</IfModule>" >> /etc/apache2/ports.conf
+	echo -e "" >> /etc/apache2/ports.conf
+	echo -e "# vim: syntax=apache ts=4 sw=4 sts=4 sr noet" >> /etc/apache2/ports.conf
+	RESTARTAPACHE=yes
+fi
+
+if [ "$RESTARTAPACHE" == yes ]; then
+	echo '<li>Enabling required apache modules.</li><br>'
+	# Add required apache modules
+	a2enmod rewrite &>/dev/null
+	a2enmod headers &>/dev/null
+	a2enmod proxy &>/dev/null
+	a2enmod proxy_http &>/dev/null
+	a2enmod ssl &>/dev/null
+	# Add gitlab-ssl.conf to enabled sites
+	a2ensite gitlab-ssl.conf &>/dev/null
+
+	# Restart apache
+	echo '<li>Restarting apache to apply Gitlab support.</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+fi
+
+#####################
+#Apply default configuration to redirect traffic
+#####################
+APPLYDEFAULT=no
+
+[! -f /etc/default/gitlab ] || echo >> /etc/default/gitlab
+
+if [ $(grep -c "#gitlab default configuration" /etc/default/gitlab) == 0 ]; then
+	echo '<li>Creating defaults file.</li><br>'
+	echo -e '#gitlab default configuration
+gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:50010 -authBackend http://127.0.0.1:50009"' >> /etc/default/gitlab
+	APPLYDEFAULT=yes
+fi
+
+if [ "$APPLYDEFAULT" == yes ]; then
+	echo '<li>Executing defaults file.</li><br>'
+	". /etc/default/gitlab"
+fi
+
+###########################
+#Extract gitlab
+###########################
+cd /opt/karoshi/.tempdata/
+
+echo '<li>'$"Extracting Gitlab"'</li><br>'
+tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz
+
+# Copy files into place
+echo '<li>'$"Copying Gitlab files into place - This make take a while."'</li><br>'
+cp -rf /opt/karoshi/.tempdata/opt/gitlab /opt/
+
+# Symlink gitlab-ctl
+/opt/gitlab/embedded/bin/symlink_ctl_cmds /opt/gitlab
+
+[ -d /home/gitlab ] || mkdir /home/gitlab
+[ -d /etc/gitlab ] || mkdir /etc/gitlab
+[! -f /etc/gitlab/gitlab.rb ] || echo >> /etc/gitlab/gitlab.rb
+chmod 600 /etc/gitlab/gitlab.rb
+
+###########################
+#Modify gitlab configuration
+###########################
+RECONFIGUREGITLAB=no
+if [ $(grep -c "#gitlab configuration" /etc/gitlab/gitlab.rb) == 0 ]; then
+	echo '<li>Creating Gitlab configuration file.</li><br>'
+	echo -e "#gitlab configuration" >> /etc/gitlab/gitlab.rb
+	echo -e "" >> /etc/gitlab/gitlab.rb
+	echo -e "external_url 'https://$ALIAS.$REALM:443'" >> /etc/gitlab/gitlab.rb
+	echo -e "unicorn['worker_timeout'] = 600
+unicorn['port'] = 50009
+web_server['external_users'] = ['www-data']
+nginx['enable'] = false
+
+gitlab_git_http_server['listen_network'] = \"tcp\"
+gitlab_git_http_server['listen_addr'] = \"127.0.0.1:50010\"
+
+git_data_dir \"/home/gitlab/data\"
+
+gitlab_rails['ldap_enabled'] = true
+gitlab_rails['ldap_servers'] = YAML.load <<-EOS
+main:
+  label: 'LDAP_Server'
+  host: '$LDAPSERVER'
+  port: 389
+  uid: 'sAMAccountName'
+  method: 'tls'
+  bind_dn: 'anonymous'
+  password: ''
+  active_directory: true
+  allow_username_or_email_login: true
+  block_auto_created_users: false" >> /etc/gitlab/gitlab.rb
+echo -e "  base: 'OU=People,$LDAPBASE'" >> /etc/gitlab/gitlab.rb
+echo -e "  user_filter: ''
+
+  attributes:
+    username: ['cn', 'sAMAccountName']
+    email:    ['Email', 'userPrincipalName']
+    name:       'displayName'
+    first_name: 'givenName'
+    last_name:  'sn'
+EOS" >> /etc/gitlab/gitlab.rb
+	RECONFIGUREGITLAB=yes
+fi
+
+if [ "$RECONFIGUREGITLAB" == yes ]; then
+	echo '<li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li><br>'
+	gitlab-ctl reconfigure &>/dev/null
+	# Restart gitlab
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+fi
+
+#####################################
+#Restrict SSH to users git and root access for main server
+#####################################
+RESTARTSSH=no
+
+if [ $(grep -c "AllowUsers" /etc/ssh/sshd_config) == 0 ]; then
+	echo -e "AllowUsers git root@$REMOTE_ADDR" >> /etc/ssh/sshd_config
+	RESTARTSSH=yes
+fi
+
+if [ "$RESTARTSSH" == yes ]; then
+	# Restart SSH - should not kill the connection between the Main Server and the current server
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start 1>/dev/null
+fi
+
+#####################################
+#Ensure that apache, ssh and gitlab ports are open in shorewall
+#####################################
+
+MODCHECK=$(grep -c -w 443 /etc/shorewall/rules)
+MODCHECK2=$(grep -c -w 50009 /etc/shorewall/rules)
+MODCHECK3=$(grep -c -w 50010 /etc/shorewall/rules)
+MODCHECK4=$(grep -c -w 22 /etc/shorewall/rules)
+
+MOD_SHOREWALL_GITLAB=no
+MOD_SHOREWALL_APACHE=no
+MOD_SHOREWALL_SSH=no
+
+ANNOUNCEPORTS=no
+ANNOUNCECHANGE=no
+
+PORTLIST=""
+
+if [ "$MODCHECK" == 0 ]; then
+	MOD_SHOREWALL_APACHE=yes
+	PORTLIST="${PORTLIST},443"
+fi
+
+if [ "$MODCHECK2" == 0 ]; then
+	MOD_SHOREWALL_GITLAB=yes
+	PORTSGITLAB="50009"
+	PORTLIST="${PORTLIST},50009"
+fi
+
+if [ "$MODCHECK3" == 0 ]; then
+	MOD_SHOREWALL_GITLAB=yes
+	PORTSGITLAB="${PORTSGITLAB},50010"
+	PORTLIST="${PORTLIST},50010"
+fi
+
+if [ "$MODCHECK4" == 0 ]; then
+	MOD_SHOREWALL_SSH=yes
+	PORTLIST="${PORTLIST},22"
+fi
+
+if [ "$MOD_SHOREWALL_GITLAB" == yes ]; then
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	$PORTSGITLAB	-#gitlab_server_rule/" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	ANNOUNCEPORTS=yes
+fi
+
+if [ "$MOD_SHOREWALL_APACHE" == yes ]; then
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	80,443	-#apache_webserver_rule/" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	ANNOUNCEPORTS=yes
+fi
+
+if [ "$MOD_SHOREWALL_SSH" == yes ]; then
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	22	-#pdc_ssh_rule/" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	ANNOUNCEPORTS=yes
+else
+	# Change ssh access to accept all
+	LINENUM=$(grep -n "pdc_ssh_rule" /etc/shorewall/rules | grep -Eo '^[^:]+')
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	22	-#pdc_ssh_rule/" /etc/shorewall/rules
+	ANNOUNCECHANGE=yes
+fi
+
+if [ "$ANNOUNCEPORTS" == yes ]; then
+	# Announce the changed ports
+	PORTLIST=${PORTLIST:1}
+	echo '<li>'$"The following extra ports are being allowed: TCP $PORTLIST"'</li><br>'
+fi
+
+if [ "$ANNOUNCECHANGE" == yes ]; then
+	# Announce the changed ssh rule
+	echo '<li>'$"Shorewall rule for TCP 22 changed to accept all (SSH access now restricted by sshd_config)"'</li><br>'
+fi
+
+######################
+#Restart shorewall
+######################
+if [ "$MOD_SHOREWALL" == yes ]; then
+	echo '<li>'$"Restarting shorewall"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#################################
+#Configure fail2ban with ssh
+#################################
+RESTARTFBAN=no
+
+if [ $(grep -c "[ssh]" /etc/fail2ban/jail.conf) == 0 ]; then
+	# Add ssh to fail2ban configuration
+	echo -e "# SSH JAIL CONFIGURATION
+[ssh]
+
+enabled  = true
+port     = ssh
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 6" >> /etc/fail2ban/jail.conf
+	RESTARTFBAN=yes
+fi
+
+######################
+#Restart fail2ban
+######################
+if [ "$RESTARTFBAN" == yes ]; then
+	echo '<li>'$"Restarting fail2ban"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start 1>/dev/null
+fi
+
+#################################
+#Make sure that apache is running
+#################################
+APACHESTATUS=$(ps -e | grep -c -w $APACHEVER)
+if [ "$APACHESTATUS" == 0 ]; then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+fi
+
+#################################
+#Make sure that gitlab is running
+#################################
+GITLABSTATUS=$(ps -e | grep -w -c gitlab-git-http)
+GITLABSTATUS2=$(ps -e | grep -w -c gitlab-logrotat)
+GITLABSTATUS3=$(ps -e | grep -w -c gitlab-unicorn-)
+
+if [ "$GITLABSTATUS" == 0 ]; then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+fi
+
+if [ "$GITLABSTATUS2" == 0 ]; then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+fi
+
+if [ "$GITLABSTATUS3" == 0 ]; then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+fi
+
+#################################
+#Make sure that fail2ban is running
+#################################
+FAILBANSTATUS=$(ps -e | grep -w -c fail2ban-server)
+
+if [ "$FAILBANSTATUS" == 0 ]; then
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start 1>/dev/null
+fi
+
+#############################
+#Ensure that gitlab is running at boot
+#############################
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/gitlab
+
+exit
