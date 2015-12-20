@@ -111,10 +111,10 @@ let RANGE=$RANGE-1
 COUNTER=1
 while [ $COUNTER -le 16 ]
 do
-ARRAYCHOICE=$RANDOM
-let "ARRAYCHOICE %= $RANGE"
-PASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-let COUNTER=COUNTER+1
+	ARRAYCHOICE=$RANDOM
+	let "ARRAYCHOICE %= $RANGE"
+	PASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
+	let COUNTER=COUNTER+1
 done
 }
 
@@ -128,8 +128,8 @@ echo '<li>'$"Configuring Postfix"'</li><br>'
 ########################
 if [ ! -f /etc/MailScanner/rules/spam.whitelist.rules ]
 then
-echo From:'           '127.0.0.1'      'yes > /etc/MailScanner/rules/spam.whitelist.rules
-echo FromOrTo:'       'default'        'no >> /etc/MailScanner/rules/spam.whitelist.rules
+	echo From:'           '127.0.0.1'      'yes > /etc/MailScanner/rules/spam.whitelist.rules
+	echo FromOrTo:'       'default'        'no >> /etc/MailScanner/rules/spam.whitelist.rules
 fi
 ########################
 #Change postfix path
@@ -168,12 +168,12 @@ sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap.cf
 #Change dovecot limits
 if [ `grep -c ^"#default_process_limit = 100" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-sed -i "s/^#default_process_limit = 100/default_process_limit = 1000/g"  /etc/dovecot/conf.d/10-master.conf
+	sed -i "s/^#default_process_limit = 100/default_process_limit = 1000/g"  /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^"#default_client_limit = 1000" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-sed -i "s/^#default_client_limit = 1000/default_client_limit = 2003/g" /etc/dovecot/conf.d/10-master.conf
+	sed -i "s/^#default_client_limit = 1000/default_client_limit = 2003/g" /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^mail_location /etc/dovecot/dovecot.conf` = 0 ]
@@ -195,7 +195,7 @@ fi
 
 if [ `grep -c ^"#kerberos auth and sasl" /etc/dovecot/dovecot.conf` = 0 ]
 then
-echo '#kerberos auth and sasl
+	echo '#kerberos auth and sasl
 auth_mechanisms = plain gssapi
 
 auth_krb5_keytab = /etc/keytabs/mail.keytab
@@ -245,35 +245,34 @@ fi
 [ ! -d /home/users/email ] && mkdir -p /home/users/email
 for USERNAME in `getent passwd | grep /home/users | cut -d: -f1`
 do
+	HOMEPATH=`getent passwd $USERNAME | cut -d: -f6`
+	if [ ! -d /home/users/email/$USERNAME ]
+	then
+		mkdir /home/users/email/$USERNAME
+		chmod -R 0600 /home/users/email/$USERNAME
+		chmod -R u+X /home/users/email/$USERNAME
+		chown -R $USERNAME /home/users/email/$USERNAME
+	fi
 
-HOMEPATH=`getent passwd $USERNAME | cut -d: -f6`
-if [ ! -d /home/users/email/$USERNAME ]
-then
-mkdir /home/users/email/$USERNAME
-chmod -R 0600 /home/users/email/$USERNAME
-chmod -R u+X /home/users/email/$USERNAME
-chown -R $USERNAME /home/users/email/$USERNAME
-fi
-
-if [ ! -z $HOMEPATH ]
-then
-if [ ! -d $HOMEPATH ]
-then
-mkdir -p $HOMEPATH
-chmod -R 0600 $HOMEPATH
-chmod -R u+X $HOMEPATH
-chown -R $USERNAME $HOMEPATH
-fi
-fi
+	if [ ! -z $HOMEPATH ]
+	then
+		if [ ! -d $HOMEPATH ]
+		then
+			mkdir -p $HOMEPATH
+			chmod -R 0600 $HOMEPATH
+			chmod -R u+X $HOMEPATH
+			chown -R $USERNAME $HOMEPATH
+		fi
+	fi
 done
 
 #Create folder for karoshi
 if [ ! -d /home/users/email/karoshi ]
 then
-mkdir /home/users/email/karoshi
-chmod -R 0600 /home/users/email/karoshi
-chmod -R u+X /home/users/email/karoshi
-chown -R karoshi /home/users/email/karoshi
+	mkdir /home/users/email/karoshi
+	chmod -R 0600 /home/users/email/karoshi
+	chmod -R u+X /home/users/email/karoshi
+	chown -R karoshi /home/users/email/karoshi
 fi
 
 ########################
@@ -450,13 +449,13 @@ MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-echo '<li>'$"Starting MYSQL"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	echo '<li>'$"Starting MYSQL"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>'$"Starting Apache"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo '<li>'$"Starting Apache"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 ##########################
@@ -492,15 +491,16 @@ postmap hash:/etc/postfix/restricted_domains
 touch /etc/postfix/aliases
 if [ `grep -c ^root: /etc/postfix/aliases` = 0 ]
 then
-echo root:"	""	"sysadmin >> /etc/postfix/aliases
+	echo root:"	""	"sysadmin >> /etc/postfix/aliases
+	echo postmaster:"	""	"sysadmin >> /etc/postfix/aliases
 fi
 newaliases
 echo '<li>'$"Starting Postfix"'</li><br>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
 if [ $APACHESTATUS = 0 ]
 then
-echo '<li>'$"Starting Apache"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo '<li>'$"Starting Apache"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
 sleep 1
@@ -523,22 +523,22 @@ RESTART_SHOREWALL=no
 MODCHECK=`grep -c -w \#apache_webserver_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-RESTART_SHOREWALL=yes
-echo ''$"The following extra ports are being allowed" - tcp 80,443'<br><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_webserver_rule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	RESTART_SHOREWALL=yes
+	echo ''$"The following extra ports are being allowed" - tcp 80,443'<br><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'80,443'	'-'#'apache_webserver_rule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 MODCHECK=`grep -c -w \#email_server_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-RESTART_SHOREWALL=yes
-echo ''$"The following extra ports are being allowed" - tcp 25,110,143,993,995 udp 110,143,993,995'<br><br>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'25,110,143,993,995'	'-'#'email_server_rule /etc/shorewall/rules
-echo ACCEPT'	'net'	'fw'	'udp'	'25,110,143,993,995'	'-'#'email_server_rule >> /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	RESTART_SHOREWALL=yes
+	echo ''$"The following extra ports are being allowed" - tcp 25,110,143,993,995 udp 110,143,993,995'<br><br>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'25,110,143,993,995'	'-'#'email_server_rule /etc/shorewall/rules
+	echo ACCEPT'	'net'	'fw'	'udp'	'25,110,143,993,995'	'-'#'email_server_rule >> /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 
@@ -547,10 +547,10 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo '<li>'$"Restarting shorewall"'</li><br>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 ######################
