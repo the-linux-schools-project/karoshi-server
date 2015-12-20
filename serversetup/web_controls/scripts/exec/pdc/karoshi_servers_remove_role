@@ -762,12 +762,12 @@ then
 	else
 		# Store working directory
 		DIRECTORY=$(pwd)
-		[! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
+		[ ! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
 		cd /opt/karoshi/.tempdata/
 		# Store main/current server into a sourceable file
 		echo "MAINSERVERIP="$(hostname --ip-address) >> sshvar
 		# Copy the file onto the server in a tempfolder
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '[! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/'
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '[ ! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/'
 		scp -p -r sshvar root@$SERVERNAME:/opt/karoshi/.tempdata/ 1> /dev/null
 		ssh -x -o PasswordAuthentication=no $SERVERNAME 'chmod 755 /opt/karoshi/.tempdata/sshvar'
 		# Remove file locally

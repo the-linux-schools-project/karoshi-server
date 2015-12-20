@@ -1,7 +1,7 @@
 #!/bin/bash
 #Start gitlab on boot
 
-if [! -f /etc/init/gitlab-runsvdir.conf ]; then
+if [ ! -f /etc/init/gitlab-runsvdir.conf ]; then
 	echo -e "start on runlevel [2345]
 stop on shutdown
 respawn

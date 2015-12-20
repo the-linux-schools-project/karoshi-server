@@ -79,7 +79,7 @@ fi
 #####################
 RESTARTAPACHE=no
 
-[! -f /etc/apache2/sites-available/gitlab-ssl.conf ] || echo >> /etc/apache2/sites-available/gitlab-ssl.conf
+[ ! -f /etc/apache2/sites-available/gitlab-ssl.conf ] || echo >> /etc/apache2/sites-available/gitlab-ssl.conf
 
 if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ssl.conf) == 0 ]; then
 	echo '<li>Configuring Gitlab apache virtual host.</li><br>'
@@ -209,7 +209,7 @@ fi
 #####################
 APPLYDEFAULT=no
 
-[! -f /etc/default/gitlab ] || echo >> /etc/default/gitlab
+[ ! -f /etc/default/gitlab ] || echo >> /etc/default/gitlab
 
 if [ $(grep -c "#gitlab default configuration" /etc/default/gitlab) == 0 ]; then
 	echo '<li>Creating defaults file.</li><br>'
@@ -240,7 +240,7 @@ cp -rf /opt/karoshi/.tempdata/opt/gitlab /opt/
 
 [ -d /home/gitlab ] || mkdir /home/gitlab
 [ -d /etc/gitlab ] || mkdir /etc/gitlab
-[! -f /etc/gitlab/gitlab.rb ] || echo >> /etc/gitlab/gitlab.rb
+[ ! -f /etc/gitlab/gitlab.rb ] || echo >> /etc/gitlab/gitlab.rb
 chmod 600 /etc/gitlab/gitlab.rb
 
 ###########################
