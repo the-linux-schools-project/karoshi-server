@@ -688,8 +688,8 @@ then
 		echo "<li>Revoking apache site.</li><br>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
-		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-available/gitlab-ssl.conf
-		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 
 		echo "<li>Restarting apache.</li><br>"
 		# Restart apache
@@ -762,12 +762,12 @@ then
 	else
 		# Store working directory
 		DIRECTORY=$(pwd)
-		[ ! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
+		[ -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/
 		cd /opt/karoshi/.tempdata/
 		# Store main/current server into a sourceable file
 		echo "MAINSERVERIP="$(hostname --ip-address) >> sshvar
 		# Copy the file onto the server in a tempfolder
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '[ ! -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/'
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '[ -d /opt/karoshi/.tempdata/ ] || mkdir /opt/karoshi/.tempdata/'
 		scp -p -r sshvar root@$SERVERNAME:/opt/karoshi/.tempdata/ 1> /dev/null
 		ssh -x -o PasswordAuthentication=no $SERVERNAME 'chmod 755 /opt/karoshi/.tempdata/sshvar'
 		# Remove file locally
@@ -790,8 +790,8 @@ then
 		echo "<li>Revoking apache site.</li><br>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
-		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-available/gitlab-ssl.conf
-		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] || rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 		echo "<li>Restarting apache.</li><br>"
 		# Restart apache
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
