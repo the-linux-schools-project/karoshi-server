@@ -77,10 +77,11 @@ then
 	/opt/karoshi/web_controls/generate_navbar_top
 else
 	source /opt/karoshi/web_controls/version
+	source /opt/karoshi/server_network/domain_information/domain_name
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 
       <div class="expanded">
-       <span>TLSP '$"DE"'</span>
+       <span>'$SHORTNAME'</span>
         <a href="/cgi-bin/all/change_my_password_fm.cgi">'$"All"'</a>
         <a href="/cgi-bin/staff/mobile_menu.cgi">'$"Staff"'</a>
         <a href="/cgi-bin/tech/mobile_menu.cgi">'$"Technician"'</a>

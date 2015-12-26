@@ -224,6 +224,27 @@ if [ "$APPLYDEFAULT" == yes ]; then
 fi
 
 ###########################
+#Download gitlab.tar.gz if needed.
+###########################
+
+#We may only have a placeholder for the compressed image due to the file being in github LFS area.
+if [ $(file /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz | grep -c gzip) = 0 ]
+then
+	#File info does not show that this is a valid gzip so download the real thing.
+	rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz
+	cd /opt/karoshi/serversetup/modules/gitlab
+	echo '<li>'$"Downloading Gitlab archive"'</li><br>'
+	wget https://github.com/the-linux-schools-project/karoshi-server/raw/master/serversetup/modules/gitlab/gitlab.tar.gz
+	if [ $? != 0 ]
+	then
+		#We failed so bail out.
+		echo '<li>'$"There was a problem downloading the archive"'</li><br>'
+		sleep 5
+		exit 101
+	fi
+fi
+
+###########################
 #Extract gitlab
 ###########################
 cd /opt/karoshi/.tempdata/
