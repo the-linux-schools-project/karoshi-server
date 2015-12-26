@@ -95,18 +95,17 @@ echo '</tbody></table>'
 
 
 function show_server {
-if [ $MOBILE = yes ]
-then
-	SERVERNAME=`echo "$SERVER" | cut -d. -f1`
-else
-	SERVERNAME="$SERVER"
-fi
 
 if [ "$SERVERNAME" = allservers ]
 then
 	SERVERNAME2=$"All Servers"
 else
-	SERVERNAME2="$SERVER"
+	if [ $MOBILE = yes ]
+	then
+		SERVERNAME2=`echo "$SERVER" | cut -d. -f1`
+	else
+		SERVERNAME2="$SERVER"
+	fi
 fi
 
 echo '<tr><td style="vertical-align: top;">'$SERVERNAME2'</td>'

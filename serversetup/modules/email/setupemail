@@ -299,6 +299,21 @@ echo mail.$REALM > /etc/mailname
 
 echo '<li>'$"Configuring MailScanner"'</li><br>'
 
+#Update MailScanner
+MAILSCANNERVER=4.85.2-3
+if [ $(dpkg -l | grep mailscanner | tr -cd "0-9\-.\n") != $MAILSCANNERVER ]
+then
+	echo "<li>$EMAILSERVER - updating MailScanner</li>"
+	[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
+	[ -d /tmp/MailScanner-$MAILSCANNERVER ] && rm -f -R /tmp/MailScanner-$MAILSCANNERVER
+	wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-$MAILSCANNERVER.deb.tar.gz -O /tmp/mailscanner.tar.gz
+	tar -xvzf /tmp/mailscanner.tar.gz -C /tmp
+	dpkg -i /tmp/MailScanner-$MAILSCANNERVER/mailscanner-$MAILSCANNERVER-noarch.deb
+	#Tidy up
+	rm -f /tmp/mailscanner.tar.gz
+	rm -f -R /tmp/MailScanner-$MAILSCANNERVER
+fi
+
 [ -f /etc/MailScanner/MailScanner.conf ] && mv /etc/MailScanner/MailScanner.conf /etc/MailScanner/MailScannerold.conf
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/MailScanner.conf /etc/MailScanner/
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/mailscanner/mailscanner /etc/cron.hourly/
