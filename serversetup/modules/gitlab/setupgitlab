@@ -242,6 +242,13 @@ then
 		sleep 5
 		exit 101
 	fi
+	# Verify that the file is complete and that the correct file was downloaded
+	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
+	if [ "$checksum" != "11da28c6d65a109e9c261920094b2cac" ]; then
+		echo '<li>'$"There was a problem verifying the downloaded archive."'</li><br>'
+		sleep 5
+		exit 101
+	fi
 fi
 
 ###########################
