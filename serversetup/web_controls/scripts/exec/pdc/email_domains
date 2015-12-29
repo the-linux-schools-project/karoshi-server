@@ -1,0 +1,253 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi SERVERNAME.
+#
+#Karoshi SERVERNAME is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi SERVERNAME is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi SERVERNAME.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_domains_cgi
+then
+	echo `date`: email_domains - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_domains_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_domains.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_domains_cgi'check' ]
+then
+	echo `date`: email_domains - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: email_domains - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%'`
+#echo $DATA"<br>"
+if [ -z "$DATA" ]
+then
+	echo `date`: email_domains - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
+ACTION=`echo "$DATA" | cut -s -d: -f5`
+DOMAIN=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: email_domains - Not called by email_domains.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: email_domains - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: email_domains - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+
+
+if [ $ACTION != add ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != delete ] && [ $ACTION != view ]
+then
+	echo `date`: email_domains - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: email_domains - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+TEXTDOMAIN=karoshi-server
+
+#icons
+if [ "$MOBILE" = no ]
+then
+	TABLECLASS=standard
+	ICON1=/images/submenus/email/email_delete.png
+	WIDTH1=180
+	WIDTH2=150
+else
+	TABLECLASS=mobilestandard
+	ICON1=/images/submenus/email/email_deletem.png
+	WIDTH1=100
+	WIDTH2=100
+fi
+
+#Add a virtual domain
+if [ "$ACTION" = reallyadd ]
+then
+	echo "`date`: email_domains - adding $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Add domain to /etc/postfix/virtual_domains
+	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+	if [ $EMAILSERVER = $(hostname-fqdn )
+	then
+		touch /etc/postfix/virtual_domains
+		if [ $(grep -c ^"$DOMAIN" /etc/postfix/virtual_domains) = 0 ]
+		then
+			echo "$DOMAIN	#Domain" >> /etc/postfix/virtual_domains
+			#Sort virtual domains
+			sort /etc/postfix/virtual_domains > /etc/postfix/virtual_domains.$$
+			rm -f /etc/postfix/virtual_domains
+			mv /etc/postfix/virtual_domains.$$ /etc/postfix/virtual_domains
+			postmap hash:/etc/postfix/virtual_domains
+
+			#Make sure virtual_domains are emabled in main.cf
+			if [ $(grep -c /etc/postfix/virtual_domains /etc/postfix/main.cf) = 0 ]
+			then
+				echo virtual_alias_domains = hash:/etc/postfix/virtual_domains >> /etc/postfix/main.cf
+			fi 
+			#Reload Postfix
+			service postfix reload 1>/dev/null
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		touch /etc/postfix/virtual_domains
+		if [ $(grep -c ^"'$DOMAIN'" /etc/postfix/virtual_domains) = 0 ]
+		then
+			echo "'$DOMAIN'	#Domain" >> /etc/postfix/virtual_domains
+			#Sort virtual domains
+			sort /etc/postfix/virtual_domains > /etc/postfix/virtual_domains.'$$'
+			rm -f /etc/postfix/virtual_domains
+			mv /etc/postfix/virtual_domains.'$$' /etc/postfix/virtual_domains
+			postmap hash:/etc/postfix/virtual_domains
+
+			#Make sure virtual_domains are emabled in main.cf
+			if [ $(grep -c /etc/postfix/virtual_domains /etc/postfix/main.cf) = 0 ]
+			then
+				echo virtual_alias_domains = hash:/etc/postfix/virtual_domains >> /etc/postfix/main.cf
+			fi 
+			#Reload Postfix
+			service postfix reload 1>/dev/null
+		fi
+
+		'
+	fi
+	touch /opt/karoshi/server_network/email/virtual_domains/"$DOMAIN"
+	ACTION=view
+fi
+
+#Show a form to add a domain
+if [ "$ACTION" = add ]
+then
+	echo '<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<tr><td style="width: '$WIDTH1'px;">'$"Domain"'</td><td style="width: '$WIDTH2'px;"><input tabindex= "1" style="width: 200px;" name="_DOMAIN_" size="20" type="text"></td></tr>
+	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"></form><form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'	
+fi
+
+#Delete an existing virtual domain
+if [ "$ACTION" = reallydelete ]
+then
+	if [ -f /opt/karoshi/server_network/email/virtual_domains/"$DOMAIN" ]
+	then
+		echo "`date`: email_domains - deleting $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+		#Delete any email aliases for this domain
+
+		#Delete the virtual domain from postfix
+		if [ $EMAILSERVER = $(hostname-fqdn) ]
+		then
+			if [ $(grep -c ^"$DOMAIN" /etc/postfix/virtual_domains) -gt 0 ]
+			then
+				sed -i "/^$DOMAIN/d" /etc/postfix/virtual_domains
+				postmap hash:/etc/postfix/virtual_domains
+				service postfix reload 1>/dev/null
+			fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+			if [ $(grep -c ^"'$DOMAIN'" /etc/postfix/virtual_domains) -gt 0 ]
+			then
+				sed -i "/^'$DOMAIN'/d" /etc/postfix/virtual_domains
+				postmap hash:/etc/postfix/virtual_domains
+				service postfix reload 1>/dev/null
+			fi
+			'
+		fi
+
+		#Delete the flag file
+		rm -f /opt/karoshi/server_network/email/virtual_domains/"$DOMAIN"
+	fi
+	ACTION=view
+fi
+
+#Confirm deleting a virtual domain
+if [ "$ACTION" = delete ]
+then
+	echo ''$DOMAIN' <br><br>'$"Deleting this virtual domain will delete all email aliases used for this domain."'
+	<br><br>
+	<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post">
+	<input type="hidden" name="_ACTION_" value="reallydelete"><input type="hidden" name="_DOMAIN_" value="'$DOMAIN'">
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+	<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>
+'
+
+fi
+
+#Show existing email domains
+if [ "$ACTION" = view ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th><th></th></tr></thead><tbody>'
+
+	#Show default domain
+	echo '<tr><td>'$REALM'</td><td>'$"Default Domain"'</td><td></td></tr>'
+
+	#Show any virtual domains
+	if [ -d /opt/karoshi/server_network/email/virtual_domains ]
+	then
+		if [ $(ls -1 /opt/karoshi/server_network/email/virtual_domains | wc -l) -gt 0 ]
+		then
+			for VIRTUAL_DOMAIN in $(ls -1 /opt/karoshi/server_network/email/virtual_domains)
+			do
+				echo '<tr><td>'$VIRTUAL_DOMAIN'</td><td>'$"Virtual Domain"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_DOMAIN_'$VIRTUAL_DOMAIN'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$VIRTUAL_DOMAIN'</span></a></td></tr>'
+			done
+		fi
+	fi
+	echo '</tbody></table></form>'
+fi
+
+
