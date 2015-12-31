@@ -113,8 +113,8 @@ then
 else
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/email/email_deletem.png
-	WIDTH1=100
-	WIDTH2=100
+	WIDTH1=150
+	WIDTH2=140
 fi
 
 #Add a virtual domain
@@ -123,7 +123,7 @@ then
 	echo "`date`: email_domains - adding $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	#Add domain to /etc/postfix/virtual_domains
 	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
-	if [ $EMAILSERVER = $(hostname-fqdn )
+	if [ $EMAILSERVER = $(hostname-fqdn ) ]
 	then
 		touch /etc/postfix/virtual_domains
 		if [ $(grep -c ^"$DOMAIN" /etc/postfix/virtual_domains) = 0 ]
@@ -142,6 +142,10 @@ then
 			fi 
 			#Reload Postfix
 			service postfix reload 1>/dev/null
+			
+			#Create domain alias file
+			[ ! -d /etc/postfix/virtual_domain_addresses ] && mkdir -p /etc/postfix/virtual_domain_addresses
+			touch /etc/postfix/virtual_domain_addresses/$DOMAIN
 		fi
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
@@ -162,6 +166,11 @@ then
 			fi 
 			#Reload Postfix
 			service postfix reload 1>/dev/null
+
+			#Create domain alias file
+			[ ! -d /etc/postfix/virtual_domain_addresses ] && mkdir -p /etc/postfix/virtual_domain_addresses
+			touch /etc/postfix/virtual_domain_addresses/'$DOMAIN'
+
 		fi
 
 		'
@@ -173,9 +182,16 @@ fi
 #Show a form to add a domain
 if [ "$ACTION" = add ]
 then
-	echo '<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyadd">'
+	if [ "$MOBILE" = no ]
+	then
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr><td style="width: '$WIDTH1'px;">'$"Domain"'</td><td style="width: '$WIDTH2'px;"><input tabindex= "1" style="width: 200px;" name="_DOMAIN_" size="20" type="text"></td></tr>
-	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"></form><form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'	
+	</tbody></table>'
+	else
+		echo ''$"Domain"'<br><input tabindex= "1" style="width: 200px;" name="_DOMAIN_" size="20" type="text">'
+	fi
+	echo '<br><br><input value="'$"Submit"'" class="button" type="submit"></form><form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'	
 fi
 
 #Delete an existing virtual domain
@@ -184,26 +200,65 @@ then
 	if [ -f /opt/karoshi/server_network/email/virtual_domains/"$DOMAIN" ]
 	then
 		echo "`date`: email_domains - deleting $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		source /opt/karoshi/server_network/domain_information/domain_name
+		#Get samba 4 database password
+		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 		#Delete any email aliases for this domain
+
+		#Get virtual alias file
+		if [ $EMAILSERVER != $(hostname-fqdn) ]
+		then
+			[ ! -d /etc/postfix/virtual_domain_addresses ] && mkdir -p /etc/postfix/virtual_domain_addresses
+			scp root@$EMAILSERVER:/etc/postfix/virtual_domain_addresses/"$DOMAIN" /etc/postfix/virtual_domain_addresses/
+		fi
+
+
+		for VIRTUAL_EMAIL_DATA in $(cat /etc/postfix/virtual_domain_addresses/"$DOMAIN" | sed "s/\t/,/g")
+		do
+			ALIAS=$(echo $VIRTUAL_EMAIL_DATA | cut -d, -f1)
+			USERNAME=$(echo $VIRTUAL_EMAIL_DATA | cut -d, -f2)
+
+			#Delete alias entry from samba4 ldap
+
+			USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+			echo -e "$USERDN\nchangetype: modify\ndelete: proxyAddresses\nproxyAddresses: $ALIAS\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+			
+		done
 
 		#Delete the virtual domain from postfix
 		if [ $EMAILSERVER = $(hostname-fqdn) ]
 		then
+			rm -f /etc/postfix/virtual_domain_addresses/"$DOMAIN"
 			if [ $(grep -c ^"$DOMAIN" /etc/postfix/virtual_domains) -gt 0 ]
 			then
 				sed -i "/^$DOMAIN/d" /etc/postfix/virtual_domains
 				postmap hash:/etc/postfix/virtual_domains
-				service postfix reload 1>/dev/null
 			fi
+			echo > /etc/postfix/virtual_addresses
+			for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
+			do
+				echo "$DOMAIN_LIST	#DOMAIN" >> /etc/postfix/virtual_addresses
+				cat /etc/postfix/virtual_domain_addresses/$DOMAIN_LIST >> /etc/postfix/virtual_addresses
+			done
+			postmap hash:/etc/postfix/virtual_addresses
+			service postfix reload 1>/dev/null
 		else
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+			rm -f /etc/postfix/virtual_domain_addresses/"'$DOMAIN'"
 			if [ $(grep -c ^"'$DOMAIN'" /etc/postfix/virtual_domains) -gt 0 ]
 			then
 				sed -i "/^'$DOMAIN'/d" /etc/postfix/virtual_domains
 				postmap hash:/etc/postfix/virtual_domains
-				service postfix reload 1>/dev/null
 			fi
+			echo > /etc/postfix/virtual_addresses
+			for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
+			do
+				echo "$DOMAIN_LIST	#DOMAIN" >> /etc/postfix/virtual_addresses
+				cat /etc/postfix/virtual_domain_addresses/$DOMAIN_LIST >> /etc/postfix/virtual_addresses
+			done
+			postmap hash:/etc/postfix/virtual_addresses
+			service postfix reload 1>/dev/null
 			'
 		fi
 
@@ -230,7 +285,7 @@ fi
 if [ "$ACTION" = view ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
 	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th><th></th></tr></thead><tbody>'
 
 	#Show default domain

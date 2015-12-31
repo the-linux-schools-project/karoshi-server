@@ -134,6 +134,15 @@ then
 	ACTION=view
 fi
 
+ALTACTION=add
+ALTMESSAGE=$"Add Domain"
+
+if [ "$ACTION" = add ]
+then
+	ALTACTION=view
+	ALTMESSAGE=$"View Domains"
+fi
+
 #########################
 #Check data
 #########################
@@ -184,22 +193,22 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-	echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"E-Mail Domains"'</span><a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a></div></div><div id="'$DIV_ID'">
+		<table class="mobilestandard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+		<form action="/cgi-bin/admin/email_domains.cgi" method="post"><input name="_ACTION_'$ALTACTION'_" type="submit" class="button" value="'$ALTMESSAGE'"></form></td><td style="vertical-align: top;"><a href="email_aliases.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Aliases"'"></a></td></tr>
+	</tbody></table>
 	'
+
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
 	<tr>
 	<td style="vertical-align: top;"><div class="sectiontitle">'$"E-Mail Domains"'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"E-Mail Domains"'</span></a></td>'
-
-	if [ "$ACTION" != add ]
-	then
-		echo '<td><form action="/cgi-bin/admin/email_domains.cgi" method="post"><input name="_ACTION_add_" type="submit" class="button" value="'$"Add Domain"'"></form></td>'
-	fi
-	echo '</tr></tbody></table></div><div id="infobox">'
+	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any domains that you have set up for your E-Mail system."'</span></a></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_domains.cgi" method="post"><input name="_ACTION_'$ALTACTION'_" type="submit" class="button" value="'$ALTMESSAGE'"></form></td>
+<td style="vertical-align: top;"><a href="email_aliases.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Aliases"'"></a></td></tr></tbody></table></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_domains.cgi | cut -d' ' -f1`

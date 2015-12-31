@@ -96,7 +96,7 @@ echo '</tbody></table>'
 
 function show_server {
 
-if [ "$SERVERNAME" = allservers ]
+if [ "$SERVER" = allservers ]
 then
 	SERVERNAME2=$"All Servers"
 else

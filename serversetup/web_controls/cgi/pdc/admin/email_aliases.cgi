@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -64,7 +64,7 @@ $(document).ready(function()
 
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -137,6 +137,20 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign DOMAIN
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DOMAINcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DOMAIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -175,19 +189,25 @@ if [ $ACTION = delete ] || [ $ACTION = reallyadd ]
 then
 	if [ -z "$ALIAS" ]
 	then
-	MESSAGE=$"You have not entered an alias."
-	show_status
+		MESSAGE=$"You have not entered an alias."
+		show_status
 	fi
 	if [ -z "$USERNAME" ]
 	then
-	MESSAGE=$"You have not entered a username."
-	show_status
+		MESSAGE=$"You have not entered a username."
+		show_status
 	fi
 	#Check that the username exists
 	getent passwd $USERNAME 1>/dev/null
 	if [ $? != 0 ]
 	then
 	MESSAGE=$"The username does not exist."
+		show_status
+	fi
+	#Check that the domain is not blank
+	if [ -z "$DOMAIN" ]
+	then
+		MESSAGE=$"The domain cannot be blank."
 		show_status
 	fi
 fi
@@ -213,7 +233,7 @@ then
 else
 	ACTION2=add
 	ICON=$ICON2
-	MESSAGE=$"Add an alias"
+	MESSAGE=$"Add Alias"
 	HELPMSG=$"These are the email aliases that are currently active for your email system."
 fi
 
@@ -225,25 +245,29 @@ then
 	<span>'$"E-Mail Aliases"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle;">
+<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
-</td></tr>
-</tbody></table><br>
+</td>
+<td><a href="email_domains.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Domains"'"></a></td></tr>
+</tbody></table></form><br>
 '
 else
 	ICON2="/images/submenus/email/alias_add.png"
 	ICON3="/images/submenus/email/alias_view.png"
 
-	echo '<form action="/cgi-bin/admin/email_aliases.cgi" method="post"><div id="'$DIV_ID'">
+	echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
 <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
-</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
+</td>
+<td><a href="email_domains.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Domains"'"></a></td>
+<td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
 </td></tr>
-</tbody></table><br>'
+</tbody></table></form><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
 #Show aliases
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ALIAS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
-echo '</div></form></div></body></html>'
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ALIAS:$USERNAME:$DOMAIN:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
+[ $MOBILE = no ] && echo '</div>'
+echo '</div></body></html>'

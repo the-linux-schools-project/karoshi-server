@@ -193,6 +193,7 @@ then
 echo '      <div class="collapsed">
         <span>E-Mail</span>
         <a href="/cgi-bin/admin/email_aliases.cgi">'$"Aliases"'</a>
+        <a href="/cgi-bin/admin/email_domains.cgi">'$"Domains"'</a>
 	<a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a>
 	<a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Banned E-Mail domains"'</a>
 	<a href="/cgi-bin/admin/email_limits.cgi">'$"E-Mail limits"'</a>
