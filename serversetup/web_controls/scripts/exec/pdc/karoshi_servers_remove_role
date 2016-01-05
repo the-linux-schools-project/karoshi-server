@@ -420,7 +420,7 @@ if [ $MODULE = emailserver ]
 then
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
-		echo "<li>"$SERVERNAME: $"Removing E-Mail Module.""</li><br>"
+		echo "<li>"$SERVERNAME: $"Removing E-Mail Module""</li><br>"
 
 		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron
 		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron
@@ -523,7 +523,7 @@ then
 	fi
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 	[ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
 	completed
@@ -536,7 +536,7 @@ fi
 
 if [ $MODULE = joomlaserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Joomla.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Joomla""</li><br>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		[ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
@@ -554,7 +554,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Joomla" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Joomla" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver
 	completed
 fi
@@ -566,7 +566,7 @@ fi
 
 if [ $MODULE = radioserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing Icecast radio server.""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Icecast radio server""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop icecast server
@@ -584,7 +584,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed.""</li><br>"
+echo "<li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 [ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
 completed
@@ -611,7 +611,7 @@ then
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 	completed
 fi
@@ -624,7 +624,7 @@ fi
 
 if [ $MODULE = moodle ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Moodle.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Moodle""</li><br>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
@@ -652,9 +652,46 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 	[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
+	completed
+fi
+
+##########################
+#owncloudserver
+#Unflags this server as an owncloud server. Deletes all owncloud files and the owncloud database.
+##########################
+
+if [ $MODULE = owncloud ]
+then
+	echo "<li>"$SERVERNAME: $"Removing Owncloud""</li><br>"
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		[ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
+		[ -d /home/owncloud ] && rm -f -R /home/owncloud
+
+		/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		#Remove owncloud database 
+		mysqladmin -f --password=$MYSQLPASS drop owncloud 1>/dev/null 2>/dev/null
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		[ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
+		[ -d /home/owncloud ] && rm -f -R /home/owncloud
+
+		/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=$(cat /etc/mysql.secret)
+		#Remove owncloud database
+		mysqladmin -f --password=$MYSQLPASS drop owncloud 1>/dev/null 2>/dev/null
+		'
+	fi
+	#Unflag server
+	echo "<li>"$SERVERNAME: $"Owncloud Server" - $"Designation removed""</li><br>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
+	[ -f /opt/karoshi/server_network/owncloudserver ] && rm -f /opt/karoshi/server_network/owncloudserver
 	completed
 fi
 
@@ -667,16 +704,16 @@ fi
 
 if [ "$MODULE" = "gitlab" ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Gitlab.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Gitlab""</li><br>"
 	if [ $SERVERNAME = `hostname-fqdn` ]; then
 		# Stop gitlab
-		echo "<li>Stopping Gitlab.</li><br>"
+		echo "<li>Stopping Gitlab</li><br>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 
 		# Remove init script from boot
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
 
-		echo "<li>Removing files and repositories.</li><br>"
+		echo "<li>Removing files and repositories</li><br>"
 		# Remove gitlab files
 		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
 		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
@@ -685,18 +722,18 @@ then
 		# Remove gitlab repositories
 		[ -d /home/gitlab ] && rm -f -R /home/gitlab
 
-		echo "<li>Revoking apache site.</li><br>"
+		echo "<li>Revoking apache site</li><br>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
 		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 
-		echo "<li>Restarting apache.</li><br>"
+		echo "<li>Restarting apache</li><br>"
 		# Restart apache
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
-		echo "<li>Removing symlinks and users.</li><br>"
+		echo "<li>Removing symlinks and users</li><br>"
 		# Remove symlinks
 		[ -f /usr/bin/gitlab-ci-rails ] && rm -f /usr/bin/gitlab-ci-rails
 		[ -f /usr/bin/gitlab-ci-rake ] && rm -f /usr/bin/gitlab-ci-rake
@@ -776,18 +813,18 @@ then
 		cd $DIRECTORY
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		# Stop gitlab
-		echo "<li>Stopping Gitlab.</li><br>"
+		echo "<li>Stopping Gitlab</li><br>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 		# Remove init script from boot
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
-		echo "<li>Removing files and repositories.</li><br>"
+		echo "<li>Removing files and repositories</li><br>"
 		# Remove gitlab files
 		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
 		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
 		[ -d /etc/gitlab ] && rm -f -R /etc/gitlab
 		# Remove gitlab repositories
 		[ -d /home/gitlab ] && rm -f -R /home/gitlab
-		echo "<li>Revoking apache site.</li><br>"
+		echo "<li>Revoking apache site</li><br>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
@@ -861,7 +898,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Gitlab Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Gitlab Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab
 	[ -f /opt/karoshi/server_network/gitlabserver ] && rm -f /opt/karoshi/server_network/gitlabserver
 	completed
@@ -869,7 +906,7 @@ fi
 
 if [ $MODULE = openvpn ]
 then
-	echo "<li>"$SERVERNAME: $"Removing OpenVPN.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing OpenVPN""</li><br>"
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	#Stop openvpn
 	source /opt/karoshi/serversetup/variables/distro
@@ -891,7 +928,7 @@ then
 	'
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"OpenVPN Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"OpenVPN Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
 	[ -f /opt/karoshi/server_network/vpnserver ] && rm -f /opt/karoshi/server_network/vpnserver
 	completed
@@ -904,7 +941,7 @@ fi
 
 if [ $MODULE = ocsserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing OCS-Inventory.""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing OCS-Inventory""</li><br>"
 
 [ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
 [ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
@@ -945,7 +982,7 @@ sleep 0.5
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"OCS Inventory" - $"Designation removed.""</li><br>"
+echo "<li>"$SERVERNAME: $"OCS Inventory" - $"Designation removed""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
 [ -f /opt/karoshi/server_network/ocs_server ] && rm -f /opt/karoshi/server_network/ocs_server
 #Remove ocs item from the web management menu
@@ -960,7 +997,7 @@ fi
 
 if [ $MODULE = printserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Print Server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Print Server""</li><br>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		#Stop Cups
@@ -975,7 +1012,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 	[ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
 
@@ -992,7 +1029,7 @@ fi
 ##########################
 if [ $MODULE = squid ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Squid.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Squid""</li><br>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		#Stop squid and dansguardian
@@ -1034,7 +1071,7 @@ then
 	'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy
@@ -1055,7 +1092,7 @@ fi
 ##########################
 if [ $MODULE = monitoring ]
 then
-echo "<li>"$SERVERNAME: $"Removing Mon.""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Mon""</li><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop mon
@@ -1081,7 +1118,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"Monitor Server" - $"Designation removed.""</li><br>"
+echo "<li>"$SERVERNAME: $"Monitor Server" - $"Designation removed""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
 [ -f /opt/karoshi/server_network/monitoringserver ] && rm -f /opt/karoshi/server_network/monitoringserver
 
@@ -1098,7 +1135,7 @@ fi
 if [ $MODULE = fileserver ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo "<li>"$SERVERNAME: $"Removing File Server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing File Server""</li><br>"
 
 	#Change group information
 	for GROUPFILES in /opt/karoshi/server_network/group_information/*
@@ -1110,7 +1147,7 @@ then
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
 	completed
 fi
@@ -1196,10 +1233,10 @@ fi
 ##########################
 if [ $MODULE = ldapserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing LDAP Server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing LDAP Server""</li><br>"
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Designation removed""</li><br>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
 	[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 
@@ -1213,7 +1250,7 @@ then
 fi
 
 #Unflag server
-echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
+echo "<li>"$SERVERNAME: $"Designation removed""</li><br>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE
 
 completed

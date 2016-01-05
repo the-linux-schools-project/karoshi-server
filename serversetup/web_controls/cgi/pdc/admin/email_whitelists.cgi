@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,7 +49,17 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Aliases"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -88,28 +98,28 @@ END_POINT=8
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign ADDRESS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-ADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -125,22 +135,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"The action cannot be blank."
-show_status
+	export MESSAGE=$"The action cannot be blank."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -158,51 +168,47 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-TABLECLASS=standard
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	TABLECLASS=standard
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
 fi
 
 if [ $ACTION = add ]
 then
-ACTION2=view
-ICON=$ICON3
-MESSAGE=$"View Whitelists"
-HELPMSG=$"Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
+	ACTION2=view
+	ICON=$ICON3
+	MESSAGE=$"View Whitelists"
+	HELPMSG=$"Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
 else
-ACTION2=add
-ICON=$ICON2
-MESSAGE=$"Add a Whitelist"
-HELPMSG=$"These are the email whitelists addresses that are currently active for your email system."
+	ACTION2=add
+	ICON=$ICON2
+	MESSAGE=$"Add a Whitelist"
+	HELPMSG=$"These are the email whitelists addresses that are currently active for your email system."
 fi
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"E-Mail Whitelists"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_whitelists.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle;">
-<input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
-</td></tr>
-</tbody></table><br>
-'
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_whitelists.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	<td style="vertical-align: middle;"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'"></td>
+	</tr></tbody></table><br>'
 else
-ICON2="/images/submenus/email/alias_add.png"
-ICON3="/images/submenus/email/alias_view.png"
+	ICON2="/images/submenus/email/alias_add.png"
+	ICON3="/images/submenus/email/alias_view.png"
 
-echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_whitelists.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Whitelists"'</div></td>
-<td style="vertical-align: middle;">
-<input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
-</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_whitelists"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
-</td></tr>
-</tbody></table><br>'
+	echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_whitelists.cgi" method="post">
+	<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Whitelists"'</div></td>
+	<td style="vertical-align: middle;"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'"></td>
+	<td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_whitelists"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
+	</tr></tbody></table><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_whitelists.cgi | cut -d' ' -f1`

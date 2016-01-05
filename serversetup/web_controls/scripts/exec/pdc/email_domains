@@ -175,6 +175,7 @@ then
 
 		'
 	fi
+	[ ! -d /opt/karoshi/server_network/email/virtual_domains ] && mkdir -p /opt/karoshi/server_network/email/virtual_domains
 	touch /opt/karoshi/server_network/email/virtual_domains/"$DOMAIN"
 	ACTION=view
 fi
@@ -220,7 +221,7 @@ then
 			USERNAME=$(echo $VIRTUAL_EMAIL_DATA | cut -d, -f2)
 
 			#Delete alias entry from samba4 ldap
-
+			echo "`date`: email_domains - deleting $ALIAS for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
 			echo -e "$USERDN\nchangetype: modify\ndelete: proxyAddresses\nproxyAddresses: $ALIAS\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 			
@@ -286,10 +287,10 @@ if [ "$ACTION" = view ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
 	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th><th></th></tr></thead><tbody>'
+	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th></tr></thead><tbody>'
 
 	#Show default domain
-	echo '<tr><td>'$REALM'</td><td>'$"Default Domain"'</td><td></td></tr>'
+	echo '<tr><td>'$REALM'</td><td>'$"Default Domain"'</td></tr>'
 
 	#Show any virtual domains
 	if [ -d /opt/karoshi/server_network/email/virtual_domains ]

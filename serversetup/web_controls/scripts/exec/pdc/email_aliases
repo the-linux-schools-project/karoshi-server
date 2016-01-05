@@ -180,7 +180,7 @@ then
 		do
 		ALIAS=`echo $ENTRY | cut -d: -f1`
 		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$REALM</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$REALM_\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$REALM</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$REALM"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
 		done
 	#Show any virtual aliases
 	if [ -d /etc/postfix/virtual_domain_addresses/ ]
@@ -191,7 +191,7 @@ then
 			do
 				ALIAS=`echo $VIRTUAL_ADDRESS | cut -d: -f1 | cut -d"@" -f1`
 				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
-				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN_\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
 			done
 		done
 	fi

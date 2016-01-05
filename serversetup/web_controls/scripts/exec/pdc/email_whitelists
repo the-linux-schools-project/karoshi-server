@@ -116,12 +116,14 @@ if [ $MOBILE = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=200
+	WIDTH2=80
 	ICON1="/images/submenus/email/email_delete.png"
 	ICON2="/images/submenus/email/alias_add.png"
 	ICON3="/images/submenus/email/alias_view.png"
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=160
+	WIDTH2=80
 	ICON1="/images/submenus/email/email_deletem.png"
 	ICON2="/images/submenus/email/alias_addm.png"
 	ICON3="/images/submenus/email/alias_viewm.png"
@@ -210,7 +212,7 @@ then
 		touch /etc/MailScanner/rules/spam.whitelist.rules.additional
 		if [ `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | wc -l` -gt 0 ]
 		then
-			echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Address"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Address"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
 			do
 				echo "<tr><td>"$ADDRESS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ADDRESS</span></a></td></tr>"
@@ -223,7 +225,7 @@ then
 		touch /etc/MailScanner/rules/spam.whitelist.rules.additional
 		if [ `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | wc -l` -gt 0 ]
 		then
-			echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody><tr><td style=\"width: '$WIDTH1'px;\"><b>'$"Address"'</b></td><td><b>'$"Delete"'</b></td></tr>"
+			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead><tr><th style=\"width: '$WIDTH1'px;\"><b>'$"Address"'</b></th><th style=\"width: '$WIDTH2'px;\"><b>'$"Delete"'</b></th></tr></thead><tbody>"
 			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
 			do
 				echo "<tr><td>"$ADDRESS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ADDRESS</span></a></td></tr>"

@@ -327,6 +327,12 @@ case "$ROLE_FILE" in
 	CONSEQUENCES=$"Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 	MODULES=yes
 	;;
+	owncloud)
+	ROLE_NAME=$"Owncloud Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
+	MODULES=yes
+	;;
 	federated_server)
 	ROLE_NAME=$"Federated Server"
 	ROLE_NAME_STATUS=set
@@ -354,8 +360,8 @@ then
 <input name="___MODULE___" value="'$MODULE'" type="hidden">
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
 <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$"Module"'</td><td style="vertical-align: top; text-align: left;">'$ROLE_NAME'</td><td style="vertical-align: top; width: 250px;"></td></tr>
-<tr><td style="vertical-align: top; width: 50px;">'$"Information"'</td><td style="vertical-align: top; text-align: left;" colspan="2">'$CONSEQUENCES'</td></tr>
+<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$"Module"'</td><td style="vertical-align: top; text-align: left;  width: 150px;">'$ROLE_NAME'</td><td style="vertical-align: top; width: 250px;"></td></tr>
+<tr><td style="vertical-align: top;">'$"Information"'</td><td style="vertical-align: top; text-align: left;" colspan="2">'$CONSEQUENCES'</td></tr>
 <tr><td style="vertical-align: top; height: 30px;">'$"Code"'</td>
 <td style="vertical-align: top; text-align: left;"><b>'$REMOVE_CODE'</b></td></tr>
 <tr><td style="vertical-align: top; width: 180px; height: 30px;">'$"Confirm"'</td>

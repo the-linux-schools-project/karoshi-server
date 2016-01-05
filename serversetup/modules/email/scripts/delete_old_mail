@@ -15,3 +15,6 @@ OLDMAIL=30 #How long old mail should be kept for in system accounts before delet
 
 #Delete old mail for karoshi user.
 [ $OLDTRASH != 0 ] && find /home/users/email/karoshi/ -type f -mtime +$OLDMAIL -delete
+
+#Delete old mail for postmaster / sysadmin user.
+[ $OLDTRASH != 0 ] && find /home/users/email/sysadmin/ -type f -mtime +$OLDMAIL -delete
