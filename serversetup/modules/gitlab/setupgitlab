@@ -257,11 +257,12 @@ fi
 cd /opt/karoshi/.tempdata/
 
 echo '<li>'$"Extracting Gitlab"'</li><br>'
-tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz
+mkdir /opt/karoshi/.tempdata/gitlab_temp
+tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz -C /opt/karoshi/.tempdata/gitlab_temp
 
 # Copy files into place
 echo '<li>'$"Copying Gitlab files into place - This make take a while."'</li><br>'
-cp -rf /opt/karoshi/.tempdata/opt/gitlab /opt/
+cp -rf /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
 
 # Symlink gitlab-ctl
 /opt/gitlab/embedded/bin/symlink_ctl_cmds /opt/gitlab
@@ -270,6 +271,9 @@ cp -rf /opt/karoshi/.tempdata/opt/gitlab /opt/
 [ -d /etc/gitlab ] || mkdir /etc/gitlab
 [ -f /etc/gitlab/gitlab.rb ] || echo >> /etc/gitlab/gitlab.rb
 chmod 600 /etc/gitlab/gitlab.rb
+
+# Delete temp extracted files (they total ~1GB)
+rm -rf /opt/karoshi/.tempdata/gitlab_temp
 
 ###########################
 #Modify gitlab configuration
