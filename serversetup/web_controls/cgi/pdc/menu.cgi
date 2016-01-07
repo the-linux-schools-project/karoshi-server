@@ -45,7 +45,17 @@ echo '
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
   <title>'$"Web Management"'</title>
 <link href="/css/'$STYLESHEET'?d=`date +%F`" rel="stylesheet" type="text/css">
-<script src="/all/stuHover.js" type="text/javascript"></script>'
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script type="text/javascript" id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+'
 
 
 if [ $MOBILE = yes ]

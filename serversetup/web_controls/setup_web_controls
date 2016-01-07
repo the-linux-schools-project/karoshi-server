@@ -672,6 +672,11 @@ echo 0 0 '*' '*' 1-7 /opt/karoshi/web_controls/statistics > /opt/karoshi/server_
 ######################
 echo 0 7 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/disk_usage > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/disk_usage.cron
 ######################
+#Schedule system update checks
+######################
+cp /opt/karoshi/serversetup/pdc/"useful scripts"/check_system_upgraded /opt/karoshi/"useful scripts"/
+echo 30 6 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/check_system_upgraded > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_system_upgraded.cron
+######################
 #Schedule reboot check
 ######################
 echo 0 8 '*' '*' 1-7 /opt/karoshi/serversetup/all/scripts/check_reboot > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_reboot.cron

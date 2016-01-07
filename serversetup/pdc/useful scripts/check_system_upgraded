@@ -1,0 +1,66 @@
+#!/bin/bash
+LOG_DATE=`date +%F`
+source /opt/karoshi/serversetup/variables/distro
+UPDATE_INTERVAL=864000 #Update interval in seconds to check if the server has been updated
+
+
+for SERVER in $(ls -1 /opt/karoshi/server_network/servers/)
+do
+	UPDATESTATUS=ok
+	if [ "$SERVER" = $(hostname-fqdn) ]
+	then
+		if [ -d /opt/karoshi/logs/server_upgrades ]
+		then
+			if [ $(ls -1 /opt/karoshi/logs/server_upgrades | wc -l ) -gt 0 ]
+			then
+				#Get the last time the server was updated
+				LAST_UPDATE=$(ls -1 /opt/karoshi/logs/server_upgrades | sort -r | sed -n 1,1p)
+				#Convert this time to epoch time
+				LAST_UPDATE_SEC=$(date --date="$LAST_UPDATE" +%s)
+				#Get the current epoch time
+				CURRENT_SEC=$(date +%s)
+				#Get the time interval since the last update
+				let LAST_UPDATE_INTERVAL="$CURRENT_SEC"-"$LAST_UPDATE_SEC"
+				#Check if the server has been updated with the time interval
+				if [ "$LAST_UPDATE_INTERVAL" -gt "$UPDATE_INTERVAL" ]
+				then
+					UPDATESTATUS=error
+				fi
+			fi
+		else
+			UPDATESTATUS=error
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		if [ -d /opt/karoshi/logs/server_upgrades ]
+		then
+			if [ $(ls -1 /opt/karoshi/logs/server_upgrades | wc -l) -gt 0 ]
+			then
+				#Get the last time the server was updated
+				LAST_UPDATE=$(ls -1 /opt/karoshi/logs/server_upgrades | sort -r | sed -n 1,1p)
+				#Convert this time to epoch time
+				LAST_UPDATE_SEC=$(date --date="$LAST_UPDATE" +%s)
+				#Get the current epoch time
+				CURRENT_SEC=$(date +%s)
+				#Get the time interval since the last update
+				let LAST_UPDATE_INTERVAL="$CURRENT_SEC"-"$LAST_UPDATE_SEC"
+				#Check if the server has been updated with the time interval
+				if [ "$LAST_UPDATE_INTERVAL" -gt "'$UPDATE_INTERVAL'" ]
+				then
+					exit 101
+				fi
+			fi
+		else
+			exit 101
+		fi
+		'
+		[ $? = 101 ] && UPDATESTATUS=error
+	fi
+
+	if [ "$UPDATESTATUS" = error ]
+	then 
+		/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add update_system_"$SERVER" /cgi-bin/admin/update_servers_fm.cgi "$SERVER - "$"System upgrade required" 3
+	fi
+done
+exit
+

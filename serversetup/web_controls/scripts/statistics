@@ -21,30 +21,27 @@
 #
 #Website: http://www.karoshi.org.uk
 #Generate top of html page
-echo '<br><br><table class="data" style="text-align: left; width: 800px;" border="0" cellpadding="2" cellspacing="2">' > /var/www/html_karoshi/statistics.html
-echo '<tbody><tr><td style="width: 90px; height: 30px;"><span style="font-weight: bold;">Server</span></td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 100px;"><span style="font-weight: bold;">Uptime</span></td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 250px;"><span style="font-weight: bold;">CPU</span></td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 100px;"><span style="font-weight: bold;">Total Memory(Mb)</span></td></tr>' >> /var/www/html_karoshi/statistics.html
+echo '<br><br>
+<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<tr><th style="width: 90px; height: 30px;"><span style="font-weight: bold;">Server</span></th><th style="width: 50px;"><span style="font-weight: bold;">Uptime</span></th><th style="width: 90px;"><span style="font-weight: bold;">Last Boot</span></th><th style="width: 350px;"><span style="font-weight: bold;">CPU</span></th>
+<th style="width: 100px;"><span style="font-weight: bold;">Memory(Mb)</span></th></tr></thead><tbody>' > /var/www/html_karoshi/statistics.html
 
 #Generate table of data on server
 function table_gen {
-echo '<tr>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 90px; height: 30px;">'$KAROSHI_SERVER'</td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 100px; height: 30px;">'$UPTIME''$SYMBOL'</td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 250px; height: 30px;">'$CPUTYPE'</td>' >> /var/www/html_karoshi/statistics.html
-echo '<td style="width: 100px; height: 30px;">'$TOTAL_MEMORY'</td></tr>' >> /var/www/html_karoshi/statistics.html
+echo '<tr><td style="height: 30px;">'$KAROSHI_SERVER'</td><td style="height: 30px;">'$UPTIME''$SYMBOL'</td><td style="height: 30px;">'$LASTBOOTDATE'</td><td style="height: 30px;">'$CPUTYPE'</td><td style="height: 30px;">'$TOTAL_MEMORY'</td></tr>' >> /var/www/html_karoshi/statistics.html
 }
 
 #Get data for the PDC
 KAROSHI_SERVER=`hostname-fqdn`
 UPTIME=`karoshi-uptime.sh -p uptime`
 UPTIME2=`echo $UPTIME | cut -d. -f1`
+LASTBOOT=$(cat /proc/uptime | cut -d" " -f1)
+LASTBOOTDATE=$(date +%H:%M" "%d-%m-%y --date '-'$LASTBOOT' secs')
 SYMBOL=%
 if [ $UPTIME2 -gt 100 ]
 then
-UPTIME=-
-SYMBOL=-
+	UPTIME=-
+	SYMBOL=-
 fi
 CPUTYPE=`cat /proc/cpuinfo | sed -n 5,5p | cut -d' ' -f3-`
 TOTAL_MEMORY=`free -m | sed -n 2,2p | tr -s ' ' ' ' | cut -d' ' -f2`
@@ -54,24 +51,26 @@ table_gen
 #SSh to any other enabled servers and get the data
 if [ `ls -1 /opt/karoshi/server_network/servers | wc -l` -gt 0 ]
 then
-source /opt/karoshi/server_network/domain_information/domain_name
-for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
-do
-KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-if [ $KAROSHI_SERVER != `hostname-fqdn` ]
-then
-#Check if server is online
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS = 0 ]
-then
-UPTIME=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'karoshi-uptime.sh -p uptime'`
-CPUTYPE=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'cat /proc/cpuinfo | sed -n 5,5p | cut -d" " -f3-'`
-TOTAL_MEMORY=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'free -m | sed -n 2,2p | tr -s " " " " | cut -d" " -f2'`
-table_gen
-fi
-fi
-done
+	source /opt/karoshi/server_network/domain_information/domain_name
+	for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
+	do
+		KAROSHI_SERVER=`basename $KAROSHI_SERVER`
+		if [ $KAROSHI_SERVER != `hostname-fqdn` ]
+		then
+			#Check if server is online
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHI_SERVER ls 1>/dev/null
+			SSHSTATUS=`echo $?`
+			if [ $SSHSTATUS = 0 ]
+			then
+				UPTIME=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'karoshi-uptime.sh -p uptime'`
+				LASTBOOT=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'cat /proc/uptime | cut -d" " -f1'`
+				LASTBOOTDATE=$(date +%H:%M" "%d-%m-%y --date '-'$LASTBOOT' secs')
+				CPUTYPE=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'cat /proc/cpuinfo | sed -n 5,5p | cut -d" " -f3-'`
+				TOTAL_MEMORY=`ssh -x $KAROSHI_SERVER PasswordAuthentication=no 'free -m | sed -n 2,2p | tr -s " " " " | cut -d" " -f2'`
+				table_gen
+			fi
+		fi
+	done
 fi
 echo '</tbody></table>' >> /var/www/html_karoshi/statistics.html
 exit

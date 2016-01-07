@@ -1,0 +1,140 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ssl_commercial_certs_cgi
+then
+	echo `date`:ssl_lets_encrypt - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ssl_commercial_certs_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_commercial_certs.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ssl_commercial_certs_cgi'check' ]
+then
+	echo `date`:ssl_lets_encrypt - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`:ssl_lets_encrypt - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-\n-+*' | sed 's/ /-/g'`
+
+
+
+if [ -z "$DATA" ]
+then
+	echo `date`:ssl_lets_encrypt - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+ALIASLIST=`echo "$DATA" | cut -s -d: -f5`
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`:ssl_lets_encrypt - Not called byssl_lets_encrypt.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`:ssl_lets_encrypt - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ "$ACTION" = addcert ]
+then
+	#Process aliaslist
+	for ALIAS in $(echo "$ALIASLIST" | sed 's/,/ /g')
+	do
+	
+		ALIASLIST2=$(echo "$ALIASLIST2 -d $ALIAS.$REALM")
+	done
+
+	source /opt/karoshi/server_network/domain_information/domain_name
+
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		echo "<li>$SERVERNAME - "$"Updating repository""</li>"
+		apt-get update
+
+		which git 1>/dev/null
+		if [ $? != 0 ]
+		then
+			echo "<li>$SERVERNAME - "$"Installing git""</li>"
+			apt-get install git
+		fi
+
+		echo "<li>$SERVERNAME - "$"Downloading git""</li>"
+		git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+
+		cd /opt/letsencrypt
+
+		./letsencrypt-auto --apache $ALIASLIST2
+	else
+		echo use ssh
+	fi
+fi
+
+exit
