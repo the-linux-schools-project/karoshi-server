@@ -500,6 +500,27 @@ if [ "$RESTARTFBAN" == yes ]; then
 fi
 
 #################################
+# Add the chosen git certificates to root certificate chain
+# Fixes error: https://github.com/the-linux-schools-project/karoshi-server/issues/4
+#################################
+[ ! -d /usr/share/ca-certificates/gitlab ] && mkdir /usr/share/ca-certificates/gitlab 1>/dev/null
+
+[ ! -f "/usr/share/ca-certificates/gitlab/${ALIAS}.${REALM}.pem" ] && cp "/etc/ssl/apache/${ALIAS}.${REALM}.pem" "/usr/share/ca-certificates/gitlab" 1>/dev/null
+[ ! -f "/usr/share/ca-certificates/gitlab/cacert.pem" ] && cp "/etc/ssl/root-ca/cacert.pem" "/usr/share/ca-certificates/gitlab" 1>/dev/null
+
+if ! grep -Fxq "${ALIAS}.${REALM}.pem" /etc/ca-certificates.conf
+then
+echo -e "gitlab/${ALIAS}.${REALM}.pem" >> /etc/ca-certificates.conf
+fi
+
+if ! grep -Fxq "cacert.pem" /etc/ca-certificates.conf
+then
+echo -e "gitlab/cacert.pem" >> /etc/ca-certificates.conf
+fi
+
+update-ca-certificates 1>/dev/null
+
+#################################
 #Make sure that apache is running
 #################################
 APACHESTATUS=$(ps -e | grep -c -w $APACHEVER)
