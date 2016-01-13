@@ -258,10 +258,14 @@ downloadgitlab="1"
 
 # Check whether the user has the tar.gz archive instead
 if [ -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz ]; then
+	echo '<li>'$"Existing tar.gz archive discovered."'</li><br>'
 	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
 	if [ "$checksum" != "11da28c6d65a109e9c261920094b2cac" ]; then
 		# Valid gitlab.tar.gz archive exists
+		echo '<li>'$"Archive validated, skipping download."'</li><br>'
 		downloadgitlab="0"
+	else
+		echo '<li>'$"Archive invalid!"'</li><br>'
 	fi
 fi
 
@@ -289,6 +293,8 @@ if [ "$downloadgitlab" == "1" ]; then
 			sleep 5
 			exit 101
 		fi
+	else
+		echo '<li>'$"Existing .deb archive validated, skipping download."'</li><br>'
 	fi
 fi
 
@@ -303,7 +309,7 @@ mkdir /opt/karoshi/.tempdata/gitlab_temp
 dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp &>/dev/null
 
 # Copy files into place
-echo '<li>'$"Copying Gitlab files into place - This make take a while."'</li><br>'
+echo '<li>'$"Copying Gitlab files into place - This may take a while."'</li><br>'
 cp -rf /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
 
 # Symlink gitlab-ctl
@@ -503,6 +509,7 @@ fi
 # Add the chosen git certificates to root certificate chain
 # Fixes error: https://github.com/the-linux-schools-project/karoshi-server/issues/4
 #################################
+echo '<li>'$"Copying certificates into the root certificate chain."'</li><br>'
 [ ! -d /usr/share/ca-certificates/gitlab ] && mkdir /usr/share/ca-certificates/gitlab 1>/dev/null
 
 [ ! -f "/usr/share/ca-certificates/gitlab/${ALIAS}.${REALM}.pem" ] && cp "/etc/ssl/apache/${ALIAS}.${REALM}.pem" "/usr/share/ca-certificates/gitlab" 1>/dev/null
@@ -518,6 +525,7 @@ then
 echo -e "gitlab/cacert.pem" >> /etc/ca-certificates.conf
 fi
 
+echo '<li>'$"Updating the root certificate chain."'</li><br>'
 update-ca-certificates 1>/dev/null
 
 #################################
