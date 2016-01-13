@@ -260,7 +260,7 @@ downloadgitlab="1"
 if [ -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz ]; then
 	echo '<li>'$"Existing tar.gz archive discovered."'</li><br>'
 	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
-	if [ "$checksum" != "11da28c6d65a109e9c261920094b2cac" ]; then
+	if [ "$checksum" == "11da28c6d65a109e9c261920094b2cac" ]; then
 		# Valid gitlab.tar.gz archive exists
 		echo '<li>'$"Archive validated, skipping download."'</li><br>'
 		downloadgitlab="0"
