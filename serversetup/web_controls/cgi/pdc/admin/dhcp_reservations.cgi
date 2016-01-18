@@ -48,13 +48,13 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"DHCP Reservations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter({
@@ -72,14 +72,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-		<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		<script src="/all/mobile_menu/sdmenu.js">
 			/***********************************************
 			* Slashdot Menu script- By DimX
-			* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-			* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+			* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+			* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 			***********************************************/
 		</script>
-		<script type="text/javascript">
+		<script>
 		// <![CDATA[
 		var myMenu;
 		window.onload = function() {
@@ -158,7 +158,7 @@ done
 [ -z "$ACTION" ] && ACTION=view
 
 function show_warnings {
-echo '<script type="text/javascript">
+echo '<script>
 alert("'$MESSAGE'");
 window.location = "/cgi-bin/admin/dhcp_reservations.cgi";
 </script>'
@@ -299,7 +299,7 @@ then
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'"><br><br>'
 	fi
 else
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
 	<td style="vertical-align: top;">'
@@ -322,7 +322,7 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
 		then
 		SHOWENTRIES=yes
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th><th></th><th></th></tr></thead><tbody>'
 
 		for CLIENTHOSTNAMES in /opt/karoshi/server_network/dhcp/reservations/*
@@ -348,7 +348,7 @@ fi
 
 function add_reservation {
 
-echo '<input type="hidden" name="_ACTION_reallyadd_" value="English"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<input type="hidden" name="_ACTION_reallyadd_" value="English"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Host name"'</td>
 <td><input tabindex= "1" style="width: '$WIDTH4'px;" name="_CLIENTHOSTNAME_" value="'$CLIENTHOSTNAME'" 
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>

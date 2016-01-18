@@ -48,7 +48,7 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Monitorix System Monitor"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Monitorix System Monitor"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -154,7 +154,7 @@ ACCESSPORT=50001
 [ `echo $HTTP_REFERER | grep -c ":50002"` -gt 0 ] && ACCESSPORT=50002
 source /opt/karoshi/server_network/domain_information/domain_name
 echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td>

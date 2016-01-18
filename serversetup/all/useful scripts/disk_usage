@@ -45,7 +45,12 @@ function generate_data {
 
 if [ $UPLINKS = yes ]
 then
-	echo '<a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDERUP'_" type="image" class="images" src="'$ICON2'" value=""><span>'$FOLDERUP'</span></a> <b>'$DISKPATH'</b> <small>'`date +%d-%m-%y`'</small><br><br>' > /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+	echo '
+	<button class="info" name="_Delete_" value="_CHOICE_'$FOLDERUP'_">
+	<img src="'$ICON2'" alt="'$FOLDERUP'">
+	<span>'$FOLDERUP'</span>
+	</button>
+	 <b>'$DISKPATH'</b> <small>'`date +%d-%m-%y`'</small><br><br>' > /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 else
 	echo "<b>"$DISKPATH"</b> <small>"`date +%d-%m-%y`"</small><br><br>" > /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 fi
@@ -99,7 +104,12 @@ then
 
 			if [ $SHOWSUBLINKS = yes ]
 			then
-				echo '<tr><td><a class="info" href="javascript:void(0)"><input name="_CHOICE_'$FOLDER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$FOLDERSHORT'</span></a></td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+				echo '<tr><td>
+				<button class="info" name="_Delete_" value="_CHOICE_'$FOLDER'_">
+				<img src="'$ICON1'" alt="'$FOLDERSHORT'">
+				<span>'$FOLDERSHORT'</span>
+				</button>
+				</td><td><div class="BarLabel">'$FOLDERSHORT'</div></td><td>'$SIZE' '$SUFFIX'</td><td class="BarFull"><img src="/images/disk_usage/'$COLOUR'.png" height="12" width="'$PERCENT'%"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 			fi
 
 			if [ $SHOWSUBLINKS = no ]

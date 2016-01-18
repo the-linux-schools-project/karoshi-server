@@ -48,19 +48,19 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client software packages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client software packages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -165,7 +165,7 @@ then
 </div></div><div id="mobileactionbox">'
 else
 	echo '<form action="/cgi-bin/admin/linux_client_software_controls.cgi" method="post"><input name="_VERSION_" value="'$VERSION'" type="hidden">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
 <b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Software Controls"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will be installed by your linux client computers on boot."'</span></a></td></tr></tbody></table></form><br>'
 fi
 
@@ -183,7 +183,7 @@ echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" 
 
 if [ $MOBILE = no ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH'px;">'$"Location"'</td><td>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH'px;">'$"Location"'</td><td>'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
@@ -221,7 +221,7 @@ do
 	if [ `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software | wc -l` -gt 0 ]
 	then
 		echo '
-		<b>'$"Location"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		<b>'$"Location"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 		<tr><td style="width: '$WIDTH'px;"><b>'$"Software Package"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></td></tr>'
 		for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software`
 		do

@@ -50,7 +50,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Set up Ruby CAS Authentication"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -128,7 +128,7 @@ fi
 if [ $SHOW_LDAP = yes ]
 then
 echo '<b>'$"Parameters"'</b><br><br>
-<table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left; height: 15px;" ><tbody>
 <tr><td style="width: 180px;">'$LDAPSERVERMSG1'</td><td>'
 #Generate list of ldap servers for authentication
 echo '<select name="_LDAPSERVER_">

@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -60,14 +60,14 @@ echo '
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -116,7 +116,7 @@ fi
 
 
 
-echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td ><input value="'$REMOTE_USER'" tabindex="1" style="width: '$WIDTH1'px;" maxlength="22" size="20" name="_NAME_"></td></tr>
 <tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '$WIDTH1'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>

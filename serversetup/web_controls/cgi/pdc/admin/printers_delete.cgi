@@ -43,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete a Network Printer"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete a Network Printer"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -96,7 +96,7 @@ exit
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><b>'$"Delete a Network Printer"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
@@ -122,7 +122,7 @@ echo '</div></body></html>'
 exit
 fi
 #Show printer list to choose from
-echo '  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '  <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">'$"Printer"'</td><td>'

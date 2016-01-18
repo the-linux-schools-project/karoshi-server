@@ -57,7 +57,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Quota Warning Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><script src="/all/stuHover.js" type="text/javascript"></script><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Quota Warning Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><script src="/all/stuHover.js" type="text/javascript"></script><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################
@@ -72,7 +72,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/email_quota_settings2.cgi" method="post">'
 echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail Quota Warning Settings"'</div><br>'
-echo '<table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<table class="standard" style="text-align: left; height: 30px;" ><tbody>'
 #Get current email quota settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Banned Users"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"<link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Banned Users"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"<link rel="stylesheet" href="/css/$STYLESHEET"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

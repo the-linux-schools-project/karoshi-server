@@ -50,10 +50,10 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Service Status"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-  <script type="text/javascript">
+  <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -73,9 +73,9 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 // -->
   </script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -87,14 +87,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -133,7 +133,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"Service Status"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></td>
@@ -175,7 +175,7 @@ then
 source /opt/karoshi/server_network/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
-echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
 for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 do
 KAROSHISERVER=`basename $KAROSHI_SERVER`
@@ -203,7 +203,7 @@ then
 source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
-echo '<b>'$"Federated Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<b>'$"Federated Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
 echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'<br><br>'
 cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/* | sed '/<a href/c'"&nbsp"
 echo '</span></a><br>'$FEDERATED_SERVER'</td>'
@@ -230,7 +230,7 @@ fi
 
 if [ $SERVERLISTCOUNT -gt 1 ] 
 then
-echo '<b>'$"All Servers"'</b><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_allservers_" type="image" class="images" src="'$SERVERICON2'" value=""><span>'$"All Servers"'</span></a><br>'$"All Servers"'</td></tr></tbody></table>'
+echo '<b>'$"All Servers"'</b><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_allservers_" type="image" class="images" src="'$SERVERICON2'" value=""><span>'$"All Servers"'</span></a><br>'$"All Servers"'</td></tr></tbody></table>'
 fi
 
 echo '</div></form></div></body></html>'

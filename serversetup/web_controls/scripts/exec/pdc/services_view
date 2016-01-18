@@ -215,7 +215,7 @@ TABLECLASS=standard
 echo '<form name="myform" action="/cgi-bin/admin/services_view2.cgi" method="post">'
 echo '<input name="_SERVERNAME_'$SERVERNAME''$ALLSERVERS'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_" value="" type="hidden">
 
-<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr>
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr>
 <th style="width: 120px;"><b>'$"Service"'</b></th><th style="width: 180px;"><b>'$"Function"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 #Make sure the list of suggested services is unique
@@ -291,7 +291,13 @@ then
 		check_status
 
 		#Show service details
-		echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+		
+		echo "<tr><td><b style=\"color:$FONTCOLOR\">$SERVICENAME</b></td><td><b style=\"color:$FONTCOLOR\">${!SERVICENAME}</b></td><td>
+		<button class=\"info\" name=\"_Control_\" value=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\">
+		<img src=\"$ICON\" alt=\"$SERVICENAME - $MESSAGE\">
+		<span>$SERVICENAME - $MESSAGE</span>
+		</button>
+		</td></tr>"
 	done 
 	############################
 	#Check all other services
@@ -301,7 +307,12 @@ then
 		if [ `echo $DSERVICES | grep -c -w $SERVICENAME` = 0 ]
 		then
 			check_status
-			echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+			echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td>
+			<button class=\"info\" name=\"_Control_\" value=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\">
+			<img src=\"$ICON\" alt=\"$SERVICENAME - $MESSAGE\">
+			<span>$SERVICENAME - $MESSAGE</span>
+			</button>
+			</td></tr>"
 		fi
 	done
 
@@ -365,7 +376,7 @@ else
 		do
 			check_status
 			#Show service details
-			echo "<tr><td><FONT COLOR=\"$FONTCOLOR\"><b>$SERVICENAME</b></font></td><td><FONT COLOR=\"$FONTCOLOR\"><b>${!SERVICENAME}</b></font></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
+			echo "<tr><td><b style=\"color:$FONTCOLOR\">$SERVICENAME</p></td><td><b style=\"color:$FONTCOLOR\">${!SERVICENAME}</b></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
 		done 
 		############################
 		#Check all other services

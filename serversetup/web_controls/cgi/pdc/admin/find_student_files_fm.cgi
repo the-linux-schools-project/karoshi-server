@@ -51,14 +51,14 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Find student files and folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -102,7 +102,7 @@ echo '
  value="'$USERNAME'" size="20" type="text"><br>
 '
 else
-echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<div id="suggestions"></div><table class="standard" style="text-align: left;" >
     <tbody>
 
 <tr><td style="width: 180px;"><b>'$"File / folder name"'</b></td><td>

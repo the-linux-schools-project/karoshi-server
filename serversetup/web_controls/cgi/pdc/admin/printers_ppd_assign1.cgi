@@ -43,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -135,12 +135,12 @@ then
 	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign PPD File"'</b></a></td>'
 else
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="standard" style="text-align: left;" >
 	<tbody><tr><td><b>'$"Assign PPD File"'</b></td>'
 fi
 
 echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."'</span></a></tr></tbody></table>
-<br><input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left; height: 120px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+<br><input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
 #Show Printername
 echo '<tr><td style="width: 180px;">'$"Printer"'</td><td>'$PRINTERNAME'</td></tr>'
 

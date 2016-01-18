@@ -164,7 +164,7 @@ fi
 function viewlogs {
 if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Time"'</b></td><td></td><td style="width: '$WIDTH3'px;"><b>'$"Client"'</b></td><td></td><td><b>'$"Website"'</b></td></tr>'
 	sort -t">" -s -k 6 /opt/karoshi/.tempdata/$USERNAME.$$ | sed 's/<form action="dg_view_site_logs2.cgi" method="post">//g' | sed 's/<form action="dg_view_computer_logs.cgi" method="post">//g' | sed 's/<\/form>//g'
 	rm -f /opt/karoshi/.tempdata/$USERNAME.$$

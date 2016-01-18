@@ -37,14 +37,14 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta charset="UTF-8">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
   <title>'$"Web Management"'</title>
-<link href="/css/'$STYLESHEET'?d=`date +%F`" rel="stylesheet" type="text/css">
+<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -111,7 +111,7 @@ if [ $MOBILE = no ]
 then
 	echo '<div id="actionbox3"><div id="infobox">'
 	[ -f /var/www/html_karoshi/statistics.html ] && cat /var/www/html_karoshi/statistics.html
-	echo '<br><br><br><img src="/images/valid-html401-blue.png" alt="Valid HTML 4.01 Transitional"></div>'
+	echo '<br><br><br><img src="/images/w3c-html5.png"  height="44" width="100" alt="Valid HTML 5"></div>'
 else
 	echo "<br><br>"
 fi

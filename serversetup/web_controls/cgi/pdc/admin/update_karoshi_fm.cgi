@@ -50,10 +50,10 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Update Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript">
+<script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -76,14 +76,14 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 if [ $MOBILE = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -158,17 +158,19 @@ then
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
 else
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Linux Schools Server patches that are available."'</span></a></td></tr></tbody></table><br>'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td>
 <form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post">
-<input name="_ACTION_'$ACTION'_" type="submit" class="button" value="'$MESSAGE'">
+<button class="button" name="Updates" value="_ACTION_'$ACTION'_">
+'$MESSAGE'
+</button>
 </form></td><td>
 <form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
-<input name="" type="submit" class="button" value="'$"Refresh list"'">
+<input name="RefreshList" type="submit" class="button" value="'$"Refresh list"'">
 </form></td></tr></tbody></table>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

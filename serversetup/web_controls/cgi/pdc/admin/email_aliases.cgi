@@ -48,12 +48,12 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Aliases"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript"></script><script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Aliases"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script></script><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -65,14 +65,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -245,7 +245,7 @@ then
 	<span>'$"E-Mail Aliases"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td>
 <td><a href="email_domains.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Domains"'"></a></td></tr>
@@ -256,7 +256,7 @@ else
 	ICON3="/images/submenus/email/alias_view.png"
 
 	echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Aliases"'</div></td>
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td>

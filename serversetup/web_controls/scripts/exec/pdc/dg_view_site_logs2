@@ -189,7 +189,7 @@ fi
 function viewlogs {
 if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ] || [ -f /opt/karoshi/.tempdata/sitelog_allowed.$$ ]
 then
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th><b>'$"Client"'</b></th></tr></thead><tbody>'
 	if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ]
 	then	

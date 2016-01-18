@@ -142,7 +142,7 @@ then
 exit 102
 fi
 COUNTER=$LOGLENGTH
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" >'
 echo '<tbody>'
 while [ $COUNTER -gt 0 ]
 do

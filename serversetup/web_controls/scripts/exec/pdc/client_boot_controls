@@ -135,7 +135,7 @@ if [ -d /opt/karoshi/asset_register/locations/$LOCATION/ ]
 then
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
 if [ $MOBILE = no ]
@@ -212,7 +212,7 @@ else
 
 #Search
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
 if [ $MOBILE = no ]

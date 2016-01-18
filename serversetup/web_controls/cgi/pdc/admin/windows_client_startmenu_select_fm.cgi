@@ -47,10 +47,10 @@ let GROUPEND=$THISYEAR+5
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Windows Start menu - Select"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript">
+<script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -108,7 +108,7 @@ FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
 fi
 #Show list of profiles to choose from
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Uploaded file"'</td><td>'$FILENAME'</td></tr>
 <tr><td>'$"Windows Version"'</td><td>
 <select name="_WINDOWSVER_" style="width: 200px;">
@@ -126,7 +126,7 @@ echo '
   <br><input name="_FILENAME_" value="'$FILENAME'" type="hidden">
   <br>
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
  <tbody><tr><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td><td style="width: '$WIDTH1'px;"></td><td style="width: '$WIDTH2'px;"><b>'$"Group"'</b></td></tr>'
 
 COUNTER=1

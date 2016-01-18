@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"View E-Mail - SMS Alerts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -62,7 +62,7 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="actionbox"><table class="standard" style="text-align: left; " ><tbody>
 <tr><td style="vertical-align: top;"><b>'$"View E-Mail - SMS Alerts"'</b></td>
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a>
@@ -76,7 +76,7 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left; " bor
 </tr></tbody></table>
 <br>'
 
-echo '<table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; " >
     <tbody>
 <tr><td style="width: 120px;"><b>'$"Contact Name"'</b></td><td style="width: 180px;"><b>'$"E-Mail"'</b></td><td style="width: 180px;"><b>'$"Sender"'</b></td><td style="width: 140px;"><b>'$"E-Mail Server"'</b></td><td><b>'$"Enabled"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><b>'$"Test"'</b></td></tr>'
 

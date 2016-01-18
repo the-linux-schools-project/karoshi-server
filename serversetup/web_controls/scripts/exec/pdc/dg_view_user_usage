@@ -120,7 +120,7 @@ then
 <input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'">
 </form></td></tr></tbody></table><br>
 </div><div id="infobox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Hits"'</b></td><td style="width: 120px;"><b>'$"Log Date"'</b></td></tr>'
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Hits"'</b></td><td style="width: 120px;"><b>'$"Log Date"'</b></td></tr>'
 sort -t">" -s -k 13 /opt/karoshi/.tempdata/usage_"$USERNAME".$$
 	rm -f /opt/karoshi/.tempdata/usage_"$USERNAME".$$
 	echo '</tbody></table><br></div>'

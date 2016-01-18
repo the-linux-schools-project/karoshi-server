@@ -37,7 +37,7 @@ source /opt/karoshi/web_controls/group_dropdown_def
 #Check if timout should be disabled
 if [ `echo $REMOTE___ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 YEAR=`date +%Y`
@@ -50,7 +50,7 @@ let ENDYEAR=$YEAR+2
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Label Groups"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -59,32 +59,37 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"Label Groups"'</b></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$"View Groups"'"></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="ViewGroups" value="_">
+'$"View Groups"'
+</button>
+</td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Labelling_groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will let you add labels to your groups. The labels are shown to help you choose the correct group when adding new users to the system."'</span></a></td></tr></tbody></table>
 <br></div><div id="infobox">'
 
 #groups
 COUNTER=1
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-GROUPNAME=`basename $GROUPNAMES`
-UPPERGROUPNAME=${GROUPNAME^^}
-LABEL=${!UPPERGROUPNAME}
-echo '<td style="width: 100px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="10" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 40px;"></td>'
+	GROUPNAME=`basename $GROUPNAMES`
+	UPPERGROUPNAME=${GROUPNAME^^}
+	LABEL=${!UPPERGROUPNAME}
+	echo '<td style="width: 100px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="10" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 40px;"></td>'
 
-if [ $COUNTER = 3 ]
-then
-echo "</tr><tr>"
-COUNTER=0
-fi
-let COUNTER=$COUNTER+1
+	if [ $COUNTER = 3 ]
+	then
+		echo "</tr><tr>"
+		COUNTER=0
+	fi
+	let COUNTER=$COUNTER+1
 done
 echo '</tbody></table><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div>
 </div>
 </form>
 </div></body>

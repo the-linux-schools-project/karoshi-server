@@ -5,7 +5,12 @@ body {
 	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
 	font-size: 10pt;
 	margin: 0;
-	height: 100%;
+	position:fixed;
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
 }
 
 #pagecontainer {
@@ -13,10 +18,19 @@ body {
 	margin: 0 auto 0 auto;
 	height: 100%;
 	min-width: 1200px;
-	max-width: 1300px;
+	max-width: 1400px;
 	display: flex;
 	flex-direction: column;
 	position: relative;
+}
+
+.texttop {
+vertical-align:text-top;
+}
+
+.webmanagement-title {
+	font-weight: bold;
+	font-size : 16pt;	
 }
 
 .reinstall a:link,
@@ -103,6 +117,8 @@ table.tablesorter {
 	margin:10px 0pt 15px;
 	font-size: 10pt;
 	text-align: left;
+	border-spacing: 2px;
+	padding: 2px;
 }
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {
 	background-color: #e6EEEE;
@@ -356,8 +372,8 @@ a.searchlink:hover
 .smallbutton
 {
    padding: 1px;
-   min-width: 50px;
    height: 15px;
+   min-width: 50px;
 }
 
 .squarebutton
@@ -385,6 +401,129 @@ a.searchlink:hover
         margin: 2px 2px 2px 2px;
 	z-index:100;
 }
+
+       .info{
+        position:relative;           /*this is the key*/
+        z-index:24;
+        color:#000000;               /* colour of display text */
+        border:1px;    /* border colour */
+        text-decoration:none;
+        font-style:italic;
+        }
+
+        .info:hover {
+        z-index:25;
+        background-color:#ffffff;
+
+        }
+
+        .info span{
+        display: none;  /* hide the span text using this css */
+        }
+
+        .info:hover span{ /*the span will display just on :hover state*/
+        display:block;
+        position:absolute;
+        top: 1.5em;
+        left: 2em;
+        min-width:15em;
+        border:1px solid #3B6694; /* border colour */
+        background-color:#ffffff; /* background colour here */
+        color:#000000;         /* text colour */
+        text-align: center;
+        font-size: .8em;
+        font-style:italic;
+        z-index:30;
+        }
+
+        .infoleft:hover span{ /*the span will display just on :hover state*/
+        left: -10em;
+        }
+
+        .infocenter:hover span{ /*the span will display just on :hover state*/
+        left: -3em;
+        }
+
+        .infoabove:hover span{ /*the span will display just on :hover state*/
+        top: -5em;
+        }
+
+	.info3{
+        position:relative;           /*this is the key*/
+        z-index:24;
+        color:#000000;               /* colour of display text */
+        border:1px;    /* border colour */
+        text-decoration:none;
+        font-style:italic;
+        }
+
+        a.info3:hover {
+        z-index:25;
+        background-color:#ffffff;
+
+        }
+
+        .info3 span{
+        display: none;  /* hide the span text using this css */
+        }
+
+        .info3:hover span{ /*the span will display just on :hover state*/
+        display:block;
+        position:absolute;
+        top: 1.5em;
+        left: 3em;
+        width:22em;
+        border:1px solid #3B6694; /* border colour */
+        background-color:#ffffff; /* background colour here */
+        color:#000000;         /* text colour */
+        text-align: center;
+        font-size: .8em;
+        font-style:italic;
+        z-index:30;
+        }
+
+        .info2{
+        position:relative;           /*this is the key*/
+        z-index:24;
+        color:#000000;               /* colour of display text */
+        border:0px dotted #999;    /* border colour */
+        text-decoration:none;
+        font-style:italic;
+        }
+
+        .info2:hover {
+        z-index:25;
+        background-color:#ffffff;
+
+        }
+
+        .info2 span{
+        display: none;  /* hide the span text using this css */
+        }
+
+        .info2:hover span{ /*the span will display just on :hover state*/
+        display:block;
+        position:absolute;
+        top: 1.5em;
+        left: 3em;
+        width:15em;
+        border:0px solid #3B6694; /* border colour */
+        background-color:#ffffff; /* background colour here */
+        color:#000000;         /* text colour */
+        text-align: center;
+        font-size: .8em;
+        font-style:italic;
+        z-index:30;
+        }
+        .images {
+        vertical-align:bottom;
+				border: none;
+        }
+
+
+
+
+
 
         a.info{
         position:relative;           /*this is the key*/

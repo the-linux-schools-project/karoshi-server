@@ -122,7 +122,7 @@ echo '<b>Itadminshare '$"ISO Images"'</b><br><br>'
 if [ `ls -1 /home/itadminshare/distributions/linux/ | wc -l` -gt 0 ]
 then
 #Show list of distros in itadminshare
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody>'
 
 for ISOIMAGES in /home/itadminshare/distributions/linux/*.iso
@@ -150,7 +150,7 @@ then
 [ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
 if [ `ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l` -gt 0 ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody>'
 for ISOIMAGES in /home/distributions/linux_iso/*.iso
 do

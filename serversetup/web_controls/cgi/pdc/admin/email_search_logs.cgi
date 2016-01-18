@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
@@ -217,7 +217,7 @@ echo '<form name="testform" action="/cgi-bin/admin/email_search_logs.cgi" method
  <input type="hidden" name="_ACT_" value="yes"> 
   <div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Search E-Mail logs"'</div><br>
-<table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; " >
 <tbody>
 <tr><td style="width: 180px;">'$"Date"'</td>
 <td>'

@@ -47,7 +47,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change Timeout"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -58,7 +58,7 @@ echo '
 echo '<form action="/cgi-bin/admin/remote_management_change_timeout.cgi" method="post">
 <div id="actionbox"><div class="sectiontitle">'$"Change Timeout"'</div>
 <br>
-<table class="standard" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; height: 30px;" >
 <tbody>
 <tr>
 <td style="width: 200px;">'$"Timeout"'</td>'

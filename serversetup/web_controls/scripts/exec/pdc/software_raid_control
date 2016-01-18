@@ -152,7 +152,7 @@ RAID_DEVICE=`blkid | grep $RAID_UUID | cut -d: -f1`
 #Check that the raid is running
 if [ `mdadm --detail --scan | grep -c ARRAY` = 0 ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">$"Raid UUID"</td><td>'$RAID_UUID'</td></tr>
 <tr><td>'$"Raid State"'</td><td>'$"The sofware raid is not running."'</td></tr>
 <tr><td>'$"Custom command"'</td><td><form action="/cgi-bin/admin/software_raid_control2.cgi" method="post">
@@ -243,7 +243,7 @@ RAID_SIZE=`echo -e "$RAID_SIZE" | sed "s/ * / /g" | sed -n 2,2p | cut -d" " -f2`
 RAID_STATE=`mdadm --detail $RAID_DEVICE | grep "State :" | sed "s/ * / /g" | cut -d: -f2 | sed "s/^ //g"`
 REBUILDSTATUS=`mdadm --detail $RAID_DEVICE | grep "Rebuild Status :" | cut -d: -f2 | sed "s/^ //g"`
 echo '<b>'$"Raid Information"'</b><br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Raid Name"'</td><td>'$RAID_DEVICE'</td></tr>
 <tr><td>'$"Raid UUID"'</td><td>'$RAID_UUID'</td></tr>
 <tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>

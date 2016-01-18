@@ -144,7 +144,7 @@ then
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
 #Show table of sites
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 250px;"><b>'$"Banned Users"'</b></td><td style="width: 70px;"><b>'$"Duration"'</b></td><td style="width: 100px;"><b>'$"View Incidents"'</b></td><td style="width: 100px;"><b>'$"Allow"'</b></td></tr>'
 while [ $COUNTER -le $USERCOUNT ]
 do

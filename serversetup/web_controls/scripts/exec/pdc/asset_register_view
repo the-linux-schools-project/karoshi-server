@@ -314,13 +314,13 @@ fi
 
 if [ $ACTION = viewtcpip ]
 then
-	echo '<b>'$"Asset Register"' - '$"Allocated TCPIP Numbers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<b>'$"Asset Register"' - '$"Allocated TCPIP Numbers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	</tr></tbody></table>'
 
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 	touch /opt/karoshi/asset_register/tcpip_addresses
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	<tr><th style="width: '$WIDTH1'px;">'$"TCPIP"'</th>'
 
 	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;">'$"Location"'</th>'
@@ -383,7 +383,7 @@ fi
 ##########################
 if [ $ACTION = export ]
 then
-	echo '<b>'$"Asset Register"' - '$"Export"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<b>'$"Asset Register"' - '$"Export"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_cm2_" type="submit" class="button" value="'$"Add Asset"'"></td>
 	</tr></tbody></table>'
@@ -411,7 +411,7 @@ fi
 ##########################
 if [ $ACTION = adddesc ]
 then
-	echo '<b>'$"Add description"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<b>'$"Add description"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
 	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a description that you want to appear in the description drop down list."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyadddesc_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
 fi
@@ -484,7 +484,7 @@ fi
 ##########################
 if [ $ACTION = viewdescriptions ]
 then
-	echo '<b>'$"Asset Register"' - '$"Descriptions"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<b>'$"Asset Register"' - '$"Descriptions"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_adddesc_LOCATION_notset_" type="submit" class="button" value="'$"Add Description"'"></td>
 	</tr></tbody></table><br>'
@@ -492,7 +492,7 @@ then
 
 	if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
 	then
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 		<tr><th style="width:400px;"><b>'$"Description"'</b></th><th style="width: 20px;"></th></tr></thead><tbody>'
 
 		for DESCRIPTIONFILES in /opt/karoshi/asset_register/descriptions/*
@@ -510,7 +510,7 @@ fi
 ##########################
 if [ $ACTION = addsupplier ]
 then
-	echo '<b>'$"Add supplier"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<b>'$"Add supplier"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Supplier"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
 	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a supplier that you want to be available in the supplier drop down menu."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyaddsupplier_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
 
@@ -587,7 +587,7 @@ fi
 ##########################
 if [ $ACTION = viewsuppliers ]
 then
-	echo '<b>'$"Asset Register"' - '$"Suppliers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<b>'$"Asset Register"' - '$"Suppliers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_addsupplier_LOCATION_notset_" type="submit" class="button" value="'$"Add Supplier"'"></td>
 	</tr></tbody></table><br>'
@@ -596,7 +596,7 @@ then
 	then
 		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
 		then
-			echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 			<tr></th><th style="width:400px;"><b>'$"Supplier"'</b></th><th style="width: 20px;"></tr></thead><tbody>'
 
 			for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
@@ -615,7 +615,7 @@ fi
 ##########################
 if [ $ACTION = addbudget ]
 then
-	echo '<b>'$"Add budget"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<b>'$"Add budget"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Budget"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
 	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a budget that you want to be available in the budget drop down menu."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyaddbudget_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
 fi
@@ -680,7 +680,7 @@ fi
 ##########################
 if [ $ACTION = viewbudgets ]
 then
-	echo '<b>'$"Asset Register"' - '$"Budgets"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '<b>'$"Asset Register"' - '$"Budgets"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 	<td style="vertical-align: top;"><input name="_ACTION_addbudget_LOCATION_notset_" type="submit" class="button" value="'$"Add Budget"'"></td>
 	</tr></tbody></table><br>'
@@ -689,7 +689,7 @@ then
 	then
 		if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
 		then
-			echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 			<tr><th style="width:400px;"><b>'$"Budget"'</b></th><th style="width: 20px;"></th></tr></thead><tbody>'
 
 			for BUDGETFILES in /opt/karoshi/asset_register/budgets/*
@@ -735,7 +735,7 @@ then
 		TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/$LOCATION/* | wc -l`
 
 
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td><b>'$"Totals" - $LOCATION'</b></td></tr></tbody></table><br>'
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a></td><td><b>'$"Totals" - $LOCATION'</b></td></tr></tbody></table><br>'
 
 		echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>'
 		echo '<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
@@ -769,7 +769,7 @@ then
 	TOTAL19=`grep -h -R ASSETTYPE=\"19\" /opt/karoshi/asset_register/locations/* | wc -l`
 	TOTAL20=`grep -h -R ASSETTYPE=\"20\" /opt/karoshi/asset_register/locations/* | wc -l`
 	TOTAL21=`grep -h -R ASSETTYPE=\"21\" /opt/karoshi/asset_register/locations/* | wc -l`
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'</span></a></td><td><b>'$"Totals"'</b></td></tr></tbody></table><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'</span></a></td><td><b>'$"Totals"'</b></td></tr></tbody></table><br>'
 	echo '<table class="'$TABLECLASS'" style="text-align: left; width: 100%;"><tbody>
 	<tr><td>'$"Curriculum Computer"'</td><td>'$TOTAL1'</td><td>'$"Admin Computer"'</td><td>'$TOTAL2'</td><td>'$"Curriculum Laptop"'</td><td>'$TOTAL3'</td><td>'$"Admin Laptop"'</td><td>'$TOTAL4'</td></tr>
 	<tr><td>'$"Curriculum Tablet"'</td><td>'$TOTAL5'</td><td>'$"Admin Tablet"'</td><td>'$TOTAL6'</td><td>'$"Curriculum PDA"'</td><td>'$TOTAL7'</td><td>'$"Admin PDA"'</td><td>'$TOTAL8'</td></tr>
@@ -791,7 +791,7 @@ then
 	WIDTH=90
 	[ $MOBILE = yes ] && WIDTH=70
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Statistics"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Search"'</b></td>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Statistics"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Search"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Import"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Export"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"TCPIP"'</b></td>
@@ -811,11 +811,11 @@ then
 	</tr></tbody></table><br>'
 	if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;"><b>'$"View Assets"' - Choose Location</b></td></tr></tbody></table><br>'
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><b>'$"View Assets"' - Choose Location</b></td></tr></tbody></table><br>'
 
 		[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
 		LOCCOUNTER=1
 		LOCATIONARRAY=( `ls /opt/karoshi/asset_register/locations/ | sort -f` )
 		ARRAYCOUNT=0
@@ -881,7 +881,7 @@ fi
 function asset_form {
 
 echo ' <input type="hidden" name="_ACTION_really'$ACTION'_ASSET_'$ASSET'_" value=""> 
-<table style="text-align: left;" border="0" cellpadding="2" cellspacing="2" class="'$TABLECLASS'"><tbody>'
+<table style="text-align: left;"  class="'$TABLECLASS'"><tbody>'
 if [ "$ACTION" = edit ]
 then
 	echo '<tr><td style="width: 180px;">'$"Asset Number"'</td><td>'$ASSET'</td></tr>'
@@ -1323,7 +1323,7 @@ if [ $OPTION = filter ]
 then
 ASSETTYPE=$ASSETCHOICE
 assign_asset_labels
-echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="submit" class="button" value="'$"Show all assets"'"></td>
 <td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>'
 
@@ -1337,7 +1337,7 @@ fi
 echo '</tr></tbody></table>
 '
 else
-echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
 <td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Add Asset"'"></td>'
 
@@ -1357,7 +1357,7 @@ fi
 if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 then
 	echo '
-<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th>'
 
 if [ $MOBILE = no ]
@@ -1411,7 +1411,7 @@ then
 	echo '<b>'$"Search Assets"'</b><br><br>
 	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallysearch_LOCATION_notset_" value="">
 	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br>
-	<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" ><tbody>
 	<tr><td style="width: 180px;">'$"Search"'</td><td><input name="_OPTION_" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."'</span></a></td></tr></tbody></table><br>'
 fi
 
@@ -1424,7 +1424,7 @@ then
 
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$"Name"'</td>'
 	if [ $MOBILE = no ]
 	then
@@ -1514,7 +1514,7 @@ then
 		BUDGET=`echo "$DATALINE" | cut -s -d, -f11 | sed 's/+/ /g' | sed 's/%3A/:/g'`
 		ASSIGNED=`echo "$DATALINE" | cut -s -d, -f12 | sed 's/+/ /g'`
 
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 		<tbody><tr><td style="width: 180px;"><b>'$"Adding Asset"'</b></td><td><b>'$COUNTER'/'$TOTALCOUNT'</b></td></tr>
 		<tr><td>'$"Identity"'</td><td>'$IDENTITY'</td></tr>
 		<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>

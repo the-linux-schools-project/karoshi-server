@@ -45,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
   <title>'$"Web Management - Upload Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
@@ -122,7 +122,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select
 echo '<input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">'
 echo '<input name="___UPLOADID___" value="'$UPLOADID'" type="hidden">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 180px;">'$"Web Folder"'</td><td><select name="___UPLOADFOLDER___" style="width: 185px;">'
 
 #Create folder list

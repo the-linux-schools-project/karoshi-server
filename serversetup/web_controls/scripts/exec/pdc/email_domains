@@ -186,7 +186,7 @@ then
 	echo '<form style="display: inline;" action="/cgi-bin/admin/email_domains.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyadd">'
 	if [ "$MOBILE" = no ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH1'px;">'$"Domain"'</td><td style="width: '$WIDTH2'px;"><input tabindex= "1" style="width: 200px;" name="_DOMAIN_" size="20" type="text"></td></tr>
 	</tbody></table>'
 	else
@@ -286,7 +286,7 @@ fi
 if [ "$ACTION" = view ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th></tr></thead><tbody>'
 
 	#Show default domain

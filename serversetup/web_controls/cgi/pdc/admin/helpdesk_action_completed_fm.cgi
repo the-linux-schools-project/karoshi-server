@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+echo '<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -108,7 +108,7 @@ source /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
 #Show job data
 echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>
 <input name="_JOBNAME_" value="'$JOBNAME'" type="hidden">
-<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; height: 91px;" >
 <tbody>
 <tr><td style="width: 180px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
 <tr><td>'$"Name"'</td><td>'$NAME'</td></tr>

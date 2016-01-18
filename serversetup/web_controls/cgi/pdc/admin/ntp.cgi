@@ -61,7 +61,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure NTP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure NTP"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -80,9 +80,9 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 }
 // -->
 </script><script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -117,7 +117,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Configure NTP"'</div><br>
-<table class="standard" style="text-align: left; height: 50px;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; height: 50px;" >
 <tbody><tr><td style="width: 180px;">'$"NTP Server"'</td>
 <td><input name="_NTPSERVER_" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the NTP server address that you want the servers to get the time from."'</span></a>
 </td></tr></tbody></table></div><div id="infobox">'

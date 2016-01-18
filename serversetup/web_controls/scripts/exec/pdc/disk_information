@@ -151,10 +151,10 @@ then
 	#Get partition info
 	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
 	<tr><td style=\"width: $WIDTH1"px";\"><b>Mount point</b></td>"
 	[ $MOBILE = no ] && echo "<td style=\"width: $WIDTH2"px";\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
-	echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
+	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 	COUNTER=1
 	while [ $COUNTER -le $MOUNTCOUNT ]
 	do
@@ -180,9 +180,9 @@ then
 			BARCOL=green
 		fi
 		let USE2=$USE2*$MULTI
-		echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-		[ $MOBILE = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
-		echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+		echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
+		[ $MOBILE = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+		echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 		let COUNTER=$COUNTER+1
 	done
@@ -250,7 +250,7 @@ then
 		DRIVESCALE=TB
 	fi
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
 	<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
 	<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
@@ -260,10 +260,10 @@ then
 
 	if [[ $DISK_AGE_WARN = 2 ]]
 	then
-		echo '<tr><td><FONT COLOR="red"><b>'$"Disk Age"'</b></font></td><td><FONT COLOR="red"><b>'$DISK_AGE' '$DISK_AGE_UNIT'</b></font></td></tr>'
+		echo '<tr><td style="color:red"><b>'$"Disk Age"'</b></td><td style="color:red"><b>'$DISK_AGE' '$DISK_AGE_UNIT'</b></td></tr>'
 	elif [[ $DISK_AGE_WARN = 1 ]]
 	then
-		echo '<tr><td><FONT COLOR="orange">'$"Disk Age"'</b></font></td><td><FONT COLOR="orange">'$DISK_AGE' '$DISK_AGE_UNIT'</b></font></td></tr>'
+		echo '<tr><td style="color:orange">'$"Disk Age"'</b></td><td style="color:orange">'$DISK_AGE' '$DISK_AGE_UNIT'</b></td></tr>'
 	else
 		echo '<tr><td>'$"Disk Age"'</td><td>'$DISK_AGE' '$DISK_AGE_UNIT'</td></tr>'
 	fi
@@ -275,7 +275,7 @@ then
 	then
 		if [ $PENDINGSECTORS -gt 0 ]
 		then
-			echo '<tr><td><FONT COLOR="red"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR="red"><b>'$PENDINGSECTORS'</b></font></td></tr>'
+			echo '<tr><td style="color:red"><b>'$"Pending Sectors"'</b></td><td style="color:red"><b>'$PENDINGSECTORS'</b></td></tr>'
 		else
 			echo '<tr><td>'$"Pending Sectors"'</td><td>'$PENDINGSECTORS'</td></tr>'
 		fi
@@ -283,10 +283,10 @@ then
 
 	if [[ $DISKTEMP > 50 ]]
 	then
-		echo '<tr><td><FONT COLOR="red"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR="red"><b>'$DISKTEMP' <sup>o</sup>C</b></font></td></tr>'
+		echo '<tr><td style="color:red"><b>'$"Disk temperature"'</b></td><td style="color:red"><b>'$DISKTEMP' <sup>o</sup>C</b></td></tr>'
 	elif [[ $DISKTEMP > 40 ]]
 	then
-		echo '<tr><td><FONT COLOR="orange">'$"Disk temperature"'</font></td><td><FONT COLOR="orange">'$DISKTEMP' <sup>o</sup>C</font></td></tr>'
+		echo '<tr><td style="color:orange">'$"Disk temperature"'</td><td style="color:orange">'$DISKTEMP' <sup>o</sup>C</td></tr>'
 	else
 		echo '<tr><td>'$"Disk temperature"'</td><td>'$DISKTEMP' <sup>o</sup>C</td></tr>'
 	fi
@@ -320,7 +320,7 @@ then
 		CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 		UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 		<tr><td style="width: '$WIDTH3'"px";">'$"Raid Level"'</td><td>'$RAIDLEVEL'</td></tr>
 		<tr><td>'$"Raid Size"'</td><td>'$ARRAYSIZE'</td></tr>
 		<tr><td>'$"Used Size"'</td><td>'$USEDSIZE'</td></tr>
@@ -351,10 +351,10 @@ then
 	#Get partition info
 	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 	<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
 	[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
-	echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
+	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 	COUNTER=1
 	while [ $COUNTER -le $MOUNTCOUNT ]
 	do
@@ -381,9 +381,9 @@ then
 	BARCOL=green
 	fi
 	let USE2=$USE2*'$MULTI'
-	echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-	[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
-	echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+	echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
+	[ '$MOBILE' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+	echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 	let COUNTER=$COUNTER+1
 	done
@@ -451,7 +451,7 @@ then
 	DRIVESCALE=TB
 	fi
 
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 	<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 	<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
@@ -459,10 +459,10 @@ then
 
 	if [[ $DISK_AGE_WARN = 2 ]]
 	then
-		echo "<tr><td><FONT COLOR=\"red\"><b>'$"Disk Age"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISK_AGE $DISK_AGE_UNIT</b></font></td></tr>"
+		echo "<tr><td style=\"color:red\"><b>'$"Disk Age"'</b></td><td style=\"color:red\"><b>$DISK_AGE $DISK_AGE_UNIT</b></td></tr>"
 	elif [[ $DISK_AGE_WARN = 1 ]]
 	then
-		echo "<tr><td><FONT COLOR=\"orange\">'$"Disk Age"'</b></font></td><td><FONT COLOR=\"orange\">$DISK_AGE $DISK_AGE_UNIT</b></font></td></tr>"
+		echo "<tr><td style=\"color:orange\">'$"Disk Age"'</b></td><td style=\"color:orange\">$DISK_AGE $DISK_AGE_UNIT</b></td></tr>"
 	else
 		echo "<tr><td>'$"Disk Age"'</td><td>$DISK_AGE $DISK_AGE_UNIT</td></tr>"
 	fi
@@ -475,18 +475,18 @@ then
 	then
 	if [ $PENDINGSECTORS -gt 0 ]
 	then
-	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+	echo "<tr><td style=\"color:red\"><b>'$"Pending Sectors"'</b></td><td style=\"color:red\"><b>$PENDINGSECTORS</b></td></tr>"
 	else
-	echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
+	echo "<tr><td>'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
 	fi
 	fi
 
 	if [[ $DISKTEMP > 50 ]]
 	then
-	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+	echo "<tr><td style=\"color:red\"><b>'$"Disk temperature"'</b></td><td style=\"color:red\"><b>$DISKTEMP <sup>o</sup>C</b></td></tr>"
 	elif [[ $DISKTEMP > 40 ]]
 	then
-	echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+	echo "<tr><td style=\"color:orange\">'$"Disk temperature"'</td><td style=\"color:orange\">$DISKTEMP <sup>o</sup>C</td></tr>"
 	else
 	echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 	fi
@@ -520,7 +520,7 @@ then
 	CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 	UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 	<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 	<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 	<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
@@ -553,10 +553,10 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$KAROSHI_SERVER' '\''
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
 [ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
-echo "<td><b>Avail</b></td><td><b>%Use</b></td></tr>"
+echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 COUNTER=1
 while [ $COUNTER -le $MOUNTCOUNT ]
 do
@@ -582,9 +582,9 @@ ALERTCOL=green
 BARCOL=green
 fi
 let USE2=$USE2*'$MULTI'
-echo "<tr><td><FONT COLOR=\"$ALERTCOL\">$MOUNTPOINT</font></td>"
-[ '$MOBILE' = no ] && echo "<td><FONT COLOR=\"$ALERTCOL\">$FILESYSTEM</font></td><td><FONT COLOR=\"$ALERTCOL\">$SIZE</font></td><td><FONT COLOR=\"$ALERTCOL\">$USED</font></td>"
-echo "<td><FONT COLOR=\"$ALERTCOL\">$AVAIL</font></td><td><FONT COLOR=\"$ALERTCOL\">$USE</font></td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
+[ '$MOBILE' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 let COUNTER=$COUNTER+1
 done
 echo "</tbody></table><br>"
@@ -626,7 +626,7 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 <tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
@@ -639,20 +639,20 @@ if [ ! -z "$PENDINGSECTORS" ]
 then
 if [ $PENDINGSECTORS -gt 0 ]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Pending Sectors"'</b></font></td><td><FONT COLOR=\"red\"><b>$PENDINGSECTORS</b></font></td></tr>"
+echo "<tr><td style=\"color:red\"><b>'$"Pending Sectors"'</b></td><td style=\"color:red\"><b>$PENDINGSECTORS</b></td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
+echo "<tr><td>'$"Pending Sectors"'</td><td>$PENDINGSECTORS</td></tr>"
 fi
 fi
 
 if [[ $DISKTEMP > 50 ]]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"red\"><b>'$"Disk temperature"'</b></font></td><td><FONT COLOR=\"red\"><b>$DISKTEMP <sup>o</sup>C</b></font></td></tr>"
+echo "<tr><td style=\"color:red\"><b>'$"Disk temperature"'</b></td><td style=\"color:red\"><b>$DISKTEMP <sup>o</sup>C</b></td></tr>"
 elif [[ $DISKTEMP > 40 ]]
 then
-echo "<tr><td style=\"width: 180px;\"><FONT COLOR=\"orange\">'$"Disk temperature"'</font></td><td><FONT COLOR=\"orange\">$DISKTEMP <sup>o</sup>C</font></td></tr>"
+echo "<tr><td style=\"color:orange\">'$"Disk temperature"'</td><td style=\"color:orange\">$DISKTEMP <sup>o</sup>C</td></tr>"
 else
-echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+echo "<tr><td>'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 fi
 
 echo "</tbody></table><br>"
@@ -684,7 +684,7 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 <tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>

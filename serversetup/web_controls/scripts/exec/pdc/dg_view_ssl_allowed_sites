@@ -173,7 +173,7 @@ COUNTER=1
 if [ $SITECOUNT -gt 0 ]
 then
 #Show table of sites
-echo "<table class="standard" style="text-align: left';' width: 800px';' height: 100px';'" border="0" cellpadding="2" cellspacing="2">"
+echo "<table class="standard" style="text-align: left';' width: 800px';' height: 100px';'" >"
 echo "<tbody>"
 echo "<tr><td" style='"width: 250px;"'"><b>"$SITEMSG"</b></td><td><b>"$DELETEMSG"</b></td></tr>"
 while [ $COUNTER -le $SITECOUNT ]

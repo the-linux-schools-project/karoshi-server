@@ -41,10 +41,10 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Home Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Home Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -64,7 +64,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Change Home Server"'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a>
 </td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table>'
@@ -185,7 +185,7 @@ echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning
 <form action="/cgi-bin/admin/home_folders2.cgi" method="post">
 <input name="_CURRENTSERVER_" value="'$SERVER'" type="hidden">
 <input name="_PRIGROUP_" value="'$PRIGROUP'" type="hidden">
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+  <table class="standard" style="text-align: left;" ><tbody>
 
 <tr><td style="width: 180px;">'$"Current Server"'</td><td>'$SERVER'</td></tr>
 <tr><td>'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>

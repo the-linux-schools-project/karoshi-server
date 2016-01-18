@@ -9,7 +9,7 @@ let ENDYEAR=$YEAR+2
 source /opt/karoshi/web_controls/group_dropdown_def
 echo '
         <select name="_GROUP_" style="width: 200px;">
-	<option></option>'
+	<option label="blank"></option>'
 
 #Show all groups in group_information
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*

@@ -54,7 +54,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Schedule Wake on Lan"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Schedule Wake on Lan"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -96,7 +96,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/wake_on_lan_add2.cgi" method="post"><div id="actionbox3"><div id="titlebox">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'$"Schedule Wake on Lan"'</b></td>
 <td><a href="wake_on_lan_view.cgi"><input class="button" type="button" name="" value="'$"View scheduled locations"'"></a></td>
 <td><a href="wake_on_lan_now.cgi"><input class="button" type="button" name="" value="'$"Wake a location"'"></a></td>
@@ -106,7 +106,7 @@ echo '<form action="/cgi-bin/admin/wake_on_lan_add2.cgi" method="post"><div id="
 
 '
 #Time to wake location up
-echo '<table class="'$TABLECLASS'" style="text-align: left; height: 60px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="'$TABLECLASS'" style="text-align: left; height: 60px;" >
     <tbody>
 <tr><td style="width: 200px;"><b>'$"Time"'</b></td><td>'
 echo '<input maxlength="2" size="2" name="_HOUR_" value="08"> : <input maxlength="2" size="2" name="_MINUTES_" value="15"> </td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the time that you want the computers in your selected location to be turned on."'</span></a></td></tr><tr><td><b>'$"Location"'</b></td><td>'

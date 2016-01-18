@@ -56,20 +56,20 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Server Update Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Server Update Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 echo "<link rel=\"stylesheet\" href=\"/css/$STYLESHEET\"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -94,69 +94,69 @@ END_POINT=19
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOGVIEWcheck ]
-then
-let COUNTER=$COUNTER+1
-LOGVIEW=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = LOGVIEWcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		LOGVIEW=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign DATE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -180,29 +180,29 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LOGVIEW is not blank
-if [ $LOGVIEW'null' = null ]
+if [ -z "$LOGVIEW" ]
 then
-MESSAGE=$"The log view must not be blank."
-show_status
+	MESSAGE=$"The log view must not be blank."
+	show_status
 fi
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date must not be blank."
-show_status
+	MESSAGE=$"The date must not be blank."
+	show_status
 fi
 
 #Check that date is valid
@@ -216,44 +216,44 @@ MESSAGE=$"Incorrect date format."
 show_status
 fi
 
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $DAY -gt 31 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $MONTH -gt 12 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
+	DIV_ID=mobileactionbox
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1`
@@ -271,10 +271,16 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"View Server Update Logs" $SERVERNAME $DAY-$MONTH-$YEAR'</b></td>
-<td style="vertical-align: top;"><a href="update_servers_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
+<td style="vertical-align: top;">
+<form name="myform" action="update_servers_view_logs_fm.cgi" method="post">
+<button class="button" name="SelectServer" value="_">
+'$"Select server"'
+</button>
+</form>
+</td>
 </tr></table></div><div id="infobox">'
 fi
 
@@ -283,13 +289,13 @@ LOG_STATUS=`echo $?`
 echo '</div>'
 if [ $LOG_STATUS = 101 ]
 then
-MESSAGE=$"There is no log available for this date."
-show_status
+	MESSAGE=$"There is no log available for this date."
+	show_status
 fi
 if [ $LOG_STATUS = 102 ]
 then
-MESSAGE=$"There are no logs available for this month."
-show_status
+	MESSAGE=$"There are no logs available for this month."
+	show_status
 fi
 echo '</div></div></body></html>'
 exit

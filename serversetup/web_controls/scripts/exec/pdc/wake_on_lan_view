@@ -109,7 +109,7 @@ if [ "$WAKEONLANCOUNT" -gt 12 ]
 then
 	echo '<input class="button" value="'$"Submit"'" type="submit"> <input class="button" value="'$"Reset"'" type="reset"> <input class="button" type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_ENABLE_\'', true);" value="'$"Enable All"'"> <input class="button" type="button" onclick="SetAllCheckBoxes('\'selectwol\'', '\'_DISABLE_\'', true);" value="'$"Disable All"'">'
 fi
-echo '<table class="standard" style="text-align: left; width: 600px; height: 60px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; width: 600px; height: 60px;" >
 <tbody><tr><td style="width: 220px;"><b>'$"Location"'</b></td><td style="width: 220px;"><b>'$"Time"'</b></td><td style="width: 100px;"><b>'$"Status"'</b></td><td style="width: 100px;"><b>'$"Enable"'</b></td><td style="width: 100px;"><b>'$"Disable"'</b></td><td style="width: 100px;"><b>'$"Remove"'</b></td></tr><tr>'
 
 for LOCATION in /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/wake_on_lan/*

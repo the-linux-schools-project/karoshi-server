@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html>'
+<!DOCTYPE html><html>'
 
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
@@ -118,8 +118,8 @@ echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Internet Usage Trends"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>'
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>'
 
 
 
@@ -127,7 +127,7 @@ echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 if [ ! -z "$ACTION" ] && [ "$ACTION" = viewuserdata ]
 then
 
-	echo '<script type="text/javascript" id="js">
+	echo '<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter({
@@ -142,7 +142,7 @@ $(document).ready(function()
 );
 </script>'
 else
-	echo '<script type="text/javascript" id="js">
+	echo '<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -156,14 +156,14 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--4
 if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -180,7 +180,7 @@ ICON2=/images/submenus/system/delete.png
 ICON3=/images/submenus/internet/detailed_logs.png
 
 function show_status {
-echo '<script language="Javascript">
+echo '<script>
 alert("'$MESSAGE'");
 window.location = "/cgi-bin/admin/ist.cgi";
 </script></div></body></html>'
@@ -264,7 +264,7 @@ then
 	else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<form action="/cgi-bin/admin/ist.cgi" method="post">
-	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
 	<td style="vertical-align: top;"><div class="sectiontitle">'$"Internet Usage Trends"'</div></td>
 	<td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONTEXT'"></td>
@@ -302,7 +302,7 @@ then
 	fi
 
 	#Show for for adding catergories
-	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyaddcategory"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyaddcategory"><table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;" colspan="2"><b>'$"Add an Internet Trend Category"'</b></td><td></td></tr>
 	<tr><td>'$"Category"'</td><td>'
 	if [ -z "$CATEGORY" ]
@@ -320,7 +320,7 @@ fi
 
 if [ $ACTION = viewcategories ]
 then
-	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 180px;"><b>'$"Category"'</b></th><th style="width: 250px;"><b>'$"Search Criteria"'</b></th><th style="width: 60px;"><b>'$"Edit"'</b></th><th style="width: 60px;"><b>'$"Delete"'</b></th><th style="width: 60px;"><b>'$"View"'</b></th></tr></thead><tbody>'
 	for CATEGORY in $(ls -1 /opt/karoshi/server_network/ist/categories/)
 	do

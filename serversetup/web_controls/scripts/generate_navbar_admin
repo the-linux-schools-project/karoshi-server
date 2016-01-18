@@ -32,7 +32,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME'</span> <small><small>
 '$"Version"' : '$VERSION'
 </small></small>
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
@@ -47,7 +47,7 @@ then
 SHOW_WARNINGS=yes
 echo '<div id="tickerbar">'
 
-echo "<SCRIPT type=\"text/javascript\" LANGUAGE=\"JavaScript\">
+echo "<script>
 
 /**************************************
 * http://vertical-scroller.vbarsan.com/
@@ -89,9 +89,9 @@ ns6div.style.top=sheight+\"px\";ns6div.innerHTML=singletext[ii];sizeup=ns6div.of
 //-- end Algorithm -->
 
 </script>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">
+<table class=\"standard\" style=\"text-align: left;\">
 <tr><td>
-<SCRIPT type=\"text/javascript\" LANGUAGE=\"JavaScript\">if(document.layers){document.write('<ilayer id=\"ns4div\" width=\"'+swidth+'\" height="'+sheight+'"><layer id=\"ns4div1\" width=\"'+swidth+'\" height=\"'+sheight+'\" onmouseover=\"sspeed=0;\" onmouseout=\"sspeed=rspeed\"><\/layer><\/ilayer>')}
+<script>if(document.layers){document.write('<ilayer id=\"ns4div\" width=\"'+swidth+'\" height="'+sheight+'"><layer id=\"ns4div1\" width=\"'+swidth+'\" height=\"'+sheight+'\" onmouseover=\"sspeed=0;\" onmouseout=\"sspeed=rspeed\"><\/layer><\/ilayer>')}
 if(document.getElementById||document.all){document.write('<div style=\"position:relative;overflow:hidden;width:'+swidth+'px;height:'+sheight+'px;clip:rect(0 '+swidth+'px '+sheight+'px 0);\" onmouseover=\"sspeed=0\" onmouseout=\"sspeed=rspeed\"><div id=\"iens6div\" style=\"position:relative;width:'+swidth+'px;\"><\/div><\/div>');}</script>
 </td></tr></table>"
 

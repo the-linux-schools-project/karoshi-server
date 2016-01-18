@@ -108,7 +108,7 @@ RESTARTICON=/images/submenus/system/ups_restart.png
 ########################
 #Create table header
 ########################
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 160px; height: 30px;"><b>'$"Server"'</b></td><td style="width: 160px;"><b>'$"UPS Model"'</b></td><td style="width: 60px;"><b>Status</b></td><td style="width: 60px;"><b>'$"Charge"'</b></td><td style="width: 60px;"><b>Volts</b></td><td style="width: 60px;"><b>'$"Load"'</b></td><td style="width: 60px;"><b>'$"Temp"'</b></td><td style="width: 60px;"><b>'$"Run time"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$DELETEICON'"><span>'$"Delete"'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$RESTARTICON'"><span>'$"Restart UPS deamon"'</span></a></td></tr>
 '
 

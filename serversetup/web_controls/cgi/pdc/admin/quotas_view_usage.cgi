@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Quota Usage"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Quota Usage"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head><body><div id="pagecontainer">'

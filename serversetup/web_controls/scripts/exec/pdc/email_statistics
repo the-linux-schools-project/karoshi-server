@@ -126,7 +126,7 @@ fi
 echo `date`: email_statistics "for" $SERVERNAME on $DAY-$MONTH-$YEAR from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+#echo '<table class="standard" style="text-align: left;" >'
 #This server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then

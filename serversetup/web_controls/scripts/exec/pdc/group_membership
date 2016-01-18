@@ -116,9 +116,19 @@ fi
 function check_group_membership {
 if [ `echo "$CURRENTGROUPS" | grep -c -w "$GROUPNAME"` -gt 0 ]
 then
-[ $USERGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td><input type="image" src="'$ICON1'" name="___ACTION___REMOVE___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___" value=""></td></tr>'
+	[ $USERGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td>
+	<button class="info" name="___Remove___" value="___ACTION___REMOVE___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___">
+	<img src="'$ICON1'" alt="'$"Remove"'">
+	<span>'$"Remove"'<br>'$USERNAME'</span>
+	</button>
+	</td></tr>'
 else
-[ $AVAILABLEGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td><input type="image" src="'$ICON2'" name="___ACTION___ADD___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___" value=""></td></tr>'
+	[ $AVAILABLEGROUPS = yes ] && echo '<tr><td>'$GROUPNAME'</td><td>'$GROUPID'</td><td>
+	<button class="info" name="___Remove___" value="___ACTION___ADD___GROUP___'$GROUPNAME'___USERNAME___'$USERNAME'___">
+	<img src="'$ICON2'" alt="'$"Add"'">
+	<span>'$"Add"'<br>'$USERNAME'</span>
+	</button>
+	</td></tr>'
 fi
 }
 
@@ -132,7 +142,7 @@ TEXTDOMAIN=karoshi-server
 #Get existing group information
 CURRENTGROUPS=`id -G -n $USERNAME`
 echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
-echo  '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo  '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody><tr><td style="width: '$WIDTH'px;"><b>'$"Group"'</b></td><td><b>'$"Group ID"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 

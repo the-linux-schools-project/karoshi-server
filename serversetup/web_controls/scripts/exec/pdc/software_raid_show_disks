@@ -134,7 +134,7 @@ fi
 
 if [ $SHOW_MENU = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody>
 <tr><td>'$"Raid Type"'</td><td>'$"Raid Name"'</td></tr>
 <tr><td>
@@ -156,7 +156,7 @@ fi
 #Show drive information
 if [ $DRIVE_STATUS = ok ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td><img src="/images/submenus/system/'$DISKICON'" alt=""> </td><td>"'$DRIVE'"</td><td>"'$DISKSIZE'"</td><td>'$"Disk Options"'</td></tr>'
 fi
 fi

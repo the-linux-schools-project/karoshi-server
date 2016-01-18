@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enabled Printers"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=printer_accounting_status_fm.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enabled Printers"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=printer_accounting_status_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -76,7 +76,7 @@ done
 
 
 function show_status {
-echo '<script type="text/javascript">'
+echo '<script>'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/printer_accounting_status_fm.cgi";'
 echo '</script>'

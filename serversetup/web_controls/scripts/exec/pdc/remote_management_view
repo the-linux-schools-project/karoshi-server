@@ -121,14 +121,14 @@ fi
 if [ $PRIADMINSTATUS = yes ]
 then
 echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
 <td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add"'"></a></td>
 </tr></tbody></table>
 '
 else
 echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
 </tr></tbody></table>
 '
@@ -181,7 +181,7 @@ echo '<a class="info" href="javascript:void(0)"><input name="_USERACTION_'$USERN
 
 fi
 echo '<br><br>'
-echo '<table class="standard" style="text-align: left; width: 648px; height: 100px;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left; width: 648px; height: 100px;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$JOBTITLEMSG':</td><td>'$JOBTITLE'</td></tr>'
 echo '<tr><td style="width: 180px;">'$FORENAMEMSG':</td><td>'$FORENAME'</td></tr>'

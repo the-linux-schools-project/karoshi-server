@@ -64,7 +64,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Reverse Proxy Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -72,14 +72,14 @@ echo '
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -149,7 +149,7 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr>'
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$"Reverse Proxy Sites"'</div></td>'
 echo '<td style="vertical-align: top;"><a href="reverse_proxy_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add Reverse Proxy"'"></a></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></td>
@@ -157,7 +157,7 @@ echo '<td style="vertical-align: top;"><a href="reverse_proxy_add_fm.cgi"><input
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
 
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$"Target"'</b></td>'
 echo '<td style="width: '$WIDTH3'px;"><b>'$"Destination"'</b></td><td><b>'$"Delete"'</b></td></tr>'

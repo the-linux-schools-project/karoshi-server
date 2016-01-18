@@ -44,7 +44,7 @@ fi
 BANLENGTH=7
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban User Account"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban User Account"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
@@ -218,12 +218,16 @@ fi
 echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">
 <div id="actionbox">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Ban User Account"'</div></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/banned_users_view_fm.cgi"><input class="button" type="button" name="" value="'$"View Banned Users"'"></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/banned_users_view_fm.cgi" name="ViewBannedUsers" value="_">
+'$"View Banned Users"'
+</button>
+</td>
 </tbody></table>
 
-<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" border="0" cellpadding="0" cellspacing="0">
+<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;">
 <tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
 echo '<input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:'
@@ -235,7 +239,7 @@ echo '<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4" type="text">'
 echo '</td></tr><tr><td>'$"Ban duration in days - leave blank for a permanent ban."'</td><td>'
 echo '<input name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Users are automatically allowed after their ban duration is up. The ban duration will include weekends and holidays."'</span></a>
 '
-echo '</td></tr></tbody></table>'
+echo '</td><td></td></tr></tbody></table>'
 #Students involved
 echo '<br>'$"Please enter the usernames you want to ban from the system separated by spaces:"'<br><br>'
 echo '<input value="'$STUDENTS'" name="_STUDENTS_" size="53" type="text">'

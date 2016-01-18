@@ -46,12 +46,12 @@ echo "Content-type: text/html"
 echo ""
 echo '
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript">
+<script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -90,7 +90,7 @@ then
 if [ `ls -1 /opt/karoshi/asset_register/network_install/normal_boot/ | wc -l` -gt 0 ]
 then
 echo '<b>$STANDARDBOOTMSG</b><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 120px;">'$LOCATIONMSG'</td><td style="width: 180px;">'$MACMSG'</td><td style="width: 120px;">'$TCPMSG'</td><td>'$NETWORKINSTALLMSG'</td><td>'$NORMALMSG'</td><td>'$MEMTESTMSG'</td><td>'$REMOVEMSG'</td>'
 for LOCATIONS in /opt/karoshi/asset_register/network_install/normal_boot/*
 do

@@ -45,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Add Wireless Zone"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -56,7 +56,7 @@ echo '
 
 echo '<form action="/cgi-bin/admin/wireless_add_zone.cgi" method="post"><div id="actionbox"><b>'$"Add Wireless Zone"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows WPA II enterprise wireless access points to be used. This key will need to match the key supplied to the wireless access points."'<br><br>'$"The wireless access points will authenticate using usernames and passwords via a radius server and LDAP on the PDC."'</span></a><br>
   <br>
-  <table class="standard" style="text-align: left; height: 10px;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left; height: 10px;" >
     <tbody>
 <tr><td style="width: 180px;">'$"Access Name"'</td><td><input name="_CLIENTNAME_" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for your set of wireless access points."'</span></a></td></tr>

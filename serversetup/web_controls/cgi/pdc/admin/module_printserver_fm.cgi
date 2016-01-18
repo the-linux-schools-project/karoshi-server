@@ -109,7 +109,7 @@ echo '
 <form action="/cgi-bin/admin/module_printserver.cgi" method="post">
 <div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Print Server"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Print Server"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Print_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up a print server for your network allowing printer queues to be created and controlled."' '$"Printer drivers can be added to the printer queues so that your client computers do not need to have the printer drivers installed on them."'</span></a>
 </td></tr></tbody></table><br>
 

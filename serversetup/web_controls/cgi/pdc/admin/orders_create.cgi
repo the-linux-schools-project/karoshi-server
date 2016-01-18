@@ -45,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Create Order"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <link rel="stylesheet" type="text/css" href="/css/print.css" media="print" />
@@ -270,7 +270,7 @@ echo '
 
 echo '</div><div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td style="width: 150px;"><b>'$"Department"'</b></td><td style="width: 240px;">'$DEPARTMENT'</td><td style="width: 120px;"><b>'$"Date"'</b></td><td style="width: 200px;">'$DATE'</td></tr>
 <tr><td><b>'$"Supplier"'</b></td><td>'$SUPPLIER'</td><td><b>'$"Budget Holder"'</b></td><td>'$BHOLDER'</td></tr>

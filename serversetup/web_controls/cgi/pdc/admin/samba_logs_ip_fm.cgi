@@ -43,7 +43,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"TCPIP Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
@@ -59,7 +59,7 @@ echo '<form action="/cgi-bin/admin/samba_logs_ip.cgi" name="testform" method="po
   <div id="actionbox"><b>'$"TCPIP Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Connection logs are generated each time a user connects to a share."'</span></a>
 <br><br>
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td style="width: 180px;">'$"TCPIP"'</td><td><input tabindex= "1" name="_TCPIP_" size="14" type="text"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network share name that you want to check the logs for."'</span></a></td></tr>'
 echo "<tr><td>$"Log Date"</td><td>

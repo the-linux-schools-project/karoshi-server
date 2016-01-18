@@ -227,7 +227,7 @@ fi
 if [ $SHOW_MENU = yes ]
 then
 echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
 <tbody>
 <tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on."' '$"Allowed mount points are /home or subfolders of /media, /mnt, /var, and /home"'</span></a>
@@ -252,7 +252,7 @@ echo "</select>
 <td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$RAIDHELP</span></a></td>
 </tr>
 </tbody></table>"
-echo '<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<br><br><table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 80px;"><b>'$"Size"'</b></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'<br><br>'$"Spare drives can be added after the raid has been created."'</span></a>
 </td></tr>'

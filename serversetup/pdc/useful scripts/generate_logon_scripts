@@ -25,14 +25,12 @@ cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/mount-shares.sh /var/lib/s
 
 #Copy in mac scripts
 cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/install-script.sh /var/lib/samba/netlogon/mac_client/scripts/
-cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/com.update-script.sh.plist /var/lib/samba/netlogon/mac_client/scripts/
-cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/update-scripts.sh /var/lib/samba/netlogon/mac_client/scripts/
-cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/com.mount-shares.sh.plist /var/lib/samba/netlogon/mac_client/scripts/
+cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/detect-user.sh.plist /var/lib/samba/netlogon/mac_client/scripts/
 cp -f /opt/karoshi/serversetup/pdc/mac_client/scripts/detect-user.sh /var/lib/samba/netlogon/mac_client/scripts/
 chmod 0555 /var/lib/samba/netlogon/mac_client/scripts/install-script.sh
 
 #Set domain on install-script
-sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/update-scripts.sh
+sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/detect-user.sh
 sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/install-script.sh
 
 #Get primary group
@@ -102,7 +100,7 @@ then
 	echo '
 #'$SHARE'
 [ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
-mount_smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
 ' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 else
@@ -121,7 +119,7 @@ then
 	[ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
 	if [ $(mount | grep -c "/tmp/$LoggedInUser/'$SHARE'/") = 0 ]
 	then
-		mount_smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+		mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
 	fi
 fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
@@ -234,7 +232,7 @@ fi
 
 echo 'if [ ! -z "$HOMESERVER" ]
 then
-	mount_smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
+	mount -t smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
 fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 #Complete pam_mount.conf.xml.krb5

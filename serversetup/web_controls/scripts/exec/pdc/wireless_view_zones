@@ -111,7 +111,7 @@ echo $"No wireless zones have been added."
 exit
 fi
 
-echo '<table class="standard" style="text-align: left; height: 10px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; height: 10px;" >
 <tbody><tr><td style="width: 200px;"><b>'$"Wireless Zones"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
 for ZONE in /opt/karoshi/wireless_network/access/*txt

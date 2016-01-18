@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Create Commercial Certificate"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Create Commercial Certificate"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -417,7 +417,7 @@ echo '<b>'$"Install Commercial Certificate"' - '$SERVERNAME'</b><br><br>'$"You w
 
 #Drop down choice for cert types
 
-echo '<input type="hidden" name="___ACTION___" value="installcertinfo"><input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<input type="hidden" name="___ACTION___" value="installcertinfo"><input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden"><table class="standard" style="text-align: left;" >
 <tbody><tr><td style="width: 360px;"><b>'$"Intermediate certificate or bundle"'</b></td><td>
 <select name="___CERTTYPE___" style="width: 200px;">
 	<option></option>

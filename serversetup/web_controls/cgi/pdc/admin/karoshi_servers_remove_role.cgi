@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Remove Server Role"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Remove Server Role"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -359,7 +359,7 @@ then
 <input name="___FORMCODE___" value="'$REMOVE_CODE'" type="hidden">
 <input name="___MODULE___" value="'$MODULE'" type="hidden">
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top; width: 180px; height: 30px;">'$"Module"'</td><td style="vertical-align: top; text-align: left;  width: 150px;">'$ROLE_NAME'</td><td style="vertical-align: top; width: 250px;"></td></tr>
 <tr><td style="vertical-align: top;">'$"Information"'</td><td style="vertical-align: top; text-align: left;" colspan="2">'$CONSEQUENCES'</td></tr>
 <tr><td style="vertical-align: top; height: 30px;">'$"Code"'</td>
@@ -377,7 +377,7 @@ then
 <form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
 <input name="___ACTION___" value="remove" type="hidden">
 <input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 '
 
 	if [ -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]

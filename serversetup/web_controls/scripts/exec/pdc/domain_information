@@ -160,7 +160,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 echo '<div class="sectiontitle">'$"Domain Information"'</div><br>'
 
 echo '
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+  <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Domain"'</b></td><td>'$SAMBADOMAIN'</td></tr>
 <tr><td style="width: 180px;"><b>'$"Realm"'</b></td><td>'$REALM'</td></tr>
 <tr><td style="width: 180px;"><b>'$"Gateway"'</b></td><td>'$DEFAULTGATEWAY'</td></tr>

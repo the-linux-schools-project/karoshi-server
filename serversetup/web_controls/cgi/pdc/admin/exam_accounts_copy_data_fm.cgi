@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
   <title>'$"Exam Accounts - Copy Data"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
@@ -66,7 +66,7 @@ echo '
 else
 echo '
   <br>
-  <table class="standard" style="text-align: left; border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left; >
     <tbody>
 <tr><td style="width: 180px;"><span style="font-weight: bold;">'$"Start Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMSTART_" maxlength="3" size="3" value="1" type="text"></td></tr>
 <tr><td><span style="font-weight: bold;">'$"End Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMEND_" maxlength="3" size="3" value="10" type="text"></td></tr>

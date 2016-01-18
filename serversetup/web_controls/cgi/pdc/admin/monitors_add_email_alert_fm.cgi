@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -121,7 +121,7 @@ done
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top; width: 130px;"><b>'$"E-Mail - SMS Alerts"'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
@@ -131,7 +131,7 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
 </td>
 </tr></tbody></table>
 <br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
     <tbody>
 	<tr>
         <td style="width: 180px;">

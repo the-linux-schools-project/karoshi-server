@@ -67,7 +67,7 @@ then
 MOODLEDOMAIN=`ssh -x -o PasswordAuthentication=no $SERVER grep wwwroot /var/www/html/moodle/config.php | cut -d\' -f2 | sed "s/\/moodle$//g" | sed "s/^http:\/\///g"`
 fi
 
-echo '<table class="standard" style="text-align: left; height: 20px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; height: 20px;" >
 <tbody><tr><td style="width: 200px;"><b>'$"Web Service"'</b></td><td><b>'$"Domain"'</b></td><td></td><td>'$"Sub Folder"'</td></tr>
 <tr><td style="width: 200px;">
 '$"Moodle - E Learning"'</td>

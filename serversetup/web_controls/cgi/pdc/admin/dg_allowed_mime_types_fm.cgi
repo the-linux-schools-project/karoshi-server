@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
   <title>'$"Allowed Mime Types"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
@@ -89,7 +89,7 @@ source /opt/karoshi/server_network/dansguardian/mime_types
 
 
 echo '
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 100px;">'$STUDENTSMSG'</td>

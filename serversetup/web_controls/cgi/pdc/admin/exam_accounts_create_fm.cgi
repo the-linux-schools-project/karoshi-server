@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Exam Accounts - Create additional accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -56,7 +56,7 @@ echo '<form action="/cgi-bin/admin/exam_accounts_create.cgi" method="post"><div 
 <div class="sectiontitle">'$"Exam Accounts - Create additional accounts"'</div>
   <br>
 '$OPENINGMSG'<br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Quantity"'</td><td><input maxlength="3" size="3" name="_NEWEXAMS_" value="10"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Create_Extra_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create additional numbered exam accounts."'</span></a></td></tr>
 </tbody></table></div>

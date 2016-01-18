@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Banned User Accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -55,7 +55,7 @@ echo '
 echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" method="post">
   <div id="actionbox"><div class="sectiontitle">'$"View Banned User Accounts"'</div>
   <br>
-  <table class="standard" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left; width: 100%;" >
     <tbody>
       <tr>
         <td><input name="_ALPHABET_" value="A" checked="checked" type="radio">A</td>

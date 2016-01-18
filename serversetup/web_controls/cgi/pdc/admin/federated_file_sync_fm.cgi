@@ -45,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Federated File Synchronisation"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Federated File Synchronisation"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
@@ -102,7 +102,7 @@ fi
 #Show list groups to enable file sync between federated servers.
 
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
 
 
 #Show all primary groups
@@ -141,7 +141,7 @@ if [ `ls -1 /opt/karoshi/server_network/federated_file_sync_custom | wc -l` -gt 
 then
 COLCOUNT=1
 ICON=/images/submenus/user/sync.png
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
 for CUSTOMFOLDERS in /opt/karoshi/server_network/federated_file_sync_custom/*
 do
 CUSTOMFOLDER=`basename "$CUSTOMFOLDERS"`
@@ -158,7 +158,7 @@ fi
 fi
 
 #Show choice of extra folders that can be synchronised
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">Add folder</td><td><select name="___ACTION___customadd___">'
 for FOLDERCHOICES in /home/*
 do

@@ -272,7 +272,7 @@ if [ $COPYHOMEAREAS = yes ]
 then
 	echo $"Copying Home Areas"'<br><br>'
 	echo '
-	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Primary Group"'</td><td>'$PRIGROUP'</td></tr>
 	<tr><td style="width: 180px;">'$"Current Server"'</td><td>'$CURRENTSERVER'</td></tr>
 	<tr><td style="width: 180px;">'$"New Server"'</td><td>'$NEWSERVER'</td></tr>

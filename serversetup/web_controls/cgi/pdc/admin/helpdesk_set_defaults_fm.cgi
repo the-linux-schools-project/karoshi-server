@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -59,7 +59,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/helpdesk_set_defaults.cgi" method="post"><div id="actionbox"><b>'$"Set Defaults"'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
 <tbody>
 <tr><td style="width: 180px;">'$"Default assign jobs"'</td><td>
 <select tabindex= "1" style="width: 200px;" name="_DEFAULTNAME_">'

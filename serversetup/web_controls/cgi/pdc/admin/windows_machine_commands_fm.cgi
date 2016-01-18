@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Commands"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Commands"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -73,7 +73,7 @@ echo '<b>'$"Windows Commands"'</b> <a class="info" href="javascript:void(0)"><im
 fi
 
 echo '
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
     <tbody>
 <tr>
          <td style="width: 180px;">'$"Command"'</td>
@@ -107,7 +107,7 @@ SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
 SERVERCOUNTER=0
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
 while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
 do
 KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}

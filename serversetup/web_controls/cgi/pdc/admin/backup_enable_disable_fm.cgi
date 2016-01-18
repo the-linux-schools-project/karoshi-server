@@ -44,13 +44,13 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enable - Disable Network Backup"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -76,7 +76,7 @@ echo '<form action="/cgi-bin/admin/backup_enable_disable.cgi" name="selectserver
 BACKUPSTATUS="Disable Backup"
 BACKUP_ICON=/images/submenus/system/backup_enabled.png
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>'
 echo '<tr><th style="width: 180px;"><b>'$"Server"'</b></th><th style="width: 180px;"><b>'$"Backup Server"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 #Get backup status for the servers

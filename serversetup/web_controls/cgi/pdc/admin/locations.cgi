@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -78,7 +78,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Client Locations"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
@@ -86,7 +86,7 @@ echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="tex
 </tr></tbody></table><br>
 '
 
-echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$"New location"'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
 echo '</tbody></table><br></div><div id="infobox">'
@@ -100,12 +100,12 @@ fi
 #Show current rooms
 if [ $LOCATION_COUNT -gt 0 ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;"><b>Current Locations</b></td><td><b>Delete</b></td></tr>'
 echo '</tbody></table><br>'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left;" >'
 echo '<tbody>'
 COUNTER=1
 while [ $COUNTER -lt $LOCATION_COUNT ]

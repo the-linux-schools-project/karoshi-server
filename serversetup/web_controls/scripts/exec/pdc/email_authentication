@@ -166,7 +166,7 @@ fi
 
 if [ $ACTION = delete ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"TCPIP"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Comment"'</td></td></tr>
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"TCPIP"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Comment"'</td></td></tr>
 <tr><td>'$TCPIP'</td><td>'$COMMENT'</td><td></tr>
 </tbody></table><br>'$"Remove this TCPIP address?"'<br><br>
 <input type="hidden" name="____ACTION____" value="reallydelete">
@@ -222,7 +222,7 @@ fi
 
 if [ $ACTION = add ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH1'px;">'$"TCPIP"'</td><td><input tabindex= "1" value="'$TCPIP'" name="____TCPIP____" style="width: '$WIDTH3'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the TCPIP address of a device that you want to be able to send E-Mail from without having to authenticate."'</span></a></td></tr><tr><td>'$"Comment"'</td><td><input tabindex= "2" value="'$COMMENT'" name="____COMMENT____" style="width: '$WIDTH3'px;" size="60" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a comment for the TCPIP address."'</span></a></td></tr></tbody></table><br><br><input type="hidden" name="____ACTION____" value="reallyadd"> <input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 

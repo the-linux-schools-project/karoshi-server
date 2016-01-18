@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 HOUR=`date +%H`
@@ -51,11 +51,11 @@ SECONDS=`date +%S`
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/calendar/ts_picker.js" type="text/javascript"></script>
 <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -67,14 +67,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -98,14 +98,14 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DAYcheck ]
-then
-let COUNTER=$COUNTER+1
-DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DAYcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #########################
@@ -121,32 +121,34 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH1=180
-WIDTH2=200
-HEIGHT=25
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH1=180
+	WIDTH2=192
+	WIDTH3=200
+	HEIGHT=25
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH1=90
-WIDTH2=120
-HEIGHT=30
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH1=90
+	WIDTH2=120
+	WIDTH3=120
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
@@ -156,14 +158,14 @@ echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="pos
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Update Servers"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+	echo '
+<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td></tr></tbody></table><br>'
 fi
@@ -171,20 +173,20 @@ fi
 #Preselect day
 if [ ! -z $DAY ]
 then
-[ $DAY = 1 ] && OP1='selected="selected"'
-[ $DAY = 2 ] && OP2='selected="selected"'
-[ $DAY = 3 ] && OP3='selected="selected"'
-[ $DAY = 4 ] && OP4='selected="selected"'
-[ $DAY = 5 ] && OP5='selected="selected"'
-[ $DAY = 6 ] && OP6='selected="selected"'
-[ $DAY = 7 ] && OP7='selected="selected"'
-[ $DAY = 8 ] && OP8='selected="selected"'
+	[ $DAY = 1 ] && OP1='selected="selected"'
+	[ $DAY = 2 ] && OP2='selected="selected"'
+	[ $DAY = 3 ] && OP3='selected="selected"'
+	[ $DAY = 4 ] && OP4='selected="selected"'
+	[ $DAY = 5 ] && OP5='selected="selected"'
+	[ $DAY = 6 ] && OP6='selected="selected"'
+	[ $DAY = 7 ] && OP7='selected="selected"'
+	[ $DAY = 8 ] && OP8='selected="selected"'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Day"'</td><td>
-<select style="width: '$WIDTH2'px; height: '$HEIGHT'px;" name="_DAY_">
-<option value=""></option>
+<select style="width: '$WIDTH3'px; height: '$HEIGHT'px;" name="_DAY_">
+<option label="blank" value=""></option>
 <option value="never">'$"Never"'</option>
 <option '$OP1' value="1">'$"Monday"'</option>
 <option '$OP2' value="2">'$"Tuesday"'</option>

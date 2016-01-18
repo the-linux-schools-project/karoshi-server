@@ -380,7 +380,7 @@ else
 	SERVER2=$SERVER
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Server"'</b></td><td style="width: '$WIDTH2'px;">'$SERVER2'</td><td>
 '
 
@@ -402,7 +402,7 @@ echo '</td></tr><tr><td><b>'$"Primary Group"'</b></td><td>'$GROUP'</td><td>
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 if [ "$SERVER" = `hostname-fqdn` ]

@@ -103,11 +103,17 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<div id="actionbox3"><div id="titlebox">'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"My Servers"' '$SHORTNAME'</div></td>
-<td style="vertical-align: top;"><a href="karoshi_servers_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add server"'"></a></td>
+<td style="vertical-align: top;">
+<form action="karoshi_servers_add_fm.cgi" method="post">
+<button class="button" name="_AddServer_" value="_">
+<span>'$"Add server"'</span>
+</button>
+</form>
+</td>
 </tr></tbody></table></div><div id="infobox">
-<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
 
 
 function show_servers {
@@ -139,17 +145,24 @@ echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]
 then
 	echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT' - '$"Add a role to this server."'</span></a>
-</form>
-</td>
-'
+	<button class="info" name="_AddRole_" value="_SERVERNAME_'$SERVER'_">
+	<img src="'$SERVERICON'" alt="'$"Add a role to this server."'">
+	<span>'$SERVERSHORT' - '$"Add a role to this server."'</span>
+	</button>
+	</form>
+	</td>
+	'
 else
 	echo '</td>'
 fi
 
 echo '<td style="vertical-align: top;">
 <form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="___SERVERNAME___'$SERVER'___" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$SERVERSHORT' - '$"Remove a role from this server."'</span></a></form></td>'
+<button class="info" name="_RemoveRole_" value="___SERVERNAME___'$SERVER'___">
+<img src="'$SERVERICON2'" alt="'$"Remove a role from this server."'">
+<span>'$SERVERSHORT' - '$"Remove a role from this server."'</span>
+</button>
+</form></td>'
 
 
 echo '<td style="vertical-align: top;">'
@@ -157,8 +170,11 @@ echo '<td style="vertical-align: top;">'
 if [ $SERVER != `hostname-fqdn` ]
 then
 	echo '<form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-<a class="info infocenter" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERSHORT'_" type="image" class="images" src="'$SERVERICON'" value="'$SERVER'"><span>'$SERVERSHORT - $SERVERSSHSTATUS'</span></a>
-</form>'
+	<button class="info infocenter" name="_AddServer_" value="_SERVERNAME_'$SERVERSHORT'_">
+	<img src="'$SERVERICON'" alt="'$SERVERSHORT - $SERVERSSHSTATUS'">
+	<span>'$SERVERSHORT - $SERVERSSHSTATUS'</span>
+	</button>
+	</form>'
 fi
 
 echo '</td><td style="vertical-align: top;">'
@@ -194,7 +210,11 @@ fi
 if [ $SSHSTATUS = 0 ]
 then
 	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
-<a class="info infoleft" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVER'_" type="image" class="images" src="'$SERVERBACKUPICON'" value="'$SERVER'"><span>'$SERVERBACKUPSSHSTATUS'</span></a></form>'
+	<button class="info infoleft" name="_AssignBackup_" value="_SERVERNAME_'$SERVER'_">
+	<img src="'$SERVERBACKUPICON'" alt="'$SERVERBACKUPSSHSTATUS'">
+	<span>'$SERVERBACKUPSSHSTATUS'</span>
+	</button>
+	</form>'
 fi
 echo '</td></tr>'
 }
@@ -280,7 +300,7 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 <td style="vertical-align: top;"><b>'$"Federated Servers"' '$LOCATION_NAME'</b></td>
 </tr></tbody></table>'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<table class="standard" style="text-align: left;" ><tbody>'
 echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"></td></tr>'
 
 
@@ -356,7 +376,7 @@ if [ `ls -1 /opt/karoshi/server_network/windows_servers/* | wc -l` -gt 0 ]
 then
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/windows_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'$ADDSERVERICON'" value="ADDSERVER"><span>'$"Add a Windows Server to the network."'</span></a></form></td><td style="vertical-align: top; width: 140px;"><b>'$"Windows Servers"'</b></td></tr></tbody></table>'
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<table class="standard" style="text-align: left;" ><tbody>'
 echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td></tr>'
 
 for WINDOWS_SERVERS in /opt/karoshi/server_network/windows_servers/*

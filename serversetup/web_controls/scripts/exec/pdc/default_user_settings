@@ -144,16 +144,16 @@ then
 	[ -z "$SHADOWMAX" ] && SHADOWMAX=3650
 
 	#Show table for data choice
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Lockout duration"'</td>
-        <td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
+        <td><input style="width: 192px;" tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in minutes that you want a user to be locked out."'</span></a>
 	</td></tr>
-	<tr><td>'$"Lockout threshold"'</td><td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
+	<tr><td>'$"Lockout threshold"'</td><td><input style="width: 192px;" tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Number of login attempts to trigger the lockout."'</span></a></td></tr>
-	<tr><td>'$"Lockout observation period"'</td><td><input style="width: 200px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
+	<tr><td>'$"Lockout observation period"'</td><td><input style="width: 192px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time duration that the login attempts are monitored over."'</span></a></td></tr>
-	<tr><td>'$"Password change time"'</td><td><input style="width: 200px;" tabindex= "2" name="_SHADOWMAX_" maxlength="4" size="3" type="text" value="'$SHADOWMAX'"></td>
+	<tr><td>'$"Password change time"'</td><td><input style="width: 192px;" tabindex= "2" name="_SHADOWMAX_" maxlength="4" size="3" type="text" value="'$SHADOWMAX'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>
 	<tr><td>'$"Username style"'</td>
 	<td>

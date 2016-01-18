@@ -147,7 +147,7 @@ then
 	DATE_RANGE=4
 	let DATE_RANGE_VIEW=$DATE_RANGE+1
 
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
 	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
 	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
@@ -157,7 +157,7 @@ then
 
 
 
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	<tr><th style="width: 70px;"><b>Filter</b></th><th style="width: 90px;"><b>Time</b></th><th></th><th style="width: 110px;"><b>Client</b></th><th></th><th style="width: 600px;"><b>Website</b></th></tr></thead><tbody>
 	'
 	for d in $(seq 0 $DATE_RANGE)
@@ -256,13 +256,13 @@ then
 	done
 
 	#View the data
-	echo '</form><form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '</form><form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
 	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
 	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
 	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE_VIEW'</td></tr>
 	</tbody></table><br>
-	<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th><th></th></tr></thead><tbody>'
 	for SORTDATA in $(sort -k2 -n -r --field-separator=',' /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
 	do

@@ -1,12 +1,21 @@
 #!/bin/bash
 
-#The purpose of this script is to determine if you are a local or domain user. If local then exit, if domain then run the mount-shares.sh script
+#The purpose of this script is to determine if you are a local or domain user. If local then exit, if domain then copy down mount-shares.sh to /tmp/
 
-#If statement to determine if user is local and then exit if they are or run the script Mount-Home-Areas.sh if not local.
 UserID=$(id -u)
 if [ $UserID -lt 1000 ]
 then
 	exit
 else
-	/bin/bash /Library/Scripts/LoginScripts/mount-shares.sh
+	if [ ! -d /tmp/tmpnetlogon/ ]
+	then
+		mkdir -p /tmp/tmpnetlogon/
+		mount -t smbfs -o nobrowse "//CHANGETHISDOMAIN/netlogon/" /tmp/tmpnetlogon/
+		cp -f /tmp/tmpnetlogon/mac_client/scripts/mount-shares.sh /tmp/
+		chmod 0755 /tmp/mount-shares.sh
+		diskutil unmount force /tmp/tmpnetlogon/
+		rmdir /tmp/tmpnetlogon/
+		sh /tmp/mount-shares.sh
+		rm -f /tmp/mount-shares.sh
+	fi
 fi

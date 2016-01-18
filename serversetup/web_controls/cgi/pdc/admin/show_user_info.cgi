@@ -45,7 +45,7 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -197,25 +197,37 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1`
 #Show User info
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"User Information"'</b></td>
 <td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
-	<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Change Username"'">
+	<button class="button" name="_ChangeUsername_" value="_USERNAME_'$USERNAME'_">
+	'$"Change Username"'
+	</button>
 	</form>
 </td>
 <td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
-	<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Change Primary Group"'">
+	<button class="button" name="_ChangePrimaryGroup_" value="_USERNAME_'$USERNAME'_">
+	'$"Change Primary Group"'
+	</button>
 	</form>
 </td>
 <td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/group_membership.cgi" method="post">
-	<input name="____USERNAME____'$USERNAME'____" type="submit" class="button" value="'$"Group Membership"'">
+	<button class="button" name="____GroupMembership____" value="____USERNAME____'$USERNAME'____">
+	'$"Group Membership"'
+	</button>
 	</form>
 </td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/show_user_info_fm.cgi"><input class="button" type="button" name="" value="'$"Choose user"'"></a></td>
+<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
+	<button class="button" name="_ChooseUser_" value="_">
+	'$"Choose user"'
+	</button>
+	</form>
+</td>
 </tr></table></div><div id="infobox">'
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info

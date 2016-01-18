@@ -50,14 +50,14 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Show User Information"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -86,7 +86,7 @@ echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
 
 echo '<div class="sectiontitle">'$"Show User Information"'</div>
   <br>
-  <table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left; height: 40px;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
@@ -101,6 +101,7 @@ echo '<div class="sectiontitle">'$"Show User Information"'</div>
 
 /opt/karoshi/web_controls/show_servers $MOBILE pdc $"Show user info"
 
+[ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit
 

@@ -201,7 +201,7 @@ then
 		echo '<input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">'
 	fi
 	echo '<input type="hidden" name="____ACTION____" value="reallyedit">
-	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<table class="standard" style="text-align: left;" >
     	<tbody><tr><td style="width: 180px;"><b>'$"Backup Name"'</b></td><td>'
 
 	if [ "$ACTION" = edit ]
@@ -226,11 +226,11 @@ then
 	BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
 	DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
 
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="standard" style="text-align: left;" >
     	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>
 	<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
 	</tbody></table><br>
-	<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	<table class="standard" style="text-align: left;" >
 	<tr><td>
 	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
@@ -273,7 +273,7 @@ then
 	[ "$BACKUPTIME_MINS" = 0 ] && BACKUPTIME_MINS="00"	
 
 	#Show backup server and backup status
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
 	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td>
 '$BACKUPSERVER'</td></tr>
 	<tr><td><b>'$"Backup Time"'</b></td><td>'$BACKUPTIME_HOURS':'$BACKUPTIME_MINS'</td></tr>
@@ -281,7 +281,7 @@ then
 	</tbody></table></form><br><br>'
 	
 	#Show all folders that are set to be backed up.
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
     	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>'
 	for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g'`
 	do

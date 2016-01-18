@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Requested Deleted Users"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head>
@@ -59,7 +59,7 @@ if [ -d /opt/karoshi/user_requests/delete_users ]
 then
 if [ `ls -1 /opt/karoshi/user_requests/delete_users | wc -l` -gt 0  ]
 then
-echo '<table class="standard" style="text-align: left; width: 690px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<table class="standard" style="text-align: left; width: 690px;" ><tbody>'
 echo '<tr><td style="vertical-align: top;">'$"Forename"'</td><td style="vertical-align: top;">'$"Surname"'</td><td style="vertical-align: top;">'$"Primary Group"'</td><td style="vertical-align: top;">'$"Admission Number"'</td><td style="vertical-align: top;">'$"Requested by"'</td><td style="vertical-align: top;">'$"Delete"'</td><td style="vertical-align: top;">'$"Remove"'</td></tr>'
 for DELETE_USER in /opt/karoshi/user_requests/delete_users/*
 do

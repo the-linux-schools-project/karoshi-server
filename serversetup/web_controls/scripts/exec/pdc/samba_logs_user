@@ -122,7 +122,7 @@ PRI_GROUP=`id -g -n $USERNAME`
 #Get home server for user
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Username"'</b></td><td>'$USERNAME'</td></tr>
 <tr><td><b>'$"Home Server"'</b></td><td>'$SERVER'</td></tr>'
 [ -z "$SEARCHDATE" ] && echo '<tr><td><b>'$"Log Date"'</b></td><td>'$SEARCHDATE'</td></tr>'

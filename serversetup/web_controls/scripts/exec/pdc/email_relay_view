@@ -133,7 +133,7 @@ else
 CHECK1="checked=\"checked\""
 fi
 
-echo '<table class="standard" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 180px;" colspan="1" rowspan="1">'$"Send E-mail directly"'</td><td><input name="_RELAY_" value="direct" '$CHECK1' type="radio"></td><td></td><td></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose this option of you want to send your emails directly out to the internet."'</span></a></td></tr>
+echo '<table class="standard" style="text-align: left; " ><tbody><tr><td style="width: 180px;" colspan="1" rowspan="1">'$"Send E-mail directly"'</td><td><input name="_RELAY_" value="direct" '$CHECK1' type="radio"></td><td></td><td></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Send_E-Mail_directly"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose this option of you want to send your emails directly out to the internet."'</span></a></td></tr>
 <tr><td>'$"Use E-mail relay"'</td><td><input name="_RELAY_" value="relay" '$CHECK2' type="radio"></td><td>'$"Relay"'</td>
 <td><span style="font-weight: bold;"><input name="_RADDRESS_" size="30" type="text" value="'$RELAYHOST'"></span></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Use_E-Mail_Relay#Use_E-Mail_relay"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is address of the email relay that you want all the email sent to."'</span></a></td></tr></tbody></table><br>'
 fi

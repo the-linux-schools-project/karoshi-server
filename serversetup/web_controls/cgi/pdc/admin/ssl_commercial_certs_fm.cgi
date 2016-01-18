@@ -46,12 +46,12 @@ echo "Content-type: text/html"
 echo ""
 echo '
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Commercial SSL Certificates"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -94,14 +94,14 @@ done
 
 echo '
 <form action="/cgi-bin/admin/ssl_commercial_certs.cgi" name="selectservers" method="post">
-<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Create Commercial Certificate"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Commercial_SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is a three stage process to create and install a commercial SSL certificate for your domain."'</span></a></td></tr></tbody></table>
 <br></div><div id="infobox">'
 MOBILE=no
 
 #Show step 1
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody>
 <tr><td height="50" style="width: 180px;">'$"Step"' 1</td><td><input name="___SERVERNAME___'$REALM'___SERVERTYPE___network___SERVERMASTER___notset___ACTION___getcertdetails___" type="submit" class="button" value="'$"Create Certificate"'"></td></tr>
 '

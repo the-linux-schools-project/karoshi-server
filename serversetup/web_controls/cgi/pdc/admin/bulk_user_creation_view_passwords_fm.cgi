@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Bulk User Creation - View Passwords"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -53,14 +53,22 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><b>'$"Bulk User Creation - View Passwords"'</b></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_upload_fm.cgi"><input class="button" type="button" name="" value="'$"Bulk User Creation"'"></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_import_enrollment_numbers_fm.cgi"><input class="button" type="button" name="" value="'$"Import enrolment numbers"'"></td></tr>
+<td style="vertical-align: top;">
+<button class="button" formaction="bulk_user_creation_upload_fm.cgi" name="BulkUserCreation" value="_">
+'$"Bulk User Creation"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="ImportEnrolmentNumbers" value="_">
+'$"Import enrolment numbers"'
+</button>
+</td></tr>
 </tbody></table><br>
 '$"View the new passwords for a group of users."'<br>
   <br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+  <table class="standard" style="text-align: left;">
     <tbody>
       <tr>
         <td style="width: 180px;">'$"Primary Group"'</td>

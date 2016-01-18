@@ -178,7 +178,7 @@ fi
 
 if [ "$ACTION" = confirmremovefolder ]
 then
-	echo '<input type="hidden" name="_FOLDER_" value="'$FOLDER'"><input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+	echo '<input type="hidden" name="_FOLDER_" value="'$FOLDER'"><input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " ><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
 <tr><td><b>'$"Folder"'</b></td><td>'$FOLDER'</td></tr></tbody></table><br>
 '$"This will delete all of the data in the folder."' '$"Are you sure that you want to delete this folder?"'
 <br><br><input name="_ACTION_reallyremovefolder_" value="'$"Submit"'" class="button" type="submit"> <input name="_ACTION_view_" value="'$"Cancel"'" class="button" type="submit">
@@ -193,14 +193,19 @@ then
 	then
 		if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l` -gt 0 ]
 		then
-			echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+			echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " ><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
 <tr><td style="vertical-align: top; height: 20px;"></td></tr>
 <tr><td><b>'$"Folder"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
 			for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
 			do
 				FOLDER=`basename $FOLDERS | sed 's/-/\//g'`
-				echo '<tr><td>'$FOLDER'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_confirmremovefolder_FOLDER_'$FOLDER'_" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>Delete<br>'$FOLDER'</span></a></td></tr>'
+				echo '<tr><td>'$FOLDER'</td><td>
+				<button class="info" name="_RemoveFolder_" value="_ACTION_confirmremovefolder_FOLDER_'$FOLDER'_">
+				<img src="/images/submenus/file/delete.png" alt="'$"Remove Folder"'">
+				<span>Delete<br>'$FOLDER'</span>
+				</button>
+				</td></tr>'
 			done
 			echo '</tbody></table><br>'
 		else
@@ -374,7 +379,7 @@ fi
 #Get folder path to add to a volume
 if [ $ACTION = addfolder ]
 then
-	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " ><tbody>
 <tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>'
 	if [ ! -z "$SERVER" ]
 	then
@@ -458,7 +463,7 @@ then
 	done	
 	VOLUME=glustervol$GLUSTERCOUNT
 	#Show tick box of servers from zones to use
-	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " ><tbody>
 <tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;">'$VOLUME'
 </td></tr>'
 
@@ -494,7 +499,7 @@ if [ "$ACTION" = view ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/ | wc -l` -gt 0 ]
 	then
-		echo '<table id="myTable" class="tablesorter" style="text-align: left; " border="0" cellpadding="2" cellspacing="2">
+		echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
 		<thead>
 		<tr><th style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></th><th><b>'$"Actions"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
@@ -523,7 +528,22 @@ then
 			echo '</td><td style="vertical-align: top;">'
 			if [ "$VOLUME" != dc-data ]
 			then
-				echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_addfolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_add_folder.png" value=""><span>'$"Add folder"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_removefolder_VOLUME_'$VOLUME'_" type="image" class="images" src="/images/submenus/system/gluster_remove_folder.png" value=""><span>'$"Remove folder"'</span></a> <a class="info" href="javascript:void(0)"><input name="_ACTION_assignhomefolders_" type="image" class="images" src="/images/submenus/system/gluster_assign_home_folders.png" value=""><span>'$"Assign Home Folders"'</span></a>'
+				echo '
+				<button class="info" name="_AddFolder_" value="_ACTION_addfolder_VOLUME_'$VOLUME'_">
+				<img src="/images/submenus/system/gluster_add_folder.png" alt="'$"Add folder"'">
+				<span>'$"Add folder"'</span>
+				</button>
+
+				<button class="info" name="_RemoveFolder_" value="_ACTION_removefolder_VOLUME_'$VOLUME'_">
+				<img src="/images/submenus/system/gluster_remove_folder.png" alt="'$"Remove folder"'">
+				<span>'$"Remove folder"'</span>
+				</button>
+
+				<button class="info" name="_RemoveFolder_" value="_ACTION_assignhomefolders_">
+				<img src="/images/submenus/system/gluster_assign_home_folders.png" alt="'$"Assign Home Folders"'">
+				<span>'$"Assign Home Folders"'</span>
+				</button>
+				'
 			fi
 			echo '</td></tr>'
 		done

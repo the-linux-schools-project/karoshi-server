@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <TITLE>'$"Update Moodle"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -55,7 +55,7 @@ echo '
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/update_moodle.cgi" METHOD="POST"><div id="actionbox">
 <B>'$"Update Moodle"'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to download a new version of moodle for the update. Use the link provided below."'</span></a> <br><br>
 <table class="standard" style="text-align: left; width: 700px; height: 40px;"
- border="0" cellpadding="2" cellspacing="2">
+ >
   <tbody>
     <tr>
       <td style="width: 300px;"><b>'$"Useful Links"'</b></td>

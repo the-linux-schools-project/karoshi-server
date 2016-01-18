@@ -59,7 +59,7 @@ exit
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Remote Management Secure Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -84,7 +84,7 @@ MESSAGE=$"Incorrect user level."
 show_status
 fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 <tbody>'
 
 #Primary admin - show key options for all web management users
@@ -136,7 +136,7 @@ echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method
 <div id="actionbox">
 <span style="font-weight: bold;">'$"Remote Management Secure Access"'</span><br>
   <br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">

@@ -129,12 +129,12 @@ then
 	let QUEUEARRAYCOUNT=$QUEUEARRAYCOUNT-1
 	if [ $QUEUEARRAYCOUNT -gt 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 		<tbody><tr><td style="width: 140px;">'$"Flush E-Mail queue"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_FLUSH_MAILID_NOTSET_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Flush E-Mail queue"'</span></a></td></tr>
 		<tr><td style="width: 180px;">'$"Delete all queued E-Mails"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETEALL_MAILID_NOTSET_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete all queued E-Mails"'</span></a></td></tr>
 		</tbody></table><br>
 
-		<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		<table class="'$TABLECLASS'" style="text-align: left;" >
 		<tbody>
 		<tr><td style="width: 120px;"><b>'$"Mail ID"'</b></td><td><b>'$"Size"'</b></td><td><b>'$"Date"'</b></td><td><b>'$"Sender"'</b></td><td><b>'$"Recipient"'</b></td></tr>'
 		COUNTER=0

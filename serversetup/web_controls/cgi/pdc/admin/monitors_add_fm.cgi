@@ -45,10 +45,10 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
- <script type="text/javascript">
+ <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -128,7 +128,7 @@ done
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"Add Monitors"'</b></td>
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"Add Monitors"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
 <td style="vertical-align: top;">
 <a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
@@ -207,7 +207,7 @@ MONITOR=$NAME
 INTERVAL=5
 fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
@@ -303,7 +303,7 @@ echo '</td><td>
 <tr><td>'$"TCPIP numbers"'</td><td><input tabindex="2" name="_TCPIP_" value="'$TCPIPS'" type="text" style="width: 300px;"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to enter in the TCPIP numbers separated by spaces of the devices that you want to monitor."'</span></a></td></tr></tbody></table>
 <br><br><b>'$"Services to monitor"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Pick the services that you want monitored for this group."'</span></a><br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '$PING' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the most basic monitor type. Most devices will respond to a ping request."'</span></a>
 </td><td style="width: 200px;"><input type="checkbox" name="_MONITORTYPES_" '$POP3' value="pop3"> pop3
 </td></tr>

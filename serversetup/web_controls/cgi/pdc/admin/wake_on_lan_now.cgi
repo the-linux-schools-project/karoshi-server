@@ -53,7 +53,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake a location"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Wake a location"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
 echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
 echo "</head><body><div id='pagecontainer'>"
 #########################
@@ -97,7 +97,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/wake_on_lan_now2.cgi" method="post"><div id="actionbox3"><div id="titlebox">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'$"Wake a location"'</b></td>
 <td><a href="wake_on_lan_add.cgi"><input class="button" type="button" name="" value="'$"Schedule a location"'"></a></td>
 <td><a href="wake_on_lan_view.cgi"><input class="button" type="button" name="" value="'$"View scheduled locations"'"></a></td>
@@ -106,7 +106,7 @@ echo '<form action="/cgi-bin/admin/wake_on_lan_now2.cgi" method="post"><div id="
 </td></tr></tbody></table>
 '
 #Time to wake location up
-echo '<table class="'$TABLECLASS'" style="text-align: left; height: 60px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="'$TABLECLASS'" style="text-align: left; height: 60px;" >
     <tbody>
 <tr><td style="width: 200px;"><b>'$"Location"'</b></td><td>'
 #Show current rooms

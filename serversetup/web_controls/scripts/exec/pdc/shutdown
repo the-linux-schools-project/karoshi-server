@@ -158,7 +158,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Shutdown this server
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 	<tr><td style="vertical-align: top; width: 180px; height: 30px;">'`hostname-fqdn`'</td>
 	<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
@@ -172,7 +172,7 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != allservers ]
 then
 	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
 		<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
@@ -186,7 +186,7 @@ then
 	#Shutdown federated slave server
 	if [ $SERVERTYPE = federatedslave ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>
 		<tr><td style="vertical-align: top; width: 180px; height: 30px;">'$SERVERNAME'</td>
 		<td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>
@@ -205,7 +205,7 @@ fi
 if [ $SERVERNAME = allservers ]
 then
 	SERVERCOUNTER=0
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="vertical-align: top; width: 180px; height: 30px;"><b>'$"Server"'</b></td><td style="vertical-align: top;"><b>'$"Shutdown/Reboot"'</b></td></tr>'
 	if [ `ls -1 /opt/karoshi/server_network/servers  | wc -l` -gt 0 ]
 	then

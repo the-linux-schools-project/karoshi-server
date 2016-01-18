@@ -41,10 +41,10 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Network Shares"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Network Shares"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -437,7 +437,7 @@ then
 fi
 
 function show_status {
-echo '<script type="text/javascript">'
+echo '<script>'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/samba_shares.cgi";'
 echo '</script>'
@@ -604,13 +604,21 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 fi
-echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'$TITLETXT'</b></td>
 <td style="vertical-align: top;">
 <input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
 </td>
-<td><a href="gluster_control.cgi"><input class="button" type="button" name="" value="'$"Gluster Volume Control"'"></a></td>
-<td><a href="home_folders_fm.cgi"><input class="button" type="button" name="" value="'$"Home Folders"'"></a></td>
+<td>
+<button class="button" formaction="gluster_control.cgi" name="GlusterControl" value="_">
+'$"Gluster Volume Control"'
+</button>
+</td>
+<td>
+<button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">
+'$"Home Folders"'
+</button>
+</td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Shares"'</span></a>
 </td></tr></tbody></table></form>

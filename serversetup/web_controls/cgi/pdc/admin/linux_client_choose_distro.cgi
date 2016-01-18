@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client - Choose Distribution"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client - Choose Distribution"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -79,7 +79,7 @@ let COUNTER=$COUNTER+1
 done
 
 function show_status {
-echo '<script type="text/javascript">'
+echo '<script>'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/linux_client_choose_distro_fm.cgi";'
 echo '</script>'
@@ -88,7 +88,7 @@ exit
 }
 
 function completed {
-echo '<script type="text/javascript">'
+echo '<script>'
 echo 'window.location = "/cgi-bin/admin/linux_client_choose_distro_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"

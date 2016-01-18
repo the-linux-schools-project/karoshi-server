@@ -196,7 +196,7 @@ if [ `echo $IMAGEFILE | grep -c .tar.gz$` = 1 ] || [ `echo $IMAGEFILE | grep -c 
 	fi
 
 	#Create table header - username image primary group status
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td style="width: 100px;"><b>'$"Image"'</b></td><td style="width: 100px;"><b>'$"Primary Group"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`

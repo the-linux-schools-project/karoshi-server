@@ -165,7 +165,7 @@ then
 			SECRETKEY=`echo -e "$ACCESSDATA" | sed -n 2,2p | cut -d" " -f4`	
 		fi
 	fi
-	echo '<input type="hidden" name="____ACTION____" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: '$WIDTH1'px;">'$"Short name"'</td><td>'
+	echo '<input type="hidden" name="____ACTION____" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;">'$"Short name"'</td><td>'
 
 	if [ "$ACTION" = add ]
 	then
@@ -248,7 +248,7 @@ then
 		exit
 	fi
 	#Show access points
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Short name"'</b></th><th style="width: '$WIDTH2'px; "><b>'$"TCPIP"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Edit"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	for ACCESSPOINTS in /opt/karoshi/server_network/radius/wireless_access_points/*
 	do

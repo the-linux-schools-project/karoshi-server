@@ -48,7 +48,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Create Order"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
@@ -211,7 +211,7 @@ echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=
 	</script></td><td>$"Order Number"</td><td><input tabindex= \"1\" name=\"_ORDERNO_\" size=\"14\" type=\"text\"></td></tr><tr><td>$"Person"</td><td><input tabindex= \"1\" name=\"_PERSON_\" size=\"14\" type=\"text\"></td><td>$"Budget"</td><td><input tabindex= \"1\" name=\"_BUDGET_\" size=\"14\" type=\"text\"></td></tr><tr><td>$"Supplier"</td><td><input tabindex= \"1\" name=\"_SUPPLIER_\" size=\"14\" type=\"text\"></td><td>$"Post and Packaging"</td><td><input tabindex= \"1\" name=\"_PANDP_\" size=\"14\" type=\"text\"></td></tr><tr><td></td><td></td><td>$TOTALMSG</td><td><b>$TOTAL</b></td></tr></tbody></table>"
 
 
-echo '<table class="standard" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left; width: 100%;" ><tbody>
 <tr><td style="vertical-align: top;">'$"Add item"'</td>
 <td style="vertical-align: top; width: 80px;">'$"Quantity"'</td>
 <td style="vertical-align: top; width: 80px;">Unit Price</td>

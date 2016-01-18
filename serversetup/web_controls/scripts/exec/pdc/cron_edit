@@ -227,7 +227,7 @@ then
 		</div></div><div id="mobileactionbox">
 		'
 	else
-		echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+		echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Edit Scheduled Jobs"' - '$SERVERNAME2'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the parameters for the scheduled job."'</span></a></td>
 <td style="vertical-align: top;"><a href="cron_view_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
@@ -247,7 +247,7 @@ then
 	fi
 
 	echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">
-	  <table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	  <table class="'$TABLECLASS'" style="text-align: left;" >
 	    <tbody>
 	      <tr>
 		<td style="width: 180px;">
@@ -382,7 +382,7 @@ then
 
 	if [ $MOBILE = no ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 	    <tbody>
 	      <tr>
 		<td style="width: 180px;">

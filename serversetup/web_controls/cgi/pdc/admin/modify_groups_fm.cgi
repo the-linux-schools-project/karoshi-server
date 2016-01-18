@@ -39,7 +39,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -47,7 +47,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Bulk User Actions"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -60,7 +60,7 @@ echo '<form action="/cgi-bin/admin/modify_groups.cgi" method="post">
   <b>'$"Bulk User Actions"'</b> 
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will affect a group of users."'</span></a>
 <br><br>
-  <table class="standard" style="text-align: left; left: 232px;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left; left: 232px;" >
     <tbody>
 <tr><td style="width: 180px;">
 '$"Primary Group"'</td><td>'
@@ -79,7 +79,7 @@ echo '</td><td>
 <tr><td style="width: 180px;">
 '$"Exceptions"'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
+<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 192px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any user accounts that you do not want to modify separated by spaces."'</span></a>
 </td></tr>

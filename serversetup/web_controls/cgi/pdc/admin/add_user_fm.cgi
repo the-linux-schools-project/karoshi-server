@@ -68,18 +68,18 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -90,7 +90,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '
-<script type="text/javascript">
+<script>
 function rewriteselect() {
 document.myform.____USERNAMESTYLE____.options.selectedIndex.length=0;
 var firstnameValue = (document.myform.____FIRSTNAME____.value).toLowerCase();
@@ -247,15 +247,15 @@ if [ $MOBILE = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 192px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 192px; height: 30px;" size="20" type="text"><br>
 	'$"Password"'<br>
-	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input tabindex= "3" name="____PASSWORD1____" style="width: 192px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input tabindex= "4" name="____PASSWORD2____" style="width: 192px; height: 30px;" size="20" type="password"><br>
 	'$"Enrolment number / staff code"'<br>
-	<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 192px; height: 30px;" size="20" type="text"><br>
 	'$"Primary group"'<br>
 '
 	if [ -z "$FILE" ]
@@ -282,19 +282,19 @@ then
 		<span id="extraoptions2"></span><br><br>'
 else
 
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 192px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
-        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 192px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
-;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td></tr>
+	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 192px;" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 192px;" size="20" type="password"></td><td></td></tr>
 	<tr><td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 192px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
       <tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
@@ -320,7 +320,7 @@ else
         <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username"'</option>
 	<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
 	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
-	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td></tr>
+	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
 	</tbody></table><br>
 	</div><div id="submitbox">'
 fi

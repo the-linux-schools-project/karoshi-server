@@ -44,7 +44,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restore Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restore Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 
 
@@ -89,7 +89,7 @@ SERVERCOUNTER=0
 LINECOUNTER=1
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
 if [ "$SERVERLISTCOUNT" -gt 1 ]
 then
 	echo '<td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
@@ -127,7 +127,7 @@ echo '</tr></tbody></table><br>'
 #Show list of primary groups to restore from.
 #############################
 
-echo '<b>'$"Restore User Files and Folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a><br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<b>'$"Restore User Files and Folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a><br><br><table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width:250px;"><b>'$"Server"'</b></td><td style="width: 70px;"><b>'$"Restore"'</b></td><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width: 250px;"><b>'$"Server"'</b></td><td><b>'$"Restore"'</b></td></tr>
 '
 START_LINE=yes

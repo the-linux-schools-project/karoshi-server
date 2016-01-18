@@ -31,7 +31,7 @@ ACCESS_ERROR1="You must be a Karoshi Management User to complete this action."
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/karoshi/style.css"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/karoshi/style.css"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -73,11 +73,11 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><div id="actionbox"><b>Locations</b><br><br>'
-echo '<table class="standard" style="text-align: left; width: 334px; height: 91px;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left; width: 334px; height: 91px;" >'
 echo '<tbody>'
 echo '<tr><td>New location</td><td><input name="_NEWLOCATION_" size="30" type="text"></td></tr>'
 echo '</tbody></table>'
-echo '<table class="standard" style="text-align: left; width: 334px;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left; width: 334px;" >'
 echo '<tbody>'
 echo '<tr><td><b>Current Locations</b></td><td><b>Delete</b></td></tr>'
 echo '</tbody></table><br>'
@@ -91,7 +91,7 @@ LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
 LOCATION_COUNT=0
 fi
-echo '<table class="standard" style="text-align: left; width: 334px;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left; width: 334px;" >'
 echo '<tbody>'
 COUNTER=1
 while [ $COUNTER -le $LOCATION_COUNT ]

@@ -41,14 +41,14 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"User Internet Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
 
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -58,7 +58,7 @@ echo '
 echo '<form action="/cgi-bin/admin/dg_view_user_usage.cgi" name="testform" method="post">
   <div id="actionbox"><b>'$"User Internet Usage"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a>
 <br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: 200px;" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr></tbody></table>
   </div>

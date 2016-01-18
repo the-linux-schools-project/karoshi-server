@@ -128,7 +128,7 @@ then
 	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$"Global Internet Usage"' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top;"><form action="dg_view_top_sites.cgi" method="post"><input name="_DATE_'$DAY'-'$MONTH'-'$YEAR'_" type="submit" class="button" value="'$"Top Sites"'">
 </form></td></tr></tbody></table><br>
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Username"'</b></td><td style="width: 120px;"><b>'$"Hits"'</b></td></tr>'
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Username"'</b></td><td style="width: 120px;"><b>'$"Hits"'</b></td></tr>'
 sort -t">" -s -k 13 /opt/karoshi/.tempdata/global_user_usage.$$
 	rm -f /opt/karoshi/.tempdata/global_user_usage.$$
 	echo '</tbody></table><br>'

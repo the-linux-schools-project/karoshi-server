@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Wireless Zones"2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Wireless Zones"2'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body>
 <body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -131,7 +131,7 @@ fi
 if $ACTION = edit ]
 then
 echo '<input name="_ZONECHOICE_" value="'$ZONECHOICE'" type="hidden"
-<table class="standard" style="text-align: left; height: 10px;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; height: 10px;" >
     <tbody>
 <tr><td style="width: 180px;">'$TCPIPMSG'</td><td><input name="_TCPIP_" maxlength="20" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$TCPIPHELPMSG1'<br><br>'$TCPIPHELPMSG2'</span></a></td></tr>

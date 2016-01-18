@@ -96,7 +96,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 COUNTER=`ls -1 /home/users/exams/ | wc -l`
 let EXAMSTOTAL=$COUNTER+$NEWEXAMS
 let COUNTER=$COUNTER+1
-echo '<table class="standard" style="text-align: left; width: 600px;" border="0" cellpadding="2" cellspacing="2"><tbody>'
+echo '<table class="standard" style="text-align: left; width: 600px;" ><tbody>'
 echo '<tr><td style="width: 300px;"><b>'$"New Exam Account"'</b></td><td style="width: 300px;"><b>'$"Homepath"'</b></td></tr>'
 
 while [ $COUNTER -le $EXAMSTOTAL ]

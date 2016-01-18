@@ -100,8 +100,13 @@ MONDATAPATH=/opt/karoshi/server_network/mon/mon_data
 #Show mon status
 ########################
 WIDTH1=110
-WIDTH2=55
+WIDTH2=70
 
+if [ "$MOBILE" = yes ]
+then
+	WIDTH1=110
+	WIDTH2=90
+fi
 #echo `date`: mon_status - viewing from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ -d /opt/karoshi/server_network/mon ] || mkdir /opt/karoshi/server_network/mon
 if [ -f /opt/karoshi/server_network/monitoringserver ]
@@ -116,11 +121,11 @@ if [ $MOBILE != yes ]
 then
 	TABLECLASS=mon
 	#Create table
-	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>ping</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smb</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>http</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>https</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>pop3s</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imap</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>imaps</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>smtp</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>proxy</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>dns</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>cups</b></td></tr>'
+	echo '<br><table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>ping</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smb</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>http</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>https</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3s</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imap</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imaps</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smtp</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>proxy</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>dns</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>cups</b></th></tr></thead><tbody>'
 else
 	TABLECLASS=mobilestandard
 	#Create table
-	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></td><td style="vertical-align: top; text-align: center; width: '$WIDTH2'px;"><b>'$"Status"'</b></td></tr>'
+	echo '<br><table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 fi
 
 if [ $MONITORING_SERVER = `hostname-fqdn` ]

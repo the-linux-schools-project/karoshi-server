@@ -47,10 +47,10 @@ let GROUPEND=$THISYEAR+5
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Windows Background - Select"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript">
+<script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -115,7 +115,7 @@ echo ''$"Uploaded file"' : '$FILENAME'<br><br>'$"Please select the groups that y
 FILENAME=$FILENAME2
 echo '
 <br><br><input name="_FILENAME_" value="'$FILENAME'" type="hidden">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
  <tbody><tr><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 50px;"></td><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 50px;"></td></tr>'
 while [ $GROUPSTART -le $GROUPEND ]
 do

@@ -46,11 +46,11 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -62,14 +62,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -417,13 +417,13 @@ then
 		<div class="expanded">
 		<span>'$"Group Management"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-	</div></div></form><div id="mobileactionbox"><form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+	</div></div></form><div id="mobileactionbox">
 	'
 	else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
-echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr>'
 	if [ $MOBILE = no ]
 	then
@@ -434,27 +434,60 @@ echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><tabl
 
 if [ $ACTION = view ] 
 then
-	echo '<td style="vertical-align: top;"><input name="____ACTION____add____TYPE____primary____" type="submit" class="button" value="'$"New primary group"'"></td>
-		<td style="vertical-align: top;"><input name="____ACTION____add____TYPE____secondary____" type="submit" class="button" value="'$"New secondary group"'"></td>'
+	echo '<td style="vertical-align: top;">
+	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+	<button class="button" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
+	'$"New primary group"'
+	</button>
+	</form>
+	</td><td style="vertical-align: top;">
+	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+	<button class="button" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
+	'$"New secondary group"'
+	</button>
+	</form>
+	</td>'
 
 
 	if [ $MOBILE = no ]
 	then
-		echo '<td style="vertical-align: top;"><a href="/cgi-bin/admin/dynamic_groups_fm.cgi"><input class="button" type="button" name="" value="'$"Dynamic Groups"'"></a></td><td style="vertical-align: top;"><a href="/cgi-bin/admin/label_groups_fm.cgi"><input class="button" type="button" name="" value="'$"Label Groups"'"></a></td>
-		<td style="vertical-align: top;"><a href="/cgi-bin/admin/copy_files_upload_fm.cgi"><input class="button" type="button" name="" value="'$"Copy Files"'"></a></td>'
+		echo '<td style="vertical-align: top;">
+		<form name="DynamicGroups" action="/cgi-bin/admin/dynamic_groups_fm.cgi" method="post">
+		<button class="button" name="ViewGroups" value="_">
+		'$"Dynamic Groups"'
+		</button>
+		</form>
+		</td>
+		<td style="vertical-align: top;">
+		<form name="LabelGroups" action="/cgi-bin/admin/label_groups_fm.cgi" method="post">
+		<button class="button" name="LabelGroups" value="_">
+		'$"Label Groups"'
+		</button>
+		</form>
+		</td>
+		<td style="vertical-align: top;">
+		<form name="CopyFiles" action="/cgi-bin/admin/copy_files_upload_fm.cgi" method="post">
+		<button class="button" name="CopyFiles" value="_">
+		'$"Copy Files"'
+		</button>
+		</form>
+		</td>'
 	fi
 else
-	echo '<td style="vertical-align: top;"><input name="____ACTION____view____TYPE____'$TYPE'____" type="submit" class="button" value="'$"View groups"'"></td>'
+	echo '<td style="vertical-align: top;">
+	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+	<button class="button" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
+	'$"View groups"'
+	</button>
+	</form>	
+	</td>'
 fi
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></td></tr></tbody></table></form>'
+echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></td></tr></tbody></table>'
 
 if [ $MOBILE = no ]
 then
 	echo '</div><div id="infobox">'
 fi
-
-echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">'
-
 
 #Show users in a group
 if [ "$ACTION" = showusers ]
@@ -465,7 +498,7 @@ fi
 #Show form for adding groups
 if [ $ACTION = add ] && [ $TYPE = secondary ]
 then
-echo '<input type="hidden" name="____TYPE____secondary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____secondary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: '$WIDTH3'px;">
@@ -479,12 +512,12 @@ echo '<input type="hidden" name="____TYPE____secondary____" value=""><input type
   </table>
   <br>
   <br>
-  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 
 if [ $ACTION = add ] && [ $TYPE = primary ]
 then
-	echo '<input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" >
 	    <tbody>
 	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '$WIDTH3'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the new primary group that you want to create."'<br><br>'$"This could be used where you need different profiles for staff and require more staff groups."'</span></a>
@@ -493,7 +526,7 @@ then
 
 	<tr><td>'$"Profile"'</td><td>'
 	#Generate list of profiles
-	echo '<select name="____PROFILE____" style="width: '$WIDTH3'px;"><option value=""></option>'
+	echo '<select name="____PROFILE____" style="width: '$WIDTH3'px;"><option label="blank"></option>'
 	for PROFILES in `ls -1 /home/applications/profiles | grep -v .V2`
 	do
 		PROFILE=`basename $PROFILES`
@@ -519,7 +552,7 @@ then
 		fi
 	done
 	COUNTER=0
-	while [ $COUNTER -le $FILESERVERCOUNT ]
+	while [ $COUNTER -lt $FILESERVERCOUNT ]
 	do
 		echo '<option value="'${SERVERARRAY[$COUNTER]}'">'${SERVERARRAY[$COUNTER]}'</option>'
 		let COUNTER=$COUNTER+1
@@ -528,13 +561,13 @@ then
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server you require for the home areas to be stored on for this group."'</span></a></td></tr>'
 	#Show categories
 	echo '<tr><td>'$"Category"'</td><td><select name="____CATEGORY____" style="width: '$WIDTH3'px;">
-	<option value=""></option>
+	<option value="" label="blank"></option>
 	<option value="students">'$"Student"'</option>
 	<option value="personnel">'$"Personnel"'</option>
 	<option value="other">'$"Other"'</option>
 	<option value="trustees">'$"Trustee"'</option></select>
 	</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category that you want this group to be placed in."'</span></a></td></tr>
-	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 
 if [ $ACTION = view ]
@@ -574,7 +607,7 @@ then
 	GROUPCOUNT=${#GROUPLIST[@]} 
 	COUNTER=0
 
-	echo  '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo  '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group name"'</b></th>'
 
 
@@ -631,26 +664,40 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 				if [ $GTYPE = primary ]
 				then
 					source /opt/karoshi/server_network/group_information/"$GROUPNAME"
-					echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$GTYPE'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Change the extra groups associated with this group."' '$GROUPNAME'</span></a> '$SECONDARYGROUP''
+					echo '
+
+
+			<button class="info" name="____changeextragroups____" value="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$GTYPE'____">
+			<img src="'$ICON2'" alt="'$"changeextragroups"'">
+			<span>'$"Change the extra groups associated with this group."' '$GROUPNAME'</span>
+			</button> '$SECONDARYGROUP''
 				fi
 				echo '</td>'
 			fi
 
-			echo '<td><a class="info" href="javascript:void(0)"><input name="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON3'" value=""><span>'$GROUPNAME' - '$"Show users in this group."'</span></a></td><td>'
+			echo '<td>
+			<button class="info" name="____showusers____" value="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
+			<img src="'$ICON3'" alt="'$"Show users in this group."'">
+			<span>'$GROUPNAME' - '$"Show users in this group."'</span>
+			</button></td><td>'
 			PROTECTED=no
 			[ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
 			if [ "$PROTECTED" = no ]
 			then
 				if [ "$MEMBERCOUNT" = 0 ] || [ "$GTYPE" = secondary ] || [ "$GTYPE" = dynamic ] 
 				then
-					echo '<a class="info" href="javascript:void(0)"><input name="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPNAME' - '$"delete this group."'</span></a>'
+					echo '
+			<button class="info" name="____deletegroup____" value="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
+			<img src="'$ICON1'" alt="'$"delete this group."'">
+			<span>'$GROUPNAME' - '$"delete this group."'</span>
+			</button>'
 				fi
 			fi
 			echo '</td></tr>'
 		fi
 		let COUNTER=$COUNTER+1
 	done
-	echo '</tbody></table>'
+	echo '</tbody></table></form>'
 fi
 
 if [ $ACTION = delete ]
@@ -661,38 +708,38 @@ fi
 
 if [ $ACTION = extragroups ]
 then
-#Get a list of groups already asociated with this group
-source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+	#Get a list of groups already asociated with this group
+	source /opt/karoshi/server_network/group_information/"$GROUPNAME"
 
-echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
+	echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
 
-#Show list of groups
-GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
-GROUPCOUNT=${#GROUPLIST[@]}  
-COUNTER=0
+	#Show list of groups
+	GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+	GROUPCOUNT=${#GROUPLIST[@]}  
+	COUNTER=0
 
-echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Group name"'</b></td><td><b>Select</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></td></tr>'
+	echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table class="'$TABLECLASS'" style="text-align: left;" >
+	<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Group name"'</b></td><td><b>Select</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></td></tr>'
 
-while [ $COUNTER -lt $GROUPCOUNT ]
-do
-	GROUPNAMECHOICE=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
-	GROUPID=`getent group "$GROUPNAMECHOICE" | cut -d: -f3`
-	if [ $GROUPID -ge 1000 ] && [ $GROUPNAMECHOICE != $GROUPNAME ] && [ $GROUPNAME != nogroup ]
-	then
-		echo '<tr><td>'$GROUPNAMECHOICE'</td><td>'
-		CHECKED=""
-		[ `echo $SECONDARYGROUP | grep -c -w $GROUPNAMECHOICE` -gt 0 ] && CHECKED=checked
-		echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'>'
-		echo '</td></tr>'
-	fi
-	let COUNTER=$COUNTER+1
-done
+	while [ $COUNTER -lt $GROUPCOUNT ]
+	do
+		GROUPNAMECHOICE=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+		GROUPID=`getent group "$GROUPNAMECHOICE" | cut -d: -f3`
+		if [ $GROUPID -ge 1000 ] && [ $GROUPNAMECHOICE != $GROUPNAME ] && [ $GROUPNAME != nogroup ]
+		then
+			echo '<tr><td>'$GROUPNAMECHOICE'</td><td>'
+			CHECKED=""
+			[ `echo $SECONDARYGROUP | grep -c -w $GROUPNAMECHOICE` -gt 0 ] && CHECKED=checked
+			echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'>'
+			echo '</td></tr>'
+		fi
+		let COUNTER=$COUNTER+1
+	done
 
-echo '</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+	echo '</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 
 fi
-echo '</form>'
+
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

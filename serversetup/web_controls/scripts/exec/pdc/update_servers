@@ -351,4 +351,8 @@ then
 	fi
 fi
 
-
+#Clear any warning messages for the server
+if [ -f /opt/karoshi/web_controls/warnings/raw_messages/update_system_"$SERVERNAME" ]
+then
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete update_system_"$SERVERNAME"
+fi

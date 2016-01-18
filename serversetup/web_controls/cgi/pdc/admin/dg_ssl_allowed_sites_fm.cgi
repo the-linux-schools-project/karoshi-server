@@ -44,12 +44,12 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Allow SSL Internet Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 
   
-  <script type="text/javascript">
+  <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -99,7 +99,7 @@ echo '<b>'$"Allow SSL Internet Sites"'</b> <a class="info" href="javascript:void
 <br><br>'
 fi
 
-echo '<table class="standard" style="text-align:" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align:" >
 <tbody><tr><td style="width: 100px;">'$"Site"'</td><td><input name="_WEBADDRESS_" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the site that you want to allow."'<br><br>'$"Do not include http or www."'<br><br>'$"Example: mysite.com"'</span></a></td></tr></tbody></table><br>'
 
 if [ $MOBILE = no ]

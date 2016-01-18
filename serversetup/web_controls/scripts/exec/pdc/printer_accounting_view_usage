@@ -130,7 +130,7 @@ then
 WIDTH1=85
 TABLECLASS=mobilestandard
 fi
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Year"'</b></td><td><b>'$"Month"'</b></td><td><b>'$"Print Total"'</b></td></tr>'
 
 if [ $PRINTSERVER = `hostname-fqdn` ] && [ $TYPE = user ]

@@ -49,16 +49,16 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Technical Support"' - '$"Requests"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -69,14 +69,14 @@ $(document).ready(function()
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -141,7 +141,7 @@ echo '
 <form id="refresh_form" action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
  <input type="hidden" name="_SEARCHCRITERIA_'$SEARCHCRITERIA'_" value="_SEARCHCRITERIA_'$SEARCHCRITERIA'_"> 
 </form>
-<script type="text/javascript">
+<script>
 setTimeout(function(){
 document.getElementById("refresh_form").submit();
 }, 180000);
@@ -162,11 +162,11 @@ exit
 fi
 if [ $MOBILE = yes ]
 then
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 90px;"><b>'$"Date"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 30px;"></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
 else
-	echo '<table  id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table  id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 100px;"><b>'$"Date"'</b></th><th style="width: 130px;"><b>'$"Name"'</b></th><th style="width: 140px;"><b>'$"Request Summary"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 90px;"><b>'$"Wait Time"'</b></th><th style="width: 90px;"><b>'$"Priority"'</b></th><th style="width: 100px;"><b>'$"Assigned to"'</b></th><th style="width: 30px;"></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
 fi

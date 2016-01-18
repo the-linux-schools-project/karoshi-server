@@ -146,7 +146,7 @@ fi
 if [ "$ACTION" = add ]
 then
 	#Show form to add certificates
-	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Username"'</td>
         <td><div id="suggestions"></div>
 	<input tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td>

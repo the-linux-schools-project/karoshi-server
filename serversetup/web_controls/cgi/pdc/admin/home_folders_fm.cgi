@@ -44,13 +44,13 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Home Folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -64,15 +64,23 @@ $(document).ready(function()
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
 
 #Check for gluster support
-[ `grep -c dfs /etc/samba/smb.conf` -gt 0 ] && echo '<td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td>'
+[ `grep -c dfs /etc/samba/smb.conf` -gt 0 ] && echo '<td>
+<button class="button" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
+'$"Gluster Volume Control"'
+</button>
+</td>'
 
-echo '<td><a href="samba_shares.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Network Shares"'"></a></td><td>
+echo '<td>
+<button class="button" formaction="samba_shares.cgi" name="SambaShares" value="_">
+'$"Network Shares"'
+</button>
+</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td></tr></tbody></table><br></div><div id="infobox">
-  <table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><thead>
+  <table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" ><thead>
 <tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 180px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td><b>'$"Change"'</b></td></tr></thead><tbody>
 '
 START_LINE=yes
@@ -94,16 +102,25 @@ do
 
 	if [ $START_LINE = yes ]
 	then
-		echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td>'
-	START_LINE=no
+		echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;">
+		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
+		<img src="'$ICON1'" alt="'$"Rename"'">
+		<span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span>
+		</button>
+		</td>'
+		START_LINE=no
 	else
-		echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_"><span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span></a></td></tr>'
+		echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;">
+		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
+		<img src="'$ICON1'" alt="'$"Rename"'">
+		<span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span>
+		</button>
+		</td></tr>'
 	START_LINE=yes
 	fi
 done
 
-echo '</tbody>
-  </table><br><br>
+echo '</tbody></table><br><br>
 </div></div>
 </form>
 </div></body>

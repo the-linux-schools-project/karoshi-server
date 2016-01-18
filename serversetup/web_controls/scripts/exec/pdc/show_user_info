@@ -198,17 +198,17 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post">
 <input type="hidden" name="_USERNAME_" value="'$USERNAME'">
-<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 200px;" valign="top"><b>'$"Basic Information"'</b></td></tr>
-<tr><td valign="top">'$"Username"'</td><td valign="top">'$USERNAME'<br></td></tr>
+<table class="standard" style="text-align: left; height: 40px;" ><tbody>
+<tr><td style="width: 200px;"><b>'$"Basic Information"'</b></td><td></td><td></td></tr>
+<tr><td>'$"Username"'</td><td>'$USERNAME'<br></td><td></td></tr>
 <tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$SERVER'</td></tr>
 <tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY'</td></tr>
 <tr><td>'$"Windows Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY2'</td></tr>
-<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td></tr>
-<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td></tr>
-<tr><td>UID number</td><td>'$UIDNUMBER'</td></tr>
-<tr><td>GID number</td><td>'$GIDNUMBER'</td></tr>
-<tr><td>'$"Common Name"'</td><td>'$CN'</td></tr>
+<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td><td></td></tr>
+<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td><td></td></tr>
+<tr><td>UID number</td><td>'$UIDNUMBER'</td><td></td></tr>
+<tr><td>GID number</td><td>'$GIDNUMBER'</td><td></td></tr>
+<tr><td>'$"Common Name"'</td><td>'$CN'</td><td></td></tr>
 <tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'$SN'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
 <td colspan="1" rowspan="7" style="vertical-align: top;">'
 #Show user image
@@ -216,9 +216,9 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 #Show user image
 if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
 then
-	echo '<div id="photobox"><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" style="width:140px;height:180px"></div>'
+	echo '<div id="photobox"><img alt="'$USERNAME'.jpg" src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" style="width:140px;height:180px"></div>'
 else
-	echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+	echo '<div id="photobox"><img alt="'$USERNAME'.jpg" src="/images/blank_user_image.jpg" width="140" height="180"></div>'
 fi
 
 
@@ -234,28 +234,28 @@ echo '</tr>
 echo '<br><br><input value="Submit" type="submit" class="button"> <input value="Reset" type="reset" class="button"></form>'
 else
 
-echo '<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
-<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 200px;" valign="top"><b>'$"Basic Information"'</b></td></tr>
-<tr><td>'$"Username"'</td><td>'$USERNAME'</td></tr>
-<tr><td>'$"Home Server"'</td><td>'$SERVER'</td></tr>
-<tr><td>'$"Unix Home Directory"'</td><td>'$HOMEDIRECTORY'</td></tr>
-<tr><td>'$"Windows Home Directory"'</td><td>'$HOMEDIRECTORY2'</td></tr>
-<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td></tr>
-<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td></tr>
-<tr><td>UID number</td><td>'$UIDNUMBER'</td></tr>
-<tr><td>GID number</td><td>'$GIDNUMBER'</td></tr>
-<tr><td>'$"Common Name"'</td><td>'$CN'</td></tr>
-<tr><td>'$"Surname"'</td><td>'$SN'</td></tr>
-<tr><td>'$"Given Name"'</td><td>'$GIVENNAME'</td></tr>
-<tr><td>Employee / student number</td><td>'$EMPLOYEENUMBER'</td></tr>
-<tr><td>'$"Display Name"'</td><td>'$DISPLAYNAME'</td></tr>
-<tr><td>'$"E-Mail address"'</td><td>'$MAIL'</td></tr>
-<tr><td>'$"Samba account flags"'</td><td>'$SAMBAACCTFLAGS'</td></tr>
-<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET'</td></tr>
+echo '<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td>
+<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" ><tbody>
+<tr><td style="width: 200px;"><b>'$"Basic Information"'</b></td><td></td><td></td></tr>
+<tr><td>'$"Username"'</td><td>'$USERNAME'</td><td></td></tr>
+<tr><td>'$"Home Server"'</td><td>'$SERVER'</td><td></td></tr>
+<tr><td>'$"Unix Home Directory"'</td><td>'$HOMEDIRECTORY'</td><td></td></tr>
+<tr><td>'$"Windows Home Directory"'</td><td>'$HOMEDIRECTORY2'</td><td></td></tr>
+<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td><td></td></tr>
+<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td><td></td></tr>
+<tr><td>UID number</td><td>'$UIDNUMBER'</td><td></td></tr>
+<tr><td>GID number</td><td>'$GIDNUMBER'</td><td></td></tr>
+<tr><td>'$"Common Name"'</td><td>'$CN'</td><td></td></tr>
+<tr><td>'$"Surname"'</td><td>'$SN'</td><td></td></tr>
+<tr><td>'$"Given Name"'</td><td>'$GIVENNAME'</td><td></td></tr>
+<tr><td>Employee / student number</td><td>'$EMPLOYEENUMBER'</td><td></td></tr>
+<tr><td>'$"Display Name"'</td><td>'$DISPLAYNAME'</td><td></td></tr>
+<tr><td>'$"E-Mail address"'</td><td>'$MAIL'</td><td></td></tr>
+<tr><td>'$"Samba account flags"'</td><td>'$SAMBAACCTFLAGS'</td><td></td></tr>
+<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET'</td><td></td></tr>
 </tbody></table>
 '
-echo '</td><td valign="top">'
+echo '</td><td>'
 if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
 then
 echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'

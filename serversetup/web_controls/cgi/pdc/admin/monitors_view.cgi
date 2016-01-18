@@ -44,8 +44,8 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">'
-echo '<script type="text/javascript">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">'
+echo '<script>'
 echo '<!--'
 echo 'function SetAllCheckBoxes(FormName, FieldName, CheckValue)'
 echo '{'
@@ -105,7 +105,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"View Monitors"'</b></td>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"View Monitors"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
 <input name="ADDMONITOR" type="submit" class="button" value="'$"Add Monitor"'">
@@ -129,7 +129,7 @@ show_status
 fi
 
 #Show table of sites
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">'
+echo '<table class="standard" style="text-align: left;" >'
 echo "<tbody>"
 echo '<tr><td style="width: 180px;"><b>'$"Monitors"'</b></td><td><b>'$"Enabled"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><b>'$"Info"'</b></td></tr>'
 

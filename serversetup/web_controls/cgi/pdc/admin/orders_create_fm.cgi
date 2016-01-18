@@ -50,7 +50,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$TITLE'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
@@ -236,7 +236,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><form name="testform" action="/cgi-bin/admin/orders_create_fm.cgi" method="post">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td style="width: 90px;"><b>'$"Department"'</b></td><td style="width: 300px;"><input value="'$DEPARTMENT'" maxlength="20" size="20" name="___DEPARTMENT___"></td><td style="width: 120px;"><b>'$"Date"'</b></td><td style="width: 200px;">'
 

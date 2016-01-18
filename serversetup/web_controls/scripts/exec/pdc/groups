@@ -192,16 +192,16 @@ then
 	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 	#Show box to add users to the group.
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Users"'</b></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Users"'</b></td><td></td><td></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
 <input tabindex= "1" style="width: '$WIDTH1'px;" name="____ACTION____adduser____GROUPNAME____'$GROUPNAME'____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br><br></form>'
+ value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br><br>'
 	#Check how many users there are in the group before showing any users.
 	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
 	then
 		SERVERNAME=`hostname-fqdn`
 		#Show all users in the group.
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Edit User"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
@@ -209,12 +209,20 @@ then
 			FIRSTNAME=`echo "$FULLNAME" | cut -d" " -f1`
 			LASTNAME=`echo "$FULLNAME" | cut -d" " -f2`
 			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>
-			<form action="show_user_info.cgi" target="_blank" method="post">
-			<a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_" type="image" class="images" src="/images/submenus/user/edit_user_info.png" value=""><span>Edit '$GROUPMEMBER'</span></a>
+			<form name="myform" action="/cgi-bin/admin/show_user_info.cgi" method="post">
+			<button class="info" name="_ShowUserInfo_" value="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_">
+			<img src="/images/submenus/user/edit_user_info.png" alt="'$"Show users in this group."'">
+			<span>'$"Edit"' '$GROUPMEMBER'</span>
+			</button>
 			</form>
-			</td><td><form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-			<a class="info" href="javascript:void(0)"><input name="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____" type="image" class="images" src="'$ICON1'" value=""><span>'$GROUPMEMBER' - '$"remove this user from the group."'</span></form></a>
-	</td></tr>'
+			</td><td>
+			<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+			<button class="info" name="____RemoveUser____" value="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
+			<img src="'$ICON1'" alt="'$"remove this user from the group."'">
+			<span>'$GROUPMEMBER' - '$"remove this user from the group."'</span>
+			</button>
+			</form>
+			</td></tr>'
 		done
 		echo '</tbody></table>'
 	fi

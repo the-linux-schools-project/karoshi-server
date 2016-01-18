@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 function getip {
@@ -50,12 +50,12 @@ SERVERIP=`grep -w $SERVER /etc/hosts | sed -n 1,1p | cut -f1`
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Add Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 
 
-		<script type="text/javascript"><!--
+		<script><!--
 var lastDiv = "";
 function showDiv(divName) {
 	// hide last div
@@ -187,24 +187,26 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>
+<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Add Server"'</div></td>
 <td style="vertical-align: top;">
-<a href="karoshi_servers_view.cgi"><input class="button" type="button" name="" value="'$"Show servers"'"></a> 
+<button class="button" formaction="karoshi_servers_view.cgi" name="ShowServers" value="_">
+'$"Show servers"'
+</button>
 </td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Linux Schools server so that it can be controlled by the web management."'</span></a>
 </td>
 </tr></tbody></table>
 <br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 180px;">'$"Server"'</td><td><input tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the server you want to enable ssh for."'</span></a>
-</td></tr><tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server that you are connecting to."'</span></a>
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$"Server"'</td><td><input tabindex= "1" style="width: 192px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the server you want to enable ssh for."'</span></a>
+</td></tr><tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input tabindex= "2" style="width: 192px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server that you are connecting to."'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$"Root Password"'</td><td><input tabindex= "3" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the root password for the server you are setting up ssh for and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
-;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
+<tr><td style="width: 180px;">'$"Root Password"'</td><td><input tabindex= "3" style="width: 192px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="23" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the root password for the server you are setting up ssh for and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a>
 </td></tr>
-<tr><td>'$"Confirm Root Password"'</td><td><input tabindex= "4" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td></tr>
+<tr><td>'$"Confirm Root Password"'</td><td><input tabindex= "4" style="width: 192px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="23" type="password"></td><td></td></tr>
 <tr><td style="width: 180px;">Zone</td><td>
 <select name="____ZONE____" style="width: 200px;">
 <option '$ZONESELECT1'>internal</option>
@@ -215,10 +217,10 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Zone"><img class="images" alt="" src="/images/help/info.png"><span>'$"Your server is in a dmz firewall zone and will be set up with a vpn tunnel to the main server."'</span></a>
 </td></tr>
 </tbody></table><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td>
 <div class="sectiontitle">'$"Authentication type"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"In most cases your extra server will need to recognise your network users and groups."'</span></a></td></tr></tbody></table><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Additional domain controller"'</td><td><input type="radio" name="____AUTHENTICATION____" value="adc" '$CHECKED1' onchange="showDiv(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server#Authentication_Type"><img class="images" alt="" src="/images/help/info.png"><span>'$"Reduncancy in the case of failure of your main domain controller and for additional file servers."'</span></a>
 </td></tr>

@@ -170,7 +170,7 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo '<table class='"$TABLECLASS"' style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class='"$TABLECLASS"' style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
 <tr><td style="width: 180px;">'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
 <tr><td style="width: 180px;">'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>

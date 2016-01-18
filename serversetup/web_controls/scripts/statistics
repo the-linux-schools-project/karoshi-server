@@ -22,7 +22,7 @@
 #Website: http://www.karoshi.org.uk
 #Generate top of html page
 echo '<br><br>
-<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 <tr><th style="width: 90px; height: 30px;"><span style="font-weight: bold;">Server</span></th><th style="width: 50px;"><span style="font-weight: bold;">Uptime</span></th><th style="width: 90px;"><span style="font-weight: bold;">Last Boot</span></th><th style="width: 350px;"><span style="font-weight: bold;">CPU</span></th>
 <th style="width: 100px;"><span style="font-weight: bold;">Memory(Mb)</span></th></tr></thead><tbody>' > /var/www/html_karoshi/statistics.html
 

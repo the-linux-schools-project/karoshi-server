@@ -102,7 +102,7 @@ COUNTER=1
 if [ $MONITORCOUNT -gt 0 ]
 then
 	#Show table of sites
-	echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left; width: 800px; height: 100px;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Monitors"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td></tr>'
 	while [ $COUNTER -le $MONITORCOUNT ]
 	do

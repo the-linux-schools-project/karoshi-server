@@ -272,7 +272,7 @@ fi
 }
 
 function showtitle {
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
 <tr>' 
 if [ $MOBILE = no ]
 then
@@ -296,7 +296,7 @@ echo '<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit"
 function viewfilters {
 #Show add filtergroup button
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="'$TABLECLASS'" style="text-align: left;" >
 <tr><td style="width: 180px; vertical-align: top;"><div class="sectiontitle">'$"Filter Management"'</div></td>
 <td style="vertical-align: top;">
 <input name="_ACTION_add_" type="submit" class="button" value="'$"Add Filter Group"'">
@@ -311,7 +311,7 @@ echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="htt
 
 #Show existing filtergroups
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 50px;"><b>'$"Name"'</b></th>'
 if [ $MOBILE = no ]
 then
@@ -377,7 +377,7 @@ HELPMSG=$"Enter in the label and description of new group that you want to creat
 SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$"The filter lists are loaded into memory for each filter group so use as few filter groups as possible."'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$"The filter lists are loaded into memory for each filter group so use as few filter groups as possible."'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$"Filter group to clone from"'</td><td><select name="_FILTERDATA3_" style="width: 200px;">'
 
@@ -444,7 +444,7 @@ showtitle
 source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="'$TABLECLASS'" style="text-align: left;" >
 <tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
 <tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br>
 '$"Are you sure you want to delete this filter group?"'<br><br><input type="hidden" name="_ACTION_" value="reallydelete"><br><input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'"><input value="'$"Submit"'" class="button" type="submit"></form>'
@@ -505,13 +505,13 @@ showtitle
 source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 
 #Show details for the group
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'"><input type="hidden" name="_ACTION_" value="reallyeditlable"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'"><input type="hidden" name="_ACTION_" value="reallyeditlable"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Description"'</b></td><td><input tabindex= "2" value="'$FILTERDESC'" name="_FILTERDATA2_" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><input value='$"Submit"' class="button" type="submit"></td></tr></tbody></table><br>'
 
 #Show option to edit banned site lists and part banned site lists
 echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'">
-<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH3'px;"><b>'$"Filter Group Options"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
 <tr><td>'$"Custom Allowed Sites"'</td><td style="vertical-align: top;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_viewcustomsites_FILTERDATA_allowed_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Custom Allowed Sites"'</span></a>
@@ -541,7 +541,7 @@ if [ $FILTERNAME != f1 ]
 then
 	#Show option to add in a group
 	echo "<input type=\"hidden\" name=\"_FILTERNAME_\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"_ACTION_\" value=\"reallyaddgroup\">"
-	echo '<b>'$"Add User Group"'</b><br><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+	echo '<b>'$"Add User Group"'</b><br><table class="'$TABLECLASS'" style="text-align: left;" >
 	<tr><td style="width: '$WIDTH1'px;">'$"Group"'</td><td>'
 
 	/opt/karoshi/web_controls/group_dropdown_list | sed 's/_GROUP_/_FILTERDATA_/g' | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
@@ -554,7 +554,7 @@ then
 	#Show any existing groups that have been assigned.
 	if [ -d /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups ]
 	then
-		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: '$WIDTH3'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: 70px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH3'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: 70px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
 		'
 		for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/*
 		do
@@ -656,11 +656,11 @@ source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 
 #Show details for the group
 
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
 <tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br><br>'
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 180px;"><b>'$"Filter Category"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
 
 #Show categories that are currently active
@@ -736,12 +736,12 @@ showtitle
 
 source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
 
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
 <tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br>'
 
 #Show allowed extensions
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH5'"px";"><b>'$"Extension"'</b></th>'
 [ $MOBILE = no ] && echo '<th style="width: '$WIDTH6'"px";"><b>'$"Description"'</b></th>'
 echo '<th style="width: 60px";"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
@@ -807,11 +807,11 @@ showtitle
 source /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/details
 
 
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
 <tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br>'
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH7'px;"><b>'$"Mime Type"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
 
 
@@ -897,7 +897,7 @@ source /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/details
 
 #Show details for the group
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
 <tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br><br>'
 
@@ -908,7 +908,7 @@ SEARCH="$FILTERDATA2"
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'">
 <input type="hidden" name="_FILTERDATA_" value="'$FILTERDATA'">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Add Site"'</td><td><input tabindex= "1" name="_ACTION_modifycustomsite_FILTERDATA3_add_FILTERDATA2_" style="width: '$WIDTH2'px;" value="'$BANSITE'" size="20" type="text"></td>
 <td><input value="Submit" class="button" type="submit"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the site that you want to ban or allow."'</span></a></td></tr>
 <tr><td></td><td colspan="2">'
@@ -926,7 +926,7 @@ echo '</td></tr></tbody></table></form>
 <form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'">
 <input type="hidden" name="_FILTERDATA_" value="'$FILTERDATA'">
-<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 
 <tr><td style="width: '$WIDTH1'px;">'$"Search"'</td><td><input tabindex= "2" name="_ACTION_viewcustomsites_FILTERDATA2_" value="'$SEARCH'" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><input value="'$"Submit"'" class="button" type="submit"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a search term to filter the results."'</span></a></td></tr>
 </tbody></table><br></form>
@@ -938,7 +938,7 @@ echo '</td></tr></tbody></table></form>
 <input type="hidden" name="_ACTION_" value="modifycustomsite">
 '
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH3'px;"><b>'$"Site"'</b></th><th style="width: 70px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 for SITE in `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE2 | sort | grep "$SEARCH"`
 do

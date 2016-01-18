@@ -123,7 +123,7 @@ fi
 
 
 function show_status {
-echo '<script type="text/javascript">'
+echo '<script>'
 echo 'alert("'$MESSAGE'");'
 echo 'window.location = "/cgi-bin/admin/'$STARTCGI'";'
 echo '</script>'
@@ -137,7 +137,7 @@ exit
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Printer Limits"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Printer Limits"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 </head><body onLoad="start()"><div id="pagecontainer">'
 
 #########################
@@ -208,7 +208,7 @@ echo '
 if [ $TYPE != userdelete ] && [ $TYPE = user ]
 then
 	echo '
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Username"'</td><td>'$NAME'</td></tr>
 <tr><td>'$"User Limit"'</td><td>'$LIMIT'</td></tr>
 <tr><td>'$"Group Limit"'</td><td>'$GROUPLIMIT'</td></tr>
@@ -219,7 +219,7 @@ fi
 
 if [ $TYPE != userdelete ] && [ $TYPE = group ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"User or Primary Group"'</b></td><td><b>'$"Limit"'</b></td></tr>
 <tr><td>'$NAME'</td><td><input maxlength="10" size="10" name="_LIMIT_" value="'$LIMIT'"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr></tbody></table>
 '

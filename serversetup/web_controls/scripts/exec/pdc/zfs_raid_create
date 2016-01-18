@@ -221,7 +221,7 @@ then
 			echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
 
 			POOL=`echo zfs$MOUNTPOINT | sed "s/\//-/g"`
-			echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+			echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$POOL'</b></td></tr>
 <tr><td style="width: 180px;">'$"Reuse Drives for a new array"'</td><td><input type="radio" name="_CREATETYPE_" value="reuse"></td></tr>
 <tr><td>'$"Restore ZFS Array"'</td><td><input type="radio" name="_CREATETYPE_" value="restore"></td></tr>
@@ -275,7 +275,7 @@ then
 				if [ $SHOW_MENU = yes ]
 				then
 					echo '
-					<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+					<table class="standard" style="text-align: left;" ><tbody>
 		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
 		</td></tr>
@@ -287,7 +287,7 @@ then
 		<option value="3">'$"Triple Redundancy"'</option>
 		</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the redundancy type that you want."'<br><br>'$"Mirror allows for the failure of one drive without losing any data and only needs two drives."'<br><br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
 		</tr></tbody></table>
-		<br><br><table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		<br><br><table class="standard" style="text-align: left;" >
 		<tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 90px;"><b>'$"Size"'</b></td><td style="width: 70px;"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
 					</td></tr>'

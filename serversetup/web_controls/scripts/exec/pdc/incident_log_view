@@ -133,7 +133,7 @@ COUNTER=1
 if [ $LOGCOUNT -gt 0 ]
 then
 	#Show table of sites
-	echo '<table class="standard" style="text-align: left; width: 1000px; height: 100px;" border="0" cellpadding="2" cellspacing="2">
+	echo '<table class="standard" style="text-align: left; width: 1000px; height: 100px;" >
 	<tbody><tr><td style="width: 70px;"><b>'$"Date"'</b></td><td style="width: 45px;"><b>'$"Time"'</b></td><td><b>'$"Incident"'</b></td><td><b>'$"Action Taken"'</b></td><td><b>'$"Users Involved"'</b></td></tr>'
 	while [ $COUNTER -le $LOGCOUNT ]
 	do

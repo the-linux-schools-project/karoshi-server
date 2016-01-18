@@ -114,7 +114,7 @@ fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 110px;"><b>Username</b></td><td style="width: 80px;"><b>Server</b></tb><td style="width: 160px;"><b>Homepath</b></td><td>Blocks</td><td><b>Used</b></td><td><b>Size Quota</b></td><td><b>Size Limit</b></td><td><b>File count</b></td><td><b>File Quota</b></td><td><b>File limit</b></td></tr>'
 #File servers
 if [ $SERVER = `hostname-fqdn` ]

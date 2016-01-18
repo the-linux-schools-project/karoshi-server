@@ -151,10 +151,10 @@ fi
 
 if [ $MOBILE = yes ]
 then
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 90px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th></tr></thead><tbody>'
 else
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 250px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th><th style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></th><th><b>'$"Start Date"'</b></th><th><b>'$"Reset"'</b></th></thead><tbody>'
 fi
 }
@@ -214,12 +214,12 @@ fi
 
 if [ $MOBILE = yes ]
 then
-	echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td>'
+	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td>'
 else
-	echo '<tr><td valign="top">'$DISPLAY_NAME'</td><td valign="top">'$UPPRCENT''$SYMBOL'</td><td valign="top">'$DPY' '$SUFFIX'</td><td valign="top">'$START_TIME'</td>'
+	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td>'$DPY' '$SUFFIX'</td><td>'$START_TIME'</td>'
 fi
 
-echo '<td valign="top"> 
+echo '<td> 
 <form action="/cgi-bin/admin/uptime_reset.cgi" name="selectservers" method="post">
 <input name="_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_SERVERMASTER_'$FEDERATED_SERVER'_" type="submit" class="button" value="'$"Reset"'">
 </form>

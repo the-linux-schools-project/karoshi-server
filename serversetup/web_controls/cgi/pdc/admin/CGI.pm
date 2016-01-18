@@ -462,8 +462,8 @@ sub init {
 
     $fh = to_filehandle($initializer) if $initializer;
 
-    # set charset to the safe ISO-8859-1
-    $self->charset('ISO-8859-1');
+    # set charset to the safe UTF-8
+    $self->charset('UTF-8');
 
   METHOD: {
 
@@ -2138,7 +2138,7 @@ sub escapeHTML {
          else {
 	     $toencode =~ s{"}{&quot;}gso;
          }
-         my $latin = uc $self->{'.charset'} eq 'ISO-8859-1' ||
+         my $latin = uc $self->{'.charset'} eq 'UTF-8' ||
                      uc $self->{'.charset'} eq 'WINDOWS-1252';
          if ($latin) {  # bug in some browsers
                 $toencode =~ s{'}{&#39;}gso;
@@ -2160,7 +2160,7 @@ sub unescapeHTML {
     push @_,$_[0] if @_==1 && $_[0] eq 'CGI';
     my ($self,$string) = CGI::self_or_default(@_);
     return undef unless defined($string);
-    my $latin = defined $self->{'.charset'} ? $self->{'.charset'} =~ /^(ISO-8859-1|WINDOWS-1252)$/i
+    my $latin = defined $self->{'.charset'} ? $self->{'.charset'} =~ /^(UTF-8|WINDOWS-1252)$/i
                                             : 1;
     # thanks to Randal Schwartz for the correct solution to this one
     $string=~ s[&(.*?);]{
@@ -4732,7 +4732,7 @@ headers to work with a NPH (no-parse-header) script.  This is important
 to use with certain servers that expect all their scripts to be NPH.
 
 The B<-charset> parameter can be used to control the character set
-sent to the browser.  If not provided, defaults to ISO-8859-1.  As a
+sent to the browser.  If not provided, defaults to UTF-8.  As a
 side effect, this sets the charset() method as well.
 
 The B<-attachment> parameter can be used to turn the page into an
@@ -5287,7 +5287,7 @@ Escape HTML formatting characters in a string.
 
 =back
 
-Provided that you have specified a character set of ISO-8859-1 (the
+Provided that you have specified a character set of UTF-8 (the
 default), the standard HTML escaping rules will be used.  The "<"
 character becomes "&lt;", ">" becomes "&gt;", "&" becomes "&amp;", and
 the quote character becomes "&quot;".  In addition, the hexadecimal

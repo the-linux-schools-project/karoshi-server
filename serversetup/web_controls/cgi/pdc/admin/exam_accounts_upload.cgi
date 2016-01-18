@@ -161,7 +161,7 @@ BEGIN {
 		print header;
 		print <<__END_OF_HTML_CODE__;
 		
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 			<TITLE>Error: Bad Directory</TITLE>
 		</HEAD>
 		<BODY BGCOLOR="#FFFFFF">
@@ -208,7 +208,7 @@ __END_OF_HTML_CODE__
 				print header;
 				print <<__END_OF_HTML_CODE__;
 				
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 					<TITLE>Error: Filename Problem</TITLE>
 				</HEAD>
 				<BODY BGCOLOR="#FFFFFF">
@@ -303,7 +303,7 @@ __END_OF_HTML_CODE__
 		print header;
 		print <<__END_OF_HTML_CODE__;
 		
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 			<TITLE>Error: Limit Reached</TITLE>
 		</HEAD>
 		<BODY BGCOLOR="#FFFFFF">
@@ -329,7 +329,7 @@ __END_OF_HTML_CODE__
 		print header;
 		print <<__END_OF_HTML_CODE__;
 		
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 			<TITLE>Upload Completed</TITLE><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/exam_accounts_copy_data_fm.cgi">
 		</HEAD>
 		<BODY style="color: rgb(0, 0, 0); background-color: rgb(0, 0, 0);">

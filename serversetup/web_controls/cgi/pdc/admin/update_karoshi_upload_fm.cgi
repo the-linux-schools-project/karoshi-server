@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <TITLE>'$"Upload Web Management Patch"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -54,35 +54,34 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo ' <FORM ENCTYPE="multipart/form-data" action="/cgi-bin/admin/update_karoshi_upload.cgi" method="post"><div id="actionbox">
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Upload Web Management Patch"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow you to upload and apply a web management updates to your server. You will also need the signature file to verify that it is a legitamate update."'</span></a></td></tr></tbody></table>
 <P>
 '$UPLOADMSG'
 <P>
-        <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/update_karoshi_upload.cgi" METHOD="POST">
-        <TABLE class="standard" BORDER=0 WIDTH="570">
-        <TR>
-            <TD ALIGN=LEFT>
+        <table class="standard">
+        <tr>
+            <td>
                 '$"Patch file"':
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=LEFT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"Sign file"':
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
-            </TD>
-        </TR>
-        </TABLE>
+            </td>
+        </tr>
+        </table>
 </div><div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-        </FORM>
+        </form>
 </div>
 </BODY>
 </HTML>

@@ -1,3 +1,12 @@
+body {
+        top: unset;
+        bottom: unset;
+        overflow: auto;
+        height: 100%;
+        position: unset;
+}
+
+
 #pagecontainer {
 	background-image: url(/images/backgrounds/lightblue.jpg);
 	padding: 10px 0 0 0;
@@ -181,11 +190,10 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	color: #FFF;
 }
 
-
 .button
 {
 font-size: 12px;
-height: 30;
+height: 30px
 border-radius: 12px;
   -moz-border-radius: 12px;
   -webkit-border-radius: 12px;
@@ -201,3 +209,9 @@ border-radius: 12px;
   background-image: linear-gradient(to bottom, #159ABC, #0E6981);
   text-decoration: none;
  }
+
+.smallbutton
+{
+   height: 30px;
+}
+

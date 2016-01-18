@@ -52,7 +52,7 @@ then
 	SERVERICON2="/images/submenus/system/all_computers.png"
 	TABLECLASS=standard
 else
-	WIDTH1=160
+	WIDTH1=90
 	WIDTH2=140
 	WIDTH3=50
 	WIDTH4=110
@@ -64,7 +64,7 @@ else
 fi
 
 function tabletop {
-echo '<table id="myTable" class="tablesorter" width="90%" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 <tr><th style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></th>'
 
 [ $MOBILE = no ] && echo '<th style="vertical-align: top; width: '$WIDTH5'px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Role"'</b></th>'

@@ -166,7 +166,7 @@ echo `date`: package_cache_control - deleting "$FILTERDATA" by "$REMOTE_USER" fr
 function viewlist {
 
 #Show add site box
-echo '<form action="/cgi-bin/admin/package_cache_control.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form action="/cgi-bin/admin/package_cache_control.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Add Site"'</b></td><td><input tabindex= "1" name="_ACTION_add_FILTERDATA_" style="width: '$WIDTH3'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Package_Cache_Control"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a site that you want to allow for the clients to connect to."'</span></a></td>'
 
 [ "$MOBILE" = yes ] && echo '</tr><tr><td></td>'
@@ -174,7 +174,7 @@ echo '<form action="/cgi-bin/admin/package_cache_control.cgi" method="post"><tab
 echo '<td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table><br></form><form action="/cgi-bin/admin/package_cache_control.cgi" method="post">'
 
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH2'px;"><b>'$"Site"'</b></td><td></td></tr>'
 
 for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`

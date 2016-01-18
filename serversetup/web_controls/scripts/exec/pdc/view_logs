@@ -124,7 +124,7 @@ fi
 
 function show_options {
 #Show options
-echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td><input name="_ACTION_viewservers_" type="submit" class="button" value="'$"View Servers"'"></td>'
 if [ "$ACTION" != viewlist ]
 then
@@ -238,7 +238,7 @@ then
 	#Show a list of logs
 	if [ "$LOGCOUNT" -gt 0 ]
 	then
-		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
 	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		if [ "$SERVERNAME" = `hostname-fqdn` ]
 		then

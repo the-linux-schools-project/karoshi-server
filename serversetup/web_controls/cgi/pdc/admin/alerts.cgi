@@ -50,13 +50,13 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Warning Messages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter({
@@ -80,16 +80,27 @@ echo '<div id="actionbox"><div class="sectiontitle">'$"Warning Messages"'</div>'
 #Check for any web management warnings
 if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
 then
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="width: 450px;"><b>'$"Description"'</b></th><th><b>Check</b></th></tr></thead><tbody>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 450px;"><b>'$"Description"'</b></th><th><b>Check</b></th></tr></thead><tbody>'
 	for WARNING_FILE in `ls /opt/karoshi/web_controls/warnings/raw_messages/`
 	do
 		DATA=`cat /opt/karoshi/web_controls/warnings/raw_messages/"$WARNING_FILE"`
 		LINK=`echo "$DATA" | cut -d"," -f1`
 		DESCRIPTION=`echo "$DATA" | cut -d"," -f2`
-		echo '<tr><td>'$DESCRIPTION'</td><td><a href="'$LINK'"><input class="button" type="button" name="" value="'$"Check"'"></a></td></tr>'
-
+		echo '<tr><td>'$DESCRIPTION'</td><td>
+		<form name="checkservers" action="'$LINK'" method="get">
+		<button class="button" name="Check" value="_">
+		'$"Check"'
+		</button>
+		</form>
+		</td></tr>'
 	done
-	echo '<tr><td>'$"Clear all warning messages"'</td><td><a href="/cgi-bin/admin/clear_warnings_fm.cgi"><input class="button" type="button" name="" value="'$"Clear all"'"></a></td></tr></tbody></table>'
+	echo '<tr><td>'$"Clear all warning messages"'</td><td>
+	<form name="ClearMessages" action="clear_warnings_fm.cgi" method="post">
+	<button class="button" name="ClearMessages" value="_">
+	'$"Clear all"'
+	</button>
+	</form>
+	</td></tr></tbody></table>'
 else
 	echo $"There are no warning messages."
 fi
