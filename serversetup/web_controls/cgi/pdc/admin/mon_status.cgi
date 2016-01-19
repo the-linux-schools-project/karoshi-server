@@ -89,11 +89,11 @@ echo '
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -116,22 +116,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Show back button for mobiles
@@ -147,22 +147,34 @@ else
 #Show title
 echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top; width: 110px;"><div class="sectiontitle">'$"System Status"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add Monitor"'"></a>
+<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
+	<button class="button" name="_AddMonitor_" value="_">
+	'$"Add Monitor"'
+	</button>
+</form>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view.cgi"><input class="button" type="button" name="" value="'$"View Monitors"'"></a>
+<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
+	<button class="button" name="_ViewMonitors_" value="_">
+	'$"View Monitors"'
+	</button>
+</form>
 </td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
+<form action="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi" method="post">
+	<button class="button" name="_ViewEmailAlerts_" value="_">
+	'$"E-Mail Alerts"'
+	</button>
+</form>
 </td>
 </tr></tbody></table></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
 sudo -H /opt/karoshi/web_controls/exec/mon_status $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-if [ `echo $?` = 102 ]
+if [ $? = 102 ]
 then
-echo '<br><br>'$"A monitoring server has not been setup."'<br>'
+	echo '<br><br>'$"A monitoring server has not been setup."'<br>'
 fi
 [ $MOBILE = no ] && echo '</div>'
 echo "</div></div></body></html>"

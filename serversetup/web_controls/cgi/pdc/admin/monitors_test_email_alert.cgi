@@ -49,19 +49,19 @@ DATA=`cat | tr -cd 'A-Za-z0-9\.%_:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=3
+END_POINT=5
 #Assign NAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
@@ -104,10 +104,10 @@ fi
 #Check data
 #########################
 #Check to see that NAME is not blank
-if [ $NAME'null' = null ]
+if [ -z "$NAME" ]
 then
-MESSAGE=$"You have not entered in a name for this alert."
-show_status
+	MESSAGE=$"You have not entered in a name for this alert."
+	show_status
 fi
 
 

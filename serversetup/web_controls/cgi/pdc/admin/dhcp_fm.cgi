@@ -70,7 +70,15 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 <table class="standard" style="text-align: left;" >
 <tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"Configure DHCP"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></td>
-<td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$"View DHCP Leases"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPLeases_" value="_">
+'$"View DHCP Leases"'
+</button>
+</td><td style="vertical-align: top;">
+<button class="button" formaction="dhcp_reservations.cgi" name="_DHCPReservations_" value="_">
+'$"DHCP Reservations"'
+</button>
+</td>
 </tr>
 </tbody></table><br><br></div><div id="infobox">'
 
@@ -151,7 +159,7 @@ echo '
 #Show secondary DHCP server
 if [ ! -z "$SECONDARY_DHCP_SERVER" ]
 then
-	echo '<tr><td>'$"Secondary DHCP Server"'</td><td>'$SECONDARY_DHCP_SERVER'</td></tr>'
+	echo '<tr><td>'$"Secondary DHCP Server"'</td><td>'$SECONDARY_DHCP_SERVER'</td><td></td></tr>'
 fi
 
 echo '</tbody></table>'

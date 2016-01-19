@@ -206,7 +206,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/server_info_fm.cgi">'$"Select Server"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
-echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><b>'$SERVERNAME'</b></td><td style="vertical-align: top;"><a href="server_info_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td></tr></tbody></table><br></div><div id="infobox">'
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><b>'$SERVERNAME'</b></td><td style="vertical-align: top;">
+	<form name="myform" action="server_info_fm.cgi" method="post">
+	<button class="button" name="SelectServer" value="_">
+	'$"Select server"'
+	</button>
+	</form>
+	</td></tr></tbody></table>
+	<br></div>
+	<div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1`
@@ -221,7 +229,7 @@ fi
 
 if [ $EXEC_STATUS = 103 ]
 then
-echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
+	echo '<br><b>'$CHECKCOMPLETEDMSG'</b><br>'
 fi
 echo "</div></div></div></body></html>"
 exit

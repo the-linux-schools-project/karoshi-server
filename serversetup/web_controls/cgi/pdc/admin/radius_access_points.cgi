@@ -174,6 +174,8 @@ else
 	TABLECLASS=mobilestandard
 fi
 
+echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">'
+
 #Check data
 if [ "$ACTION" = reallyadd ]
 then
@@ -205,8 +207,6 @@ then
 
 fi
 
-echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">'
-
 [ -z "$ACTION" ] && ACTION=view
 
 if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
@@ -236,7 +236,9 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'$TITLETXT'</b></td>
 <td style="vertical-align: top;">
-<input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
+<button class="button" name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
+'$BUTTONTXT'
+</button>
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a>
 </td></tr></tbody></table><br>
@@ -246,5 +248,5 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/radius_access_points.cgi | cut -d'
 #View access points
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$SHORTNAME:$SECRETKEY:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_points
 
-echo '</div></form></div></body></html>'
+echo '</form></div></div></body></html>'
 exit

@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -90,17 +90,19 @@ $(document).ready(function()
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=200
-HEIGHT=25
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH1=192
+	WIDTH2=200
+	HEIGHT=20
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
-WIDTH=140
-HEIGHT=30
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
+	WIDTH1=140
+	WIDTH2=140
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/change_management_passwords.cgi" method="post">'
@@ -123,8 +125,8 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">System Password</td><td>
-<select name="____USERACCOUNT____"  tabindex="1" style="width: '$WIDTH'px; height: '$HEIGHT'px;">
-<option></option>
+<select name="____USERACCOUNT____"  tabindex="1" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
+<option label="blank"></option>
 <option>karoshi</option>
 <option>Administrator</option>
 <option>mysql</option>
@@ -133,12 +135,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 echo '<option>root</option>
 </select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
 </td></tr>
-<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH'px; height: '$HEIGHT'px;" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'$CHARACTERHELP' space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
-;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~
+<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'$CHARACTERHELP' space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~
 </span></a>
 </td></tr>
-<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH'px; height: '$HEIGHT'px;" type="password"></td></tr>
+<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH1'px; height: '$HEIGHT'px;" type="password"></td><td></td></tr>
 </tbody></table><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

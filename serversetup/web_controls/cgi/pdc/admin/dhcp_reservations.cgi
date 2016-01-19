@@ -310,7 +310,15 @@ else
 	else
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'">'
 	fi
-	echo '</td><td style="vertical-align: top;"><a href="dhcp_view_leases.cgi"><input class="button" type="button" name="" value="'$"View DHCP Leases"'"></a></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td></tr></tbody></table></div><div id="infobox">
+	echo '</td><td style="vertical-align: top;">
+	<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPViewLeases_" value="_">
+	'$"View DHCP Leases"'
+	</button>
+	</td><td style="vertical-align: top;">
+	<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+	'$"Configure DHCP"'
+	</button>
+	</td></tr></tbody></table></div><div id="infobox">
 	'
 fi
 
@@ -331,9 +339,15 @@ then
 			#Get details
 			source $CLIENTHOSTNAMES
 			echo '<tr><td>'$CLIENTHOSTNAME'</td><td>'$MACADDRESS'</td><td>'$TCPIPADDRESS'</td><td>
-			<a class="info" href="javascript:void(0)"><input name="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit reservation"'</span></a>
+			<button class="info" name="_Edit_" value="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_">
+			<img src="'$ICON1'" alt="'$"Edit reservation"'">
+			<span>'$"Edit reservation"'</span>
+			</button>
 			</td><td>
-			<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete reservation"'</span></a>
+			<button class="info" name="_Delete_" value="_ACTION_delete_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_">
+			<img src="'$ICON2'" alt="'$"Delete reservation"'">
+			<span>'$"Delete reservation"'</span>
+			</button>
 			</td></tr>'
 			done
 		echo '</tbody></table><br>'

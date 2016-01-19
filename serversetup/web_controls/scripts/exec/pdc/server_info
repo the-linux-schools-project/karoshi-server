@@ -138,7 +138,7 @@ then
 #Show free space
 echo '<b>'$"Summary"'</b><br>'
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>"
 
 df -h -l | sed "s/ * / /g" | sed "s/ /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/^/<tr><td style=\"width: 180px;\">/"
 echo "</tbody></table><br>"
@@ -204,20 +204,20 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\">$"Raid Level"</td><td>$RAIDLEVEL</td></tr>
-<tr><td style=\"width: 180px;\">$"Raid Size"</td><td>$ARRAYSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$"Used Size"</td><td>$USEDSIZE</td></tr>
-<tr><td style=\"width: 180px;\">$"Raid Status"</td><td>$RAIDSTATUS</td></tr>"
+echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
+<tr><td style=\"width: 180px;\">"$"Raid Level""</td><td>$RAIDLEVEL</td></tr>
+<tr><td style=\"width: 180px;\">"$"Raid Size""</td><td>$ARRAYSIZE</td></tr>
+<tr><td style=\"width: 180px;\">"$"Used Size""</td><td>$USEDSIZE</td></tr>
+<tr><td style=\"width: 180px;\">"$"Raid Status""</td><td>$RAIDSTATUS</td></tr>"
 [ ! -z "$REBUILDSTATUS" ] && echo "<tr><td style=\"width: 180px;\">Rebuild Status</td><td>$REBUILDSTATUS</td></tr>"
-echo "<tr><td style=\"width: 180px;\">$"Raid Drives"</td><td>$RAIDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Used Drives"</td><td>$TOTALDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Active Devices"</td><td>$ACTIVEDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Working Devices"</td><td>$WORKINGDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Failed Devices"</td><td>$FAILEDDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Spare Devices"</td><td>$SPAREDEVICES</td></tr>
-<tr><td style=\"width: 180px;\">$"Layout"</td><td>$LAYOUT</td></tr>
-<tr><td style=\"width: 180px;\">$"Chunk Size"</td><td>$CHUNKSIZE</td></tr>
+echo "<tr><td style=\"width: 180px;\">"$"Raid Drives""</td><td>$RAIDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Used Drives""</td><td>$TOTALDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Active Devices""</td><td>$ACTIVEDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Working Devices""</td><td>$WORKINGDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Failed Devices""</td><td>$FAILEDDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Spare Devices""</td><td>$SPAREDEVICES</td></tr>
+<tr><td style=\"width: 180px;\">"$"Layout""</td><td>$LAYOUT</td></tr>
+<tr><td style=\"width: 180px;\">"$"Chunk Size""</td><td>$CHUNKSIZE</td></tr>
 <tr><td style=\"width: 180px;\">UUID</td><td>$UUID</td></tr>
 </tbody></table>"
 fi
@@ -261,7 +261,7 @@ then
 #Show free space
 echo \<b\>'$"Free Space"'\</b\>\<br\>
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\"><tbody>"
 
 df -h -l | sed "s/ * / /g" | sed "s/ /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/^/<tr><td style=\"width: 180px;\">/"
 echo "</tbody></table><br>"
@@ -295,7 +295,7 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 <tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
@@ -329,7 +329,7 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 <tr><td style=\"width: 180px;\">'$"Used Size"'</td><td>$USEDSIZE</td></tr>
@@ -390,7 +390,7 @@ then
 #Show free space
 echo \<img src=\"/images/submenus/system/computer.png\" alt=\"Server\"\> \<b\>'$"Free Space"'\</b\>\<br\>
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left\;\"><tbody>"
 
 df -h -l | sed "s/ * / /g" | sed "s/ /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/^/<tr><td style=\"width: 180px;\">/"
 echo "</tbody></table><br>"
@@ -399,7 +399,6 @@ echo "</tbody></table><br>"
 
 #Show smart information
 
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 #Get list of disks
 DISKLIST=`fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g"`
 for DISK in $DISKLIST
@@ -426,7 +425,7 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 <tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
@@ -459,7 +458,7 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 <tr><td style=\"width: 180px;\">'$"Used Size"'</td><td>$USEDSIZE</td></tr>

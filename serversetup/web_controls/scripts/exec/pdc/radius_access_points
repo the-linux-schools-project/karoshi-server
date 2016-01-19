@@ -76,7 +76,7 @@ WIDTH2=90
 WIDTH3=200
 WIDTH4=320
 WIDTH5=70
-HEIGHT=25
+HEIGHT=20
 TABLECLASS=standard
 if [ "$MOBILE" = yes ]
 then
@@ -255,8 +255,18 @@ then
 		ACCESSPOINT=`basename "$ACCESSPOINTS"`
 		TCPIP=`sed -n 1,1p /opt/karoshi/server_network/radius/wireless_access_points/"$ACCESSPOINT" | cut -d' ' -f2` 
 		echo '<tr><td>'$ACCESSPOINT'</td><td>'$TCPIP'</td>
-		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____edit____SHORTNAME____'$ACCESSPOINT'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'</span></a></td>
-		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____SHORTNAME____'$ACCESSPOINT'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'</span></a></td>
+		<td>
+		<button class="info" name="____EditAccessPoint____" value="____ACTION____edit____SHORTNAME____'$ACCESSPOINT'____">
+		<img src="'$ICON1'" alt="'$"Edit" $ACCESSPOINT'">
+		<span>'$"Edit" $ACCESSPOINT'</span>
+		</button>
+		</td>
+		<td>
+		<button class="info" name="____ACTION____delete____SHORTNAME____'$ACCESSPOINT'____">
+		<img src="'$ICON2'" alt="'$"Delete"  $ACCESSPOINT'">
+		<span>'$"Delete"  $ACCESSPOINT'</span>
+		</button>
+		</td>
 		</tr>'
 	done
 	echo '</tbody></table>'

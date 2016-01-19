@@ -125,22 +125,43 @@ fi
 function show_options {
 #Show options
 echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td><input name="_ACTION_viewservers_" type="submit" class="button" value="'$"View Servers"'"></td>'
+<tr><td>
+<button class="button" name="_ViewServers_" value="_ACTION_viewservers_">
+'$"View Servers"'
+</button>
+</td>'
 if [ "$ACTION" != viewlist ]
 then
-	echo '<td><input name="_ACTION_viewlist_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"View Event Logs"'"></td>'
+	echo '<td>
+	<button class="button" name="_ViewEventLogs_" value="_ACTION_viewlist_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
+	'$"View Event Logs"'
+	</button>
+	</td>'
 fi
 if [ "$ACTION" = viewevent ]
 then
-	echo '<td><input name="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Delete"'"></td>'
+	echo '<td>
+	<button class="button" name="_DeleteLog_" value="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
+	'$"Delete"'
+	</button>
+	</td>'
 fi
 if [ "$ACTION" = viewlist ]
 then
-	echo '<td><input name="_ACTION_deleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Delete All"'"></td>'
+	echo '<td>
+	<button class="button" name="_DeleteAllLogs_" value="_ACTION_deleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
+	'$"Delete All"'
+	</button>
+	</td>'
 fi
 if [ "$ACTION" = deleteall ]
 then
-	echo '<td><input name="_ACTION_reallydeleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_" type="submit" class="button" value="'$"Confirm Delete All"'"></td>'
+	echo '<td>
+
+	<button class="button" name="_ReallyDeleteAllLogs_" value="_ACTION_reallydeleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
+	'$"Confirm Delete All"'
+	</button>
+	</td>'
 fi
 
 echo '</tr></tbody></table>
@@ -251,7 +272,17 @@ then
 				TIME=$(echo $EVENT | cut -d"-" -f4)
 
 				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td>
-				<td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View"'<br>'$EVENT'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$EVENT'</span></a></td></tr>'
+				<td>
+				<button class="info" name="_ViewEventLog_" value="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_">
+				<img src="'$ICON1'" alt="'$"ViewEventLog"'">
+				<span>'$"View"'<br>'$EVENT'</span>
+				</button>
+				</td><td>
+				<button class="info" name="_DeleteEventLog_" value="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_">
+				<img src="'$ICON2'" alt="'$"DeleteEventLog"'">
+				<span>'$"Delete"'<br>'$EVENT'</span>
+				</button>
+				</td></tr>'
 			done
 		else
 			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
@@ -264,13 +295,23 @@ then
 				TIME=$(echo $EVENT | cut -d"-" -f4)
 
 				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td>
-				<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"View"'<br>$EVENT</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$EVENT</span></a></td></tr>"
+				<td>
+				<button class=\"info\" name=\"_ViewEventLog_\" value=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\">
+				<img src=\"'$ICON1'\" alt=\"'$"ViewEventLog"'\">
+				<span>'$"View"'<br>$EVENT</span>
+				</button>
+				</td><td>
+				<button class="info" name="_DeleteEventLog_" value=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\">
+				<img src="'$ICON2'" alt="'$"DeleteEventLog"'">
+				<span>'$"Delete"'<br>$EVENT</span>
+				</button>
+				</td></tr>"
 			done
 			'
 		fi
 		echo '</tbody></table></form>'
 	else
-		echo $"No event logs"
+		echo "<br>"$"No event logs"
 	fi
 fi
 

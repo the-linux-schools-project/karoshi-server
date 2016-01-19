@@ -73,7 +73,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=7
 #Assign OPTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -94,8 +94,17 @@ done
 echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_view_leases.cgi" method="post">
 
 <table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;"><a href="dhcp_fm.cgi"><input class="button" type="button" name="" value="'$"Configure DHCP"'"></a></td><td style="vertical-align: top;"><a href="dhcp_reservations.cgi"><input class="button" type="button" name="" value="'$"DHCP Reservations"'"></a></td>
-<td style="vertical-align: top;"><input name="_OPTION_active_" type="submit" class="button" value="'$"Show Active Leases"'"></td>'
+<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;">
+<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+'$"Configure DHCP"'
+</button>
+</td><td style="vertical-align: top;">
+<button class="button" formaction="dhcp_reservations.cgi" name="_DHCPReservations_" value="_">
+'$"DHCP Reservations"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<input name="_OPTION_active_" type="submit" class="button" value="'$"Show Active Leases"'"></td>'
 
 #Only show backup leases button if we have a secondary dhcp server
 [ -d /opt/karoshi/server_network/dhcp_servers ] && echo '<td style="vertical-align: top;"><input name="_OPTION_backup_" type="submit" class="button" value="'$"Show Backup Leases"'"></td>'

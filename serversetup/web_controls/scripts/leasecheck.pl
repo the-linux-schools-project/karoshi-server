@@ -59,7 +59,7 @@ foreach $line (@lines){
         }
 }
 
-print "<table class='standard' style='text-align: left;' border='0' cellpadding='2' cellspacing='2'><tbody>\n";
+print "<table class='standard' style='text-align: left;'><tbody>\n";
 
 if ($failover){
         $my_state_time = localize($my_state_time);
@@ -124,7 +124,7 @@ foreach $line (@lines){
 }
 
 @lease_states=sort (@lease_states);
-my $header=("<table id='myTable' class='tablesorter' style='text-align: left;' border='0' cellpadding='2' cellspacing='2'><thead><tr><th style='width: 120px;'><b>IP</b></th><th style='width: 150px;'><b>Start Time</b></th><th style='width: 150px;'><b>End Time</b></th><th style='width: 140px;'><b>Mac Address</b></th><th style='width: 80px;'><b>State</b></th><th style='width: 210px;'><b>Hostname</b></th></tr></thead><tbody>\n");
+my $header=("<table id='myTable' class='tablesorter' style='text-align: left;'><thead><tr><th style='width: 120px;'><b>IP</b></th><th style='width: 150px;'><b>Start Time</b></th><th style='width: 150px;'><b>End Time</b></th><th style='width: 140px;'><b>Mac Address</b></th><th style='width: 80px;'><b>State</b></th><th style='width: 210px;'><b>Hostname</b></th></tr></thead><tbody>\n");
 
 print "<tr><td style='width: 160px;'>Total leases</td><td>$lease</td></tr>\n";
 print "<tr><td>Total active leases</td><td>$active</td></tr></tbody></table><br>\n";

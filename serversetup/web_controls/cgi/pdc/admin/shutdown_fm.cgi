@@ -145,17 +145,14 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
         <td style="width: '$WIDTH'px;">'$"Shutdown"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="shutdown" checked="checked" type="radio"></td>
         <td></td>
-        <td></td>
       </tr>
       <tr>
         <td>'$"Reboot"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="reboot" type="radio"></td>
         <td></td>
-        <td></td>
       </tr>
 <tr><td>'$"Shutdown Code"'</td>
         <td style="vertical-align: top; text-align: left;"><b>'$SHUTDOWN_CODE'</b></td>
-        <td></td>
         <td></td>
       </tr>
 <tr><td>'$"Confirm"'</td>

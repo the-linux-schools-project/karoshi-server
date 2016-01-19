@@ -235,6 +235,9 @@ then
 	mount -t smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
 fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
+#Complete mount-shares.sh
+echo -e '\n#Show mounted shares on desktop\ndefaults write /Users/$LoggedInUser/Library/Preferences/com.apple.finder.plist ShowMountedServersOnDesktop -bool TRUE\nkillall Finder' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
 #Complete pam_mount.conf.xml.krb5
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 

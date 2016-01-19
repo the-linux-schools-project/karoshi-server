@@ -796,18 +796,63 @@ then
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Export"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"TCPIP"'</b></td>
 	</tr>
-	<tr><td style="vertical-align: top; height: 30px;"><a class="info" href="javascript:void(0)"><input name="_ACTION_showstats_LOCATION_notset_" type="image" class="images" src="'$ICON5'" value=""><span>'$"Statistics"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_search_LOCATION_notset_" type="image" class="images" src="'$ICON6'" value=""><span>'$"Search"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_import_LOCATION_notset_" type="image" class="images" src="'$ICON16'" value=""><span>'$"Import"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_export_LOCATION_notset_" type="image" class="images" src="'$ICON15'" value=""><span>'$"Export"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewtcpip_LOCATION_notset_" type="image" class="images" src="'$ICON16'" value=""><span>'$"View Allocated TCPIP Addresses"'</span></a></td>
+	<tr><td style="vertical-align: top; height: 30px;">
+	<button class="info" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
+	<img src="'$ICON5'" alt="'$"Statistics"'">
+	<span>'$"Statistics"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoSearch_" value="_ACTION_search_LOCATION_notset_">
+	<img src="'$ICON6'" alt="'$"Statistics"'">
+	<span>'$"Search"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoImport_" value="_ACTION_import_LOCATION_notset_">
+	<img src="'$ICON16'" alt="'$"Import"'">
+	<span>'$"Import"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoExport_" value="_ACTION_export_LOCATION_notset_">
+	<img src="'$ICON15'" alt="'$"Export"'">
+	<span>'$"Export"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
+	<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
+	<span>'$"View Allocated TCPIP Addresses"'</span>
+	</button>
+	</td>
 	</tr><tr>
-	<td style="vertical-align: top; height: 30px;"><b>'$"Add Asset"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Descriptions"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Suppliers"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Budgets"'</b></td>
+	<td style="vertical-align: top; height: 30px;"><b>'$"Add Asset"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Descriptions"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Suppliers"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Budgets"'</b></td><td></td>
 	</tr><tr>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_add_LOCATION_notset_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Add Asset"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewdescriptions_LOCATION_notset_" type="image" class="images" src="'$ICON7'" value=""><span>'$"Description"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewsuppliers_LOCATION_notset_" type="image" class="images" src="'$ICON9'" value=""><span>'$"Suppliers"'</span></a></td>
-	<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_viewbudgets_LOCATION_notset_" type="image" class="images" src="'$ICON12'" value=""><span>'$"Budgets"'</span></a></td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoAddAsset_" value="_ACTION_add_LOCATION_notset_">
+	<img src="'$ICON4'" alt="'$"Add Asset"'">
+	<span>'$"Add Asset"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoViewDescriptions_" value="_ACTION_viewdescriptions_LOCATION_notset_">
+	<img src="'$ICON7'" alt="'$"Description"'">
+	<span>'$"Description"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoViewSuppliers_" value="_ACTION_viewsuppliers_LOCATION_notset_">
+	<img src="'$ICON7'" alt="'$"Suppliers"'">
+	<span>'$"Suppliers"'</span>
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="info" name="_DoViewBudgets_" value="_ACTION_viewbudgets_LOCATION_notset_">
+	<img src="'$ICON12'" alt="'$"Budgets"'">
+	<span>'$"Budgets"'</span>
+	</button>
+	</td><td></td>
 	</tr></tbody></table><br>'
 	if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
 	then
@@ -823,7 +868,12 @@ then
 		while [ $ARRAYCOUNT -lt $ARRAYMAX ]
 		do
 			LOCATION=${LOCATIONARRAY[$ARRAYCOUNT]}
-			echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"View Assets"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+			echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: center;">
+			<button class="info" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+			<img src="'$ICON1'" alt="'$"View Assets"'">
+			<span>'$"View Assets"'<br>'$LOCATION'</span>
+			</button>
+			<br>'$LOCATION'</td>'
 			[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
 			let LOCCOUNTER=$LOCCOUNTER+1
 			[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
@@ -1318,89 +1368,143 @@ fi
 ############################
 if [ $ACTION = view ] && [ $LOCATION != showchoice ]
 then
+	if [ $OPTION = filter ]
+	then
+	ASSETTYPE=$ASSETCHOICE
+	assign_asset_labels
+	echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoSHowAllAssets_" value="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_">
+	'$"Show all assets"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoChooseLocation_" value="_ACTION_view_">
+	'$"Choose Location"'
+	</button>
+	</td>'
 
-if [ $OPTION = filter ]
-then
-ASSETTYPE=$ASSETCHOICE
-assign_asset_labels
-echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_" type="submit" class="button" value="'$"Show all assets"'"></td>
-<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>'
+	[ $MOBILE = yes ] && echo '</tr><tr>'
 
-[ $MOBILE = yes ] && echo '</tr><tr>'
+	echo '<td style="vertical-align: top;">
+	<button class="button" name="_DoAddAsset_" value="_ACTION_add_LOCATION_'$LOCATION'_">
+	'$"Add Asset"'
+	</button>
+	</td>'
+	if [ -f /opt/karoshi/server_network/distribution_server ]
+	then 
+		echo '<td style="vertical-align: top;">
+	<button class="button" formaction="client_boot_controls.cgi" name="_ClientBootControls_" value="_LOCATION_'$LOCATION'_">
+	'$"Client Boot Controls"'
+	</button>
+	</td>'
+	fi
+	echo '</tr></tbody></table>
+	'
+	else
+	echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoChooseLocation_" value="_ACTION_view_">
+	'$"Choose Location"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoAddAsset_" value="_ACTION_add_LOCATION_'$LOCATION'_">
+	'$"Add Asset"'
+	</button>
+	</td>'
 
-echo '<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Add Asset"'"></td>'
-if [ -f /opt/karoshi/server_network/distribution_server ]
-then 
-echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Client Boot Controls"'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
-fi
-echo '</tr></tbody></table>
-'
-else
-echo '<b>'$"Asset Register"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
-<td style="vertical-align: top;"><input name="_ACTION_add_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Add Asset"'"></td>'
+	[ $MOBILE = yes ] && echo '</tr><tr>'
 
-[ $MOBILE = yes ] && echo '</tr><tr>'
+	echo '<td style="vertical-align: top;">
+	<button class="button" name="_DoQRCodes_" value="_ACTION_qrcodes_LOCATION_'$LOCATION'_">
+	'$"QR Codes"'
+	</button>
+	</td>'
+	if [ -f /opt/karoshi/server_network/distribution_server ]
+	then 
+		echo '<td style="vertical-align: top;">
 
-echo '<td style="vertical-align: top;"><input name="_ACTION_qrcodes_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"QR Codes"'"></td>'
-if [ -f /opt/karoshi/server_network/distribution_server ]
-then 
-	echo '<td style="vertical-align: top;"></form><form action="client_boot_controls.cgi" id="foo" method="post"><input name="_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Client Boot Controls"'"></form><form action="asset_register_view.cgi" id="foo" method="post"></td>'
-fi
-echo '</tr></tbody></table>
-'
-fi
+	<button class="button" formaction="client_boot_controls.cgi" name="_ClientBootControls_" value="_LOCATION_'$LOCATION'_">
+	'$"Client Boot Controls"'
+	</button>
+	</td>'
+	fi
+	echo '</tr></tbody></table>
+	'
+	fi
 
-[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
-then
-	echo '
-<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th>'
+	if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
+	then
+		echo '
+	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th><th style="width: 20px;"></th>'
 
-if [ $MOBILE = no ]
-then
-	echo '<th style="width: 60px;"><b>'$"Name"'</b></th><th style="width: 240px;"><b>'$"Description"'</b></th><th style="width: 100px;"><b>'$"Tcpip"'</b></th><th style="width: 110px;"><b>'$"Mac-address"'</b></th><th style="width: 150px;"><b>'$"Serial Number"'</b></th></tr>'
-else
-	echo '</tr>'
-fi
-echo '</thead><tbody>'
-for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
-do
-ASSET=`basename $ASSETS`
-#Get asset information
-source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-assign_asset_labels
-SHOWENTRY=yes
-if [ $OPTION = filter ]
-then
-SHOWENTRY=no
-[ $ASSETTYPE = $ASSETCHOICE ] && SHOWENTRY=yes
-fi
-if [ $SHOWENTRY = yes ]
-then
-echo '<tr><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Assigned"' : '$ASSIGNED'<br>'$"Purchased"' : '$PURCHASEDATE'<br>'$"Value"' : '$VALUE'<br>'$"Supplier"' : '$SUPPLIER'<br>'$"Budget"' : '$BUDGET'<br>'$"Tcpip"'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$"Mac-address"'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Edit"' '$IDENTITY'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete"' '$IDENTITY'</span></a></td>
-<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_" type="image" class="images" src="'$ASSETICON'" value=""><span>'$ASSETLABEL'</span></a></td>
-<td style="vertical-align: top;">'
-if [ $ASSETTYPE -le 8 ]
-then
-echo '<a class="info" href="javascript:void(0)"><input name="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="image" class="images" src="'$ICON17'" value=""><span>Show logs '$IDENTITY'</span></a></td>'
-fi
-echo '<td style="vertical-align: top;">'$IDENTITY'</td>'
-if [ $MOBILE = no ]
-then
-echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
-else
-echo '</tr>'
-fi
-fi
-done
-echo '</tbody></table>'
-else
-echo $"There are no assets allocated to this location."
-fi
+	if [ $MOBILE = no ]
+	then
+		echo '<th style="width: 60px;"><b>'$"Name"'</b></th><th style="width: 240px;"><b>'$"Description"'</b></th><th style="width: 100px;"><b>'$"Tcpip"'</b></th><th style="width: 110px;"><b>'$"Mac-address"'</b></th><th style="width: 150px;"><b>'$"Serial Number"'</b></th></tr>'
+	else
+		echo '</tr>'
+	fi
+	echo '</thead><tbody>'
+	for ASSETS in /opt/karoshi/asset_register/locations/$LOCATION/*
+	do
+		ASSET=`basename $ASSETS`
+		#Get asset information
+		source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
+		assign_asset_labels
+		SHOWENTRY=yes
+		if [ $OPTION = filter ]
+		then
+			SHOWENTRY=no
+			[ $ASSETTYPE = $ASSETCHOICE ] && SHOWENTRY=yes
+		fi
+		if [ $SHOWENTRY = yes ]
+		then
+			echo '<tr><td style="vertical-align: top;">
+			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Assigned"' : '$ASSIGNED'<br>'$"Purchased"' : '$PURCHASEDATE'<br>'$"Value"' : '$VALUE'<br>'$"Supplier"' : '$SUPPLIER'<br>'$"Budget"' : '$BUDGET'<br>'$"Tcpip"'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$"Mac-address"'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td>
+			<td style="vertical-align: top;">
+			<button class="info" name="_DoEdit_" value="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_">
+			<img src="'$ICON2'" alt="'$"Edit"' '$IDENTITY'">
+			<span>'$"Edit"' '$IDENTITY'</span>
+			</button>
+			</td><td style="vertical-align: top;">
+			<button class="info" name="_DoDelete_" value="_ACTION_delete_LOCATION_'$LOCATION'_ASSET_'$ASSET'_">
+			<img src="'$ICON3'" alt="'$"Delete"' '$IDENTITY'">
+			<span>'$"Delete"' '$IDENTITY'</span>
+			</button>
+			</td>
+			<td style="vertical-align: top;">
+			<button class="info" name="_DoFilter_" value="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_filter_">
+			<img src="'$ASSETICON'" alt="'$ASSETLABEL'">
+			<span>'$ASSETLABEL'</span>
+			</button>
+			</td>
+			<td style="vertical-align: top;">'
+			if [ $ASSETTYPE -le 8 ]
+			then
+				echo '
+				<button class="info" name="_DoShowLogs_" value="_ACTION_showlogs_LOCATION_'$LOCATION'_ASSET_'$ASSET'_">
+				<img src="'$ICON17'" alt="'$"Show logs"' '$IDENTITY'">
+				<span>'$"Show logs"' '$IDENTITY'</span>
+				</button>
+				</td>'
+			fi
+			echo '<td style="vertical-align: top;">'$IDENTITY'</td>'
+			if [ $MOBILE = no ]
+			then
+				echo '<td style="vertical-align: top;">'$DESCRIPTION'</td><td style="vertical-align: top;">'$TCPIP1' '$TCPIP2' '$TCPIP3'</td><td style="vertical-align: top;">'$MAC1' '$MAC2' '$MAC3'</td><td style="vertical-align: top;">'$SERIAL'</td></tr>'
+			else
+				echo '</tr>'
+			fi
+		fi
+	done
+	echo '</tbody></table>'
+	else
+		echo $"There are no assets allocated to this location."
+	fi
 fi
 
 ########################

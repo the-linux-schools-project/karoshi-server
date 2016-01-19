@@ -53,22 +53,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
@@ -78,9 +78,27 @@ echo '<div id="actionbox">
 <tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"UPS Status"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td>
-<td style="vertical-align: top;"><a href="ups_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add a UPS"'"></a></td>
-<td style="vertical-align: top;"><a href="ups_slave_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add a slave UPS"'"></a></td>
-<td style="vertical-align: top;"><a href="ups_device_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add a device"'"></a></td>
+<td style="vertical-align: top;">
+<form action="ups_add_fm.cgi" method="post">
+<button class="button" name="_AddUPS" value="_">
+'$"Add a UPS"'
+</button>
+</form>
+</td>
+<td style="vertical-align: top;">
+<form action="ups_slave_add_fm.cgi" method="post">
+<button class="button" name="_AddSlaveUPS" value="_">
+'$"Add a slave UPS"'
+</button>
+</form>
+</td>
+<td style="vertical-align: top;">
+<form action="ups_device_add_fm.cgi" method="post">
+<button class="button" name="_AddDevice" value="_">
+'$"Add a device"'
+</button>
+</form>
+</td>
 </tr></table>
 <br>'
 
@@ -90,7 +108,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/ex
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 106 ]
 then
-echo $"No UPS devices have been added."
+	echo $"No UPS devices have been added."
 fi
 echo '</div></div></body></html>'
 exit

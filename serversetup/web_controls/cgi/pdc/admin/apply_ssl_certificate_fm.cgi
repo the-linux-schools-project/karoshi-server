@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 SERVERICON="/images/submenus/system/computer.png"
@@ -59,14 +59,19 @@ echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectserver
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create an ssl certificate signed by the root signing authority on your server."' '$"Your client computers will need to have the root signing authority installed into their web browsers."'</span></a></td></tr></tbody></table>
   <br><table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: 180px;"><b>Server</b></td><td style="width: 300px;"><b>Alias</b></td></tr>
+<tr><td style="width: 180px;"><b>Server</b></td><td style="width: 300px;"><b>Alias</b></td><td></td></tr>
 <tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;">
-<input name="_SERVER_'$HOSTNAME'_" type="submit" class="button" value="'$"Apply Certificate"'">
+<button class="button" name="_ApplyCert_" value="_SERVER_'$HOSTNAME'_">
+'$"Apply Certificate"'
+</button>
 </td></tr>
 <tr><td>'$"All Web Servers"'</td><td>*.'$REALM'</td>
 <td style="vertical-align: top; text-align: left;">
-<input name="_SERVER_allwebservers_" type="submit" class="button" value="'$"Apply Certificate"'">
+<button class="button" name="_ApplyCertAllServers_" value="_SERVER_allwebservers_">
+'$"Apply Certificate"'
+</button>
 </td></tr></tbody></table>
+</div></form></div></body></html>
 '
 
 
