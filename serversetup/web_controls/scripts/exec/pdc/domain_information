@@ -23,36 +23,36 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/domain_information_cgi
 then
-echo `date`: domain_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/domain_information_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/domain_information.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $domain_information_cgi'check' ]
 then
-echo `date`: domain_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/domain_information_cgi
 then
-echo `date`: domain_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/domain_information_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/domain_information.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2 != $domain_information_cgi ]
 then
-echo `date`: domain_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -71,23 +71,23 @@ REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: domain_information - Not called by domain_information.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - Not called by domain_information.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: domain_information - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: domain_information - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: domain_information - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: domain_information - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: domain_information - showing information to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -123,11 +123,11 @@ CURRENTMAXLEASETIME=`grep max-lease-time $DHCPCONFPATH | sed -n 1,1p | cut -d' '
 [ `echo $CURRENTDOMAINSERVERS'null' | sed 's/ //g'` = null ] && CURRENTDOMAINSERVERS=NOTSET
 if [ `echo $CURRENTNETBIOSSERVERS'null' | sed 's/ //g'` = null ]
 then
-CURRENTNETBIOSSERVERS=$CURRENTDOMAINSERVERS
+	CURRENTNETBIOSSERVERS=$CURRENTDOMAINSERVERS
 fi
 if [ `echo $CURRENTDOMAINSERVERS'null' | sed 's/ //g'` = null ]
 then
-CURRENTDOMAINSERVERS=`cat /etc/resolv.conf | grep nameserver | cut -d' ' -f2`
+	CURRENTDOMAINSERVERS=`cat /etc/resolv.conf | grep nameserver | cut -d' ' -f2`
 fi
 [ `echo $CURRENTROUTERS'null' | sed 's/ //g'` = null ] && CURRENTROUTERS=NOTSET
 [ `echo $CURRENTSUBNETMASK'null' | sed 's/ //g'` = null ] && CURRENTSUBNETMASK=NOTSET
@@ -171,7 +171,7 @@ echo '
 if [ $SHOWDHCP = yes ]
 then
 echo '
-<tr><td valign="bottom" style="width: 180px; height: 40px;"><b>'$"DHCP Settings"'</b></td><td></td></tr>
+<tr><td style="width: 180px; height: 40px;"><b>'$"DHCP Settings"'</b></td><td></td></tr>
 <tr><td style="width: 180px;"><b>'$"DNS Server"'</b></td><td>'$CURRENTDOMAINSERVERS'</td></tr>
 <tr><td style="width: 180px;"><b>'$"DHCP Range"'</b></td><td>'$STARTADDRESS - $ENDADDRESS'</td></tr>
 '

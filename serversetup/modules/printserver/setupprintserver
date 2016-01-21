@@ -42,46 +42,46 @@ PDCSERVER=`echo "$DATA" | cut -s -d: -f5`
 PDCIP=`echo "$DATA" | cut -s -d: -f6`
 SAMBADOMAIN=`echo "$DATA" | cut -s -d: -f7`
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupprintserver - Blank remote user."<br>"
-exit 101
+	echo `date`: setupprintserver - Blank remote user."<br>"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupprintserver - Blank remote tcpip address."<br>"
-exit 101
+	echo `date`: setupprintserver - Blank remote tcpip address."<br>"
+	exit 101
 fi
 
-if [ $PDCSERVER'null' = null ]
+if [ -z "$PDCSERVER" ]
 then
-echo `date`: setupprintserver - Blank PDC."<br>"
-exit 101
+	echo `date`: setupprintserver - Blank PDC."<br>"
+	exit 101
 fi
 if [ $PDCSERVER != `hostname-fqdn` ]
 then
-if [ $LDAPPASS'null' = null ]
-then
-echo `date`: setupprintserver - Blank root password."<br>"
-exit 101
-fi
+	if [ $LDAPPASS'null' = null ]
+	then
+		echo `date`: setupprintserver - Blank root password."<br>"
+		exit 101
+	fi
 fi
 
-if [ $PDCIP'null' = null ]
+if [ -z "$PDCIP" ]
 then
-echo `date`: setupprintserver - Blank TCPIP."<br>"
-exit 101
+	echo `date`: setupprintserver - Blank TCPIP."<br>"
+	exit 101
 fi
 
 if [ $PDCSERVER != `hostname-fqdn` ]
 then
-#Check to see that we can ping the PDC
-ping -c 2 $PDCIP 1>/dev/null
-if [[ $? != 0 ]]
-then
-echo `date` : setupprintserver - $"The main server cannot be contacted."."<br>"
-exit 101
-fi
+	#Check to see that we can ping the PDC
+	ping -c 2 $PDCIP 1>/dev/null
+	if [[ $? != 0 ]]
+	then
+		echo `date` : setupprintserver - $"The main server cannot be contacted."."<br>"
+		exit 101
+	fi
 fi
 
 source /opt/karoshi/serversetup/variables/distro
@@ -91,25 +91,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 TEXTDOMAIN=karoshi-server
 
 SAMBADOMAINCAPS=`echo $SAMBADOMAIN | tr 'a-z' 'A-Z'`
-
-######################
-#Final samba Install check
-######################
-if ! test -f /etc/init.d/$SMBVER
-then
-echo /etc/init.d/$SMBVER does not exist >> /opt/karoshi/serversetup/install_log
-echo $SAMBANOTINSTALLED'<br><br>'
-exit 101
-fi
-######################
-#Final xinetd Install check
-######################
-if ! test -f /etc/init.d/$XINETDVER
-then
-echo /etc/init.d/$XINETDVER does not exist >> /opt/karoshi/serversetup/install_log
-echo $XINETDVER $XINETDNOTINSTALLED'<br><br>'
-exit 101
-fi
 
 #############################
 #Ensure that samba and cups are running on boot

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -72,14 +72,14 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin

@@ -118,8 +118,16 @@ fi
 echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'$"Wake on Lan - Scheduled Locations"'</b></td>
-<td><a href="wake_on_lan_add.cgi"><input class="button" type="button" name="" value="'$"Schedule a location"'"></a></td>
-<td><a href="wake_on_lan_now.cgi"><input class="button" type="button" name="" value="'$"Wake a location"'"></a></td>
+<td>
+<button class="button" formaction="wake_on_lan_add.cgi" name="_ScheduleWakeonLan_" value="_">
+'$"Schedule a location"'
+</button>
+</td>
+<td>
+<button class="button" formaction="wake_on_lan_now.cgi" name="_WakeALocation_" value="_">
+'$"Wake a location"'
+</button>
+</td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Wake_on_LAN"><img class="images" alt="" src="/images/help/info.png"><span>'$"The locations below are scheduled for wake on lan."'</span></a>
 </td></tr></tbody></table><br></div><div id="infobox">'

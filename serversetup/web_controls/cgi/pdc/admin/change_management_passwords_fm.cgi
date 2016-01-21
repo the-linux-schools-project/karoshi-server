@@ -94,7 +94,7 @@ then
 	TABLECLASS=standard
 	WIDTH1=192
 	WIDTH2=200
-	HEIGHT=20
+	HEIGHT=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else

@@ -100,9 +100,9 @@ then
 	#Show legend
 	if [ $MOBILE = yes ]
 	then
-		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead><tr><th style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th><th style="width: 60px;"><b>'$"Username"'</b></th><th style="width: 60px;"><b>'$"Time"'</b></th><th style="width: 70px;">'$"Delete"'</th></tr></thead><tbody>'
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;"><thead><tr><th style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th><th style="width: 60px;"><b>'$"Username"'</b></th><th style="width: 60px;"><b>'$"Time"'</b></th><th style="width: 70px;">'$"Delete"'</th></tr></thead><tbody>'
 	else
-		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><thead>
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;"><thead>
 		<tr><th style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th><th style="width: 90px;"><b>'$"Queue No."'</b></th><th style="width: 100px;"><b>'$"Username"'</b></th><th style="width: 90px;"><b>'$"Size"' (KB)</b></th><th style="width: 110px;"><b>'$"Time"'</b></th><th style="width: 90px;"><b>'$"Date"'</b></th><th style="width: 90px;">'$"Delete"'</th></tr></thead><tbody>'
 	fi
 	QUEUE_COUNTER=0
@@ -123,9 +123,20 @@ then
 		#Show print job information
 		if [ $MOBILE = yes ]
 		then
-			echo '<tr><td>'$PRINTER'</td><td>'$PRINT_JOB_OWNER'</td><td>'$DATE_TIME'</td><td><form action="printers_control.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_jobid_'$PRINT_ID'_" type="image" class="images" src="'$ICON8'" value=""><span>Delete Job</span></a></form></td>'
+			echo '<tr><td>'$PRINTER'</td><td>'$PRINT_JOB_OWNER'</td><td>'$DATE_TIME'</td><td><form action="printers_control.cgi" method="post">
+			<button class="info" name="_DeleteJob_" value="_jobid_'$PRINT_ID'_">
+			<img src="'$ICON8'" alt="'$"Delete Job"'">
+			<span>'$"Delete Job"'</span>
+			</button>
+			</form></td>'
 		else
-			echo '<tr><td>'$PRINTER'</td><td>'$QUEUE_COUNTER2'</td><td>'$PRINT_JOB_OWNER'</td><td>'$JOB_SIZE'</td><td>'$DATE_TIME'</td><td>'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td><td><form action="printers_control.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_jobid_'$PRINT_ID'_" type="image" class="images" src="'$ICON8'" value=""><span>Delete Job</span></a></form></td>'
+			echo '<tr><td>'$PRINTER'</td><td>'$QUEUE_COUNTER2'</td><td>'$PRINT_JOB_OWNER'</td><td>'$JOB_SIZE'</td><td>'$DATE_TIME'</td><td>'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td><td><form action="printers_control.cgi" method="post">
+
+			<button class="info" name="_DeleteJob_" value="_jobid_'$PRINT_ID'_">
+			<img src="'$ICON8'" alt="'$"Delete Job"'">
+			<span>'$"Delete Job"'</span>
+			</button>
+			</form></td>'
 		fi
 
 		echo '</tr>'
@@ -142,8 +153,8 @@ then
 	#Get total job count
 	TOTALJOBS=$(lpstat -o | wc -l)
 
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
-	<thead><tr><th style="height: 30px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;">
+	<thead><tr><th style="height: 20px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th>'
 	if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 	then
 		echo '<th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Status"'</b></th>
@@ -212,7 +223,12 @@ then
 		echo '<tr><td style="width: '$WIDTH1'px; height: 35px;"><b>'$PDNAME'</b></td>'
 		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 		then
-			echo '<td><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input name="_'$PRINTER_NAME'_setppd_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span></a></form></td>'
+			echo '<td><form action="printers_control.cgi" method="post">
+			<button class="'$INFOCLASS'" name="_SetPpd_" value="_'$PRINTER_NAME'_setppd_">
+			<img src="'$PRINTER_ICON'" alt="'$"Set PPD"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span>
+			</button>
+			</form></td>'
 		fi
 
 		#Show printer location
@@ -225,17 +241,38 @@ then
 
 		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 		then
-			echo '<td><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_setlocation_" type="image" src="'$PRINTER_LOCATION_ICON'" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span></a></form></td>'
+			echo '<td><form action="printers_control.cgi" method="post">
+
+			<button class="'$INFOCLASS'" name="_SetprinterLocation_" value="_'$PRINTER_NAME'_setlocation_">
+			<img src="'$PRINTER_LOCATION_ICON'" alt="'$"Set Location"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span>
+			</button>
+			</form></td>'
 		fi
 		if [ $PRINTER_STATUS = 1 ]
 		then
 			echo '
-			<td><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input src="'$ICON6'" name="_'$PRINTER_NAME'_enable_" type="image" class="images" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Enable Printer Queue"'</span></a></form></td>
+			<td><form action="printers_control.cgi" method="post">
+			<button class="'$INFOCLASS'" name="EnablePrinter" value="_'$PRINTER_NAME'_enable_">
+			<img src="'$ICON6'" alt="'$"Enable Printer"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Enable Printer Queue"'</span>
+			</button>
+			</form></td>
 			<td></td><td></td>'
 		else
 			echo '
-			<td><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input src="'$ICON5'" class="images" name="_'$PRINTER_NAME'_disable_" type="image" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Disable Printer Queue"'</span></a></form></td>
-			<td style="width: '$WIDTH2'px;"><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_test_" type="image" src="'$ICON7'" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Test Printer Queue"'</span></a></form></td><td>'$QUEUE_COUNT'</td>
+			<td><form action="printers_control.cgi" method="post">
+			<button class="'$INFOCLASS'" name="DisablePrinter" value="_'$PRINTER_NAME'_disable_">
+			<img src="'$ICON5'" alt="'$"Disable Printer"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Disable Printer Queue"'</span>
+			</button>
+			</form></td>
+			<td style="width: '$WIDTH2'px;"><form action="printers_control.cgi" method="post">
+			<button class="'$INFOCLASS'" name="TestPrinter" value="_'$PRINTER_NAME'_test_">
+			<img src="'$ICON7'" alt="'$"Test Printer"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Test Printer Queue"'</span>
+			</button>
+			</form></td><td>'$QUEUE_COUNT'</td>
 		'
 		fi
 
@@ -243,7 +280,17 @@ then
 		#Show clear queue icon
 		if [ $QUEUE_COUNT -gt 0 ]
 		then
-			echo '<td><form action="printers.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input class="images" name="_PRINTER_'$PRINTER_NAME'_" type="image" src="'$ICON11'" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"View Jobs"'</span></a></form></td><td><form action="printers_control.cgi" method="post"><a class="'$INFOCLASS'" href="javascript:void(0)"><input class="images" name="_'$PRINTER_NAME'_clearqueue_" type="image" src="'$ICON9'" value=""><span>'$"Printer"': '$PRINTER_NAME'<br><br>Clear Printer Queue</span></a></form></td></tr>'
+			echo '<td><form action="printers.cgi" method="post">
+			<button class="'$INFOCLASS'" name="_ViewJobs_" value="_PRINTER_'$PRINTER_NAME'_">
+			<img src="'$ICON11'" alt="'$"View Jobs"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"View Jobs"'</span>
+			</button>
+			</form></td><td><form action="printers_control.cgi" method="post">
+			<button class="'$INFOCLASS'" name="ClearQueue" value="_'$PRINTER_NAME'_clearqueue_">
+			<img src="'$ICON9'" alt="'$"Clear Queue"'">
+			<span>'$"Printer"': '$PRINTER_NAME'<br><br>Clear Printer Queue</span>
+			</button>
+			</form></td></tr>'
 		else
 			if [ "$TOTALJOBS" -gt 0 ]
 			then
@@ -258,7 +305,7 @@ then
 	echo '</tbody></table>'
 
 	#Reload the page every 3 minutes
-	echo '<form id="refresh_form" action="printers.cgi" method="post"><input type="hidden" name="" value=""> </form>
+	echo '<form id="refresh_form" action="printers.cgi" method="post"><input type="hidden" name="_ReloadPage_" value="_"> </form>
 <script type="text/javascript">
 setTimeout(function(){
 document.getElementById("refresh_form").submit();

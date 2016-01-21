@@ -158,7 +158,13 @@ echo '
 <tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/monitorix_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
+<td style="vertical-align: top;">
+<form name="myform" action="/cgi-bin/admin/monitorix_fm.cgi" method="post">
+<button class="button" name="_SelectServer_" value="_">
+'$"Select server"'
+</button>
+</form>
+</td>
 </tr></table><br></div><div id="infobox">'
 #Show monitorix data
 

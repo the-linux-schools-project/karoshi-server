@@ -33,11 +33,9 @@ source /opt/karoshi/server_network/domain_information/domain_name
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
-'$"Version"' : '$VERSION'
-</small></small>
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/tech/search.cgi" method="post">
-<input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">
+<input name="_SEARCH_" tabindex= "1" style="width: 200px; height: 20px;" size="20" type="text">
 <input name="_SEARCH_" type="submit" class="button" value="Search">
 </form></div>'
 

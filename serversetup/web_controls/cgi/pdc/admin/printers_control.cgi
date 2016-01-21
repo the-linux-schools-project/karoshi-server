@@ -54,8 +54,8 @@ PRINTER_COMMAND_DATA=`echo $DATA | sed 's/_QUEUENAME_/ QUEUENAME_/g'`
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
@@ -68,8 +68,8 @@ fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Detect mobile browser
@@ -79,8 +79,8 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -f1`
@@ -92,60 +92,60 @@ PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2 | sed 's/123456789/_/g'`
 #Check to see what action needs to be carried out
 if [ `echo $PRINTDATA | grep -c _enable_` = 1 ]
 then
-PRINTER_ACTION=enable
-PRINTMSG=$"Enabling the printer queue."
+	PRINTER_ACTION=enable
+	PRINTMSG=$"Enabling the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _disable_` = 1 ]
 then
-PRINTER_ACTION=disable
-PRINTMSG=$"Disabling the printer queue."
+	PRINTER_ACTION=disable
+	PRINTMSG=$"Disabling the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _test_` = 1 ]
 then
-PRINTER_ACTION=test
-PRINTMSG=$"Testing the printer queue."
+	PRINTER_ACTION=test
+	PRINTMSG=$"Testing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _setlocation_` = 1 ]
 then
-PRINTER_ACTION=setlocation
-PRINTMSG=$"Testing the printer queue."
+	PRINTER_ACTION=setlocation
+	PRINTMSG=$"Testing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _setppd_` = 1 ]
 then
-PRINTER_ACTION=setppd
+	PRINTER_ACTION=setppd
 fi
 if [ `echo $PRINTDATA | grep -c _clearqueue_` = 1 ]
 then
-PRINTER_ACTION=clearqueue
-PRINTMSG=$"Clearing the printer queue."
+	PRINTER_ACTION=clearqueue
+	PRINTMSG=$"Clearing the printer queue."
 fi
 if [ `echo $PRINTDATA | grep -c _jobid_` = 1 ]
 then
-END_POINT=6
-#Assign jobid
-JOBCOUNTER=5
-while [ $JOBCOUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
-if [ `echo $DATAHEADER'check'` = jobid'check' ]
-then
-let JOBCOUNTER=$JOBCOUNTER+1
-JOBID=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
-PRINTER_ACTION=removejobid
-break
-fi
-let JOBCOUNTER=$JOBCOUNTER+1
-done
-if [ $JOBID'null' != null ]
-then
-PRINTMSG=`echo ''$"Deleting print job"' '$JOBID'.'`
-fi
+	END_POINT=6
+	#Assign jobid
+	JOBCOUNTER=5
+	while [ $JOBCOUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
+		if [ `echo $DATAHEADER'check'` = jobid'check' ]
+		then
+			let JOBCOUNTER=$JOBCOUNTER+1
+			JOBID=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
+			PRINTER_ACTION=removejobid
+			break
+		fi
+		let JOBCOUNTER=$JOBCOUNTER+1
+	done
+	if [ $JOBID'null' != null ]
+	then
+		PRINTMSG=`echo ''$"Deleting print job"' '$JOBID'.'`
+	fi
 fi
 
 #Show action to be taken
 if [ $PRINTER_ACTION != none ]
 then
-sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
+	sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
 fi
 
 echo "</div></body></html>"

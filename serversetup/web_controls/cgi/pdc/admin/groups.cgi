@@ -57,6 +57,7 @@ $(document).ready(function()
     } 
 );
 </script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -336,6 +337,7 @@ then
 	WIDTH2=90
 	WIDTH3=200
 	WIDTH4=70
+	WIDTH5=80
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
@@ -344,10 +346,11 @@ then
 else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
-	WIDTH1=120
+	WIDTH1=100
 	WIDTH2=70
 	WIDTH3=150
 	WIDTH4=60
+	WIDTH5=50
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/usersm.png
@@ -608,15 +611,13 @@ then
 	COUNTER=0
 
 	echo  '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group name"'</b></th>'
+	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group"'</b></th>'
 
 
 	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"Group id"'</b></th><th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"User count"'</b></th>'
 
-	echo '<td style="width: '$WIDTH2'px; vertical-align:top;">'
-
-
-	echo '<select name="____TYPE____" onchange="this.form.submit()">
+	echo '<td style="width: '$WIDTH5'px; vertical-align:top;">
+	<select name="____TYPE____" onchange="this.form.submit()">
 	<option value="'$TYPE'">'$"Type"'</option>
 	<option class="select-dash" disabled="disabled">----------</option>
 	<option value="primary">'$"Primary"'</option>
@@ -624,14 +625,17 @@ then
 	<option value="dynamic">'$"Dynamic"'</option>
 	<option value="all">'$"All"'</option>
 	</select>
-	<noscript><input type="submit" value="Submit"></noscript>'
+	<noscript><input type="submit" value="Submit"></noscript>
+	</td>'
 
-[ $MOBILE = no ] && echo '</td><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
+[ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
 echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 	while [ $COUNTER -lt $GROUPCOUNT ]
 	do
 		GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+		GROUPNAMESHORT="$GROUPNAME"
+		[ $MOBILE = yes ] && GROUPNAMESHORT=${GROUPNAME:0:12}
 		GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
 
 		if [ $GROUPID -ge 1000 ] && [ $GROUPNAME != nogroup ]
@@ -654,7 +658,7 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 			fi
 			#Show primary, secondary, dynamic, or all groups
 			MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
-			echo '<tr><td>'$GROUPNAME'</td><td>'
+			echo '<tr><td>'$GROUPNAMESHORT'</td><td>'
 			[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
 		
 			echo ''$GROUPTYPE'</td>'

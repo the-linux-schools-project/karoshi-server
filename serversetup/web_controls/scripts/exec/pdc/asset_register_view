@@ -315,7 +315,11 @@ fi
 if [ $ACTION = viewtcpip ]
 then
 	echo '<b>'$"Asset Register"' - '$"Allocated TCPIP Numbers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoChooseLocattion_" value="_ACTION_view_">
+	'$"Choose Location"'
+	</button>
+	</td>
 	</tr></tbody></table>'
 
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
@@ -336,7 +340,13 @@ then
 
 		[ $MOBILE = no ] && echo '<td style="background-color:'$COLOR'">'$LOCATION'</td>'
 
-		echo '<td style="background-color:'$COLOR'"><a class="info" href="javascript:void(0)"><input name="_ACTION_view_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>View Assets<br>CM1</span></a></td><td style="background-color:'$COLOR'">'$ASSETLABEL'</td></tr>'
+		echo '<td style="background-color:'$COLOR'">
+
+		<button class="info" name="_Delete_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+		<img src="'$ICON1'" alt="'$"View Assets"'">
+		<span>'$"View Assets"'<br>'$LOCATION'</span>
+		</button>
+		</td><td style="background-color:'$COLOR'">'$ASSETLABEL'</td></tr>'
 	done
 	echo '</tbody></table>'
 fi
@@ -413,7 +423,16 @@ if [ $ACTION = adddesc ]
 then
 	echo '<b>'$"Add description"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a description that you want to appear in the description drop down list."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyadddesc_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in a description that you want to appear in the description drop down list."'</span></a></td></tr></tbody></table><br>
+
+<button class="button" name="_Submit_" value="_ACTION_reallyadddesc_">
+'$"Submit"'
+</button>
+
+<button class="button" name="_DoViewDescriptions_" value="_ACTION_viewdescriptions_LOCATION_notset_">
+<span>'$"Cancel"'</span>
+</button>
+'
 fi
 
 if [ $ACTION = reallyadddesc ]
@@ -499,7 +518,13 @@ then
 		do
 			DESCRIPTIONFILE=`basename $DESCRIPTIONFILES`
 			DESCRIPTION=`cat /opt/karoshi/asset_register/descriptions/$DESCRIPTIONFILE`
-			echo '<tr><td>'$DESCRIPTION'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete description"'</span></a></td></tr>'
+			echo '<tr><td>'$DESCRIPTION'</td><td style="vertical-align: top;">
+
+			<button class="info" name="_DoDeleteDescription_" value="_ACTION_deletedescription_LOCATION_notset_ASSET_'$DESCRIPTIONFILE'_">
+			<img src="'$ICON3'" alt="'$"Delete description"'">
+			<span>'$"Delete description"'</span>
+			</button>
+			</td></tr>'
 		done
 		echo '</tbody></table>'
 	fi
@@ -512,7 +537,16 @@ if [ $ACTION = addsupplier ]
 then
 	echo '<b>'$"Add supplier"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Supplier"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a supplier that you want to be available in the supplier drop down menu."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyaddsupplier_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a supplier that you want to be available in the supplier drop down menu."'</span></a></td></tr></tbody></table><br>
+
+<button class="button" name="_Submit_" value="_ACTION_reallyaddsupplier_">
+'$"Submit"'
+</button>
+
+<button class="button" name="_DoViewSuppliers_" value="_ACTION_viewsuppliers_LOCATION_notset_">
+<span>'$"Cancel"'</span>
+</button>
+'
 
 
 fi
@@ -588,8 +622,16 @@ fi
 if [ $ACTION = viewsuppliers ]
 then
 	echo '<b>'$"Asset Register"' - '$"Suppliers"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
-	<td style="vertical-align: top;"><input name="_ACTION_addsupplier_LOCATION_notset_" type="submit" class="button" value="'$"Add Supplier"'"></td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoChooseLocattion_" value="_ACTION_view_">
+	'$"Choose Location"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoAddSupplier_" value="_ACTION_addsupplier_LOCATION_notset_">
+	'$"Add Supplier"'
+	</button>
+	</td>
 	</tr></tbody></table><br>'
 
 	if [ -d /opt/karoshi/asset_register/suppliers/ ]
@@ -597,13 +639,18 @@ then
 		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
 		then
 			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-			<tr></th><th style="width:400px;"><b>'$"Supplier"'</b></th><th style="width: 20px;"></tr></thead><tbody>'
+			<tr><th style="width:400px;"><b>'$"Supplier"'</b></th><th style="width: 20px;"></tr></thead><tbody>'
 
 			for SUPPLIERFILES in /opt/karoshi/asset_register/suppliers/*
 			do
 				SUPPLIERFILE=`basename $SUPPLIERFILES`
 				SUPPLIER=`cat /opt/karoshi/asset_register/suppliers/$SUPPLIERFILE`
-				echo '<tr><td>'$SUPPLIER'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete supplier"'</span></a></td></tr>'
+				echo '<tr><td>'$SUPPLIER'</td><td style="vertical-align: top;">
+				<button class="info" name="_DoDeleteSupplier_" value="_ACTION_deletesupplier_LOCATION_notset_ASSET_'$SUPPLIERFILE'_">
+				<img src="'$ICON3'" alt="'$"Delete supplier"'">
+				<span>'$"Delete supplier"'</span>
+				</button>
+				</td></tr>'
 			done
 			echo '</tbody></table>'
 		fi
@@ -617,7 +664,16 @@ if [ $ACTION = addbudget ]
 then
 	echo '<b>'$"Add budget"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Budget"'</td><td><input tabindex= "1" name="_OPTION_" style="width: 200px;" size="20" type="text"></td><td>
-	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a budget that you want to be available in the budget drop down menu."'</span></a></td></tr></tbody></table><br><input name="_ACTION_reallyaddbudget_" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
+	<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add in the name of a budget that you want to be available in the budget drop down menu."'</span></a></td></tr></tbody></table><br>
+
+<button class="button" name="_Submit_" value="_ACTION_reallyaddbudget_">
+'$"Submit"'
+</button>
+
+<button class="button" name="_DoViewBudgets_" value="_ACTION_viewbudgets_LOCATION_notset_">
+<span>'$"Cancel"'</span>
+</button>
+'
 fi
 
 if [ $ACTION = reallyaddbudget ]
@@ -681,8 +737,16 @@ fi
 if [ $ACTION = viewbudgets ]
 then
 	echo '<b>'$"Asset Register"' - '$"Budgets"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"Choose Location"'"></td>
-	<td style="vertical-align: top;"><input name="_ACTION_addbudget_LOCATION_notset_" type="submit" class="button" value="'$"Add Budget"'"></td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoChooseLocattion_" value="_ACTION_view_">
+	'$"Choose Location"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" name="_DoAddBudget_" value="_ACTION_addbudget_LOCATION_notset_">
+	'$"Add Budget"'
+	</button>
+	</td>
 	</tr></tbody></table><br>'
 
 	if [ -d /opt/karoshi/asset_register/budgets/ ]
@@ -696,7 +760,12 @@ then
 			do
 				BUDGETFILE=`basename $BUDGETFILES`
 				BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
-				echo '<tr><td>'$BUDGET'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Delete budget"'</span></a></td></tr>'
+				echo '<tr><td>'$BUDGET'</td><td style="vertical-align: top;">
+				<button class="info" name="_DoDeleteBudget_" value="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_">
+				<img src="'$ICON3'" alt="'$"Delete budget"'">
+				<span>'$"Delete budget"'</span>
+				</button>
+				</td></tr>'
 			done
 			echo '</tbody></table>'
 		fi
@@ -934,9 +1003,9 @@ echo ' <input type="hidden" name="_ACTION_really'$ACTION'_ASSET_'$ASSET'_" value
 <table style="text-align: left;"  class="'$TABLECLASS'"><tbody>'
 if [ "$ACTION" = edit ]
 then
-	echo '<tr><td style="width: 180px;">'$"Asset Number"'</td><td>'$ASSET'</td></tr>'
+	echo '<tr><td style="width: 180px;">'$"Asset Number"'</td><td>'$ASSET'</td><td></td><td></td></tr>'
 	else
-	echo '<tr><td></td></tr>'
+	echo '<tr><td></td><td></td><td></td><td></td></tr>'
 fi
 echo '<tr><td style="width: 180px;">'$"Type"'</td><td>'
 echo '<select name="_ASSETTYPE_" style="width: 200px;" tabindex= "1">'
@@ -962,10 +1031,10 @@ echo '<option value="18">'$"Audio Visual"'</option>'
 echo '<option value="19">'$"Monitor"'</option>'
 echo '<option value="20">'$"Software"'</option>'
 echo '<option value="21">'$"Other"'</option>'
-echo '<option value=""></option>'
+echo '<option label="blank" value=""></option>'
 echo '</select></td>'
 #Value
-echo '<td style="width: 180px;">'$"Value"'</td><td><input size="17" name="_VALUE_" value="'$VALUE'" style="width: 200px;" tabindex= "9" ></td></tr>'
+echo '<td style="width: 180px;">'$"Value"'</td><td><input size="17" name="_VALUE_" value="'$VALUE'" style="width: 192px;" tabindex= "9" ></td></tr>'
 #Location
 echo '<tr><td>'$"Location"'<td><select name="_LOCATION_" style="width: 200px;" tabindex= "2">
 <option value="'$LOCATION'">'$LOCATION'</option>'
@@ -985,7 +1054,7 @@ done
 echo '</select></td>'
 #Serial Code
 DATE=`date +%d-%m-%y`
-echo '<td>'$"Serial Number"'</td><td><input size="23" style="width: 200px;" value="'$SERIAL'" name="_SERIALKEY_" tabindex= "10"></td></tr>'
+echo '<td>'$"Serial Number"'</td><td><input size="23" style="width: 192px;" value="'$SERIAL'" name="_SERIALKEY_" tabindex= "10"></td></tr>'
 if [ "$ACTION" = edit ]
 then
 	#Identity
@@ -996,7 +1065,7 @@ else
 	#os type
 	echo '<tr><td>'$"OS Type"'</td><td>
 	<select name="_IDENTITY_" style="width: 200px;" tabindex= "3">
-	<option value=""></option>
+	<option label="blank" value=""></option>
         <option value="lx">Linux</option>
         <option value="mc">Mac</option>
         <option value="wn">Windows</option>
@@ -1005,45 +1074,53 @@ else
 	</td>'
 fi
 #Assigned to
-echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 200px;" tabindex= "11"></td></tr>'
+echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 192px;" tabindex= "11"></td></tr>'
 #Budget
 echo '<tr><td><a href="/cgi-bin/admin/asset_register_add_budget_fm.cgi">'$"Budget"'</a></td><td><select name="_BUDGET_" style="width: 200px;" tabindex= "4">'
-echo '<option value="'$BUDGET'">'$BUDGET'</option>'
+echo '<option label="CurrentBudget" value="'$BUDGET'">'$BUDGET'</option>'
 [ -f /opt/karoshi/asset_register/supplier_list ] && cat /opt/karoshi/asset_register/budget_list
-echo '<option value=""></option>'
+echo '<option label="blank" value=""></option>'
 echo '</select></td>'
 #Asset Purchase date
 
 [ $ACTION = add ] && PURCHASEDATE=`date +%d-%m-%y`
 
-echo '<td>'$"Purchased"'</td><td><input maxlength="15" size="17" name="_PURCHASEDATE_" value="'$PURCHASEDATE'" style="width: 200px;" tabindex= "12"></td></tr>'
+echo '<td>'$"Purchased"'</td><td><input maxlength="15" size="17" name="_PURCHASEDATE_" value="'$PURCHASEDATE'" style="width: 192px;" tabindex= "12"></td></tr>'
 #Description
 echo '<tr><td><a href="/cgi-bin/admin/asset_register_add_description_fm.cgi">'$"Description"'</a></td><td><select name="_DESCRIPTION_" style="width: 200px;" tabindex= "5">'
-echo '<option value="'$DESCRIPTION'">'$DESCRIPTION'</option>'
+echo '<option label="CurrentDescription" value="'$DESCRIPTION'">'$DESCRIPTION'</option>'
 [ -f /opt/karoshi/asset_register/description_list ] && cat /opt/karoshi/asset_register/description_list
-echo '<option value=""></option>'
+echo '<option label="blank" value=""></option>'
 echo '</select></td>'
 #Supplier
 echo '<td><a href="/cgi-bin/admin/asset_register_add_supplier_fm.cgi">'$"Supplier"'</a></td><td><select name="_SUPPLIER_" style="width: 200px;" tabindex= "13">'
-echo '<option value="'$SUPPLIER'">'$SUPPLIER'</option>'
+echo '<option label="CurrentSupplier" value="'$SUPPLIER'">'$SUPPLIER'</option>'
 [ -f /opt/karoshi/asset_register/supplier_list ] && cat /opt/karoshi/asset_register/supplier_list
-echo '<option value=""></option></select></td></tr>'
+echo '<option label="blank" value=""></option></select></td></tr>'
 #TCPIP1
-echo '<tr><td>TCPIP 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 200px;" tabindex= "6"></td>'
+echo '<tr><td>TCPIP 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 192px;" tabindex= "6"></td>'
 #MAC Address1
-echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MAC1_" value="'$MAC1'" style="width: 200px;" tabindex= "14"></td></tr>'
+echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MAC1_" value="'$MAC1'" style="width: 192px;" tabindex= "14"></td></tr>'
 #TCPIP2
-echo '<tr><td>TCPIP 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 200px;" tabindex= "7"></td>'
+echo '<tr><td>TCPIP 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 192px;" tabindex= "7"></td>'
 #MAC address2
-echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MAC2_" value="'$MAC2'" style="width: 200px;" tabindex= "15"></td></tr>'
+echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MAC2_" value="'$MAC2'" style="width: 192px;" tabindex= "15"></td></tr>'
 #TCPIP3
-echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 200px;" tabindex= "8"></td>'
+echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 192px;" tabindex= "8"></td>'
 #MAC address3
-echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 200px;" tabindex= "16"></td></tr>'
+echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 192px;" tabindex= "16"></td></tr>'
 #Extra information
-echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 200px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
+echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 192px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
 </td></tr>'
-echo '</tbody></table><br><input name="" type="submit" class="button" value="'$"Submit"'"><a href="javascript:history.go(-1)"><input class="button" type="button" name="" value="'$"Cancel"'"></a>'
+echo '</tbody></table><br>
+
+<button class="button" name="_Submit_" value="_">
+'$"Submit"'
+</button>
+
+<button class="button" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+<span>'$"Cancel"'</span>
+</button>'
 
 }
 
@@ -1513,8 +1590,14 @@ fi
 if [ $ACTION = search ]
 then
 	echo '<b>'$"Search Assets"'</b><br><br>
-	<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_reallysearch_LOCATION_notset_" value="">
-	<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a><br>
+
+	<button class="button" name="_DoSearch_" value="_ACTION_reallysearch_LOCATION_notset_">
+	<span>'$"Search"'</span>
+	</button>
+	<button class="button" name="_DoChooseLocattion_" value="_ACTION_view_">
+	'$"Cancel"'
+	</button>
+	<br><br>
 	<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" ><tbody>
 	<tr><td style="width: 180px;">'$"Search"'</td><td><input name="_OPTION_" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."'</span></a></td></tr></tbody></table><br>'
 fi

@@ -88,7 +88,7 @@ echo '</head>
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -112,22 +112,20 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </tbody></table><br>
 '
 else
-echo '<div id="'$DIV_ID'">
+echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Banned E-mail Domains"'</b></td>
 <td style="vertical-align: top;">
 <a href="email_ban_domain_fm.cgi"><input class="button" type="button" name="" value="'$"Ban Domain"'"></a>
 </td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Banned_E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"Any E-mail domains shown in the list below are banned from e-mailing to your server."'</span></a>
 </td></tr>
-</tbody></table><br>
+</tbody></table><br></div><div id="infobox">
 '
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_view_banned_domains_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_view_banned_domains
 
-echo '</div>
-</div></body>
-</html>
-'
+[ "$MOBILE" = no ] && echo '</div>'
+echo '</div></form></div></body></html>'
 exit
 

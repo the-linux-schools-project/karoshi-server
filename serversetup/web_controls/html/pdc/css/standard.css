@@ -24,13 +24,18 @@ body {
 	position: relative;
 }
 
+.version {
+	font-size:10px;
+}
+
 .texttop {
-vertical-align:text-top;
+	vertical-align:text-top;
 }
 
 .webmanagement-title {
 	font-weight: bold;
-	font-size : 16pt;	
+	font-size : 16pt;
+	vertical-align: text-top;	
 }
 
 .reinstall a:link,
@@ -70,6 +75,17 @@ text-decoration: bold
 #searchresults span.seperator { float:right; padding-right:15px; margin-right:5px;
 			background-image:url(../images/shortcuts_arrow.gif); background-repeat:no-repeat; background-position:right; }
 #searchresults span.seperator a { background-color:transparent; display:block; margin:5px; height:auto; color:#ffffff; }
+
+table.centerTable th 
+{
+    text-align:center; 
+    vertical-align:middle;
+}
+
+table.centerTable td, table.centerTable th {
+    text-align:center !important; 
+    vertical-align:middle !important;
+}
 
 table.standard th, table.standard td {
   font-size : 10pt;
@@ -284,8 +300,8 @@ font-weight: bold;
 
 #tickerbar {
 	position: absolute;
-	top: 35px;
-	left: 64px;
+	top: 32px;
+	left: 62px;
         z-index:1;
         margin: 2px 2px 2px 2px;
         z-index:500;
@@ -410,12 +426,12 @@ a.searchlink:hover
         border:1px;    /* border colour */
         text-decoration:none;
         font-style:italic;
-	background-color: #ffffff;
+	background-color: inherit;
         }
 
         .info:hover {
         z-index:25;
-        background-color:#ffffff;
+        background-color: inherit;
 
         }
 

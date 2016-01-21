@@ -49,18 +49,18 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=3
+END_POINT=7
 #Assign MONITOR
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MONITORcheck ]
-then
-let COUNTER=$COUNTER+1
-MONITOR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MONITORcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MONITOR=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
 let COUNTER=$COUNTER+1
 done
 
@@ -77,41 +77,41 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that monitor is not blank
-if [ $MONITOR'null' = null ]
+if [ -z "$MONITOR" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$"The monitor cannot be blank."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_enable_disable.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_enable_disable
-EXEC_STATUS=`echo $?`
+EXEC_STATUS=`$?
 if [ $EXEC_STATUS != 0 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
-show_status
+	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	show_status
 fi
 echo "</div></body></html>"
-
 exit
+

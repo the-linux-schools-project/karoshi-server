@@ -53,7 +53,7 @@ echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script id="js">
+<script id="js1">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter({
@@ -65,14 +65,14 @@ $(document).ready(function()
     }
 );
 </script>
-<script id="js">
+<script id="js2">
 $(document).ready(function() 
     { 
         $("#myTable2").tablesorter(); 
     } 
 );
 </script>
-<script id="js">
+<script id="js3">
 $(document).ready(function() 
     { 
         $("#myTable2").tablesorter(); 
@@ -110,7 +110,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=2
+END_POINT=5
 #Assign PRINTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -191,7 +191,7 @@ else
 <tr><td style="vertical-align: top;"><b>'$"Manage Print Queues"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></td>
 <td style="vertical-align: top;">
-<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><input name="ADDPRINTER" type="submit" class="button" value='$"Add Printer"'></form>
+<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><input name="ADDPRINTER" type="submit" class="button" value="'$"Add Printer"'"></form>
 </td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
 <input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'"></form></td>

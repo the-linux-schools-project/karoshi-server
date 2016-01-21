@@ -53,9 +53,13 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
+HEIGHT=15
+PADHEIGHT=6
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	HEIGHT=20
+	PADHEIGHT=9
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -76,10 +80,12 @@ fi
 
 echo '
 <style type="text/css">
+  #hide1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #333 !important}
+  #show1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #333 !important}
  .row { vertical-align: top; height:auto !important; }
  .list {display:none; }
  .show {display: none; }
- .hide:target + .show {display: inline; }
+ .hide:target + .show {display: inline-block; }
  .hide:target {display: none; }
  .hide:target ~ .list {display:inline; }
  @media print { .hide, .show { display: none; } }

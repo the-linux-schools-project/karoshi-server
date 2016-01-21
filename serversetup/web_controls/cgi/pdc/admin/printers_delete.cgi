@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -71,14 +71,14 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
@@ -96,30 +96,35 @@ exit
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
+echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post"><div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><b>'$"Delete a Network Printer"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-<input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'">
-</form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post">
-<input name="ADDPRINTER" type="submit" class="button" value="'$"Add Printer"'">
-</form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'">
-</form></td>
+<td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers.cgi" name="_ShowPrinters_" value="_">
+'$"Show Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers_add_fm.cg" name="_AddPrinter_" value="_">
+'$"Add Printer"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/locations.cgi" name="_AddLocation_" value="_">
+'$"Add Location"'
+</button>
+</td>
 </tr></tbody></table><br>
 '
 
-echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post">'
 PRINTERLIST=( `sudo -H /opt/karoshi/web_controls/exec/printers_show_queues` )
 PRINTERCOUNT=${#PRINTERLIST[@]}
 if [ $PRINTERCOUNT = 0 ]
 then
-echo $"There are no printer queues to delete."'<br>'
-echo "</div>"
-echo '</div></body></html>'
-exit
+	echo $"There are no printer queues to delete."'<br>'
+	echo '/div></div></body></html>'
+	exit
 fi
 #Show printer list to choose from
 echo '  <table class="standard" style="text-align: left;" >
@@ -127,17 +132,17 @@ echo '  <table class="standard" style="text-align: left;" >
       <tr>
         <td style="width: 180px;">'$"Printer"'</td><td>'
 COUNTER=0
-echo '<select name="_PRINTERNAME_" style="width: 200px;"><option value=""></option>'
+echo '<select name="_PRINTERNAME_" style="width: 200px;"><option label="blank" value=""></option>'
 while [ $COUNTER -lt $PRINTERCOUNT ]
 do
-#Get printer name
-PRINTERNAME=${PRINTERLIST[$COUNTER]}
-PRINTERNAME=`echo $PRINTERNAME | sed 's/_/123456789/g'`
-echo '<option value="'$PRINTERNAME'">'$PRINTERNAME'</option>'
-let COUNTER=$COUNTER+1
+	#Get printer name
+	PRINTERNAME=${PRINTERLIST[$COUNTER]}
+	PRINTERNAME=`echo $PRINTERNAME | sed 's/_/123456789/g'`
+	echo '<option value="'$PRINTERNAME'">'$PRINTERNAME'</option>'
+	let COUNTER=$COUNTER+1
 done
 echo '</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the printer you want to delete."'</span></a>
-</td></tr></tbody></table></div><div id="submitbox"><input class="button" value="Submit" type="submit">'
-echo '</form></div></div></body></html>'
+</td></tr></tbody></table></div><div id="submitbox"><input class="button" value="Submit" type="submit"></div>
+</form></div></body></html>'
 exit

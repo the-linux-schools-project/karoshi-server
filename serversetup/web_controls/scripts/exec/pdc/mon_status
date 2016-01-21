@@ -100,12 +100,14 @@ MONDATAPATH=/opt/karoshi/server_network/mon/mon_data
 #Show mon status
 ########################
 WIDTH1=110
-WIDTH2=70
+WIDTH2=65
+WIDTH3=100
 
 if [ "$MOBILE" = yes ]
 then
-	WIDTH1=110
+	WIDTH1=115
 	WIDTH2=90
+	WIDTH3=100
 fi
 #echo `date`: mon_status - viewing from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 [ -d /opt/karoshi/server_network/mon ] || mkdir /opt/karoshi/server_network/mon
@@ -121,11 +123,11 @@ if [ $MOBILE != yes ]
 then
 	TABLECLASS=mon
 	#Create table
-	echo '<br><table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>ping</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smb</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>http</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>https</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3s</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imap</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imaps</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smtp</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>proxy</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>dns</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>cups</b></th></tr></thead><tbody>'
+	echo '<br><table id="myTable" class="tablesorter centerTable" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>ping</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smb</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>http</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>https</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>pop3s</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imap</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>imaps</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>smtp</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>proxy</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>dns</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>cups</b></th></tr></thead><tbody>'
 else
 	TABLECLASS=mobilestandard
 	#Create table
-	echo '<br><table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+	echo '<br><table id="myTable" class="tablesorter centerTable" style="text-align: left;"><thead><tr><th style="vertical-align: top; text-align: left; width: '$WIDTH1'px;"><b>Host Group</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Monitor"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 fi
 
 if [ $MONITORING_SERVER = `hostname-fqdn` ]
@@ -164,7 +166,7 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
 	then
 		echo '<br><b>'$"Inactive Monitors"'</b><br><br>
-		<table class="'$TABLECLASS'" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
+		<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td style="width: '$WIDTH1'px;"><b>Host Group</b></td><td style="width: '$WIDTH2'px;"></td></tr>'
 
 		for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*
 		do

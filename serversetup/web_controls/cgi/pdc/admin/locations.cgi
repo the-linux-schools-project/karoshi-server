@@ -89,7 +89,7 @@ echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="tex
 echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$"New location"'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
-echo '</tbody></table><br></div><div id="infobox">'
+echo '</tbody></table></form><br></div><div id="infobox">'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
@@ -100,21 +100,23 @@ fi
 #Show current rooms
 if [ $LOCATION_COUNT -gt 0 ]
 then
-echo '<table class="standard" style="text-align: left;" >'
-echo '<tbody>'
-echo '<tr><td style="width: 180px;"><b>Current Locations</b></td><td><b>Delete</b></td></tr>'
-echo '</tbody></table><br>'
-
-echo '<table class="standard" style="text-align: left;" >'
-echo '<tbody>'
+	echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" >
+<tbody><tr><td style="width: 180px;"><b>Current Locations</b></td><td><b>Delete</b></td></tr></tbody></table><br>
+<table class="standard" style="text-align: left;" >
+<tbody>'
 COUNTER=1
 while [ $COUNTER -lt $LOCATION_COUNT ]
 do
-LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-echo '<tr><td style="width: 180px;">'$LOCATION'</td><td><a class="info" href="javascript:void(0)"><input name="_DELETE_'$LOCATION'_" type="image" class="images" src="/images/submenus/client/delete_location.png" value=""><span>Delete '$LOCATION'</span></a></td></tr>'
-let COUNTER=$COUNTER+1
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	echo '<tr><td style="width: 180px;">'$LOCATION'</td><td>
+	<button class="info" name="DoDelete_" value="_DELETE_'$LOCATION'_">
+	<img src="/images/submenus/client/delete_location.png" alt="'$"Delete"' '$LOCATION'">
+	<span>'$"Delete"' '$LOCATION'</span>
+	</button>
+	</td></tr>'
+	let COUNTER=$COUNTER+1
 done
-echo '</tbody></table><br>'
+echo '</tbody></table></form><br>'
 fi
-echo '</form></div></div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

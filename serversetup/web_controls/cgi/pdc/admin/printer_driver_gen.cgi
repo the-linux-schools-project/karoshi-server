@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -107,33 +107,33 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=7
 #Assign action
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign queue
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = QUEUEcheck ]
-then
-let COUNTER=$COUNTER+1
-QUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = QUEUEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		QUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 [ -z $ACTION ] && ACTION=view
@@ -141,13 +141,13 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
 fi
 
 function show_status {
@@ -166,8 +166,8 @@ echo '<form action="/cgi-bin/admin/printer_driver_gen.cgi" name="selectedsites" 
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
-then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	then
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Printer Driver Generation"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -176,7 +176,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 fi
 if [ $MOBILE = yes ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td>
 <b>'$"Windows Printer Driver Generation"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td></tr>
 </tbody></table><br>
@@ -185,7 +185,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"><br><br>
 '
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr>
 <td style="vertical-align: top;"><b>'$"Windows Printer Driver Generation"'</b></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"></td></tr></table><br>
@@ -194,21 +194,21 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
 if [ $ACTION = gendrivers ]
 then
-sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-EXEC_STATUS=$?
-[ $EXEC_STATUS = 0 ] && MESSAGE=$"Windows printer driver generation completed."
+	sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
+	EXEC_STATUS=$?
+	[ $EXEC_STATUS = 0 ] && MESSAGE=$"Windows printer driver generation completed."
 
-if [ $EXEC_STATUS = 102 ]
-then
-MESSAGE=$"The samba root password was incorrect."
-fi
-if [ $EXEC_STATUS = 103 ]
-then
-MESSAGE=$"The windows dll files needed to generate the windows printer drivers are missing. The dlls needed in /usr/share/cups/drivers/ are pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf."
-fi
-show_status
+	if [ $EXEC_STATUS = 102 ]
+	then
+		MESSAGE=$"The samba root password was incorrect."
+	fi
+	if [ $EXEC_STATUS = 103 ]
+	then
+		MESSAGE=$"The windows dll files needed to generate the windows printer drivers are missing. The dlls needed in /usr/share/cups/drivers/ are pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf."
+	fi
+	show_status
 else
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
 fi
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'

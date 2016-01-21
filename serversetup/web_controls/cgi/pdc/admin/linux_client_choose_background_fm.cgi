@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -140,8 +140,8 @@ exit
 #Check to see if any backgrounds have been uploaded
 if [ ! -d /var/lib/samba/netlogon/linuxclient/backgrounds ]
 then
-MESSAGE=$"No client backgrounds have been uploaded."
-upload_background
+	MESSAGE=$"No client backgrounds have been uploaded."
+	upload_background
 fi
 
 if [ `ls -1 /var/lib/samba/netlogon/linuxclient/backgrounds | wc -l` = 0 ]
@@ -162,15 +162,25 @@ BACKGROUND=`basename "$BACKGROUNDS" | sed 's/.png$//g'`
 BACKGROUND_SHORT="${BACKGROUND:0:$CHARS}"
 if [ $BACKGROUND = $DEFAULTBACKGROUND ]
 then
-echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; background-color: rgb(204, 0, 0); text-align: left;"><b>'$"Default Background"'</b><br><br>'$BACKGROUND_SHORT'</td><td>
-<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: '$WIDTH2'px; height: '$WIDTH3'px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
-</td></tr>'
+	echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; background-color: rgb(204, 0, 0); text-align: left;"><b>'$"Default Background"'</b><br><br>'$BACKGROUND_SHORT'</td><td>
+
+	<button style="width: '$WIDTH2'px; height: '$WIDTH3'px;" class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
+	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" alt="'$BACKGROUND'">
+	<span>'$BACKGROUND'</span>
+	</button>
+	</td></tr>'
 else
-echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; text-align: left;">'$BACKGROUND_SHORT'</td><td>
-<a class="info" href="javascript:void(0)"><input name="___ACTION___choose___BACKGROUND___'$BACKGROUND'___" type="image" class="images" style="width: '$WIDTH2'px; height: '$WIDTH3'px;" src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" value=""><span>'$BACKGROUND'</span></a>
-</td><td style="width: '$WIDTH1'px; vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="___ACTION___delete___BACKGROUND___'$BACKGROUND'___" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>'$"Delete"'<br>'$BACKGROUND'</span></a>
-</td></tr>'
+	echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; text-align: left;">'$BACKGROUND_SHORT'</td><td>
+	<button style="width: '$WIDTH2'px; height: '$WIDTH3'px;" class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
+	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" alt="'$BACKGROUND'">
+	<span>'$BACKGROUND'</span>
+	</button>
+	</td><td style="width: '$WIDTH1'px; vertical-align: top;">
+	<button class="info" name="___DeleteBackground___" value="___delete___BACKGROUND___'$BACKGROUND'___">
+	<img src="/images/submenus/file/delete.png" alt="'$"Delete"'<br>'$BACKGROUND'">
+	<span>'$"Delete"'<br>'$BACKGROUND'</span>
+	</button>
+	</td></tr>'
 fi
 done
 
