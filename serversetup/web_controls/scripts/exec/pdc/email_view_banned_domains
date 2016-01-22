@@ -125,7 +125,7 @@ else
 	EMAILARRAY=( `cat /etc/postfix/access | cut -f1` )
 	EMAILARRAYCOUNT=${#EMAILARRAY[@]} 
 
-	echo  "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+	echo  "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\">
 	<thead>
 	<tr><th style=\"width: 180px;\"><b>'$"E-Mail Domain"'</b></th><th style=\"width: 80px;\"><b>'$"Delete"'</b></th></tr></thead><tbody>"
 

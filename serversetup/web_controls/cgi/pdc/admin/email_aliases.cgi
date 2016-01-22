@@ -92,8 +92,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=8
-
+END_POINT=10
 
 #Assign ACTION
 COUNTER=2
@@ -248,7 +247,11 @@ then
 <table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td>
-<td><a href="email_domains.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Domains"'"></a></td></tr>
+<td>
+<button class="button" formaction="email_domains.cgi" name="EMailDomains" value="_">
+'$"Domains"'
+</button>
+</td></tr>
 </tbody></table></form><br>
 '
 else
@@ -260,7 +263,11 @@ else
 <td style="vertical-align: middle;">
 <input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$MESSAGE'">
 </td>
-<td><a href="email_domains.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Domains"'"></a></td>
+<td>
+<button class="button" formaction="email_domains.cgi" name="EMailDomains" value="_">
+'$"Domains"'
+</button>
+</td>
 <td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a>
 </td></tr>
 </tbody></table></form><br>'

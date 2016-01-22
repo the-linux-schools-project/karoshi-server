@@ -173,7 +173,6 @@ echo '	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux C
 echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a>
 </div>'
 
-
 if [ $PRINTERCTRL = yes ]
 then
 echo '      <div class="collapsed">
@@ -184,7 +183,7 @@ echo '      <div class="collapsed">
         <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a>
         <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a>
         <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a>
-        <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Printer Driver Generation"'</a>
+        <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a>
       </div>'
 fi
 

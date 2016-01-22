@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -78,29 +78,36 @@ then
 source /opt/karoshi/server_network/info
 LOCATION_NAME="- $LOCATION_NAME"
 fi
-echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$HOSTNAME'</span></a><br>'$HOSTNAME'</td></tr></tbody></table><br>'
+echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><br><table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="vertical-align: top; text-align: left;">
+<button class="button" name="_SetName_" value="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_">
+'$HOSTNAME'
+</button>
+</td></tr></tbody></table><br>'
 
 #Show list of federated servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-LOCATION_NAME=""
-if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
-then
-source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
-LOCATION_NAME="- $LOCATION_NAME"
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
+			LOCATION_NAME=""
+			if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
+			then
+			source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
+			LOCATION_NAME="- $LOCATION_NAME"
+			fi
+			echo '<b>'$"Federated Servers"' '$LOCATION_NAME'</b><table class="standard" style="text-align: left;" ><tbody><tr>'
+			echo '<tr><td style="vertical-align: top; text-align: left;">
+			<button class="button" name="_SetFedName_" value="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_">
+			'$FEDERATED_SERVER'
+			</button>
+			</td></tr></tbody></table><br>'
+		done
+	fi
 fi
-echo '<b>'$"Federated Servers"' '$LOCATION_NAME'</b><table class="standard" style="text-align: left;" ><tbody><tr>'
-echo '<tr><td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_federated_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$FEDERATED_SERVER'</span></a><br>'$FEDERATED_SERVER'</td></tr></tbody></table><br>'
-done
-fi
-fi
-
 echo '</div></form></div></body></html>
 '
 exit

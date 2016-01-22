@@ -108,7 +108,7 @@ if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
 	ICON1=/images/submenus/email/email_delete.png
-	WIDTH1=180
+	WIDTH1=200
 	WIDTH2=150
 else
 	TABLECLASS=mobilestandard
@@ -286,22 +286,46 @@ fi
 if [ "$ACTION" = view ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th></tr></thead><tbody>'
-
-	#Show default domain
-	echo '<tr><td>'$REALM'</td><td>'$"Default Domain"'</td></tr>'
-
-	#Show any virtual domains
+	VIRTDOMCOUNT=0
 	if [ -d /opt/karoshi/server_network/email/virtual_domains ]
 	then
-		if [ $(ls -1 /opt/karoshi/server_network/email/virtual_domains | wc -l) -gt 0 ]
-		then
-			for VIRTUAL_DOMAIN in $(ls -1 /opt/karoshi/server_network/email/virtual_domains)
-			do
-				echo '<tr><td>'$VIRTUAL_DOMAIN'</td><td>'$"Virtual Domain"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_DOMAIN_'$VIRTUAL_DOMAIN'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$VIRTUAL_DOMAIN'</span></a></td></tr>'
-			done
-		fi
+		VIRTDOMCOUNT=$(ls -1 /opt/karoshi/server_network/email/virtual_domains | wc -l)
+	fi
+
+
+
+	echo '<form action="/cgi-bin/admin/email_domains.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: '$WIDTH1'px;">'$"Domain"'</th><th style="width: '$WIDTH2'px;">'$"Status"'</th>'
+
+	if [ $VIRTDOMCOUNT -gt 0 ]
+	then
+		echo '<th></th>'
+	fi
+
+	echo '</tr></thead><tbody>'
+
+	#Show default domain
+	echo '<tr><td>'$REALM'</td><td>'$"Default Domain"'</td>'
+
+	if [ $VIRTDOMCOUNT -gt 0 ]
+	then
+		echo '<td></td>'
+	fi
+
+	echo '</tr>'
+
+	#Show any virtual domains
+	if [  $VIRTDOMCOUNT -gt 0 ]
+	then
+		for VIRTUAL_DOMAIN in $(ls -1 /opt/karoshi/server_network/email/virtual_domains)
+		do
+			echo '<tr><td>'$VIRTUAL_DOMAIN'</td><td>'$"Virtual Domain"'</td><td>
+			<button class="info" name="_DeleteDomain_" value="_ACTION_delete_DOMAIN_'$VIRTUAL_DOMAIN'_">
+			<img src="'$ICON1'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'$VIRTUAL_DOMAIN'</span>
+			</button>
+			</td></tr>'
+		done
 	fi
 	echo '</tbody></table></form>'
 fi

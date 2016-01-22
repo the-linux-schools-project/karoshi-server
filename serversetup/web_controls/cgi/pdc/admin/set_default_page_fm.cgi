@@ -54,22 +54,22 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Set Default Page"'</b></a> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Set Default Page"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table><br>'
 fi
 
@@ -83,7 +83,7 @@ echo '
         <td>
 
 <select name="_DEFAULTPAGE_" style="width: 200px;">
-	<option></option>
+	<option label="blank"></option>
         <option value="add_user_fm.cgi">'$"Add Users"'</option>
         <option value="change_password_fm.cgi">'$"Change User Passwords"'</option>
         <option value="show_user_info_fm.cgi">'$"Show User Information"'</option>

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -63,7 +63,12 @@ for THEMES in /var/www/html_karoshi/images/theme_preview/*
 do
 	STYLESHEETCHOICE=`basename $THEMES | sed 's/.png//g'`
 
-	echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_THEMECHOICE_'$STYLESHEETCHOICE'_" type="image" class="images" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" width="330px" value="_THEMECHOICE_'$STYLESHEETCHOICE'_"><span>'$STYLESHEETCHOICE'</span></a></td>'
+	echo '<td style="width: 90px; vertical-align: top; height: 160px; text-align: left;">
+		<button class="info" name="_SetTheme_" value="_THEMECHOICE_'$STYLESHEETCHOICE'_">
+		<img style="width: 330px;" src="/images/theme_preview/'$STYLESHEETCHOICE'.png" alt="'$STYLESHEETCHOICE'">
+		<span>'$STYLESHEETCHOICE'</span>
+		</button>
+	`	</td>'
 	let STYLECOUNT=$STYLECOUNT+1
 
 	if [ $STYLECOUNT = 4 ]

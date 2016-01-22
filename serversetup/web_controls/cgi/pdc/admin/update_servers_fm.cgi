@@ -134,21 +134,25 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=192
 	WIDTH3=200
-	HEIGHT=25
+	HEIGHT1=25
+	HEIGHT2=20
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
 	WIDTH1=90
 	WIDTH2=120
 	WIDTH3=120
-	HEIGHT=30
+	HEIGHT1=30
+	HEIGHT2=30
 fi
 
 echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
@@ -167,7 +171,7 @@ else
 	echo '
 <table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td></tr></tbody></table><br>'
+<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td></tr></tbody></table><br>'
 fi
 
 #Preselect day
@@ -185,7 +189,7 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Day"'</td><td>
-<select style="width: '$WIDTH3'px; height: '$HEIGHT'px;" name="_DAY_">
+<select style="width: '$WIDTH3'px; height: '$HEIGHT1'px;" name="_DAY_">
 <option label="blank" value=""></option>
 <option value="never">'$"Never"'</option>
 <option '$OP1' value="1">'$"Monday"'</option>
@@ -197,9 +201,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <option '$OP7' value="7">'$"Sunday"'</option>
 <option '$OP8' value="8">'$"Every day"'</option>
 </select>
-</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+</td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px; height: '$HEIGHT2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px; height: '$HEIGHT2'px;" size="3" type="text"></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
 </tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

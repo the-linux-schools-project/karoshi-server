@@ -41,7 +41,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=11
+END_POINT=15
 #Assign NAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

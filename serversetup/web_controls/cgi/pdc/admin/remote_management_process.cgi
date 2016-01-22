@@ -51,19 +51,19 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=3
+END_POINT=5
 #Assign username
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-USERACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -86,57 +86,57 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$HTTPS_ERROR
-show_status
+	export MESSAGE=$HTTPS_ERROR
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$ACCESS_ERROR1
-show_status
+	MESSAGE=$ACCESS_ERROR1
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that USERACTION is not blank
-if [ $USERACTION'null' = null ]
+if [ -z "$USERACTION" ]
 then
-MESSAGE=$ERRORMSG1
-show_status
+	MESSAGE=$ERRORMSG1
+	show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_process.cgi | cut -d' ' -f1`
 if [ `echo $USERACTION | grep -c deleteuser` = 1 ]
 then
-USERNAME=`echo $USERACTION | sed 's/deleteuser//g'`
-if [ $USERNAME != $REMOTE_USER ]
-then
-sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
-EXITSTATUS=`echo $?`
-view_users
-else
-MESSAGE=$ERRORMSG2
-show_status
-fi
+	USERNAME=`echo $USERACTION | sed 's/deleteuser//g'`
+	if [ $USERNAME != $REMOTE_USER ]
+	then
+		sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
+		EXITSTATUS=`echo $?`
+		view_users
+	else
+		MESSAGE=$ERRORMSG2
+		show_status
+	fi
 fi
 
 if [ `echo $USERACTION | grep -c edituser` = 1 ]
 then
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
-echo '<form action="/cgi-bin/admin/remote_management_edit.cgi" method="post">'
-USERNAME=`echo $USERACTION | sed 's/edituser//g'`
-sudo -H /opt/karoshi/web_controls/exec/remote_management_edit2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
-echo "</div>"
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
-echo "</div></body></html>"
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="actionbox">'
+	echo '<form action="/cgi-bin/admin/remote_management_edit.cgi" method="post">'
+	USERNAME=`echo $USERACTION | sed 's/edituser//g'`
+	sudo -H /opt/karoshi/web_controls/exec/remote_management_edit2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
+	echo "</div>"
+	echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
+	echo "</div></body></html>"
 fi
 exit

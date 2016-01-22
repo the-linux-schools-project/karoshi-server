@@ -49,7 +49,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\_\%-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=3
+END_POINT=5
 #Assign PRINTACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

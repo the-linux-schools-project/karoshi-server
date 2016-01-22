@@ -82,6 +82,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	TOOLTIPCLASS="info"
 	DIV_ID=actionbox
 	TABLECLASS=standard
 	WIDTH1=200
@@ -91,6 +92,7 @@ then
 	ROWS=6
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox
 	TABLECLASS=mobilestandard
 	WIDTH1=140
@@ -119,9 +121,9 @@ fi
 echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td ><input value="'$REMOTE_USER'" tabindex="1" style="width: '$WIDTH1'px;" maxlength="22" size="20" name="_NAME_"></td></tr>
-<tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '$WIDTH1'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>
+<tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '$WIDTH1'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>
 </tr>
-<tr><td style="width: '$WIDTH1'px;">'$"Computer Number"'</td><td><input tabindex="3" maxlength="30" style="width: '$WIDTH1'px;" size="20" name="_ASSETNUMBER_"></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td>
+<tr><td style="width: '$WIDTH1'px;">'$"Computer Number"'</td><td><input tabindex="3" maxlength="30" style="width: '$WIDTH1'px;" size="20" name="_ASSETNUMBER_"></td><td style="vertical-align: top;"><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td>
 </tr>
 <tr><td>'$"Location"'</td><td>
 '
@@ -131,18 +133,18 @@ echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class=
 ###############################
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 
 echo '<select tabindex="4" style="width: '$WIDTH2'px;" name="_LOCATION_"><option value=""></option>'
 COUNTER=1
 while [ $COUNTER -le $LOCATION_COUNT ]
 do
-LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-echo '<option>'$LOCATION'</option>'
-let COUNTER=$COUNTER+1
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	echo '<option>'$LOCATION'</option>'
+	let COUNTER=$COUNTER+1
 done
 echo '</select></td></tr>'
 echo '<tr><td>'$"Department"'</td>
@@ -187,15 +189,15 @@ echo '<tr><td>'$"Department"'</td>
 <option value="'$"Website"'">'$"Website"'</option>
 <option value="'$"Other"'">'$"Other"'</option>
 </select></td><td>
- <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category for the problem."'</span></a></td>
+ <a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category for the problem."'</span></a></td>
 </tr>
 <tr><td>'$"Extended Details"'</td><td><textarea style="width: '$WIDTH3'px;" tabindex="7" cols="'$COLS'" rows="'$ROWS'" name="_REQUEST_"></textarea></td>
-<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the details for the help request."'</span></a></td>
+<td><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the details for the help request."'</span></a></td>
 </tr>
 </tbody></table><br><br>'
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form>

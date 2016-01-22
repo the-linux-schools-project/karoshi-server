@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Clear User Page Counts"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Clear User Page Counts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
@@ -55,29 +55,29 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_clear_page_counts.cgi" method="post"><div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_printer_menu.cgi"><b>'$"Group Printer Limits"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Clear User Page Counts"'</b><br><br>'
+	echo '<b>'$"Clear User Page Counts"'</b><br><br>'
 fi
 
 echo $"Clear all of the user page count data."'<br><br>'$"This should only be carried out at the end of your billing cycle."'<br><br>'
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit">
 </div></form></div></body></html>

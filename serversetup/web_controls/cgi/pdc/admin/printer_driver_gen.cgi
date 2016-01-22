@@ -52,7 +52,7 @@ echo '
 <!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Windows Printer Driver Generation"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Windows Printer Drivers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 
   
@@ -75,6 +75,17 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 }
 // -->
   </script>
+
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -169,7 +180,7 @@ if [ $MOBILE = yes ]
 	then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Printer Driver Generation"'</span>
+	<span>'$"Windows Printer Drivers"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
@@ -178,17 +189,15 @@ if [ $MOBILE = yes ]
 then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td>
-<b>'$"Windows Printer Driver Generation"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td></tr>
+<b>'$"Windows Printer Drivers"'</b></td><td><a class="info infoleft" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated Windows printer driver generation for your print queues."'</span></a></td></tr>
 </tbody></table><br>
-<input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'">
-<input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"><br>
 <input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"><br><br>
 '
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$"Windows Printer Driver Generation"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated windows printer driver generation for your print queues."'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"></td></tr></table><br>
+<td style="vertical-align: top;"><b>'$"Windows Printer Drivers"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated Windows printer driver generation for your print queues."'</span></a></td><td><input name="_ACTION_enableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Enable all"'"></td><td><input name="_ACTION_disableall_PRINTQUEUE_all_" type="submit" class="button" value="'$"Disable all"'"></td><td><input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"></td></tr></table><br>
 </div><div id="infobox">'
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`

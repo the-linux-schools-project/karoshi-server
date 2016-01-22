@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enabled Printers"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enabled Printers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
@@ -55,22 +55,22 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_status.cgi" method="post"><div id="'$DIV_ID'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Enabled Printers"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Enabled Printers"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Enabled_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow you to track printing usage for all of your users."'</span></a><br><br>'
+	echo '<b>'$"Enabled Printers"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Enabled_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow you to track printing usage for all of your users."'</span></a><br><br>'
 fi
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -81,20 +81,23 @@ PRINTERCOUNT=${#PRINTERLIST[@]}
 COUNTER=0
 while [ $COUNTER -lt $PRINTERCOUNT ]
 do
-PRINTERNAME=${PRINTERLIST[$COUNTER]}
-STATUSMSG=''$PRINTERNAME' - '$"Enable accounting for this printer queue."''
-ACTION=enable
-PRINTER_ICON=/images/submenus/printer/accounting_disabled.png
-if [ -f /opt/karoshi/server_network/printer_accounting/accounting_status/$PRINTERNAME ]
-then
-PRINTER_ICON=/images/submenus/printer/accounting_enabled.png
-STATUSMSG=''$PRINTERNAME' - '$"Disable accounting for this printer queue."''
-ACTION=disable
-fi
-echo '<tr> <td style="width: 180px;">'$PRINTERNAME'</td><td>
-<a class="info" href="javascript:void(0)"><input name="_ACTION_'$ACTION'_PRINTER_'$PRINTERNAME'_" type="image" class="images" src="'$PRINTER_ICON'" value=""><span>'$STATUSMSG'</span></a>
-</td></tr>'
-let COUNTER=$COUNTER+1
+	PRINTERNAME=${PRINTERLIST[$COUNTER]}
+	STATUSMSG=''$PRINTERNAME' - '$"Enable accounting for this printer queue."''
+	ACTION=enable
+	PRINTER_ICON=/images/submenus/printer/accounting_disabled.png
+	if [ -f /opt/karoshi/server_network/printer_accounting/accounting_status/$PRINTERNAME ]
+	then
+		PRINTER_ICON=/images/submenus/printer/accounting_enabled.png
+		STATUSMSG=''$PRINTERNAME' - '$"Disable accounting for this printer queue."''
+		ACTION=disable
+	fi
+	echo '<tr> <td style="width: 180px;">'$PRINTERNAME'</td><td>
+	<button class="info" name="_DoAction_" value="_ACTION_'$ACTION'_PRINTER_'$PRINTERNAME'_">
+	<img src="'$PRINTER_ICON'" alt="'$STATUSMSG'">
+	<span>'$STATUSMSG'</span>
+	</button>
+	</td></tr>'
+	let COUNTER=$COUNTER+1
 done
        
 echo '</tbody></table><br></div></form></div></body></html>'

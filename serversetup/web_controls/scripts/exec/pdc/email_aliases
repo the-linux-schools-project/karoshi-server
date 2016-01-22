@@ -133,7 +133,9 @@ then
 	WIDTH2=200
 	WIDTH3=60
 	WIDTH4=200
+	WIDTH5=192
 	HEIGHT=25
+	HEIGHT2=20
 	ICON1="/images/submenus/email/email_delete.png"
 	ICON2="/images/submenus/email/alias_add.png"
 	ICON3="/images/submenus/email/alias_view.png"
@@ -144,7 +146,9 @@ else
 	WIDTH2=200
 	WIDTH3=30
 	WIDTH4=120
+	WIDTH5=200
 	HEIGHT=30
+	HEIGHT2=30
 	ICON1="/images/submenus/email/email_deletem.png"
 	ICON2="/images/submenus/email/alias_addm.png"
 	ICON3="/images/submenus/email/alias_viewm.png"
@@ -180,7 +184,12 @@ then
 		do
 		ALIAS=`echo $ENTRY | cut -d: -f1`
 		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$REALM</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$REALM"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		echo '<tr><td>'$USERNAME'</td><td>'$ALIAS'</td><td>'$REALM'</td><td>
+		<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'$ALIAS'_USERNAME_'$USERNAME'_DOMAIN_'$REALM'_">
+		<img src="'$ICON1'" alt="'$"Delete"'">
+		<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+		</button>
+		</td></tr>'
 		done
 	#Show any virtual aliases
 	if [ -d /etc/postfix/virtual_domain_addresses/ ]
@@ -191,7 +200,12 @@ then
 			do
 				ALIAS=`echo $VIRTUAL_ADDRESS | cut -d: -f1 | cut -d"@" -f1`
 				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
-				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+				echo '<tr><td>'$USERNAME'</td><td>'$ALIAS'</td><td>'$VIRTUAL_DOMAIN'</td><td>
+				<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'$ALIAS'_USERNAME_'$USERNAME'_DOMAIN_'$VIRTUAL_DOMAIN'_">
+				<img src="'$ICON1'" alt="'$"Delete"'">
+				<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+				</button>
+				</td></tr>'
 			done
 		done
 	fi
@@ -206,7 +220,12 @@ then
 		do
 		ALIAS=`echo $ENTRY | cut -d: -f1`
 		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>'$REALM'</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_DOMAIN_'$REALM'_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>'$REALM'</td><td>
+		<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_'$REALM'_\">
+		<img src=\"'$ICON1'\" alt=\"'$"Delete"'\">
+		<span>'$"Delete"' $ALIAS - $USERNAME</span>
+		</button>
+		</td></tr>"
 		done
 	#Show any virtual aliases
 	if [ -d /etc/postfix/virtual_domain_addresses/ ]
@@ -217,7 +236,14 @@ then
 			do
 				ALIAS=`echo $VIRTUAL_ADDRESS | cut -d: -f1 | cut -d"@" -f1`
 				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
-				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ALIAS - $USERNAME</span></a></td></tr>"
+				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td>
+
+
+				<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_\">
+				<img src=\"'$ICON1'\" alt=\"'$"Delete"'\">
+				<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+				</button>
+				</td></tr>"
 			done
 		done
 	fi
@@ -302,10 +328,10 @@ then
 	then
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody><tr><td style="width: '$WIDTH2'px;">'$"Username"'</td>
-<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
 </td></tr>
- <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
+ <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
 <tr><td>'$"Domain"'</td><td>'
 	else
 		echo ''$"Username"'<br>

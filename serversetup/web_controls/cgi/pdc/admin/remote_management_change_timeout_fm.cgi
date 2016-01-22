@@ -39,7 +39,7 @@ USER_TIMEOUT=$TIMEOUT
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -65,11 +65,11 @@ echo '<form action="/cgi-bin/admin/remote_management_change_timeout.cgi" method=
 #Convert timeout to minutes
 let USER_TIMEOUT=$USER_TIMEOUT/60
 echo '
-<td><input size="2" maxlength="2" name="_TIMEOUT_"value="'$USER_TIMEOUT'"></td>
+<td><input size="2" maxlength="2" name="_TIMEOUT_" value="'$USER_TIMEOUT'"></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the time delay before you are logged out of the Karoshi Web Management system."'<br><br>'$"Enter a time in minutes between 1 and 99. This is a per user setting and will not affect other users."'<br><br>'$"The default value is 5 minutes."'</span></a></td>
 </tr>
 <tr><td>'$"Extend timeout from"'</td>
-<td><input size="15" maxlength="15" name="_NOTIMEOUT_"value="'$NOTIMEOUT'"></td>
+<td><input size="15" maxlength="15" name="_NOTIMEOUT_" value="'$NOTIMEOUT'"></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a tcpip number or range to extend the timeout from. The timeout setting will extend to 1 day for computers matching this value."'<br><br>'$"Example1 - 172.30.3.1 - individual computer"'<br><br>'$"Example2 - 172.30.3 - all computers in this range"'</span></a></td>
 </tbody></table></div>
   <div id="submitbox">

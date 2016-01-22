@@ -863,7 +863,6 @@ then
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Statistics"'</b></td><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Search"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Import"'</b></td>
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"Export"'</b></td>
-	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"TCPIP"'</b></td>
 	</tr>
 	<tr><td style="vertical-align: top; height: 30px;">
 	<button class="info" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
@@ -887,12 +886,6 @@ then
 	<button class="info" name="_DoExport_" value="_ACTION_export_LOCATION_notset_">
 	<img src="'$ICON15'" alt="'$"Export"'">
 	<span>'$"Export"'</span>
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="info" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
-	<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
-	<span>'$"View Allocated TCPIP Addresses"'</span>
 	</button>
 	</td>
 	</tr><tr>
@@ -922,7 +915,17 @@ then
 	<span>'$"Budgets"'</span>
 	</button>
 	</td><td></td>
-	</tr></tbody></table><br>'
+	</tr>
+	<tr><td style="vertical-align: top; height: 30px; width: '$WIDTH'px;"><b>'$"TCPIP"'</b></td></tr>
+	<tr>
+	<td style="vertical-align: top;">
+	<button class="info" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
+	<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
+	<span>'$"View Allocated TCPIP Addresses"'</span>
+	</button>
+	</td>
+	</tr>
+	</tbody></table><br>'
 	if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l`  -gt 0 ]
 	then
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><b>'$"View Assets"' - Choose Location</b></td></tr></tbody></table><br>'

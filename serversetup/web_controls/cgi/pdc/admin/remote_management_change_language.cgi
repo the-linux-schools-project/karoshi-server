@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -56,7 +56,7 @@ echo '
 
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -81,13 +81,13 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-HEIGHT=25
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	HEIGHT=25
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-HEIGHT=30
+	DIV_ID=actionbox2
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/remote_management_change_language2.cgi" method="post">'
@@ -97,21 +97,21 @@ echo '<form action="/cgi-bin/admin/remote_management_change_language2.cgi" metho
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Web Management Language"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div class="sectiontitle">'$"Web Management Language"'</div><br>'
+	echo '<div class="sectiontitle">'$"Web Management Language"'</div><br>'
 fi
 
 [ -z "$LANG" ] && LANG="en.UTF-8"
 
 function create_lang_list {
 #Generate dropdown list of langauges
-echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option></option>'
+echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option label="blank" ></option>'
 echo '<option value="ar_AE.UTF-8">العربية</option>
 <option value="cs_CZ.UTF-8">Čeština</option>
 <option value="cy_GB.UTF-8">Cymraeg</option>
@@ -137,17 +137,16 @@ echo '</select>'
 
 if [ $MOBILE = yes ]
 then
-echo ''$"Language"'<br>
-'
-create_lang_list
-echo '<br><br>'
+	echo ''$"Language"'<br>'
+	create_lang_list
+	echo '<br><br>'
 
 else
 
-echo '<table class="standard" style="text-align: left;" ><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Language"'</td><td>'
 
-create_lang_list
+	create_lang_list
 
 echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will not affect other web management users."'</span></a></td></tr></tbody></table><br>'
 
@@ -155,7 +154,7 @@ fi
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'

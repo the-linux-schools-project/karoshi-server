@@ -680,7 +680,7 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 			fi
 
 			echo '<td>
-			<button class="info" name="____showusers____" value="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
+			<button class="info infoleft" name="____showusers____" value="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
 			<img src="'$ICON3'" alt="'$"Show users in this group."'">
 			<span>'$GROUPNAME' - '$"Show users in this group."'</span>
 			</button></td><td>'
@@ -691,7 +691,7 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 				if [ "$MEMBERCOUNT" = 0 ] || [ "$GTYPE" = secondary ] || [ "$GTYPE" = dynamic ] 
 				then
 					echo '
-			<button class="info" name="____deletegroup____" value="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
+			<button class="info infoleft" name="____deletegroup____" value="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
 			<img src="'$ICON1'" alt="'$"delete this group."'">
 			<span>'$GROUPNAME' - '$"delete this group."'</span>
 			</button>'

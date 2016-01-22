@@ -66,7 +66,7 @@ echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input tabindex="2" name="____PASSWORD2____" size="20" type="password"></td>
+        <td><input tabindex="2" name="____PASSWORD2____" size="20" type="password"></td><td></td>
       </tr>
     </tbody>
   </table>

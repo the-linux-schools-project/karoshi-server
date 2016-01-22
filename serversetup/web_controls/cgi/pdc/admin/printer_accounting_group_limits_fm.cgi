@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Printer Limits"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Printer Limits"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -75,12 +75,14 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=180
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
 	WIDTH=110
@@ -104,7 +106,7 @@ echo '<b>'$"Group Printer Limits"'</b> <a class="info" target="_blank" href="htt
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH'px;"><b>'$"Primary Group"'</b></td><td><b>'$"Limit"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Group_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>'
+<tr><td style="width: '$WIDTH'px;"><b>'$"Primary Group"'</b></td><td><b>'$"Limit"'</b></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Group_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>'
 
 ICON1=/images/submenus/printer/edit_printer_limits.png
 for NAMES in /opt/karoshi/server_network/group_information/*
@@ -118,7 +120,10 @@ do
 		LIMIT=""
 	fi
 	echo '<tr><td>'$NAME'</td><td>'$LIMIT'</td><td>
-	<input src="'$ICON1'" name="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_group_" type="image" value="'$NAME2' - '$"Edit Printer Limit"'">
+	<button class="'$TOOLTIPCLASS'" name="_EditLimit_" value="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_group_">
+	<img src="'$ICON1'" alt="'$NAME2' - '$"Edit Printer Limit"'">
+	<span>'$NAME2' - '$"Edit Printer Limit"'</span>
+	</button>
 	</td></tr>'
 done
 echo '</tbody></table><br></div>'

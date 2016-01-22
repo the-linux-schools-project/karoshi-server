@@ -116,16 +116,18 @@ fi
 echo `date`: printer_driver_gen - action $ACTION Queue $QUEUE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
-ICON1=/images/submenus/printer/enable_printer
-ICON2=/images/submenus/printer/disable_printer
+ICON1=/images/submenus/printer/enable_printer.png
+ICON2=/images/submenus/printer/disable_printer.png
 TABLECLASS=standard
 WIDTH1=180
+WIDTH2=130
 if [ $MOBILE = yes ]
 then
-	ICON1=/images/submenus/printer/enable_printerm
-	ICON2=/images/submenus/printer/disable_printerm
+	ICON1=/images/submenus/printer/enable_printerm.png
+	ICON2=/images/submenus/printer/disable_printerm.png
 	TABLECLASS=mobilestandard
-	WIDTH1=100
+	WIDTH1=160
+	WIDTH2=130
 fi
 
 if [ $PRINTSERVER = `hostname-fqdn` ]
@@ -156,8 +158,8 @@ then
 		done
 	fi
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: '$WIDTH1'px;"><b>'$"Print Queue"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Auto generate"'</b></th></tr></thead><tbody>'
 
 	for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
 	do
@@ -210,8 +212,8 @@ else
 		done
 	fi
 
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: 180px;\"><b>'$"Printer Queue"'</b></td><td><b>'$"Auto driver generation"'</b></td></tr>"
+	echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead>
+	<tr><th style=\"width: '$WIDTH1'px;\"><b>'$"Print Queue"'</b></th><th style=\"width: '$WIDTH1'px;\"><b>'$"Auto generate"'</b></th></tr></thead><tbody>"
 	for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
 	do
 		echo "<tr><td>$PRINTQUEUE</td><td>"

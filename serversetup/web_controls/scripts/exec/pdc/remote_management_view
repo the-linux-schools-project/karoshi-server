@@ -54,16 +54,16 @@ TEXTDOMAIN=karoshi-server
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_view_cgi
 then
-echo `date`: remote_management_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_view_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_view.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $remote_management_view_cgi'check' ]
 then
-echo `date`: remote_management_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -71,8 +71,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: remote_management_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -83,23 +83,23 @@ REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: remote_management_view - Not called by remote_management_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - Not called by remote_management_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: remote_management_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: remote_management_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: remote_management_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 [ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
 echo `date`: remote_management_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -107,28 +107,33 @@ REMOTE_USER_COUNT=`cat /opt/karoshi/web_controls/remote_management_users | wc -l
 COUNTER=1
 PRIADMINSTATUS=no
 PRIADMINLINE=`grep -n ^$REMOTE_USER: /opt/karoshi/web_controls/remote_management_users | cut -d: -f1`
-if [ $PRIADMINLINE'null' = null ]
+if [ -z "$PRIADMINLINE" ]
 then
-exit 101
+	exit 101
 fi
 THISPRIADMINSTATUS=`sed -n $PRIADMINLINE,$PRIADMINLINE'p' /opt/karoshi/web_controls/remote_management_users | cut -d: -f5`
-[ $THISPRIADMINSTATUS'null' = null ] && THISPRIADMINSTATUS=no
+[ -z "$THISPRIADMINSTATUS" ] && THISPRIADMINSTATUS=no
 if [ $THISPRIADMINSTATUS = yes ]
 then
-PRIADMINSTATUS=yes
+	PRIADMINSTATUS=yes
 fi
 
 if [ $PRIADMINSTATUS = yes ]
 then
-echo '<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
+	echo '
 <table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
-<td style="vertical-align: top;"><a href="remote_management_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add"'"></a></td>
+<td style="vertical-align: top;">
+<form action="remote_management_add_fm.cgi" method="post">
+<button class="button" name="_AddUser_" value="_">
+'$"Add"'
+</button>
+</form>
+</td>
 </tr></tbody></table>
 '
 else
-echo '
-<table class="standard" style="text-align: left;" ><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Access"'</div></td>
 </tr></tbody></table>
 '
@@ -138,65 +143,71 @@ echo '<br>'$"The following accounts have web admin access:"'<br><br></div><div i
 
 while [ $COUNTER -le $REMOTE_USER_COUNT ]
 do
-REMOTE_USER_DATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/remote_management_users`
-USERNAME=`echo $REMOTE_USER_DATA | cut -d: -f1`
-FORENAME=`echo $REMOTE_USER_DATA | cut -d: -f2`
-SURNAME=`echo $REMOTE_USER_DATA | cut -d: -f3`
-JOBTITLE=`echo $REMOTE_USER_DATA | cut -d: -f4`
-PRIADMIN=`echo $REMOTE_USER_DATA | cut -d: -f5`
-ADMINLEVEL=`echo $REMOTE_USER_DATA | cut -d: -f6`
-if [ $ADMINLEVEL = 1 ]
-then
-ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL1`
-fi
-if [ $ADMINLEVEL = 2 ]
-then
-ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL2`
-fi
-if [ $ADMINLEVEL = 3 ]
-then
-ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL3`
-fi
-if [ $PRIADMIN'null' != null ]
-then
-if [ $PRIADMIN = yes ]
-then
-PRIADMIN=$YESMSG
-else
-PRIADMIN=$NOMSG
-fi
-else
-PRIADMIN=$NOMSG
-fi
-if [ $TCPIPRESTRICTION'null' = null ]
-then
-TCPIPRESTRICTION=$NOMSG
-fi
+	REMOTE_USER_DATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/remote_management_users`
+	USERNAME=`echo $REMOTE_USER_DATA | cut -d: -f1`
+	FORENAME=`echo $REMOTE_USER_DATA | cut -d: -f2`
+	SURNAME=`echo $REMOTE_USER_DATA | cut -d: -f3`
+	JOBTITLE=`echo $REMOTE_USER_DATA | cut -d: -f4`
+	PRIADMIN=`echo $REMOTE_USER_DATA | cut -d: -f5`
+	ADMINLEVEL=`echo $REMOTE_USER_DATA | cut -d: -f6`
+	if [ $ADMINLEVEL = 1 ]
+	then
+		ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL1`
+	fi
+	if [ $ADMINLEVEL = 2 ]
+	then
+		ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL2`
+	fi
+	if [ $ADMINLEVEL = 3 ]
+	then
+		ADMIN_LEVEL=`echo $ADMINLEVEL: $LEVEL3`
+	fi
+	if [ ! -z "$PRIADMIN" ]
+	then
+		if [ $PRIADMIN = yes ]
+		then
+			PRIADMIN=$YESMSG
+		else
+			PRIADMIN=$NOMSG
+		fi
+	else
+		PRIADMIN=$NOMSG
+	fi
+	if [ -z "$TCPIPRESTRICTION" ]
+	then
+		TCPIPRESTRICTION=$NOMSG
+	fi
 
-echo '<b>'$USERNAME'</b> '
-if [ $PRIADMINSTATUS = yes ]
-then
+	echo '<b>'$USERNAME'</b> '
+	if [ $PRIADMINSTATUS = yes ]
+	then
+		echo '
+		<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
+		<button class="info" name="_EditUser_" value="_USERACTION_'$USERNAME'edituser_">
+		<img src="/images/submenus/file/edit.png" alt="'$"Edit"'">
+		<span>'$"Edit"'<br>'$USERNAME'</span>
+		</button>
 
-echo '<a class="info" href="javascript:void(0)"><input name="_USERACTION_'$USERNAME'edituser_" type="image" class="images" src="/images/submenus/file/edit.png" value="_USERACTION_'$USERNAME'edituser_"><span>Edit</span></a> <a class="info" href="javascript:void(0)"><input name="_USERACTION_'$USERNAME'deleteuser_" type="image" class="images" src="/images/submenus/file/delete.png" value="_USERACTION_'$USERNAME'deleteuser_"><span>Delete</span></a>'
+		<button class="info" name="_DeleteUser_" value="_USERACTION_'$USERNAME'deleteuser_">
+		<img src="/images/submenus/file/delete.png" alt="'$"Delete"'">
+		<span>'$"Delete"'<br>'$USERNAME'</span>
+		</button>
+		</form>'
 
-fi
-echo '<br><br>'
-echo '<table class="standard" style="text-align: left; width: 648px; height: 100px;" >'
-echo '<tbody>'
-echo '<tr><td style="width: 180px;">'$JOBTITLEMSG':</td><td>'$JOBTITLE'</td></tr>'
-echo '<tr><td style="width: 180px;">'$FORENAMEMSG':</td><td>'$FORENAME'</td></tr>'
-echo '<tr><td style="width: 180px;">'$SURNAMEMSG':</td><td>'$SURNAME'</td></tr>'
-echo '<tr><td style="width: 180px;">'$"Username"':</td><td>'$USERNAME'</td></tr>'
-echo '<tr><td style="width: 180px;">'$PRIADMINMSG':</td><td>'$PRIADMIN'</td></tr>'
-echo '<tr><td style="width: 180px;">'$ADMINLEVELMSG':</td><td>'$ADMIN_LEVEL'</td></tr>'
-echo '</tbody>'
-echo '</table>'
-echo '<br>'
-let COUNTER=$COUNTER+1
+	fi
+	echo '<br><br>'
+	echo '<table class="standard" style="text-align: left; width: 648px; height: 100px;" >
+	<tbody>
+	<tr><td style="width: 180px;">'$JOBTITLEMSG':</td><td>'$JOBTITLE'</td></tr>
+	<tr><td style="width: 180px;">'$FORENAMEMSG':</td><td>'$FORENAME'</td></tr>
+	<tr><td style="width: 180px;">'$SURNAMEMSG':</td><td>'$SURNAME'</td></tr>
+	<tr><td style="width: 180px;">'$"Username"':</td><td>'$USERNAME'</td></tr>
+	<tr><td style="width: 180px;">'$PRIADMINMSG':</td><td>'$PRIADMIN'</td></tr>
+	<tr><td style="width: 180px;">'$ADMINLEVELMSG':</td><td>'$ADMIN_LEVEL'</td></tr>
+	</tbody>
+	</table>
+	<br>'
+	let COUNTER=$COUNTER+1
 done
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '</form>'
-fi
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

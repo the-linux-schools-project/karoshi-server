@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -50,7 +50,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Wireless Settings"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Wireless Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -86,31 +86,33 @@ FILE=`echo $DATA | cut -s -d_ -f3`
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH1=180
-WIDTH2=200
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	TOOLTIPCLASS="info"
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH1=180
+	WIDTH2=200
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
-TABLECLASS=mobilestandard
-WIDTH1=100
-WIDTH2=140
+	TOOLTIPCLASS="info infoleft"
+	DIV_ID=mobileactionbox
+	TABLECLASS=mobilestandard
+	WIDTH1=100
+	WIDTH2=140
 fi
 echo '<form name="myform" action="/cgi-bin/admin/client_wireless_settings.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Client Wireless Settings"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$"Client Wireless Settings"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will save the wifi information on the netlogon share for your clients to use when accessing wifi access points."'</span></a><br><br>'
+	echo '<div id="'$DIV_ID'"><b>'$"Client Wireless Settings"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will save the wifi information on the netlogon share for your clients to use when accessing wifi access points."'</span></a><br><br>'
 fi
 [ -f /var/lib/samba/netlogon/domain_information/wifi_ssid ] && SSID=`sed -n 1,1p /var/lib/samba/netlogon/domain_information/wifi_ssid`
 [ -f /var/lib/samba/netlogon/domain_information/wifi_key ] && KEY=`sed -n 1,1p /var/lib/samba/netlogon/domain_information/wifi_key`
@@ -118,10 +120,10 @@ fi
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Wifi - SSID"'</td><td>
 <input tabindex= "1" value="'$SSID'" name="_SSID_" style="width: '$WIDTH2'px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the SSID name for your wireless access points."'</span></a></td></tr>
+<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the SSID name for your wireless access points."'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Wifi key"'</td><td>
 <input tabindex= "1" value="'$KEY'" name="_KEY_" style="width: '$WIDTH2'px;" size="20" type="text"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the wifi key for your wireless access points."'</span></a></td></tr></tbody></table><br>'
+<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Wireless_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the wifi key for your wireless access points."'</span></a></td></tr></tbody></table><br>'
 
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'
 

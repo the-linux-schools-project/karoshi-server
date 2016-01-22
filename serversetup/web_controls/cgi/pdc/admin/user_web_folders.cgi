@@ -143,6 +143,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
 	[ -z "$GROUP" ] && DIV_ID=actionbox
 	TABLECLASS=standard
@@ -152,6 +153,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox
 	TABLECLASS=mobilestandard
 	WIDTH1=120
@@ -201,7 +203,7 @@ then
 	<td>'
 	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px; height: '$HEIGHT1'px;">/g'
 	echo '</td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
+	<td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
 	</tr></tbody></table><br><br>
 	'
 	[ $MOBILE = no ] && echo '</div><div id="submitbox">'

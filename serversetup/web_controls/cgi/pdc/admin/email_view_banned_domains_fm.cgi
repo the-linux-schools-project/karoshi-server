@@ -88,11 +88,11 @@ echo '</head>
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 echo '<form name="myform" action="/cgi-bin/admin/email_delete_banned_domains.cgi" method="post">'
 

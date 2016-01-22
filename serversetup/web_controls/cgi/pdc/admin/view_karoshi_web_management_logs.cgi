@@ -50,14 +50,14 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script language="JavaScript" type="text/javascript" src="/all/calendar2/calendar_eu.js"></script>
-        <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/calendar2/calendar_eu.js"></script>
+        <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -93,7 +93,7 @@ MONTH=`echo $DATE_INFO | cut -d- -f2`
 YEAR=`echo $DATE_INFO | cut -d- -f1`
 
 function show_status {
-echo '<SCRIPT language="Javascript">'
+echo '<SCRIPT>'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/incident_log_add.cgi";'
 echo '</script>'
@@ -154,7 +154,7 @@ echo ''$"Log Date"'<br>'
 
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"height: 30px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
-	<script type=\"text/javascript\" language=\"JavaScript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -174,7 +174,7 @@ echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Log Date"'</td><td>'
 echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
-	<script type=\"text/javascript\" language=\"JavaScript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',

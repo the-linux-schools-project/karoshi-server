@@ -30,12 +30,14 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 
 if [ $MOBILE = yes ]
 then
+	TOOLTIPCLASS="info"
 	TABLECLASS=mobilestandard
 	WIDTH1=100
 	WIDTH2=50
 	WIDTH3=50
 	WIDTH4=100
 else
+	TOOLTIPCLASS="info infoleft"
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=175
@@ -269,14 +271,14 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 </td><td style="width: '$WIDTH3'px;"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACCEPTABLEUSESTATUS'"></td><td></td></tr>
 <tr><td>'$"Grace Time"'</td><td><input maxlength="2" size="2" name="_GRACETIME_" value="'$GRACETIME'"></td>
 <td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$"Set Grace Time"'"></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
+<td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
 </tr>
 <tr><td>'$"Reset Status"'</td><td>'
 
 #Show list of groups to reset the acceptable use grace time for
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/'$WIDTH4'/g'
 
-echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
+echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
 </tbody></table><br>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'

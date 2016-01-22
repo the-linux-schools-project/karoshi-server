@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Printer Usage"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Printer Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -109,7 +109,7 @@ echo ''$"Username"'<br>
 <input tabindex= "1" value="'$USERNAME'" name="_NAME_" style="width: 160px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"Month"'<br>
 <select style="width: 160px;" name="_MONTH_">
-<option value="all"></option>
+<option label="AllMonths" value="all"></option>
 <option value="Jan">January</option>
 <option value="Feb">February</option>
 <option value="Mar">March</option>
@@ -137,12 +137,12 @@ done
 echo '</select><br><br>'
 else
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" value="'$USERNAME'" name="_NAME_" style="width: 200px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" value="'$USERNAME'" name="_NAME_" style="width: 192px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Printer_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to view printer data for."'</span></a>
 </td></tr>
 <tr><td style="width: 180px;">'$"Month"'</td><td>
 <select style="width: 200px;" name="_MONTH_">
-<option value="all"></option>
+<option label="AllMonths" value="all"></option>
 <option value="Jan">'$"January"'</option>
 <option value="Feb">'$"February"'</option>
 <option value="Mar">'$"March"'</option>

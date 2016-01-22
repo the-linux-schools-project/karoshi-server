@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Printer Usage"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Printer Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -115,7 +115,7 @@ echo ''$"Group"'<br>'
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/_GROUP_/_NAME_/g'
 echo '<br>'$"Month"'<br>
 <select style="width: 200px;" name="_MONTH_">
-<option value="all"></option>
+<option label="AllMonths" value="all"></option>
 <option value="Jan">January</option>
 <option value="Feb">February</option>
 <option value="Mar">March</option>
@@ -153,7 +153,7 @@ echo '<table class="standard" style="text-align: left;" ><tbody>
 echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#Group_Printer_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to view the printer data for."'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Month"'</td><td>
 <select style="width: 200px;" name="_MONTH_">
-<option value="all"></option>
+<option label="AllMonths" value="all"></option>
 <option value="Jan">January</option>
 <option value="Feb">February</option>
 <option value="Mar">March</option>

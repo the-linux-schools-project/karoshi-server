@@ -75,15 +75,17 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	TOOLTIPCLASS="info"
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=110
+	TOOLTIPCLASS="info infoleft"
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=110
 fi
 echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_edit_limits_fm.cgi" method="post">'
 
@@ -104,7 +106,7 @@ echo '<b>'$"User Printer Limits"'</b> <a class="info" target="_blank" href="http
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH'px;"><b>'$"Username"'</b></td><td><b>'$"Limit"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a>
+<tr><td style="width: '$WIDTH'px;"><b>'$"Username"'</b></td><td><b>'$"Limit"'</b></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a>
 </td></tr>'
 
 ICON1=/images/submenus/printer/edit_printer_limits.png
@@ -112,15 +114,15 @@ ICON2=/images/submenus/printer/delete_printer_limits.png
 
 if [ `ls -1 /opt/karoshi/server_network/printer_accounting/quotas/ | grep -c _user_quota` -gt 0 ]
 then
-for NAMES in /opt/karoshi/server_network/printer_accounting/quotas/*_user_quota
-do
-NAME1=`basename $NAMES`
-NAME2=`basename $NAMES | cut -d_ -f1`
-LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME1`
-echo '<tr><td>'$NAME2'</td><td>'$LIMIT'</td>
-<td><input src="'$ICON2'" name="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_userdelete_" type="image" value="'$NAME2' - '$"Edit Printer Limit"'"></td>
-</tr>'
-done
+	for NAMES in /opt/karoshi/server_network/printer_accounting/quotas/*_user_quota
+	do
+		NAME1=`basename $NAMES`
+		NAME2=`basename $NAMES | cut -d_ -f1`
+		LIMIT=`sed -n 1,1p /opt/karoshi/server_network/printer_accounting/quotas/$NAME1`
+		echo '<tr><td>'$NAME2'</td><td>'$LIMIT'</td>
+		<td><input src="'$ICON2'" name="_NAME_'$NAME1'_LIMIT_'$LIMIT'_TYPE_userdelete_" type="image" value="'$NAME2' - '$"Edit Printer Limit"'"></td>
+		</tr>'
+	done
 fi
 echo '</tbody></table><br></div></form></div></body></html>'
 exit

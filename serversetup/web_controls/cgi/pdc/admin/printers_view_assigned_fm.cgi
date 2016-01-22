@@ -81,7 +81,7 @@ let COUNTER=$COUNTER+1
 NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
 
 #Create top of table
-echo '<table class="standard" style="text-align: left;"><tbody><tr><td style="width: 200px;"><b>'$"Location"'</b></td><td style="width: 150px;"><b>'$"Assigned Printers"'</b></td></td><td></td></tr>'
+echo '<table class="standard" style="text-align: left;"><tbody><tr><td style="width: 200px;"><b>'$"Location"'</b></td><td style="width: 150px;"><b>'$"Assigned Printers"'</b></td><td></td><td></td></tr>'
 LASTLOCATION=notset
 #Show locations and printers
 while [ $COUNTER -le $NOOFLINES ]
@@ -99,7 +99,7 @@ do
 		while [ $ARRAYCOUNTER -lt $ARRAYCOUNT ]
 		do
 			#Show location 
-			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td></tr>'
+			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td><td></td><td></td><td></td></tr>'
 			echo '<tr><td>'
 			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
 			LASTLOCATION=${DATARRAY[0]}
@@ -108,7 +108,13 @@ do
 			#Set default option
 			if [ ${DATARRAY[$ARRAYCOUNTER]} != $DEFAULTPRINTER ]
 			then
-				echo '<td style="text-align: center;"><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_make_default.png" value=""><span>'$"Set Default"'</span></a></td>'
+				echo '<td style="text-align: center;">
+
+			<button class="info" name="_SetDefault_" value="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_">
+			<img src="/images/help/printer_make_default.png" alt="'$"Set Default"'">
+			<span>'$"Set Default"'</span>
+			</button>
+			</td>'
 			else
 				echo '<td style="text-align: center;">
 			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$"Default Printer"'</span></a>
@@ -116,7 +122,12 @@ do
 			fi
 
 			#Delete option
-			echo '<td><a class="info" href="javascript:void(0)"><input name="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_" type="image" class="images" src="/images/help/printer_remove.png" value=""><span>'$"Remove Printer"'</span></a></td></tr>'
+			echo '<td>
+			<button class="info" name="_SetDefault_" value="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_">
+			<img src="/images/help/printer_remove.png" alt="'$"Remove Printer"'">
+			<span>'$"Remove Printer"'</span>
+			</button>
+			</td></tr>'
 			let ARRAYCOUNTER=$ARRAYCOUNTER+1
 		done
 		#Clear array
@@ -125,5 +136,5 @@ do
 	let COUNTER=$COUNTER+1
 done
 #End table
-echo '</tbody></table></div></form></div></body></html>'
+echo '</tbody></table></div></div></form></div></body></html>'
 exit

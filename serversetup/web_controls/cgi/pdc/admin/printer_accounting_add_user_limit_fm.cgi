@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add User Printer Limit"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add User Printer Limit"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -83,13 +83,13 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-WIDTH=110
+	DIV_ID=actionbox2
+	WIDTH=110
 fi
 echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_edit_limits.cgi" method="post">'
 
@@ -99,7 +99,7 @@ echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_edit_limits.
 if [ $MOBILE = yes ]
 then
 
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Add User Printer Limit"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -111,20 +111,20 @@ fi
 
 if [ $MOBILE = yes ]
 then
-echo '<div id="mobileactionbox">'
-echo ''$"Username"'<br>
-<input name="_TYPE_" value="user" type="hidden">
-<input tabindex= "1" name="_NAME_" style="width: 160px;" size="20" type="text"><br>
-'$"Limit"'<br>
-<input tabindex= "1" name="_LIMIT_" style="width: 160px;" size="20" type="text"><br><br>
-'
+	echo '<div id="mobileactionbox">'
+	echo ''$"Username"'<br>
+	<input name="_TYPE_" value="user" type="hidden">
+	<input tabindex= "1" name="_NAME_" style="width: 160px;" size="20" type="text"><br>
+	'$"Limit"'<br>
+	<input tabindex= "1" name="_LIMIT_" style="width: 160px;" size="20" type="text"><br><br>
+	'
 else
-echo '<input name="_TYPE_" value="user" type="hidden">
+	echo '<input name="_TYPE_" value="user" type="hidden">
   <table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: '$WIDTH'px;">'$"Username"'</td><td><input tabindex= "1" name="_NAME_" style="width: 200px;" size="20" type="text"></td><td>
+<tr><td style="width: '$WIDTH'px;">'$"Username"'</td><td><input tabindex= "1" name="_NAME_" style="width: 192px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add a printer limit for."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Limit"'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 200px;" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"Limit"'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 192px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>
 </tbody></table><br>'
 fi

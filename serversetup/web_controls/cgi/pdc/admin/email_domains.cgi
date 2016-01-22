@@ -194,10 +194,21 @@ fi
 if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
-		<div class="expanded">
-		<span>'$"E-Mail Domains"'</span><a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a></div></div><div id="'$DIV_ID'">
-		<table class="mobilestandard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
-		<form action="/cgi-bin/admin/email_domains.cgi" method="post"><input name="_ACTION_'$ALTACTION'_" type="submit" class="button" value="'$ALTMESSAGE'"></form></td><td style="vertical-align: top;"><a href="email_aliases.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Aliases"'"></a></td></tr>
+	<div class="expanded">
+	<span>'$"E-Mail Domains"'</span><a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a></div></div><div id="'$DIV_ID'">
+	<table class="mobilestandard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/email_domains.cgi" method="post">
+	<button class="button" name="_DoAction_" value="_ACTION_'$ALTACTION'_">
+	'$ALTMESSAGE'
+	</button>
+	</form>
+	</td><td style="vertical-align: top;">
+	<form action="email_aliases.cgi" method="post">
+	<button class="button" name="_ViewAliases_" value="_">
+	'$"Aliases"'
+	</button>
+	</form>
+	</td></tr>
 	</tbody></table>
 	'
 
@@ -207,8 +218,18 @@ else
 	<tr>
 	<td style="vertical-align: top;"><div class="sectiontitle">'$"E-Mail Domains"'</div></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any domains that you have set up for your E-Mail system."'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_domains.cgi" method="post"><input name="_ACTION_'$ALTACTION'_" type="submit" class="button" value="'$ALTMESSAGE'"></form></td>
-<td style="vertical-align: top;"><a href="email_aliases.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Aliases"'"></a></td></tr></tbody></table></div><div id="infobox">'
+	<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_domains.cgi" method="post">
+	<button class="button" name="_DoAction_" value="_ACTION_'$ALTACTION'_">
+	'$ALTMESSAGE'
+	</button>
+	</form></td>
+	<td style="vertical-align: top;">
+	<form action="email_aliases.cgi" method="post">
+	<button class="button" name="_ViewAliases_" value="_">
+	'$"Aliases"'
+	</button>
+	</form>
+	</td></tr></tbody></table></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_domains.cgi | cut -d' ' -f1`

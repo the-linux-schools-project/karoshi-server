@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -58,7 +58,11 @@ echo '
 
 <table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><b>'$"Add a new Web Management User"'</b></td>
-<td style="vertical-align: top;"><a href="remote_management_view.cgi"><input class="button" type="button" name="" value="'$"View"'"></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="remote_management_view.cgi" name="ViewUsers" value="_">
+'$"View"'
+</button>
+</td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."'</span></a>
 </td>
 </tr></tbody></table>
@@ -67,35 +71,35 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">Job Title</td>
-        <td><input name="_JOBTITLE_" style="width: 200px;" size="20"></td>
+        <td><input name="_JOBTITLE_" style="width: 192px;" size="20"></td>
       </tr>
       <tr>
         <td>Forename</td>
-        <td><input name="_FORENAME_" style="width: 200px;" size="20"></td>
+        <td><input name="_FORENAME_" style="width: 192px;" size="20"></td>
       </tr>
       <tr>
         <td>Surname</td>
-        <td><input name="_SURNAME_" style="width: 200px;" size="20"></td>
+        <td><input name="_SURNAME_" style="width: 192px;" size="20"></td>
       </tr>
       <tr>
         <td>
 '$"Username"'</td>
-        <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
+        <td><input name="_USERNAME_" style="width: 192px;" size="20" type="text"></td>
       </tr>
       <tr>
         <td>
 '$"Password"'</td>
-        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD1_" style="width: 192px;" size="20" type="password"></td>
       </tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD2_" style="width: 192px;" size="20" type="password"></td>
       </tr>
       <tr>
         <td>'$"Access Level"'</td><td>
         <select name="_PRIMARYADMIN_" style="width: 200px;">
-<option value=""></option>
+<option label="blank" value=""></option>
 <option value="1">'$"Primary Admin"'</option>
 <option value="2">'$"Admin"'</option>
 <option value="3">'$"Technician"'</option>        

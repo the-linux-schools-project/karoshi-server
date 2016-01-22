@@ -108,7 +108,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
+echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
 <br><br>'
 fi
 
@@ -143,7 +143,7 @@ echo '<table class="standard" style="text-align: left;" >
 		<div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" size="14" style="width: 200px;" type="text" id="inputString" onkeyup="lookup(this.value);">
 	    </td>
 	    <td style="vertical-align: top; text-align: center;">
-		<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a>
+		<a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a>
 	    </td>
         	<td colspan="1" rowspan="7" style="vertical-align: top;">
 	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>

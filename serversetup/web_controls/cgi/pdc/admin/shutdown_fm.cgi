@@ -110,6 +110,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=180
@@ -117,6 +118,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
 	WIDTH=160
@@ -157,7 +159,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
       </tr>
 <tr><td>'$"Confirm"'</td>
         <td style="vertical-align: top; text-align: left;"><input style="height: '$HEIGHT'px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
+<a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
 </td></tr></tbody></table><br>
 <input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">
 '
