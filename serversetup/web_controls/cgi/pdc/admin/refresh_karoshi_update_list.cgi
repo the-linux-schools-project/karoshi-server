@@ -72,24 +72,24 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
+	DIV_ID=mobileactionbox
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
@@ -99,12 +99,12 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Refresh Update List"'</span>
+	<span>'$"Checking for updates"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">
 '
 else
-echo '<div class="sectiontitle">'$"Refresh Update List"'</div><br>'
+		echo '<div class="sectiontitle">'$"Checking for updates"'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | cut -d' ' -f1`

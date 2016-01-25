@@ -113,12 +113,14 @@ then
 	WIDTH1=150
 	WIDTH2=200
 	WIDTH3=200
+	WIDTH4=50
 else
 	ICON1=/images/submenus/email/email_deletem.png
 	TABLECLASS=mobilestandard
 	WIDTH1=120
 	WIDTH2=170
 	WIDTH3=140
+	WIDTH4=50
 fi
 
 EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
@@ -166,8 +168,8 @@ fi
 
 if [ $ACTION = delete ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"TCPIP"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Comment"'</td></td></tr>
-<tr><td>'$TCPIP'</td><td>'$COMMENT'</td><td></tr>
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"TCPIP"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Comment"'</b></td></tr>
+<tr><td>'$TCPIP'</td><td>'$COMMENT'</td></tr>
 </tbody></table><br>'$"Remove this TCPIP address?"'<br><br>
 <input type="hidden" name="____ACTION____" value="reallydelete">
 <input type="hidden" name="____TCPIP____" value="'$TCPIP'">
@@ -240,8 +242,8 @@ then
 	
 	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">'
 
-	echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead>
-	<tr><th style=\"width: $WIDTH1\px;\"><b>"$"TCPIP""</b></th><th style=\"width: $WIDTH2\px;\"><b>"$"Comment""</b></th><th></th></tr></thead><tbody>"
+	echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead>
+	<tr><th style=\"width: $WIDTH1\px;\"><b>"$"TCPIP""</b></th><th style=\"width: $WIDTH2\px;\"><b>"$"Comment""</b></th><th style=\"width: $WIDTH4\px;\"></th></tr></thead><tbody>"
 	#Show all allowed tcpip addresses
 	for ALLOWED in $ALLOWED_LIST
 	do
@@ -254,7 +256,12 @@ then
 		echo '<tr><td>'$ALLOWED'</td><td>'$COMMENT'</td>'
 		if [ $ALLOWED != 127.0.0.1 ]
 		then
-			echo '<td><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____TCPIP____'$ALLOWED'____COMMENT____'$COMMENT'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Remove"'<br>'$ALLOWED'</span></a></td>'
+			echo '<td>
+			<button class="info" name="____DoDelete____" value="____ACTION____delete____TCPIP____'$ALLOWED'____COMMENT____'$COMMENT'____">
+			<img src="'$ICON1'" alt="'$"Remove"' '$ALLOWED'">
+			<span>'$"Remove"'<br>'$ALLOWED'</span>
+			</button>
+			</td>'
 		else
 			echo '<td></td>'
 		fi

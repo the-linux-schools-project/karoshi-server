@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js"></script><script src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
@@ -177,7 +177,7 @@ MONTH=$(echo "$DATE" | cut -d"-" -f2)
 YEAR=$(echo "$DATE" | cut -d"-" -f3)
 
 function show_status {
-echo '<SCRIPT language="Javascript">'
+echo '<SCRIPT'
 echo 'alert("'$MESSAGE'")';
 echo '                window.location = "/cgi-bin/admin/email_search_logs_fm.cgi";'
 echo '</script>'
@@ -225,7 +225,7 @@ echo '<form name="testform" action="/cgi-bin/admin/email_search_logs.cgi" method
 echo "
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" style=\"width: 175px\" size=14 maxlength=10 name=\"_DATE_\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script type=\"text/javascript\">
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -243,7 +243,7 @@ then
 <option class="select-dash" disabled="disabled">---</option>'
 fi
 
-echo '<option></option>'
+echo '<option label="blank"></option>'
 
 for HOURCHOICE in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
 do
@@ -258,7 +258,7 @@ then
 <option class="select-dash" disabled="disabled">---</option>'
 fi
 
-echo '<option></option>'
+echo '<option label="blank"></option>'
 
 for MINUTECHOICE in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
 do
@@ -273,11 +273,11 @@ echo '</select></td>
 <tr><td>'$"Search"' 2</td><td><input tabindex= "4" name="_SEARCH2_" value="'$SEARCH2'" size="14" style="width: 200px;" type="text"></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Search_E-Mail_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in extra search criteria here."'</span></a></td>
 </tr>
-<tr><td>'$"Search"' 3</td><td><input tabindex= "4" name="_SEARCH3_" value="'$SEARCH3'" size="14" style="width: 200px;" type="text"></td></tr>
-<tr><td>'$"Search"' 4</td><td><input tabindex= "4" name="_SEARCH4_" value="'$SEARCH4'" size="14" style="width: 200px;" type="text"></td></tr>
+<tr><td>'$"Search"' 3</td><td><input tabindex= "4" name="_SEARCH3_" value="'$SEARCH3'" size="14" style="width: 200px;" type="text"></td><td></td></tr>
+<tr><td>'$"Search"' 4</td><td><input tabindex= "4" name="_SEARCH4_" value="'$SEARCH4'" size="14" style="width: 200px;" type="text"></td><td></td></tr>
 <tr><td></td><td>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</td>
+</td><td></td></tr>
 </tbody></table>
 </div><div id="infobox">'
 
@@ -288,6 +288,6 @@ then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DATE:$HOURS:$MINUTES:$SEARCH1:$SEARCH2:$SEARCH3:$SEARCH4:" | sudo -H /opt/karoshi/web_controls/exec/email_search_logs
 fi
 
-echo '</form></div></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit
 

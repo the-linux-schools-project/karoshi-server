@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -91,44 +91,44 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
+	DIV_ID=actionbox
+	TABLECLASS=standard
 
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
-TABLECLASS=mobilestandard
-WIDTH1=160
+	DIV_ID=menubox
+	TABLECLASS=mobilestandard
+	WIDTH1=160
 fi
+
+echo '<form action="/cgi-bin/admin/email_limits2.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"E-Mail Limits"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'">
+	echo '<div id="'$DIV_ID'">
 <table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"E-Mail Limits"'</b></td>
 <td style="vertical-align: middle;">
 </td></tr>
 </tbody></table><br>'
 fi
 
-#Generate navigation bar
-
-echo '<form action="/cgi-bin/admin/email_limits2.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
 
 #Get current email settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits.cgi | cut -d' ' -f1`
@@ -136,5 +136,5 @@ sudo -H /opt/karoshi/web_controls/exec/email_limits_view $REMOTE_USER:$REMOTE_AD
 echo '</tbody></table><br>'
 [ $MOBILE != yes ] && echo '</div><div id="submitbox">'
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</form></div></div></body></html>'
+</div></form></div></body></html>'
 exit

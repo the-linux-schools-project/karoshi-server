@@ -103,7 +103,7 @@ echo '<form action="/cgi-bin/admin/module_web.cgi" method="post"><div id="action
 <b>'$"Description"'</b><br><br>
 '$"This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website."' '$"Leave the database fields blank if you do not require a database to be created."'<br><br>
 <b>'$"Parameters"'</b><br><br>
-  <table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
+  <table class="standard" style="text-align: left; height: 15px;">
     <tbody><tr><td style="width: 180px;">'$"Mysql database"'</td><td><input tabindex= "1" name="___MYSQLDB___" size="20" type="text" style="width: 200px;"></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the database that you want to use with your website."'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Mysql Username"'</td><td><input tabindex= "1" name="___MYSQLUSER___" size="20" type="text" style="width: 200px;"></td>

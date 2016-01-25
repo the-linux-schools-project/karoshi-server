@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -66,31 +66,31 @@ echo '<form action="/cgi-bin/admin/helpdesk_set_defaults.cgi" method="post"><div
 
 if [ -f /opt/karoshi/server_network/helpdesk/defaultassign ]
 then
-ASSIGNED=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultassign`
-echo '<option value="'$ASSIGNED'">'$ASSIGNED'</option>
-'
+	ASSIGNED=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultassign`
+	echo '<option value="'$ASSIGNED'">'$ASSIGNED'</option>
+	'
 else
-ASSIGNED=no
+	ASSIGNED=no
 fi
 echo '<option value="NODEFAULTNAME">'$"No default"'</option>'
 for ADMINUSER in `cat /opt/karoshi/web_controls/web_access_admin | cut -d: -f1`
 do
-[ $ADMINUSER != $ASSIGNED ] && echo '<option value="'$ADMINUSER'">'$ADMINUSER'</option>'
+	[ $ADMINUSER != $ASSIGNED ] && echo '<option value="'$ADMINUSER'">'$ADMINUSER'</option>'
 done
 for TECHUSER in `cat /opt/karoshi/web_controls/web_access_tech | cut -d: -f1`
 do
-[ $TECHUSER != $ASSIGNED ] && echo '<option value="'$TECHUSER'">'$TECHUSER'</option>'
+	[ $TECHUSER != $ASSIGNED ] && echo '<option value="'$TECHUSER'">'$TECHUSER'</option>'
 done
-echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the administrator or technician that you want helpdesk tasks to default to."'</span></a></td></tr>
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the administrator or technician that you want helpdesk tasks to default to."'</span></a></td></tr>
 <tr><td>'$"Default priority"'</td><td><select tabindex= "2" style="width: 200px;" name="_DEFAULTPRIORITY_">'
 
 if [ -f /opt/karoshi/server_network/helpdesk/defaultpriority ]
 then
-PRIORITY=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultpriority`
-echo '<option value="'$PRIORITY'">'$PRIORITY'</option>
+	PRIORITY=`sed -n 1,1p /opt/karoshi/server_network/helpdesk/defaultpriority`
+	echo '<option value="'$PRIORITY'">'$PRIORITY'</option>
 '
 else
-PRIORITY=no
+	o
 fi
 echo '<option value="NODEFAULTPRIORITY">'$"No default"'</option>'
 [ $PRIORITY != $"Urgent" ] && echo '<option value="'$"Urgent"'">'$"Urgent"'</option>'
@@ -98,7 +98,7 @@ echo '<option value="NODEFAULTPRIORITY">'$"No default"'</option>'
 [ $PRIORITY != $"Medium" ] && echo '<option value="'$"Medium"'">'$"Medium"'</option>'
 [ $PRIORITY != $"Urgent" ] && echo '<option value="'$"Low"'">'$"Low"'</option>'
 
-echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default priority that you want."'</span></a></td></tr></tbody></table><br>
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default priority that you want."'</span></a></td></tr></tbody></table><br>
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">

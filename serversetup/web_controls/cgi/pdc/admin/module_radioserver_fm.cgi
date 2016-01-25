@@ -44,6 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
+<!DOCTYPE html>
 <html>
 <head>
   <title>'$"Setup Internet Radio Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">

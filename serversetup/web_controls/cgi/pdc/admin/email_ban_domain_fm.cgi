@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban E-Mail Domain"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban E-Mail Domain"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -78,22 +78,22 @@ echo '</head>
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH1=200
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH1=200
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
-TABLECLASS=mobilestandard
-WIDTH1=160
+	DIV_ID=menubox
+	TABLECLASS=mobilestandard
+	WIDTH1=160
 fi
 echo '<form name="myform" action="/cgi-bin/admin/email_ban_domain.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Ban E-Mail Domain"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -104,10 +104,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </tbody></table><br>
 '
 else
-echo '<div id="'$DIV_ID'">
+	echo '<div id="'$DIV_ID'">
 <table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Ban E-Mail Domain"'</b></td>
 <td style="vertical-align: top;">
-<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$"Banned Domains"'"></a>
+
+<button class="button" formaction="email_view_banned_domains_fm.cgi" name="_ViewBannedDomains_" value="_">
+'$"Banned Domains"'
+</button>
 </td></tr>
 </tbody></table><br>'
 fi

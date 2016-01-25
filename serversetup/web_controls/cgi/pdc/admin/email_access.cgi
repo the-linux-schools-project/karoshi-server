@@ -233,11 +233,22 @@ else
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
 	if [ "$ACTION" != viewrestrictionlist ]
 	then
-		echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_access.cgi" method="post"><input name="_ACTION_viewrestrictionlist_" type="submit" class="button" value="'$"View Restriction List"'"></form></td>'
+		echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_access.cgi" method="post">
+		<button class="button" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
+		'$"View Restriction List"'
+		</button>
+		</form></td>'
 	fi
 	if [ "$ACTION" != getchoice ]
 	then
-		echo '<td style="vertical-align: top;"><a href="email_access.cgi"><input class="button" type="button" name="" value="'$"Choose User / group"'"></a></td>'
+		echo '<td style="vertical-align: top;">
+
+		<form action="email_access.cgi" method="post">
+		<button class="button" name="_ChooseUserOrGroup_" value="_">
+		'$"Choose User / group"'
+		</button>
+		</form>
+		</td>'
 	fi
 	echo '</tr></table><br></div><div id="infobox">'
 fi

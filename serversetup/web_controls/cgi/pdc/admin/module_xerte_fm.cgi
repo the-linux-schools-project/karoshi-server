@@ -108,7 +108,7 @@ fi
 
 echo '<form  id="form1" name="combobox" action="/cgi-bin/admin/module_xerte.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" ><tr><td style=vertical-align: top;"><div class="sectiontitle">'$"Setup Xerte"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Xerte"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Xerte"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will setup Xerte for your users."'</span></a>
 </td></tr></tbody></table><br>
 
@@ -122,13 +122,13 @@ then
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
-<table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
-<tbody><tr><td valign="middle" style="width: 180px;">'$"Xerte Domain"'</td><td>'
+<table class="standard" style="text-align: left; height: 15px;">
+<tbody><tr><td style="width: 180px;">'$"Xerte Domain"'</td><td>'
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Xerte"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 192px;" value="" size="10"></td><td>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Xerte"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
-<option value="" selected="selected"></option>'
+<option label="selected" value="" selected="selected"></option>'
             
 #Show alias choice
 
@@ -153,6 +153,6 @@ do
 	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
 	let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
+echo '</select></td><td></td><td></td></tr></tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit
 

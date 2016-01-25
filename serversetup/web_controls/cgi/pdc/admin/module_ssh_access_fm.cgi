@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -104,7 +104,7 @@ echo '<form action="/cgi-bin/admin/module_ssh_access.cgi" method="post"><div id=
 <b>'$"Description"'</b><br><br>
 '$"This module is for advanced use for users that want ssh access to the main server."' '$"It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."'<br><br>
 <b>'$"Parameters"'</b><br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0"><tbody>
+<table class="standard" style="text-align: left;"><tbody>
 <tr><td style="width: 180px;">'$"TCPIP"' / '$"MAC"'</td><td><input tabindex= "2" name="_TCPIP_" size="20" type="text"></td><td>
 <select name="_RESTRICTTYPE_">
 <option>TCPIP</option>

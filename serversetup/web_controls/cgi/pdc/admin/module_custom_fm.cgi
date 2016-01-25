@@ -102,10 +102,10 @@ exit
 #Check data
 #########################
 #Check to see that servername is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server cannot be blank."
-show_status
+	MESSAGE=$"The server cannot be blank."
+	show_status
 fi
 
 echo '<form action="/cgi-bin/admin/module_custom.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Custom Application"' - '$SERVERNAME'</div><br>
@@ -113,7 +113,7 @@ echo '<form action="/cgi-bin/admin/module_custom.cgi" method="post"><div id="act
 '$"This will add in the name of a custom role that you have added to this server. The only purpose of this feature is to record the custom role on the show servers page in the web management."'
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <br><br><b>'$"Parameters"'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
+  <table class="standard" style="text-align: left;">
     <tbody>
 <tr><td style="width: 180px;">
 '$"Custom Application"'</td>

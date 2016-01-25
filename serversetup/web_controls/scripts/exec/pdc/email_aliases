@@ -357,11 +357,12 @@ then
 	echo '</select>'
 	if [ "$MOBILE" = no ]
 	then
-		echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the domain that you want for the username."'</span></a></td></tr></tbody></table></div><div id="submitbox">'
+		echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the domain that you want for the username."'</span></a></td></tr></tbody></table><br><br>'
 	else
-		echo '<br><br>' 
+		echo '<br><br>'
 	fi
-	echo '<input class="button" value="'$"Submit"'" type="submit"></form><form  style="display: inline;" action="/cgi-bin/admin/email_aliases.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
+	echo '<input class="button" value="'$"Submit"'" type="submit">'
+	echo '</form><form  style="display: inline;" action="/cgi-bin/admin/email_aliases.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
 if [ "$ACTION" = reallyadd ]

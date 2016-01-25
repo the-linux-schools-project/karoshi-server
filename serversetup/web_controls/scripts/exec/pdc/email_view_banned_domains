@@ -67,8 +67,8 @@ MOBILE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_view_banned_domains_fm - Not called by email_view_banned_domains_fm.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_view_banned_domains_fm - Not called by email_view_banned_domains_fm.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
@@ -114,7 +114,10 @@ then
 	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
 	do
 		echo '<tr><td>'${EMAILARRAY[$COUNTER]}'</td><td>
-		<a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span></a>
+		<button class="info" name="_DoDelete_" value="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_">
+		<img src="'$ICON1'" alt="'$"Delete"' - '${EMAILARRAY[$COUNTER]}'">
+		<span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span>
+		</button>
 		</td></tr>'
 		let COUNTER=$COUNTER+1
 	done
@@ -133,11 +136,13 @@ else
 	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
 	do
 		echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
-		<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Delete"' - ${EMAILARRAY[$COUNTER]}</span></a>
+		<button class=\"info\" name=\"_DoDelete_\" value=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\">
+		<img src=\"'$ICON1'\" alt=\"'$"Delete"' - ${EMAILARRAY[$COUNTER]}\">
+		<span>'$"Delete"' - ${EMAILARRAY[$COUNTER]}</span>
+		</button>
 		</td></tr>"
 		let COUNTER=$COUNTER+1
 	done
-
 	echo "</tbody></table>"
 
 	'

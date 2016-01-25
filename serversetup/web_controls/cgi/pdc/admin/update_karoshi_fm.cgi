@@ -144,7 +144,7 @@ else
 	UPDATELIST=updatelist.html
 	ICON=/images/submenus/system/updates_all.png
 	ACTION=ALL
-	MESSAGE=$"All updates"
+	MESSAGE=$"Installed Updates"
 fi
 
 #Show back button for mobiles
@@ -170,7 +170,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 </button>
 </form></td><td>
 <form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
-<input name="RefreshList" type="submit" class="button" value="'$"Refresh list"'">
+<input name="RefreshList" type="submit" class="button" value="'$"Check for updates"'">
 </form></td></tr></tbody></table>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

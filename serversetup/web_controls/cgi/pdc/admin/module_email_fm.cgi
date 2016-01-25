@@ -39,7 +39,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -110,7 +110,7 @@ fi
 echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup E-mail"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server""><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$" Emails can also be accessed via an imap or pop3 email client."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$" Emails can also be accessed via an imap or pop3 email client."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
@@ -124,7 +124,7 @@ then
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
+  <table class="standard" style="text-align: left;">
     <tbody>'
 
 #Check to see if an email server has already been assigned
@@ -138,29 +138,29 @@ then
 	fi
 fi
 
-echo '<tr><td valign="top" style="width: 180px;">
+echo '<tr><td style="width: 180px;">
 '$"E-Mail domain"'</td>
         <td style="vertical-align: top; text-align: right;">mail</td><td>.'$REALM'</td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in your choice of mail domain without http://www. Example myemaildomain.com"'</span></a>
       </td></tr>
-<tr><td valign="middle">Web Mail Access</td><td>'
+<tr><td>Web Mail Access</td><td>'
 
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 192px;" value="" size="10"></td><td>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
-<option value="" selected="selected"></option>'
+<option label="selected" value="" selected="selected"></option>'
             
 #Show alias choice
 
 if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 then
-#Show any custom aliases that have been assigned
-echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
-for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
-do
-echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
-done
-echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
+	#Show any custom aliases that have been assigned
+	echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
+	for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+	do
+		echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
+	done
+	echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
 
 #Get a set of available aliases to check
@@ -170,10 +170,10 @@ fi
 COUNTER=1
 while [ $COUNTER -le 10 ]
 do
-[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
-let COUNTER=$COUNTER+1
+	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
+	let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr>'
+echo '</select></td><td></td><td></td></tr>'
 echo 
 
 echo '</tbody></table><br><br>

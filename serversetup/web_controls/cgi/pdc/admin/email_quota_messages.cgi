@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -65,8 +65,8 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #Generate navigation bar
@@ -79,51 +79,51 @@ echo '<div id="actionbox3"><div id="titlebox"><b>'$"E-Mail Quota Warning Message
 ###########################
 if [ ! -f /opt/karoshi/postfixdata/warning_messages/level1 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level2 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level3 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level4 ]
 then
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages.cgi | cut -d' ' -f1`
-#Get messages from colossus
-sudo -H /opt/karoshi/web_controls/exec/email_get_quota_messages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages.cgi | cut -d' ' -f1`
+	#Get messages from colossus
+	sudo -H /opt/karoshi/web_controls/exec/email_get_quota_messages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
 fi
 
 #Level1
 echo '<b>'$"Level"' 1</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level1 ]
 then
-echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL1_\"\>
-cat /opt/karoshi/postfixdata/warning_messages/level1
-echo \</textarea\>
+	echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL1_\"\>
+	cat /opt/karoshi/postfixdata/warning_messages/level1
+	echo '</textarea>'
 else
-echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL1_\"\>\</textarea\>
+	echo '<textarea cols="80" rows="10" name="_LEVEL1_"></textarea>'
 fi
 #Level2
 echo '<br><br><b>'$"Level"' 2</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level2 ]
 then
-echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL2_\"\>
-cat /opt/karoshi/postfixdata/warning_messages/level2
-echo \</textarea\>
+	echo '<textarea cols="80" rows="10" name="_LEVEL2_">'
+	cat /opt/karoshi/postfixdata/warning_messages/level2
+	echo '</textarea>'
 else
-echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL2_\"\>\</textarea\>
+	echo '<textarea cols="80" rows="10" name="_LEVEL2_"></textarea>'
 fi
 #Level3
 echo '<br><br><b>'$"Level"' 3</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level3 ]
 then
-echo -e \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL3_\"\>
-cat /opt/karoshi/postfixdata/warning_messages/level3
-echo \</textarea\>
+	echo '<textarea cols="80" rows="10" name="_LEVEL3_">'
+	cat /opt/karoshi/postfixdata/warning_messages/level3
+	echo '</textarea>'
 else
-echo \<textarea cols=\"80\" rows=\"10\" name=\"_LEVEL3_\"\>\</textarea\>
+	echo '<textarea cols="80" rows="10" name="_LEVEL3_"></textarea>'
 fi
 #Level4
 echo '<br><br><b>'$"Level"' 4</b><br>'
 if [ -f /opt/karoshi/postfixdata/warning_messages/level4 ]
 then
-echo -e \<textarea cols=\"80\" rows=\"8\" name=\"_LEVEL4_\"\>
-cat /opt/karoshi/postfixdata/warning_messages/level4
-echo \</textarea\>
+	echo '<textarea cols="80" rows="8" name="_LEVEL4_">'
+	cat /opt/karoshi/postfixdata/warning_messages/level4
+	echo '</textarea>'
 else
-echo \<textarea cols=\"80\" rows=\"8\" name=\"_LEVEL4_\"\>\</textarea\>
+	echo '<textarea cols="80" rows="8" name="_LEVEL4_"></textarea>'
 fi
 echo '<br><br><input value="Submit" class="button" type="submit"><input value="Reset" class="button" type="reset">
-</div></form></div></div></body></html>'
+</div></div></form></div></body></html>'
 exit

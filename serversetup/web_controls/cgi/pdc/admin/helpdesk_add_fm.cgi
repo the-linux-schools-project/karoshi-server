@@ -85,7 +85,7 @@ then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox
 	TABLECLASS=standard
-	WIDTH1=200
+	WIDTH1=192
 	WIDTH2=200
 	WIDTH3=400
 	COLS=70
@@ -101,6 +101,9 @@ else
 	COLS=18
 	ROWS=4
 fi
+
+echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post">'
+
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
 #Show back button for mobiles
@@ -112,15 +115,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Technical Support"' - '$"Add Request"'</div><br>'
+	echo '<div class="sectiontitle">'$"Technical Support"' - '$"Add Request"'</div><br>'
 fi
 
-
-
-
-echo '<form action="/cgi-bin/admin/helpdesk_add.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
+echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody>
-<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td ><input value="'$REMOTE_USER'" tabindex="1" style="width: '$WIDTH1'px;" maxlength="22" size="20" name="_NAME_"></td></tr>
+<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td ><input value="'$REMOTE_USER'" tabindex="1" style="width: '$WIDTH1'px;" maxlength="22" size="20" name="_NAME_"></td><td></td></tr>
 <tr><td style="width: '$WIDTH1'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '$WIDTH1'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>
 </tr>
 <tr><td style="width: '$WIDTH1'px;">'$"Computer Number"'</td><td><input tabindex="3" maxlength="30" style="width: '$WIDTH1'px;" size="20" name="_ASSETNUMBER_"></td><td style="vertical-align: top;"><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td>
@@ -138,19 +138,19 @@ else
 	LOCATION_COUNT=0
 fi
 
-echo '<select tabindex="4" style="width: '$WIDTH2'px;" name="_LOCATION_"><option value=""></option>'
+echo '<select tabindex="4" style="width: '$WIDTH2'px;" name="_LOCATION_"><option label="blank" value=""></option>'
 COUNTER=1
-while [ $COUNTER -le $LOCATION_COUNT ]
+while [ $COUNTER -lt $LOCATION_COUNT ]
 do
 	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 	echo '<option>'$LOCATION'</option>'
 	let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr>'
+echo '</select></td><td></td></tr>'
 echo '<tr><td>'$"Department"'</td>
 <td>
 <select tabindex="5" style="width: '$WIDTH2'px;" name="_DEPARTMENT_">
-<option value=""></option>
+<option label="blank" value=""></option>
 <option value="'$"Art"'">'$"Art"'</option>
 <option value="'$"Business Studies"'">'$"Business Studies"'</option>
 <option value="'$"Citizenship"'">'$"Citizenship"'</option>
@@ -170,13 +170,12 @@ echo '<tr><td>'$"Department"'</td>
 <option value="'$"Technology"'">'$"Technology"'</option>
 <option value="'$"Office Staff"'">'$"Office Staff"'</option>
 <option value="'$"Other"'">'$"Other"'</option>
-<option value="'$""'">'$""'</option>
 </select>
-</td></tr>
+</td><td></td></tr>
 <tr><td>'$"Category"'</td>
 <td>
 <select tabindex= "6" style="width: '$WIDTH2'px;" name="_CATEGORY_">
-<option value=""></option>
+<option label="blank" value=""></option>
 <option value="'$"Hardware"'">'$"Hardware"'</option>
 <option value="'$"Software"'">'$"Software"'</option>
 <option value="'$"Internet"'">'$"Internet"'</option>
@@ -200,9 +199,6 @@ then
 	echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</form>
-</div>
-</div></body>
-</html>
+</div></form></div></body></html>
 '
 exit

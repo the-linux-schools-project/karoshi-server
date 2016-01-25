@@ -73,7 +73,10 @@ ICON1=/images/submenus/email/email_delete.png
 WIDTH1=180
 WIDTH2=200
 WIDTH3=180
+WIDTH4=192
+WIDTH5=50
 HEIGHT1=25
+HEIGHT2=20
 if [ "$MOBILE" = yes ]
 then
 	ICON1=/images/submenus/email/email_deletem.png
@@ -81,7 +84,10 @@ then
 	WIDTH1=120
 	WIDTH2=140
 	WIDTH3=250
+	WIDTH4=200
+	WIDTH5=50
 	HEIGHT1=30
+	HEIGHT2=30
 fi
 
 ########################
@@ -215,13 +221,13 @@ if [ $ACTION = viewrestrictionlist ]
 then
 	#Show add domain
 	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="addrestricteddomain"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Domain"'</b></td><td><input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a domain that you want to add to the restricted list."'<br><br>'$"Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"></form><br>
+	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Domain"'</b></td><td><input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a domain that you want to add to the restricted list."'<br><br>'$"Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"></form><br>
 	
 	'
 
 	#Show the contents of /etc/postfix/restricted_domains
 	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH3'px;"><b>'$"Allowed Domains"'</b></th><th></th></tr></thead><tbody>'
+	<tr><th style="width: '$WIDTH3'px;"><b>'$"Allowed Domains"'</b></th><th style="width: '$WIDTH5'px;"></th></tr></thead><tbody>'
 	if [ $EMAILSERVER = $(hostname-fqdn) ]
 	then
 		RESTRICTED_DOMAIN_LIST=$(cat /etc/postfix/restricted_domains | cut -f1)
@@ -233,12 +239,17 @@ then
 
 	for RESTRICTED_DOMAIN in $RESTRICTED_DOMAIN_LIST
 	do
-		echo "<tr><td>$RESTRICTED_DOMAIN</td>"
+		echo "<tr><td>$RESTRICTED_DOMAIN</td><td>"
 		if [ $RESTRICTED_DOMAIN != $REALM ]
 		then
-			echo '<td><a class="info" href="javascript:void(0)"><input name="_ACTION_deleterestricteddomain_USERSELECT_'$RESTRICTED_DOMAIN'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$FILENAME'</span></a></td>'
+			echo '
+			<button class="info" name="_DoDeleteRestrictedDomain_" value="_ACTION_deleterestricteddomain_USERSELECT_'$RESTRICTED_DOMAIN'_">
+			<img src="'$ICON1'" alt="'$"Delete" $RESTRICTED_DOMAIN'">
+			<span>'$"Delete"'<br>'$RESTRICTED_DOMAIN'</span>
+			</button>
+			'
 		fi
-		echo "</tr>"
+		echo "</td></tr>"
 	done
 	echo '</tbody></table></form>'
 fi
@@ -377,7 +388,7 @@ fi
 if [ $ACTION = view ]
 then
 	function showdata {
-	echo '<tr><td valign="top">'$USERNAME'</td><td>'$EMAIL_LEVEL'</td><td><form id="'$USERNAME'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'$USERNAME'"><input type="hidden" name="_GROUP_" value="'$GROUP'">
+	echo '<tr><td>'$USERNAME'</td><td>'$EMAIL_LEVEL'</td><td><form id="'$USERNAME'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'$USERNAME'"><input type="hidden" name="_GROUP_" value="'$GROUP'">
 	<select name="_ACCESSLEVEL_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" onchange="'$USERNAME'.submit()">
 	<option value="1" '$SELECT1'>'$"Full access"'</option>
   	<option value="2" '$SELECT2'>'$"Restricted"'</option>
@@ -409,7 +420,7 @@ then
 		[ $EMAIL_LEVEL = 6 ] && SELECT6="selected"
 		[ $EMAIL_LEVEL = 7 ] && SELECT7="selected"
 
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+		echo '<table id="myTableUser" class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH1'px;"><b>'$"Group"'</b></td><td style="width: 20px;"></td><td><b>'$"Change Status"'</b></td></tr>'
 		#Show an option to change the status of all of the users in the group
 		USERNAME=$USERSELECT
@@ -566,13 +577,13 @@ then
 	#Show the user a choice of username or group to select.
 	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
-	<input type="text" name="_USERSELECT_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
+	<input type="text" name="_USERSELECT_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH4'px; height: '$HEIGHT2'px;" value="" size="10"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
 
 
-echo '</td></tr></tbody></table><br><br>
+echo '</td><td></td></tr></tbody></table><br><br>
 	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 

@@ -215,7 +215,12 @@ then
 			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Address"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
 			do
-				echo "<tr><td>"$ADDRESS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\" type=\"image\" class=\"images\" src=\"$ICON1\" value=\"\"><span>$ADDRESS</span></a></td></tr>"
+				echo '<tr><td>'$ADDRESS'</td><td>
+				<button class="info" name="_DeleteAddress_" value="_ACTION_delete_ADDRESS_'$ADDRESS'_">
+				<img src="'$ICON1'" alt="'$ADDRESS'">
+				<span>'$ADDRESS'</span>
+				</button>
+				</td></tr>'
 			done
 			echo "</tbody></table>"
 		fi
@@ -228,7 +233,12 @@ then
 			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead><tr><th style=\"width: '$WIDTH1'px;\"><b>'$"Address"'</b></th><th style=\"width: '$WIDTH2'px;\"><b>'$"Delete"'</b></th></tr></thead><tbody>"
 			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
 			do
-				echo "<tr><td>"$ADDRESS"</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>$ADDRESS</span></a></td></tr>"
+				echo "<tr><td>$ADDRESS</td><td>
+				<button class=\"info\" name=\"_DeleteAddress_\" value=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\">
+				<img src=\"'$ICON1'\" alt=\"$ADDRESS\">
+				<span>$ADDRESS</span>
+				</button>
+				</td></tr>"
 			done
 		fi
 	'
@@ -244,15 +254,8 @@ then
 	<tbody><tr><td style="width: 180px;">'$"E-Mail Address or domain"'</td>
 	<td><input tabindex= "1" name="_ADDRESS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_whitelists"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the E-Mail address or domain that you want to add to the whitelist."'</span></a>
-	</td></tr></tbody></table>'
-
-	if [ $MOBILE = yes ]
-	then
-		echo "<br>"
-	else
-		echo '</div> <div id="submitbox">'
-	fi
-	echo '<input class="button" value="'$"Submit"'" type="submit">'
+	</td></tr></tbody></table><br>
+	<input class="button" value="'$"Submit"'" type="submit">'
 fi
 
 exit

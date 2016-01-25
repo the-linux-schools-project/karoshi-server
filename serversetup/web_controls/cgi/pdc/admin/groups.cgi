@@ -631,6 +631,9 @@ then
 [ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
 echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
+	source /opt/karoshi/web_controls/group_dropdown_def
+	
+
 	while [ $COUNTER -lt $GROUPCOUNT ]
 	do
 		GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
@@ -640,6 +643,9 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 
 		if [ $GROUPID -ge 1000 ] && [ $GROUPNAME != nogroup ]
 		then
+
+			UPPERGROUPNAME=${GROUPNAME^^}
+			LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
 
 			if [ $TYPE = all ]
 			then
@@ -658,7 +664,7 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 			fi
 			#Show primary, secondary, dynamic, or all groups
 			MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
-			echo '<tr><td>'$GROUPNAMESHORT'</td><td>'
+			echo '<tr><td>'$GROUPNAMESHORT' '$LABEL'</td><td>'
 			[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
 		
 			echo ''$GROUPTYPE'</td>'

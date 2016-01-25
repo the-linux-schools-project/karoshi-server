@@ -118,13 +118,13 @@ then
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
+  <table class="standard" style="text-align: left;">
     <tbody>
-<tr><td valign="middle" style="width: 180px;">'$"Web Domain"'</td><td>'
+<tr><td style="width: 180px;">'$"Web Domain"'</td><td>'
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Joomla"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 192px;" value="" size="10"></td><td>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Joomla"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
-<option value="" selected="selected"></option>'
+<option label="selected" value="" selected="selected"></option>'
             
 #Show alias choice
 
@@ -149,7 +149,7 @@ do
 [ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
 let COUNTER=$COUNTER+1
 done
-echo '</select></td></tr>
+echo '</select></td><td></td><td></td></tr>
 </tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit
 

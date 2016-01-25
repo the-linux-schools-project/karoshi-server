@@ -34,16 +34,16 @@ HELP2="Enter in the maximum size for the inboxes in megabytes."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_limits_cgi
 then
-echo `date`: email_limits_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_limits_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $email_limits_cgi'check' ]
 then
-echo `date`: email_limits_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -52,8 +52,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: email_limits_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -66,24 +66,24 @@ WIDTH1=200
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_limits_view - Not called by email_limits_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - Not called by email_limits_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_limits_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_limits_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: email_limits_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_limits_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: email_limits_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 ############################
@@ -93,36 +93,35 @@ EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
 if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
 then
-echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 
 
 if [ $EMAILSERVER != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+	ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
 MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
 #Convert to megabytes
 let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
-echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
-<tr><td style=\"width: 180px;\">'$MAILBOXLIMITMSG' (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP2'</span></a></td></tr>
+echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
+<tr><td style=\"width: 180px;\">'$MAILBOXLIMITMSG' (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP2'</span></a></td></tr>
 "
 
 '
 else
-MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
-MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
-#Convert to megabytes
-let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
-let MBOXLIMIT=$MBOXLIMIT/1024/1024
+	MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
+	MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
+	#Convert to megabytes
+	let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
+	let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
-echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
-<tr><td style=\"width: 180px;\">$MAILBOXLIMITMSG (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" style=\"width: 200px;\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP2</span></a></td></tr>
+	echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
+<tr><td style=\"width: 180px;\">$MAILBOXLIMITMSG (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP2</span></a></td></tr>
 "
-
 
 fi
