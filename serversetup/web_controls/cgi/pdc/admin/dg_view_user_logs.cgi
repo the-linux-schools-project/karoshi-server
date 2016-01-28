@@ -296,7 +296,7 @@ do
 		<div class="expanded">
 		<span>'$"User Internet Logs"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-	</div></div><div id="mobilecontent"><div id="mobileactionbox2">
+	</div></div><div id="mobilecontent"><div id="mobileactionbox">
 	'
 	fi
 

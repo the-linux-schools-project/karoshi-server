@@ -74,7 +74,7 @@ echo '<form action="/cgi-bin/admin/dg_allowed_mime_types.cgi" name="selectedsite
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Allowed Mime Types"'</b></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$PARTBANMSG'<br><br>'$WWWWARNING'<br><br>'$EXAMPLEMSG'</span></a></td></tr></tbody></table><br>'
 else

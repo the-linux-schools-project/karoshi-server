@@ -60,7 +60,7 @@ echo '<div id="actionbox">
 '$"Please select the compressed start menu that you want to upload in .zip or .tar.gz format."':
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_startmenu_upload.cgi" METHOD="POST">
-        <TABLE class="standard" BORDER="0" cellpadding="2" cellspacing="2">
+        <TABLE class="standard">
         <TR>
             <TD style="width: 200px;" ALIGN=LEFT>
                 '$"Compressed start menu"':

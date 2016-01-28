@@ -32,13 +32,13 @@ STYLESHEET=defaultstyle.css
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Reset a Student's Password"'</title>
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -73,7 +73,7 @@ done
 echo '<form action="/cgi-bin/staff/reset_student_password.cgi" method="post">
   <div id="actionbox">
 <b>'$"Reset a Student's Password"'</b><br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;" >
 	<tbody>
 		<tr>
 			<td style="width: 180px; height: 35px">
@@ -87,7 +87,7 @@ echo '<form action="/cgi-bin/staff/reset_student_password.cgi" method="post">
 				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the password of the user for access to all servers on the Karoshi system including moodle and email. The new password will be displayed on the screen."'</span></a>
 			</td>
 			<td colspan="1" rowspan="4" style="vertical-align: top;">
-				<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+				<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>
 			</td>
 		</tr>
 		<tr><td colspan="3">&nbsp;</td></tr>

@@ -57,8 +57,7 @@ echo '<form action="/cgi-bin/admin/quotas_view_usage.cgi" name="selectservers" m
   <div id="actionbox"><b>'$"View Quota Usage"'</b>
   <br>
   <br>
-<table class="standard" style="text-align: left;" border="0"
- cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left;">
   <tbody>
  <tr>
       <td style="width: 180px;">'$"Username"'</td>

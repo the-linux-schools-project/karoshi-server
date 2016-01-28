@@ -100,9 +100,11 @@ TEXTDOMAIN=karoshi-server
 ICON1=/images/submenus/email/email_flush.png
 ICON2=/images/submenus/email/email_delete.png
 TABLECLASS=standard
+HELPCLASS="info"
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
+	HELPCLASS="info infoleft"
 	ICON1=/images/submenus/email/email_flush.png
 	ICON2=/images/submenus/email/email_deletem.png
 fi
@@ -117,7 +119,7 @@ else
 fi
 
 #Get postfix data
-echo '<b>'$"E-Mail Queue"' - '$EMAILSERVER'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a><br><br>'
+echo '<b>'$"E-Mail Queue"' - '$EMAILSERVER'</b> <a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 

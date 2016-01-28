@@ -43,12 +43,12 @@ YEAR=`echo $DATE_INFO | cut -d- -f1`
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html><head>
   <title>'$"Student Internet Logs"'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
@@ -57,14 +57,14 @@ echo '
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 		***********************************************/
 	</script>
-	<script type="text/javascript">
+	<script>
 	// <![CDATA[
 	var myMenu;
 	window.onload = function() {
@@ -126,7 +126,7 @@ echo "
 "
 
 else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left;" >
 	<tbody>
 		<tr>
 			<td style="width: 180px; height: 35px">
@@ -140,13 +140,13 @@ echo '<table class="standard" style="text-align: left;" border="0" cellpadding="
 				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a>
 			</td>
 			<td colspan="1" rowspan="4" style="vertical-align: top;">
-				<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+				<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>
 			</td>
 		</tr>'
 echo '<tr><td style="vertical-align: top;">'$"Log Date"'</td><td style="vertical-align: top;">'
 echo "<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
-	<script language=\"JavaScript\">
+	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',

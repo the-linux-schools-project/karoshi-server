@@ -132,6 +132,7 @@ then
 	WIDTH1=180
 	WIDTH2=200
 	WIDTH3=600
+	WIDTH4=192
 	COLS=70
 	ROWS=6
 	/opt/karoshi/web_controls/generate_navbar_admin
@@ -141,6 +142,7 @@ else
 	WIDTH1=120
 	WIDTH2=140
 	WIDTH3=140
+	WIDTH4=140
 	COLS=18
 	ROWS=4
 fi
@@ -182,24 +184,24 @@ echo '<input name="_JOBNAME_" value="'$JOBNAME'" type="hidden">
 <tr><td>'$"Completed"'</td><td><input tabindex= "3" name="_ACTION_" value="completed" type="radio"></td></tr>
 <tr><td>'$"Assigned to"'</td><td>'
 #Show list of technical staff
-echo '<select tabindex= "4" style="width: '$WIDTH2'px;" name="_ASSIGNED_"><option>'$ASSIGNED'</option>'
+echo '<select tabindex= "4" style="width: '$WIDTH2'px;" name="_ASSIGNED_"><option label="CurrentAssigned">'$ASSIGNED'</option>'
 cat /opt/karoshi/web_controls/web_access_admin | cut -d: -f1 | sed 's/^/<option>/g' | sed 's/$/<\/option>/g'
 cat /opt/karoshi/web_controls/web_access_tech | cut -d: -f1 | sed 's/^/<option>/g' | sed 's/$/<\/option>/g'
-echo '<option value=""></option></select>'
+echo '</select>'
 
 echo '</td></tr>
-<tr><td>'$"Alternative assign"'</td><td><input tabindex= "5" name="_ASSIGNED2_" style="width: '$WIDTH2'px;" size="20" type="text"></td></tr>
+<tr><td>'$"Alternative assign"'</td><td><input tabindex= "5" name="_ASSIGNED2_" style="width: '$WIDTH4'px;" size="20" type="text"></td></tr>
 <tr><td>'$"Priority"'</td><td>'
 
 #Show priorities
 echo '
 <select tabindex= "6" style="width: '$WIDTH2'px;" name="_PRIORITY_">
-<option value="'$PRIORITY'">'$PRIORITY'</option>
+<option label="CurrentPriority" value="'$PRIORITY'">'$PRIORITY'</option>
 <option value="'$"Urgent"'">'$"Urgent"'</option>
 <option value="'$"High"'">'$"High"'</option>
 <option value="'$"Medium"'">'$"Medium"'</option>
 <option value="'$"Low"'">'$"Low"'</option>
-<option value=""></option></select>
+</select>
 '
 
 echo '</td></tr>

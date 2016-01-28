@@ -37,12 +37,12 @@ echo '
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
   <title>'$"Web Management"'</title>
 <link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
 </head>
 <body>
-<table class="menu" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
+<table class="menu" style="text-align: left; height: 91px;" >
   <tbody>
     <tr>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/tech/change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/user.png"><br>

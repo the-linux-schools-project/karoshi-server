@@ -122,11 +122,17 @@ then
 '
 else
 	echo '<table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top;"><b>'$"Client Internet Controls"' - '$"Location"'</b></td>
-<td valign=top>
-<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$"Reset times"'"></a>
+<tr><td><b>'$"Client Internet Controls"' - '$"Location"'</b></td>
+<td>
+	<form action="dg_reset_room_controls_fm.cgi" method="post">	
+		<button class="button" name="Top" value="_">
+		'$"Reset times"'
+		</button>
+	</form>
 </td>
-<td valign=top><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a></td></tr></tbody></table><br>'
+<td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a>
+</td></tr></tbody></table><br>'
 
 fi
 
@@ -148,13 +154,20 @@ then
 			WIDTH=90
 			[ $MOBILE = yes ] && WIDTH=70
 
-			echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
+			echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS' centerTable" style="text-align: left;" ><tbody><tr>'
 			LOCCOUNTER=1
 
 			for LOCATIONS in /opt/karoshi/asset_register/locations/*
 			do
 				LOCATION=`basename "$LOCATIONS"`
-				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Internet Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
+				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;">
+
+					<button class="info" name="_ChooseLocation_" value="_LOCATION_'$LOCATION'_">
+					<img src="'$ICON1'" alt="'$"Choose Location"'">
+					<span>'$"Client Internet Controls"'<br>'$LOCATION'</span>
+					</button>
+					<br>'$LOCATION'
+				</td>'
 				[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
 				let LOCCOUNTER=$LOCCOUNTER+1
 				[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1

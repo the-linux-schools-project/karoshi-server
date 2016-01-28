@@ -102,7 +102,9 @@ echo '
         <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
         </div>     
 	<div class="collapsed">
-        <span>'$"Users and Groups"'</span>'
+        <span>'$"Users and Groups"'</span>
+	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
+	'
 if [ $ADDUSERCTRL = yes ]
 then
 echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
@@ -111,8 +113,7 @@ echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
 	<a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a>
 '
 fi
-echo '	<a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a>
-	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a>
+echo '	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a>
 	<a href="/cgi-bin/admin/groups.cgi">'$"Group Management"'</a>
       </div>
       <div class="collapsed">

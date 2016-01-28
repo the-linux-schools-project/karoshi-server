@@ -30,13 +30,9 @@ source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
 TEXTDOMAIN=karoshi-server
 
-echo '<div id="header"><img src="/images/small_logo.png" alt="logo" align="top"> <font style="font-weight: bold;" size="+2">'$"Web Management"' '$SHORTNAME'</font> <small><small>
-'$"Version"' : '$VERSION'
-</small></small>'
-
-echo '</div><div id="navbar"><span class="preload1"></span>
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span>
+</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
-
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
 </ul>

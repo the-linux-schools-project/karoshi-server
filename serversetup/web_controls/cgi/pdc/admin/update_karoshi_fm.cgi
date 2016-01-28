@@ -186,8 +186,8 @@ then
 		cat /opt/karoshi/updates/$UPDATELIST
 	fi
 	else
-	echo $"No updates are available."'<br>'
+	echo '<br>'$"No updates are available."'<br>'
 fi
 
-echo '</form></div></div></div></body></html>'
+echo '</form><br><br><br><br><br></div></div></div></body></html>'
 exit

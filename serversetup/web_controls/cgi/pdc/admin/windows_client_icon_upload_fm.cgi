@@ -60,7 +60,7 @@ echo '<div id="actionbox">
 '$"Select the icons that you want to upload."':
 <P>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_icon_upload.cgi" METHOD="POST">
-        <TABLE class="standard" BORDER="0" cellpadding="2" cellspacing="2">
+        <TABLE class="standard">
         <TR>
             <TD style="width: 200px;" ALIGN=left>
                 '$"Icon"' 1:

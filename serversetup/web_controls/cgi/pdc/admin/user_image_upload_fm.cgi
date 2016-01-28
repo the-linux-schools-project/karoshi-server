@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -58,22 +58,22 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_uplo
 <P>
 <P>
         
-        <TABLE class="standard" BORDER=0>
-        <TR>
+        <table class="standard">
+        <tr>
 <td style="width: 200px;">
 '$"User Image or compressed file"':
 </td>
-            <TD>
-            </TD>
-            <TD>
+            <td>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
-            </TD>
+            </td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Images"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a jpg image which corresponds to a user name or enrollment number or choose a zip or tar.gz file that contains multiple images."'<br><br>'$"Example"' - jjones.jpg - 10111.jpg.<br><br>'$"User images default to width 120px height 150px."'</span></a>
 
 </td>
-        </TR>
-        </TABLE>
+</tr>
+</table>
   </div>
 <div id="submitbox">
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">

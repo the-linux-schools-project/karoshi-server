@@ -151,7 +151,11 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr>'
 [ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$"Reverse Proxy Sites"'</div></td>'
-echo '<td style="vertical-align: top;"><a href="reverse_proxy_add_fm.cgi"><input class="button" type="button" name="" value="'$"Add Reverse Proxy"'"></a></td>
+echo '<td style="vertical-align: top;">
+<button class="button" formaction="reverse_proxy_add_fm.cgi" name="AddReverseProxy" value="_">
+'$"Add Reverse Proxy"'
+</button>
+</td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></td>
 </tr></tbody></table><br>'
 
@@ -169,7 +173,12 @@ do
 	REDIRECT=`sed -n 6,6p /opt/karoshi/server_network/reverseproxy/sites/$SITE | cut -d' ' -f2- | sed 's/;//g'`
 	echo '<tr>'
 	[ $MOBILE = no ] && echo '<td>'$SITE2'</td>'
-	echo '<td>'$REDIRECT'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_FOLDER_'$SITE'_" type="image" class="images" src="'$ICON1'" value="_ACTION_DELETE_FOLDER_'$SITE'_"><span>'$"Delete" $SITE2'</span></a></td></tr>'
+	echo '<td>'$REDIRECT'</td><td>
+		<button class="info" name="_DoDelete_" value="_ACTION_DELETE_FOLDER_'$SITE'_">
+		<img src="'$ICON1'" alt="'$"Delete"'">
+		<span>'$"Delete" $SITE2'</span>
+		</button>
+	</td></tr>'
 done
 
 echo '</tbody></table><br></div>'

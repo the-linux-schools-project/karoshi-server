@@ -197,7 +197,7 @@ done
 echo '<form action="/cgi-bin/admin/helpdesk_create_order.cgi" name="testform" method="post"><div id="actionbox"><div class="sectiontitle">'$"Create Order"'</div><br>'$DATA''
 
 #Show calendar
-echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tr><td>$"Date"</td><td>
+echo "<table class=\"standard\" style=\"text-align: left; width: 100%;\"><tr><td>$"Date"</td><td>
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" />
 	<script language=\"JavaScript\">

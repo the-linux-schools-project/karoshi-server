@@ -167,7 +167,7 @@ then
 
 	if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
 	then
-		echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+		echo "<table class=\"standard\" style=\"text-align: left;\">
 		<tbody><tr><td style=\"width: 180px;\"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td><td><b>'$"Download"'</b></td></tr>"
 		for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
 		do
@@ -180,7 +180,17 @@ then
 				REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
 				echo "<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server\"><img class=\"images\" alt=\"\" src=\"'$ICON2'\"><span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'$REVODATE'</span></a>"
 			else
-				echo "<a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_revoke_USERNAME_"$USERNAME"_\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Revoke"'<br>$USERNAME</span></a></td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_downloadcert_USERNAME_"$USERNAME"_\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$"Download Certificate"'<br>$USERNAME</span></a>"
+				echo "<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_revoke_USERNAME_"$USERNAME"_\">
+			<img src=\"'$ICON1'\" alt=\"'$"Revoke"'\">
+			<span>'$"Revoke"'<br>$USERNAME</span>
+			</button>
+			</td><td>
+
+			<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_downloadcert_USERNAME_"$USERNAME"_\">
+			<img src=\"'$ICON3'\" alt=\"'$"Revoke"'\">
+			<span>'$"Download Certificate"'<br>$USERNAME</span>
+			</button>
+			"
 			fi
 
 		done

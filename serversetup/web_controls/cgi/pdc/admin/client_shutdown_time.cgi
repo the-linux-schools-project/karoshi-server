@@ -129,10 +129,9 @@ else
 	WIDTH3=120
 fi
 
+echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
-
-echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -172,5 +171,5 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td sty
 
 echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"></div>'
 [ $MOBILE = no ] && echo '</div>'
-echo '</form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

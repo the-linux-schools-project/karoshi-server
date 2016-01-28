@@ -86,7 +86,7 @@ done
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/helpdesk_view_completed_fm.cgi" method="post"><b>'$TITLE' - '$"Completed Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form></div><div id="infobox"><br>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Technical Support"' - '$"Completed Requests"'</b></div><div id="infobox"><br>'
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any completed jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/completed/ ]
@@ -161,9 +161,22 @@ do
 	fi
 
 	echo '<tr><td style="vertical-align: top;">'$DATE' '$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td>
-	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED='$ASSIGNED'_"><span>'$ASSIGNED'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_completed_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$COMPLETED_JOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$COMPLETED_JOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
+	<form action="/cgi-bin/admin/helpdesk_view_completed_fm.cgi" method="post">
+	<button class="info" name="_AssignedJob_" value="_SEARCHCRITERIA_'$ASSIGNED'_">
+	<img src="/images/submenus/user/helpdesk/staff.png" alt="'$ASSIGNED2'">
+	<span>'$ASSIGNED'</span>
+	</button>
+	</form>
+	</td><td>
+	<form action="/cgi-bin/admin/helpdesk_action_completed_fm.cgi" method="post">
+	<button class="info" name="_ViewUserAssignedJobs_" value="_JOBNAME_'$COMPLETED_JOB'_">
+	<img src="/images/submenus/user/helpdesk/action.png" alt="'$JOBTITLE'">
+	<span>'$JOBTITLE'</span>
+	</button>
+	</form>
+	</td></tr>'
 done
-echo '</tbody></table></div></html>'
+echo '</tbody></table></div></div></div></html>'
 
 exit
 

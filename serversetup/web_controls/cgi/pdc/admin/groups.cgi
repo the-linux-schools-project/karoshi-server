@@ -420,7 +420,7 @@ then
 		<div class="expanded">
 		<span>'$"Group Management"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-	</div></div></form><div id="mobileactionbox">
+	</div></div><div id="mobileactionbox">
 	'
 	else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">'

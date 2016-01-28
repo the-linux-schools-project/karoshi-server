@@ -120,7 +120,7 @@ then
 fi
 
 #Create keytab for cups
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME.$REALM:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 PDCIP=`net lookup $HOSTNAME`
 if [ $SERVERNAME != `hostname-fqdn` ]

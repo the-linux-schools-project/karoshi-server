@@ -551,7 +551,7 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-	echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post"><div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"File Manager"' '$SERVER2'</span>'
 	if [ $SERVERNAME != notset ]

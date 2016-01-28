@@ -39,13 +39,13 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Reset User Lockout"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/script.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body><div id="pagecontainer">'
@@ -53,7 +53,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '<form action="/cgi-bin/staff/lockout_reset.cgi" method="post"><div id="actionbox"><b>'$"Reset User Lockout"'</b><br><br>
 <div id="suggestions"></div>
-   <table class="standard" style="text-align: left; width: 397px;" border="0" cellpadding="2" cellspacing="2">
+   <table class="standard" style="text-align: left; width: 397px;" >
     <tbody>
 <tr><td style="width: 200px;">'$"Username"'</td>
 <td><input tabindex= "3" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td>

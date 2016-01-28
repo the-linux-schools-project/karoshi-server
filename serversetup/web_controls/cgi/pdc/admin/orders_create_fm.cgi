@@ -256,7 +256,7 @@ echo "
 
 echo '</td></tr>
 <tr><td><b>'$"Supplier"'</b></td><td><input value="'$SUPPLIER'" maxlength="20" size="20" name="___SUPPLIER___"></td><td><b>'$"Budget Holder"'</b></td><td><input value="'$BHOLDER'" maxlength="16" size="16" name="___BHOLDER___"></td></tr></tbody></table><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+  <table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td><b>'$"Ref"'</b></td><td><b>'$"Qty"'</b></td><td><b>'$"Description"'</b></td><td><b>'$"Unit Price"'</b></td><td><b>'$"Total"'</b></td></tr>
 <tr><td><input value="'$REF1'" maxlength="20" size="20" name="___REF1___"></td><td><input value="'$QUANTITY1'" maxlength="4" size="4" name="___QUANTITY1___"></td><td><input value="'$DESC1'" maxlength="30" size="30" name="___DESC1___"></td><td><input value="'$PPU1'" maxlength="8" size="8" name="___PPU1___"></td><td>'$TOTAL1'</td></tr>

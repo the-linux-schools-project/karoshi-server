@@ -131,7 +131,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div>
 </div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-<input name="" type="submit" class="button" value="'$"Schedule Job"'">
+<input name="submit" type="submit" class="button" value="'$"Schedule Job"'">
 </form><br>
 '
 else

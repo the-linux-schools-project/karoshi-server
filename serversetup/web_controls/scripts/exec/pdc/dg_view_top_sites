@@ -147,7 +147,13 @@ then
 	do
 		TOPSITE=`basename "$TOPSSITES" | sed "s/.tar.gz$//g"`
 
-		echo '<tr><td style="vertical-align: top;">'$COUNTER'</td><td style="vertical-align: top;">'$TOPSITE'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_'$TOPSITE'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$TOPSITE'</span></a></td></tr>'
+		echo '<tr><td style="vertical-align: top;">'$COUNTER'</td><td style="vertical-align: top;">'$TOPSITE'</td><td style="vertical-align: top;">
+
+			<button class="info" name="_ViewLog_" value="_LOGDATE_'$DAY'-'$MONTH'-'$YEAR'_WEBSITE_'$TOPSITE'_">
+			<img src="'$ICON2'" alt="'$"View Log"'">
+			<span>View log - '$TOPSITE'</span>
+			</button>
+			</td></tr>'
 		let COUNTER=$COUNTER+1
 	done
 	rm -f /opt/karoshi/.tempdata/topsites.$$

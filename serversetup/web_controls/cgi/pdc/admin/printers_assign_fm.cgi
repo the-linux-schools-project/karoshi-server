@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -83,21 +83,21 @@ END_POINT=3
 COUNTER=1
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Check to see that PRINTER is not blank
-if [ $PRINTERNAME'null' = null ]
+if [ -z "$PRINTERNAME"	 ]
 then
-MESSAGE=$"You have not chosen any printers."
-show_status
+	MESSAGE=$"You have not chosen any printers."
+	show_status
 fi
 
 #Detect mobile browser
@@ -107,11 +107,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 
 echo '<form action="/cgi-bin/admin/printers_assign.cgi" method="post"><div id="'$DIV_ID'">'
@@ -119,20 +119,20 @@ echo '<form action="/cgi-bin/admin/printers_assign.cgi" method="post"><div id="'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign Printers to Locations"'</b></a></td></tr></tbody></table>'
 else
-echo '<div class="sectiontitle">'$"Assign Printers to Locations"'</div><br>'
+	echo '<div class="sectiontitle">'$"Assign Printers to Locations"'</div><br>'
 fi
 
 
 #Check to see that locations.txt exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-MESSAGE=$"No locations have been created."
-no_locations
-exit
+	MESSAGE=$"No locations have been created."
+	no_locations
+	exit
 fi
 
 ###############################
@@ -140,9 +140,9 @@ fi
 ###############################
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 
 echo '<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 180px;">Printer</td><td>'$PRINTERNAME'</td></tr>
@@ -151,22 +151,22 @@ echo '<select multiple="multiple" size="5" name="_LOCATION_">'
 COUNTER=1
 while [ $COUNTER -le $LOCATION_COUNT ]
 do
-LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
+	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 
-if [ `grep ^$LOCATION /var/lib/samba/netlogon/printers.txt | grep -c $PRINTERNAME` -gt 0 ]
-then
-echo '<option selected="selected">'$LOCATION'</option>'
-else
-echo '<option>'$LOCATION'</option>'
-fi
-let COUNTER=$COUNTER+1
+	if [ `grep ^$LOCATION /var/lib/samba/netlogon/printers.txt | grep -c $PRINTERNAME` -gt 0 ]
+	then
+		echo '<option selected="selected">'$LOCATION'</option>'
+	else
+		echo '<option>'$LOCATION'</option>'
+	fi
+	let COUNTER=$COUNTER+1
 done
 echo '<option value="">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option></select>'
 echo '</td></tr></tbody></table><br>'
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 
 echo '<input value="'$"Submit"'" class="button" type="submit"></form></div></body></html>'

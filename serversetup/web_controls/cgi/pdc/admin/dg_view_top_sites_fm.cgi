@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -52,10 +52,10 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Top Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+<script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
-<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/stuHover.js"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
@@ -67,7 +67,7 @@ echo '<form action="/cgi-bin/admin/dg_view_top_sites.cgi" name="testform" method
     <tbody><tr><td style="width: 180px;">'$"Log Date"'</td><td>'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',

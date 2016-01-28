@@ -43,7 +43,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -94,14 +94,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+		then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #FILE
@@ -109,24 +109,24 @@ COUNTER=2
 END_POINT=8
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-FILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 
@@ -139,64 +139,62 @@ echo '
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Delete User"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
 else
-echo '<div class="sectiontitle">'$"Delete User"'</div><br>'
+	echo '<div class="sectiontitle">'$"Delete User"'</div><br>'
 fi
 
 #Check that this server is not part of a federated setup
 if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
 then
-echo $"This server is part of a federated system. Users must be deleted on the main federation server." '</div></div></body></html>'
-exit
+	echo $"This server is part of a federated system. Users must be deleted on the main federation server." '</div></div></body></html>'
+	exit
 fi
 
 
 #Get request data if asked
-if [ $FILE'null' != null ]
+if [ -z "$FILE" ]
 then
-if [ -f /opt/karoshi/user_requests/delete_users/$FILE ]
-then
-NEW_USER_DATA=`sed -n 1,1p /opt/karoshi/user_requests/delete_users/$FILE`
-FORENAME=`echo $NEW_USER_DATA | cut -d: -f1`
-SURNAME=`echo $NEW_USER_DATA | cut -d: -f2`
-GROUP=`echo $NEW_USER_DATA | cut -d: -f3`
-echo '<input name="_REQUESTFILE_" value="'$FILE'" type="hidden">'
-#Try and get username
+	if [ -f /opt/karoshi/user_requests/delete_users/$FILE ]
+		then
+		NEW_USER_DATA=`sed -n 1,1p /opt/karoshi/user_requests/delete_users/$FILE`
+		FORENAME=`echo $NEW_USER_DATA | cut -d: -f1`
+		SURNAME=`echo $NEW_USER_DATA | cut -d: -f2`
+		GROUP=`echo $NEW_USER_DATA | cut -d: -f3`
+		echo '<input name="_REQUESTFILE_" value="'$FILE'" type="hidden">'
+		#Try and get username
 
-if [ `echo $GROUP | grep -c ^yr` -gt 0 ]
-then
-GROUPCHARCOUNT=`echo $GROUP | wc -c`
-let GROUPCHARCOUNT=$GROUPCHARCOUNT-1
-let GROUPSTARTCHAR=$GROUPCHARCOUNT-2
-USERNAME=`echo ${FORENAME:0:1}$SURNAME${GROUP:$GROUPSTARTCHAR:$GROUPCHARCOUNT} | tr 'A-Z' 'a-z'`
-else
-USERNAME=`echo ${FORENAME:0:1}$SURNAME | tr 'A-Z' 'a-z'`
-fi
-fi
+		if [ `echo $GROUP | grep -c ^yr` -gt 0 ]
+		then
+			GROUPCHARCOUNT=`echo $GROUP | wc -c`
+			let GROUPCHARCOUNT=$GROUPCHARCOUNT-1
+			let GROUPSTARTCHAR=$GROUPCHARCOUNT-2
+			USERNAME=`echo ${FORENAME:0:1}$SURNAME${GROUP:$GROUPSTARTCHAR:$GROUPCHARCOUNT} | tr 'A-Z' 'a-z'`
+		else
+			USERNAME=`echo ${FORENAME:0:1}$SURNAME | tr 'A-Z' 'a-z'`
+		fi
+	fi
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<div id="mobileactionbox">'
-echo '<div id="suggestions"></div>
-'$"Username"'<br>
-<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
-'$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
-'$"Confirm"'<br>
-<input tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
-'$"View User Image"'<br>
-<a class="info" href="javascript:void(0)"><input name="_VIEWIMAGE_yes_" type="image" class="images" src="/images/submenus/user/user_photo.png" value=""><span>'$"View User Image"'</span></a>
-<br>
-'
+	echo '<div id="mobileactionbox">'
+	echo '<div id="suggestions"></div>
+	'$"Username"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
+	'$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
+	'$"Confirm"'<br>
+	<input tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br>
+	<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
+	'
 else
 
-echo '
+	echo '
   <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
@@ -261,9 +259,9 @@ fi
 #fi
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 else
-echo '<br>'
+	echo '<br>'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
 exit

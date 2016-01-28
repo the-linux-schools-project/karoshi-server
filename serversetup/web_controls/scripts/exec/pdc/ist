@@ -256,7 +256,7 @@ then
 	done
 
 	#View the data
-	echo '</form><form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" ><tbody>
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
 	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
 	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
@@ -269,10 +269,13 @@ then
 		USERNAME=$(echo "$SORTDATA" | cut -d, -f1)
 		SCORE=$(echo "$SORTDATA" | cut -d, -f2)
 		echo '<tr><td>'$USERNAME'</td><td>'$SCORE'</td><td>
-		<a class="info" href="javascript:void(0)"><input name="_ACTION_viewuserdata_CATEGORY_'$CATEGORY2'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View"'<br>'$USERNAME'</span></a>
+		<button class="info" name="_View_" value="_ACTION_viewuserdata_CATEGORY_'$CATEGORY2'_USERNAME_'$USERNAME'_">
+		<img src="'$ICON3'" alt="'$"View"'">
+		<span>'$"View"'<br>'$USERNAME'</span>
+		</button>
 		</tr>'
 	done
-	echo '</tbody></table>'
+	echo '</tbody></table></form>'
 	rm -f /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
 	rm -f /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$	
 fi

@@ -53,7 +53,7 @@ echo '
 <form action="/cgi-bin/admin/search.cgi" method="post"><span style="font-weight: bold;">
 '$"Search Karoshi Web Management"' </span> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the phrase that you want to search for."'</span></a><br>
   <br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 100px;">

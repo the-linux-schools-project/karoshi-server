@@ -164,7 +164,7 @@ echo '<div id="wizard">
 <form action="/cgi-bin/admin/setup_wizard.cgi" method="post">
 <input type="hidden" id="age" name="_VIEWEDPAGES_'$VIEWEDPAGES'_" value="">
 
-<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+<table class="standard" style="text-align: left;">
 <tbody>
 <tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_2_" type="image" class="images"  src="/images/submenus/system/'$IMAGE2'" value=""></a>

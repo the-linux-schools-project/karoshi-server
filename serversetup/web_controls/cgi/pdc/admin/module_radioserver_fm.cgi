@@ -119,7 +119,7 @@ then
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
-  <table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">
+  <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">

@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -112,28 +112,28 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign tcpipaddress
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-then
-let COUNTER=$COUNTER+1
-TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 [ -z $ACTION ] && ACTION=view
@@ -141,13 +141,13 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
 fi
 
 echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><b></b>'
@@ -167,9 +167,9 @@ BUTTONMSG=$"Add IP number"
 
 if [ $ACTION = add ]
 then
-TITLE=$"Add Bypass"
-BUTTONACTION=view
-BUTTONMSG=$"View IP numbers"
+	TITLE=$"Add Bypass"
+	BUTTONACTION=view
+	BUTTONMSG=$"View IP numbers"
 fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -203,25 +203,25 @@ fi
 
 if [ $ACTION = add ]
 then 
-echo '<input type="hidden" name="_ACTION_" value="reallyadd">'
-if [ $MOBILE = yes ]
-then
-echo '
-'$"TCPIP Number"'<br>
-<input name="_TCPIP_" style="width: 160px;" value="'$TCPIP_ADDR'" size="20"><br><br>
-'
-else
-echo '<table class="standard" style="text-align: left;" >
-    <tbody>
-      <tr>
-        <td style="width: 200px;">'$"TCPIP Number"'</td>
-        <td><input name="_TCPIP_" value="'$TCPIP_ADDR'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
-      </tr>
-    </tbody>
-  </table>
-  <br></div><div id="submitbox">'
-fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+	echo '<input type="hidden" name="_ACTION_" value="reallyadd">'
+	if [ $MOBILE = yes ]
+	then
+		echo '
+	'$"TCPIP Number"'<br>
+	<input name="_TCPIP_" style="width: 160px;" value="'$TCPIP_ADDR'" size="20"><br><br>
+	'
+	else
+		echo '<table class="standard" style="text-align: left;" >
+	    <tbody>
+	      <tr>
+		<td style="width: 200px;">'$"TCPIP Number"'</td>
+		<td><input name="_TCPIP_" value="'$TCPIP_ADDR'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  <br></div><div id="submitbox">'
+	fi
+	echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 fi
 
 echo '</div></form></div></body></html>'

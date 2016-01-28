@@ -32,7 +32,7 @@ STYLESHEET=defaultstyle.css
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+echo '<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -95,7 +95,7 @@ source /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
 #Show job data
 echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="actionbox"><b>'$"Technical Support"' - '$"Action Request"'</b><br><br>
 
-<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
+<table class="standard" style="text-align: left; height: 91px;" >
 <tbody>
 <tr><td style="width: 180px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
 <tr><td>'$"Name"'</td><td>'$NAME'</td></tr>

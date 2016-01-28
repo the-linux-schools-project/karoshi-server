@@ -60,7 +60,12 @@ REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 WIDTH1=200
-[ $MOBILE = yes ] && WIDTH1=160 
+HELPCLASS="info"
+if [ $MOBILE = yes ]
+then
+	WIDTH1=160
+	HELPCLASS="info infoleft"
+fi 
 ########################
 #Check data
 ########################
@@ -108,7 +113,7 @@ MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut
 let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
-echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
+echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"'$HELPCLASS'\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
 <tr><td style=\"width: 180px;\">'$MAILBOXLIMITMSG' (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP2'</span></a></td></tr>
 "
 
@@ -120,7 +125,7 @@ else
 	let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 	let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
-	echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
+	echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"$HELPCLASS\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
 <tr><td style=\"width: 180px;\">$MAILBOXLIMITMSG (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP2</span></a></td></tr>
 "
 

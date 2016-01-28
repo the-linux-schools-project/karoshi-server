@@ -66,7 +66,7 @@ echo '<form name="myform" action="/cgi-bin/admin/printer_accounting_status.cgi" 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Enabled Printers"'</b></a></td></tr></tbody></table>'
 else

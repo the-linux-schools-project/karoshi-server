@@ -87,6 +87,7 @@ MOBILE=`echo "$DATA" | cut -s -d: -f10`
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
 TABLECLASS=standard
+HELPCLASS="info"
 WIDTH1=180
 WIDTH2=200
 WIDTH3=180
@@ -103,6 +104,7 @@ ICON5=/images/submenus/system/delete.png
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
+	HELPCLASS="info infoleft"
 	WIDTH1=90
 	WIDTH2=130
 	WIDTH3=200
@@ -280,7 +282,7 @@ if [ $MOBILE = no ]
 then
 	echo '<td style="width: '$WIDTH4'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
 else
-	echo '<td align="center" colspan="2" style="width: '$WIDTH4'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
+	echo '<td colspan="2" style="width: '$WIDTH4'px; vertical-align: top;"><div class="sectiontitle">'$TITLE'</div></td>'
 fi
 if [ $ACTION = editfilterlists ] || [ $ACTION = bannedextensionlists ] || [ $ACTION = bannedmimetypelists ] || [ $ACTION = viewcustomsites ]
 then
@@ -289,7 +291,7 @@ then
 fi
 
 echo '<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"View Filter Groups"'"></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management'$SUBTITLE'"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
+<td style="vertical-align: top;"><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management'$SUBTITLE'"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
 </tr></tbody></table><br></form>' 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 }
@@ -309,7 +311,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 #<input name="_ACTION_activatechanges_" type="submit" class="button" value="'$"Activate Changes"'">
 #</td>'
 
-echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the internet filter groups that are available and the groups that are assigned to them."'</span></a></td></tr></tbody></table><br>'
+echo '<td style="vertical-align: top;"><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the internet filter groups that are available and the groups that are assigned to them."'</span></a></td></tr></tbody></table><br>'
 
 #Show existing filtergroups
 
@@ -325,11 +327,11 @@ for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
 	FILTERGROUP=`basename "$FILTERGROUPS"`
 	source /etc/e2guardian/lists/filtergroups/"$FILTERGROUP"/details
-	echo "<tr><td style=\"height: 40px;\" valign=\"top\">$FILTERGROUP</td>" 
+	echo "<tr><td style=\"height: 40px;\">$FILTERGROUP</td>" 
 	if [ "$MOBILE" = no ]
 	then
-		echo "<td valign=\"top\">$FILTERDESC</td>" 
-		echo '<td valign="top">'
+		echo "<td>$FILTERDESC</td>" 
+		echo '<td>'
 
 		#Get list of assigned groups
 
@@ -349,10 +351,10 @@ do
 		echo '</td>'
 	fi
 	#Show actions for the filter groups
-	echo '<td style="vertical-align: top;"><input name="_ACTION_editfiltergroup_FILTERNAME_'$FILTERGROUP'_" type="submit" class="button" value='$"Edit Filter Group"'></td><td style="vertical-align: top;">'
+	echo '<td style="vertical-align: top;"><input name="_ACTION_editfiltergroup_FILTERNAME_'$FILTERGROUP'_" type="submit" class="button" value="'$"Edit Filter Group"'"></td><td style="vertical-align: top;">'
 	if [ "$FILTERGROUP" != f1 ]
 	then
-		echo '<input name="_ACTION_deletefiltergroup_FILTERNAME_'$FILTERGROUP'_" type="submit" class="button" value='$"Delete Filter Group"'>'
+		echo '<input name="_ACTION_deletefiltergroup_FILTERNAME_'$FILTERGROUP'_" type="submit" class="button" value="'$"Delete Filter Group"'">'
 	fi
 	echo "</td></tr>"
 done
@@ -380,13 +382,13 @@ SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$"The filter lists are loaded into memory for each filter group so use as few filter groups as possible."'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 192px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$"Filter group to clone from"'</td><td><select name="_FILTERDATA3_" style="width: 200px;">'
 
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
 	FILTERGROUP=`basename $FILTERGROUPS`
-	echo "<option value=\"$FILTERGROUP\" $FILTERGROUP>$FILTERGROUP</option>"
+	echo "<option value=\"$FILTERGROUP\">$FILTERGROUP</option>"
 done
 
 echo '</select></tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>
@@ -516,23 +518,41 @@ echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">
 <table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH7'px;"><b>'$"Filter Group Options"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
 <tr><td>'$"Custom Allowed Sites"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_viewcustomsites_FILTERDATA_allowed_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Custom Allowed Sites"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditCustomAllowedSites_" value="_ACTION_viewcustomsites_FILTERDATA_allowed_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Custom Allowed Sites"'">
+	<span>'$"Edit"'<br>'$"Custom Allowed Sites"'</span>
+	</button>
 </td></tr>
 <tr><td>'$"Custom Banned Sites"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_viewcustomsites_FILTERDATA_banned_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Custom Banned Sites"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditCustomBannedSites_" value="_ACTION_viewcustomsites_FILTERDATA_banned_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Custom Banned Sites"'">
+	<span>'$"Edit"'<br>'$"Custom Banned Sites"'</span>
+	</button>
 </td></tr>
 <tr><td>'$"Banned Categories"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_editfilterlists_FILTERDATA_domains_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Banned Categories"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditBannedDomains_" value="_ACTION_editfilterlists_FILTERDATA_domains_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Banned Categories"'">
+	<span>'$"Edit"'<br>'$"Banned Categories"'</span>
+	</button>
 </td></tr>'
 #echo "<tr><td>$"Part Banned Site Lists"</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_urls_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$"Edit"<br>$"Part Banned Site Lists"</span></a></td></tr>"
 echo '<tr><td>'$"Banned Phrase Categories"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_editfilterlists_FILTERDATA_phraselists_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Banned Phrase Categories"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditBannedPhraseCategories_" value="_ACTION_editfilterlists_FILTERDATA_phraselists_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Banned Phrase Categories"'">
+	<span>'$"Edit"'<br>'$"Banned Phrase Categories"'</span>
+	</button>
 </td></tr>
 <tr><td>'$"Banned Extensions"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_bannedextensionlists_" type="image" class="images" src="'$ICON4'" value=""><span>'$"Edit"'<br>'$"Banned Extensions"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditBannedExtensions_" value="_ACTION_bannedextensionlists_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Banned Extensions"'">
+	<span>'$"Edit"'<br>'$"Banned Extensions"'</span>
+	</button>
 </td></tr>
 <tr><td>'$"Banned Mime Types"'</td><td style="vertical-align: top;">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_bannedmimetypelists_" type="image" class="images" src='"$ICON4"' value=""><span>'$"Edit"'<br>'$"Banned Mime Types"'</span></a>
+	<button class="'$HELPCLASS'" name="_EditBannedMimeTypes_" value="_ACTION_bannedmimetypelists_">
+	<img src="'$ICON4'" alt="'$"Edit" $"Banned Mime Types"'">
+	<span>'$"Edit"'<br>'$"Banned Mime Types"'</span>
+	</button>
 </td></tr>
 </tbody></table><br>
 '
@@ -561,7 +581,12 @@ then
 		for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/*
 		do
 			FILTERGROUP=`basename $FILTERGROUPS`
-			echo '<tr><td style="width: 180px;">'$FILTERGROUP'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_removegroup_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERGROUP'_" type="image" class="images" src="'$ICON1'" value=""><span>'$FILTERGROUP'<br>'$"Remove"'</span></a></td></tr>'
+			echo '<tr><td style="width: 180px;">'$FILTERGROUP'</td><td>
+				<button class="'$HELPCLASS'" name="_RemoveFilterGroup_" value="_ACTION_removegroup_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERGROUP'_">
+				<img src="'$ICON1'" alt="'$FILTERGROUP $"Remove"'">
+				<span>'$"Remove"'<br>'$FILTERGROUP'</span>
+				</button>
+			</td></tr>'
 			done
 		echo '</tbody></table>'
 	fi
@@ -673,7 +698,12 @@ do
 	CATEGORYNAME="$CATEGORY"
 	[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
 
-	echo '<tr><td>'$CATEGORYNAME'</td><td>'$"denied"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERDATA'_FILTERDATA2_'$CATEGORYNAME'_FILTERDATA3_deactivate_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Filter Category"' - '$CATEGORYNAME'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span></a></td></tr>'
+	echo '<tr><td>'$CATEGORYNAME'</td><td>'$"denied"'</td><td>
+			<button class="'$HELPCLASS'" name="_DeactivateFilter_" value="_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERDATA'_FILTERDATA2_'$CATEGORYNAME'_FILTERDATA3_deactivate_">
+			<img src="'$ICON3'" alt="'$"Deactivate Filter"'">
+			<span>'$"Filter Category"' - '$CATEGORYNAME'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 done
 
 #Show inactive categories
@@ -684,7 +714,13 @@ do
 	CATEGORYNAME="$CATEGORY"
 	[ $SUBCATEGORY != $FILTERTYPE ] && CATEGORYNAME="$CATEGORY/$SUBCATEGORY"
 
-	echo '<tr><td>'$CATEGORYNAME'</td><td>'$"allowed"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERDATA'_FILTERDATA2_'$CATEGORYNAME'_FILTERDATA3_activate_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Filter Category"' - '$CATEGORYNAME'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span></a></td></tr>'
+	echo '<tr><td>'$CATEGORYNAME'</td><td>'$"allowed"'</td><td>
+
+			<button class="'$HELPCLASS'" name="_ActivateFilter_" value="_ACTION_reallyeditfilterlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILTERDATA'_FILTERDATA2_'$CATEGORYNAME'_FILTERDATA3_activate_">
+			<img src="'$ICON2'" alt="'$"Activate Filter"'">
+			<span>'$"Filter Category"' - '$CATEGORYNAME'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 done
 
 echo "</tbody></table></form>"
@@ -744,9 +780,9 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table cla
 
 #Show allowed extensions
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH5'"px";"><b>'$"Extension"'</b></th>'
-[ $MOBILE = no ] && echo '<th style="width: '$WIDTH6'"px";"><b>'$"Description"'</b></th>'
-echo '<th style="width: 60px";"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH5'px;"><b>'$"Extension"'</b></th>'
+[ $MOBILE = no ] && echo '<th style="width: '$WIDTH6'px;"><b>'$"Description"'</b></th>'
+echo '<th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
 
 #Show denied extensions
 for EXTENSIONS in `grep ^"\." /etc/e2guardian/lists/filtergroups/$FILTERNAME/bannedextensionlist | sed "s/ /_/g"`
@@ -758,7 +794,12 @@ do
 	then
 	echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td>"
 	[ $MOBILE = no ] && echo "<td>$DESCRIPTION</td>"
-	echo '<td>'$"denied"'</td><td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILEEXTENSION'_FILTERDATA2_deactivate_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Extension"' - '$FILEEXTENSION'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span></a></td></tr>'
+	echo '<td>'$"denied"'</td><td style="vertical-align:top">
+			<button class="'$HELPCLASS'" name="_AllowExtension_" value="_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILEEXTENSION'_FILTERDATA2_deactivate_">
+			<img src="'$ICON3'" alt="'$"Allow Extension"'">
+			<span>'$"Extension"' - '$FILEEXTENSION'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 	fi
 done
 
@@ -772,7 +813,13 @@ do
 	then
 		echo "<tr><td style=\"vertical-align:top\">$FILEEXTENSION</td>"
 		[ $MOBILE = no ] && echo "<td>$DESCRIPTION</td>"
-		echo '<td>'$"allowed"'</td><td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILEEXTENSION'_FILTERDATA2_activate_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Extension"' - '$FILEEXTENSION'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span></a></td></tr>'
+		echo '<td>'$"allowed"'</td><td style="vertical-align:top">
+
+			<button class="'$HELPCLASS'" name="_DenyExtension_" value="_ACTION_modifybannedextensionlists_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$FILEEXTENSION'_FILTERDATA2_activate_">
+			<img src="'$ICON2'" alt="'$"Deny Extension"'">
+			<span>'$"Extension"' - '$FILEEXTENSION'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 	fi
 done
 echo "</tbody></table></form>"
@@ -821,14 +868,26 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 #Show denied mimetypes
 for MIMETYPE in `grep -v ^"#" /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/bannedmimetypelist | sed "s/#//g" | sed 1d | sort`
 do
-	[ ! -z "$MIMETYPE" ] && echo '<tr><td style="vertical-align:top">'$MIMETYPE'</td><td>'$"denied"'</td><td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="_ACTION_modifybannedmimetypes_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$MIMETYPE'_FILTERDATA2_deactivate_" type="image" class="images" src="'$ICON3'" value=\"\"><span>'$"Mime Type"' - '$MIMETYPE'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span></a></td></tr>'
+	[ ! -z "$MIMETYPE" ] && echo '<tr><td style="vertical-align:top">'$MIMETYPE'</td><td>'$"denied"'</td><td style="vertical-align:top">
+
+			<button class="'$HELPCLASS'" name="_AllowMimeType_" value="_ACTION_modifybannedmimetypes_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$MIMETYPE'_FILTERDATA2_deactivate_">
+			<img src="'$ICON3'" alt="'$"Allow Mime Type"'">
+			<span>'$"Mime Type"' - '$MIMETYPE'<br>'$"Status"' - '$"denied"'<br><br>'$"Allow access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 done
 
 #Show allowed mimetypes
 for MIMETYPE in `grep ^"#" /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/bannedmimetypelist | sed "s/#//g" | sed 1d | sort`
 do
-	[ ! -z "$MIMETYPE" ] && echo '<tr><td style="vertical-align:top">'$MIMETYPE'</td><td>'$"allowed"'</td><td style="vertical-align:top"><a class="info" href="javascript:void(0)"><input name="_ACTION_modifybannedmimetypes_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$MIMETYPE'_FILTERDATA2_activate_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Mime Type"' - '$MIMETYPE'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span>
-</a></td></tr>'
+	[ ! -z "$MIMETYPE" ] && echo '<tr><td style="vertical-align:top">'$MIMETYPE'</td><td>'$"allowed"'</td><td style="vertical-align:top">
+
+
+			<button class="'$HELPCLASS'" name="_DenyMimeType_" value="_ACTION_modifybannedmimetypes_FILTERNAME_'$FILTERNAME'_FILTERDATA_'$MIMETYPE'_FILTERDATA2_activate_">
+			<img src="'$ICON2'" alt="'$"Deny Mime Type"'">
+			<span>'$"Mime Type"' - '$MIMETYPE'<br>'$"Status"' - '$"allowed"'<br><br>'$"Deny access for this filtering group?"'</span>
+			</button>
+		</td></tr>'
 done
 echo "</tbody></table></form>"
 }
@@ -912,7 +971,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERDATA_" value="'$FILTERDATA'">
 <table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Add Site"'</td><td><input tabindex= "1" name="_ACTION_modifycustomsite_FILTERDATA3_add_FILTERDATA2_" style="width: '$WIDTH2'px;" value="'$BANSITE'" size="20" type="text"></td>
-<td><input value="Submit" class="button" type="submit"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the site that you want to ban or allow."'</span></a></td></tr>
+<td><input value="Submit" class="button" type="submit"></td><td style="vertical-align: top;"><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management#Filter_Group_Options"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the site that you want to ban or allow."'</span></a></td></tr>
 <tr><td></td><td colspan="2">'
 
 
@@ -923,7 +982,7 @@ do
 	echo "$FILTERGROUP<input type=\"checkbox\" name=\"_FILTERDATA4_\" value=\"$FILTERGROUP\" checked>"
 done
 
-echo '</td></tr></tbody></table></form>
+echo '</td><td></td></tr></tbody></table></form>
 
 <form name="myform" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="_FILTERNAME_" value="'$FILTERNAME'">
@@ -944,7 +1003,13 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH7'px;"><b>'$"Site"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
 for SITE in `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE2 | sort | grep "$SEARCH"`
 do
-	echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_FILTERDATA2_'$SITE'_" type="image" class="images" src="'$ICON5'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'
+	echo '<tr><td>'$SITE'</td><td>
+
+		<button class="'$HELPCLASS'" name="_DeleteSite_" value="_FILTERDATA2_'$SITE'_">
+		<img src="'$ICON3'" alt="'$"Delete"' '$SITE'">
+		<span>'$"Delete"' '$SITE'</span>
+		</button>
+	</td></tr>'
 done
 echo '</tbody></table>'
 

@@ -243,7 +243,7 @@ then
 	SERVERIP=`net lookup $SERVERNAME`
 	[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-	echo $ROLE"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	echo $"ROLE""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 	echo '<a href="http://'$SERVERIP':8000" target="_blank">http://'$SERVERIP':8000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 	echo $SERVERNAME > /opt/karoshi/server_network/radioserver
 fi

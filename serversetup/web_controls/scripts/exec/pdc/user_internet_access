@@ -71,8 +71,8 @@ DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+%'`
 
 if [ -z "$DATA" ]
 then
-echo `date`: user_internet_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: user_internet_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -125,6 +125,7 @@ fi
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
 TABLECLASS=standard
+HELPCLASS="info"
 WIDTH1=180
 WIDTH2=300
 WIDTH3=40
@@ -133,6 +134,7 @@ ICON2=/images/submenus/system/edit.png
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
+	HELPCLASS="info infoleft"
 	WIDTH1=90
 	WIDTH2=190
 	WIDTH3=25
@@ -210,22 +212,31 @@ BANLENGTH=7
 
 #Show form to add in banned users.
 
-echo '<b>'$"Ban User Internet Access"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page allows you to ban or allow user internet access."'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
+echo '<b>'$"Ban User Internet Access"'</b> <a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page allows you to ban or allow user internet access."'</span></a><br><br><form name="myform" action="user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
 <table class="'$TABLECLASS'" style="text-align: left;" >
 <tr><td style="width: '$WIDTH1'px;">'$"Usernames"'</td><td style="width: 140px;"><input value="'$USERNAMES'" name="_USERNAMES_" style="width: '$WIDTH2'px;" type="text"></td>'
 
-[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames that you want to ban from the internet separated by spaces."'</span></a></td>'
+if [ $MOBILE = no ]
+then
+	echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames that you want to ban from the internet separated by spaces."'</span></a></td>'
+else
+	echo '<td></td>'
+fi
 
 echo '</tr>
-<tr><td>'$"Date"'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4 type="text"></td></tr>
+<tr><td>'$"Date"'</td><td><input style="width: '$WIDTH3'px;" name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:<input style="width: '$WIDTH3'px;" name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text"> <input style="width: '$WIDTH3'px;" name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">-<input style="width: '$WIDTH3'px;" name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">-<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4" type="text"></td><td></td></tr>
 <tr><td>'$"Ban duration"'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
 
-[ $MOBILE = no ] && echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Ban duration in days - leave blank for a permanent ban."'</span></a></td>'
+if [ $MOBILE = no ]
+echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Ban duration in days - leave blank for a permanent ban."'</span></a></td>'
+else
+	echo '<td></td>'
+fi
 
 echo '</tr>
-<tr><td valign="top">'$"Incident Report"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td></tr>
-<tr><td valign="top">'$"Action Taken"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_ACTIONTAKEN_">'$"Internet Access banned."'</textarea></td></tr>
+<tr><td>'$"Incident Report"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_INCIDENT_">'$INCIDENT'</textarea></td><td></td></tr>
+<tr><td>'$"Action Taken"'</td><td><textarea style="width: '$WIDTH2'px;" cols="45" rows="2" name="_ACTIONTAKEN_">'$"Internet Access banned."'</textarea></td><td></td></tr>
 </tbody></table>
 <br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form><br>
@@ -242,7 +253,17 @@ then
 	do
 		BANLENGTH="-"
 		[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
-		echo '<tr><td>'$BADUSER'</td><td>'$BANLENGTH'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewincidents_USERNAMES_'$BADUSER'_" type="image" class="images" src="'$ICON2'" value=""><span>'$BADUSER'<br>'$"View Incidents"'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_allowuser_USERNAMES_'$BADUSER'_" type="image" class="images" src="'$ICON1'" value=""><span>'$BADUSER'<br>'$"Allow internet access?"'</span></a></td></tr>'
+		echo '<tr><td>'$BADUSER'</td><td>'$BANLENGTH'</td><td>
+			<button class="'$HELPCLASS'" name="_DoViewIncidents_" value="_ACTION_viewincidents_USERNAMES_'$BADUSER'_">
+			<img src="'$ICON2'" alt="'$"View Incidents"'">
+			<span>'$BADUSER'<br>'$"View Incidents"'</span>
+			</button>
+		</td><td>
+			<button class="'$HELPCLASS'" name="_DoViewIncidents_" value="_ACTION_allowuser_USERNAMES_'$BADUSER'_">
+			<img src="'$ICON1'" alt="'$"Allow internet access"'">
+			<span>'$BADUSER'<br>'$"Allow internet access"'</span>
+			</button>
+		</td></tr>'
 	done
 	echo "</tbody></table>"
 fi

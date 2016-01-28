@@ -176,10 +176,12 @@ fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/dg_room_controls_fm.cgi" method="post">
-<input name="" type="submit" class="button" value="'$"Location"'">
+<input name="Submit" type="submit" class="button" value="'$"Location"'">
 </form></td>
-<td valign=top>
-<a href="dg_reset_room_controls_fm.cgi"><input class="button" type="button" name="" value="'$"Reset times"'"></a>
+<td>
+<form action="dg_reset_room_controls_fm.cgi" method="post">
+<input name="Submit" type="submit" class="button" value="'$"Reset times"'">
+</form>
 </td>'
 
 [ $MOBILE = yes ] && echo '</tr><tr>'
@@ -243,14 +245,14 @@ then
 			fi
 
 
-			echo '<tr><td valign="top">'$ASSET'</td>'
+			echo '<tr><td>'$ASSET'</td>'
 
-			[ $MOBILE = no ] && echo '<td valign="top">'$MAC1'</td><td valign="top">'$TCPIP1'</td>'
+			[ $MOBILE = no ] && echo '<td>'$MAC1'</td><td>'$TCPIP1'</td>'
 
-			echo '<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
+			echo '<td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post">
 			<input name="_ACTION_'$ACTION'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR';" value="'$CONTROLMSG'"></form></td>
 
-			<td valign="top"><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><input name="_ACTION_'$ACTION2'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR2';" value="'$CONTROLMSG2'"></form></td>
+			<td><form action="/cgi-bin/admin/dg_room_controls2.cgi" method="post"><input name="_ACTION_'$ACTION2'_LOCATION_'$LOCATION'_ASSET_'$ASSET'_" type="submit" class="button" style="color:'$COLOUR2';" value="'$CONTROLMSG2'"></form></td>
 			</tr>
 			'
 			fi

@@ -121,7 +121,7 @@ then
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
-<table class="standard" style="text-align: left; height: 15px;" border="0" cellpadding="2" cellspacing="0">
+<table class="standard" style="text-align: left; height: 15px;" >
 <tbody><tr><td valign="middle" style="width: 180px;">'$"Reverse Proxy Domain"'</td><td>'
 
 echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td valign="middle">.'$REALM'</td><td valign="middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Applying_the_Reverse_Proxy_Module"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>

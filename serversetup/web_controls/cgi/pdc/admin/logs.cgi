@@ -39,7 +39,7 @@ echo ""
 echo '
 <!DOCTYPE html>
 <html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'"rel="stylesheet" type="text/css"></head>
-<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
+<body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$WEBLOGSMSG'</a><br>
 <a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$DISKLOGSMSG'</a><br>
 <a href="/cgi-bin/admin/view_karoshi_auth_errors.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/system/web.png">'$AUTHERRMSG'</a><br>

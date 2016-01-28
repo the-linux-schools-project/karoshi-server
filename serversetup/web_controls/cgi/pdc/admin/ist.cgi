@@ -303,7 +303,7 @@ then
 
 	#Show for for adding catergories
 	echo '<form action="/cgi-bin/admin/ist.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallyaddcategory"><table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;" colspan="2"><b>'$"Add an Internet Trend Category"'</b></td><td></td></tr>
+	<tr><td style="width: 180px; height: 40px;" colspan="2"><b>'$"Add an Internet Trend Category"'</b></td><td></td></tr>
 	<tr><td>'$"Category"'</td><td>'
 	if [ -z "$CATEGORY" ]
 	then
@@ -326,7 +326,23 @@ then
 	do
 		CATEGORY2=$(echo $CATEGORY | sed 's/+/ /g')
 		SEARCH=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY" | sed 's/\\|/ /g')
-		echo '<tr><td>'"$CATEGORY2"'</td><td>'"$SEARCH"'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_editcategory_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'<br>'$CATEGORY2'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_deletecategory_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete"'<br>'$CATEGORY2'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_viewdata_CATEGORY_'$CATEGORY'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"View"'<br>'$CATEGORY2'</span></a></td></tr>'
+		echo '<tr><td>'"$CATEGORY2"'</td><td>'"$SEARCH"'</td><td>
+				<button class="info" name="_Edit_" value="_ACTION_editcategory_CATEGORY_'$CATEGORY'_">
+				<img src="'$ICON1'" alt="'$"Edit"'">
+				<span>'$"Edit"'<br>'$CATEGORY2'</span>
+				</button>
+			</td><td>
+				<button class="info" name="_Delete_" value="_ACTION_deletecategory_CATEGORY_'$CATEGORY'_">
+				<img src="'$ICON2'" alt="'$"Delete"'">
+				<span>'$"Delete"'<br>'$CATEGORY2'</span>
+				</button>
+			</td><td>
+
+				<button class="info" name="_View_" value="_ACTION_viewdata_CATEGORY_'$CATEGORY'_">
+				<img src="'$ICON3'" alt="'$"View"'">
+				<span>'$"View"'<br>'$CATEGORY2'</span>
+				</button>
+			</td></tr>'
 	done
 	echo '</tbody></table></form>'
 fi

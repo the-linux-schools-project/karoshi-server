@@ -50,11 +50,11 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Global Internet Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+<script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
-<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/stuHover.js"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
@@ -69,7 +69,7 @@ echo '<form action="/cgi-bin/admin/dg_view_global_usage.cgi" name="testform" met
 echo '<tr><td style="width: 180px;">'$"Log Date"'</td><td>'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$LOG_DATE\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top;\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',

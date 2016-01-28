@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: email_view_banned_domains_fm - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: email_view_banned_domains_fm - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
@@ -85,10 +85,12 @@ echo `date`: email_view_banned_domains_fm - by $REMOTE_USER from $REMOTE_ADDR >>
 
 TABLECLASS=standard
 ICON1=/images/submenus/email/email_delete.png
+HELPCLASS="info"
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/email/email_deletem.png
+	HELPCLASS="info infoleft"
 fi
 ############################
 #Language
@@ -114,7 +116,7 @@ then
 	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
 	do
 		echo '<tr><td>'${EMAILARRAY[$COUNTER]}'</td><td>
-		<button class="info" name="_DoDelete_" value="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_">
+		<button class="'$HELPCLASS'" name="_DoDelete_" value="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_">
 		<img src="'$ICON1'" alt="'$"Delete"' - '${EMAILARRAY[$COUNTER]}'">
 		<span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span>
 		</button>
@@ -136,7 +138,7 @@ else
 	while [ $COUNTER -lt $EMAILARRAYCOUNT ]
 	do
 		echo "<tr><td>"${EMAILARRAY[$COUNTER]}"</td><td>
-		<button class=\"info\" name=\"_DoDelete_\" value=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\">
+		<button class=\"'$HELPCLASS'\" name=\"_DoDelete_\" value=\"_ACTION_DELETE_DOMAIN_${EMAILARRAY[$COUNTER]}"_"\">
 		<img src=\"'$ICON1'\" alt=\"'$"Delete"' - ${EMAILARRAY[$COUNTER]}\">
 		<span>'$"Delete"' - ${EMAILARRAY[$COUNTER]}</span>
 		</button>

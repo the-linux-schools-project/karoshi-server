@@ -34,7 +34,7 @@ STYLESHEET=defaultstyle.css
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change My Password"'</title>
@@ -48,7 +48,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
-		* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
 		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 		***********************************************/
 	</script>
@@ -135,7 +135,7 @@ echo ''$"Username"'<br>
 
 else
 
-echo '<table class="standard" style="text-align: left; width: 399px; height: 76px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; width: 399px; height: 76px;">
     <tbody>
       <tr>
         <td>
@@ -151,8 +151,8 @@ echo '<table class="standard" style="text-align: left; width: 399px; height: 76p
       <tr>
         <td>
 '$"New Password"'</td>
-        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br><b>'$"Student Password Requirements"'</b><br><br>'$"Required password length"': '$STUDENT_MINPASSLENGTH'<br>'$STUDENTCASECHECKMSG'<br>'$STUDENTCHARCHECKMSG'<br><br><b>'$"Staff Password Requirements"'</b><br><br>'$"Required password length"': '$STAFF_MINPASSLENGTH'<br>'$STAFFCASECHECKMSG'<br>'$STAFFCHARCHECKMSG'<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	"	# 	$	%	& 	(	) 	*	+	, 	-	.	/ 	:
-;	<	=	>	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td>
+        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br><b>'$"Student Password Requirements"'</b><br><br>'$"Required password length"': '$STUDENT_MINPASSLENGTH'<br>'$STUDENTCASECHECKMSG'<br>'$STUDENTCHARCHECKMSG'<br><br><b>'$"Staff Password Requirements"'</b><br><br>'$"Required password length"': '$STAFF_MINPASSLENGTH'<br>'$STAFFCASECHECKMSG'<br>'$STAFFCHARCHECKMSG'<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td>
       </tr>
        <tr>
         <td>

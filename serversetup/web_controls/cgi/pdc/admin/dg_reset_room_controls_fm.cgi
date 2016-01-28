@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -50,7 +50,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Reset Room Controls"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Reset Room Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -85,25 +85,25 @@ FILE=`echo $DATA | cut -s -d_ -f3`
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
 fi
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Reset Room Controls"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div id="'$DIV_ID'"><b>'$"Reset Room Controls"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset to allow internet access. This could be at the end of each lesson."'</span></a><br><br>'
+	echo '<div id="'$DIV_ID'"><b>'$"Reset Room Controls"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset to allow internet access. This could be at the end of each lesson."'</span></a><br><br>'
 fi
 
 ICON1=/images/submenus/internet/reset_room_controls_add.png
@@ -160,19 +160,23 @@ echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post"><b>
 #Show any existing reset times
 if [ -d /opt/karoshi/server_network/internet_room_controls_reset ]
 then
-if [ `ls -1 /opt/karoshi/server_network/internet_room_controls_reset | wc -l` -gt 0 ]
-then
-echo '<b>'$"Reset times"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
+	if [ `ls -1 /opt/karoshi/server_network/internet_room_controls_reset | wc -l` -gt 0 ]
+	then
+		echo '<b>'$"Reset times"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
 
-for RESETTIMES in /opt/karoshi/server_network/internet_room_controls_reset/*
-do
-RESETTIME=`basename $RESETTIMES`
-echo '<tr><td style="width: 180px; vertical-align: top;">'$RESETTIME'<td style="width: 120px;"></td><td>
-<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post">
-<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_TIME_'$RESETTIME'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete time"' - '$RESETTIME'</span></a></form></td></tr>'
-done
-echo '</tbody></table>'
-fi
+		for RESETTIMES in /opt/karoshi/server_network/internet_room_controls_reset/*
+		do
+			RESETTIME=`basename $RESETTIMES`
+			echo '<tr><td style="width: 180px; vertical-align: top;">'$RESETTIME'<td style="width: 120px;"></td><td>
+			<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post">
+				<button class="info" name="_DeleteTime_" value="_ACTION_delete_TIME_'$RESETTIME'_">
+				<img src="'$ICON2'" alt="'$"Delete"'">
+				<span>'$"Delete time"' - '$RESETTIME'</span>
+				</button>
+			</form></td></tr>'
+		done
+		echo '</tbody></table>'
+	fi
 fi
 
 echo '</div></div></body></html>'

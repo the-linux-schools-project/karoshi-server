@@ -25,8 +25,8 @@
 LOG_GEN_COUNT=`ps -e | grep -c internet_log_ge`
 if [ $LOG_GEN_COUNT -gt 2 ]
 then
-echo Too many internet_log_processes
-exit
+	echo Too many internet_log_processes
+	exit
 fi
 
 FULL_LOGGING=yes
@@ -48,46 +48,46 @@ TODAYSLOGFOLDER=$LOGFILEDIR`date +%d-%m-%Y`
 [ $TODAYSLOGFOLDER'null' = null ] && exit
 if [ ! -f $LOGPATH ]
 then
-echo No internet log exits
-exit
+	echo No internet log exits
+	exit
 fi
 #Make karoshi log folder
 if [ ! -d $LOGFILEDIR ]
 then
-mkdir -p $LOGFILEDIR
-chmod 0700 $LOGFILEDIR
+	mkdir -p $LOGFILEDIR
+	chmod 0700 $LOGFILEDIR
 fi
 ############################
 #Make folder for internet logs
 ############################
 if [ ! -d $TODAYSLOGFOLDER ]
 then
-mkdir -p $TODAYSLOGFOLDER
-chmod 0700 $TODAYSLOGFOLDER
-mkdir $TODAYSLOGFOLDER/users
-chmod 0700 $TODAYSLOGFOLDER/users
-mkdir $TODAYSLOGFOLDER/machines
-chmod 0700 $TODAYSLOGFOLDER/machines
-mkdir $TODAYSLOGFOLDER/sites
-chmod 0700 $TODAYSLOGFOLDER/sites
-mkdir $TODAYSLOGFOLDER/sites/allowed
-chmod 0700 $TODAYSLOGFOLDER/sites/allowed
-mkdir $TODAYSLOGFOLDER/sites/denied
-chmod 0700 $TODAYSLOGFOLDER/sites/denied
+	mkdir -p $TODAYSLOGFOLDER
+	chmod 0700 $TODAYSLOGFOLDER
+	mkdir $TODAYSLOGFOLDER/users
+	chmod 0700 $TODAYSLOGFOLDER/users
+	mkdir $TODAYSLOGFOLDER/machines
+	chmod 0700 $TODAYSLOGFOLDER/machines
+	mkdir $TODAYSLOGFOLDER/sites
+	chmod 0700 $TODAYSLOGFOLDER/sites
+	mkdir $TODAYSLOGFOLDER/sites/allowed
+	chmod 0700 $TODAYSLOGFOLDER/sites/allowed
+	mkdir $TODAYSLOGFOLDER/sites/denied
+	chmod 0700 $TODAYSLOGFOLDER/sites/denied
 
-if [ $FULL_LOGGING = yes ]
-then
-mkdir $TODAYSLOGFOLDER/users_detailed
-chmod 0700 $TODAYSLOGFOLDER/users_detailed
-mkdir $TODAYSLOGFOLDER/machines_detailed
-chmod 0700 $TODAYSLOGFOLDER/machines_detailed
-mkdir $TODAYSLOGFOLDER/sites_detailed
-chmod 0700 $TODAYSLOGFOLDER/sites_detailed
-mkdir $TODAYSLOGFOLDER/sites_detailed/allowed
-chmod 0700 $TODAYSLOGFOLDER/sites_detailed/allowed
-mkdir $TODAYSLOGFOLDER/sites_detailed/denied
-chmod 0700 $TODAYSLOGFOLDER/sites_detailed/denied
-fi
+	if [ $FULL_LOGGING = yes ]
+	then
+		mkdir $TODAYSLOGFOLDER/users_detailed
+		chmod 0700 $TODAYSLOGFOLDER/users_detailed
+		mkdir $TODAYSLOGFOLDER/machines_detailed
+		chmod 0700 $TODAYSLOGFOLDER/machines_detailed
+		mkdir $TODAYSLOGFOLDER/sites_detailed
+		chmod 0700 $TODAYSLOGFOLDER/sites_detailed
+		mkdir $TODAYSLOGFOLDER/sites_detailed/allowed
+		chmod 0700 $TODAYSLOGFOLDER/sites_detailed/allowed
+		mkdir $TODAYSLOGFOLDER/sites_detailed/denied
+		chmod 0700 $TODAYSLOGFOLDER/sites_detailed/denied
+	fi
 fi
 }
 
@@ -97,10 +97,10 @@ LOGLENGTH=`cat $LOGPATH | wc -l`
 #LOGLENGTH=1000
 if [ -f $TODAYSLOGFOLDER/startline ]
 then
-source $TODAYSLOGFOLDER/startline
-[ $COUNTER'null' = null ] && COUNTER=1
+	source $TODAYSLOGFOLDER/startline
+	[ -z "$COUNTER" ] && COUNTER=1
 else
-COUNTER=1
+	COUNTER=1
 fi
 }
 
@@ -132,89 +132,87 @@ cut -d' ' -f8 /opt/karoshi/.tempdata/internet_log.$$ > /opt/karoshi/.tempdata/in
 
 while [ $PROCESSCOUNTER -le $PROCESSLENGTH ]
 do
-#Process lines in log file
-STARTLINE=$PROCESSCOUNTER
-let ENDLINE=$PROCESSCOUNTER+$CHUNKSIZE
-if [ $ENDLINE -le $PROCESSLENGTH ]
-then
-echo Processing $PROCESSCOUNTER to $ENDLINE of $PROCESSLENGTH at `date +%H-%M-%S`
-else
-echo Processing $PROCESSCOUNTER to $PROCESSLENGTH at `date +%H-%M-%S`
-let ENDLINE=$PROCESSLENGTH
-fi
-ACCESS_TIME_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_access_times.$$` )
-CLIENT_IP_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_client_ip.$$` )
-STATUS_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_status.$$` )
-[ $FULL_LOGGING = yes ] && WEBSITE_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website.$$` )
-WEBSITE2_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website2.$$` )
-WEBSITE3_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website3.$$` )
-USERNAME_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_username.$$` )
-DATA_COUNT=`echo ${#ACCESS_TIME_ARRAY[@]}`
+	#Process lines in log file
+	STARTLINE=$PROCESSCOUNTER
+	let ENDLINE=$PROCESSCOUNTER+$CHUNKSIZE
+	if [ $ENDLINE -le $PROCESSLENGTH ]
+	then
+		echo Processing $PROCESSCOUNTER to $ENDLINE of $PROCESSLENGTH at `date +%H-%M-%S`
+	else
+		echo Processing $PROCESSCOUNTER to $PROCESSLENGTH at `date +%H-%M-%S`
+		let ENDLINE=$PROCESSLENGTH
+	fi
+	ACCESS_TIME_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_access_times.$$` )
+	CLIENT_IP_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_client_ip.$$` )
+	STATUS_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_status.$$` )
+	[ $FULL_LOGGING = yes ] && WEBSITE_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website.$$` )
+	WEBSITE2_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website2.$$` )
+	WEBSITE3_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_website3.$$` )
+	USERNAME_ARRAY=( `sed -n $PROCESSCOUNTER,$ENDLINE'p' /opt/karoshi/.tempdata/internet_log_username.$$` )
+	DATA_COUNT=`echo ${#ACCESS_TIME_ARRAY[@]}`
 
-ARRAY_COUNTER=0
-while [ $ARRAY_COUNTER -lt $DATA_COUNT ]
-do
-WRITE_LOG=yes
-ACCESS_TIME_SECONDS=${ACCESS_TIME_ARRAY[$ARRAY_COUNTER]}
-ACCESS_TIME=`date +%T -d @$ACCESS_TIME_SECONDS`
-USERTCPIP=${CLIENT_IP_ARRAY[$ARRAY_COUNTER]}
-STATUS=${STATUS_ARRAY[$ARRAY_COUNTER]}
-WEBSITE2=${WEBSITE2_ARRAY[$ARRAY_COUNTER]}
-WEBSITE3=${WEBSITE3_ARRAY[$ARRAY_COUNTER]}
-USERNAME=${USERNAME_ARRAY[$ARRAY_COUNTER]%@*}
-#WEBSITE2=`echo $WEBSITE | cut -d'/' -f 3 | tr -cd 'A-Za-z 0-9\-._:\n' | sed 's/^www\.//g' | sed 's/^www.\.//g'`
-
-
-#Only use full name of website
-WEBSITE=$WEBSITE3
-if [ $LAST_WEBSITE = $WEBSITE ] && [ $LAST_USERNAME = $USERNAME ]
-then
-WRITE_LOG=no
-fi
+	ARRAY_COUNTER=0
+	while [ $ARRAY_COUNTER -lt $DATA_COUNT ]
+	do
+		WRITE_LOG=yes
+		ACCESS_TIME_SECONDS=${ACCESS_TIME_ARRAY[$ARRAY_COUNTER]}
+		ACCESS_TIME=`date +%T -d @$ACCESS_TIME_SECONDS`
+		USERTCPIP=${CLIENT_IP_ARRAY[$ARRAY_COUNTER]}
+		STATUS=${STATUS_ARRAY[$ARRAY_COUNTER]}
+		WEBSITE2=${WEBSITE2_ARRAY[$ARRAY_COUNTER]}
+		WEBSITE3=${WEBSITE3_ARRAY[$ARRAY_COUNTER]}
+		USERNAME=${USERNAME_ARRAY[$ARRAY_COUNTER]%@*}
+		#WEBSITE2=`echo $WEBSITE | cut -d'/' -f 3 | tr -cd 'A-Za-z 0-9\-._:\n' | sed 's/^www\.//g' | sed 's/^www.\.//g'`
 
 
-if [ $USERNAME'null' != null ] && [ $WRITE_LOG = yes ]
-then
-if [ `echo $STATUS | grep -c DENIED` -gt 0 ]
-then
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/users/$USERNAME
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites/denied/$WEBSITE2
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/machines/$USERTCPIP
-else
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/users/$USERNAME
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites/allowed/$WEBSITE2
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/machines/$USERTCPIP
-fi
-fi
-
-if [ $USERNAME'null' != null ] && [ $FULL_LOGGING = yes ]
-then
-if [ `echo $STATUS | grep -c DENIED` -gt 0 ]
-then
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/users_detailed/$USERNAME
-
-#echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites_detailed/denied/$WEBSITE2
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_denied.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/machines_detailed/$USERTCPIP
-else
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/users_detailed/$USERNAME
-
-#echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td style="vertical-align: top;">'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites_detailed/allowed/$WEBSITE2
-
-echo '<tr><td style="vertical-align: top;"><img class="images" alt="" src="/images/warnings/internet_allowed.png"></td><td style="vertical-align: top;">'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td style="vertical-align: top;">'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'LOGDATE_$TODAY'_WEBSITE_'$WEBSITE2'_" type="image" class="images" src="'$ICON2'" value=""><span>View log - '$WEBSITE2'</span></a></form></td><td style="vertical-align: top;"><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/machines_detailed/$USERTCPIP
-fi
-fi
+		#Only use full name of website
+		WEBSITE=$WEBSITE3
+		if [ $LAST_WEBSITE = $WEBSITE ] && [ $LAST_USERNAME = $USERNAME ]
+		then
+			WRITE_LOG=no
+		fi
 
 
-LAST_WEBSITE=$WEBSITE
-LAST_USERNAME=$USERNAME
-let ARRAY_COUNTER=$ARRAY_COUNTER+1
-done
-let PROCESSCOUNTER=$PROCESSCOUNTER+$CHUNKSIZE+1
+		if [ ! -z "$USERNAME" ] && [ $WRITE_LOG = yes ]
+		then
+			if [ `echo $STATUS | grep -c DENIED` -gt 0 ]
+			then
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog1_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></button></form></td><td>'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog2_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/users/$USERNAME
+
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog3_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog4_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></button></form></td><td>'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites/denied/$WEBSITE2
+
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog5_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog6_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/machines/$USERTCPIP
+				else
+				echo '<tr><td><img class="images" alt="allowed" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog7_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></button></form></td><td>'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog8_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/users/$USERNAME
+
+				echo '<tr><td><img class="images" alt="allowed" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog9_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></button></form></td><td>'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites/allowed/$WEBSITE2
+
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog10_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog11_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'$WEBSITE'" target="_blank">'$WEBSITE'</a></td></tr>' >> $TODAYSLOGFOLDER/machines/$USERTCPIP
+			fi
+		fi
+
+		if [ ! -z "$USERNAME" ] && [ $FULL_LOGGING = yes ]
+		then
+			if [ `echo $STATUS | grep -c DENIED` -gt 0 ]
+			then
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog12_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></button></form></td><td>'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog13_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/users_detailed/$USERNAME
+
+				#echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td>'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td>'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites_detailed/denied/$WEBSITE2
+
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_denied.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog14_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog15_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/machines_detailed/$USERTCPIP
+				else
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><button class="info" name="_ViewLog16_" value="_ACTION_DATE_'$TODAY'_TCPIP_'$USERTCPIP'_"><img src="'$ICON1'" alt="'$"View Log"'"><span>View log - '$USERTCPIP'</span></a></button></form></td><td>'$USERTCPIP'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog17_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></a></button></form></td><td><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/users_detailed/$USERNAME
+
+				#echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_USERNAME_'$USERNAME'_" type="image" class="images" src="'$ICON3'" value=""><span>View log - '$USERNAME'</span></a></form></td><td>'$USERNAME'</td><td><form action="dg_view_computer_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$TODAY'_TCPIP_'$USERTCPIP'_" type="image" class="images" src="'$ICON1'" value=""><span>View log - '$USERTCPIP'</span></a></form></td><td>'$USERTCPIP'</td></tr>' >> $TODAYSLOGFOLDER/sites_detailed/allowed/$WEBSITE2
+
+				echo '<tr><td><img class="images" alt="denied" src="/images/warnings/internet_allowed.png"></td><td>'$ACCESS_TIME'</td><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLog18_" value="_ACTION_DATE_'$TODAY'_USERNAME_'$USERNAME'_"><img src="'$ICON3'" alt="'$"View Log"'"><span>View log - '$USERNAME'</span></button></form></td><td>'$USERNAME'</td><td><form action="dg_view_site_logs2.cgi" method="post"><button class="info" name="_ViewLog19_" value="_ACTION_LOGDATE_'$TODAY'_WEBSITE_'$WEBSITE2'_"><img src="'$ICON2'" alt="'$"View Log"'"><span>View log - '$WEBSITE2'</span></button></form></td><td><a href="'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'" target="_blank">'${WEBSITE_ARRAY[$ARRAY_COUNTER]}'</a></td></tr>' >> $TODAYSLOGFOLDER/machines_detailed/$USERTCPIP
+			fi
+		fi
+		LAST_WEBSITE=$WEBSITE
+		LAST_USERNAME=$USERNAME
+		let ARRAY_COUNTER=$ARRAY_COUNTER+1
+	done
+	let PROCESSCOUNTER=$PROCESSCOUNTER+$CHUNKSIZE+1
 done
 let COUNTER=$COUNTER+$PROCESSLENGTH
 echo COUNTER=$COUNTER > $TODAYSLOGFOLDER/startline
@@ -239,26 +237,26 @@ rm -f /opt/karoshi/.tempdata/internet_log_username.$$
 MAKELOGS=yes
 while [ $MAKELOGS = yes ]
 do
-echo Log gen cycle number $CYCLECOUNT
-makefolders
-get_log_length
-echo Current start line $COUNTER
-echo Current log length $LOGLENGTH
-if [ $COUNTER -lt $LOGLENGTH ]
-then
-echo Processing log from $COUNTER to $LOGLENGTH
-log_gen
-del_temp_files
-else
-echo No extra internet logs to process.
-fi
-let CYCLECOUNT=$CYCLECOUNT+1
-if [ $CYCLECOUNT -ge $MAXCYCLECOUNT ]
-then
-echo Max cycles reached. Exiting now...
-exit
-fi
-echo -e "\nsleeping for $SLEEPTIME seconds.\n"
-sleep $SLEEPTIME
+	echo Log gen cycle number $CYCLECOUNT
+	makefolders
+	get_log_length
+	echo Current start line $COUNTER
+	echo Current log length $LOGLENGTH
+	if [ $COUNTER -lt $LOGLENGTH ]
+	then
+		echo Processing log from $COUNTER to $LOGLENGTH
+		log_gen
+		del_temp_files
+	else
+		echo No extra internet logs to process.
+	fi
+	let CYCLECOUNT=$CYCLECOUNT+1
+	if [ $CYCLECOUNT -ge $MAXCYCLECOUNT ]
+	then
+		echo Max cycles reached. Exiting now...
+		exit
+	fi
+	echo -e "\nsleeping for $SLEEPTIME seconds.\n"
+	sleep $SLEEPTIME
 done
 exit

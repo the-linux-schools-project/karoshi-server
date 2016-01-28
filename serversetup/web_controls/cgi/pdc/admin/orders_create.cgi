@@ -276,7 +276,7 @@ echo '</div><div id="actionbox">
 <tr><td><b>'$"Supplier"'</b></td><td>'$SUPPLIER'</td><td><b>'$"Budget Holder"'</b></td><td>'$BHOLDER'</td></tr>
 <tr><td><b>'$"Order Ref"'</b></td><td>'$ORDERREF'</td></tr>
 </tbody></table><br>
-  <table class="standard" style="text-align: left;" border="2" cellpadding="2" cellspacing="2">
+  <table class="standard" style="text-align: left;">
     <tbody>
 <tr><td style="vertical-align: top; width: 250px;"><b>'$"Ref"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Qty"'</b></td><td style="vertical-align: top; width: 400px;"><b>'$"Description"'</b></td><td style="vertical-align: top; width: 90px;"><b>'$"Unit Price"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Total"'</b></td></tr>
 <tr><td>'$REF1'</td><td>'$QUANTITY1'</td><td>'$DESC1'</td><td>'$PPU1'</td><td>'$TOTAL1'</td></tr>

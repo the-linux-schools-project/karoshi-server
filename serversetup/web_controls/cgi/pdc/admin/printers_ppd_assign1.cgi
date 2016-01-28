@@ -131,7 +131,7 @@ echo '<form action="/cgi-bin/admin/printers_ppd_assign2.cgi" method="post"><div 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+	echo '<table class="standard" style="text-align: left;" >
 	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign PPD File"'</b></a></td>'
 else

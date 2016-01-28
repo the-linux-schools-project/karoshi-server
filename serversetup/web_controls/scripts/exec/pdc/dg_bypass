@@ -226,7 +226,10 @@ then
 		for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
 		do
 		echo '<tr><td>'$tcpipnumber'</td><td>
-		<a class="info" href="javascript:void(0)"><input name="_ACTION_delete_TCPIP_'$tcpipnumber'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"'<br>'$tcpipnumber'</span></a>
+			<button class="info" name="_DeleteIP_" value="_ACTION_delete_TCPIP_'$tcpipnumber'_">
+			<img src="'$ICON1'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'$tcpipnumber'</span>
+			</button>
 		</td></tr>'
 		done
 		echo "</tbody></table>"

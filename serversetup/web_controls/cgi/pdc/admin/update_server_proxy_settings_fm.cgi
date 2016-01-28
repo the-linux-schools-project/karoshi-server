@@ -151,7 +151,7 @@ echo '<form action="/cgi-bin/admin/update_server_proxy_settings.cgi" method="pos
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
+echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Configure Server Proxy Settings"' - '$SERVERNAME'</b></a></td></tr></tbody></table><br>'
 else

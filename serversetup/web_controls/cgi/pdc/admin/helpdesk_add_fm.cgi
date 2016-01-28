@@ -95,7 +95,7 @@ else
 	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox
 	TABLECLASS=mobilestandard
-	WIDTH1=140
+	WIDTH1=132
 	WIDTH2=140
 	WIDTH3=140
 	COLS=18

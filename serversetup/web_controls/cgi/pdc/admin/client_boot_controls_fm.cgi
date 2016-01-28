@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -91,40 +91,40 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-ICON1=/images/assets/location.png
-ICON6=/images/assets/search.png
-SEARCHW=200
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	ICON1=/images/assets/location.png
+	ICON6=/images/assets/search.png
+	SEARCHW=200
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-ICON1=/images/assets/locationm.png
-ICON6=/images/assets/searchm.png
-SEARCHW=150
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	ICON1=/images/assets/locationm.png
+	ICON6=/images/assets/searchm.png
+	SEARCHW=150
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -139,52 +139,63 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$"Client Boot Controls"'</b><br><br></div><div id="infobox">'
+	echo '<b>'$"Client Boot Controls"'</b><br><br></div><div id="infobox">'
 fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 
 if [ $LOCATION_COUNT != 0 ]
 then
-if [ -d /opt/karoshi/asset_register/locations/ ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
-then
+	if [ -d /opt/karoshi/asset_register/locations/ ]
+	then
+		if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
+		then
+			ROWCOUNT=6
+			[ $MOBILE = yes ] && ROWCOUNT=3
+			WIDTH=90
+			[ $MOBILE = yes ] && WIDTH=70
 
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
+			echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+			<tr><td style="width: '$WIDTH'px;">'$"Search"'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '$SEARCHW'px;" size="20" type="text"></td><td>
 
-echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH'px;">'$"Search"'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '$SEARCHW'px;" size="20" type="text"></td><td><a class="info" href="javascript:void(0)"><input name="_BUTTON_" type="image" class="images" src="'$ICON6'" value=""><span>'$"Search"'</span></a></td></tr></tbody></table></form><br>'
+			<button class="info" name="_Search_" value="_BUTTON_">
+			<img src="'$ICON6'" alt="'$"Search"'">
+			<span>'$"Search"'</span>
+			</button>
+			</td></tr></tbody></table></form><br>'
 
 
-echo ''$"Choose Location"'<br><form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
-LOCCOUNTER=1
+			echo ''$"Choose Location"'<br><form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
+			LOCCOUNTER=1
 
-for LOCATIONS in /opt/karoshi/asset_register/locations/*
-do
-LOCATION=`basename "$LOCATIONS"`
+			for LOCATIONS in /opt/karoshi/asset_register/locations/*
+			do
+				LOCATION=`basename "$LOCATIONS"`
 
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Client Boot Controls"'<br>'$LOCATION'</span></a><br>'$LOCATION'</td>'
-[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-let LOCCOUNTER=$LOCCOUNTER+1
-[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
-done
+				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: center;">
 
-echo "</tr></tbody></table></form><br>"
-fi
+			<button class="info" name="_ShowLocation_" value="_LOCATION_'$LOCATION'_">
+			<img src="'$ICON1'" alt="'$LOCATION'">
+			<span>'$"Client Boot Controls"'<br>'$LOCATION'</span>
+			</button>
+			<br>'$LOCATION'</td>'
+				[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
+				let LOCCOUNTER=$LOCCOUNTER+1
+				[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
+				done
+
+			echo "</tr></tbody></table></form><br>"
+		fi
+	else
+		echo $"The asset register is not in use."
+	fi
 else
-echo $"The asset register is not in use."
-fi
-else
-echo $"The asset register is not in use."
+	echo $"The asset register is not in use."
 fi
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'

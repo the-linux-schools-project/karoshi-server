@@ -51,11 +51,11 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Computer Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+<script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -118,7 +118,7 @@ echo ''$"Client TCPIP"'<br>
 echo "
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" style=\"width: 160px\" size=14 maxlength=10 name=\"_DATE_\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -138,7 +138,7 @@ echo '<table class="standard" style="text-align: left;" >
 <tr><td style="width: 180px;">'$"Client TCPIP"'</td><td><input tabindex= "1" name="_TCPIP_" type="text" size="14" style="width: 200px;"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr><tr><td>'$"Log Date"'</td><td>'
 echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" style=\"width: 200px\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',

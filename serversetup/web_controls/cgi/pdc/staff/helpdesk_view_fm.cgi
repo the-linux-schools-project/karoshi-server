@@ -39,16 +39,16 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Technical Support"' - '$"Requests"'</title>
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
-<script type="text/javascript" src="/all/js/jquery.js"></script>
-<script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
-<script type="text/javascript" id="js">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
 $(document).ready(function() 
     { 
         $("#myTable").tablesorter(); 
@@ -98,7 +98,7 @@ then
 fi
 
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" border="0" cellpadding="2" cellspacing="2">
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 140px;"><b>'$"Name"'</b></th><th style="width: 140px;"><b>'$"Request Summary"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 100px;"><b>'$"Wait Time"'</b></th><th style="width: 120px;"><b>'$"Assigned to"'</b></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
 for NEWJOB in `grep -w -l 'NAME="'$REMOTE_USER'"' /opt/karoshi/server_network/helpdesk/todo/*`

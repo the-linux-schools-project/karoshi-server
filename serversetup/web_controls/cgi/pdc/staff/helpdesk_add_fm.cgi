@@ -45,7 +45,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -78,10 +78,10 @@ else
 	echo '<b>'$"Technical Support"' - '$"Add Request"'</b><br><br>'
 fi
 
-echo '<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2">
+echo '<table class="standard" style="text-align: left; height: 91px;" >
 <tbody>
-<tr><td style="width: 180px;">'$"Request Summary"'</td><td><input tabindex= "1" maxlength="24" style="width: 200px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Computer Number"'</td><td><input tabindex= "3" maxlength="10" style="width: 200px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td><input tabindex= "1" maxlength="24" style="width: 192px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Computer Number"'</td><td><input tabindex= "3" maxlength="10" style="width: 192px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td></tr>
 <tr><td>'$"Location"'</td><td>
 '
 
@@ -95,9 +95,9 @@ else
 LOCATION_COUNT=0
 fi
 
-echo '<select tabindex= "2" style="width: 200px;" name="_LOCATION_"><option value=""></option>'
+echo '<select tabindex= "2" style="width: 200px;" name="_LOCATION_"><option label="blank" value=""></option>'
 COUNTER=1
-while [ $COUNTER -le $LOCATION_COUNT ]
+while [ $COUNTER -lt $LOCATION_COUNT ]
 do
 LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 echo '<option>'$LOCATION'</option>'
@@ -107,7 +107,7 @@ echo '</select></td></tr>'
 echo '<tr><td>'$"Department"'</td>
 <td>
 <select tabindex= "3" style="width: 200px;" name="_DEPARTMENT_">
-<option value=""></option>
+<option label="blank" value=""></option>
 <option value="'$"Art"'">'$"Art"'</option>
 <option value="'$"Business Studies"'">'$"Business Studies"'</option>
 <option value="'$"Citizenship"'">'$"Citizenship"'</option>
@@ -127,13 +127,13 @@ echo '<tr><td>'$"Department"'</td>
 <option value="'$"Technology"'">'$"Technology"'</option>
 <option value="'$"Office Staff"'">'$"Office Staff"'</option>
 <option value="'$"Other"'">'$"Other"'</option>
-<option value="'$""'">'$""'</option>
+<option label="blank" value="'$""'">'$""'</option>
 </select>
 </td></tr>
 <tr><td>'$"Category"'</td>
 <td>
 <select tabindex= "4" style="width: 200px;" name="_CATEGORY_">
-<option value=""></option>
+<option label="blank" value=""></option>
 <option value="'$"Hardware"'">'$"Hardware"'</option>
 <option value="'$"Software"'">'$"Software"'</option>
 <option value="'$"Internet"'">'$"Internet"'</option>

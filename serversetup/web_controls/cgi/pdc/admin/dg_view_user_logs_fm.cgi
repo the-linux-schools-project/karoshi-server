@@ -51,12 +51,12 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"User Internet Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+<script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 
 if [ $MOBILE = yes ]
@@ -85,11 +85,11 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 echo '<form action="/cgi-bin/admin/dg_view_user_logs.cgi" name="testform" method="post">'
@@ -99,8 +99,7 @@ echo '<form action="/cgi-bin/admin/dg_view_user_logs.cgi" name="testform" method
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"User Internet Logs"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -108,19 +107,19 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
+	echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
 <br><br>'
 fi
 
 if [ $MOBILE = yes ]
 then
-echo '<div id="suggestions"></div>
+	echo '<div id="suggestions"></div>
 '$"Username"'<br>
-<input tabindex= "1" name="_USERNAME_" size="14" style="width: 160px;" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+<input tabindex= "1" name="_USERNAME_" size="14" style="width: 180px;" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"Log Date"'<br>'
-echo "<!-- calendar attaches to existing form element -->
+	echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"width: 160px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -129,11 +128,11 @@ echo "<!-- calendar attaches to existing form element -->
 	});
 
 	</script><br>"
-echo ''$"Number of days to view"'<br>
+	echo ''$"Number of days to view"'<br>
 <input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"><br><br>
 '
 else
-echo '<table class="standard" style="text-align: left;" >
+	echo '<table class="standard" style="text-align: left;" >
 	<tbody>
 	  <tr>
 	    <td style="width: 180px;">
@@ -146,14 +145,14 @@ echo '<table class="standard" style="text-align: left;" >
 		<a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a>
 	    </td>
         	<td colspan="1" rowspan="7" style="vertical-align: top;">
-	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+	 		<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>
 		</td>
-	  </tr>'
-echo '<tr><td>'$"Log Date"'</td><td>'
+	  </tr>
+	<tr><td>'$"Log Date"'</td><td>'
 
-echo "<!-- calendar attaches to existing form element -->
+	echo "<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"width: 200px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top;\">
-	<script language=\"JavaScript\" type=\"text/javascript\">
+	<script>
 	new tcal ({
 		// form name
 		'formname': 'testform',
@@ -165,7 +164,7 @@ echo "<!-- calendar attaches to existing form element -->
 
 
 
-echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
+	echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td></tr>

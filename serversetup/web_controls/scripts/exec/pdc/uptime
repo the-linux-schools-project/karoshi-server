@@ -214,7 +214,7 @@ fi
 
 if [ $MOBILE = yes ]
 then
-	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td>'
+	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td></td>'
 else
 	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td>'$DPY' '$SUFFIX'</td><td>'$START_TIME'</td>'
 fi

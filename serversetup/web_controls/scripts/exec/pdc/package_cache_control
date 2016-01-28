@@ -179,7 +179,12 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 
 for SITE in `cat /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default | sort`
 do
-	echo '<tr><td>'$SITE'</td><td><a class="info" href="javascript:void(0)"><input name="_ACTION_delete_FILTERDATA_'$SITE'_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Delete"' '$SITE'</span></a></td></tr>'
+	echo '<tr><td>'$SITE'</td><td>
+			<button class="info" name="_Rename_" value="_ACTION_delete_FILTERDATA_'$SITE'_">
+			<img src="'$ICON1'" alt="'$"Delete"'">
+			<span>'$"Delete"' '$SITE'</span>
+			</button>
+		</td></tr>'
 done
 echo '</tbody></table></form>'
 }

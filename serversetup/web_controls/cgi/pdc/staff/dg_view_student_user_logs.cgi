@@ -44,20 +44,20 @@ STYLESHEET=defaultstyle.css
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><title>'$"Student Internet Logs"'</title>'
+echo '<!DOCTYPE html><html><head><title>'$"Student Internet Logs"'</title>'
 echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
-		<script type="text/javascript" src="/all/mobile_menu/sdmenu.js">
+		<script src="/all/mobile_menu/sdmenu.js">
 			/***********************************************
 			* Slashdot Menu script- By DimX
-			* Submitted to Dynamic Drive DHTML code library: http://www.dynamicdrive.com
-			* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+			* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+			* Visit Dynamic Drive at www.dynamicdrive.com for full source code
 			***********************************************/
 		</script>
-		<script type="text/javascript">
+		<script>
 		// <![CDATA[
 		var myMenu;
 		window.onload = function() {

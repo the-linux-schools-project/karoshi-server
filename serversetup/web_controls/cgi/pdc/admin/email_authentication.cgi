@@ -57,9 +57,12 @@ $(document).ready(function()
 </script>
 '
 
+HELPCLASS="info"
+
 if [ $MOBILE = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	HELPCLASS="info infoleft"
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -240,7 +243,7 @@ echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><tabl
 <input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
 </td>'
 #echo '<td><a href="gluster_control.cgi"><input class="button" type="button" name="" value="'$"Gluster Volume Control"'"></a></td><td><a href="home_folders_fm.cgi"><input class="button" type="button" name="" value="'$"Home Folders"'"></a></td>'
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"By default all E-Mail clients have to authenticate to be able to send E-Mails."'<br><br>'$"Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."'</span></a>
+echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"By default all E-Mail clients have to authenticate to be able to send E-Mails."'<br><br>'$"Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."'</span></a>
 </td></tr></tbody></table></form>
 '
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 

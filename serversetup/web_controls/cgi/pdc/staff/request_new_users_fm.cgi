@@ -32,7 +32,7 @@ STYLESHEET=defaultstyle.css
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Request New Users"'</title>
@@ -46,7 +46,7 @@ echo '
 echo '<form action="/cgi-bin/staff/request_new_users.cgi" method="post">
   <div id="actionbox">
 <b>'$"Request New Users"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will forward a request to the network manager for users to be created with the details that you provide."'</span></a><br><br>
-<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody>
+<table class="standard" style="text-align: left;" ><tbody>
 <tr><td>'$"Forename"'</td><td>'$"Surname"'</td><td>'$"Primary Group"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the year group if this is a student or the role if it is a member of staff."'</span></a></td><td>'$"Admission Number"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the admission number for a student or leave blank for a member of staff."'</span></a></td></tr>
 <tr><td><input tabindex= "3" size="10" name="_FORENAME1_"></td><td><input tabindex= "4" size="15" name="_SURNAME1_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP1/g"`'</td><td><input tabindex= "6" size="18" name="_ADNO1_"></td></tr>
 <tr><td><input tabindex= "7" size="10" name="_FORENAME2_"></td><td><input tabindex= "8" size="15" name="_SURNAME2_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP2/g"`'</td><td><input tabindex= "9" size="18" name="_ADNO2_"></td></tr>

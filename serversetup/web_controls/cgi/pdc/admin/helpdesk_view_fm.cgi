@@ -129,7 +129,7 @@ then
 	<span>'$"Technical Support"' - '$"Requests"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
+'
 else
 	echo '<b>'$"Technical Support"' - '$"Requests"'</b> </div><div id="infobox"><br>'
 fi
@@ -238,11 +238,36 @@ do
 	if [ $MOBILE = yes ]
 	then
 		echo '<tr><td style="vertical-align: top;">'$DATE'<br>'$TIME'</td><td style="vertical-align: top;">'$LOCATION'</td><td>
-	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_">
-	<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span></a></form></td></tr>'
+	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
+	<button class="info" name="_AssignedJob_" value="_SEARCHCRITERIA_'$ASSIGNED'_">
+	<img src="/images/submenus/user/helpdesk/staff.png" alt="'$ASSIGNED2'">
+	<span>'$ASSIGNED2'</span>
+	</button>
+	</form>
+	</td><td>
+	<form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post">
+	<button class="info" name="_ViewUserAssignedJobs_" value="_JOBNAME_'$NEWJOB'_">
+	<img src="/images/submenus/user/helpdesk/action.png" alt="'$JOBTITLE'">
+	<span><b>'$"Name"'</b><br>'$NAME'<br><br><b>'$"Priority"'</b><br>'$PRIORITY'<br><br><b>'$"Location"'</b><br>'$LOCATION'<br><br><b>'$"Request Summary"'</b><br>'$JOBTITLE'</span>
+	</button>
+	</form>
+	</td></tr>'
 	else
 		echo '<tr><td style="vertical-align: top;">'$DATE' '$TIME'</td><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$PRIORITY'</td><td style="vertical-align: top;">'$ASSIGNED2'</td><td>
-	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_'$ASSIGNED'_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_'$ASSIGNED'_"><span>'$ASSIGNED2'</span></a></form></td><td><form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
+	<form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
+	<button class="info" name="_AssignedJob_" value="_SEARCHCRITERIA_'$ASSIGNED'_">
+	<img src="/images/submenus/user/helpdesk/staff.png" alt="'$ASSIGNED2'">
+	<span>'$ASSIGNED2'</span>
+	</button>
+	</form>
+	</td><td>
+	<form action="/cgi-bin/admin/helpdesk_action_fm.cgi" method="post">
+	<button class="info" name="_ViewUserAssignedJobs_" value="_JOBNAME_'$NEWJOB'_">
+	<img src="/images/submenus/user/helpdesk/action.png" alt="'$JOBTITLE'">
+	<span>'$JOBTITLE'</span>
+	</button>
+	</form>
+	</td></tr>'
 	fi
 done
 
