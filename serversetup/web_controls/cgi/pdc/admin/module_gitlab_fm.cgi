@@ -101,7 +101,6 @@ echo '<form  id="form1" name="combobox" action="/cgi-bin/admin/module_gitlab.cgi
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br>
 <br>This will setup a Gitlab Server (CE 8.1 Omnibus).<br>
-<br>Recommended Server Requirements:
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gitlab_Server"><br></a>
 
 <br><b>'$"Parameters"'</b><br><br>
