@@ -88,7 +88,7 @@ then
 		DESCRIPTION=`echo "$DATA" | cut -d"," -f2`
 		echo '<tr><td>'$DESCRIPTION'</td><td>
 		<form name="checkservers" action="'$LINK'" method="get">
-		<button class="button" name="Check" value="_">
+		<button class="button" name="Check">
 		'$"Check"'
 		</button>
 		</form>

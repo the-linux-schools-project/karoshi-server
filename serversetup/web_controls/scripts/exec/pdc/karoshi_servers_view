@@ -157,8 +157,8 @@ else
 fi
 
 echo '<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
-<button class="info" name="_RemoveRole_" value="___SERVERNAME___'$SERVER'___">
+<form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
+<button class="info" name="_RemoveRole_" value="_SERVERNAME_'$SERVER'_">
 <img src="'$SERVERICON2'" alt="'$"Remove a role from this server."'">
 <span>'$SERVERSHORT' - '$"Remove a role from this server."'</span>
 </button>

@@ -38,6 +38,7 @@ smtpd_client_restrictions =
 	permit_mynetworks,
 	permit_sasl_authenticated,
 	check_client_access hash:/etc/postfix/access,
+	reject_rbl_client bl.spamcop.net,
 	reject_rbl_client zen.spamhaus.org,
 	reject_rbl_client list.dsbl.org,
 	reject_rbl_client cbl.abuseat.org,
@@ -79,7 +80,8 @@ smtpd_sender_login_maps =
 
 header_checks = regexp:/etc/postfix/header_checks
 mail_spool_directory = /home/users/email/
-mailbox_command = /usr/bin/maildrop
+#mailbox_command = /usr/bin/maildrop
+mailbox_command = /usr/lib/dovecot/dovecot-lda -f "$SENDER" -a "$RECIPIENT"
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes

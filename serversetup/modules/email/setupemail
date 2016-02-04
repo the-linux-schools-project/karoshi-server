@@ -173,7 +173,7 @@ fi
 
 if [ `grep -c ^"#default_client_limit = 1000" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-	sed -i "s/^#default_client_limit = 1000/default_client_limit = 2003/g" /etc/dovecot/conf.d/10-master.conf
+	sed -i "s/^#default_client_limit = 1000/default_client_limit = 3003/g" /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^mail_location /etc/dovecot/dovecot.conf` = 0 ]
@@ -192,6 +192,24 @@ then
 	echo >> /etc/dovecot/dovecot.conf
 	echo -e "auth_username_format = %Ln\n\n" >> /etc/dovecot/dovecot.conf
 fi
+
+#Modify dovecot lda to enable sieve support
+sed -i "s/#mail_plugins = \$mail_plugins/mail_plugins = \$mail_plugins sieve/g" /etc/dovecot/conf.d/15-lda.conf
+sed -i "s/#lda_mailbox_autocreate = no/lda_mailbox_autocreate = yes/g" /etc/dovecot/conf.d/15-lda.conf
+sed -i "s/#lda_mailbox_autosubscribe = no/lda_mailbox_autosubscribe = yes/g" /etc/dovecot/conf.d/15-lda.conf		
+
+#Modify dovecot sieve to use a default sieve rule for mta to send spam to a spam folder
+sed -i "s%#sieve_before =%sieve_before = /etc/dovecot/sieve/default.sieve%g" /etc/dovecot/conf.d/90-sieve.conf
+
+#Create default.sieve
+[ ! -d /etc/dovecot/sieve ] && mkdir -p /etc/dovecot/sieve
+		
+echo -e "require [\"fileinto\"];
+if header :contains \"X-Karoshi-MailScanner-SpamScore\" \"sssss\" {
+  fileinto \"Spam\";
+}" > /etc/dovecot/sieve/default.sieve
+
+sievec /etc/dovecot/sieve/default.sieve	
 
 if [ `grep -c ^"#kerberos auth and sasl" /etc/dovecot/dovecot.conf` = 0 ]
 then
@@ -326,6 +344,17 @@ chown -R postfix.postfix /var/spool/MailScanner/incoming 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
 [ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
 
+#Create watermark secret
+MAILSCANNER_SECRET=$(openssl rand -hex 16)
+sed -i "s/MAILSCANNER_SECRET/$MAILSCANNER_SECRET/g" /etc/MailScanner/MailScanner.conf
+
+#Set organisation name
+sed -i "s/CHANGETHISNAME/$REALM/g" /etc/MailScanner/MailScanner.conf
+sed -i "s/X-YOURDOMAIN-COM/X-$REALM/g" /etc/MailScanner/spam.assassin.prefs.conf
+
+#Link Mailscanner spamassasin
+ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/spamassassin/mailscanner-spamassassin.cf
+
 ########################
 #Ensure htaccess is enabled
 ########################
@@ -351,6 +380,8 @@ echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/
 echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/postfixstats.cron
 #Create a cron job to delete old Trash and Spam mail
 echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/delete_old_mail > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/delete_old_mail.cron
+#Create a cronjob to update spamassassin
+echo 10 07 '*' '*' '*' sa-update > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/update_spam_asassassin_rules.cron
 
 #######################
 #Refresh cronjobs
@@ -401,13 +432,9 @@ then
 fi
 
 #Set sogo limits
-if [ -f /etc/default/sogo ]
-then
-	if [ `grep -c ^"PREFORK=" /etc/default/sogo` = 0 ]
-	then 
-		echo PREFORK=10 >> /etc/default/sogo 
-	fi
-fi
+
+echo PREFORK=25 > /etc/default/sogo
+echo USER=sogo >> /etc/default/sogo  
 
 #Modify /etc/sogo/sogo.conf
 

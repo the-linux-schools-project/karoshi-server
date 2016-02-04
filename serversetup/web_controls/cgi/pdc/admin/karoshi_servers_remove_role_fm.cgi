@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -59,7 +59,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=7
 #Assign SERVERNAME
 
 COUNTER=2
@@ -247,7 +247,12 @@ then
 	get_role_name
 	if [ $ROLE_NAME_STATUS != notset ]
 	then
-	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;">
+			<button class="info" name="___RemoveModule___" value="___MODULE___'$ROLE_FILE'___">
+			<img src="'$ICON'" alt="'$"Remove"'">
+			<span>'$CONSEQUENCES'</span>
+			</button>
+		</td></tr>'
 	fi
 else
 	for ROLES in /opt/karoshi/server_network/servers/$SERVERNAME/*
@@ -257,14 +262,24 @@ else
 
 		if [ $ROLE_NAME_STATUS != notset ] && [ $ROLE_FILE != 1dc ] && [ $ROLE_FILE != 1domainmember ] && [ $ROLE_FILE != 2users-groups ]
 		then
-			echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'$ROLE_FILE'___" type="image" class="images" src="'$ICON'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+			echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$ROLE_NAME'</td><td style="vertical-align: top;">
+				<button class="info" name="___RemoveModule___" value="___MODULE___'$ROLE_FILE'___">
+				<img src="'$ICON'" alt="'$"Remove"'">
+				<span>'$CONSEQUENCES'</span>
+				</button>
+			</td></tr>'
 		fi
 	done
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ]
 then
-	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remove Server"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___REMOVESERVER___" type="image" class="images" src="'$ICON'" value=""><span>'$"Removes all designations for this server."'</span></a></td></tr>'
+	echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remove Server"'</td><td style="vertical-align: top;">
+		<button class="info" name="___RemoveServer___" value="___MODULE___REMOVESERVER___">
+		<img src="'$ICON'" alt="'$"Remove"'">
+		<span>'$"Removes all designations for this server."'</span>
+		</button>
+	</td></tr>'
 fi
 
 echo '</tbody></table><br></form></div></div></body></html>'
