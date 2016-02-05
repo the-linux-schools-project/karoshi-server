@@ -190,7 +190,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 [ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
 '
 
-echo '<li>'$SERVERNAME' - '$"Copying module"'</li><br>'
+echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
 
 #Copy in domain information
 scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null

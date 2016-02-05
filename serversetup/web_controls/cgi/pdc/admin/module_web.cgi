@@ -165,5 +165,5 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$MYSQLDB:$MYSQLUSER:$MYSQLPASS:$MYSQLPORT:" | sudo -H /opt/karoshi/web_controls/exec/module_web
-echo '<li>'$"Setup Web Server" - $"Completed"'</li></div></div></body></html>'
+echo '<ul><li>'$"Setup Web Server" - $"Completed"'</li></div></div></body></html>'
 exit

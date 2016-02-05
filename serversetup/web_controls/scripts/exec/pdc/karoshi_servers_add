@@ -116,7 +116,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 if [ "$SERVER" = "$REALM" ]
 then
-	echo "<li>$SERVER - $"The server name cannot be the same as the domain."</li>"
+	echo "<ul><li>$SERVER - $"The server name cannot be the same as the domain."</li></ul>"
 	echo `date`: karoshi_servers_add - $SERVER - $"The server name cannot be the same as the domain." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
@@ -138,7 +138,7 @@ chmod 0700 /root/.ssh
 if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
 then
 	echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo '<li><b>'$"Creating server ssh key"' - '$"This will take some time."'</b></li><br>'
+	echo '<ul><li><b>'$"Creating server ssh key"' - '$"This will take some time."'</b></li></ul>'
 	#Check that timeout has been set
 	TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 	[ $TIMEOUTSTATUS != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
@@ -249,7 +249,7 @@ exit 101
 if [ $SSHRESULT = 102 ]
 then
 	#Server name does not match
-	echo "<li>$SERVER - this name does not match the hostname of the server you are connecting to.</li>"
+	echo "<ul><li>$SERVER - this name does not match the hostname of the server you are connecting to.</li></ul>"
 	echo `date`: karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
@@ -258,7 +258,7 @@ fi
 if [ $SSHRESULT = 103 ]
 then
 	#TCPIP zone information is not correct
-	echo '<li>'$SERVER' - '$"network settings for this server show that it should not be in the same zone as the main server."'</li>'
+	echo '<ul><li>'$SERVER' - '$"network settings for this server show that it should not be in the same zone as the main server."'</li>'
 	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"Network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
@@ -267,7 +267,7 @@ fi
 if [ $SSHRESULT = 104 ]
 then
 	#TCPIP zone information is not correct
-	echo '<li>$SERVER - '$"network settings for this server show that it should be in the same zone as the main server."'</li>'
+	echo '<ul><li>$SERVER - '$"network settings for this server show that it should be in the same zone as the main server."'</li>'
 	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
@@ -275,7 +275,7 @@ fi
 
 if [ $SSHRESULT != 0 ]
 then
-	echo '<li>'$SERVER' - '$"SSH connection failure"'</li>'
+	echo '<ul><li>'$SERVER' - '$"SSH connection failure"'</li>'
 	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"SSH connection failure" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	sleep 3
 	exit 101
@@ -302,7 +302,7 @@ then
 		#Make sure that authtype is set to none if this is the case since cannot different realms cannot join together at this point.
 		if [ $AUTHENTICATION != none ]
 		then
-			echo "<li>$SERVER - this server is in the wrong domain for this authentication type.</li>"
+			echo "<ul><li>$SERVER - this server is in the wrong domain for this authentication type.</li></ul>"
 			echo `date`: "karoshi_servers_add - $SERVER this server is in the wrong domain for this authentication type by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			sleep 3
 			exit 101

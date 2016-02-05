@@ -233,9 +233,9 @@ then
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		if [ $PARITY = 0 ]
 		then
-			echo '<li>'$"Creating ZFS mirror"'</li>'
+			echo '<ul><li>'$"Creating ZFS mirror"'</li>'
 		else		
-			echo '<li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+			echo '<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li>'
 		fi
 		#Check that there is not already a pool created for this zfs raid
 		if [ `zpool status | grep -c -w $POOLNAME` -gt 0 ]
@@ -308,7 +308,7 @@ then
 				STATUS=$?
 			done
 
-			echo '<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
+			echo '<ul><li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
 
 			COUNTER=1
 			while [ $COUNTER -lt 30 ]
@@ -319,7 +319,7 @@ then
 			done
 
 			#Format the partition as ext4
-			echo '<li>'$"Formating the partition"' - ext4</li>'
+			echo '<ul><li>'$"Formating the partition"' - ext4</li>'
 			mkfs.ext4 /$ZPOOLTOPPATH/$POOLNAME/storage
 		fi
 
@@ -351,7 +351,7 @@ then
 				#Stop service if it is running
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li>'
+					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
 				fi
 				let COUNTER=$COUNTER+1
@@ -380,7 +380,7 @@ then
 		if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
 		then
 			#Umount the partition
-			echo '<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
+			echo '<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
 			umount $MOUNTPOINT
 
 			#Backup /etc/fstab
@@ -447,7 +447,7 @@ done' > /etc/rc2.d/S90zfs-mount-all
 			do
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li>'
+					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
 				fi
 				let COUNTER=$COUNTER+1

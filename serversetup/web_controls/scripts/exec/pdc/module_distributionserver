@@ -177,10 +177,10 @@ then
 	touch /etc/exports
 	if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
 	then
-		echo '<li>'$"Modifying"' /etc/exports</li>'
+		echo '<ul><li>'$"Modifying"' /etc/exports</li>'
 		echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
 	fi
-	echo '<li>'$"Restarting"' nfs</li>'
+	echo '<ul><li>'$"Restarting"' nfs</li>'
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_start 1>/dev/null
@@ -195,7 +195,7 @@ then
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 69</li><br>'
+		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 69</li></ul>'
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"69"	"-"#"tftp_server_rule /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -205,7 +205,7 @@ then
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 2049</li><br>'
+		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 2049</li></ul>'
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"2049"	"-"#"nfs_server_rule /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -215,7 +215,7 @@ then
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo "<br><li>$SHOREWALLMSG - tcp 111</li><br>"
+		echo "<br><li>$SHOREWALLMSG - tcp 111</li></ul>"
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"111"	"-"#"portmap_server_rule /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -225,7 +225,7 @@ then
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 33777</li><br>'
+		echo '<br><li>'$"The following extra ports are being allowed"' - tcp 33777</li></ul>'
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"33777"	"-"#"mountd_server_rule /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -295,7 +295,7 @@ rm -f /home/tftpboot/menu.cfg
 cp -f /home/tftpboot/stdmenu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
 rm -f /home/tftpboot/stdmenu.cfg
 
-echo "<br><li>"Restarting tftpd"</li><br>"
+echo "<br><li>"Restarting tftpd"</li></ul>"
 
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop 1>/dev/null
 sleep 1
@@ -318,10 +318,10 @@ fi
 touch /etc/exports
 if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
 then
-echo "<br><li>"Modifying /etc/exports"</li><br>"
+echo "<br><li>"Modifying /etc/exports"</li></ul>"
 echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
 fi
-echo "<br><li>"Restarting nfs"</li><br>"
+echo "<br><li>"Restarting nfs"</li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop 1>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start 1>/dev/null
@@ -337,7 +337,7 @@ MODCHECK=`grep -c -w \#tftp_server_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo "<br><li>'$"The following extra ports are being allowed"' - tcp 69</li><br>"
+echo "<br><li>'$"The following extra ports are being allowed"' - tcp 69</li></ul>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"69"	"-"#"tftp_server_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -347,7 +347,7 @@ MODCHECK=`grep -c -w \#nfs_server_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo "<br><li>'$"The following extra ports are being allowed"' - tcp 2049</li><br>"
+echo "<br><li>'$"The following extra ports are being allowed"' - tcp 2049</li></ul>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"2049"	"-"#"nfs_server_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -357,7 +357,7 @@ MODCHECK=`grep -c -w \#portmap_server_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo "<br><li>'$"The following extra ports are being allowed"' - tcp 111</li><br>"
+echo "<br><li>'$"The following extra ports are being allowed"' - tcp 111</li></ul>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"111"	"-"#"portmap_server_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -367,7 +367,7 @@ MODCHECK=`grep -c -w \#mountd_server_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 RESTART_SHOREWALL=yes
-echo "<br><li>'$"The following extra ports are being allowed"' - tcp 33777</li><br>"
+echo "<br><li>'$"The following extra ports are being allowed"' - tcp 33777</li></ul>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"33777"	"-"#"mountd_server_rule /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -378,7 +378,7 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-echo "<br><li>"'$"Restarting shorewall"'"</li><br>"
+echo "<br><li>"'$"Restarting shorewall"'"</li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -400,5 +400,5 @@ echo $SERVERNAME > /opt/karoshi/server_network/distribution_server
 sed -i 's/DISTROCTRL=no/DISTROCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Show completed message
-echo "<br><li>"$TITLE - $"Completed""</li><br>"
+echo "<br><li>"$TITLE - $"Completed""</li></ul>"
 

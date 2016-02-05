@@ -150,7 +150,7 @@ function install_gitlab {
 	if [ $SERVERNAME == `hostname-fqdn` ]; then
 		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:$PDCIP: | /opt/karoshi/serversetup/modules/gitlab/setupgitlab
 	else
-		echo '<li>'$SERVERNAME' - '$"Copying module"'</li><br>'
+		echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
 		#Remote server
 		#Copy in module
 		scp -p -r /opt/karoshi/serversetup/modules/gitlab root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null

@@ -116,7 +116,7 @@ fi
 
 if [ $WEBSERVER = `hostname-fqdn` ]
 then
-	echo '<li>'$"You cannot setup a reverse proxy on the main server."'</li>'
+	echo '<ul><li>'$"You cannot setup a reverse proxy on the main server."'</li>'
 	echo `date`: module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
@@ -199,7 +199,7 @@ source /opt/karoshi/serversetup/variables/distro
 ##########################
 #Install nginx
 ##########################
-echo "<li>"'$"Checking for modules"'"</li><br>"
+echo "<li>"'$"Checking for modules"'"</li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/reverseproxy/software
 
 ###########################
@@ -222,7 +222,7 @@ touch /etc/nginx/proxysites
 ###########################
 #Show completed message
 ###########################
-echo "<br><li>'$"Setup Reverse Proxy Completed"'</li><br>"
+echo "<br><li>'$"Setup Reverse Proxy Completed"'</li></ul>"
 '
 
 #Add in any existing reverse proxy rules

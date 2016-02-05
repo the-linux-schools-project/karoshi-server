@@ -123,7 +123,7 @@ then
 	fi
 fi
 
-echo "<li>"$SERVERNAME: $"The module has been removed.""</li><br>"
+echo "<li>"$SERVERNAME: $"The module has been removed.""</li></ul>"
 sleep 5
 exit
 }
@@ -169,7 +169,7 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 	'
 	fi
-	echo "<li>"$SERVERNAME: $"Reverse Proxy Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Reverse Proxy Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver
 	completed
 fi
@@ -180,7 +180,7 @@ fi
 ##########################
 if [ $MODULE = apacheserver ]
 then
-	echo "<li>"$SERVERNAME: $"Web Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Web Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
 	completed
 fi
@@ -233,7 +233,7 @@ then
 		#Restart shorewall
 		if [ $RESTART_SHOREWALL = yes ]
 		then
-			echo '<br><li>'$"Restarting"' shorewall</li><br>'
+			echo '<br><li>'$"Restarting"' shorewall</li></ul>'
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 			echo "<br>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
@@ -306,7 +306,7 @@ then
 		'
 	fi
 
-	echo "<li>"$SERVERNAME: $"Distribution Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Distribution Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
 	completed
 fi
@@ -317,7 +317,7 @@ fi
 ##########################
 if [ $MODULE = federated_server ]
 then
-	echo "<li>"$SERVERNAME: $"Removing federated server.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing federated server.""</li></ul>"
 
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	#Remove federated server flag
@@ -337,7 +337,7 @@ then
 	fi
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Federated Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Federated Server" - $"Designation removed.""</li></ul>"
 	[ -d /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 	completed
 fi
@@ -349,7 +349,7 @@ fi
 if [ $MODULE = backupserver ]
 then
 	#Unflag backup server
-	echo "<li>"$SERVERNAME: $"Backup Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Backup Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/backupserver
 	[ -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/backup_servers/servers/$SERVERNAME
 	#Check to see if any other servers are backing up to this server
@@ -361,7 +361,7 @@ then
 			do
 				BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
 				rm -f $BACKUP_CLIENTS
-				echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
+				echo '<ul><li>'$BACKUP_CLIENT': '$"Backup disabled"'</li></ul>'
 
 				echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			done
@@ -388,7 +388,7 @@ then
 		[ -d /var/www/html/smbwebclient ] && rm -f -R /var/www/html/smbwebclient
 		'
 	fi
-	echo "<li>"$SERVERNAME: $"Home Access Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Home Access Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess
 	[ -f /opt/karoshi/server_network/homeaccess ] && rm -f /opt/karoshi/server_network/homeaccess
 	completed
@@ -401,7 +401,7 @@ fi
 ##########################
 if [ $MODULE = dhcp_server ]
 then
-	echo "<li>"$SERVERNAME: $"DHCP Server" - $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"DHCP Server" - $"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server
 	[ -f /opt/karoshi/server_network/dhcp_server ] && rm -f /opt/karoshi/server_network/dhcp_server
 	#Stop dhcpd
@@ -420,30 +420,30 @@ if [ $MODULE = emailserver ]
 then
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
-		echo "<li>"$SERVERNAME: $"Removing E-Mail Module""</li><br>"
+		echo "<li>"$SERVERNAME: $"Removing E-Mail Module""</li></ul>"
 
 		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/postfixstats.cron
 		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/tidyrootmail.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Mailscanner""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Mailscanner""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
 		[ -f /etc/default/mailscanner ] && echo run_mailscanner=0 >> /etc/default/mailscanner
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Postfix""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Postfix""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/postfix
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Dovecot""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Dovecot""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dovecot
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Sogo""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Sogo""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/sogo
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/memcached
 
@@ -476,24 +476,24 @@ then
 		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/tidyrootmail.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
-		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Mailscanner"'"</li><br>"
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Mailscanner"'"</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mailscanner
 		[ -f /etc/default/mailscanner ] && echo run_mailscanner=0 >> /etc/default/mailscanner
 
-		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Postfix"'"</li><br>"
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Postfix"'"</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/postfix
 
-		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Dovecot"'"</li><br>"
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server"' - '$"Stopping Dovecot"'"</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dovecot_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dovecot
 
-		echo "<li>"'$SERVERNAME': '$"E-Mail Server" - $"Stopping Sogo"'"</li><br>"
+		echo "<li>"'$SERVERNAME': '$"E-Mail Server" - $"Stopping Sogo"'"</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/sogo
 
-		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li><br>"
+		echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Stopping Memcached""</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_stop
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/memcached
 
@@ -523,7 +523,7 @@ then
 	fi
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"E-Mail Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
 	[ -f /opt/karoshi/server_network/emailserver ] && rm -f /opt/karoshi/server_network/emailserver
 	completed
@@ -536,7 +536,7 @@ fi
 
 if [ $MODULE = joomlaserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Joomla""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Joomla""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		[ -d /var/www/html/joomla ] && rm -f -R /var/www/html/joomla
@@ -554,7 +554,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Joomla" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Joomla" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/joomlaserver
 	completed
 fi
@@ -566,7 +566,7 @@ fi
 
 if [ $MODULE = radioserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing Icecast radio server""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Icecast radio server""</li></ul>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop icecast server
@@ -584,7 +584,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed""</li><br>"
+echo "<li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed""</li></ul>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 [ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
 completed
@@ -597,7 +597,7 @@ fi
 
 if [ $MODULE = remote_ssh ]
 then
-	echo "<li>"$SERVERNAME: $"Removing ssh access.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing ssh access.""</li></ul>"
 	#Change firewall rules to stop ssh access
 	MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
 	if [ $MODCHECK != 0 ]
@@ -611,7 +611,7 @@ then
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
 	completed
 fi
@@ -624,7 +624,7 @@ fi
 
 if [ $MODULE = moodle ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Moodle""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Moodle""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
@@ -652,7 +652,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Moodle Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle
 	[ -f /opt/karoshi/server_network/moodleserver ] && rm -f /opt/karoshi/server_network/moodleserver
 	completed
@@ -665,7 +665,7 @@ fi
 
 if [ $MODULE = owncloud ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Owncloud""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Owncloud""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		[ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
@@ -689,7 +689,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Owncloud Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Owncloud Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud
 	[ -f /opt/karoshi/server_network/owncloudserver ] && rm -f /opt/karoshi/server_network/owncloudserver
 	completed
@@ -704,16 +704,16 @@ fi
 
 if [ "$MODULE" = "gitlab" ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Gitlab""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Gitlab""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]; then
 		# Stop gitlab
-		echo "<li>Stopping Gitlab</li><br>"
+		echo "<li>Stopping Gitlab</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 
 		# Remove init script from boot
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
 
-		echo "<li>Removing files and repositories</li><br>"
+		echo "<li>Removing files and repositories</li></ul>"
 		# Remove gitlab files
 		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
 		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
@@ -722,18 +722,18 @@ then
 		# Remove gitlab repositories
 		[ -d /home/gitlab ] && rm -f -R /home/gitlab
 
-		echo "<li>Revoking apache site</li><br>"
+		echo "<li>Revoking apache site</li></ul>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
 		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 
-		echo "<li>Restarting apache</li><br>"
+		echo "<li>Restarting apache</li></ul>"
 		# Restart apache
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
-		echo "<li>Removing symlinks and users</li><br>"
+		echo "<li>Removing symlinks and users</li></ul>"
 		# Remove symlinks
 		[ -f /usr/bin/gitlab-ci-rails ] && rm -f /usr/bin/gitlab-ci-rails
 		[ -f /usr/bin/gitlab-ci-rake ] && rm -f /usr/bin/gitlab-ci-rake
@@ -772,7 +772,7 @@ then
 
 		if [ $RESTART_SHOREWALL = yes ]; then
 			# Restart shorewall
-			echo "<li>Restarting shorewall.</li><br>"
+			echo "<li>Restarting shorewall.</li></ul>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 			sleep 0.5
@@ -789,7 +789,7 @@ then
 
 		if [ $RESTART_SSH == yes ]; then
 			#Restart ssh
-			echo "<li>Restarting SSH.</li><br>"
+			echo "<li>Restarting SSH.</li></ul>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
 			sleep 0.5
@@ -813,27 +813,27 @@ then
 		cd $DIRECTORY
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		# Stop gitlab
-		echo "<li>Stopping Gitlab</li><br>"
+		echo "<li>Stopping Gitlab</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 		# Remove init script from boot
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/gitlab 1>/dev/null
-		echo "<li>Removing files and repositories</li><br>"
+		echo "<li>Removing files and repositories</li></ul>"
 		# Remove gitlab files
 		[ -d /opt/gitlab ] && rm -f -R /opt/gitlab
 		[ -d /var/opt/gitlab ] && rm -f -R /var/opt/gitlab
 		[ -d /etc/gitlab ] && rm -f -R /etc/gitlab
 		# Remove gitlab repositories
 		[ -d /home/gitlab ] && rm -f -R /home/gitlab
-		echo "<li>Revoking apache site</li><br>"
+		echo "<li>Revoking apache site</li></ul>"
 		# Remove and revoke apache site
 		a2dissite gitlab &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
 		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
-		echo "<li>Restarting apache.</li><br>"
+		echo "<li>Restarting apache.</li></ul>"
 		# Restart apache
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
-		echo "<li>Removing symlinks and users.</li><br>"
+		echo "<li>Removing symlinks and users.</li></ul>"
 		# Remove symlinks
 		[ -f /usr/bin/gitlab-ci-rails ] && rm -f /usr/bin/gitlab-ci-rails
 		[ -f /usr/bin/gitlab-ci-rake ] && rm -f /usr/bin/gitlab-ci-rake
@@ -874,7 +874,7 @@ then
 		fi
 		if [ $RESTART_SHOREWALL = yes ]; then
 			# Restart shorewall
-			echo "<li>Restarting shorewall.</li><br>"
+			echo "<li>Restarting shorewall.</li></ul>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 			sleep 0.5
@@ -889,7 +889,7 @@ then
 		fi
 		if [ $RESTART_SSH == yes ]; then
 			#Restart ssh
-			echo "<li>Restarting SSH.</li><br>"
+			echo "<li>Restarting SSH.</li></ul>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
 			sleep 0.5
@@ -898,7 +898,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Gitlab Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Gitlab Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab
 	[ -f /opt/karoshi/server_network/gitlabserver ] && rm -f /opt/karoshi/server_network/gitlabserver
 	completed
@@ -906,7 +906,7 @@ fi
 
 if [ $MODULE = openvpn ]
 then
-	echo "<li>"$SERVERNAME: $"Removing OpenVPN""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing OpenVPN""</li></ul>"
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	#Stop openvpn
 	source /opt/karoshi/serversetup/variables/distro
@@ -928,7 +928,7 @@ then
 	'
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"OpenVPN Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"OpenVPN Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
 	[ -f /opt/karoshi/server_network/vpnserver ] && rm -f /opt/karoshi/server_network/vpnserver
 	completed
@@ -941,7 +941,7 @@ fi
 
 if [ $MODULE = ocsserver ]
 then
-echo "<li>"$SERVERNAME: $"Removing OCS-Inventory""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing OCS-Inventory""</li></ul>"
 
 [ -d /var/www/html_karoshi/admin/ocs ] && rm -f -R /var/www/html_karoshi/admin/ocs
 [ -d /var/www/html_karoshi/tech/ocs ] && rm -f -R /var/www/html_karoshi/tech/ocs
@@ -982,7 +982,7 @@ sleep 0.5
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"OCS Inventory" - $"Designation removed""</li><br>"
+echo "<li>"$SERVERNAME: $"OCS Inventory" - $"Designation removed""</li></ul>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ocsserver
 [ -f /opt/karoshi/server_network/ocs_server ] && rm -f /opt/karoshi/server_network/ocs_server
 #Remove ocs item from the web management menu
@@ -997,7 +997,7 @@ fi
 
 if [ $MODULE = printserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Print Server""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Print Server""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		#Stop Cups
@@ -1012,7 +1012,7 @@ then
 		'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Print Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 	[ -f /opt/karoshi/server_network/printserver ] && rm -f /opt/karoshi/server_network/printserver
 
@@ -1029,7 +1029,7 @@ fi
 ##########################
 if [ $MODULE = squid ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Squid""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Squid""</li></ul>"
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
 		#Stop squid and dansguardian
@@ -1071,7 +1071,7 @@ then
 	'
 	fi
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Squid Internet Proxy" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apt-cacher-ng
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy
@@ -1092,7 +1092,7 @@ fi
 ##########################
 if [ $MODULE = monitoring ]
 then
-echo "<li>"$SERVERNAME: $"Removing Mon""</li><br>"
+echo "<li>"$SERVERNAME: $"Removing Mon""</li></ul>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Stop mon
@@ -1118,7 +1118,7 @@ source /opt/karoshi/serversetup/variables/distro
 '
 fi
 #Unflag server
-echo "<li>"$SERVERNAME: $"Monitor Server" - $"Designation removed""</li><br>"
+echo "<li>"$SERVERNAME: $"Monitor Server" - $"Designation removed""</li></ul>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
 [ -f /opt/karoshi/server_network/monitoringserver ] && rm -f /opt/karoshi/server_network/monitoringserver
 
@@ -1135,7 +1135,7 @@ fi
 if [ $MODULE = fileserver ]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo "<li>"$SERVERNAME: $"Removing File Server""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing File Server""</li></ul>"
 
 	#Change group information
 	for GROUPFILES in /opt/karoshi/server_network/group_information/*
@@ -1147,7 +1147,7 @@ then
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"File Server" - $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
 	completed
 fi
@@ -1155,7 +1155,7 @@ fi
 
 if [ $MODULE = REMOVESERVER ]
 then
-	echo "<li>"$SERVERNAME: $"Removing Server""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing Server""</li></ul>"
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 	source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -1169,7 +1169,7 @@ then
 	then
 		#Demote from dc role in samba4
 		ssh -x -o PasswordAuthentication=no $SERVERNAME '
-		echo "<li>"'$SERVERNAME': '$"Demoting domain controller role"'"</li><br>"
+		echo "<li>"'$SERVERNAME': '$"Demoting domain controller role"'"</li></ul>"
 		samba-tool domain demote --username=Administrator --password='$LDAPPASS'
 		'
 	fi
@@ -1205,7 +1205,7 @@ then
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Designation removed.""</li><br>"
+	echo "<li>"$SERVERNAME: $"Designation removed.""</li></ul>"
 	[ -d /opt/karoshi/server_network/servers/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/servers/$SERVERNAME
 	[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 	[ -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME ] && rm -f /opt/karoshi/server_network/ldap_clients/$SERVERNAME
@@ -1220,7 +1220,7 @@ then
 				do
 				BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
 				rm -f $BACKUP_CLIENTS
-				echo '<li>'$BACKUP_CLIENT': '$"Backup disabled"'</li><br>'
+				echo '<ul><li>'$BACKUP_CLIENT': '$"Backup disabled"'</li></ul>'
 				echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			done
 		fi
@@ -1233,10 +1233,10 @@ fi
 ##########################
 if [ $MODULE = ldapserver ]
 then
-	echo "<li>"$SERVERNAME: $"Removing LDAP Server""</li><br>"
+	echo "<li>"$SERVERNAME: $"Removing LDAP Server""</li></ul>"
 
 	#Unflag server
-	echo "<li>"$SERVERNAME: $"Designation removed""</li><br>"
+	echo "<li>"$SERVERNAME: $"Designation removed""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/ldapserver
 	[ -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME
 
@@ -1250,7 +1250,7 @@ then
 fi
 
 #Unflag server
-echo "<li>"$SERVERNAME: $"Designation removed""</li><br>"
+echo "<li>"$SERVERNAME: $"Designation removed""</li></ul>"
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/$MODULE
 
 completed

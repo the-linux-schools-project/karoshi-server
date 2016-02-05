@@ -257,7 +257,7 @@ then
 	if [ $COPYAFTER = yes ]
 	then
 		FOLDERBASE=`echo $FOLDER | sed "s/\/$FOLDERSHORT//g"` 
-		echo '<li>'$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE'</li>'
+		echo '<ul><li>'$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE'</li>'
 
 	
 	

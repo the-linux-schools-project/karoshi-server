@@ -188,7 +188,7 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 	then
 		for USERFOLDER in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 		do
-			echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
+			echo "<li>"$USERFOLDER: Setting Permissions"</li></ul>"
 			if [ ! -d $HOMEPATH/$USERFOLDER ]
 			then
 				mkdir -p $HOMEPATH/$USERFOLDER
@@ -201,7 +201,7 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 		ssh -x -o PasswordAuthentication=no $NEWSERVER '
 		for USERFOLDER in `getent passwd | grep ":'$HOMEPATH'/" | cut -d: -f1`
 		do
-			echo "<li>"$USERFOLDER: Setting Permissions"</li><br>"
+			echo "<li>"$USERFOLDER: Setting Permissions"</li></ul>"
 			if [ ! -d '$HOMEPATH'/$USERFOLDER ]
 				then
 				mkdir -p '$HOMEPATH'/$USERFOLDER
@@ -310,7 +310,7 @@ then
 		#Copy work back to this server
 		if [ $USERLISTCOUNT -gt 0 ]
 		then
-			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
+			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li></ul>"
 			while  [ $COUNTER -lt $USERLISTCOUNT ]
 			do
 				USERNAME=${USERLIST[$COUNTER]}
@@ -322,7 +322,7 @@ then
 				PID1=$!
 				rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group  root@$CURRENTSERVER:/$HOMEPATH/$USERNAME "$HOMEPATH/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				kill $PID1
-				echo "</li><br>"
+				echo "</li></ul>"
 				let COUNTER=$COUNTER+1
 			done
 		fi
@@ -334,7 +334,7 @@ then
 
 		if [ $USERLISTCOUNT -gt 0 ]
 		then
-			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
+			echo "<li>"$USERLISTCOUNT home folders. Please wait"</li></ul>"
 			while  [ $COUNTER -lt $USERLISTCOUNT ]
 			do
 
@@ -348,7 +348,7 @@ then
 				PID1=$!
 				rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "$HOMEPATH"/"$USERNAME" root@$NEWSERVER:/$HOMEPATH/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				kill $PID1
-				echo "</li><br>"
+				echo "</li></ul>"
 				let COUNTER=$COUNTER+1
 			done
 		fi
@@ -384,7 +384,7 @@ then
 
 			if [ $USERLISTCOUNT -gt 0 ]
 			then
-				echo "<li>"$USERLISTCOUNT home folders. Please wait"</li><br>"
+				echo "<li>"$USERLISTCOUNT home folders. Please wait"</li></ul>"
 				while  [ $COUNTER -lt $USERLISTCOUNT ]
 				do
 					USERNAME=${USERLIST[$COUNTER]}
@@ -396,7 +396,7 @@ then
 					PID1=$!
 					rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group /opt/karoshi/mount/$CURRENTSERVER"$HOMEPATH"/"$USERNAME" /opt/karoshi/mount/$NEWSERVER"$HOMEPATH"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 					kill $PID1
-					echo "</li><br>"
+					echo "</li></ul>"
 					let COUNTER=$COUNTER+1
 				done
 				#Unmount sshfs shares

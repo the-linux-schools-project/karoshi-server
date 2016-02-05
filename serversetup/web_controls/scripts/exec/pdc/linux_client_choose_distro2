@@ -127,7 +127,7 @@ then
 		[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
 		mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
 		#Mount iso
-		echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li><br>"
+		echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li></ul>"
 		mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
 		#Copy files
 		echo "<li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li>"
@@ -136,7 +136,7 @@ then
 		cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
 		echo "</pre>"
 		#Unmount iso
-		echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li><br>"
+		echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li></ul>"
 		umount /media/iso.$$
 		rm -f -R /media/iso.$$
 		#Copy out files
@@ -195,7 +195,7 @@ then
 		fi
 
 		#Restart nfs server
-		echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
+		echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -208,7 +208,7 @@ then
 		[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
 		[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
 		'
-		echo '<br><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li><br>'
+		echo '<br><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li></ul>'
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
 
@@ -218,7 +218,7 @@ then
 		[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
 		mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
 		#Mount iso
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li><br>"
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li></ul>"
 		mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
 		#Copy files
 		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li>"
@@ -227,7 +227,7 @@ then
 		cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
 		echo "</pre>"
 		#Unmount iso
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li><br>"
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li></ul>"
 		umount /media/iso.'$$'
 		rm -f -R /media/iso.'$$'
 		#Copy out files
@@ -282,7 +282,7 @@ then
 		fi
 
 		#Restart nfs server
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
+		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -322,7 +322,7 @@ then
 fi
 
 #Restart nfs server
-echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li><br>"
+echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
 source /opt/karoshi/serversetup/variables/distro
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -352,7 +352,7 @@ then
 fi
 
 #Restart nfs server
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li><br>"
+echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
 source /opt/karoshi/serversetup/variables/distro
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop

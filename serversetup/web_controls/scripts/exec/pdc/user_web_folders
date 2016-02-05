@@ -234,10 +234,10 @@ then
 		#Make sure suphp is installed
 		if [ ! -f /etc/apache2/mods-available/suphp.load ]
 		then
-			echo '<li>'$"Updating the repository"'</li><br><br>'
+			echo '<ul><li>'$"Updating the repository"'</li></ul><br>'
 			sleep 1
 			apt-get update
-			echo '<br><br><li>'$"Installing suphp and suexec"'</li><br><br>'
+			echo '<br><br><li>'$"Installing suphp and suexec"'</li></ul><br>'
 			apt-get install -y libapache2-mod-suphp apache2-suexec
 		fi
 
@@ -275,10 +275,10 @@ then
 		#Make sure suphp is installed
 		if [ ! -f /etc/apache2/mods-available/suphp.load ]
 		then
-			echo "<li>"'$"Updating the repository"'"</li><br><br>"
+			echo "<li>"'$"Updating the repository"'"</li></ul><br>"
 			sleep 1
 			apt-get update
-			echo "<br><br><li>"'$"Installing suphp and suexec"'"</li><br><br>"
+			echo "<br><br><li>"'$"Installing suphp and suexec"'"</li></ul><br>"
 			apt-get -y install libapache2-mod-suphp apache2-suexec
 		fi
 

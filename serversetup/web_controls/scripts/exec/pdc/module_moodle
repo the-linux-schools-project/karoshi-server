@@ -182,7 +182,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/moodle/setupmoodle
 else
-echo '<li>'$SERVERNAME' - '$"Copying module"'</li><br>'
+echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
 #Remote server
 #Copy in module
 scp -p -r /opt/karoshi/serversetup/modules/moodle root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
@@ -223,11 +223,11 @@ if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 PORTCHECK=53,88,389
-echo "<li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li><br>"
+echo "<li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
 SCANRESULT=`nmap '$LDAPSERVER' -p $PORTCHECK -PN`
 for PORT in `echo $PORTCHECK | sed "s/,/ /g"`
 do
-echo "<li>"Checking $PORT"</li><br>"
+echo "<li>"Checking $PORT"</li></ul>"
 if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
 then
 echo Error - The ldap server cannot be contacted on $PORT"<br>"
@@ -263,7 +263,7 @@ URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUX
 }
 
 function add_moodle_users {
-echo '<li>'$"Adding users to the moodle database"'</li>'
+echo '<ul><li>'$"Adding users to the moodle database"'</li>'
 /opt/karoshi/serversetup/modules/moodle/moodle_add_all_users
 }
 
@@ -347,7 +347,7 @@ if [ $COPYMOODLE = yes ]
 then
 CURRENTSERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/SERVERNAME`
 echo "<b>"$TRANSFERMSG1"</b><br><br>"
-echo "<li>"$CURRENTSERVERNAMEMSG - $CURRENTSERVERNAME - $NEWSERVERNAMEMSG - $SERVERNAME"</li><br>"
+echo "<li>"$CURRENTSERVERNAMEMSG - $CURRENTSERVERNAME - $NEWSERVERNAMEMSG - $SERVERNAME"</li></ul>"
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
@@ -355,7 +355,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
 function set_moodle_perms {
 
-echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li><br>"
+echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li></ul>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod 0440 -R /var/www/html/moodle
@@ -370,7 +370,7 @@ chmod u+X,g+X -R /var/www/html/moodle
 chown -R root.$APACHEGROUP /var/www/html/moodle
 '
 fi
-echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/moodle-data"</li><br>"
+echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/moodle-data"</li></ul>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod 0600 -R /var/www/moodle-data
@@ -399,7 +399,7 @@ fi
 ############################
 #Copy /var/www/html/moodle
 ############################
-echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li><br><br>"
+echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li></ul><br>"
 sleep 2
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -441,7 +441,7 @@ fi
 ############################
 #Copy /var/www/moodle-data
 ############################
-echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li><br><br>"
+echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li></ul><br>"
 sleep 2
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -487,7 +487,7 @@ set_moodle_perms
 ##########################
 #Dump existing moodle database
 ##########################
-echo "<li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li><br><br>"
+echo "<li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li></ul><br>"
 
 if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
 then
@@ -530,7 +530,7 @@ fi
 ######################
 #Pipe in database
 ######################
-echo "<li>"$SERVERNAME - $PIPEDBMSG"</li><br><br>"
+echo "<li>"$SERVERNAME - $PIPEDBMSG"</li></ul><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Get moodle password

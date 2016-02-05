@@ -210,7 +210,7 @@ cat /opt/karoshi/server_network/dhcp/network_boot_list > /etc/dhcp/dhcpd_client_
 
 source /opt/karoshi/serversetup/variables/distro
 #Restart DHCP
-echo '<li>'$HOSTNAME' - '$"Restarting dhcp"'</li>'
+echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li>'
 echo `date`: client_boot_controls2 - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -223,7 +223,7 @@ then
 		if [ "$DHCPSERVER" != `hostname-fqdn` ]
 		then
 			DHCPSERVER2=`echo "$DHCPSERVER" | cut -d. -f1`
-			echo '<li>'$DHCPSERVER2' - '$"Restarting dhcp"'</li>'
+			echo '<ul><li>'$DHCPSERVER2' - '$"Restarting dhcp"'</li>'
 			echo `date`: client_boot_controls2 - $DHCPSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			scp /etc/dhcp/dhcpd_client_boot.conf root@$DHCPSERVER:/etc/dhcp/
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '

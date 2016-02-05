@@ -298,9 +298,9 @@ then
 			fi
 			if [ $DAY != never ]
 			then
-				echo '<li>'Scheduling $SERVERNAME_SHORT:  Time $HOURS:$MINUTES'</li>'
+				echo '<ul><li>'Scheduling $SERVERNAME_SHORT:  Time $HOURS:$MINUTES'</li>'
 			else
-				echo '<li>'$SERVERNAME_SHORT:  Disabling update'</li>'
+				echo '<ul><li>'$SERVERNAME_SHORT:  Disabling update'</li>'
 			fi
 			recordtime
 			scheduleupdate
@@ -332,9 +332,9 @@ then
 
 			if [ $DAY != never ]
 			then
-				echo '<li>'Scheduling $SERVERNAME_SHORT: Servermaster $SERVERMASTER Servertype $SERVERTYPE Time $HOURS:$MINUTES'</li>'
+				echo '<ul><li>'Scheduling $SERVERNAME_SHORT: Servermaster $SERVERMASTER Servertype $SERVERTYPE Time $HOURS:$MINUTES'</li>'
 			else
-				echo '<li>'$SERVERNAME_SHORT': Disabling update</li>'
+				echo '<ul><li>'$SERVERNAME_SHORT': Disabling update</li>'
 			fi
 			recordtime
 			scheduleupdate

@@ -136,11 +136,11 @@ then
 	then
 		add-apt-repository -y ppa:zfs-native/stable 1>/dev/null
 		RELOADPAGE=yes
-		echo '<li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<ul><li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		apt-get update
 		echo '</pre>'
 		UPDATEREPOS=no
-		echo '<li>'$"Installing ZFS - this can take a long time"'</li>'
+		echo '<ul><li>'$"Installing ZFS - this can take a long time"'</li>'
 		sleep 2
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		apt-get install -y ubuntu-zfs
@@ -155,11 +155,11 @@ then
 		if [ $UPDATEREPOS = yes ]
 		then
 			UPDATEREPOS=no
-			echo '<li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+			echo '<ul><li>Updating repositories</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 			apt-get update
 			echo '</pre>'
 		fi
-		echo '<li>Installing smartmontools</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<ul><li>Installing smartmontools</li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		apt-get install -y smartmontools
 		echo '</pre>'
 	fi

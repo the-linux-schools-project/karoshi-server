@@ -119,7 +119,7 @@ source /opt/karoshi/serversetup/variables/distro
 MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo '<li>'$RESTRICT' '$"Allowing access on port 22."'</li>'
+	echo '<ul><li>'$RESTRICT' '$"Allowing access on port 22."'</li>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	if [ ! -z "$RESTRICT" ]
 	then

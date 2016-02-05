@@ -189,7 +189,7 @@ fi
 ######################
 if [ $MODCHECK = 0 ] || [ $MODCHECK2 = 0 ] 
 then
-echo "<li>'$"Restarting shorewall"'</li><br>"
+echo "<li>'$"Restarting shorewall"'</li></ul>"
 /etc/init.d/'$SHOREWALLVER' stop 1>/dev/null
 /etc/init.d/'$SHOREWALLVER' start 1>/dev/null
 fi
