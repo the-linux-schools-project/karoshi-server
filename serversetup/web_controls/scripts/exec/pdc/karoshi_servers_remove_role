@@ -724,7 +724,7 @@ then
 
 		echo "<li>Revoking apache site</li></ul>"
 		# Remove and revoke apache site
-		a2dissite gitlab &>/dev/null
+		a2dissite gitlab-ssl.conf &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
 		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 
@@ -826,7 +826,7 @@ then
 		[ -d /home/gitlab ] && rm -f -R /home/gitlab
 		echo "<li>Revoking apache site</li></ul>"
 		# Remove and revoke apache site
-		a2dissite gitlab &>/dev/null
+		a2dissite gitlab-ssl.conf &>/dev/null
 		[ -f /etc/apache2/sites-available/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-available/gitlab-ssl.conf
 		[ -f /etc/apache2/sites-enabled/gitlab-ssl.conf ] && rm -f /etc/apache2/sites-enabled/gitlab-ssl.conf
 		echo "<li>Restarting apache.</li></ul>"
