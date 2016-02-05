@@ -114,68 +114,68 @@ if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ss
 	DocumentRoot /opt/gitlab/embedded/service/gitlab-rails/public
 
 	# Apache log directory
-  LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b" common_forwarded
-  ErrorLog  ${APACHE_LOG_DIR}/gitlab_error.log
+	LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b" common_forwarded
+	ErrorLog  ${APACHE_LOG_DIR}/gitlab_error.log
 
 	# Possible values include: debug, info, notice, warn, error, crit,
 	# alert, emerg.
 	LogLevel warn
 
-  CustomLog ${APACHE_LOG_DIR}/gitlab_forwarded.log common_forwarded
-  CustomLog ${APACHE_LOG_DIR}/gitlab_access.log combined env=!dontlog
+	CustomLog ${APACHE_LOG_DIR}/gitlab_forwarded.log common_forwarded
+	CustomLog ${APACHE_LOG_DIR}/gitlab_access.log combined env=!dontlog
 	CustomLog ${APACHE_LOG_DIR}/gitlab.log combined
 
-  	# SSL Engine Switch: Enable/Disable SSL for this virtual host.
-  	SSLEngine on
-		SSLProtocol all -SSLv2
-  	SSLHonorCipherOrder on
-  	SSLCipherSuite "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
-  	Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
-  	SSLCompression Off' >> /etc/apache2/sites-available/gitlab-ssl.conf
+	# SSL Engine Switch: Enable/Disable SSL for this virtual host.
+	SSLEngine on
+	SSLProtocol all -SSLv2
+	SSLHonorCipherOrder on
+	SSLCipherSuite "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+	Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+	SSLCompression Off' >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "  	SSLCertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "  	SSLCertificateKeyFile /etc/ssl/apache/$REALM.key" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "  	SSLCACertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo "" >> /etc/apache2/sites-available/gitlab-ssl.conf
-	echo -e '  	ProxyPreserveHost On
+	echo -e '	ProxyPreserveHost On
 
-  	# Leave slashed encoded
-  	AllowEncodedSlashes NoDecode
+	# Leave slashed encoded
+	AllowEncodedSlashes NoDecode
 
-  	<Location />
-  	  	# Authorisation apache 2.4+
-      	Require all granted
+	<Location />
+		# Authorisation apache 2.4+
+		Require all granted
 
-      	# Allow forwarding to gitlab-git-http-server (unicorn)
-      	ProxyPassReverse http://127.0.0.1:50010
+		# Allow forwarding to gitlab-git-http-server (unicorn)
+		ProxyPassReverse http://127.0.0.1:50010
 
-      	# Allow forwarding to gitlab rails (unicorn)
-      	ProxyPassReverse http://127.0.0.1:50009' >> /etc/apache2/sites-available/gitlab-ssl.conf
-	echo -e "  	  	ProxyPassReverse http://$ALIAS.$REALM/" >> /etc/apache2/sites-available/gitlab-ssl.conf
-	echo -e "  	</Location>
+		# Allow forwarding to gitlab rails (unicorn)
+		ProxyPassReverse http://127.0.0.1:50009' >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "		ProxyPassReverse http://$ALIAS.$REALM/" >> /etc/apache2/sites-available/gitlab-ssl.conf
+	echo -e "	</Location>
 
-  	# Apache equivalent of ngix try files
-  	RewriteEngine on
+	# Apache equivalent of ngix try files
+	RewriteEngine on
 
-  	# Forward these requests to gitlab-git-http-server
-		RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/repository/archive.* [OR]
-		RewriteCond %{REQUEST_URI} ^/api/v3/projects/.*/repository/archive.* [OR]
-		RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/(info/refs|git-upload-pack|git-receive-pack)$
-		RewriteRule .* http://127.0.0.1:50010%{REQUEST_URI} [P,QSA]
+	# Forward these requests to gitlab-git-http-server
+	RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/repository/archive.* [OR]
+	RewriteCond %{REQUEST_URI} ^/api/v3/projects/.*/repository/archive.* [OR]
+	RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/(info/refs|git-upload-pack|git-receive-pack)$
+	RewriteRule .* http://127.0.0.1:50010%{REQUEST_URI} [P,QSA]
 
-		# Forward any other requests to GitLab Rails app (Unicorn)
-		RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f [OR]
-		RewriteCond %{REQUEST_URI} ^/uploads
-		RewriteRule .* http://127.0.0.1:50009%{REQUEST_URI} [P,QSA,NE]
-		RequestHeader set X_FORWARDED_PROTO 'https'
-		RequestHeader set X-Forwarded-Ssl on
+	# Forward any other requests to GitLab Rails app (Unicorn)
+	RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f [OR]
+	RewriteCond %{REQUEST_URI} ^/uploads
+	RewriteRule .* http://127.0.0.1:50009%{REQUEST_URI} [P,QSA,NE]
+	RequestHeader set X_FORWARDED_PROTO 'https'
+	RequestHeader set X-Forwarded-Ssl on
 
-		# Apache error webpages
-		ErrorDocument 404 /404.html
-		ErrorDocument 422 /422.html
-		ErrorDocument 500 /500.html
-		ErrorDocument 503 /deploy.html
+	# Apache error webpages
+	ErrorDocument 404 /404.html
+	ErrorDocument 422 /422.html
+	ErrorDocument 500 /500.html
+	ErrorDocument 503 /deploy.html
 
 </VirtualHost>
 </IfModule>" >> /etc/apache2/sites-available/gitlab-ssl.conf
@@ -377,7 +377,8 @@ echo '<ul><li>'$"Extracting Gitlab"'</li></ul>'
 dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp 1>/dev/null 2>/dev/null
 #echo '</div>'
 # Copy files into place
-echo '<ul><li>'$"Copying Gitlab files into place - This may take a while"'</li></ul><div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo '<ul><li>'$"Copying Gitlab files into place - This may take a while"'</li></ul>'
+echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 rsync -a --no-i-r --info=progress2 /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
 
@@ -438,8 +439,8 @@ EOS" >> /etc/gitlab/gitlab.rb
 fi
 
 if [ "$RECONFIGUREGITLAB" == yes ]; then
-	echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;">'
-	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul>'
+	echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	gitlab-ctl reconfigure
 	# Restart gitlab
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
