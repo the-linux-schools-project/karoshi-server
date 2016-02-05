@@ -314,15 +314,15 @@ if [ "$downloadgitlab" == "1" ]; then
 		rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
 		echo '<ul><li>'$"Downloading Gitlab package from https://packages.gitlab.com/gitlab/gitlab-ce"'</li></ul>'
 
-		echo '<div style="height: 280px;width:40%;font-size: 100%;overflow:scroll;">'
+		echo '<div style="height: 280px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
-		wgetlog &
-		wgetPID=$!
+		#wgetlog &
+		#wgetPID=$!
 
-		wget --progress=bar --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2> /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt
+		wget --progress=bar --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2>&1
 		wgetOut=$?
 
-		kill $wgetPID
+		#kill $wgetPID
 
 		echo "</div>"
 
