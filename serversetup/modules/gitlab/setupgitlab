@@ -262,8 +262,8 @@ fi
 wgetlog () {
 	startPrint=0
 	startCheck=0
-	lastLine=0
-	oldLine=0
+	lastLine=""
+	oldLine=""
 	while [ "$startCheck" == "0" ]; do
 		[ -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt ] && startCheck=1
 	done
@@ -275,8 +275,8 @@ wgetlog () {
 	done
 
 	while [ "$startPrint" == "1" ]; do
-		lastLine=$(cat "/opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt" | wc -l)
-		[ ! $oldLine -eq $lastLine ] && echo "$(sed -n -e "$lastLine {p; q}" /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt)<br>"
+		lastLine=$(tail -n 1 /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt)
+		[ ! $oldLine -eq $lastLine ] && echo "${lastLine}<br>"
 		oldLine=$lastLine
 		sleep 1 # throttle update rate
 	done
