@@ -87,20 +87,6 @@ fi
 #Check data
 #########################
 
-#Check to see that SEARCH is not blank
-if [ -z "$SEARCH" ]
-then
-	echo "</div></body></html>"
-	exit
-fi
-
-#make sure that the search criteria has at least three spaces
-if [ ${#SEARCH} -le 2 ]
-then
-	echo "</div></body></html>"
-	exit
-fi
-
 #Sort out spaces
 SEARCH=`echo $SEARCH | sed 's/+/ /g'`
 
@@ -108,19 +94,44 @@ echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" >
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Search"' '$"Web Management"' - '$SEARCH'</div></td></tr></tbody></table><br>
-</div><div id="infobox"><table class="standard"><tbody><tr>'
+</div><div id="infobox">'
+
+#Check to see that SEARCH is not blank
+if [ -z "$SEARCH" ]
+then
+	echo $"No results found.""</div></div></div></body></html>"
+	exit
+fi
+
+#make sure that the search criteria has at least three spaces
+if [ ${#SEARCH} -le 2 ]
+then
+	echo $"Enter in more that two characters to search.""</div></div></div></body></html>"
+	exit
+fi
+
+echo '<table class="standard"><tbody><tr>'
 
 COUNTER=1
-for SEARCHLIST in `/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v 'class="top"' | sed 's/">/" class="searchlink">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g'`
-do
-	echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
-	if [ $COUNTER = 6 ]
-	then
-		echo "</tr><tr>"
-	fi
-	let COUNTER=$COUNTER+1
-done
 
+SEARCHRESULT=$(/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v singletext | grep -v 'class="top"' | sed 's/">/" class="simbutton">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g')
+
+if [ ! -z "$SEARCHRESULT" ]
+then
+
+	for SEARCHLIST in $SEARCHRESULT
+	do
+		if [ $COUNTER = 7 ]
+		then
+			echo "</tr><tr>"
+			COUNTER=1
+		fi
+		echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
+		let COUNTER=$COUNTER+1
+	done
+else
+	echo $"No results found."
+fi
 
 
 

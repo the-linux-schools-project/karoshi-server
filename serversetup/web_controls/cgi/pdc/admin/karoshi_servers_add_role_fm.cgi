@@ -350,7 +350,7 @@ else
 	</td>'
 fi
 
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ]
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<td style="vertical-align: top; height: 40px;">'$"Gitlab Server"'</td><td style="vertical-align: top;">'$GITLABSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_gitlab_fm.cgi" method="post">
 	<button class="info" name="_AddGitServer_" value="_SERVERNAME_'$SERVERNAME'_">
@@ -363,7 +363,7 @@ else
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info" name="_AddGitlabServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"Gitlab Server"'">
-	<span>'$"This will setup the Gitlab Server."'<br><br>'$"This module cannot be applied to a server without the web server module."'</span>
+	<span>'$"This will setup the Gitlab Server."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
 	</button>
 	</form>
 	</td>'
