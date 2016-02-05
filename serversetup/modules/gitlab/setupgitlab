@@ -67,7 +67,6 @@ source /opt/karoshi/server_network/domain_information/domain_name
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 
 LDAPSERVER=127.0.0.1
-
 #Get ldap server to use
 if [ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]; then
 	LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
@@ -80,22 +79,6 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/postfix
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ssh
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/fail2ban
-
-showdots() {
-DOTCOUNT=1
-SHOWDOTS=yes
-while [[ $SHOWDOTS = yes ]]
-do
-	echo "." 
-	sleep 1
-	let DOTCOUNT=$DOTCOUNT+1
-	if [ $DOTCOUNT = 80 ]
-	then
-		echo "<br>"
-		DOTCOUNT=1
-	fi
-done
-}
 
 #####################
 #Add gitlab virtual host to apache
@@ -274,9 +257,38 @@ fi
 #	fi
 #fi
 
+# The following function is temporary and in-efficient, please do not take example from this.
+# As wget does not output a progress bar, we will log output to a file, filter it and echo the last line each second.
+wgetlog () {
+	startPrint=0
+	startCheck=0
+	lastLine=0
+	oldLine=0
+	while [ "$startCheck" == "0" ]; do
+		[ -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt ] && startCheck=1
+	done
+
+	while [ "$startPrint" == "0" ]; do
+		if grep -q "Saving to: ‘/opt/karoshi/serversetup/modules/gitlab/gitlab.deb’" "/opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt"; then
+			startPrint=1
+		fi
+	done
+
+	while [ "$startPrint" == "1" ]; do
+		lastLine=$(cat "/opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt" | wc -l)
+		[ ! $oldLine -eq $lastLine ] && echo "$(sed -n -e "$lastLine {p; q}" /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt)<br>"
+		oldLine=$lastLine
+		sleep 1 # throttle update rate
+	done
+}
+# End of function
+
 ###########################
 #Download gitlab.deb package if needed.
 ###########################
+mkdir /opt/karoshi/.tempdata/gitlab_temp
+
+timeStamp="$(date +"%F-%H-%M-%S")"
 downloadgitlab="1"
 
 # Check whether the user has the tar.gz archive instead
@@ -285,7 +297,7 @@ if [ -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz ]; then
 	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
 	if [ "$checksum" == "11da28c6d65a109e9c261920094b2cac" ]; then
 		# Valid gitlab.tar.gz archive exists
-		echo '<ul><li>'$"Archive validated, skipping download."'</li></ul><br>'
+		echo '<ul><li>'$"Archive validated, skipping download."'</li></ul>'
 		downloadgitlab="0"
 	else
 		echo '<ul><li>'$"Archive invalid!"'</li></ul>'
@@ -295,33 +307,44 @@ fi
 if [ "$downloadgitlab" == "1" ]; then
 	[ ! -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb ] && echo -e "" >> /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
 	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
-	
+
 	if [ "$checksum" != "2258ff0b53b0040ba884d913b42aa170" ]; then
 		# The package does not exit and/or it is not valid
 		# Download Gitlab-CE 8.1.4 (Omnibus, Ubuntu Trusty amd64) Package from https://packages.gitlab.com/gitlab/gitlab-ce
 		rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
-
 		echo '<ul><li>'$"Downloading Gitlab package from https://packages.gitlab.com/gitlab/gitlab-ce"'</li></ul>'
 
-		showdots &
-		PID1=$!
+		echo '<div style="height: 280px;width:40%;font-size: 100%;overflow:scroll;">'
 
-		wget -nv -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download
-		STATUS=$?
-		kill $PID1
-		if [ $STATUS != 0 ]; then		
+		wgetlog &
+		wgetPID=$!
+
+		wget --progress=bar --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2> /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt
+		wgetOut=$?
+
+		kill $wgetPID
+
+		echo "</div>"
+
+		cp -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt "/opt/karoshi/logs/wget-gitlab${timeStamp}.txt"
+		rm -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt
+
+		if [ $wgetOut != 0 ]; then
 			#We failed so bail out.
-			echo '<ul><li>'$"There was a problem downloading the archive"'</li></ul>'
+			echo '<br><li>'$"There was a problem downloading the archive."'</li></ul>'
+			echo '<br><li>'$"Check the wget log at /opt/karoshi/logs/wget-gitlab${timeStamp}.txt"'</li></ul>'
 			sleep 5
 			exit 101
 		fi
-		
+
 		# Verify that the file is complete and that the correct file was downloaded
 		checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
 		if [ "$checksum" != "2258ff0b53b0040ba884d913b42aa170" ]; then
 			echo '<ul><li>'$"There was a problem verifying the downloaded archive."'</li></ul>'
 			sleep 5
 			exit 101
+		else
+			echo '<ul><li>'$"Downloaded archive verified!"'</li></ul>'
 		fi
 	else
 		echo '<ul><li>'$"Existing .deb archive validated, skipping download."'</li></ul>'
@@ -334,17 +357,12 @@ fi
 cd /opt/karoshi/.tempdata/
 
 echo '<ul><li>'$"Extracting Gitlab"'</li></ul>'
-mkdir /opt/karoshi/.tempdata/gitlab_temp
 #tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz -C /opt/karoshi/.tempdata/gitlab_temp
 dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp &>/dev/null
 
 # Copy files into place
 echo '<ul><li>'$"Copying Gitlab files into place - This may take a while."'</li></ul>'
-
-showdots &
-PID1=$!
 cp -rf /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
-kill $PID1
 
 # Symlink gitlab-ctl
 /opt/gitlab/embedded/bin/symlink_ctl_cmds /opt/gitlab
@@ -404,13 +422,10 @@ fi
 
 if [ "$RECONFIGUREGITLAB" == yes ]; then
 	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul>'
-	showdots &
-	PID1=$!
 	gitlab-ctl reconfigure &>/dev/null
 	# Restart gitlab
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
-	kill $PID1
 fi
 
 #####################################
