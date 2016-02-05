@@ -257,6 +257,22 @@ fi
 #	fi
 #fi
 
+showdots() {
+DOTCOUNT=1
+SHOWDOTS=yes
+while [[ $SHOWDOTS = yes ]]
+do
+	echo "." 
+	sleep 1
+	let DOTCOUNT=$DOTCOUNT+1
+	if [ $DOTCOUNT = 80 ]
+	then
+		echo "<br>"
+		DOTCOUNT=1
+	fi
+done
+}
+
 # The following function is temporary and in-efficient, please do not take example from this.
 # As wget does not output a progress bar, we will log output to a file, filter it and echo the last line each second.
 wgetlog () {
@@ -314,17 +330,17 @@ if [ "$downloadgitlab" == "1" ]; then
 		rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
 		echo '<ul><li>'$"Downloading Gitlab package from https://packages.gitlab.com/gitlab/gitlab-ce"'</li></ul>'
 
-		echo '<div style="height: 280px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 		#wgetlog &
 		#wgetPID=$!
 
-		wget --progress=bar --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2>&1
+		wget --progress=dot:mega --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2>&1
 		wgetOut=$?
 
 		#kill $wgetPID
 
-		echo "</div>"
+		echo "</pre></div>"
 
 		cp -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt "/opt/karoshi/logs/wget-gitlab${timeStamp}.txt"
 		rm -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt
@@ -358,11 +374,12 @@ cd /opt/karoshi/.tempdata/
 
 echo '<ul><li>'$"Extracting Gitlab"'</li></ul>'
 #tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz -C /opt/karoshi/.tempdata/gitlab_temp
-dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp &>/dev/null
-
+dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp 1>/dev/null 2>/dev/null
+#echo '</div>'
 # Copy files into place
-echo '<ul><li>'$"Copying Gitlab files into place - This may take a while."'</li></ul>'
-cp -rf /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
+echo '<ul><li>'$"Copying Gitlab files into place - This may take a while"'</li></ul><div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+rsync -a --no-i-r --info=progress2 /opt/karoshi/.tempdata/gitlab_temp/opt/gitlab /opt/
 
 # Symlink gitlab-ctl
 /opt/gitlab/embedded/bin/symlink_ctl_cmds /opt/gitlab
@@ -374,7 +391,7 @@ chmod 600 /etc/gitlab/gitlab.rb
 
 # Delete temp extracted files (they total ~1GB)
 rm -rf /opt/karoshi/.tempdata/gitlab_temp
-
+echo '</pre></div>'
 ###########################
 #Modify gitlab configuration
 ###########################
@@ -421,11 +438,13 @@ EOS" >> /etc/gitlab/gitlab.rb
 fi
 
 if [ "$RECONFIGUREGITLAB" == yes ]; then
-	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul>'
-	gitlab-ctl reconfigure &>/dev/null
+	echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;">'
+	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	gitlab-ctl reconfigure
 	# Restart gitlab
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+	echo '</pre></div>'
 fi
 
 #####################################
