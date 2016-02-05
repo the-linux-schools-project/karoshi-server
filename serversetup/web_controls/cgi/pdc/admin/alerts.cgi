@@ -87,11 +87,7 @@ then
 		LINK=`echo "$DATA" | cut -d"," -f1`
 		DESCRIPTION=`echo "$DATA" | cut -d"," -f2`
 		echo '<tr><td>'$DESCRIPTION'</td><td>
-		<form name="checkservers" action="'$LINK'" method="get">
-		<button class="button" name="Check">
-		'$"Check"'
-		</button>
-		</form>
+		<a class="simbutton" href="'$LINK'">'$"Check"'</a>
 		</td></tr>'
 	done
 	echo '<tr><td>'$"Clear all warning messages"'</td><td>

@@ -80,8 +80,11 @@ fi
 
 echo '
 <style type="text/css">
-  #hide1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #333 !important}
-  #show1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #333 !important}
+ #hide1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #000 !important }
+ #show1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #000 !important }
+ #show1:hover{color: #fff !important }
+ #hide1:hover{color: #fff !important } 
+
  .row { vertical-align: top; height:auto !important; }
  .list {display:none; }
  .show {display: none; }

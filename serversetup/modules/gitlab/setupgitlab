@@ -32,6 +32,7 @@ REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ALIAS=$(echo "$DATA" | cut -s -d: -f5)
+PDCIP=$(echo "$DATA" | cut -s -d: -f6)
 
 if [ -z "$REMOTE_USER" ]; then
 	echo $(date)": setupgitlab - Blank remote user<br>"
@@ -53,6 +54,11 @@ if [ -z "$ALIAS" ]; then
 	exit 101
 fi
 
+if [ -z "$PDCIP" ]; then
+	echo $(date)": setupgitlab - Blank PDC IP<br>"
+	exit 101
+fi
+
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 
 source /opt/karoshi/serversetup/variables/distro
@@ -60,7 +66,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 
-PDCIP=$(net lookup `hostname-fqdn`)
 LDAPSERVER=127.0.0.1
 
 #Get ldap server to use
@@ -399,10 +404,13 @@ fi
 
 if [ "$RECONFIGUREGITLAB" == yes ]; then
 	echo '<ul><li>'$"Reconfiguring and restarting Gitlab -  This may take a while."'</li></ul>'
+	showdots &
+	PID1=$!
 	gitlab-ctl reconfigure &>/dev/null
 	# Restart gitlab
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/gitlab_start 1>/dev/null
+	kill $PID1
 fi
 
 #####################################
