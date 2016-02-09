@@ -74,7 +74,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$"Warning Messages"'</div>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Warning Messages"'</div></div><div id="infobox">'
 
 #Show warning messages
 #Check for any web management warnings
@@ -101,10 +101,5 @@ else
 	echo $"There are no warning messages."
 fi
 
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 
-
-########################
-#Unique key
-########################
-#+NfSlIeXzogrDRf0Q7W5LJPRH

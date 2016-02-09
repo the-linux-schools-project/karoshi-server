@@ -56,43 +56,42 @@ then
 	then
 		#Configure shorewall for tunnel
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
-		sed -i $LINENUM"c"\dnat"	"tun+"	"detect /etc/shorewall/interfaces
+		sed -i $LINENUM"c"\vpn"	"tun+"	"detect /etc/shorewall/interfaces
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 	fi
 
 
 	echo '<li>'$"The following extra ports are being allowed" - udp 1194'</li>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
-#Add dnat to zones file
-if [ grep -c ^dnat /etc/shorewall/zones = 0 ]
+#Add openvpn to zones file
+if [ `grep -c ^vpn /etc/shorewall/zones` = 0 ]
 then
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/zones | cut -d: -f1`
-	sed -i $LINENUM"c"\dnat"	"ipv4 /etc/shorewall/zones
+	sed -i $LINENUM"c"\vpn"	"ipv4 /etc/shorewall/zones
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/zones
 fi   
 
 #Add dnat to hosts file
-if [ `grep -c ^dnat /etc/shorewall/hosts` = 0 ]
+if [ `grep -c ^vpn /etc/shorewall/hosts` = 0 ]
 then
 	source /opt/karoshi/serversetup/variables/network_card_info
 	SERVERIP=$(dig `hostname-fqdn` +short)
 	SUBNETMASK=`ifconfig $NETWORK_INT | grep Mask | cut -d":" -f4`
 	SUBNET=`ipcalc -n $SERVERIP/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/hosts | cut -d: -f1`
-	sed -i $LINENUM"c"\dnat"	"$NETWORK_INT:$SUBNET /etc/shorewall/hosts
+	sed -i $LINENUM"c"\vpn"	"$NETWORK_INT:$SUBNET /etc/shorewall/hosts
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/hosts
 fi
 
-#Add dnat to tunnels file
-if [ `grep -c ^dnat /etc/shorewall/tunnels` = 0 ]
+#Add openvpnserver to tunnels file
+if [ `grep -c ^openvpnserver /etc/shorewall/tunnels` = 0 ]
 then
-	SERVERIP=$(dig `hostname-fqdn` +short)
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/tunnels | cut -d: -f1`
-	sed -i $LINENUM"c"\dnat"	"net"	"$SERVERIP /etc/shorewall/tunnels
+	sed -i $LINENUM"c"\openvpnserver:1194"	"net"	" 0.0.0.0/0 /etc/shorewall/tunnels
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/tunnels
 fi
 
