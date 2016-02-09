@@ -1636,11 +1636,6 @@ then
 	setfolderpermissions
 	make_default_users
 	make_profiles
-	#Do businesses want google safesearch?
-	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
-	then
-		/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
-	fi
 fi
 getyadpid
 [ ! -z "$YADPID" ] && kill $YADPID
@@ -1837,6 +1832,13 @@ then
 
 	#Create drive maps
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
+
+	#Do businesses want google safesearch?
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
+	then
+		/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add &
+	fi
+
 fi
 
 if [ "$INSTALL_TYPE" = restore ]

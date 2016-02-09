@@ -36,16 +36,16 @@ sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 source /opt/karoshi/serversetup/variables/network_card_info
 
 #Allow traffic to pass through the server.
-iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE
-
+#iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE
+#
 #Add this rule to rc.local
-if [ `grep -c "#openVPN client rule" /etc/rc.local` = 0 ]
-then
-	sed -i '/exit 0/d' /etc/rc.local
-	echo "#openVPN client rule" >> /etc/rc.local
-	echo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE" >> /etc/rc.local
-	echo "exit 0" >> /etc/rc.local
-fi
+#if [ `grep -c "#openVPN client rule" /etc/rc.local` = 0 ]
+#then
+#	sed -i '/exit 0/d' /etc/rc.local
+#	echo "#openVPN client rule" >> /etc/rc.local
+#	echo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE" >> /etc/rc.local
+#	echo "exit 0" >> /etc/rc.local
+#fi
 
 #Open Shorewall on udp 1194
 if [ $(grep -c -w \#openvpn_client_connect /etc/shorewall/rules) = 0 ]
@@ -55,14 +55,14 @@ then
 	if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
 	then
 		#Configure shorewall for tunnel
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
+		LINENUM=`wc -l /etc/shorewall/interfaces | cut -d" " -f1`
 		sed -i $LINENUM"c"\vpn"	"tun+"	"detect /etc/shorewall/interfaces
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 	fi
 
-
 	echo '<li>'$"The following extra ports are being allowed" - udp 1194'</li>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+
+	LINENUM=`wc -l /etc/shorewall/rules | cut -d" " -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
@@ -70,9 +70,17 @@ fi
 #Add openvpn to zones file
 if [ `grep -c ^vpn /etc/shorewall/zones` = 0 ]
 then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/zones | cut -d: -f1`
+	LINENUM=`wc -l /etc/shorewall/zones | cut -d" " -f1`
 	sed -i $LINENUM"c"\vpn"	"ipv4 /etc/shorewall/zones
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/zones
+	echo '#'LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/zones
+fi   
+
+#Add entry to masq file
+if [ `grep -c "10.8.0.0" /etc/shorewall/masq` = 0 ]
+then
+	LINENUM=`wc -l /etc/shorewall/masq | cut -d" " -f1`
+	sed -i $LINENUM"c"$NETWORK_INT"	"10.8.0.0/24 /etc/shorewall/masq
+	echo '#'LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/masq
 fi   
 
 #Add dnat to hosts file
@@ -82,7 +90,7 @@ then
 	SERVERIP=$(dig `hostname-fqdn` +short)
 	SUBNETMASK=`ifconfig $NETWORK_INT | grep Mask | cut -d":" -f4`
 	SUBNET=`ipcalc -n $SERVERIP/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/hosts | cut -d: -f1`
+	LINENUM=`wc -l /etc/shorewall/hosts | cut -d" " -f1`
 	sed -i $LINENUM"c"\vpn"	"$NETWORK_INT:$SUBNET /etc/shorewall/hosts
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/hosts
 fi
@@ -90,9 +98,31 @@ fi
 #Add openvpnserver to tunnels file
 if [ `grep -c ^openvpnserver /etc/shorewall/tunnels` = 0 ]
 then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/tunnels | cut -d: -f1`
+	LINENUM=`wc -l /etc/shorewall/tunnels | cut -d" " -f1`
 	sed -i $LINENUM"c"\openvpnserver:1194"	"net"	" 0.0.0.0/0 /etc/shorewall/tunnels
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/tunnels
+fi
+
+#Add entries to policy file
+if [ `grep -c ^vpn /etc/shorewall/policy = 0` ]
+then
+	echo '#
+# Shorewall version 4 - Policy File
+#
+# For information about entries in this file, type "man shorewall-policy"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-policy.html
+#
+###############################################################################
+#SOURCE	DEST	POLICY		LOG	LIMIT:		CONNLIMIT:
+#				LEVEL	BURST		MASK
+vpn	fw	ACCEPT
+vpn	net	ACCEPT
+fw	net	ACCEPT
+net	all	DROP	info
+all	all	REJECT	info
+#LAST LINE -- DO NOT REMOVE' > /etc/shorewall/policy
 fi
 
 #Restart shorewall

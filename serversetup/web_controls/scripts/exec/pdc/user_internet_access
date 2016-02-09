@@ -229,7 +229,8 @@ echo '</tr>
 <tr><td>'$"Ban duration"'</td><td><input style="width: '$WIDTH3'px;" name="_BANLENGTH_" value="'$BANLENGTH'" size="2" maxlength="3" type="text"></td>'
 
 if [ $MOBILE = no ]
-echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Ban duration in days - leave blank for a permanent ban."'</span></a></td>'
+then
+	echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Ban duration in days - leave blank for a permanent ban."'</span></a></td>'
 else
 	echo '<td></td>'
 fi
