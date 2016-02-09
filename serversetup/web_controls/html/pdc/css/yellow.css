@@ -29,6 +29,8 @@ body {
 	background-color: #FFFFFF;
 	border-color: #EDF853;
 }
+#show1:hover{color: #000 !important }
+#hide1:hover{color: #000 !important } 
 
 .button:hover { 
   color: #000000;
@@ -42,7 +44,7 @@ body {
  }
 
 .simbutton:hover { 
-  color: #000000;
+  color: #000;
   background: #EDF853;
   background-image: -webkit-linear-gradient(top, #EDF853, #D7E14B);
   background-image: -moz-linear-gradient(top, #EDF853, #D7E14B);
@@ -51,6 +53,16 @@ body {
   background-image: linear-gradient(to bottom, #EDF853, #D7E14B);
   text-decoration: none;
  }
+
+.simbutton {
+	color: #000;
+}
+
+.warnings {
+	color: #001CA7;
+	font-weight: bold;
+	font-size: 10pt
+}
 
 table.menu th, table.menu td {
 	color: #ffffff;
