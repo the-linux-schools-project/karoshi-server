@@ -956,7 +956,8 @@ then
 	[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
 	cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
 	cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-	cp -f /opt/karoshi/serversetup/all/fail2ban/filters/karoshi-auth.conf /etc/fail2ban/filter.d/
+	cp -f /opt/karoshi/serversetup/all/fail2ban/filters/apache-auth.conf /etc/fail2ban/filter.d/
+	cp -f /opt/karoshi/serversetup/all/fail2ban/filters/apache-common.conf /etc/fail2ban/filter.d/
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop
 	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start
