@@ -131,7 +131,7 @@ fi
 if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
-	echo "<li>"$HOSTNAME - $"Restarting shorewall""</li><br>"
+	echo "<li>"$HOSTNAME - $"Restarting shorewall""</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 	echo "<br><br>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
@@ -154,7 +154,7 @@ fi
 if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
-	echo "<li>"$HOSTNAME - '$"Restarting shorewall"'"</li><br>"
+	echo "<li>"$HOSTNAME - '$"Restarting shorewall"'"</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
 	echo "<br><br>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
@@ -220,24 +220,24 @@ source vars 1>/dev/null 2>/dev/null
 #Generate master certificate authority and key
 if [ ! -f /etc/openvpn/$HOSTNAMEFQDN.key ] || [ ! -f /etc/openvpn/$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/dh1024.pem ]
 then
-	echo '<li>'$"Generating certificate authority and key"'</li><br>'
+	echo '<ul><li>'$"Generating certificate authority and key"'</li></ul>'
 
 	./clean-all
 	echo -e ""US"\n"Karoshi"\n"Karoshi"\n"Karoshi"\n"$HOSTNAME"\n"$HOSTNAME"\n"$HOSTNAME@$REALM"\n" | ./build-ca 1>/dev/null 2>/dev/null
 
 	#Build Server Certificates
-	echo '<li>'$"Generating certificate and private key"'</li><br>'
+	echo '<ul><li>'$"Generating certificate and private key"'</li></ul>'
 	sleep 1
 	SERVER=$HOSTNAMEFQDN
 	pipe_data | ./build-key-server $HOSTNAMEFQDN 1>/dev/null 2>/dev/null
 
 	#Generate Diffie Hellmam parameters
-	echo '<li>'$"Generating Diffie Hellman parameters - this will take some time"'</li><br>'
+	echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time"'</li></ul>'
 	sleep 3
 	./build-dh
 
 	#Copy keys to /etc/openvpn
-	echo '<li>/etc/openvpn - '$"Copying keys"'</li><br>'
+	echo '<ul><li>/etc/openvpn - '$"Copying keys"'</li></ul>'
 	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.key /etc/openvpn/
 	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.crt /etc/openvpn/
 	cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_$HOSTNAMEFQDN.crt
@@ -285,7 +285,7 @@ sleep 1
 function configure_openvpn_client {
 
 #Create client certificates
-echo '<li>'$SERVERNAME' - '$"Generating client certificate"'</li><br>'
+echo '<ul><li>'$SERVERNAME' - '$"Generating client certificate"'</li></ul>'
 SERVER=$SERVERNAME
 pipe_data | ./build-key $SERVERNAME 1>/dev/null 2>/dev/null
 
@@ -350,7 +350,7 @@ sleep 2
 COUNTER=1
 while [ $COUNTER -lt 20 ]
 do
-	echo "<li>"'$SERVERNAME' - '$"checking openvpn tunnnel"' - $COUNTER"</li><br>"
+	echo "<li>"'$SERVERNAME' - '$"checking openvpn tunnnel"' - $COUNTER"</li></ul>"
 	[ `ifconfig | grep -c tun'$TUNVAL'` -gt 0 ] && break
 	sleep 1
 
@@ -401,7 +401,7 @@ sleep 2
 }
 
 function open_firewall_port {
-echo "<li>"$"UDP hole punching port" 1194"</li><br>"
+echo "<li>"$"UDP hole punching port" 1194"</li></ul>"
 nmap -P0 -sU -p1194 -g1194 $SERVERNAME 1>/dev/null 2>/dev/null
 }
 
@@ -413,7 +413,7 @@ echo OpenVPN client"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/open
 }
 
 function schedule_cron {
-echo "<li>"$"Scheduling vpn checking""</li><br>"
+echo "<li>"$"Scheduling vpn checking""</li></ul>"
 [ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 echo '*'/5 '*' '*' '*' '*' /opt/karoshi/serversetup/modules/authentication/openvpnclients > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/openvpnclients.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs

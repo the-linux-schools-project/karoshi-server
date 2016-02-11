@@ -213,19 +213,19 @@ echo "<br>"
 MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-echo "<li><b>'$"Adding shorewall ports"'</b></li><br><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
+echo "<li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
 LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
 echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li><br>"
+echo "<li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li><br>"
+echo "<li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
@@ -319,7 +319,7 @@ fi
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<li><b>'$"Configure Authentication"'</b></li><br>"
+echo "<li><b>'$"Configure Authentication"'</b></li></ul>"
 
 source /opt/karoshi/serversetup/variables/distro
 
@@ -504,7 +504,7 @@ then
 		UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
 	fi
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo "<li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li><br>"
+	echo "<li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li></ul>"
 	for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 	do
 	echo Checking $PORT on server '$PORTSCANIP'"<br>"
@@ -517,7 +517,7 @@ then
 	if [ $EXITCHECK != 0 ]
 	then
 		echo `date`: configure_authentication - Error connecting to $PDCIP on port $EXITCHECK "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		echo '<li>'$"Connection error" -  $PDCIP: $EXITCHECK '</li><br>'
+		echo '<ul><li>'$"Connection error" -  $PDCIP: $EXITCHECK '</li></ul>'
 		sleep 4
 		exit $EXITCHECK
 	fi
@@ -526,7 +526,7 @@ fi
 }
 
 function configure_ntp {
-echo '<li><b>'$"Configuring NTP"'</b></li><br>'
+echo '<ul><li><b>'$"Configuring NTP"'</b></li></ul>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then

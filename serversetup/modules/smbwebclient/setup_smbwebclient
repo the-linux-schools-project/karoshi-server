@@ -81,7 +81,7 @@ TEXTDOMAIN=karoshi-server
 #####################################
 #Extract in smbwebclient and set permisions
 #####################################
-echo '<li>'$"Extracting files and setting permissions."'</li><br>'
+echo '<ul><li>'$"Extracting files and setting permissions."'</li></ul>'
 
 [ -d /var/www/html/smbwebclient ] || rm -f -R /var/www/html/smbwebclient
 mkdir -p /var/www/html/smbwebclient
@@ -126,7 +126,7 @@ MODCHECK=`grep -c -w 50000 /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-echo '<li>'$"Modifying shorewall rules to allow port 50000."'</li><br>'
+echo '<ul><li>'$"Modifying shorewall rules to allow port 50000."'</li></ul>'
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -136,7 +136,7 @@ fi
 ######################
 if [ $MODCHECK = 0 ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
+echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -156,12 +156,12 @@ fi
 #################################
 #Configure virtual server on port 50000 for smbwebclient
 #################################
-echo '<li>'$"Configuring apache to run a virtual server on port 50000."'</li><br>'
+echo '<ul><li>'$"Configuring apache to run a virtual server on port 50000."'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/smbwebclientvhost $REALM
 #################################
 #Restart apache
 #################################
-echo '<li>'$"Restarting Apache."'</li><br>'
+echo '<ul><li>'$"Restarting Apache."'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 

@@ -63,13 +63,18 @@ TEXTDOMAIN=karoshi-server
 which memcached 1>/dev/null
 if [ $? != 0 ]
 then
-	echo "<li>Installing memcached</li><br>"
+	echo "<li>Installing memcached</li></ul>"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	apt-get update
 	apt-get install -y memcached
 	echo "</pre>"
 	echo "<br>"
 fi
+
+#Install required packages for dovecot sieve
+echo "<ul><li>'$EMAILSERVER' - installing Dovecot Sieve Support</li></ul>"
+apt-get update
+apt-get install -y dovecot-managesieved dovecot-sieve pyzor razor
 
 [ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
 [ ! -d /var/www/html ] && mkdir -p /var/www/html
@@ -121,7 +126,7 @@ done
 #####################
 #Install email
 #####################
-echo '<li>'$"Configuring Postfix"'</li><br>'
+echo '<ul><li>'$"Configuring Postfix"'</li></ul>'
 
 ########################
 #Make sure that there is a Mail Scanner whitelist
@@ -315,7 +320,7 @@ echo mail.$REALM > /etc/mailname
 #Configure mailscanner
 ########################
 
-echo '<li>'$"Configuring MailScanner"'</li><br>'
+echo '<ul><li>'$"Configuring MailScanner"'</li></ul>'
 
 #Update MailScanner
 MAILSCANNERVER=4.85.2-3
@@ -390,7 +395,7 @@ echo 10 07 '*' '*' '*' sa-update > /opt/karoshi/server_network/cronjobs/`hostnam
 #####################
 #Create sogo mysql password for the new database
 #####################
-echo '<li>'$"Creating the SOGo database in mysql"'</li><br>'
+echo '<ul><li>'$"Creating the SOGo database in mysql"'</li></ul>'
 #Get random password
 passgen
 
@@ -467,16 +472,16 @@ a2enmod rewrite 1>/dev/null
 #Restart apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
-echo '<li>'$"Starting Apache"'</li><br>'
+echo '<ul><li>'$"Starting Apache"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 #Restart sogo
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_stop 1>/dev/null 2>/dev/null
 sleep 1
-echo '<li>'$"Starting Memcached"'</li><br>'
+echo '<ul><li>'$"Starting Memcached"'</li></ul>'
 #Start memcached
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/memcached_start 1>/dev/null
 sleep 1
-echo '<li>'$"Starting SOGo"'</li><br>'
+echo '<ul><li>'$"Starting SOGo"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/sogo_start 1>/dev/null
 ###########################
 ###########################
@@ -491,12 +496,12 @@ MYSQLSTATUS=`ps -e | grep -c -w $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-	echo '<li>'$"Starting MYSQL"'</li><br>'
+	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<li>'$"Starting Apache"'</li><br>'
+	echo '<ul><li>'$"Starting Apache"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
@@ -537,18 +542,18 @@ then
 	echo postmaster:"	""	"sysadmin >> /etc/postfix/aliases
 fi
 newaliases
-echo '<li>'$"Starting Postfix"'</li><br>'
+echo '<ul><li>'$"Starting Postfix"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start  1>/dev/null
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<li>'$"Starting Apache"'</li><br>'
+	echo '<ul><li>'$"Starting Apache"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_stop 1>/dev/null 2>/dev/null
 sleep 1
-echo '<li>'$"Starting ClamD"'</li><br>'
+echo '<ul><li>'$"Starting ClamD"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/clamd_start 1>/dev/null
-echo '<li>'$"Starting MailScanner"'</li><br>'
+echo '<ul><li>'$"Starting MailScanner"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mailscanner_start 
 
 ##########################
@@ -589,7 +594,7 @@ fi
 ######################
 if [ $RESTART_SHOREWALL = yes ]
 then
-	echo '<li>'$"Restarting shorewall"'</li><br>'
+	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
@@ -603,7 +608,7 @@ fi
 [ ! -f /opt/karoshi/server_network/security/fail2ban/email ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/email /opt/karoshi/server_network/security/fail2ban/
 [ ! -f /opt/karoshi/server_network/security/fail2ban/sogo ] && cp -f /opt/karoshi/serversetup/all/fail2ban/jails/sogo /opt/karoshi/server_network/security/fail2ban/
 cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
-echo '<li>'$"Starting Fail2ban"'</li><br>'
+echo '<ul><li>'$"Starting Fail2ban"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_stop 1>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/fail2ban_start 1>/dev/null

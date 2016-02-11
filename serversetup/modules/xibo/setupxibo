@@ -84,7 +84,7 @@ TEXTDOMAIN=karoshi-server
 #####################
 #Create xibo mysql password for the new database
 #####################
-echo '<li>'$"Creating the Xibo database in mysql"'</li><br>'
+echo '<ul><li>'$"Creating the Xibo database in mysql"'</li></ul>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -137,7 +137,7 @@ then
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo "<li>"Apache was not running"</li><br>"
+echo "<li>"Apache was not running"</li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 echo "<br>"
 fi
@@ -146,7 +146,7 @@ fi
 #Extract xibo
 ###########################
 cd /var/www/html/
-echo '<li>'$"Extracting Xibo"'</li><br>'
+echo '<ul><li>'$"Extracting Xibo"'</li></ul>'
 [ -d /var/www/html/xibo ] && rm -f -R /var/www/html/xibo
 tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo.tar.gz
 
@@ -158,7 +158,7 @@ tar -xzf /opt/karoshi/serversetup/modules/xibo/xibo-library.tar.gz
 
 ln -s /home/xibo-library /var/www/xibo-library
 
-echo '<li>'$"Setting permissions"'</li><br>'
+echo '<ul><li>'$"Setting permissions"'</li></ul>'
 chmod 0640 -R /var/www/html/xibo
 chmod u+X,g+X -R /var/www/html/xibo
 chmod 0750 -R /home/xibo-library
@@ -210,7 +210,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
+echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

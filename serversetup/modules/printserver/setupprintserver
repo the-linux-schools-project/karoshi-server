@@ -162,13 +162,13 @@ net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS"
 MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo '<li>'$"The following extra ports are being allowed" - tcp 139,445 udp 137,138,445'</li><br>'
+	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 139,445 udp 137,138,445'</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
 	echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
-	echo '<li>'$"Restarting Shorewall"'</li><br>'
+	echo '<ul><li>'$"Restarting Shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -208,7 +208,7 @@ CUPSSTATUS=`ps -e | grep -c $CUPSVER`
 
 if [ $CUPSSTATUS = 0 ]
 then
-echo '<li>'$"Starting Cups"'</li><br>'
+echo '<ul><li>'$"Starting Cups"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 fi
 
@@ -216,7 +216,7 @@ SAMBASTATUS=`ps -e | grep -c $SMBVER`
 
 if [ $SAMBASTATUS = 0 ]
 then
-echo '<li>'$"Starting Samba"'</li><br>'
+echo '<ul><li>'$"Starting Samba"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 fi
 

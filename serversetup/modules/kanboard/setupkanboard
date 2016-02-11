@@ -46,12 +46,12 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 
 if [ $MYSQLSTATUS = 0 ]
 then
-	echo '<li>'$"Starting MYSQL"'</li><br>'
+	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<li>'$"Starting Apache"'</li><br>'
+	echo '<ul><li>'$"Starting Apache"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
@@ -59,7 +59,7 @@ fi
 #####################
 #Create kanboard mysql password for the new database
 #####################
-echo '<li>'$"Creating the kanboard database in mysql"'</li><br>'
+echo '<ul><li>'$"Creating the kanboard database in mysql"'</li></ul>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -97,11 +97,11 @@ rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################
 #Extract kanboard
 ##########################
-echo '<li>'$"Extracting Kanboard"'</li><br>'
+echo '<ul><li>'$"Extracting Kanboard"'</li></ul>'
 cd /var/www/html/
 tar -xzf /opt/karoshi/serversetup/modules/kanboard/kanboard.tar.gz
 
-echo '<li>'$"Setting permissions for the kanboard data folder."'</li><br>'
+echo '<ul><li>'$"Setting permissions for the kanboard data folder."'</li></ul>'
 
 chown -R root.$APACHEUSER /var/www/html/kanboard
 chmod -R 0640 /var/www/html/kanboard
@@ -158,7 +158,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-	echo '<li>'$"Restarting shorewall"'</li><br>'
+	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

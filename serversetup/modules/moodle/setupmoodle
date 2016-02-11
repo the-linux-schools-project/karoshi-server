@@ -119,7 +119,7 @@ fi
 if [ $RESTARTAPACHE = yes ]
 then
 	#Restart apache
-	echo "<li>"Restarting apache to apply kerberos support"</li><br>"
+	echo "<li>"Restarting apache to apply kerberos support"</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
@@ -128,7 +128,7 @@ fi
 #####################
 #Create moodle mysql password for the new database
 #####################
-echo '<li>'$"Creating the moodle database in mysql"'</li><br>'
+echo '<ul><li>'$"Creating the moodle database in mysql"'</li></ul>'
 
 MOODLEPASS=`openssl rand -hex 16`
 #Create moodle badge hash
@@ -183,7 +183,7 @@ then
 fi
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<li>"'$"Apache was not running"'</li'
+	echo '<ul><li>"'$"Apache was not running"'</li'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 	echo "<br>"
 fi
@@ -196,11 +196,11 @@ fi
 #Extract moodle
 ###########################
 cd /var/www/html/
-echo '<li>'$"Extracting moodle"'</li><br>'
+echo '<ul><li>'$"Extracting moodle"'</li></ul>'
 [ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
 tar -xzf /opt/karoshi/serversetup/modules/moodle/moodle.tar.gz
 cp -f -R /opt/karoshi/serversetup/modules/moodle/moodle-data /var/www
-echo '<li>'$"Setting permissions"'</li><br>'
+echo '<ul><li>'$"Setting permissions"'</li></ul>'
 chmod 0440 -R /var/www/html/moodle
 chmod u+X,g+X -R /var/www/html/moodle
 chmod 0600 -R /var/www/moodle-data
@@ -252,7 +252,7 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-	echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
+	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 80,443</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -267,7 +267,7 @@ chmod 0700 /opt/karoshi/"useful scripts"/moodle_export_grades
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
+echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

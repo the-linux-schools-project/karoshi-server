@@ -74,7 +74,7 @@ echo '</pre>'
 #####################
 #Create OCS mysql password for the new database
 #####################
-echo '<li>'$MYSQLMSG'</li><br>'
+echo '<ul><li>'$MYSQLMSG'</li></ul>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -126,7 +126,7 @@ APACHESTATUS=`ps -e | grep -c $APACHEVER`
 ##########################
 #Run OCS installation script
 ##########################
-echo '<li>'$OCSINSTALLMSG'</li><br>'
+echo '<ul><li>'$OCSINSTALLMSG'</li></ul>'
 
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 cd /opt/karoshi/serversetup/modules/ocsinventory/OCSNG_UNIX_SERVER/ 

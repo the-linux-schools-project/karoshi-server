@@ -25,6 +25,24 @@ do
 	echo 'push "dhcp-option DNS '$DNSIP'"' >> /etc/openvpn/server.conf
 done
 
+#Enable ldap auth
+if [ -f /usr/lib/openvpn/openvpn-auth-ldap.so ]
+then
+	echo 'plugin /usr/lib/openvpn/openvpn-auth-ldap.so /etc/openvpn/auth/auth-ldap.conf' >> /etc/openvpn/server.conf
+	[ ! -d /etc/openvpn/auth ] && mkdir -p /etc/openvpn/auth
+	cp -f /opt/karoshi/serversetup/modules/vpn/auth-ldap.conf /etc/openvpn/auth/auth-ldap.conf
+	#Modify auth-ldap.conf with the correct ldap information.
+	LDAPSERVER=127.0.0.1
+	#Get ldap server to use
+	if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+	then
+		LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+	fi
+	source /opt/karoshi/server_network/domain_information/domain_name
+	sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/openvpn/auth/auth-ldap.conf
+	sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /etc/openvpn/auth/auth-ldap.conf	
+fi
+
 #Enable packet forwarding
 echo 1 > /proc/sys/net/ipv4/ip_forward
 sysctl -p 1>/dev/null
@@ -60,7 +78,7 @@ then
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 	fi
 
-	echo '<li>'$"The following extra ports are being allowed" - udp 1194'</li>'
+	echo '<ul><li>'$"The following extra ports are being allowed" - udp 1194'</li>'
 
 	LINENUM=`wc -l /etc/shorewall/rules | cut -d" " -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
@@ -162,7 +180,7 @@ sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 
 function show_elapsed_time {
 echo
-echo '<li>'$"Generating Diffie Hellman parameters - this will take some time."'</li><br>'
+echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li></ul>'
 #Wait for command to start
 while [ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") = 1 ]
 do

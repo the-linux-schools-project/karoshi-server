@@ -82,7 +82,7 @@ fi
 
 #Extract archive
 
-echo '<li>'$"Extracting Owncloud"'</li><br>'
+echo '<ul><li>'$"Extracting Owncloud"'</li></ul>'
 [ -d /var/www/html/owncloud ] && rm -f -R /var/www/html/owncloud
 tar -xzf /opt/karoshi/serversetup/modules/owncloud/owncloud.tar.gz --directory /var/www/html
 
@@ -144,14 +144,14 @@ a2enmod rewrite 1>/dev/null
 a2enmod headers 1>/dev/null
 
 #Restart apache2
-echo '<li>'$"Restarting Apache"'</li><br>'
+echo '<ul><li>'$"Restarting Apache"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 #####################
 #Create owncloud mysql password for the new database
 #####################
-echo '<li>'$"Create mysql database for Owncloud"'</li><br>'
+echo '<ul><li>'$"Create mysql database for Owncloud"'</li></ul>'
 RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
@@ -241,7 +241,7 @@ then
 LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'443'	'-'#'apacherule /etc/shorewall/rules
 echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-echo '<li>'$"Restarting shorewall"'</li><br>'
+echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

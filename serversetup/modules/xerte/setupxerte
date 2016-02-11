@@ -82,7 +82,7 @@ fi
 #####################
 #Create xerte mysql password for the new database
 #####################
-echo '<li>'$"Creating the xerte database in mysql"'</li><br>'
+echo '<ul><li>'$"Creating the xerte database in mysql"'</li></ul>'
 
 XERTEPASS=`openssl rand -hex 16`
 
@@ -132,14 +132,14 @@ mysql --password=$MYSQLPASS xerte < /opt/karoshi/serversetup/modules/xerte/xerte
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/mysql_status
 if [ $? != 0 ]
 then
-	echo '<li>"'$"Starting Mysql"'</li>'
+	echo '<ul><li>"'$"Starting Mysql"'</li>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_status
 if [ $? != 0 ]
 then
-	echo '<li>"'$"Starting Apache"'</li>'
+	echo '<ul><li>"'$"Starting Apache"'</li>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 	echo "<br>"
 fi
@@ -149,11 +149,11 @@ fi
 #Extract xerte
 ###########################
 cd /var/www/html/
-echo '<li>'$"Extracting Xerte"'</li><br>'
+echo '<ul><li>'$"Extracting Xerte"'</li></ul>'
 [ -d /var/www/html/xerte ] && rm -f -R /var/www/html/xerte
 tar -xzf /opt/karoshi/serversetup/modules/xerte/xerte.tar.gz
 
-echo '<li>'$"Setting permissions"'</li><br>'
+echo '<ul><li>'$"Setting permissions"'</li></ul>'
 chmod 0660 -R /var/www/html/xerte
 chmod u+X,g+X -R /var/www/html/xerte
 chown -R root.$APACHEGROUP /var/www/html/xerte
@@ -193,7 +193,7 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-	echo '<li>'$"The following extra ports are being allowed"' - tcp 80,443</li><br>'
+	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 80,443</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -204,7 +204,7 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<li>'$"Restarting shorewall"'</li><br>'
+echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi

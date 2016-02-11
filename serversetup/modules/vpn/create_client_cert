@@ -83,10 +83,19 @@ resolv-retry infinite
 nobind
 persist-key
 persist-tun
-ns-cert-type server
+ca ca.crt
+cert '$CLIENTNAME'.'$REALM'.crt
+key '$CLIENTNAME'.'$REALM'.key" > /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+
+#Check if we have openvpn ldap auth
+if [ -f /usr/lib/openvpn/openvpn-auth-ldap.so ]
+then
+	echo "auth-user-pass" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+fi
+echo "ns-cert-type server
 comp-lzo
 verb 3
-" > /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
 
 echo -e "\n<ca>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
 cat /etc/openvpn/easy-rsa/keys/ca.crt >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
