@@ -56,83 +56,83 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SHUTDOWNCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign FORMCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign _VIEWIMAGE_
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-then
-let COUNTER=$COUNTER+1
-VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign REQUESTFILE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = REQUESTFILEcheck ]
-then
-let COUNTER=$COUNTER+1
-REQUESTFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = REQUESTFILEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		REQUESTFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign ARCHIVE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ARCHIVEcheck ]
-then
-let COUNTER=$COUNTER+1
-ARCHIVE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ARCHIVEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ARCHIVE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -147,49 +147,49 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 #Check to see that the user exists
 getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS != 0 ]
 then
-MESSAGE=$"This user does not exist."
-show_status
+	MESSAGE=$"This user does not exist."
+	show_status
 fi
 
 #Check view image tick box
 if [ $VIEWIMAGE'check' = yescheck ]
 then
-echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/delete_user_fm.cgi" method="post" name="form">'
-echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
-echo '<input name="_DOMAINPASSWORD_" value="'$DOMAINPASSWORD'" type="hidden"></form>'
+	echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/delete_user_fm.cgi" method="post" name="form">'
+	echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
+	echo '<input name="_DOMAINPASSWORD_" value="'$DOMAINPASSWORD'" type="hidden"></form>'
 
-echo '<SCRIPT LANGUAGE="JavaScript">
+	echo '<SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
 document.form.submit();
 }
@@ -200,20 +200,20 @@ fi
 #Check to see that SHUTDOWNCODE is not blank
 if [ $SHUTDOWNCODE'null' = null ]
 then
-MESSAGE=$"The shutdown code must not be blank."
-show_status
+	MESSAGE=$"The delete code must not be blank."
+	show_status
 fi
 #Check to see that FORMCODE is not blank
 if [ $FORMCODE'null' = null ]
 then
-MESSAGE=$"The form code must not be blank."
-show_status
+	MESSAGE=$"The form code must not be blank."
+	show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
 if [ $FORMCODE != $SHUTDOWNCODE ]
 then
-MESSAGE=$"Incorrect shutdown code."
-show_status
+	MESSAGE=$"Incorrect delete code."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
