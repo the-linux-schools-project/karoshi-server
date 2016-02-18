@@ -35,6 +35,7 @@ smtpd_helo_restrictions =
     permit
 disable_vrfy_command = yes
 smtpd_client_restrictions =
+	check_recipient_access hash:/etc/postfix/protected_distribution_lists,
 	permit_mynetworks,
 	permit_sasl_authenticated,
 	check_client_access hash:/etc/postfix/access,
@@ -68,8 +69,12 @@ smtpd_recipient_restrictions =
 	permit_sasl_authenticated,
 	reject_unauth_destination
 
-smtpd_restriction_classes = restricted_domains
+smtpd_restriction_classes =
+	restricted_domains,
+	allowed_distribution_users
+
 restricted_domains = check_recipient_access hash:/etc/postfix/restricted_domains, reject
+allowed_distribution_users = check_sender_access hash:/etc/postfix/distribution_list_users, reject
 
 smtpd_data_restrictions =
 	reject_unauth_pipelining

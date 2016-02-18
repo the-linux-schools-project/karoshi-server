@@ -24,13 +24,10 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
-FORENAMEMSG="Forename"
-SURNAMEMSG="Surname"
-USERNAMEMSG="Username"
-PRIADMINMSG="Primary Admin"
-ADMINLEVELMSG="Admin level"
+
+
 JOBTITLEMSG="Job Title"
 YESMSG="Yes"
 NOMSG="No"
@@ -139,7 +136,16 @@ else
 '
 fi
 
-echo '<br>'$"The following accounts have web admin access:"'<br><br></div><div id="infobox">'
+echo '</div><div id="infobox">'
+
+
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 180px;">'$"Username"'</th><th style="width: 100px;">'$"Forename"'</th><th style="width: 100px;">'$"Surname"'</th><th style="width: 120px;">'$"Primary Admin"'</th><th style="width: 120px;">'$"Admin level"'</th>'
+
+if [ $PRIADMINSTATUS = yes ]
+then
+	echo '<th style="width: 70px;">'$"Edit"'</th><th style="width: 70px;">'$"Delete"'</th>'
+fi
+echo '</tr></thead><tbody>'
 
 while [ $COUNTER -le $REMOTE_USER_COUNT ]
 do
@@ -178,36 +184,28 @@ do
 		TCPIPRESTRICTION=$NOMSG
 	fi
 
-	echo '<b>'$USERNAME'</b> '
+	echo '<tr><td>'$USERNAME'</td><td>'$FORENAME'</td><td>'$SURNAME'</td><td>'$PRIADMIN'</td><td>'$ADMIN_LEVEL'</td>'
+
 	if [ $PRIADMINSTATUS = yes ]
 	then
-		echo '
+		echo '<td>
 		<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
 		<button class="info" name="_EditUser_" value="_USERACTION_'$USERNAME'edituser_">
 		<img src="/images/submenus/file/edit.png" alt="'$"Edit"'">
 		<span>'$"Edit"'<br>'$USERNAME'</span>
 		</button>
-
+		</form>
+		</td><td>
+		<form action="/cgi-bin/admin/remote_management_process.cgi" method="post">
 		<button class="info" name="_DeleteUser_" value="_USERACTION_'$USERNAME'deleteuser_">
 		<img src="/images/submenus/file/delete.png" alt="'$"Delete"'">
 		<span>'$"Delete"'<br>'$USERNAME'</span>
 		</button>
-		</form>'
-
+		</form>
+		</td>'
 	fi
-	echo '<br><br>'
-	echo '<table class="standard" style="text-align: left; width: 648px; height: 100px;" >
-	<tbody>
-	<tr><td style="width: 180px;">'$JOBTITLEMSG':</td><td>'$JOBTITLE'</td></tr>
-	<tr><td style="width: 180px;">'$FORENAMEMSG':</td><td>'$FORENAME'</td></tr>
-	<tr><td style="width: 180px;">'$SURNAMEMSG':</td><td>'$SURNAME'</td></tr>
-	<tr><td style="width: 180px;">'$"Username"':</td><td>'$USERNAME'</td></tr>
-	<tr><td style="width: 180px;">'$PRIADMINMSG':</td><td>'$PRIADMIN'</td></tr>
-	<tr><td style="width: 180px;">'$ADMINLEVELMSG':</td><td>'$ADMIN_LEVEL'</td></tr>
-	</tbody>
-	</table>
-	<br>'
+	echo '</tr>'
 	let COUNTER=$COUNTER+1
 done
-echo '</div></div></div></body></html>'
+echo '</tbody></table></div></div></div></body></html>'
 exit

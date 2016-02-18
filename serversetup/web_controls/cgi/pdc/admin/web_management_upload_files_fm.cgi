@@ -131,7 +131,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/web_management_
         </TABLE>
 </div><div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></div>
+</div></form></div>
 </body>
 </html>
 '

@@ -425,7 +425,13 @@ FOLDERACTION=disable
 MESSAGE=''$"Disable user web folder"''
 fi
 USERNAME=\${folder##*/}
-echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+echo "<tr><td>\$USERNAME</td><td>
+
+<button class=\"info\" name=\"_Status_\" value=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\">
+<img src=\"\$STATUSICON\" alt=\"$"Status"\">
+<span>\$MESSAGE<br><br>\$USERNAME</span>
+</button>
+</td></tr>"
 done
 ENDOFTEST
 
@@ -450,7 +456,11 @@ FOLDERACTION=disable
 MESSAGE="'$"Disable user web folder"'"
 fi
 USERNAME=\${folder##*/}
-echo "<tr><td>\$USERNAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_USERNAME_\$USERNAME"_"GROUP_'$GROUP'"_"ACTION_\$FOLDERACTION"_"\" type=\"image\" class=\"images\" src=\"\$STATUSICON\" value=\"\"><span>\$MESSAGE<br><br>\$USERNAME</span></a></td></tr>"
+echo "<tr><td>\$USERNAME</td><td>
+<button class=\"info\" name=\"_Status_\" value=\"_USERNAME_\$USERNAME"_"GROUP_$GROUP"_"ACTION_\$FOLDERACTION"_"\">
+<img src=\"\$STATUSICON\" alt=\"$"Status"\">
+<span>\$MESSAGE<br><br>\$USERNAME</span>
+</button></td></tr>"
 done
 ENDOFTEST
 

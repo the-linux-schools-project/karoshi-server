@@ -584,7 +584,7 @@ fi
 echo '<ul><li>'$"Copying certificates into the root certificate chain."'</li></ul>'
 [ ! -d /usr/share/ca-certificates/gitlab ] && mkdir /usr/share/ca-certificates/gitlab 1>/dev/null
 
-[ ! -f "/usr/share/ca-certificates/gitlab/${ALIAS}.${REALM}.pem" ] && cp "/etc/ssl/apache/${ALIAS}.${REALM}.pem" "/usr/share/ca-certificates/gitlab" 1>/dev/null
+[ ! -f "/usr/share/ca-certificates/gitlab/${ALIAS}.${REALM}.pem" ] && cp "/etc/ssl/apache/${REALM}.pem" "/usr/share/ca-certificates/gitlab/${ALIAS}.${REALM}.pem" 1>/dev/null
 [ ! -f "/usr/share/ca-certificates/gitlab/cacert.pem" ] && cp "/etc/ssl/root-ca/cacert.pem" "/usr/share/ca-certificates/gitlab" 1>/dev/null
 
 if ! grep -Fxq "${ALIAS}.${REALM}.pem" /etc/ca-certificates.conf

@@ -60,6 +60,8 @@ do
 	if [ "$UPDATESTATUS" = error ]
 	then 
 		/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add update_system_"$SERVER" /cgi-bin/admin/update_servers_fm.cgi "$SERVER - "$"System upgrade required" 3
+	else
+		/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete update_system_"$SERVER"
 	fi
 done
 exit

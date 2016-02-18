@@ -190,7 +190,10 @@ echo '<table class="standard" style="text-align: left;" ><tbody>
 </td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></td>
 <td style="vertical-align: top;">'
-[ ! -z "$GROUP" ] && echo '<a href="user_web_folders.cgi"><input class="button" type="button" name="" value="Choose group"></a>'
+[ ! -z "$GROUP" ] && echo '<button class="button" formaction="user_web_folders.cgi" name="ChooseGroup" value="_">
+'$"Choose group"'
+</button>
+'
 echo '</td>
 </tr></table><br>'
 fi

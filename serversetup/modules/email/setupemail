@@ -360,6 +360,9 @@ sed -i "s/X-YOURDOMAIN-COM/X-$REALM/g" /etc/MailScanner/spam.assassin.prefs.conf
 #Link Mailscanner spamassasin
 ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/spamassassin/mailscanner-spamassassin.cf
 
+#Link MailScanner custom functions
+ln -s /usr/share/MailScanner/MailScanner/CustomFunctions/ /etc/MailScanner/CustomFunctions
+
 ########################
 #Ensure htaccess is enabled
 ########################
@@ -526,12 +529,15 @@ postmap hash:/etc/postfix/catchall
 touch /etc/postfix/deny_sending
 touch /etc/postfix/deny_receiving
 touch /etc/postfix/restricted_accounts
+touch /etc/postfix/protected_distribution_lists
+touch /etc/postfix/distribution_list_users
 echo "$REALM	OK" > /etc/postfix/restricted_domains
 postmap hash:/etc/postfix/deny_sending
 postmap hash:/etc/postfix/deny_receiving
 postmap hash:/etc/postfix/restricted_accounts
 postmap hash:/etc/postfix/restricted_domains
-
+postmap hash:/etc/postfix/protected_distribution_lists
+postmap hash:/etc/postfix/distribution_list_users
 #############
 #generate aliases.db in /etc/postfix/
 #############

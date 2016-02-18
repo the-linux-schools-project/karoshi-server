@@ -62,92 +62,92 @@ END_POINT=16
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = JOBTITLEcheck ]
-then
-let COUNTER=$COUNTER+1
-JOBTITLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = JOBTITLEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		JOBTITLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign FORENAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FORENAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-FORENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FORENAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FORENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SURNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign username
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign password1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign password2
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PRIMARYADMIN
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRIMARYADMINcheck ]
-then
-let COUNTER=$COUNTER+1
-PRIMARYADMIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRIMARYADMINcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRIMARYADMIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign TCPACCESS
 #COUNTER=2
@@ -170,21 +170,29 @@ echo '</script>'
 echo "</div></body></html>"
 exit
 }
+
+function completed {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "remote_management_view.cgi"'
+echo '</script>'
+echo "</div></body></html>"
+exit
+}
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
@@ -196,10 +204,10 @@ fi
 #Check data
 #########################
 #Check to see that username is not blank
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-MESSAGE=$"The username must not be blank."
-show_status
+	MESSAGE=$"The username must not be blank."
+	show_status
 fi
 #Check to see that password fields are not blank
 if [ $PASSWORD1'null' = null ]
@@ -207,28 +215,28 @@ then
 MESSAGE=$"The password must not be blank."
 show_status
 fi
-if [ $PASSWORD2'null' = null ]
+if [ -z "$PASSWORD2" ]
 then
-MESSAGE=$"The password must not be blank."
-show_status
+	MESSAGE=$"The password must not be blank."
+	show_status
 fi
 #Check that password has been entered correctly
 if [ $PASSWORD1 != $PASSWORD2 ]
 then
-MESSAGE=$"The passwords do not match."
-show_status
+	MESSAGE=$"The passwords do not match."
+	show_status
 fi
 # Check that PRIMARYADMIN is not blank
-if [ $PRIMARYADMIN'null' = null ]
+if [ -z "$PRIMARYADMIN" ]
 then
-MESSAGE=$"The access level must not be blank."
-show_status
+	MESSAGE=$"The access level must not be blank."
+	show_status
 fi
 #Check that primary admin has the correct data
 if [ $PRIMARYADMIN != 1 ] && [ $PRIMARYADMIN != 2 ] && [ $PRIMARYADMIN != 3 ]
 then
-MESSAGE=$"Incorrect input for the admin level."
-show_status
+	MESSAGE=$"Incorrect input for the admin level."
+	show_status
 fi
 
 #Generate navigation bar
@@ -242,16 +250,16 @@ EXEC_STATUS=`echo $?`
 MESSAGE=`echo $USERNAME $"has been created as a web management user."`
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$"You can only do this if you are a primary admin."
+	MESSAGE=$"You can only do this if you are a primary admin."
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=`echo $USERNAME: $"This user already exists."`
+	MESSAGE=`echo $USERNAME: $"This user already exists."`
 fi
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $USERNAME: $"Not created."`
+	MESSAGE=`echo $USERNAME: $"Not created."`
 fi
-show_status
+completed
 echo '</div></body></html>'
 exit
