@@ -165,11 +165,14 @@ do
 					#Add drive map for linux due to broken dfs in mount.cfs
 
 					#Get server(s) that the share is on in case it it gluster aware
-					for DFSSERVER in $(ls -l /var/lib/samba/dfs/$SHARE | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
-					do
-						SERVER2=$(echo $DFSSERVER | cut -d"\\" -f1)
-						add_drive_map_linux_and_mac
-					done
+					if [ -e /var/lib/samba/dfs/$SHARE ]
+					then
+						for DFSSERVER in $(ls -l /var/lib/samba/dfs/$SHARE | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
+						do
+							SERVER2=$(echo $DFSSERVER | cut -d"\\" -f1)
+							add_drive_map_linux_and_mac
+						done
+					fi
 				fi
 
 			done

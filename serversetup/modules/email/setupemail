@@ -72,7 +72,7 @@ then
 fi
 
 #Install required packages for dovecot sieve
-echo "<ul><li>'$EMAILSERVER' - installing Dovecot Sieve Support</li></ul>"
+echo "<ul><li>Installing Dovecot Sieve Support</li></ul>"
 apt-get update
 apt-get install -y dovecot-managesieved dovecot-sieve pyzor razor
 
@@ -327,6 +327,11 @@ MAILSCANNERVER=4.85.2-3
 if [ $(dpkg -l | grep mailscanner | tr -cd "0-9\-.\n") != $MAILSCANNERVER ]
 then
 	echo "<li>$EMAILSERVER - updating MailScanner</li>"
+
+	#Install dependencies
+	apt-get update
+	apt-get install -y libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl
+
 	[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
 	[ -d /tmp/MailScanner-$MAILSCANNERVER ] && rm -f -R /tmp/MailScanner-$MAILSCANNERVER
 	wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-$MAILSCANNERVER.deb.tar.gz -O /tmp/mailscanner.tar.gz
@@ -525,6 +530,9 @@ sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/postfix/ldap-mail.cf
 echo "@$REALM root" > /etc/postfix/catchall
 postmap hash:/etc/postfix/catchall
 
+[ -f /etc/postfix/protected_distribution_lists ] && rm -f /etc/postfix/protected_distribution_lists
+[ -f /etc/postfix/distribution_list_users ] && rm -f /etc/postfix/distribution_list_users
+
 #Create user access files
 touch /etc/postfix/deny_sending
 touch /etc/postfix/deny_receiving
@@ -532,6 +540,37 @@ touch /etc/postfix/restricted_accounts
 touch /etc/postfix/protected_distribution_lists
 touch /etc/postfix/distribution_list_users
 echo "$REALM	OK" > /etc/postfix/restricted_domains
+
+#Populate protected_distribution_lists
+for group in $(ls -1 /opt/karoshi/server_network/group_information)
+do
+	echo $group"	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
+done
+
+if [ -d /opt/karoshi/server_network/group_information_dynamic ]
+then
+	for group in $(ls -1 /opt/karoshi/server_network/group_information_dynamic)
+	do
+		echo $group"	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
+	done
+fi
+
+#Populate distribution_list_users
+for networkuser in $(getent passwd | grep /home/users/staff | cut -d: -f1)
+do
+	echo $networkuser@$REALM OK >> /etc/postfix/distribution_list_users
+done
+
+for networkuser in $(getent passwd | grep /home/users/itadminstaff | cut -d: -f1)
+do
+	echo $networkuser@$REALM OK >> /etc/postfix/distribution_list_users
+done
+
+for networkuser in $(getent passwd | grep /home/users/officestaff | cut -d: -f1)
+do
+	echo $networkuser@$REALM OK >> /etc/postfix/distribution_list_users
+done
+
 postmap hash:/etc/postfix/deny_sending
 postmap hash:/etc/postfix/deny_receiving
 postmap hash:/etc/postfix/restricted_accounts

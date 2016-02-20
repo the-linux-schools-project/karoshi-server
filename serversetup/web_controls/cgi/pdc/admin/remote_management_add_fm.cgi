@@ -45,7 +45,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Add a new Web Management User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Add Web Management User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -57,7 +57,7 @@ echo '
   <div id="actionbox">
 
 <table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><b>'$"Add a new Web Management User"'</b></td>
+<td style="vertical-align: top;"><b>'$"Add Web Management User"'</b></td>
 <td style="vertical-align: top;">
 <button class="button" formaction="remote_management_view.cgi" name="ViewUsers" value="_">
 '$"View"'

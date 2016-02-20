@@ -1,0 +1,416 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_protected_distribution_lists_cgi
+then
+	echo `date`: email_protected_distribution_lists - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/email_protected_distribution_lists_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_protected_distribution_lists.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $email_protected_distribution_lists_cgi'check' ]
+then
+	echo `date`: email_protected_distribution_lists - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: email_protected_distribution_lists - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ -z "$DATA" ]
+then
+	echo `date`: email_protected_distribution_lists - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+USERNAME=`echo "$DATA" | cut -s -d: -f5`
+GROUP=`echo "$DATA" | cut -s -d: -f6`
+MOBILE=`echo "$DATA" | cut -s -d: -f7`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: email_protected_distribution_lists - Not called by email_protected_distribution_lists.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: email_protected_distribution_lists - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: email_protected_distribution_lists - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: email_protected_distribution_lists - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ ! -z $ACTION ]
+then
+	if [ $ACTION = delete ] || [ $ACTION = reallyadd ] || [ $ACTION = reallydelete ]
+	then
+		if [ -z "$GROUP" ]
+		then
+			echo `date`: email_protected_distribution_lists - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			exit 101
+		fi
+	fi
+else
+	ACTION=view
+fi
+
+############################
+#Language
+############################
+
+STYLESHEET=defaultstyle.css
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+TEXTDOMAIN=karoshi-server
+source /opt/karoshi/server_network/domain_information/domain_name
+
+EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+if [ "$MOBILE" = no ]
+then
+	USERNAMEMSG=$"Username"
+	TABLECLASS=standard
+	WIDTH1=200
+	WIDTH2=70
+	WIDTH3=200
+	WIDTH4=192
+	WIDTH5=200
+	HEIGHT=25
+	HEIGHT2=25
+	ICON1="/images/submenus/email/email_delete.png"
+	ICON2="/images/submenus/email/alias_add.png"
+	ICON3="/images/submenus/email/alias_view.png"
+	HELPCLASS="info"
+else
+	USERNAMEMSG=$"User"
+	TABLECLASS=mobilestandard
+	WIDTH1=200
+	WIDTH2=60
+	WIDTH3=140
+	WIDTH4=114
+	WIDTH5=120
+	HEIGHT=30
+	HEIGHT2=30
+	ICON1="/images/submenus/email/email_deletem.png"
+	ICON2="/images/submenus/email/alias_addm.png"
+	ICON3="/images/submenus/email/alias_viewm.png"
+	HELPCLASS="info infoleft"
+fi
+
+function completed_status {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "/cgi-bin/admin/email_protected_distribution_lists.cgi";'
+echo '</script>'
+echo "</body></html>"
+exit
+}
+
+#Delete users from the list.
+if [ "$ACTION" = deleteuser ]
+then
+	echo `date`: "email_protected_distribution_lists - removing $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		sed -i "/^$USERNAME@/d" /etc/postfix/distribution_list_users
+		postmap hash:/etc/postfix/distribution_list_users
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		sed -i "/^'$USERNAME'@/d" /etc/postfix/distribution_list_users
+		postmap hash:/etc/postfix/distribution_list_users
+		'
+	fi
+	ACTION=viewusers
+fi
+
+#Add allowed users
+if [ "$ACTION" = adduser ]
+then
+
+	function addusertolist {
+	echo `date`: "email_protected_distribution_lists - adding $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		if [ $(grep -c "$USERNAME@" /etc/postfix/distribution_list_users) = 0 ]
+		then
+			echo "$USERNAME@$REALM OK" >> /etc/postfix/distribution_list_users
+			cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
+			rm /etc/postfix/distribution_list_users
+			mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
+			postmap hash:/etc/postfix/distribution_list_users
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		if [ $(grep -c "'$USERNAME'@" /etc/postfix/distribution_list_users) = 0 ]
+		then
+			echo "'$USERNAME'@'$REALM' OK" >> /etc/postfix/distribution_list_users
+			cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
+			rm /etc/postfix/distribution_list_users
+			mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
+			postmap hash:/etc/postfix/distribution_list_users
+		fi
+		'
+	fi
+	}
+
+	#Check to see if we are adding a user or a group
+	getent passwd "$GROUP" 1>/dev/null
+	if [ $? = 0 ]
+	then
+		USERTYPE=user
+	fi
+	getent group "$GROUP" 1>/dev/null
+	if [ $? = 0 ]
+	then
+		USERTYPE=group
+	fi
+
+	if [ $USERTYPE = user ]
+	then
+		USERNAME=$GROUP
+		addusertolist
+	fi
+
+	if [ $USERTYPE = group ]
+	then
+		#Get all users from the group and add them
+		for USERNAME in $(getent group $GROUP | cut -d: -f4 | sed 's/,/ /g')
+		do
+			addusertolist
+		done
+	fi
+	ACTION=viewusers
+fi
+
+#View allowed users
+
+if [ "$ACTION" = viewusers ]
+then
+	#Show the user a choice of username or group to select.
+	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_protected_distribution_lists.cgi" method="post"><input type="hidden" name="_ACTION_" value="adduser"> <table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '$WIDTH3'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
+	<input type="text" name="_GROUP_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH4'px; height: '$HEIGHT2'px;" value="" size="10"></td>'
+
+	[ $MOBILE = no ] && echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Protected_Distribution_Lists"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td>'
+
+	echo '</tr>
+<tr><td></td><td><select name="_GROUPLIST_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="1" onchange="document.combobox._GROUP_.value = document.combobox._GROUPLIST_.options[document.combobox._GROUPLIST_.selectedIndex].value;document.combobox._GROUPLIST_.value=&#39;&#39;">'
+
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
+
+
+echo '</td><td></td></tr></tbody></table><br><br>
+	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form><br>'
+
+
+	#Show allowed users 
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		ALLOWED_USERS=$(cat /etc/postfix/distribution_list_users | cut -d"@" -f1)
+	else
+		ALLOWED_USERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/distribution_list_users | cut -d"@" -f1
+		')
+	fi
+	if [ ${#ALLOWED_USERS} -gt 0 ]
+	then
+		echo '<form action="/cgi-bin/admin/email_protected_distribution_lists.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Allowed Users"'</b></th><th style="width: '$WIDTH2'px;">'
+
+		[ "$MOBILE" = no ] && echo '<b>'$"Remove"'</b>'
+
+		echo '</th></tr></thead><tbody>'
+
+		for ALLOWED_USER in $ALLOWED_USERS
+		do
+			echo '<tr><td>'$ALLOWED_USER'</td><td>
+			<button class="info" name="_RemoveUser_" value="_ACTION_deleteuser_USERNAME_'$ALLOWED_USER'_">
+			<img src="'$ICON1'" alt="'$"Remove"'">
+			<span>'$"Remove"' '$ALLOWED_USER'</span>
+			</button>
+			</td></tr>'
+		done
+		echo '</tbody></table></form>'
+	fi
+fi
+
+#View aliases
+if [ "$ACTION" = view ]
+then
+	#Get a list of all groups
+	PRI_GROUPS=$(ls -1 /opt/karoshi/server_network/group_information)
+	if [ -d /opt/karoshi/server_network/group_information_dynamic ]
+	then
+		DYN_GROUPS=$(ls -1 /opt/karoshi/server_network/group_information_dynamic)
+	fi
+
+	echo '<form action="/cgi-bin/admin/email_protected_distribution_lists.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Distribution List / Group"'</b></th><th style="width: '$WIDTH2'px;">'
+
+	[ "$MOBILE" = no ] && echo '<b>'$"Remove"'</b>'
+
+	echo '</th></tr></thead><tbody>'
+
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		DIST_LIST=$(cat /etc/postfix/protected_distribution_lists | cut -f1)
+	else
+		DIST_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		cat /etc/postfix/protected_distribution_lists | cut -f1
+		')
+	fi
+
+	for ENTRY in $DIST_LIST
+	do
+		echo '<tr><td>'$ENTRY'</td><td>
+		<button class="info" name="_DeleteList_" value="_ACTION_delete_GROUP_'$ENTRY'_">
+		<img src="'$ICON1'" alt="'$"Remove"'">
+		<span>'$"Remove"' '$ENTRY'</span>
+		</button>
+		</td></tr>'
+	done
+	echo "</tbody></table></form>"
+
+#Show available groups
+
+function show_group_table {
+	echo '<form action="/cgi-bin/admin/email_protected_distribution_lists.cgi" method="post"><table id="myTable2" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Available Groups"'</b></th><th style="width: '$WIDTH2'px;">'
+	[ "$MOBILE" = no ] && echo '<b>'$"Add"'</b>'
+
+	echo '</th></tr></thead><tbody>'
+}
+
+
+	SHOW_TABLE=yes
+	SHOW_TABLE_BT=no
+
+	for ENTRY in $PRI_GROUPS
+	do
+
+		if [ $(echo $DIST_LIST | grep -c $ENTRY) = 0 ]
+		then
+			[ $SHOW_TABLE = yes ] && show_group_table
+			SHOW_TABLE=no
+			SHOW_TABLE_BT=yes
+			echo '<tr><td>'$ENTRY'</td><td>
+			<button class="info" name="_AddList_" value="_ACTION_add_GROUP_'$ENTRY'_">
+			<img src="'$ICON2'" alt="'$"Add"'">
+			<span>'$"Add"' '$ENTRY'</span>
+			</button>
+			</td></tr>'
+		fi
+	done
+
+	for ENTRY in $DYN_GROUPS
+	do
+		if [ $(echo $DIST_LIST | grep -c -w $ENTRY) = 0 ]
+		then
+
+			SHOW_TABLE=no
+			SHOW_TABLE_BT=yes
+			echo '<tr><td>'$ENTRY'</td><td>
+			<button class="info" name="_AddList_" value="_ACTION_add_GROUP_'$ENTRY'_">
+			<img src="'$ICON2'" alt="'$"Add"'">
+			<span>'$"Add"' '$ENTRY'</span>
+			</button>
+			</td></tr>'
+		fi
+	done
+
+	[ $SHOW_TABLE_BT = yes ] && echo "</tbody></table></form>"
+fi
+
+if [ $ACTION = delete ]
+then
+	echo `date`: "email_protected_distribution_lists - removing $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+	if [ "$EMAILSERVER" = `hostname-fqdn` ]
+	then
+		sed -i "/^$GROUP\t/d" /etc/postfix/protected_distribution_lists
+		postmap hash:/etc/postfix/protected_distribution_lists
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		sed -i "/^'$GROUP'\t/d" /etc/postfix/protected_distribution_lists
+		postmap hash:/etc/postfix/protected_distribution_lists
+		'
+	fi
+	completed_status
+fi
+
+if [ "$ACTION" = add ]
+then
+	echo `date`: "email_protected_distribution_lists - adding $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	if [ $EMAILSERVER = `hostname-fqdn` ]
+	then
+		if [ `grep -c ^"$GROUP\t" /etc/postfix/protected_distribution_lists` = 0 ]
+		then
+			echo -e "$GROUP\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
+			cat /etc/postfix/protected_distribution_lists | sort > /etc/postfix/protected_distribution_lists1
+			rm /etc/postfix/protected_distribution_lists
+			mv /etc/postfix/protected_distribution_lists1 /etc/postfix/protected_distribution_lists
+			postmap hash:/etc/postfix/protected_distribution_lists
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		if [ `grep -c ^"'$GROUP'\t" /etc/postfix/protected_distribution_lists` = 0 ]
+		then
+			echo -e "'$GROUP'\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
+			cat /etc/postfix/protected_distribution_lists | sort > /etc/postfix/protected_distribution_lists1
+			rm /etc/postfix/protected_distribution_lists
+			mv /etc/postfix/protected_distribution_lists1 /etc/postfix/protected_distribution_lists
+			postmap hash:/etc/postfix/protected_distribution_lists
+		fi
+		'
+	fi
+	completed_status
+fi
+
+exit
+
