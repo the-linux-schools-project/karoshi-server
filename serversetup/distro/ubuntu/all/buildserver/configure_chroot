@@ -122,7 +122,7 @@ rm /var/lib/dbus/machine-id
 dpkg-divert --rename --remove /sbin/initctl
 
 #Remove old linux kernels if there are more than one
-ls /boot/vmlinuz-3.13.**-**-generic > list.txt
+ls /boot/vmlinuz* > list.txt
 sum=$(cat list.txt | grep '[^ ]' | wc -l)
 
 if [ $sum -gt 1 ]; then

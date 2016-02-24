@@ -158,9 +158,9 @@ umount $BUILDPATH/chroot/dev
 echo -e "\nCreate ISO image\n"
 
 #Install software to create the cd image
-echo -e "Installing syslinux squashfs-tools and genisoimage\n"
+echo -e "Installing isolinux syslinux squashfs-tools and genisoimage\n"
 sleep 1	
-apt-get install --yes syslinux squashfs-tools genisoimage
+apt-get install --yes isolinux syslinux squashfs-tools genisoimage
 
 #Remove existing image directory
 if [ -d image ]
