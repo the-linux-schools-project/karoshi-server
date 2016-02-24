@@ -179,8 +179,8 @@ mkdir -p image/{casper,isolinux,install}
 #Copy in the kernel built with the casper scripts
 echo -e "\nCopying in the kernel built with casper scripts\n"
 sleep 1	
-cp chroot/boot/vmlinuz-3.13.**-**-generic image/casper/vmlinuz
-cp chroot/boot/initrd.img-3.13.**-**-generic image/casper/initrd.gz
+cp chroot/boot/vmlinuz-* image/casper/vmlinuz
+cp chroot/boot/initrd.img-* image/casper/initrd.gz
 
 #Copy in isolinux and memtest binaries
 echo -e "\nCopying in isolinux and memtest binaries\n"
