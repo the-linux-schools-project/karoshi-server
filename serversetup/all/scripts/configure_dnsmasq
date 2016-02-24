@@ -70,7 +70,7 @@ do
 				which dnsmasq 1> /dev/null
 				if [ $? != 0 ]
 				then
-					echo "<li>'$SERVERNAME' installing dnsmasq</li><br>"
+					echo "<ul><li>'$SERVERNAME' installing dnsmasq</li></ul>"
 					echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 					apt-get update
 					apt-get install -y dnsmasq
@@ -90,7 +90,7 @@ do
 					done
 					echo domain '$REALM' > /etc/resolv.conf
 					echo nameserver 127.0.0.1 >> /etc/resolv.conf
-					echo "<li>'$SERVERNAME' - '$"restarting"' dnsmasq</li>"
+					echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
 					service dnsmasq restart
 					#Make sure that dnsmasq is set to start on boot
 					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq

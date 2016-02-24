@@ -43,7 +43,7 @@ then
 	chmod 0700 /opt/karoshi/logs/server_upgrades/
 fi
 
-CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config sshclient,/etc/ssh/ssh_config squid,/etc/squid/squid.conf )
+CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dnsmasq,/etc/dnsmasq.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config sshclient,/etc/ssh/ssh_config squid,/etc/squid/squid.conf )
 
 function backup_config_files {
 #Backup service config files

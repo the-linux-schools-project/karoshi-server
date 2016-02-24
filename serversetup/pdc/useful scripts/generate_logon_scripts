@@ -165,7 +165,7 @@ do
 					#Add drive map for linux due to broken dfs in mount.cfs
 
 					#Get server(s) that the share is on in case it it gluster aware
-					if [ -e /var/lib/samba/dfs/$SHARE ]
+					if [ -L /var/lib/samba/dfs/$SHARE ]
 					then
 						for DFSSERVER in $(ls -l /var/lib/samba/dfs/$SHARE | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
 						do
@@ -201,14 +201,13 @@ then
 			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
 		#Mac
-		#echo '
-#'$SHARE'
-#if [ $PrimaryGroup = '$GROUPNAME' ]
-#then
-#	[ ! -d /tmp/$LoggedInUser/home/ ] && mkdir -p /tmp/$LoggedInUser/home/
-#	mount_smbfs "//'$HOMESERVER'/$LoggedInUser/" /tmp/$LoggedInUser/home/
-#fi
-#' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+		echo '
+#Network home area
+if [ $PrimaryGroup = '$GROUPNAME' ]
+then
+	HOMESERVER='$SERVER'
+fi
+' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 		done
 	done

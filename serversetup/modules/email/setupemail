@@ -210,7 +210,7 @@ sed -i "s%#sieve_before =%sieve_before = /etc/dovecot/sieve/default.sieve%g" /et
 [ ! -d /etc/dovecot/sieve ] && mkdir -p /etc/dovecot/sieve
 		
 echo -e "require [\"fileinto\"];
-if header :contains \"X-Karoshi-MailScanner-SpamScore\" \"sssss\" {
+if header :contains \"X-$REALM-MailScanner-SpamScore\" \"sssss\" {
   fileinto \"Spam\";
 }" > /etc/dovecot/sieve/default.sieve
 

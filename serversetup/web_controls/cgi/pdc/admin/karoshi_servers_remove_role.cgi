@@ -46,7 +46,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/
 #########################
 #Assign data to variables
 #########################
-END_POINT=19
+END_POINT=21
 #Assign MODULE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
