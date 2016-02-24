@@ -53,10 +53,10 @@ apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquit
 check_status
 
 #Temporary fudge for package dependency problem with casper and samba4 from linuxschools backports
-apt-get remove casper
+#apt-get remove casper
 
 #Install a version of casper that does not have cifs-utils as a dependency.
-dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/casper_1.340.2_amd64.deb
+#dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/casper_1.340.2_amd64.deb
 
 echo -e "\nChroot: Installing discover and os-prober\n"
 sleep 1	
