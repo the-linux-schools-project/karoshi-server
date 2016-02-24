@@ -129,10 +129,17 @@ fi
 #Check data
 #########################
 #Check to see that ALIAS is not blank
-if [ -z "$ALIAS" ]
-then
+if [ -z "$ALIAS" ]; then
 	MESSAGE=$"You have not entered an alias or domain path."
 	show_status
+else
+	# Check whether the chosen alias is already assigned.
+	for aliasList in $(cat "/opt/karoshi/server_network/aliases/$SERVERNAME"); do
+		if [ "$aliasList" == "$ALIAS" ]; then
+			MESSAGE=$"The alias you entered is already in use."
+			show_status
+		fi
+	done
 fi
 
 #Check to see that SERVERNAME is not blank
