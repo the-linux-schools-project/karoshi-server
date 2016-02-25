@@ -190,6 +190,13 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
+	#Check to see that COMMENT is not blank
+	if [ -z "$COMMENT" ]
+	then
+		MESSAGE=$"You have not entered a comment for the TCPIP address."
+		show_status
+	fi
+
 	#Check that we have some sort of useful ip address.
 	if [ `ipcalc -n "$TCPIP" | grep -c INVALID` -gt 0 ]
 	then

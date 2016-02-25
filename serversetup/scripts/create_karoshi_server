@@ -187,7 +187,7 @@ echo -e "\nCopying in isolinux and memtest binaries\n"
 sleep 1	
 cp /usr/lib/ISOLINUX/isolinux.bin image/isolinux/
 cp /boot/memtest86+.bin image/install/memtest
-cp /usr/lib/syslinuxmodules/efi64/vesamenu.c32 image/isolinux/
+cp /usr/lib/syslinux/modules/bios/vesamenu.c32 image/isolinux/
 
 #Copy in boot splash
 cp -f chroot/opt/karoshi/serversetup/all/backgrounds/bootmenu.png image/isolinux/splash.png
