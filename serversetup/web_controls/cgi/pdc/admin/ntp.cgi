@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 function show_status {
@@ -97,33 +97,45 @@ echo '<body onLoad="start()"><div id="pagecontainer">'
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+#Get current ntp servers from the main server.
+NTPSERVERS=$(grep ^server /etc/ntp.conf | grep -v 127.127.1.0 | sed "s/^server//g" | sed "s/^ //g" | cut -d" " -f1 | sort)
+NTPSERVER1=$(echo $NTPSERVERS | cut -d" " -f1)
+NTPSERVER2=$(echo $NTPSERVERS | cut -d" " -f2)
+NTPSERVER3=$(echo $NTPSERVERS | cut -d" " -f3)
+NTPSERVER4=$(echo $NTPSERVERS | cut -d" " -f4)
+
 echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Configure NTP"'</div><br>
 <table class="standard" style="text-align: left; height: 50px;" >
-<tbody><tr><td style="width: 180px;">'$"NTP Server"'</td>
-<td><input name="_NTPSERVER_" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the NTP server address that you want the servers to get the time from."'</span></a>
-</td></tr></tbody></table></div><div id="infobox">'
+<tbody><tr><td style="width: 180px;">'$"NTP Server"' 1</td>
+<td><input tabindex= "1" name="_NTPSERVER1_" size="25" type="text" value="'$NTPSERVER1'"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the NTP server addresses that you want the servers to get the time from."'</span></a>
+</td></tr>
+<tr><td>'$"NTP Server"' 2</td><td><input tabindex= "2" name="_NTPSERVER2_" size="25" type="text" value="'$NTPSERVER2'"></td><td></td></tr>
+<tr><td>'$"NTP Server"' 3</td><td><input tabindex= "3" name="_NTPSERVER3_" size="25" type="text" value="'$NTPSERVER3'"></td><td></td></tr>
+<tr><td>'$"NTP Server"' 4</td><td><input tabindex= "4" name="_NTPSERVER4_" size="25" type="text" value="'$NTPSERVER4'"></td><td></td></tr>
+</tbody></table></div><div id="infobox">'
 
-#Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE pdc $"Set Time"
+#Show list of servers 
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set NTP Server" "notset" showtime
 
 [ $MOBILE = no ] && echo '</div>'
 

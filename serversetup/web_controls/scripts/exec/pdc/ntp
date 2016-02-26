@@ -28,89 +28,103 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
 
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
 then
-echo `date`: ntp2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ntp2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $ntp2_cgi'check' ]
 then
-echo `date`: ntp - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
+
+
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [[ $numArgs != 0 ]]
 then
-echo `date`: ntp - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-NTPSERVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
-SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
-SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+if [[ -z "$DATA" ]]
+then
+	echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+NTPSERVER1=`echo "$DATA" | cut -s -d: -f4`
+NTPSERVER2=`echo "$DATA" | cut -s -d: -f5`
+NTPSERVER3=`echo "$DATA" | cut -s -d: -f6`
+NTPSERVER4=`echo "$DATA" | cut -s -d: -f7`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f8`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f9`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f10`
+
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: ntp - Not called by ntp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Not called by ntp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: ntp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: ntp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: ntp - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: ntp - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $NTPSERVER'null' = null ]
+if [ -z "$NTPSERVER1" ] && [ -z "$NTPSERVER2" ] && [ -z "$NTPSERVER3" ] && [ -z "$NTPSERVER4" ]
 then
-echo `date`: ntp - Blank ntp server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Blank ntp server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: ntp - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: ntp - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: ntp - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: ntp - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 
 ############################
@@ -124,133 +138,162 @@ TEXTDOMAIN=karoshi-server
 #Apply settings
 ###########################
 
-echo `date`: ntp - Setting $SERVERNAME to $NTPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: ntp - Setting $SERVERNAME to $NTPSERVER1 $NTPSERVER2 $NTPSERVER3 $NTPSERVER4 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 echo '<table class="headings" style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="0">'
 echo '<tbody><tr><td>'
 echo '<span style="font-weight: bold;">'$SERVERNAME'</span></td>'
 echo '</tr></tbody></table><br><br>'
+
 source /opt/karoshi/serversetup/variables/distro
 #pdc
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo $HOSTNAME - $"Stopping NTP Service""<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
-#Ensure drift file is created
-if [ ! -d /etc/ntp/ ]
-then
-mkdir -p /etc/ntp/
-chown ntp /etc/ntp/
-fi
-if [ ! -f /etc/ntp/drift ]
-then
-touch /etc/ntp/drift
-chown ntp /etc/ntp/drift
-fi
+	echo "<ul><li>"$HOSTNAME - $"Stopping NTP Service""</li></ul>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
 
-#create ntp.conf
-#echo server	127.127.1.0 > /etc/ntp.conf
-#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
-echo server	$NTPSERVER	prefer > /etc/ntp.conf
-echo driftfile /etc/ntp/drift >> /etc/ntp.conf
-echo multicastclient >> /etc/ntp.conf
-echo broadcastdelay	0.008 >> /etc/ntp.conf
-echo authenticate no >> /etc/ntp.conf
-#Do initial time syncronisation
-echo $"Syncing Server""<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpdate -t 3 $NTPSERVER 2>/dev/null
-echo "</pre><br>"$HOSTNAME - $"Starting NTP Service""<br><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	#Ensure drift file is created
+	if [ ! -d /etc/ntp/ ]
+	then
+		mkdir -p /etc/ntp/
+		chown ntp /etc/ntp/
+	fi
+	if [ ! -f /etc/ntp/drift ]
+	then
+		touch /etc/ntp/drift
+		chown ntp /etc/ntp/drift
+	fi
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
-echo "</pre>"
-#Ensure that NTP is running on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
-#Show ntp status
-echo $"NTP Status""<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpq -p 2>/dev/null
-echo \</pre\>\<br\>
+	#create ntp.conf
+	echo server 127.127.1.0 > /etc/ntp.conf
+	echo fudge 127.127.1.0 stratum 10 >> /etc/ntp.conf
+	[ ! -z "$NTPSERVER1" ] && echo server $NTPSERVER1 >> /etc/ntp.conf
+	[ ! -z "$NTPSERVER2" ] && echo server $NTPSERVER2 >> /etc/ntp.conf
+	[ ! -z "$NTPSERVER3" ] && echo server $NTPSERVER3 >> /etc/ntp.conf
+	[ ! -z "$NTPSERVER4" ] && echo server $NTPSERVER4 >> /etc/ntp.conf
+	echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+	echo broadcastdelay 0.008 >> /etc/ntp.conf
+
+	#Do initial time syncronisation for the first available ntpserver
+	[ ! -z $NTPSERVER4 ] && TIMESYNCSERVER=$NTPSERVER4
+	[ ! -z $NTPSERVER3 ] && TIMESYNCSERVER=$NTPSERVER3
+	[ ! -z $NTPSERVER2 ] && TIMESYNCSERVER=$NTPSERVER2
+	[ ! -z $NTPSERVER1 ] && TIMESYNCSERVER=$NTPSERVER1
+
+	echo "<ul><li>"$"Syncing Server""</ul></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpdate -t 3 $TIMESYNCSERVER 2>/dev/null
+	echo "</pre><ul><li>"$HOSTNAME - $"Starting NTP Service""</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 1>/dev/null
+	echo "</pre>"
+	#Ensure that NTP is running on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+	#Show ntp status
+	echo "<ul><li>"$"NTP Status""</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpq -p 2>/dev/null
+	echo \</pre\>\<br\>
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-source /opt/karoshi/serversetup/variables/distro
-echo $HOSTNAME - '$"Stopping NTP Service"'"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
-#Ensure drift file is created
-if [ ! -d /etc/ntp/ ]
-then
-mkdir -p /etc/ntp/
-chown ntp /etc/ntp/
-fi
-if [ ! -f /etc/ntp/drift ]
-then
-touch /etc/ntp/drift
-chown ntp /etc/ntp/drift
-fi
-#create ntp.conf
-#echo server	127.127.1.0 > /etc/ntp.conf
-#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
-echo server	'$NTPSERVER'	prefer > /etc/ntp.conf
-echo driftfile /etc/ntp/drift >> /etc/ntp.conf
-echo multicastclient >> /etc/ntp.conf
-echo broadcastdelay	0.008 >> /etc/ntp.conf
-echo authenticate no >> /etc/ntp.conf
-#Do initial time syncronisation
-echo '$"Syncing Server"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpdate -t 3 '$NTPSERVER' 2>/dev/null
-echo "</pre><br>"$HOSTNAME - '$"Starting NTP Service"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
-echo "</pre>"
-#Ensure that NTP is running on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
-echo '$"NTP Status"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpq -p 2>/dev/null
-echo \</pre\>\<br\>
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	source /opt/karoshi/serversetup/variables/distro
+	echo "<ul><li>"$HOSTNAME - '$"Stopping NTP Service"'"</li></ul>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+	#Ensure drift file is created
+	if [ ! -d /etc/ntp/ ]
+	then
+		mkdir -p /etc/ntp/
+		chown ntp /etc/ntp/
+	fi
+	if [ ! -f /etc/ntp/drift ]
+	then
+		touch /etc/ntp/drift
+		chown ntp /etc/ntp/drift
+	fi
+
+	#create ntp.conf
+	echo server	127.127.1.0 > /etc/ntp.conf
+	echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER1'" ] && echo server '$NTPSERVER1' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER2'" ] && echo server '$NTPSERVER2' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER3'" ] && echo server '$NTPSERVER3' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER4'" ] && echo server '$NTPSERVER4' >> /etc/ntp.conf
+	echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+	echo broadcastdelay	0.008 >> /etc/ntp.conf
+
+	#Do initial time syncronisation for the first available ntpserver
+	[ ! -z '$NTPSERVER4' ] && TIMESYNCSERVER='$NTPSERVER4'
+	[ ! -z '$NTPSERVER3' ] && TIMESYNCSERVER='$NTPSERVER3'
+	[ ! -z '$NTPSERVER2' ] && TIMESYNCSERVER='$NTPSERVER2'
+	[ ! -z '$NTPSERVER1' ] && TIMESYNCSERVER='$NTPSERVER1'
+
+	echo "<ul><li>"'$"Syncing Server"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpdate -t 3 '$TIMESYNCSERVER' 2>/dev/null
+	echo "</pre><ul><li>>"$HOSTNAME - '$"Starting NTP Service"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 1>/dev/null
+	echo "</pre>"
+
+	#Ensure that NTP is running on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+	echo "<ul><li>"'$"NTP Status"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpq -p 2>/dev/null
+	echo \</pre\>\<br\>
+	'
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER PasswordAuthentication=no '
-echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-source /opt/karoshi/serversetup/variables/distro
-echo $HOSTNAME - '$"Stopping NTP Service"'"<br><br>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
-#Ensure drift file is created
-if [ ! -d /etc/ntp/ ]
-then
-mkdir -p /etc/ntp/
-chown ntp /etc/ntp/
-fi
-if [ ! -f /etc/ntp/drift ]
-then
-touch /etc/ntp/drift
-chown ntp /etc/ntp/drift
-fi
-#create ntp.conf
-#echo server	127.127.1.0 > /etc/ntp.conf
-#echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
-echo server	'$NTPSERVER'	prefer > /etc/ntp.conf
-echo driftfile /etc/ntp/drift >> /etc/ntp.conf
-echo multicastclient >> /etc/ntp.conf
-echo broadcastdelay	0.008 >> /etc/ntp.conf
-echo authenticate no >> /etc/ntp.conf
-#Do initial time syncronisation
-echo '$"Syncing Server"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpdate -t 3 '$NTPSERVER' 2>/dev/null
-echo "</pre><br>"$HOSTNAME - '$"Starting NTP Service"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 2>/dev/null
-echo "</pre>"
-#Ensure that NTP is running on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
-echo '$"NTP Status"'"<br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-ntpq -p 2>/dev/null
-echo \</pre\>\<br\>
-'\''
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER PasswordAuthentication=no '
+	echo `date`: ntp \(federated mode\) - Setting '$SERVERNAME' to '$NTPSERVER' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	source /opt/karoshi/serversetup/variables/distro
+	echo "<ul><li>"$HOSTNAME - '$"Stopping NTP Service"'"</li></ul>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+
+	#Ensure drift file is created
+	if [ ! -d /etc/ntp/ ]
+	then
+		mkdir -p /etc/ntp/
+		chown ntp /etc/ntp/
+	fi
+	if [ ! -f /etc/ntp/drift ]
+	then
+		touch /etc/ntp/drift
+		chown ntp /etc/ntp/drift
+	fi
+
+	#create ntp.conf
+	echo server	127.127.1.0 > /etc/ntp.conf
+	echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER1'" ] && echo server '$NTPSERVER1' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER2'" ] && echo server '$NTPSERVER2' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER3'" ] && echo server '$NTPSERVER3' >> /etc/ntp.conf
+	[ ! -z "'$NTPSERVER4'" ] && echo server '$NTPSERVER4' >> /etc/ntp.conf
+	echo driftfile /etc/ntp/drift >> /etc/ntp.conf
+	echo broadcastdelay	0.008 >> /etc/ntp.conf
+
+	#Do initial time syncronisation for the first available ntpserver
+	[ ! -z '$NTPSERVER4' ] && TIMESYNCSERVER='$NTPSERVER4'
+	[ ! -z '$NTPSERVER3' ] && TIMESYNCSERVER='$NTPSERVER3'
+	[ ! -z '$NTPSERVER2' ] && TIMESYNCSERVER='$NTPSERVER2'
+	[ ! -z '$NTPSERVER1' ] && TIMESYNCSERVER='$NTPSERVER1'
+
+	echo "<ul><li>"'$"Syncing Server"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpdate -t 3 '$TIMESYNCSERVER' 2>/dev/null
+
+	echo "</pre><ul><li>"$HOSTNAME - '$"Starting NTP Service"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 1>/dev/null
+	echo "</pre>"
+
+	#Ensure that NTP is running on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+	echo "<ul><li>"'$"NTP Status"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	ntpq -p 2>/dev/null
+	echo \</pre\>\<br\>
+	'\''
+	'
 fi
 
 

@@ -109,7 +109,7 @@ echo "<input type=\"Text\" name=\"timestamp\" value=\"$DAY-$MONTH-$YEAR $HOUR:$M
                 <!--- End European Date and Time -->"
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set time"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set time" "notset" showtime
 
 [ $MOBILE = no ] && echo '</div>'
 

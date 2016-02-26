@@ -47,6 +47,7 @@ then
 	WIDTH3=80
 	WIDTH4=120
 	WIDTH5=80
+	WIDTH6=180
 	HEIGHT1=50
 	SERVERICON="/images/submenus/system/computer.png"
 	SERVERICON2="/images/submenus/system/all_computers.png"
@@ -57,11 +58,19 @@ else
 	WIDTH3=50
 	WIDTH4=110
 	WIDTH5=80
+	WIDTH6=100
 	HEIGHT1=30
 	SERVERICON="/images/submenus/system/computerm.png"
 	SERVERICON2="/images/submenus/system/all_computersm.png"
 	TABLECLASS=mobilestandard
 fi
+
+#Used to show the current time of the servers on time related pages
+function getservertime {
+SERVERTIMEDATA=$(sudo -H /opt/karoshi/web_controls/exec/get_server_time $SERVER)
+SERVERTIME=$(echo $SERVERTIMEDATA | cut -d, -f1)
+NTPSERVERS=$(echo $SERVERTIMEDATA | cut -d, -f2 | sed 's/ /<br>/g')
+}
 
 function tabletop {
 echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
@@ -72,6 +81,11 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 if [ $CUSTOM = updateserver ]
 then
 	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></th>'
+fi
+
+if [ $CUSTOM = showtime ]
+then
+	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH6'px;"><b>'$"NTP Servers"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Date and Time"'</b></th>'
 fi
 
 if [ $CUSTOM = commercialsslcert ]
@@ -134,6 +148,12 @@ then
 		echo -
 	fi
 	echo '</td>'
+fi
+
+if [ $CUSTOM = showtime ]
+then
+	getservertime
+	echo '<td style="vertical-align: top; text-align: left;">'$NTPSERVERS'</td><td style="vertical-align: top; text-align: left;">'$SERVERTIME'</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: left;">
