@@ -138,8 +138,8 @@ add-apt-repository -y ppa:webupd8team/y-ppa-manager
 #add-apt-repository -y "deb-src http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main"
 
 #Linux Schools backports
-#add-apt-repository -y "ppa:linux-schools/backports"
-#apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
+add-apt-repository -y "ppa:linux-schools/backports"
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
 }
 
 function update_repos {
