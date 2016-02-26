@@ -72,6 +72,11 @@ SERVERTIME=$(echo $SERVERTIMEDATA | cut -d, -f1)
 NTPSERVERS=$(echo $SERVERTIMEDATA | cut -d, -f2 | sed 's/ /<br>/g')
 }
 
+function getdnsforwarders {
+DNSFORWARDERS=$(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders $SERVER)
+DNSFORWARDERS=$(echo $DNSFORWARDERS | sed 's/ /<br>/g')
+}
+
 function tabletop {
 echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 <tr><th style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></th>'
@@ -81,6 +86,11 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 if [ $CUSTOM = updateserver ]
 then
 	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></th>'
+fi
+
+if [ $CUSTOM = showdns ]
+then
+	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH6'px;"><b>'$"DNS Forwarders"'</b></th>'	
 fi
 
 if [ $CUSTOM = showtime ]
@@ -154,6 +164,12 @@ if [ $CUSTOM = showtime ]
 then
 	getservertime
 	echo '<td style="vertical-align: top; text-align: left;">'$NTPSERVERS'</td><td style="vertical-align: top; text-align: left;">'$SERVERTIME'</td>'
+fi
+
+if [ $CUSTOM = showdns ]
+then
+	getdnsforwarders
+	echo '<td style="vertical-align: top; text-align: left;">'$DNSFORWARDERS'</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: left;">

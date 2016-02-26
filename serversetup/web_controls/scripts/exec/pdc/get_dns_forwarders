@@ -1,0 +1,51 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+
+SERVER=$(echo $1 | tr -cd 'A-Za-z0-9\._-')
+
+if [ $SERVER = $(hostname-fqdn) ]
+then
+	DNSFORWARDERS=$(grep "dns forwarder" /etc/samba/smb.conf | tr -cd "0-9.") 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+else
+	DNSFORWARDERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	if [ $(grep -c "dns forwarder" /etc/samba/smb.conf) -gt 0 ]
+	then
+		grep "dns forwarder" /etc/samba/smb.conf | tr -cd "0-9."
+	else
+		if [ -e /etc/resolv.karoshi.conf ]
+		then
+			grep "nameserver" /etc/resolv.karoshi.conf  | tr -cd "0-9.\n"
+		else
+			grep "nameserver" /etc/resolv.conf  | tr -cd "0-9.\n"
+		fi
+	fi
+	') 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+echo -e "$DNSFORWARDERS"
