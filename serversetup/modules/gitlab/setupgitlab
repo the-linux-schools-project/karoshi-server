@@ -99,10 +99,10 @@ if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ss
 #  ssl
 
 # Based on the Gitlab Apache Recipes:
-# https://gitlab.com/gitlab-org/gitlab-recipes/tree/stable-8-1/web-server/apache
+# https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/web-server/apache
 
-# gitlab-rails is hosted on port 50009
-# gitlab-git-http-server is hosted on port 50010
+# gitlab-workhorse is hosted on port 50010
+# gitlab-unicorn is hosten on port 50009
 
 <IfModule ssl_module>
 <VirtualHost _default_:443>" >> /etc/apache2/sites-available/gitlab-ssl.conf
@@ -116,10 +116,6 @@ if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ss
 	# Apache log directory
 	LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b" common_forwarded
 	ErrorLog  ${APACHE_LOG_DIR}/gitlab_error.log
-
-	# Possible values include: debug, info, notice, warn, error, crit,
-	# alert, emerg.
-	LogLevel warn
 
 	CustomLog ${APACHE_LOG_DIR}/gitlab_forwarded.log common_forwarded
 	CustomLog ${APACHE_LOG_DIR}/gitlab_access.log combined env=!dontlog
@@ -144,30 +140,19 @@ if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ss
 	AllowEncodedSlashes NoDecode
 
 	<Location />
-		# Authorisation apache 2.4+
+		# Authorisation Apache 2.4+
 		Require all granted
 
-		# Allow forwarding to gitlab-git-http-server (unicorn)
-		ProxyPassReverse http://127.0.0.1:50010
-
-		# Allow forwarding to gitlab rails (unicorn)
-		ProxyPassReverse http://127.0.0.1:50009' >> /etc/apache2/sites-available/gitlab-ssl.conf
+		# Allow forwarding to gitlab-workhorse (50010)
+		ProxyPassReverse http://127.0.0.1:50010' >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "		ProxyPassReverse http://$ALIAS.$REALM/" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	echo -e "	</Location>
 
 	# Apache equivalent of ngix try files
 	RewriteEngine on
 
-	# Forward these requests to gitlab-git-http-server
-	RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/repository/archive.* [OR]
-	RewriteCond %{REQUEST_URI} ^/api/v3/projects/.*/repository/archive.* [OR]
-	RewriteCond %{REQUEST_URI} ^/[\w\.-]+/[\w\.-]+/(info/refs|git-upload-pack|git-receive-pack)$
+	# Forward requests to gitlab-workhorse
 	RewriteRule .* http://127.0.0.1:50010%{REQUEST_URI} [P,QSA]
-
-	# Forward any other requests to GitLab Rails app (Unicorn)
-	RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f [OR]
-	RewriteCond %{REQUEST_URI} ^/uploads
-	RewriteRule .* http://127.0.0.1:50009%{REQUEST_URI} [P,QSA,NE]
 	RequestHeader set X_FORWARDED_PROTO 'https'
 	RequestHeader set X-Forwarded-Ssl on
 
@@ -220,7 +205,7 @@ APPLYDEFAULT=no
 if [ $(grep -c "#gitlab default configuration" /etc/default/gitlab) == 0 ]; then
 	echo '<ul><li>Creating defaults file.</li></ul>'
 	echo -e '#gitlab default configuration
-gitlab_git_http_server_options="-listenUmask 0 -listenNetwork tcp -listenAddr localhost:50010 -authBackend http://127.0.0.1:50009"' >> /etc/default/gitlab
+gitlab_workhorse_options="-listenUmask 0 -listenNetwork tcp -listenAddr 127.0.0.1:50010 -authBackend http://127.0.0.1:50009"' >> /etc/default/gitlab
 	APPLYDEFAULT=yes
 fi
 
@@ -230,141 +215,47 @@ if [ "$APPLYDEFAULT" == yes ]; then
 fi
 
 ###########################
-#Download gitlab.tar.gz if needed. (Legacy)
-###########################
-#
-#We may only have a placeholder for the compressed image due to the file being in github LFS area.
-#if [ $(file /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz | grep -c gzip) = 0 ]
-#then
-#	#File info does not show that this is a valid gzip so download the real thing.
-#	rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz
-#	cd /opt/karoshi/serversetup/modules/gitlab
-#	echo '<ul><li>'$"Downloading Gitlab archive"'</li></ul>'
-#	wget https://github.com/the-linux-schools-project/karoshi-server/raw/master/serversetup/modules/gitlab/gitlab.tar.gz
-#	if [ $? != 0 ]
-#	then
-#		#We failed so bail out.
-#		echo '<ul><li>'$"There was a problem downloading the archive"'</li></ul>'
-#		sleep 5
-#		exit 101
-#	fi
-#	# Verify that the file is complete and that the correct file was downloaded
-#	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
-#	if [ "$checksum" != "11da28c6d65a109e9c261920094b2cac" ]; then
-#		echo '<ul><li>'$"There was a problem verifying the downloaded archive."'</li></ul>'
-#		sleep 5
-#		exit 101
-#	fi
-#fi
-
-showdots() {
-DOTCOUNT=1
-SHOWDOTS=yes
-while [[ $SHOWDOTS = yes ]]
-do
-	echo "." 
-	sleep 1
-	let DOTCOUNT=$DOTCOUNT+1
-	if [ $DOTCOUNT = 80 ]
-	then
-		echo "<br>"
-		DOTCOUNT=1
-	fi
-done
-}
-
-# The following function is temporary and in-efficient, please do not take example from this.
-# As wget does not output a progress bar, we will log output to a file, filter it and echo the last line each second.
-wgetlog () {
-	startPrint=0
-	startCheck=0
-	lastLine=""
-	oldLine=""
-	while [ "$startCheck" == "0" ]; do
-		[ -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt ] && startCheck=1
-	done
-
-	while [ "$startPrint" == "0" ]; do
-		if grep -q "Saving to: ‘/opt/karoshi/serversetup/modules/gitlab/gitlab.deb’" "/opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt"; then
-			startPrint=1
-		fi
-	done
-
-	while [ "$startPrint" == "1" ]; do
-		lastLine=$(tail -n 1 /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt)
-		[ ! $oldLine -eq $lastLine ] && echo "${lastLine}<br>"
-		oldLine=$lastLine
-		sleep 1 # throttle update rate
-	done
-}
-# End of function
-
-###########################
 #Download gitlab.deb package if needed.
 ###########################
 mkdir /opt/karoshi/.tempdata/gitlab_temp
 
 timeStamp="$(date +"%F-%H-%M-%S")"
-downloadgitlab="1"
 
-# Check whether the user has the tar.gz archive instead
-if [ -f /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz ]; then
-	echo '<ul><li>'$"Existing tar.gz archive discovered."'</li></ul>'
-	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz" | cut -d ' ' -f 1)
-	if [ "$checksum" == "11da28c6d65a109e9c261920094b2cac" ]; then
-		# Valid gitlab.tar.gz archive exists
-		echo '<ul><li>'$"Archive validated, skipping download."'</li></ul>'
-		downloadgitlab="0"
-	else
-		echo '<ul><li>'$"Archive invalid!"'</li></ul>'
+[ ! -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb ] && echo -e "" >> /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
+checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
+
+if [ "$checksum" != "09f06c616c5aebba1ca7be23855df678" ]; then
+	# The package does not exit and/or it is not valid
+	# Download Gitlab-CE 8.5.1 (Omnibus, Ubuntu Trusty amd64) Package from https://packages.gitlab.com/gitlab/gitlab-ce
+	rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
+	echo '<ul><li>'$"Downloading Gitlab package from https://packages.gitlab.com/gitlab/gitlab-ce"'</li></ul>'
+
+	echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+	wget --progress=dot:mega --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.5.1-ce.0_amd64.deb/download 2>&1
+	wgetOut=$?
+
+	echo "</pre></div>"
+
+	if [ $wgetOut != 0 ]; then
+		#We failed so bail out.
+		echo '<br><li>'$"There was a problem downloading the archive."'</li></ul>'
+		echo '<br><li>'$"Check the wget log at /opt/karoshi/logs/wget-gitlab${timeStamp}.txt"'</li></ul>'
+		sleep 5
+		exit 101
 	fi
-fi
 
-if [ "$downloadgitlab" == "1" ]; then
-	[ ! -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb ] && echo -e "" >> /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
+	# Verify that the file is complete and that the correct file was downloaded
 	checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
-
-	if [ "$checksum" != "2258ff0b53b0040ba884d913b42aa170" ]; then
-		# The package does not exit and/or it is not valid
-		# Download Gitlab-CE 8.1.4 (Omnibus, Ubuntu Trusty amd64) Package from https://packages.gitlab.com/gitlab/gitlab-ce
-		rm -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
-		echo '<ul><li>'$"Downloading Gitlab package from https://packages.gitlab.com/gitlab/gitlab-ce"'</li></ul>'
-
-		echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-
-		#wgetlog &
-		#wgetPID=$!
-
-		wget --progress=dot:mega --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.1.4-ce.0_amd64.deb/download 2>&1
-		wgetOut=$?
-
-		#kill $wgetPID
-
-		echo "</pre></div>"
-
-		cp -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt "/opt/karoshi/logs/wget-gitlab${timeStamp}.txt"
-		rm -f /opt/karoshi/.tempdata/gitlab_temp/wgetlog.txt
-
-		if [ $wgetOut != 0 ]; then
-			#We failed so bail out.
-			echo '<br><li>'$"There was a problem downloading the archive."'</li></ul>'
-			echo '<br><li>'$"Check the wget log at /opt/karoshi/logs/wget-gitlab${timeStamp}.txt"'</li></ul>'
-			sleep 5
-			exit 101
-		fi
-
-		# Verify that the file is complete and that the correct file was downloaded
-		checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
-		if [ "$checksum" != "2258ff0b53b0040ba884d913b42aa170" ]; then
-			echo '<ul><li>'$"There was a problem verifying the downloaded archive."'</li></ul>'
-			sleep 5
-			exit 101
-		else
-			echo '<ul><li>'$"Downloaded archive verified!"'</li></ul>'
-		fi
+	if [ "$checksum" != "09f06c616c5aebba1ca7be23855df678" ]; then
+		echo '<ul><li>'$"There was a problem verifying the downloaded archive."'</li></ul>'
+		sleep 5
+		exit 101
 	else
-		echo '<ul><li>'$"Existing .deb archive validated, skipping download."'</li></ul>'
+		echo '<ul><li>'$"Downloaded archive verified!"'</li></ul>'
 	fi
+else
+	echo '<ul><li>'$"Existing .deb archive validated, skipping download."'</li></ul>'
 fi
 
 ###########################
@@ -373,9 +264,8 @@ fi
 cd /opt/karoshi/.tempdata/
 
 echo '<ul><li>'$"Extracting Gitlab"'</li></ul>'
-#tar -xzf /opt/karoshi/serversetup/modules/gitlab/gitlab.tar.gz -C /opt/karoshi/.tempdata/gitlab_temp
 dpkg -x /opt/karoshi/serversetup/modules/gitlab/gitlab.deb /opt/karoshi/.tempdata/gitlab_temp 1>/dev/null 2>/dev/null
-#echo '</div>'
+
 # Copy files into place
 echo '<ul><li>'$"Copying Gitlab files into place - This may take a while"'</li></ul>'
 echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
@@ -393,6 +283,18 @@ chmod 600 /etc/gitlab/gitlab.rb
 # Delete temp extracted files (they total ~1GB)
 rm -rf /opt/karoshi/.tempdata/gitlab_temp
 echo '</pre></div>'
+
+###########################
+# Setup Gitlab log directories
+###########################
+echo '<ul><li>'$"Creating the initial Gitlab log directories."'</li></ul>'
+[ -d /var/log/gitlab ] || mkdir /var/log/gitlab
+[ -d /var/log/gitlab/reconfigure ] || mkdir /var/log/gitlab/reconfigure
+
+# Give git ownership of both folders
+chown -R git:git /var/log/gitlab
+chown -R git:git /var/log/gitlab/reconfigure
+
 ###########################
 #Modify gitlab configuration
 ###########################
@@ -402,13 +304,15 @@ if [ $(grep -c "#gitlab configuration" /etc/gitlab/gitlab.rb) == 0 ]; then
 	echo -e "#gitlab configuration" >> /etc/gitlab/gitlab.rb
 	echo -e "" >> /etc/gitlab/gitlab.rb
 	echo -e "external_url 'https://$ALIAS.$REALM:443'" >> /etc/gitlab/gitlab.rb
-	echo -e "unicorn['worker_timeout'] = 600
-unicorn['port'] = 50009
+	echo -e "unicorn['port'] = 50009
 web_server['external_users'] = ['www-data']
 nginx['enable'] = false
 
-gitlab_git_http_server['listen_network'] = \"tcp\"
-gitlab_git_http_server['listen_addr'] = \"127.0.0.1:50010\"
+gitlab_workhorse['listen_network'] = \"tcp\"
+gitlab_workhorse['listen_addr'] = \"127.0.0.1:50010\"
+gitlab_workhorse['auth_backend'] = \"http://localhost:50009\"
+
+pages_nginx['enable'] = false
 
 git_data_dir \"/home/gitlab/data\"
 
@@ -611,7 +515,7 @@ fi
 #################################
 #Make sure that gitlab is running
 #################################
-GITLABSTATUS=$(ps -e | grep -w -c gitlab-git-http)
+GITLABSTATUS=$(ps -e | grep -w -c gitlab-workhors)
 GITLABSTATUS2=$(ps -e | grep -w -c gitlab-logrotat)
 GITLABSTATUS3=$(ps -e | grep -w -c gitlab-unicorn-)
 

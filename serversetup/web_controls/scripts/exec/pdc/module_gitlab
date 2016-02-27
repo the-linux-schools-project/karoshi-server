@@ -208,7 +208,7 @@ add_role_information
 #Show completed message
 ###########################
 echo '<br>'$"Gitlab has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'" target="_blank">'$ALIAS.$REALM'</a>'
-echo '<br>'$"username":root - $"password": 5iveL!fe
+echo '<br><p style="font-weight:bold">'$"Username: root - Password: 5iveL!fe"'</p>'
 echo '<br>If you are switching to LDAP login only, remember to set an LDAP user as an administrator within Gitlab. The root account will become unaccessable.<br>'
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit
