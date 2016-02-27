@@ -83,17 +83,17 @@ sleep 1
 apt-get install --yes wget
 check_status
 
+echo -e "\nChroot: ubiquity-frontend-gtk\n"
+sleep 1
+apt-get install --yes ubiquity-frontend-gtk
+check_status
+
 #Install and configure Karoshi
 TMOUT=5
 echo -e "\nChroot: Do you want to run the karoshi Server build process? (y/n)"
 read choice
 [ -z "$choice" ] && choice=y
 [ "$choice" = y ] && /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver 2>/tmp/buildservererrors
-
-echo -e "\nChroot: ubiquity-frontend-gtk\n"
-sleep 1
-apt-get install --yes ubiquity-frontend-gtk
-check_status
 
 #Add the ubuntu user for casper
 #echo -e "\nChroot: Creating karoshi user\n"
