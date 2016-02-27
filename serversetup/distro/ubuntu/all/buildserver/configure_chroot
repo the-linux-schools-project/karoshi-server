@@ -19,7 +19,7 @@ ln -s /bin/true /tmp/fake/start-stop-daemon
 ln -s /bin/true /tmp/fake/service
 
 export PATH=/tmp/fake:$PATH
-#export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND=noninteractive
 
 function check_status {
 if [ $? != 0 ]
