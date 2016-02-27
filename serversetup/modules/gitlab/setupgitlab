@@ -240,7 +240,6 @@ if [ "$checksum" != "09f06c616c5aebba1ca7be23855df678" ]; then
 	if [ $wgetOut != 0 ]; then
 		#We failed so bail out.
 		echo '<br><li>'$"There was a problem downloading the archive."'</li></ul>'
-		echo '<br><li>'$"Check the wget log at /opt/karoshi/logs/wget-gitlab${timeStamp}.txt"'</li></ul>'
 		sleep 5
 		exit 101
 	fi
