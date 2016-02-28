@@ -40,7 +40,7 @@ check_status
 
 echo -e "\nChroot: installing dbus\n"
 sleep 1	
-apt-get install --yes dbus
+apt-get install --yes dbus 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
 dbus-uuidgen > /var/lib/dbus/machine-id
@@ -49,7 +49,7 @@ dpkg-divert --local --rename --add /sbin/initctl
 #Install Packages needed for the live system
 echo -e "\nChroot: Installing packages for the live system\n"
 sleep 1	
-apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu-gnome
+apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu-gnome 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
 #Temporary fudge for package dependency problem with casper and samba4 from linuxschools backports
@@ -60,22 +60,22 @@ check_status
 
 echo -e "\nChroot: Installing discover and os-prober\n"
 sleep 1	
-apt-get install --yes discover os-prober
+apt-get install --yes discover os-prober 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
 echo -e "\nChroot: Installing linux-generic\n"
 sleep 1	
-apt-get install --yes linux-generic
+apt-get install --yes linux-generic 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
 echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
 sleep 1	
 
-apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11
+apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 
 echo -e "\nChroot: Installing python-software-properties\n"
 sleep 1	
-apt-get install --yes software-properties-common python-software-properties
+apt-get install --yes software-properties-common python-software-properties 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
  
 echo -e "\nChroot: Installing wget\n"
@@ -85,8 +85,8 @@ check_status
 
 echo -e "\nChroot: ubiquity-frontend-gtk\n"
 sleep 1
-apt-get install --yes ubiquity-frontend-gtk
-check_status
+apt-get install --yes ubiquity-frontend-gtk 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_statusn
 
 #Install and configure Karoshi
 TMOUT=5
