@@ -46,29 +46,33 @@ fi
 #Stop service from running at boot
 if [ $ACTION = off ]
 then
-for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
-do
-if [ -f /etc/$RUNLEVEL/???$SERVICE ]
-then
-echo Removing $SERVICE in $RUNLEVEL
-#Remove symlinks if they exist
-rm -f /etc/$RUNLEVEL/???$SERVICE
-fi
-done
+	for RUNLEVEL in rc0.d rc2.d rc3.d rc4.d rc5.d
+	do
+	if [ -f /etc/$RUNLEVEL/???$SERVICE ]
+	then
+		echo Removing $SERVICE in $RUNLEVEL
+		#Remove symlinks if they exist
+		rm -f /etc/$RUNLEVEL/???$SERVICE
+	fi
+	done
 fi
 
 #Start service on boot
 if [ $ACTION = on ]
 then
-for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
-do
-if [ ! -f /etc/$RUNLEVEL/???$SERVICE ]
-then
-echo Adding $SERVICE in $RUNLEVEL
-#Get priority number
-set_priority_number
-#Add symlink
-ln -s /etc/init.d/$SERVICE /etc/$RUNLEVEL/$PRI_NUM$SERVICE
-fi
-done
+	for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
+	do
+		if [ ! -f /etc/$RUNLEVEL/???$SERVICE ]
+		then
+			echo Adding $SERVICE in $RUNLEVEL
+			#Get priority number
+			set_priority_number
+			#Add symlink
+			ln -s /etc/init.d/$SERVICE /etc/$RUNLEVEL/$PRI_NUM$SERVICE
+		fi
+	done
+	if [ ! -f /etc/rc0.d/???$SERVICE ]
+	then
+		ln -s /etc/init.d/$SERVICE /etc/rc0.d/K01$SERVICE
+	fi
 fi

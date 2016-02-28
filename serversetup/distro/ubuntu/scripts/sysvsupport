@@ -119,6 +119,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nfs-kernel-ser
 [ `ls /etc/init/winbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/winbind*
 [ `ls /etc/init/openvpn* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/openvpn*
 [ `ls /etc/init/nfs-kernel-server* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nfs-kernel-server*
+[ `ls /etc/init/statd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/statd*
 
 #May need to add more to this list.
 
