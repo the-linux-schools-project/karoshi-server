@@ -265,13 +265,16 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi clamd cron cups e2guardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba4 sogo squid ssh tftpd xinetd dnsmasq winbind lightdm"
+services="apache apache_karoshi clamd cron cups e2guardian dhcp dns fail2ban glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd nut openvpn postfix portmap proftpd radius rpcbind samba4 sogo squid ssh tftpd xinetd dnsmasq winbind"
 for service in `echo $services`
 do
 	echo -e "\nStopping $service\n"
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$service"_"stop
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$service
 done
+
+#Stop lightdm in sysv - let upstart start it.
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status lightdm off 1>/dev/null 2>/dev/null
 }
 
 function sysvsupport {
