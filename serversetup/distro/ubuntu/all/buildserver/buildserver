@@ -151,7 +151,7 @@ apt-get update
 }
 
 function install_xorg {
-apt-get -y install xorg
+apt-get -y install xorg 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.lo
 }
 
 function install_dm {

@@ -83,10 +83,10 @@ sleep 1
 apt-get install --yes wget
 check_status
 
-echo -e "\nChroot: ubiquity-frontend-gtk\n"
+echo -e "\nChroot: Installing ubiquity-frontend-gtk\n"
 sleep 1
 apt-get install --yes ubiquity-frontend-gtk 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
-check_statusn
+check_status
 
 #Install and configure Karoshi
 TMOUT=5
