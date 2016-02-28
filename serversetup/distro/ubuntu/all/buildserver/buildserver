@@ -163,7 +163,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
 
 #Copy in upstart lightdm.conf that does not depend on plymouth being ready
-/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
 
 #apt-get -y install --no-install-recommends slim
 #Configure slim to auto login the karoshi user
