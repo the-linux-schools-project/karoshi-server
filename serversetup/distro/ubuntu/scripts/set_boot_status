@@ -46,7 +46,7 @@ fi
 #Stop service from running at boot
 if [ $ACTION = off ]
 then
-	for RUNLEVEL in rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d
+	for RUNLEVEL in rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d
 	do
 	if [ -f /etc/$RUNLEVEL/???$SERVICE ]
 	then
@@ -78,5 +78,9 @@ then
 	if [ ! -f /etc/rc1.d/???$SERVICE ]
 	then
 		ln -s /etc/init.d/$SERVICE /etc/rc1.d/K01$SERVICE
+	fi
+	if [ ! -f /etc/rc6.d/???$SERVICE ]
+	then
+		ln -s /etc/init.d/$SERVICE /etc/rc6.d/K01$SERVICE
 	fi
 fi

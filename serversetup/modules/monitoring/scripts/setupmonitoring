@@ -49,7 +49,7 @@ fi
 #Copy in config files for mon
 #############################
 
-echo '<ul><li>'$"Configuring the monitoring system."'</li></ul>'
+echo '<ul><li>'$"Configuring the monitoring system"'</li></ul>'
 [ -d /var/www/html/mon/ ] || ( mkdir -p /var/www/html/mon/ ; chmod 0755 -R /var/www/html/mon/ )
 [ -d /opt/karoshi/server_network/mon/events ] || ( mkdir -p /opt/karoshi/server_network/mon/events ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/events )
 [ -d /opt/karoshi/server_network/mon/messages ] || ( mkdir -p /opt/karoshi/server_network/mon/messages ; chmod 0755 -R /opt/karoshi/server_network/mon ; chown mon /opt/karoshi/server_network/mon/messages )
