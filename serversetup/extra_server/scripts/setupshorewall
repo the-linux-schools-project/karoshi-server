@@ -69,14 +69,15 @@ cp -f /opt/karoshi/serversetup/extra_server/shorewall/rules /etc/shorewall/
 #########################
 if [ -e /etc/default/shorewall ]
 then
-sed 's/startup=0/startup=1/g' /etc/default/shorewall > /etc/default/shorewall2
-rm -f /etc/default/shorewall
-mv /etc/default/shorewall2 /etc/default/shorewall
+	sed 's/startup=0/startup=1/g' /etc/default/shorewall > /etc/default/shorewall2
+	rm -f /etc/default/shorewall
+	mv /etc/default/shorewall2 /etc/default/shorewall
 fi
 #########################
 #Run distro specific to check if eth0 should be changed
 #########################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/shorewallconfig
+
 #########################
 #Start shorewall
 #########################

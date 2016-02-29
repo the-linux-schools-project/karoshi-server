@@ -69,10 +69,12 @@ cp -f /opt/karoshi/serversetup/pdc/pdcshorewall/rules /etc/shorewall/
 #Make sure that shorewall will start
 #########################
 [ -e /etc/default/shorewall ] && sed -i 's/startup=0/startup=1/g' /etc/default/shorewall
+
 #########################
 #Run distro specific to check if eth0 should be changed
 #########################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/shorewallconfig
+
 #########################
 #Start shorewall
 #########################
