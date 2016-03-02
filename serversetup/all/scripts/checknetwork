@@ -72,7 +72,7 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-CARDCHOICE=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."' '$YADNICS'' --button=OK`
+CARDCHOICE=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."'\n '$YADNICS'' --button=OK`
 
 #Check which cards have been selected
 
@@ -132,9 +132,9 @@ fi
 
 function confirmchoice {
 BONDMSG=""
-[ $SCARDCOUNT -gt 1 ] && BONDMSG="\nBond Mode:\t\t$BONDMODE"
+[ $SCARDCOUNT -gt 1 ] && BONDMSG='<span font_weight="bold">\nBond Mode</span>\t'$BONDMODE''
 DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n<span font_weight="bold">'$"Server name"'</span> : '$NAMECUSTOM' \n\n<span font_weight="bold">'$"TCPIP"' : '$TCPIPCUSTOM'</span>\n\n<span font_weight="bold">'$"Netmask"' : </span>'$NETMASKCUSTOM'\n\n<span font_weight="bold">'$"DNS Server"'</span> : '$NAMESERVERCUSTOM'\n\n<span font_weight="bold">'$"Gateway"'</span> : '$GATEWAYCUSTOM'\n\n<span font_weight="bold">'$"Card selection"'</span> : '$CARDSELECTION''$BONDMSG'\n\n' 2>/dev/null`
+    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n\n<span font_weight="bold">'$"Server name"'</span>\t'$NAMECUSTOM'\n\n<span font_weight="bold">'$"TCPIP"'</span>\t\t'$TCPIPCUSTOM'\n\n<span font_weight="bold">'$"Netmask"'</span>\t\t'$NETMASKCUSTOM'\n\n<span font_weight="bold">'$"DNS Server"'</span>\t'$NAMESERVERCUSTOM'\n\n<span font_weight="bold">'$"Gateway"'</span>\t\t'$GATEWAYCUSTOM'\n\n<span font_weight="bold">'$"Card selection"'</span>\t'$CARDSELECTION''"$BONDMSG"'\n\n' 2>/dev/null`
 CHOICE=$?
 [ $CHOICE = 0 ] && CHOICE=commit
 [ $CHOICE = 1 ] && CHOICE=configure
