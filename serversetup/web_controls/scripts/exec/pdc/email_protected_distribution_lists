@@ -298,10 +298,10 @@ then
 
 	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
-		DIST_LIST=$(cat /etc/postfix/protected_distribution_lists | cut -f1)
+		DIST_LIST=$(cat /etc/postfix/protected_distribution_lists | cut -d"@" -f1)
 	else
 		DIST_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		cat /etc/postfix/protected_distribution_lists | cut -f1
+		cat /etc/postfix/protected_distribution_lists | cut -d"@" -f1
 		')
 	fi
 
@@ -372,11 +372,11 @@ then
 
 	if [ "$EMAILSERVER" = `hostname-fqdn` ]
 	then
-		sed -i "/^$GROUP\t/d" /etc/postfix/protected_distribution_lists
+		sed -i "/^$GROUP@$REALM\t/d" /etc/postfix/protected_distribution_lists
 		postmap hash:/etc/postfix/protected_distribution_lists
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		sed -i "/^'$GROUP'\t/d" /etc/postfix/protected_distribution_lists
+		sed -i "/^'$GROUP'@'$REALM'\t/d" /etc/postfix/protected_distribution_lists
 		postmap hash:/etc/postfix/protected_distribution_lists
 		'
 	fi
@@ -389,9 +389,9 @@ then
 
 	if [ $EMAILSERVER = `hostname-fqdn` ]
 	then
-		if [ `grep -c ^"$GROUP\t" /etc/postfix/protected_distribution_lists` = 0 ]
+		if [ `grep -c ^"$GROUP@$REALM\t" /etc/postfix/protected_distribution_lists` = 0 ]
 		then
-			echo -e "$GROUP\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
+			echo -e "$GROUP@$REALM\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
 			cat /etc/postfix/protected_distribution_lists | sort > /etc/postfix/protected_distribution_lists1
 			rm /etc/postfix/protected_distribution_lists
 			mv /etc/postfix/protected_distribution_lists1 /etc/postfix/protected_distribution_lists
@@ -399,9 +399,9 @@ then
 		fi
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		if [ `grep -c ^"'$GROUP'\t" /etc/postfix/protected_distribution_lists` = 0 ]
+		if [ `grep -c ^"'$GROUP'@'$REALM'\t" /etc/postfix/protected_distribution_lists` = 0 ]
 		then
-			echo -e "'$GROUP'\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
+			echo -e "'$GROUP'@'$REALM'\tallowed_distribution_users" >> /etc/postfix/protected_distribution_lists
 			cat /etc/postfix/protected_distribution_lists | sort > /etc/postfix/protected_distribution_lists1
 			rm /etc/postfix/protected_distribution_lists
 			mv /etc/postfix/protected_distribution_lists1 /etc/postfix/protected_distribution_lists

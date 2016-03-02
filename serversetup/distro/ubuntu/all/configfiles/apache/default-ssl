@@ -167,5 +167,9 @@
 		nokeepalive ssl-unclean-shutdown \
 		downgrade-1.0 force-response-1.0
 
+	<IfModule mod_headers.c>
+		Header always set Strict-Transport-Security "max-age=15768000; includeSubDomains; preload"
+	</IfModule>
+
 </VirtualHost>
 </IfModule>

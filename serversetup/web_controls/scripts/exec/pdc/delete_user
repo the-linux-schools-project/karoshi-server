@@ -286,16 +286,16 @@ then
 	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 	CITY=`cat /etc/timezone | cut -d/ -f2`
 
+	echo `date`: delete_user - deleting $DELETEUSER from Moodle on $MOODLESERVER by $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	if [ $MOODLESERVER = $(hostname-fqdn) ]
 	then
-		sudo -u www-data moosh -p /var/www/html/moodle user-delete $DELETEUSER
+		sudo -u www-data moosh -p /var/www/html/moodle user-delete $DELETEUSER 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MOODLESERVER '
 		sudo -u www-data moosh -p /var/www/html/moodle user-delete '$DELETEUSER'
-		'
+		' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	fi
 fi
-
 
 #######################
 #Delete the account on any federated ldap servers

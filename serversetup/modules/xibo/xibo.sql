@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.37, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.28, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: xibo
 -- ------------------------------------------------------
--- Server version	5.5.37-0ubuntu0.14.04.1
+-- Server version	5.6.28-1ubuntu2
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,34 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `auditlog`
+--
+
+DROP TABLE IF EXISTS `auditlog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auditlog` (
+  `logId` int(11) NOT NULL AUTO_INCREMENT,
+  `logDate` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `message` varchar(254) NOT NULL,
+  `entity` varchar(50) NOT NULL,
+  `entityId` int(11) NOT NULL,
+  `objectAfter` text NOT NULL,
+  PRIMARY KEY (`logId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auditlog`
+--
+
+LOCK TABLES `auditlog` WRITE;
+/*!40000 ALTER TABLE `auditlog` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auditlog` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `bandwidth`
@@ -39,6 +67,30 @@ LOCK TABLES `bandwidth` WRITE;
 /*!40000 ALTER TABLE `bandwidth` DISABLE KEYS */;
 INSERT INTO `bandwidth` VALUES (1,1,1398898800,3544),(1,2,1398898800,164167),(1,3,1398898800,20837),(1,4,1398898800,1002332);
 /*!40000 ALTER TABLE `bandwidth` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `bandwidthtype`
+--
+
+DROP TABLE IF EXISTS `bandwidthtype`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bandwidthtype` (
+  `bandwidthtypeid` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) NOT NULL,
+  PRIMARY KEY (`bandwidthtypeid`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bandwidthtype`
+--
+
+LOCK TABLES `bandwidthtype` WRITE;
+/*!40000 ALTER TABLE `bandwidthtype` DISABLE KEYS */;
+INSERT INTO `bandwidthtype` VALUES (1,'Register'),(2,'Required Files'),(3,'Schedule'),(4,'Get File'),(5,'Get Resource'),(6,'Media Inventory'),(7,'Notify Status'),(8,'Submit Stats'),(9,'Submit Log'),(10,'Blacklist'),(11,'Screen Shot');
+/*!40000 ALTER TABLE `bandwidthtype` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -113,6 +165,7 @@ CREATE TABLE `dataset` (
   `DataSet` varchar(50) NOT NULL,
   `Description` varchar(254) DEFAULT NULL,
   `UserID` int(11) NOT NULL,
+  `LastDataEdit` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`DataSetID`),
   KEY `UserID` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -227,7 +280,7 @@ CREATE TABLE `datatype` (
 
 LOCK TABLES `datatype` WRITE;
 /*!40000 ALTER TABLE `datatype` DISABLE KEYS */;
-INSERT INTO `datatype` VALUES (1,'String'),(2,'Number'),(3,'Date');
+INSERT INTO `datatype` VALUES (1,'String'),(2,'Number'),(3,'Date'),(4,'Image');
 /*!40000 ALTER TABLE `datatype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,12 +314,17 @@ CREATE TABLE `display` (
   `WakeOnLanTime` varchar(5) DEFAULT NULL,
   `BroadCastAddress` varchar(100) DEFAULT NULL,
   `SecureOn` varchar(17) DEFAULT NULL,
-  `Cidr` smallint(6) DEFAULT NULL,
+  `Cidr` varchar(6) DEFAULT NULL,
   `GeoLocation` point DEFAULT NULL,
   `version_instructions` varchar(255) DEFAULT NULL,
   `client_type` varchar(20) DEFAULT NULL,
-  `client_version` varchar(5) DEFAULT NULL,
+  `client_version` varchar(15) DEFAULT NULL,
   `client_code` smallint(6) DEFAULT NULL,
+  `displayprofileid` int(11) DEFAULT NULL,
+  `currentLayoutId` int(11) DEFAULT NULL,
+  `screenShotRequested` tinyint(4) NOT NULL DEFAULT '0',
+  `storageAvailableSpace` bigint(20) DEFAULT NULL,
+  `storageTotalSpace` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`displayid`),
   KEY `defaultplaylistid` (`defaultlayoutid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -278,7 +336,7 @@ CREATE TABLE `display` (
 
 LOCK TABLES `display` WRITE;
 /*!40000 ALTER TABLE `display` DISABLE KEYS */;
-INSERT INTO `display` VALUES (1,0,'raspberrypi',4,'b084aa7f524fc359d14fef50bbc6667fff6cb3d8',1,1,1400856418,0,0,0,'172.30.254.252',1,'<?xml version=\"1.0\" ?>\n<files macAddress=\"b8:27:eb:ca:31:3e\">\n	<file complete=\"1\" id=\"10\" lastChecked=\"2014-05-23 16:41:41\" md5=\"f75a0638c88502bfd4f4306bb668b670\" type=\"media\"/>\n	<file complete=\"1\" id=\"11\" lastChecked=\"2014-05-23 16:41:41\" md5=\"3f1da9cae5dfad77691441c17c242e34\" type=\"media\"/>\n	<file complete=\"1\" id=\"4\" lastChecked=\"2014-05-23 16:41:41\" md5=\"848ffdb82cbce2fa2edc6d5d879d5367\" type=\"media\"/>\n	<file complete=\"1\" id=\"3\" lastChecked=\"2014-05-23 16:41:42\" md5=\"030f39447116a18cded931935362dc00\" type=\"media\"/>\n	<file complete=\"1\" id=\"0\" lastChecked=\"2014-05-23 16:41:42\" md5=\"4b14f66e4933019dbe96fd0ad3f965ba\" type=\"media\"/>\n	<file complete=\"1\" id=\"4\" lastChecked=\"2014-05-23 16:41:53\" md5=\"299d52f80b3deaa676ccdf5cee60e566\" type=\"layout\"/>\n	<file complete=\"1\" id=\"0\" lastChecked=\"2014-05-23 16:41:42\" md5=\"89685dbff67cc25863d0ca99e8686bb8\" type=\"media\"/>\n	<file complete=\"1\" id=\"6\" lastChecked=\"2014-05-23 16:41:42\" md5=\"13234d8ca6fb2ce947510e6a8f040348\" type=\"media\"/>\n	<file complete=\"1\" id=\"7\" lastChecked=\"2014-05-23 16:41:42\" md5=\"9c745f91be0eb1201098d508d8341858\" type=\"media\"/>\n	<file complete=\"1\" id=\"1\" lastChecked=\"2014-05-23 16:41:42\" md5=\"4ad3b1f2572a3323dda3a88f97c1f35f\" type=\"media\"/>\n	<file complete=\"1\" id=\"5\" lastChecked=\"2014-05-23 16:41:42\" md5=\"7c89d07101fe148fb35bc86e0620e510\" type=\"media\"/>\n</files>\n','b8:27:eb:ca:31:3e',1400600375,1,NULL,0,'','','',0,'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',NULL,NULL,NULL,NULL);
+INSERT INTO `display` VALUES (1,0,'raspberrypi',4,'b084aa7f524fc359d14fef50bbc6667fff6cb3d8',1,1,1400856418,0,0,0,'172.30.254.252',1,'<?xml version=\"1.0\" ?>\n<files macAddress=\"b8:27:eb:ca:31:3e\">\n	<file complete=\"1\" id=\"10\" lastChecked=\"2014-05-23 16:41:41\" md5=\"f75a0638c88502bfd4f4306bb668b670\" type=\"media\"/>\n	<file complete=\"1\" id=\"11\" lastChecked=\"2014-05-23 16:41:41\" md5=\"3f1da9cae5dfad77691441c17c242e34\" type=\"media\"/>\n	<file complete=\"1\" id=\"4\" lastChecked=\"2014-05-23 16:41:41\" md5=\"848ffdb82cbce2fa2edc6d5d879d5367\" type=\"media\"/>\n	<file complete=\"1\" id=\"3\" lastChecked=\"2014-05-23 16:41:42\" md5=\"030f39447116a18cded931935362dc00\" type=\"media\"/>\n	<file complete=\"1\" id=\"0\" lastChecked=\"2014-05-23 16:41:42\" md5=\"4b14f66e4933019dbe96fd0ad3f965ba\" type=\"media\"/>\n	<file complete=\"1\" id=\"4\" lastChecked=\"2014-05-23 16:41:53\" md5=\"299d52f80b3deaa676ccdf5cee60e566\" type=\"layout\"/>\n	<file complete=\"1\" id=\"0\" lastChecked=\"2014-05-23 16:41:42\" md5=\"89685dbff67cc25863d0ca99e8686bb8\" type=\"media\"/>\n	<file complete=\"1\" id=\"6\" lastChecked=\"2014-05-23 16:41:42\" md5=\"13234d8ca6fb2ce947510e6a8f040348\" type=\"media\"/>\n	<file complete=\"1\" id=\"7\" lastChecked=\"2014-05-23 16:41:42\" md5=\"9c745f91be0eb1201098d508d8341858\" type=\"media\"/>\n	<file complete=\"1\" id=\"1\" lastChecked=\"2014-05-23 16:41:42\" md5=\"4ad3b1f2572a3323dda3a88f97c1f35f\" type=\"media\"/>\n	<file complete=\"1\" id=\"5\" lastChecked=\"2014-05-23 16:41:42\" md5=\"7c89d07101fe148fb35bc86e0620e510\" type=\"media\"/>\n</files>\n','b8:27:eb:ca:31:3e',1400600375,1,NULL,0,'','','','0','\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0',NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL);
 /*!40000 ALTER TABLE `display` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -306,6 +364,34 @@ LOCK TABLES `displaygroup` WRITE;
 /*!40000 ALTER TABLE `displaygroup` DISABLE KEYS */;
 INSERT INTO `displaygroup` VALUES (1,'raspberrypi','',1);
 /*!40000 ALTER TABLE `displaygroup` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `displayprofile`
+--
+
+DROP TABLE IF EXISTS `displayprofile`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `displayprofile` (
+  `displayprofileid` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `type` varchar(15) NOT NULL,
+  `config` text NOT NULL,
+  `isdefault` int(11) NOT NULL,
+  `userid` int(11) NOT NULL,
+  PRIMARY KEY (`displayprofileid`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `displayprofile`
+--
+
+LOCK TABLES `displayprofile` WRITE;
+/*!40000 ALTER TABLE `displayprofile` DISABLE KEYS */;
+INSERT INTO `displayprofile` VALUES (1,'Windows','windows','[]',1,1),(2,'Android','android','[]',1,1);
+/*!40000 ALTER TABLE `displayprofile` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -346,6 +432,7 @@ CREATE TABLE `group` (
   `group` varchar(50) NOT NULL,
   `IsUserSpecific` tinyint(4) NOT NULL DEFAULT '0',
   `IsEveryone` tinyint(4) NOT NULL DEFAULT '0',
+  `libraryQuota` int(11) DEFAULT NULL,
   PRIMARY KEY (`groupID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Groups';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -356,7 +443,7 @@ CREATE TABLE `group` (
 
 LOCK TABLES `group` WRITE;
 /*!40000 ALTER TABLE `group` DISABLE KEYS */;
-INSERT INTO `group` VALUES (1,'Users',0,0),(2,'Everyone',0,1),(3,'xibo_admin',1,0);
+INSERT INTO `group` VALUES (1,'Users',0,0,NULL),(2,'Everyone',0,1,NULL),(3,'xibo_admin',1,0,NULL);
 /*!40000 ALTER TABLE `group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -373,7 +460,7 @@ CREATE TABLE `help` (
   `Category` varchar(254) NOT NULL DEFAULT 'General',
   `Link` varchar(254) NOT NULL,
   PRIMARY KEY (`HelpID`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -382,7 +469,7 @@ CREATE TABLE `help` (
 
 LOCK TABLES `help` WRITE;
 /*!40000 ALTER TABLE `help` DISABLE KEYS */;
-INSERT INTO `help` VALUES (1,'Layout','General','manual/single.php?p=layout/overview'),(2,'Content','General','manual/single.php?p=content/overview'),(4,'Schedule','General','manual/single.php?p=schedule/overview'),(5,'Group','General','manual/single.php?p=users/groups'),(6,'Admin','General','manual/single.php?p=admin/settings'),(7,'Report','General','manual/single.php?p=admin/advanced'),(8,'Dashboard','General','manual/single.php?p=coreconcepts/dashboard'),(9,'User','General','manual/single.php?p=users/users'),(10,'Display','General','manual/single.php?p=admin/displays'),(11,'DisplayGroup','General','manual/single.php?p=admin/displaygroups'),(12,'Layout','Add','manual/single.php?p=layout/overview#Add_Layout'),(13,'Layout','Background','manual/single.php?p=layout/layoutdesigner#Background'),(14,'Content','Assign','manual/single.php?p=layout/assigncontent#Assigning_Content'),(15,'Layout','RegionOptions','manual/single.php?p=layout/assigncontent'),(16,'Content','AddtoLibrary','manual/single.php?p=content/adding'),(17,'Display','Edit','manual/single.php?p=admin/displays#Display_Edit'),(18,'Display','Delete','manual/single.php?p=admin/displays#Display_Delete'),(19,'Displays','Groups','manual/single.php?p=admin/displaygroups#Group_Members'),(20,'UserGroup','Add','manual/single.php?p=users/groups#Adding_Group'),(21,'User','Add','manual/single.php?p=users/users#Add_User'),(22,'User','Delete','manual/single.php?p=users/users#Delete_User'),(23,'Content','Config','manual/single.php?p=admin/settings#Content'),(24,'LayoutMedia','Permissions','manual/single.php?p=users/user_permissions'),(25,'Region','Permissions','manual/single.php?p=users/user_permissions'),(26,'Library','Assign','manual/single.php?p=layout/assigncontent#Add_From_Library'),(27,'Media','Delete','manual/single.php?p=content/deleting'),(28,'DisplayGroup','Add','manual/single.php?p=admin/displaygroups#Add_Group'),(29,'DisplayGroup','Edit','manual/single.php?p=admin/displaygroups#Edit_Group'),(30,'DisplayGroup','Delete','manual/single.php?p=admin/displaygroups#Delete_Group'),(31,'DisplayGroup','Members','manual/single.php?p=admin/displaygroups#Group_Members'),(32,'DisplayGroup','Permissions','manual/single.php?p=users/user_permissions'),(34,'Schedule','ScheduleNow','manual/single.php?p=schedule/schedule_now'),(35,'Layout','Delete','manual/single.php?p=layout/overview#Delete_Layout'),(36,'Layout','Copy','manual/single.php?p=layout/overview#Copy_Layout'),(37,'Schedule','Edit','manual/single.php?p=schedule/schedule_event'),(38,'Schedule','Add','manual/single.php?p=schedule/schedule_event'),(39,'Layout','Permissions','manual/single.php?p=users/user_permissions'),(40,'Display','MediaInventory','manual/single.php?p=admin/displays#Media_Inventory'),(41,'User','ChangePassword','manual/single.php?p=coreconcepts/navbar#Change_Password'),(42,'Schedule','Delete','manual/single.php?p=schedule/schedule_event'),(43,'Layout','Edit','manual/single.php?p=layout/overview#Edit_Layout'),(44,'Media','Permissions','manual/single.php?p=users/user_permissions'),(45,'Display','DefaultLayout','manual/single.php?p=admin/displays'),(46,'UserGroup','Edit','manual/single.php?p=users/groups#Edit_Group'),(47,'UserGroup','Members','manual/single.php?p=users/groups#Group_Member'),(48,'User','PageSecurity','manual/single.php?p=users/menu_page_security#Page_Security'),(49,'User','MenuSecurity','manual/single.php?p=users/menu_page_security#Menu_Security'),(50,'UserGroup','Delete','manual/single.php?p=users/groups#Delete_Group'),(51,'User','Edit','manual/single.php?p=users/users#Edit_User'),(52,'User','Applications','manual/single.php?p=users/users#Users_MyApplications'),(53,'User','SetHomepage','manual/single.php?p=coreconcepts/dashboard#Media_Dashboard'),(54,'DataSet','General','manual/single.php?p=content/content_dataset'),(55,'DataSet','Add','manual/single.php?p=content/content_dataset#Create_Dataset'),(56,'DataSet','Edit','manual/single.php?p=content/content_dataset#Edit_Dataset'),(57,'DataSet','Delete','manual/single.php?p=content/content_dataset#Delete_Dataset'),(58,'DataSet','AddColumn','manual/single.php?p=content/content_dataset#Dataset_Column'),(59,'DataSet','EditColumn','manual/single.php?p=content/content_dataset#Dataset_Column'),(60,'DataSet','DeleteColumn','manual/single.php?p=content/content_dataset#Dataset_Column'),(61,'DataSet','Data','manual/single.php?p=content/content_dataset#Dataset_Row'),(62,'DataSet','Permissions','manual/single.php?p=users/user_permissions'),(63,'Fault','General','manual/single.php?p=admin/advanced#Report_Fault'),(65,'Stats','General','manual/single.php?p=admin/displaystats'),(66,'Resolution','General','manual/single.php?p=templates/template_resolution'),(67,'Template','General','manual/single.php?p=templates/overview'),(68,'Services','Register','manual/single.php?p=admin/api_oauth#Registered_Applications'),(69,'OAuth','General','manual/single.php?p=admin/api_oauth'),(70,'Services','Log','manual/single.php?p=admin/api_oauth#oAuthLog'),(71,'Module','Edit','manual/single.php?p=admin/modules'),(72,'Module','General','manual/single.php?p=admin/modules'),(73,'Campaign','General','manual/single.php?p=layout/campaign_layout'),(74,'License','General','manual/single.php?p=license/licenses'),(75,'DataSet','ViewColumns','manual/single.php?p=content/content_dataset#Dataset_Column'),(76,'Campaign','Permissions','manual/single.php?p=users/user_permissions'),(77,'Transition','Edit','manual/single.php?p=layout/transitions'),(78,'User','SetPassword','manual/single.php?p=users/users#Set_Password'),(79,'DataSet','ImportCSV','manual/single.php?p=content/content_dataset#Import_CSV'),(80,'DisplayGroup','FileAssociations','manual/single.php?p=admin/fileassociations'),(81,'Statusdashboard','General','manual/single.php?p=coreconcepts/dashboard#Status_Dashboard');
+INSERT INTO `help` VALUES (1,'Layout','General','layouts.html'),(2,'Content','General','media.html'),(4,'Schedule','General','scheduling.html'),(5,'Group','General','users_groups.html'),(6,'Admin','General','cms_settings.html'),(7,'Report','General','troubleshooting.html'),(8,'Dashboard','General','tour.html'),(9,'User','General','users.html'),(10,'Display','General','displays.html'),(11,'DisplayGroup','General','displays_groups.html'),(12,'Layout','Add','layouts.html#Add_Layout'),(13,'Layout','Background','layouts_designer.html#Background'),(14,'Content','Assign','layouts_playlists.html#Assigning_Content'),(15,'Layout','RegionOptions','layouts_regions.html'),(16,'Content','AddtoLibrary','media_library.html'),(17,'Display','Edit','displays.html#Display_Edit'),(18,'Display','Delete','displays.html#Display_Delete'),(19,'Displays','Groups','displays_groups.html#Group_Members'),(20,'UserGroup','Add','users_groups.html#Adding_Group'),(21,'User','Add','users_administration.html#Add_User'),(22,'User','Delete','users_administration.html#Delete_User'),(23,'Content','Config','cms_settings.html#Content'),(24,'LayoutMedia','Permissions','users_permissions.html'),(25,'Region','Permissions','users_permissions.html'),(26,'Library','Assign','layouts_playlists.html#Add_From_Library'),(27,'Media','Delete','media_library.html#Delete'),(28,'DisplayGroup','Add','displays_groups.html#Add_Group'),(29,'DisplayGroup','Edit','displays_groups.html#Edit_Group'),(30,'DisplayGroup','Delete','displays_groups.html#Delete_Group'),(31,'DisplayGroup','Members','displays_groups.html#Group_Members'),(32,'DisplayGroup','Permissions','users_permissions.html'),(34,'Schedule','ScheduleNow','scheduling_now.html'),(35,'Layout','Delete','layouts.html#Delete_Layout'),(36,'Layout','Copy','layouts.html#Copy_Layout'),(37,'Schedule','Edit','scheduling_events.html#Edit'),(38,'Schedule','Add','scheduling_events.html#Add'),(39,'Layout','Permissions','users_permissions.html'),(40,'Display','MediaInventory','displays.html#Media_Inventory'),(41,'User','ChangePassword','users.html#Change_Password'),(42,'Schedule','Delete','scheduling_events.html'),(43,'Layout','Edit','layouts_designer.html#Edit_Layout'),(44,'Media','Permissions','users_permissions.html'),(45,'Display','DefaultLayout','displays.html#DefaultLayout'),(46,'UserGroup','Edit','users_groups.html#Edit_Group'),(47,'UserGroup','Members','users_groups.html#Group_Member'),(48,'User','PageSecurity','users_permissions.html#Page_Security'),(49,'User','MenuSecurity','users_permissions.html#Menu_Security'),(50,'UserGroup','Delete','users_groups.html#Delete_Group'),(51,'User','Edit','users_administration.html#Edit_User'),(52,'User','Applications','users_administration.html#Users_MyApplications'),(53,'User','SetHomepage','users_administration.html#Media_Dashboard'),(54,'DataSet','General','media_datasets.html'),(55,'DataSet','Add','media_datasets.html#Create_Dataset'),(56,'DataSet','Edit','media_datasets.html#Edit_Dataset'),(57,'DataSet','Delete','media_datasets.html#Delete_Dataset'),(58,'DataSet','AddColumn','media_datasets.html#Dataset_Column'),(59,'DataSet','EditColumn','media_datasets.html#Dataset_Column'),(60,'DataSet','DeleteColumn','media_datasets.html#Dataset_Column'),(61,'DataSet','Data','media_datasets.html#Dataset_Row'),(62,'DataSet','Permissions','users_permissions.html'),(63,'Fault','General','troubleshooting.html#Report_Fault'),(65,'Stats','General','displays_metrics.html'),(66,'Resolution','General','layouts_resolutions.html'),(67,'Template','General','layouts_templates.html'),(68,'Services','Register','#Registered_Applications'),(69,'OAuth','General','api_oauth.html'),(70,'Services','Log','api_oauth.html#oAuthLog'),(71,'Module','Edit','media_modules.html'),(72,'Module','General','media_modules.html'),(73,'Campaign','General','layouts_campaigns.html'),(74,'License','General','licence_information.html'),(75,'DataSet','ViewColumns','media_datasets.html#Dataset_Column'),(76,'Campaign','Permissions','users_permissions.html'),(77,'Transition','Edit','layouts_transitions.html'),(78,'User','SetPassword','users_administration.html#Set_Password'),(79,'DataSet','ImportCSV','media_datasets.htmlmedia_datasets.html#Import_CSV'),(80,'DisplayGroup','FileAssociations','displays_fileassociations.html'),(81,'Statusdashboard','General','tour_status_dashboard.html'),(82,'Displayprofile','General','displays_settings.html'),(83,'DisplayProfile','Edit','displays_settings.html#edit'),(84,'DisplayProfile','Delete','displays_settings.html#delete');
 /*!40000 ALTER TABLE `help` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -401,12 +488,10 @@ CREATE TABLE `layout` (
   `createdDT` datetime NOT NULL,
   `modifiedDT` datetime NOT NULL,
   `description` varchar(254) DEFAULT NULL,
-  `tags` varchar(254) DEFAULT NULL,
-  `templateID` int(11) DEFAULT NULL COMMENT 'The ID of the template',
   `retired` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Is this layout retired',
   `duration` int(11) NOT NULL DEFAULT '0' COMMENT 'The duration in seconds',
-  `background` varchar(254) DEFAULT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
+  `backgroundImageId` int(11) DEFAULT NULL,
   PRIMARY KEY (`layoutID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='Layouts';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -417,7 +502,7 @@ CREATE TABLE `layout` (
 
 LOCK TABLES `layout` WRITE;
 /*!40000 ALTER TABLE `layout` DISABLE KEYS */;
-INSERT INTO `layout` VALUES (4,'Default Layout','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"800\" height=\"450\" bgcolor=\"#000000\" background=\"2.png\" resolutionid=\"4\"><region id=\"47ff29524ce1b\" width=\"460\" height=\"272\" top=\"101\" left=\"177\" userId=\"1\"><media id=\"10\" type=\"image\" duration=\"10\" lkid=\"10\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>10.png</uri></options>\n                            <raw/>\n                    </media><media id=\"11\" type=\"image\" duration=\"10\" lkid=\"11\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>11.png</uri></options>\n                            <raw/>\n                    </media></region><region id=\"537b79c27eade\" userId=\"1\" width=\"800\" height=\"61\" top=\"389\" left=\"0\"><media id=\"3d4de8eb456dffe12921ab00c472b86f\" type=\"ticker\" duration=\"10\" lkid=\"\" userId=\"1\" schemaVersion=\"1\">\n                            <options><xmds>1</xmds><sourceId>1</sourceId><uri>http%3A%2F%2Ffeeds.bbci.co.uk%2Fnews%2Fworld%2Frss.xml</uri><datasetid>0</datasetid><updateInterval>120</updateInterval><scrollSpeed>1</scrollSpeed><direction>single</direction><copyright/><numItems>30</numItems><takeItemsFrom>start</takeItemsFrom><durationIsPerItem>1</durationIsPerItem><fitText>0</fitText><itemsSideBySide>0</itemsSideBySide><upperLimit>0</upperLimit><lowerLimit>0</lowerLimit><filter/><ordering/><itemsPerPage>1</itemsPerPage></options>\n                            <raw><template><![CDATA[<p style=\"text-align: center;\"><span style=\"color:#000000;\"><span style=\"font-size: 20px;\">[Description]</span></span></p>\n]]></template><css><![CDATA[]]></css></raw>\n                    </media></region><region id=\"537f5368b172a\" userId=\"1\" width=\"286\" height=\"98\" top=\"0\" left=\"0\"><media id=\"6\" type=\"image\" duration=\"3\" lkid=\"8\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>6.png</uri></options>\n                            <raw/>\n                    </media><media id=\"b4f8db9697d8b5be5d877e3b7e9df3ee\" type=\"webpage\" duration=\"999\" lkid=\"\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>%2Fclock.php</uri><scaling>100</scaling><transparency>1</transparency><offsetLeft>0</offsetLeft><offsetTop>0</offsetTop></options>\n                            <raw/>\n                    </media></region></layout>\n',1,'2013-02-02 14:30:40','2014-05-23 15:41:10',NULL,NULL,NULL,0,0,'2.png',2);
+INSERT INTO `layout` VALUES (4,'Default Layout','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"800\" height=\"450\" bgcolor=\"#000000\" background=\"2.png\" resolutionid=\"4\"><region id=\"47ff29524ce1b\" width=\"460\" height=\"272\" top=\"101\" left=\"177\" userId=\"1\"><media id=\"10\" type=\"image\" duration=\"10\" lkid=\"10\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>10.png</uri></options>\n                            <raw/>\n                    </media><media id=\"11\" type=\"image\" duration=\"10\" lkid=\"11\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>11.png</uri></options>\n                            <raw/>\n                    </media></region><region id=\"537b79c27eade\" userId=\"1\" width=\"800\" height=\"61\" top=\"389\" left=\"0\"><media id=\"3d4de8eb456dffe12921ab00c472b86f\" type=\"ticker\" duration=\"10\" lkid=\"\" userId=\"1\" schemaVersion=\"1\">\n                            <options><xmds>1</xmds><sourceId>1</sourceId><uri>http%3A%2F%2Ffeeds.bbci.co.uk%2Fnews%2Fworld%2Frss.xml</uri><datasetid>0</datasetid><updateInterval>120</updateInterval><scrollSpeed>1</scrollSpeed><direction>single</direction><copyright/><numItems>30</numItems><takeItemsFrom>start</takeItemsFrom><durationIsPerItem>1</durationIsPerItem><fitText>0</fitText><itemsSideBySide>0</itemsSideBySide><upperLimit>0</upperLimit><lowerLimit>0</lowerLimit><filter/><ordering/><itemsPerPage>1</itemsPerPage></options>\n                            <raw><template><![CDATA[<p style=\"text-align: center;\"><span style=\"color:#000000;\"><span style=\"font-size: 20px;\">[Description]</span></span></p>\n]]></template><css><![CDATA[]]></css></raw>\n                    </media></region><region id=\"537f5368b172a\" userId=\"1\" width=\"286\" height=\"98\" top=\"0\" left=\"0\"><media id=\"6\" type=\"image\" duration=\"3\" lkid=\"8\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>6.png</uri></options>\n                            <raw/>\n                    </media><media id=\"b4f8db9697d8b5be5d877e3b7e9df3ee\" type=\"webpage\" duration=\"999\" lkid=\"\" userId=\"1\" schemaVersion=\"1\">\n                            <options><uri>%2Fclock.php</uri><scaling>100</scaling><transparency>1</transparency><offsetLeft>0</offsetLeft><offsetTop>0</offsetTop></options>\n                            <raw/>\n                    </media></region></layout>\n',1,'2013-02-02 14:30:40','2014-05-23 15:41:10',NULL,0,0,2,2);
 /*!40000 ALTER TABLE `layout` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -514,6 +599,32 @@ LOCK TABLES `lkdatasetgroup` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `lkdatasetlayout`
+--
+
+DROP TABLE IF EXISTS `lkdatasetlayout`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lkdatasetlayout` (
+  `LkDataSetLayoutID` int(11) NOT NULL AUTO_INCREMENT,
+  `DataSetID` int(11) NOT NULL,
+  `LayoutID` int(11) NOT NULL,
+  `RegionID` varchar(50) NOT NULL,
+  `MediaID` varchar(50) NOT NULL,
+  PRIMARY KEY (`LkDataSetLayoutID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lkdatasetlayout`
+--
+
+LOCK TABLES `lkdatasetlayout` WRITE;
+/*!40000 ALTER TABLE `lkdatasetlayout` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lkdatasetlayout` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `lkdisplaydg`
 --
 
@@ -590,7 +701,7 @@ CREATE TABLE `lklayoutmedia` (
   KEY `layoutID` (`layoutID`),
   CONSTRAINT `lklayoutmedia_ibfk_1` FOREIGN KEY (`mediaID`) REFERENCES `media` (`mediaID`),
   CONSTRAINT `lklayoutmedia_ibfk_2` FOREIGN KEY (`layoutID`) REFERENCES `layout` (`layoutID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='Creates a reference between Layout and Media';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='Creates a reference between Layout and Media';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -599,7 +710,7 @@ CREATE TABLE `lklayoutmedia` (
 
 LOCK TABLES `lklayoutmedia` WRITE;
 /*!40000 ALTER TABLE `lklayoutmedia` DISABLE KEYS */;
-INSERT INTO `lklayoutmedia` VALUES (8,6,4,'537f5368b172a'),(10,10,4,'47ff29524ce1b'),(11,11,4,'47ff29524ce1b');
+INSERT INTO `lklayoutmedia` VALUES (8,6,4,'537f5368b172a'),(10,10,4,'47ff29524ce1b'),(11,11,4,'47ff29524ce1b'),(12,2,4,'background');
 /*!40000 ALTER TABLE `lklayoutmedia` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -783,35 +894,51 @@ INSERT INTO `lkpagegroup` VALUES (1,2,1),(2,1,1),(3,3,1),(4,19,1),(5,5,1),(6,7,1
 UNLOCK TABLES;
 
 --
--- Table structure for table `lktemplategroup`
+-- Table structure for table `lktaglayout`
 --
 
-DROP TABLE IF EXISTS `lktemplategroup`;
+DROP TABLE IF EXISTS `lktaglayout`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `lktemplategroup` (
-  `LkTemplateGroupID` int(11) NOT NULL AUTO_INCREMENT,
-  `TemplateID` int(11) NOT NULL,
-  `GroupID` int(11) NOT NULL,
-  `View` tinyint(4) NOT NULL DEFAULT '0',
-  `Edit` tinyint(4) NOT NULL DEFAULT '0',
-  `Del` tinyint(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`LkTemplateGroupID`),
-  KEY `TemplateID` (`TemplateID`),
-  KEY `GroupID` (`GroupID`),
-  CONSTRAINT `lktemplategroup_ibfk_1` FOREIGN KEY (`TemplateID`) REFERENCES `template` (`templateID`),
-  CONSTRAINT `lktemplategroup_ibfk_2` FOREIGN KEY (`GroupID`) REFERENCES `group` (`groupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+CREATE TABLE `lktaglayout` (
+  `lkTagLayoutId` int(11) NOT NULL AUTO_INCREMENT,
+  `tagId` int(11) NOT NULL,
+  `layoutId` int(11) NOT NULL,
+  PRIMARY KEY (`lkTagLayoutId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `lktemplategroup`
+-- Dumping data for table `lktaglayout`
 --
 
-LOCK TABLES `lktemplategroup` WRITE;
-/*!40000 ALTER TABLE `lktemplategroup` DISABLE KEYS */;
-INSERT INTO `lktemplategroup` VALUES (1,1,2,1,0,0),(2,2,2,1,0,0),(3,3,2,1,0,0),(4,4,2,1,0,0),(5,5,2,1,0,0),(6,6,2,1,0,0),(7,7,2,1,0,0),(8,8,2,1,0,0);
-/*!40000 ALTER TABLE `lktemplategroup` ENABLE KEYS */;
+LOCK TABLES `lktaglayout` WRITE;
+/*!40000 ALTER TABLE `lktaglayout` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lktaglayout` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `lktagmedia`
+--
+
+DROP TABLE IF EXISTS `lktagmedia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `lktagmedia` (
+  `lkTagMediaId` int(11) NOT NULL AUTO_INCREMENT,
+  `tagId` int(11) NOT NULL,
+  `mediaId` int(11) NOT NULL,
+  PRIMARY KEY (`lkTagMediaId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lktagmedia`
+--
+
+LOCK TABLES `lktagmedia` WRITE;
+/*!40000 ALTER TABLE `lktagmedia` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lktagmedia` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -867,9 +994,18 @@ CREATE TABLE `log` (
   `mediaID` int(11) DEFAULT NULL,
   PRIMARY KEY (`logid`),
   KEY `logdate` (`logdate`)
-) ENGINE=MyISAM AUTO_INCREMENT=11204 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11206 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `log`
+--
+
+LOCK TABLES `log` WRITE;
+/*!40000 ALTER TABLE `log` DISABLE KEYS */;
+INSERT INTO `log` VALUES (11204,'2016-03-02 14:12:21','error','','','No session returned','/xibo/','172.30.3.12',0,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0',0,0,0,0),(11205,'2016-03-02 14:12:21','error','','','<errormsg>mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead</errormsg>\n<errornum>8192</errornum>\n<errortype>Deprecated Call</errortype>\n<scriptname>/var/www/html/xibo/3rdparty/oauth-php/library/store/OAuthStoreSQL.php</scriptname>\n<scriptlinenum>77</scriptlinenum>\n','/xibo/','172.30.3.12',0,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0',0,0,0,0);
+/*!40000 ALTER TABLE `log` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `media`
@@ -891,8 +1027,11 @@ CREATE TABLE `media` (
   `retired` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Is retired?',
   `isEdited` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Is this the current record',
   `editedMediaID` int(11) DEFAULT NULL COMMENT 'The Parent ID',
+  `moduleSystemFile` tinyint(4) NOT NULL DEFAULT '0',
+  `valid` tinyint(1) NOT NULL DEFAULT '1',
+  `expires` int(11) DEFAULT NULL,
   PRIMARY KEY (`mediaID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -901,7 +1040,7 @@ CREATE TABLE `media` (
 
 LOCK TABLES `media` WRITE;
 /*!40000 ALTER TABLE `media` DISABLE KEYS */;
-INSERT INTO `media` VALUES (1,'bgrnd1','image',10,'background.png','1.png','89685dbff67cc25863d0ca99e8686bb8',257704,1,0,0,NULL),(2,'xibo_karoshi','image',10,'xibobackground.png','2.png','4b14f66e4933019dbe96fd0ad3f965ba',70831,1,0,0,NULL),(6,'blackbox1.png','image',3,'blackbox1.png','6.png','13234d8ca6fb2ce947510e6a8f040348',655,1,0,0,NULL),(10,'welcome1','image',10,'welcome1.png','10.png','f75a0638c88502bfd4f4306bb668b670',43628,1,0,0,NULL),(11,'welcome2','image',10,'welcome2.png','11.png','3f1da9cae5dfad77691441c17c242e34',23884,1,0,0,NULL);
+INSERT INTO `media` VALUES (1,'bgrnd1','image',10,'background.png','1.png','89685dbff67cc25863d0ca99e8686bb8',257704,1,0,0,NULL,0,1,NULL),(2,'xibo_karoshi','image',10,'xibobackground.png','2.png','4b14f66e4933019dbe96fd0ad3f965ba',70831,1,0,0,NULL,0,1,NULL),(6,'blackbox1.png','image',3,'blackbox1.png','6.png','13234d8ca6fb2ce947510e6a8f040348',655,1,0,0,NULL,0,1,NULL),(10,'welcome1','image',10,'welcome1.png','10.png','f75a0638c88502bfd4f4306bb668b670',43628,1,0,0,NULL,0,1,NULL),(11,'welcome2','image',10,'welcome2.png','11.png','3f1da9cae5dfad77691441c17c242e34',23884,1,0,0,NULL,0,1,NULL),(12,'jquery-1.11.1.min.js','module',10,'jquery-1.11.1.min.js','jquery-1.11.1.min.js','3c9137d88a00b1ae0b41ff6a70571615',95785,1,0,0,NULL,1,1,0),(13,'xibo-layout-scaler.js','module',10,'xibo-layout-scaler.js','xibo-layout-scaler.js','3659986d00e56c929218084aeb991cca',2466,1,0,0,NULL,1,1,0),(14,'xibo-webpage-render.js','module',10,'xibo-webpage-render.js','xibo-webpage-render.js','d59f5fc84ef7747f27baddc07fe81487',4832,1,0,0,NULL,1,1,0),(15,'moment.js','module',10,'moment.js','moment.js','67bb26c11dba6c366834e65f5933aff2',160251,1,0,0,NULL,1,1,0),(16,'jquery.marquee.min.js','module',10,'jquery.marquee.min.js','jquery.marquee.min.js','2286bb4f44d9ea301131a25c5204ca0a',2248,1,0,0,NULL,1,1,0),(17,'jquery-cycle-2.1.6.min.js','module',10,'jquery-cycle-2.1.6.min.js','jquery-cycle-2.1.6.min.js','4310a8127c98c2fc13d1f6597c338e6f',28669,1,0,0,NULL,1,1,0),(18,'xibo-text-render.js','module',10,'xibo-text-render.js','xibo-text-render.js','72479995bc5e5957392e94458117560a',9111,1,0,0,NULL,1,1,0),(19,'xibo-dataset-render.js','module',10,'xibo-dataset-render.js','xibo-dataset-render.js','ffcde6f93e4ac6cb6d4dddad45d344db',1585,1,0,0,NULL,1,1,0),(20,'flipclock.min.js','module',10,'flipclock.min.js','flipclock.min.js','cd44dfb10cf85968f429871c1334ee78',20242,1,0,0,NULL,1,1,0);
 /*!40000 ALTER TABLE `media` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -952,7 +1091,7 @@ CREATE TABLE `menuitem` (
   KEY `MenuID` (`MenuID`),
   CONSTRAINT `menuitem_ibfk_1` FOREIGN KEY (`MenuID`) REFERENCES `menu` (`MenuID`),
   CONSTRAINT `menuitem_ibfk_2` FOREIGN KEY (`PageID`) REFERENCES `pages` (`pageID`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -961,7 +1100,7 @@ CREATE TABLE `menuitem` (
 
 LOCK TABLES `menuitem` WRITE;
 /*!40000 ALTER TABLE `menuitem` DISABLE KEYS */;
-INSERT INTO `menuitem` VALUES (1,1,2,NULL,'Schedule',NULL,NULL,1,0),(2,1,5,NULL,'Design',NULL,NULL,2,0),(3,1,7,NULL,'Library',NULL,NULL,3,0),(4,1,17,NULL,'Administration',NULL,NULL,5,0),(7,7,11,NULL,'Displays',NULL,NULL,1,0),(8,8,15,NULL,'User Groups',NULL,NULL,2,0),(9,8,17,NULL,'Users',NULL,NULL,1,0),(10,9,16,NULL,'Log',NULL,NULL,1,0),(11,9,18,NULL,'About',NULL,NULL,4,0),(12,9,40,NULL,'Sessions',NULL,NULL,2,0),(13,8,14,NULL,'Settings',NULL,NULL,3,0),(14,2,2,'sp=month','Schedule','schedule_button','dashboard/scheduleview.png',1,0),(15,2,5,NULL,'Layouts','playlist_button','dashboard/presentations.png',2,0),(16,2,7,NULL,'Library','content_button','dashboard/content.png',3,0),(17,2,25,NULL,'Templates','layout_button','dashboard/layouts.png',4,0),(18,2,17,NULL,'Users','user_button','dashboard/users.png',5,0),(19,2,14,NULL,'Settings','settings_button','dashboard/settings.png',6,0),(20,2,18,NULL,'About','license_button','dashboard/license.png',7,0),(22,9,26,NULL,'Report Fault',NULL,NULL,3,0),(23,7,27,NULL,'Statistics',NULL,NULL,3,0),(24,2,28,'manual/index.php','Manual','help_button','dashboard/help.png',10,1),(25,6,29,NULL,'Resolutions',NULL,NULL,4,0),(26,6,25,NULL,'Templates',NULL,NULL,3,0),(27,7,32,NULL,'Display Groups',NULL,NULL,2,0),(28,8,33,NULL,'Applications',NULL,NULL,4,0),(29,5,36,NULL,'DataSets',NULL,NULL,2,0),(30,5,7,NULL,'Media',NULL,NULL,1,0),(33,6,5,NULL,'Layouts',NULL,NULL,2,0),(34,1,11,NULL,'Displays',NULL,NULL,4,0),(35,1,16,NULL,'Advanced',NULL,NULL,6,0),(36,8,24,NULL,'Modules',NULL,NULL,5,0),(37,6,37,NULL,'Campaigns',NULL,NULL,1,0),(38,8,38,NULL,'Transitions',NULL,NULL,6,0),(39,9,30,NULL,'Help Links',NULL,NULL,6,0);
+INSERT INTO `menuitem` VALUES (1,1,2,NULL,'Schedule',NULL,NULL,1,0),(2,1,5,NULL,'Design',NULL,NULL,2,0),(3,1,7,NULL,'Library',NULL,NULL,3,0),(4,1,17,NULL,'Administration',NULL,NULL,5,0),(7,7,11,NULL,'Displays',NULL,NULL,1,0),(8,8,15,NULL,'User Groups',NULL,NULL,2,0),(9,8,17,NULL,'Users',NULL,NULL,1,0),(10,9,16,NULL,'Log',NULL,NULL,1,0),(11,9,18,NULL,'About',NULL,NULL,4,0),(12,9,40,NULL,'Sessions',NULL,NULL,2,0),(13,8,14,NULL,'Settings',NULL,NULL,3,0),(14,2,2,'sp=month','Schedule','schedule_button','dashboard/scheduleview.png',1,0),(15,2,5,NULL,'Layouts','playlist_button','dashboard/presentations.png',2,0),(16,2,7,NULL,'Library','content_button','dashboard/content.png',3,0),(17,2,25,NULL,'Templates','layout_button','dashboard/layouts.png',4,0),(18,2,17,NULL,'Users','user_button','dashboard/users.png',5,0),(19,2,14,NULL,'Settings','settings_button','dashboard/settings.png',6,0),(20,2,18,NULL,'About','license_button','dashboard/license.png',7,0),(22,9,26,NULL,'Report Fault',NULL,NULL,3,0),(23,7,27,NULL,'Statistics',NULL,NULL,3,0),(24,2,28,'manual/index.php','Manual','help_button','dashboard/help.png',10,1),(25,6,29,NULL,'Resolutions',NULL,NULL,4,0),(26,6,25,NULL,'Templates',NULL,NULL,3,0),(27,7,32,NULL,'Display Groups',NULL,NULL,2,0),(28,8,33,NULL,'Applications',NULL,NULL,4,0),(29,5,36,NULL,'DataSets',NULL,NULL,2,0),(30,5,7,NULL,'Media',NULL,NULL,1,0),(33,6,5,NULL,'Layouts',NULL,NULL,2,0),(34,1,11,NULL,'Displays',NULL,NULL,4,0),(35,1,16,NULL,'Advanced',NULL,NULL,6,0),(36,8,24,NULL,'Modules',NULL,NULL,5,0),(37,6,37,NULL,'Campaigns',NULL,NULL,1,0),(38,8,38,NULL,'Transitions',NULL,NULL,6,0),(39,9,30,NULL,'Help Links',NULL,NULL,6,0),(40,7,43,NULL,'Display Settings',NULL,NULL,4,0),(41,9,44,NULL,'Audit Trail',NULL,NULL,2,0);
 /*!40000 ALTER TABLE `menuitem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -984,8 +1123,10 @@ CREATE TABLE `module` (
   `ValidExtensions` varchar(254) DEFAULT NULL,
   `PreviewEnabled` tinyint(4) NOT NULL DEFAULT '1',
   `assignable` tinyint(4) NOT NULL DEFAULT '1',
+  `render_as` varchar(10) DEFAULT NULL,
+  `settings` text,
   PRIMARY KEY (`ModuleID`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='Functional Modules';
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COMMENT='Functional Modules';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -994,7 +1135,7 @@ CREATE TABLE `module` (
 
 LOCK TABLES `module` WRITE;
 /*!40000 ALTER TABLE `module` DISABLE KEYS */;
-INSERT INTO `module` VALUES (1,'Image','Image',1,0,'Images. PNG, JPG, BMP, GIF','forms/image.gif',1,'jpg,jpeg,png,bmp,gif',1,1),(2,'Video','Video',1,0,'Videos - support varies depending on the client hardware you are using.','forms/video.gif',1,'wmv,avi,mpg,mpeg,webm,mp4',1,1),(3,'Flash','Flash',1,0,'Flash','forms/flash.gif',1,'swf',1,1),(4,'PowerPoint','PowerPoint',1,0,'Powerpoint. PPT, PPS','forms/powerpoint.gif',1,'ppt,pps,pptx',1,1),(5,'Webpage','Webpage',1,1,'Webpages.','forms/webpage.gif',1,NULL,1,1),(6,'Ticker','Ticker',1,1,'RSS Ticker.','forms/ticker.gif',1,NULL,1,1),(7,'Text','Text',1,1,'Text. With Directional Controls.','forms/text.gif',1,NULL,1,1),(8,'Embedded','Embedded',1,1,'Embedded HTML','forms/webpage.gif',1,NULL,1,1),(9,'MicroBlog','MicroBlog',0,1,NULL,'forms/microblog.gif',1,NULL,1,1),(10,'Counter','Counter',0,1,'Customer Counter connected to a Remote Control','forms/counter.gif',1,NULL,1,1),(11,'datasetview','Data Set',1,1,'A view on a DataSet','forms/datasetview.gif',1,NULL,1,1),(12,'shellcommand','Shell Command',1,1,'Execute a shell command on the client','forms/shellcommand.gif',1,NULL,1,1),(13,'localvideo','Local Video',0,1,'Play a video locally stored on the client','forms/video.gif',1,NULL,1,1),(14,'genericfile','Generic File',1,0,'A generic file to be stored in the library','forms/library.gif',1,'apk,js,html,htm',0,0);
+INSERT INTO `module` VALUES (1,'Image','Image',1,0,'Images. PNG, JPG, BMP, GIF','forms/image.gif',1,'jpg,jpeg,png,bmp,gif',1,1,NULL,NULL),(2,'Video','Video',1,0,'Videos - support varies depending on the client hardware you are using.','forms/video.gif',1,'wmv,avi,mpg,mpeg,webm,mp4',1,1,NULL,NULL),(3,'Flash','Flash',1,0,'Flash','forms/flash.gif',1,'swf',1,1,NULL,NULL),(4,'PowerPoint','PowerPoint',1,0,'Powerpoint. PPT, PPS','forms/powerpoint.gif',1,'ppt,pps,pptx',1,1,NULL,NULL),(5,'Webpage','Webpage',1,1,'Webpages.','forms/webpage.gif',1,NULL,1,1,NULL,NULL),(6,'Ticker','Ticker',1,1,'RSS Ticker.','forms/ticker.gif',1,NULL,1,1,NULL,NULL),(7,'Text','Text',1,1,'Text. With Directional Controls.','forms/text.gif',1,NULL,1,1,NULL,NULL),(8,'Embedded','Embedded',1,1,'Embedded HTML','forms/webpage.gif',1,NULL,1,1,NULL,NULL),(10,'Counter','Counter',0,1,'Customer Counter connected to a Remote Control','forms/counter.gif',1,NULL,1,1,NULL,NULL),(11,'datasetview','Data Set',1,1,'A view on a DataSet','forms/datasetview.gif',1,NULL,1,1,NULL,NULL),(12,'shellcommand','Shell Command',1,1,'Execute a shell command on the client','forms/shellcommand.gif',1,NULL,1,1,NULL,NULL),(13,'localvideo','Local Video',0,1,'Play a video locally stored on the client','forms/video.gif',1,NULL,1,1,NULL,NULL),(14,'genericfile','Generic File',1,0,'A generic file to be stored in the library','forms/library.gif',1,'apk,js,html,htm',0,0,NULL,NULL),(15,'font','Font',1,0,'A font to use in other Modules','forms/library.gif',1,'ttf,otf,eot,svg,woff',0,0,NULL,NULL),(16,'clock','Clock',1,1,'Display a Clock','forms/library.gif',1,'',1,1,'html',NULL);
 /*!40000 ALTER TABLE `module` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1181,7 +1322,7 @@ CREATE TABLE `pages` (
   PRIMARY KEY (`pageID`),
   KEY `pagegroupID` (`pagegroupID`),
   CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`pagegroupID`) REFERENCES `pagegroup` (`pagegroupID`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='Available Pages';
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COMMENT='Available Pages';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1190,7 +1331,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-INSERT INTO `pages` VALUES (1,'dashboard',2),(2,'schedule',1),(3,'mediamanager',2),(5,'layout',3),(7,'content',4),(11,'display',7),(12,'update',11),(14,'admin',10),(15,'group',8),(16,'log',9),(17,'user',8),(18,'license',10),(19,'index',2),(24,'module',4),(25,'template',3),(26,'fault',10),(27,'stats',9),(28,'manual',2),(29,'resolution',12),(30,'help',2),(31,'clock',2),(32,'displaygroup',7),(33,'oauth',13),(34,'help',2),(35,'clock',2),(36,'dataset',14),(37,'campaign',3),(38,'transition',4),(39,'timeline',3),(40,'sessions',9),(41,'preview',3),(42,'statusdashboard',2);
+INSERT INTO `pages` VALUES (1,'dashboard',2),(2,'schedule',1),(3,'mediamanager',2),(5,'layout',3),(7,'content',4),(11,'display',7),(12,'update',11),(14,'admin',10),(15,'group',8),(16,'log',9),(17,'user',8),(18,'license',10),(19,'index',2),(24,'module',4),(25,'template',3),(26,'fault',10),(27,'stats',9),(28,'manual',2),(29,'resolution',12),(30,'help',2),(31,'clock',2),(32,'displaygroup',7),(33,'oauth',13),(34,'help',2),(35,'clock',2),(36,'dataset',14),(37,'campaign',3),(38,'transition',4),(39,'timeline',3),(40,'sessions',9),(41,'preview',3),(42,'statusdashboard',2),(43,'displayprofile',7),(44,'auditlog',9);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1203,13 +1344,15 @@ DROP TABLE IF EXISTS `resolution`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `resolution` (
   `resolutionID` int(11) NOT NULL AUTO_INCREMENT,
-  `resolution` varchar(20) NOT NULL,
+  `resolution` varchar(254) NOT NULL,
   `width` smallint(6) NOT NULL,
   `height` smallint(6) NOT NULL,
   `intended_width` smallint(6) NOT NULL,
   `intended_height` smallint(6) NOT NULL,
+  `version` tinyint(4) NOT NULL DEFAULT '1',
+  `enabled` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`resolutionID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='Supported Resolutions';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='Supported Resolutions';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1218,7 +1361,7 @@ CREATE TABLE `resolution` (
 
 LOCK TABLES `resolution` WRITE;
 /*!40000 ALTER TABLE `resolution` DISABLE KEYS */;
-INSERT INTO `resolution` VALUES (1,'4:3 Monitor',800,600,1024,768),(2,'3:2 Tv',720,480,1440,960),(3,'16:10 Widescreen Mon',800,500,1680,1050),(4,'16:9 HD Widescreen',800,450,1920,1080),(5,'3:4 Monitor',600,800,768,1024),(6,'2:3 Tv',480,720,960,1440),(7,'10:16 Widescreen',500,800,1050,1680),(8,'9:16 HD Widescreen',450,800,1080,1920);
+INSERT INTO `resolution` VALUES (1,'4:3 Monitor',800,600,1024,768,1,0),(2,'3:2 Tv',720,480,1440,960,1,0),(3,'16:10 Widescreen Mon',800,500,1680,1050,1,0),(4,'16:9 HD Widescreen',800,450,1920,1080,1,0),(5,'3:4 Monitor',600,800,768,1024,1,0),(6,'2:3 Tv',480,720,960,1440,1,0),(7,'10:16 Widescreen',500,800,1050,1680,1,0),(8,'9:16 HD Widescreen',450,800,1080,1920,1,0),(9,'1080p HD Landscape',800,450,1920,1080,2,1),(10,'720p HD Landscape',800,450,1280,720,2,1),(11,'1080p HD Portrait',450,800,1080,1920,2,1),(12,'720p HD Portrait',450,800,720,1280,2,1),(13,'4k',800,450,4096,2304,2,1),(14,'Common PC Monitor 4:3',800,600,1024,768,2,1);
 /*!40000 ALTER TABLE `resolution` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1233,13 +1376,14 @@ CREATE TABLE `schedule` (
   `eventID` int(11) NOT NULL AUTO_INCREMENT,
   `CampaignID` int(11) NOT NULL,
   `DisplayGroupIDs` varchar(254) NOT NULL COMMENT 'A list of the display group ids for this event',
-  `recurrence_type` enum('Hour','Day','Week','Month','Year') DEFAULT NULL,
+  `recurrence_type` enum('Minute','Hour','Day','Week','Month','Year') DEFAULT NULL,
   `recurrence_detail` varchar(100) DEFAULT NULL,
   `userID` int(11) NOT NULL,
   `is_priority` tinyint(4) NOT NULL,
   `FromDT` bigint(20) NOT NULL DEFAULT '0',
   `ToDT` bigint(20) NOT NULL DEFAULT '0',
   `recurrence_range` bigint(20) DEFAULT NULL,
+  `DisplayOrder` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`eventID`),
   KEY `layoutID` (`CampaignID`),
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`CampaignID`) REFERENCES `campaign` (`CampaignID`)
@@ -1265,20 +1409,16 @@ DROP TABLE IF EXISTS `schedule_detail`;
 CREATE TABLE `schedule_detail` (
   `schedule_detailID` int(11) NOT NULL AUTO_INCREMENT,
   `DisplayGroupID` int(11) NOT NULL,
-  `CampaignID` int(11) NOT NULL,
   `userID` int(8) NOT NULL DEFAULT '1' COMMENT 'Owner of the Event',
-  `is_priority` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'This scheduled event has priority and will take precidence over any others scheduled',
   `eventID` int(11) DEFAULT NULL,
   `FromDT` bigint(20) NOT NULL DEFAULT '0',
   `ToDT` bigint(20) NOT NULL DEFAULT '0',
-  `DisplayOrder` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`schedule_detailID`),
-  KEY `layoutID` (`CampaignID`),
   KEY `scheduleID` (`eventID`),
   KEY `DisplayGroupID` (`DisplayGroupID`),
+  KEY `FromDT` (`FromDT`,`ToDT`),
   CONSTRAINT `schedule_detail_ibfk_7` FOREIGN KEY (`eventID`) REFERENCES `schedule` (`eventID`),
-  CONSTRAINT `schedule_detail_ibfk_8` FOREIGN KEY (`DisplayGroupID`) REFERENCES `displaygroup` (`DisplayGroupID`),
-  CONSTRAINT `schedule_detail_ibfk_9` FOREIGN KEY (`CampaignID`) REFERENCES `campaign` (`CampaignID`)
+  CONSTRAINT `schedule_detail_ibfk_8` FOREIGN KEY (`DisplayGroupID`) REFERENCES `displaygroup` (`DisplayGroupID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Replicated schedule across displays and recurrence';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1311,7 +1451,7 @@ CREATE TABLE `session` (
   `SecurityToken` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`session_id`),
   KEY `userID` (`userID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1320,7 +1460,7 @@ CREATE TABLE `session` (
 
 LOCK TABLES `session` WRITE;
 /*!40000 ALTER TABLE `session` DISABLE KEYS */;
-INSERT INTO `session` VALUES ('2mjp7i29l02dakumnjgh2qvh53','pagename|s:6:\"layout\";token|s:32:\"2c6953f2c6411ead6b50b04a3b5b7df2\";token_timeout|i:1400855330;message|s:0:\"\";userid|s:1:\"1\";username|s:10:\"xibo_admin\";usertype|s:1:\"1\";layout|a:5:{s:13:\"filter_layout\";s:0:\"\";s:13:\"filter_userid\";i:0;s:14:\"filter_retired\";i:0;s:11:\"filter_tags\";s:0:\"\";s:12:\"LayoutFilter\";i:0;}layoutDesigner|a:2:{s:8:\"JumpList\";i:0;s:4:\"Name\";s:0:\"\";}content|a:8:{s:4:\"type\";s:7:\"webpage\";s:9:\"mediatype\";s:5:\"image\";s:11:\"filter_type\";s:0:\"\";s:11:\"filter_name\";s:0:\"\";s:12:\"filter_owner\";i:0;s:14:\"filter_retired\";i:0;s:26:\"filter_duration_in_seconds\";i:0;s:6:\"Filter\";i:0;}',1400857510,'2014-05-23 15:41:10','layout',1,0,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:23.0) Gecko/20100101 Firefox/23.0','172.30.86.31',NULL),('41l84lk0ecb78sefjk7mrq8j92','pagename|s:5:\"clock\";token|s:32:\"3e87c25720384ffbafe17e2d08b5be51\";token_timeout|i:1400856366;message|s:0:\"\";username|s:10:\"xibo_admin\";usertype|s:1:\"1\";layout|a:5:{s:13:\"filter_layout\";s:0:\"\";s:13:\"filter_userid\";i:0;s:14:\"filter_retired\";i:0;s:11:\"filter_tags\";s:0:\"\";s:12:\"LayoutFilter\";i:0;}layoutDesigner|a:2:{s:8:\"JumpList\";i:0;s:4:\"Name\";s:0:\"\";}content|a:8:{s:4:\"type\";s:6:\"ticker\";s:11:\"filter_type\";s:0:\"\";s:11:\"filter_name\";s:0:\"\";s:12:\"filter_owner\";i:0;s:14:\"filter_retired\";i:0;s:26:\"filter_duration_in_seconds\";i:0;s:6:\"Filter\";i:0;s:9:\"mediatype\";s:5:\"image\";}DisplayGroupIDs|a:0:{}',1400857806,'2014-05-23 15:46:06','clock',1,1,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0','127.0.0.1',NULL),('7clmpcr3bvhc96rh0ev8thque6','pagename|s:5:\"clock\";token|s:32:\"684cc8a780fa102a2474f9f640b9ae60\";token_timeout|i:1400849886;message|s:0:\"\";username|s:10:\"xibo_admin\";usertype|s:1:\"1\";layout|a:5:{s:13:\"filter_layout\";s:0:\"\";s:13:\"filter_userid\";i:0;s:14:\"filter_retired\";i:0;s:11:\"filter_tags\";s:0:\"\";s:12:\"LayoutFilter\";i:0;}user|a:3:{s:15:\"filter_username\";s:0:\"\";s:17:\"filter_usertypeid\";i:0;s:6:\"Filter\";i:0;}template|a:4:{s:11:\"filter_name\";s:0:\"\";s:11:\"filter_tags\";s:0:\"\";s:16:\"filter_is_system\";s:2:\"-1\";s:6:\"Filter\";i:0;}layoutDesigner|a:2:{s:8:\"JumpList\";i:0;s:4:\"Name\";s:0:\"\";}content|a:7:{s:4:\"type\";s:6:\"ticker\";s:11:\"filter_type\";s:0:\"\";s:11:\"filter_name\";s:0:\"\";s:12:\"filter_owner\";i:0;s:14:\"filter_retired\";i:0;s:26:\"filter_duration_in_seconds\";i:0;s:6:\"Filter\";i:0;}DisplayGroupIDs|a:0:{}',1400851326,'2014-05-23 13:58:06','clock',1,1,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:23.0) Gecko/20100101 Firefox/23.0','172.30.86.31',NULL),('rl8h45ti5o31inckgtdbvbmen6','pagename|s:5:\"clock\";token|s:32:\"f027ecba00351b087259d99f09b4ffc0\";token_timeout|i:1400856348;message|s:0:\"\";username|s:10:\"xibo_admin\";usertype|s:1:\"1\";layout|a:5:{s:13:\"filter_layout\";s:0:\"\";s:13:\"filter_userid\";i:0;s:14:\"filter_retired\";i:0;s:11:\"filter_tags\";s:0:\"\";s:12:\"LayoutFilter\";i:0;}layoutDesigner|a:2:{s:8:\"JumpList\";i:0;s:4:\"Name\";s:0:\"\";}content|a:7:{s:11:\"filter_type\";s:0:\"\";s:11:\"filter_name\";s:0:\"\";s:12:\"filter_owner\";i:0;s:14:\"filter_retired\";i:0;s:26:\"filter_duration_in_seconds\";i:0;s:6:\"Filter\";i:0;s:4:\"type\";s:4:\"text\";}template|a:4:{s:11:\"filter_name\";s:0:\"\";s:11:\"filter_tags\";s:0:\"\";s:16:\"filter_is_system\";s:2:\"-1\";s:6:\"Filter\";i:0;}user|a:3:{s:15:\"filter_username\";s:0:\"\";s:17:\"filter_usertypeid\";i:0;s:6:\"Filter\";i:0;}DisplayGroupIDs|a:0:{}',1400857788,'2014-05-23 15:45:48','clock',1,1,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0','172.30.86.12',NULL);
+INSERT INTO `session` VALUES ('0it7obuit821o23cgvbfbhjhp1','pagename|s:8:\"timeline\";token|s:32:\"050938649822169d44dfc4004b790601\";token_timeout|i:1456928204;message|s:0:\"\";userid|s:1:\"1\";username|s:10:\"xibo_admin\";usertype|s:1:\"1\";upgradeFrom|s:2:\"68\";phpFiles|a:6:{i:0;s:5:\"2.php\";i:1;s:6:\"20.php\";i:2;s:6:\"23.php\";i:3;s:6:\"46.php\";i:4;s:6:\"48.php\";i:5;s:6:\"50.php\";}sqlFiles|a:56:{i:0;s:5:\"1.sql\";i:2;s:5:\"2.sql\";i:12;s:5:\"3.sql\";i:13;s:5:\"4.sql\";i:27;s:5:\"6.sql\";i:38;s:5:\"7.sql\";i:42;s:5:\"8.sql\";i:53;s:5:\"9.sql\";i:1;s:6:\"10.sql\";i:3;s:6:\"20.sql\";i:4;s:6:\"21.sql\";i:5;s:6:\"22.sql\";i:6;s:6:\"23.sql\";i:7;s:6:\"24.sql\";i:8;s:6:\"25.sql\";i:9;s:6:\"26.sql\";i:10;s:6:\"27.sql\";i:11;s:6:\"28.sql\";i:14;s:6:\"40.sql\";i:15;s:6:\"41.sql\";i:16;s:6:\"42.sql\";i:17;s:6:\"43.sql\";i:18;s:6:\"44.sql\";i:19;s:6:\"45.sql\";i:20;s:6:\"46.sql\";i:21;s:6:\"47.sql\";i:22;s:6:\"48.sql\";i:23;s:6:\"49.sql\";i:24;s:6:\"50.sql\";i:25;s:6:\"51.sql\";i:26;s:6:\"52.sql\";i:28;s:6:\"60.sql\";i:29;s:6:\"61.sql\";i:30;s:6:\"62.sql\";i:31;s:6:\"63.sql\";i:32;s:6:\"64.sql\";i:33;s:6:\"65.sql\";i:34;s:6:\"66.sql\";i:35;s:6:\"67.sql\";i:36;s:6:\"68.sql\";i:37;s:6:\"69.sql\";i:39;s:6:\"70.sql\";i:40;s:6:\"71.sql\";i:41;s:6:\"72.sql\";i:43;s:6:\"80.sql\";i:44;s:6:\"81.sql\";i:45;s:6:\"82.sql\";i:46;s:6:\"83.sql\";i:47;s:6:\"84.sql\";i:48;s:6:\"85.sql\";i:49;s:6:\"86.sql\";i:50;s:6:\"87.sql\";i:51;s:6:\"88.sql\";i:52;s:6:\"89.sql\";i:54;s:6:\"90.sql\";i:55;s:6:\"91.sql\";}upgradeTo|s:2:\"91\";layout|a:9:{s:13:\"filter_layout\";s:0:\"\";s:13:\"filter_userid\";i:0;s:14:\"filter_retired\";i:0;s:20:\"filterLayoutStatusId\";s:1:\"1\";s:17:\"showDescriptionId\";s:1:\"2\";s:8:\"showTags\";i:0;s:13:\"showThumbnail\";i:1;s:11:\"filter_tags\";s:0:\"\";s:12:\"LayoutFilter\";i:0;}gridToken|s:32:\"de66d165d8b75a3aef8a4c3526696cb8\";gridToken_timeout|i:1456928056;timeLineView|s:4:\"list\";content|a:1:{s:9:\"mediatype\";s:5:\"image\";}',1456929699,'2016-03-02 14:17:39','timeline',1,0,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0','172.30.3.12',NULL),('i0lhlhrf5gu2sd9q3keoruabe2','pagename|s:5:\"index\";token|s:32:\"80f80c56cd178a532bb7d7925137a0d3\";token_timeout|i:1456928148;message|s:0:\"\";',1456929588,'2016-03-02 14:15:48','login',NULL,0,'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0','172.30.3.12',NULL);
 /*!40000 ALTER TABLE `session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1335,13 +1475,19 @@ CREATE TABLE `setting` (
   `settingid` int(11) NOT NULL AUTO_INCREMENT,
   `setting` varchar(50) NOT NULL,
   `value` varchar(1000) NOT NULL,
-  `type` varchar(24) NOT NULL,
+  `fieldType` varchar(24) NOT NULL,
   `helptext` text,
   `options` varchar(254) DEFAULT NULL,
   `cat` varchar(24) NOT NULL DEFAULT 'general',
   `userChange` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Can the user change this setting',
+  `title` varchar(254) NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `validation` varchar(50) NOT NULL,
+  `ordering` int(11) NOT NULL,
+  `default` varchar(1000) NOT NULL,
+  `userSee` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`settingid`)
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1350,7 +1496,7 @@ CREATE TABLE `setting` (
 
 LOCK TABLES `setting` WRITE;
 /*!40000 ALTER TABLE `setting` DISABLE KEYS */;
-INSERT INTO `setting` VALUES (1,'MEDIA_DEFAULT','private','dropdown','Media will be created with these settings. If public everyone will be able to view and use this media.','private|public','default',1),(2,'LAYOUT_DEFAULT','private','dropdown','New layouts will be created with these settings. If public everyone will be able to view and use this layout.','private|public','default',1),(3,'defaultUsertype','User','dropdown','Sets the default user type selected when creating a user.\r\n<br />\r\nWe recommend that this is set to \"User\"','User|Group Admin|Super Admin','default',1),(5,'debug','Off','dropdown','Sets whether debug information is recorded when an error occurs.\r\n<br />\r\nThis should be set to \"off\" to ensure smaller log sizes','On|Off','error',1),(7,'userModule','module_user_general.php','dirselect','This sets which user authentication module is currently being used.',NULL,'user',0),(10,'adminMessage','','text','Sets the admin message to be displayed on the client page at all times',NULL,'general',0),(11,'defaultTimezone','Europe/London','timezone','Set the default timezone for the application','Europe/London','default',1),(18,'mail_to','admin@yoursite.com','text','Errors will be mailed here',NULL,'maintenance',1),(19,'mail_from','mail@yoursite.com','text','Mail will be sent from this address',NULL,'maintenance',1),(20,'BASE_URL','http://localhost/xibo/','text','This is the fully qualified URI of the site. e.g http://www.xibo.co.uk/',NULL,'general',0),(23,'jpg_length','10','text','Default length for JPG files (in seconds)',NULL,'content',1),(24,'ppt_width','1024','text','Default length for PPT files',NULL,'content',0),(25,'ppt_height','768','text','Default height for PPT files',NULL,'content',0),(26,'ppt_length','120','text','Default length for PPT files (in seconds)',NULL,'content',1),(29,'swf_length','60','text','Default length for SWF files',NULL,'content',1),(30,'audit','Off','dropdown','Turn on the auditing information. Warning this will quickly fill up the log','On|Off','error',1),(33,'LIBRARY_LOCATION','/var/www/xibo-library/','text',NULL,NULL,'path',1),(34,'SERVER_KEY','xiboserverkey','text',NULL,NULL,'general',1),(35,'HELP_BASE','http://www.xibo.org.uk/manual/','text',NULL,NULL,'path',0),(36,'PHONE_HOME','Off','dropdown','Should the server send anonymous statistics back to the Xibo project?','On|Off','general',1),(37,'PHONE_HOME_KEY','27c4d299dbca36c644de33042377b1f8','text','Key used to distinguish each Xibo instance. This is generated randomly based on the time you first installed Xibo, and is completely untraceable.',NULL,'general',0),(38,'PHONE_HOME_URL','http://www.xibo.org.uk/stats/track.php','text','The URL to connect to to PHONE_HOME (if enabled)',NULL,'path',0),(39,'PHONE_HOME_DATE','0','text','The last time we PHONED_HOME in seconds since the epoch',NULL,'general',0),(40,'SERVER_MODE','Production','dropdown','This should only be set if you want to display the maximum allowed error messaging through the user interface. <br /> Useful for capturing critical php errors and environment issues.','Production|Test','error',1),(41,'MAINTENANCE_ENABLED','Off','dropdown','Allow the maintenance script to run if it is called?','Protected|On|Off','maintenance',1),(42,'MAINTENANCE_EMAIL_ALERTS','On','dropdown','Global switch for email alerts to be sent','On|Off','maintenance',1),(43,'MAINTENANCE_KEY','changeme','text','String appended to the maintenance script to prevent malicious calls to the script.',NULL,'maintenance',1),(44,'MAINTENANCE_LOG_MAXAGE','30','text','Maximum age for log entries. Set to 0 to keep logs indefinitely.',NULL,'maintenance',1),(45,'MAINTENANCE_STAT_MAXAGE','30','text','Maximum age for statistics entries. Set to 0 to keep statistics indefinitely.',NULL,'maintenance',1),(46,'MAINTENANCE_ALERT_TOUT','12','text','How long in minutes after the last time a client connects should we send an alert? Can be overridden on a per client basis.',NULL,'maintenance',1),(47,'SHOW_DISPLAY_AS_VNCLINK','','text','Turn the display name in display management into a VNC link using the IP address last collected. The %s is replaced with the IP address. Leave blank to disable.',NULL,'general',1),(48,'SHOW_DISPLAY_AS_VNC_TGT','_top','text','If the display name is shown as a link in display management, what target should the link have? Set _top to open the link in the same window or _blank to open in a new window.',NULL,'general',1),(49,'MAINTENANCE_ALWAYS_ALERT','Off','dropdown','Should Xibo send an email if a display is in an error state every time the maintenance script runs?','On|Off','maintenance',1),(50,'SCHEDULE_LOOKAHEAD','On','dropdown','Should Xibo send future schedule information to clients?','On|Off','general',0),(51,'REQUIRED_FILES_LOOKAHEAD','172800','text','How many seconds in to the future should the calls to RequiredFiles look?',NULL,'general',1),(52,'REGION_OPTIONS_COLOURING','Media Colouring','dropdown',NULL,'Media Colouring|Permissions Colouring','permissions',1),(53,'LAYOUT_COPY_MEDIA_CHECKB','Unchecked','dropdown','Default the checkbox for making duplicates of media when copying layouts','Checked|Unchecked','default',1),(54,'MAX_LICENSED_DISPLAYS','0','text','The maximum number of licensed clients for this server installation. 0 = unlimited',NULL,'general',0),(55,'LIBRARY_MEDIA_UPDATEINALL_CHECKB','Unchecked','dropdown','Default the checkbox for updating media on all layouts when editing in the library','Checked|Unchecked','default',1),(56,'USER_PASSWORD_POLICY','','text','Regular Expression for password complexity, leave blank for no policy.','','permissions',1),(57,'USER_PASSWORD_ERROR','','text','A text description of this password policy. Will be show to users when their password does not meet the required policy','','permissions',1),(58,'MODULE_CONFIG_LOCKED_CHECKB','Unchecked','dropdown','Is the module config locked? Useful for Service providers.','Checked|Unchecked','general',0),(59,'LIBRARY_SIZE_LIMIT_KB','0','text','The Limit for the Library Size in KB',NULL,'content',0),(60,'MONTHLY_XMDS_TRANSFER_LIMIT_KB','0','text','XMDS Transfer Limit in KB/month',NULL,'general',0),(61,'DEFAULT_LANGUAGE','en_GB','text','The default language to use',NULL,'general',1),(62,'TRANSITION_CONFIG_LOCKED_CHECKB','Unchecked','dropdown','Is the Transition config locked?','Checked|Unchecked','general',0),(63,'GLOBAL_THEME_NAME','default','text','The Theme to apply to all pages by default',NULL,'general',1),(64,'DEFAULT_LAT','51.504','text','The Latitude to apply for any Geo aware Previews',NULL,'general',1),(65,'DEFAULT_LONG','-0.104','text','The Longitude to apply for any Geo aware Previews',NULL,'general',1),(66,'SCHEDULE_WITH_VIEW_PERMISSION','No','dropdown','Should users with View permissions on displays be allowed to schedule to them?','Yes|No','permissions',1),(67,'SETTING_IMPORT_ENABLED','Off','dropdown',NULL,'On|Off','general',0),(68,'SETTING_LIBRARY_TIDY_ENABLED','Off','dropdown',NULL,'On|Off','general',0),(69,'SENDFILE_MODE','Off','dropdown','When a user downloads a file from the library or previews a layout, should we attempt to use Apache X-Sendfile, Nginx X-Accel, or PHP (Off) to return the file from the library?','Off|Apache|Nginx','general',1),(70,'EMBEDDED_STATUS_WIDGET','','text','HTML to embed in an iframe on the Status Dashboard',NULL,'general',0),(71,'PROXY_HOST','','text','The Proxy URL',NULL,'general',1),(72,'PROXY_PORT','','text','The Proxy Port',NULL,'general',1),(73,'PROXY_AUTH','','text','The Authentication information for this proxy. username:password',NULL,'general',1);
+INSERT INTO `setting` VALUES (1,'MEDIA_DEFAULT','private','dropdown','Media will be created with these settings. If public everyone will be able to view and use this media.','private|public','permissions',1,'Media Permissions','dropdown','',20,'private',1),(2,'LAYOUT_DEFAULT','private','dropdown','New layouts will be created with these settings. If public everyone will be able to view and use this layout.','private|public','permissions',1,'Layout Permissions','dropdown','',10,'private',1),(3,'defaultUsertype','User','dropdown','Sets the default user type selected when creating a user.\r\n<br />\r\nWe recommend that this is set to \"User\"','User|Group Admin|Super Admin','users',1,'Default User Type','dropdown','',10,'User',1),(7,'userModule','module_user_general.php','dirselect','This sets which user authentication module is currently being used.',NULL,'users',0,'User Module','dirselect','',0,'module_user_general.php',0),(11,'defaultTimezone','Europe/London','timezone','Set the default timezone for the application','Europe/London','regional',1,'Timezone','timezone','',20,'Europe/London',1),(18,'mail_to','admin@yoursite.com','text','Errors will be mailed here',NULL,'maintenance',1,'Admin email address','text','',30,'mail@yoursite.com',1),(19,'mail_from','mail@yoursite.com','text','Mail will be sent from this address',NULL,'maintenance',1,'Sending email address','text','',40,'mail@yoursite.com',1),(23,'jpg_length','10','text','Default length for JPG files (in seconds)',NULL,'content',1,'Default Image Duration','text','',30,'10',1),(26,'ppt_length','120','text','Default length for PPT files (in seconds)',NULL,'content',1,'Default PowerPoint Duration','text','',10,'10',1),(29,'swf_length','60','text','Default length for SWF files',NULL,'content',1,'Default Flash Duration','text','',20,'10',1),(30,'audit','Off','dropdown','Set the level of logging the CMS should record. In production systems \"error\" is recommended.','error|info|audit|off','troubleshooting',1,'Log Level','dropdown','',20,'error',1),(33,'LIBRARY_LOCATION','/var/www/xibo-library/','text',NULL,NULL,'configuration',1,'Library Location','text','',10,'',1),(34,'SERVER_KEY','xiboserverkey','text',NULL,NULL,'configuration',1,'CMS Secret Key','text','',20,'',1),(35,'HELP_BASE','http://www.xibo.org.uk/manual/','text',NULL,NULL,'general',1,'Location of the Manual','text','',10,'http://www.xibo.org.uk/manual/en/',1),(36,'PHONE_HOME','Off','dropdown','Should the server send anonymous statistics back to the Xibo project?','On|Off','general',1,'Allow usage tracking?','dropdown','',10,'On',1),(37,'PHONE_HOME_KEY','27c4d299dbca36c644de33042377b1f8','text','Key used to distinguish each Xibo instance. This is generated randomly based on the time you first installed Xibo, and is completely untraceable.',NULL,'general',0,'Phone home key','text','',20,'',0),(38,'PHONE_HOME_URL','http://www.xibo.org.uk/stats/track.php','text','The URL to connect to to PHONE_HOME (if enabled)',NULL,'network',0,'Phone home URL','text','',60,'http://www.xibo.org.uk/stats/track.php',0),(39,'PHONE_HOME_DATE','0','text','The last time we PHONED_HOME in seconds since the epoch',NULL,'general',0,'Phone home time','text','',30,'0',0),(40,'SERVER_MODE','Production','dropdown','This should only be set if you want to display the maximum allowed error messaging through the user interface. <br /> Useful for capturing critical php errors and environment issues.','Production|Test','troubleshooting',1,'Server Mode','dropdown','',30,'Production',1),(41,'MAINTENANCE_ENABLED','Off','dropdown','Allow the maintenance script to run if it is called?','Protected|On|Off','maintenance',1,'Enable Maintenance?','dropdown','',10,'Off',1),(42,'MAINTENANCE_EMAIL_ALERTS','On','dropdown','Global switch for email alerts to be sent','On|Off','maintenance',1,'Enable Email Alerts?','dropdown','',20,'On',1),(43,'MAINTENANCE_KEY','changeme','text','String appended to the maintenance script to prevent malicious calls to the script.',NULL,'maintenance',1,'Maintenance Key','text','',50,'changeme',1),(44,'MAINTENANCE_LOG_MAXAGE','30','text','Maximum age for log entries. Set to 0 to keep logs indefinitely.',NULL,'maintenance',1,'Max Log Age','text','',60,'30',1),(45,'MAINTENANCE_STAT_MAXAGE','30','text','Maximum age for statistics entries. Set to 0 to keep statistics indefinitely.',NULL,'maintenance',1,'Max Statistics Age','text','',70,'30',1),(46,'MAINTENANCE_ALERT_TOUT','12','text','How long in minutes after the last time a client connects should we send an alert? Can be overridden on a per client basis.',NULL,'maintenance',1,'Max Display Timeout','text','',80,'12',1),(47,'SHOW_DISPLAY_AS_VNCLINK','','text','Turn the display name in display management into a VNC link using the IP address last collected. The %s is replaced with the IP address. Leave blank to disable.',NULL,'displays',1,'Display a VNC Link?','text','',30,'',1),(48,'SHOW_DISPLAY_AS_VNC_TGT','_top','text','If the display name is shown as a link in display management, what target should the link have? Set _top to open the link in the same window or _blank to open in a new window.',NULL,'displays',1,'Open VNC Link in new window?','text','',40,'_top',1),(49,'MAINTENANCE_ALWAYS_ALERT','Off','dropdown','Should Xibo send an email if a display is in an error state every time the maintenance script runs?','On|Off','maintenance',1,'Send repeat Display Timeouts','dropdown','',80,'Off',1),(50,'SCHEDULE_LOOKAHEAD','On','dropdown','Should Xibo send future schedule information to clients?','On|Off','general',0,'Send Schedule in advance?','dropdown','',40,'On',1),(51,'REQUIRED_FILES_LOOKAHEAD','172800','text','How many seconds in to the future should the calls to RequiredFiles look?',NULL,'general',1,'Send files in advance?','text','',50,'172800',1),(52,'REGION_OPTIONS_COLOURING','Media Colouring','dropdown',NULL,'Media Colouring|Permissions Colouring','permissions',1,'How to colour Media on the Region Timeline','dropdown','',30,'Media Colouring',1),(53,'LAYOUT_COPY_MEDIA_CHECKB','Unchecked','dropdown','Default the checkbox for making duplicates of media when copying layouts','Checked|Unchecked','defaults',1,'Default copy media when copying a layout?','dropdown','',20,'Unchecked',1),(54,'MAX_LICENSED_DISPLAYS','0','text','The maximum number of licensed clients for this server installation. 0 = unlimited',NULL,'displays',0,'Number of display slots','text','',50,'0',0),(55,'LIBRARY_MEDIA_UPDATEINALL_CHECKB','Unchecked','dropdown','Default the checkbox for updating media on all layouts when editing in the library','Checked|Unchecked','defaults',1,'Default update media in all layouts','dropdown','',10,'Unchecked',1),(56,'USER_PASSWORD_POLICY','','text','Regular Expression for password complexity, leave blank for no policy.','','users',1,'Password Policy Regular Expression','text','',20,'',1),(57,'USER_PASSWORD_ERROR','','text','A text description of this password policy. Will be show to users when their password does not meet the required policy','','users',1,'Description of Password Policy','text','',30,'',1),(58,'MODULE_CONFIG_LOCKED_CHECKB','Unchecked','dropdown','Is the module config locked? Useful for Service providers.','Checked|Unchecked','defaults',0,'Lock Module Config','dropdown','',30,'Unchecked',0),(59,'LIBRARY_SIZE_LIMIT_KB','0','text','The Limit for the Library Size in KB',NULL,'network',0,'Library Size Limit','text','',50,'0',1),(60,'MONTHLY_XMDS_TRANSFER_LIMIT_KB','0','text','XMDS Transfer Limit in KB/month',NULL,'network',0,'Monthly bandwidth Limit','text','',40,'0',1),(61,'DEFAULT_LANGUAGE','en_GB','text','The default language to use',NULL,'regional',1,'Default Language','text','',10,'en_GB',1),(62,'TRANSITION_CONFIG_LOCKED_CHECKB','Unchecked','dropdown','Is the Transition config locked?','Checked|Unchecked','defaults',0,'Allow modifications to the transition configuration?','dropdown','',40,'Unchecked',1),(63,'GLOBAL_THEME_NAME','default','text','The Theme to apply to all pages by default',NULL,'configuration',1,'CMS Theme','text','',30,'default',1),(64,'DEFAULT_LAT','51.504','text','The Latitude to apply for any Geo aware Previews',NULL,'displays',1,'Default Latitude','text','',10,'51.504',1),(65,'DEFAULT_LONG','-0.104','text','The Longitude to apply for any Geo aware Previews',NULL,'displays',1,'Default Longitude','text','',20,'-0.104',1),(66,'SCHEDULE_WITH_VIEW_PERMISSION','No','dropdown','Should users with View permissions on displays be allowed to schedule to them?','Yes|No','permissions',1,'Schedule with view permissions?','dropdown','',40,'No',1),(67,'SETTING_IMPORT_ENABLED','Off','checkbox',NULL,'On|Off','general',1,'Allow Import?','checkbox','',80,'1',1),(68,'SETTING_LIBRARY_TIDY_ENABLED','Off','checkbox',NULL,'On|Off','general',1,'Enable Library Tidy?','checkbox','',90,'1',1),(69,'SENDFILE_MODE','Off','dropdown','When a user downloads a file from the library or previews a layout, should we attempt to use Apache X-Sendfile, Nginx X-Accel, or PHP (Off) to return the file from the library?','Off|Apache|Nginx','general',1,'File download mode','dropdown','',60,'Off',1),(70,'EMBEDDED_STATUS_WIDGET','','text','HTML to embed in an iframe on the Status Dashboard',NULL,'general',0,'Status Dashboard Widget','text','',70,'',1),(71,'PROXY_HOST','','text','The Proxy URL',NULL,'network',1,'Proxy URL','text','',10,'',1),(72,'PROXY_PORT','','text','The Proxy Port',NULL,'network',1,'Proxy Port','text','',20,'0',1),(73,'PROXY_AUTH','','text','The Authentication information for this proxy. username:password',NULL,'network',1,'Proxy Credentials','text','',30,'',1),(74,'DATE_FORMAT','Y-m-d H:i','text','The Date Format to use when displaying dates in the CMS.',NULL,'regional',1,'Date Format','string','required',30,'Y-m-d',1),(75,'DETECT_LANGUAGE','1','checkbox','Detect the browser language?',NULL,'regional',1,'Detect Language','checkbox','',40,'1',1),(76,'DEFAULTS_IMPORTED','1','text','Has the default layout been imported?',NULL,'general',0,'Defaults Imported?','checkbox','required',100,'0',0),(77,'FORCE_HTTPS','0','checkbox','Force the portal into HTTPS?',NULL,'network',1,'Force HTTPS?','checkbox','',70,'0',1),(78,'ISSUE_STS','0','checkbox','Add STS to the response headers? Make sure you fully understand STS before turning it on as it will prevent access via HTTP after the first successful HTTPS connection.',NULL,'network',1,'Enable STS?','checkbox','',80,'0',1),(79,'STS_TTL','600','text','The Time to Live (maxage) of the STS header expressed in minutes.',NULL,'network',1,'STS Time out','int','',90,'600',1),(80,'MAINTENANCE_ALERTS_FOR_VIEW_USERS','0','checkbox','Email maintenance alerts for users with view permissions to effected Displays.',NULL,'displays',1,'Maintenance Alerts for Users','checkbox','',60,'0',1),(81,'CALENDAR_TYPE','Gregorian','dropdown','Which Calendar Type should the CMS use?','Gregorian|Jalali','regional',1,'Calendar Type','string','',50,'Gregorian',1),(82,'DASHBOARD_LATEST_NEWS_ENABLED','1','checkbox','Should the Dashboard show latest news? The address is provided by the theme.','','general',1,'Enable Latest News?','checkbox','',110,'1',1),(83,'LIBRARY_MEDIA_DELETEOLDVER_CHECKB','Unchecked','dropdown','Default the checkbox for Deleting Old Version of media when a new file is being uploaded to the library.','Checked|Unchecked','defaults',1,'Default for \"Delete old version of Media\" checkbox. Showen when Editing Library Media.','dropdown','',50,'Unchecked',1),(84,'USE_INTL_DATEFORMAT','0','checkbox','Should dates be internationalised where possible.','','regional',1,'Show international dates?','checkbox','',60,'0',1),(85,'PROXY_EXCEPTIONS','','text','Hosts and Keywords that should not be loaded via the Proxy Specified. These should be comma separated.','','network',1,'Proxy Exceptions','text','',32,'',1);
 /*!40000 ALTER TABLE `setting` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1367,12 +1513,13 @@ CREATE TABLE `stat` (
   `statDate` datetime NOT NULL COMMENT 'State entry date',
   `scheduleID` int(8) NOT NULL,
   `displayID` int(4) NOT NULL,
-  `layoutID` int(8) NOT NULL,
+  `layoutID` int(8) DEFAULT NULL,
   `mediaID` varchar(50) DEFAULT NULL,
   `start` datetime NOT NULL,
-  `end` datetime NOT NULL,
+  `end` datetime DEFAULT NULL,
   `Tag` varchar(254) DEFAULT NULL,
-  PRIMARY KEY (`statID`)
+  PRIMARY KEY (`statID`),
+  KEY `statDate` (`statDate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1386,38 +1533,27 @@ LOCK TABLES `stat` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `template`
+-- Table structure for table `tag`
 --
 
-DROP TABLE IF EXISTS `template`;
+DROP TABLE IF EXISTS `tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `template` (
-  `templateID` int(11) NOT NULL AUTO_INCREMENT,
-  `template` varchar(50) NOT NULL,
-  `xml` text NOT NULL,
-  `userID` int(11) NOT NULL,
-  `createdDT` datetime NOT NULL,
-  `modifiedDT` datetime NOT NULL,
-  `description` varchar(254) DEFAULT NULL,
-  `tags` varchar(254) DEFAULT NULL,
-  `thumbnail` varchar(100) DEFAULT NULL,
-  `isSystem` tinyint(4) NOT NULL DEFAULT '0',
-  `retired` tinyint(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`templateID`),
-  KEY `userID` (`userID`),
-  CONSTRAINT `template_ibfk_3` FOREIGN KEY (`userID`) REFERENCES `user` (`UserID`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='Templates for use on Layouts';
+CREATE TABLE `tag` (
+  `tagId` int(11) NOT NULL AUTO_INCREMENT,
+  `tag` varchar(50) NOT NULL,
+  PRIMARY KEY (`tagId`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `template`
+-- Dumping data for table `tag`
 --
 
-LOCK TABLES `template` WRITE;
-/*!40000 ALTER TABLE `template` DISABLE KEYS */;
-INSERT INTO `template` VALUES (1,'Full Screen 16:9','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"800\" height=\"450\" bgcolor=\"#000000\"><region id=\"47ff29524ce1b\" width=\"800\" height=\"450\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','fullscreen',NULL,1,0),(2,'Full Screen 16:10','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"800\" height=\"500\" bgcolor=\"#000000\"><region id=\"47ff29524ce1b\" width=\"800\" height=\"500\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','fullscreen',NULL,1,0),(3,'Full Screen 4:3','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"800\" height=\"600\" bgcolor=\"#000000\"><region id=\"47ff29524ce1b\" width=\"800\" height=\"600\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','fullscreen',NULL,1,0),(4,'Full Screen 3:2','<?xml version=\"1.0\"?>\n<layout schemaVersion=\"1\" width=\"720\" height=\"480\" bgcolor=\"#000000\"><region id=\"47ff29524ce1b\" width=\"720\" height=\"480\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','fullscreen',NULL,1,0),(5,'Portrait - 10:16','<?xml version=\"1.0\"?>\n<layout width=\"500\" height=\"800\" bgcolor=\"#000000\" background=\"\" schemaVersion=\"1\"><region id=\"47ff2f524ae1b\" width=\"500\" height=\"800\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','',NULL,1,0),(6,'Portrait - 9:16','<?xml version=\"1.0\"?>\n<layout width=\"450\" height=\"800\" bgcolor=\"#000000\" background=\"\" schemaVersion=\"1\"><region id=\"47ff2f524be1b\" width=\"450\" height=\"800\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','',NULL,1,0),(7,'Portrait - 3:4','<?xml version=\"1.0\"?>\n<layout width=\"600\" height=\"800\" bgcolor=\"#000000\" background=\"\" schemaVersion=\"1\"><region id=\"47ff2f524ce1b\" width=\"600\" height=\"800\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','',NULL,1,0),(8,'Portrait - 2:3','<?xml version=\"1.0\"?>\n<layout width=\"480\" height=\"720\" bgcolor=\"#000000\" background=\"\" schemaVersion=\"1\"><region id=\"47ff2f524de1b\" width=\"480\" height=\"720\" top=\"0\" left=\"0\"/></layout>\n',1,'2008-01-01 01:00:00','2008-01-01 01:00:00','','',NULL,1,0);
-/*!40000 ALTER TABLE `template` ENABLE KEYS */;
+LOCK TABLES `tag` WRITE;
+/*!40000 ALTER TABLE `tag` DISABLE KEYS */;
+INSERT INTO `tag` VALUES (1,'template'),(2,'background'),(3,'thumbnail');
+/*!40000 ALTER TABLE `tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1436,7 +1572,7 @@ CREATE TABLE `transition` (
   `AvailableAsIn` tinyint(4) NOT NULL,
   `AvailableAsOut` tinyint(4) NOT NULL,
   PRIMARY KEY (`TransitionID`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1459,7 +1595,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `UserID` int(11) NOT NULL AUTO_INCREMENT,
   `usertypeid` int(8) NOT NULL,
-  `UserName` varchar(15) NOT NULL,
+  `UserName` varchar(50) NOT NULL,
   `UserPassword` varchar(128) NOT NULL,
   `loggedin` tinyint(1) NOT NULL DEFAULT '0',
   `lastaccessed` datetime DEFAULT NULL,
@@ -1467,6 +1603,7 @@ CREATE TABLE `user` (
   `homepage` varchar(254) NOT NULL DEFAULT 'dashboard.php' COMMENT 'The users homepage',
   `Retired` tinyint(4) NOT NULL DEFAULT '0',
   `CSPRNG` tinyint(4) NOT NULL DEFAULT '0',
+  `newUserWizard` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`UserID`),
   KEY `usertypeid` (`usertypeid`),
   CONSTRAINT `user_ibfk_2` FOREIGN KEY (`usertypeid`) REFERENCES `usertype` (`usertypeid`)
@@ -1479,7 +1616,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,1,'xibo_admin','sha256:1000:bHAULq9e8k0hBwZqNQZ6aVL9anCyEMp+:wDpfkLdXcDKhiI0vA2CF0bNBRbdyP2PG',1,'2014-05-23 15:46:55','info@xibo.org.uk','statusdashboard',0,1);
+INSERT INTO `user` VALUES (1,1,'xibo_admin','sha256:1000:bHAULq9e8k0hBwZqNQZ6aVL9anCyEMp+:wDpfkLdXcDKhiI0vA2CF0bNBRbdyP2PG',1,'2016-03-02 14:17:39','info@xibo.org.uk','statusdashboard',0,1,1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1519,7 +1656,7 @@ CREATE TABLE `version` (
   `XmdsVersion` smallint(6) NOT NULL,
   `XlfVersion` smallint(6) NOT NULL,
   `DBVersion` int(11) NOT NULL DEFAULT '1'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Version information';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Version information';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1528,8 +1665,40 @@ CREATE TABLE `version` (
 
 LOCK TABLES `version` WRITE;
 /*!40000 ALTER TABLE `version` DISABLE KEYS */;
-INSERT INTO `version` VALUES ('1.6.0',3,1,68);
+INSERT INTO `version` VALUES ('1.7.6',4,2,91);
 /*!40000 ALTER TABLE `version` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `xmdsnonce`
+--
+
+DROP TABLE IF EXISTS `xmdsnonce`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `xmdsnonce` (
+  `nonceId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nonce` varchar(100) NOT NULL,
+  `expiry` int(11) NOT NULL,
+  `lastUsed` int(11) DEFAULT NULL,
+  `displayId` int(11) NOT NULL,
+  `fileId` int(11) DEFAULT NULL,
+  `size` bigint(20) DEFAULT NULL,
+  `storedAs` varchar(100) DEFAULT NULL,
+  `layoutId` int(11) DEFAULT NULL,
+  `regionId` varchar(100) DEFAULT NULL,
+  `mediaId` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`nonceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `xmdsnonce`
+--
+
+LOCK TABLES `xmdsnonce` WRITE;
+/*!40000 ALTER TABLE `xmdsnonce` DISABLE KEYS */;
+/*!40000 ALTER TABLE `xmdsnonce` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -1541,4 +1710,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-23 15:47:19
+-- Dump completed on 2016-03-02 14:19:05
