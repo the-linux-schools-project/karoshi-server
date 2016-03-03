@@ -161,7 +161,7 @@ echo '<ul><li>'$"Configuring apache to run a virtual server on port 50000."'</li
 #################################
 #Restart apache
 #################################
-echo '<ul><li>'$"Restarting Apache."'</li></ul>'
+echo '<ul><li>'$"Restarting Apache"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 
