@@ -1,15 +1,10 @@
 #!/bin/bash
 #Detect if running the live cd
 
-MOUNTOUT=$(mount | head -n 1)
-case "$MOUNTOUT" in
-*aufs*) ;;
-*overlayfs*) ;;
-*unionfs*) ;;
-*)
+if [ $(mount | grep -c squashfs) = 0 ]
+then
 	exit 0
-	;;
-esac
+fi
 
 ubiquity
 exit 101
