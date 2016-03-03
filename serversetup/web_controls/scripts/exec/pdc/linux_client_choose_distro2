@@ -127,20 +127,20 @@ then
 		[ -d /home/distributions/linux_distro/$DISTROFOLDER ] && rm -f -R /home/distributions/linux_distro/$DISTROFOLDER
 		mkdir -p /home/distributions/linux_distro/$DISTROFOLDER
 		#Mount iso
-		echo "<li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li></ul>"
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Mounting iso""</li></ul>"
 		mount /home/distributions/linux_iso/"$DISTROCHOICE" /media/iso.$$ -o loop
 		#Copy files
-		echo "<li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li>"
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Copying files out of the iso image""</li></ul>"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		cp -v -a /media/iso.$$/* /home/distributions/linux_distro/$DISTROFOLDER
 		cp -v -a -f -R /media/iso.$$/.disk /home/distributions/linux_distro/$DISTROFOLDER
 		echo "</pre>"
 		#Unmount iso
-		echo "<li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li></ul>"
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Unmounting iso""</li></ul>"
 		umount /media/iso.$$
 		rm -f -R /media/iso.$$
 		#Copy out files
-		echo "<li>"$DISTRIBUTIONSERVER - $"Copying out files""</li>"
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Copying out files""</li></ul>"
 
 		[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
 		mkdir -p /home/tftpboot/images/$DISTROFOLDER/
@@ -195,7 +195,7 @@ then
 		fi
 
 		#Restart nfs server
-		echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -208,7 +208,7 @@ then
 		[ ! -d /home/distributions/linux_iso ] && mkdir -p /home/distributions/linux_iso
 		[ -f /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
 		'
-		echo '<br><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li></ul>'
+		echo '<ul><li>'$HOSTNAME' - '$DISTRIBUTIONSERVER' - '$"Copying iso"'</li></ul>'
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		rsync -avL /home/distributions/linux_iso/"$DISTROCHOICE" root@$DISTRIBUTIONSERVER:"/home/distributions/linux_iso/" 2>&1
 
@@ -218,16 +218,16 @@ then
 		[ -d /home/distributions/linux_distro/'$DISTROFOLDER' ] && rm -f -R /home/distributions/linux_distro/'$DISTROFOLDER'
 		mkdir -p /home/distributions/linux_distro/'$DISTROFOLDER'
 		#Mount iso
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li></ul>"
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Mounting iso"'"</li></ul>"
 		mount /home/distributions/linux_iso/"'$DISTROCHOICE'" /media/iso.'$$' -o loop
 		#Copy files
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li>"
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Copying files out of the iso image"'"</li></ul>"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		cp -v -a /media/iso.'$$'/* /home/distributions/linux_distro/'$DISTROFOLDER'
 		cp -v -a -f -R /media/iso.'$$'/.disk /home/distributions/linux_distro/'$DISTROFOLDER'
 		echo "</pre>"
 		#Unmount iso
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li></ul>"
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Unmounting iso"'"</li></ul>"
 		umount /media/iso.'$$'
 		rm -f -R /media/iso.'$$'
 		#Copy out files
@@ -282,7 +282,7 @@ then
 		fi
 
 		#Restart nfs server
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
 		source /opt/karoshi/serversetup/variables/distro
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
@@ -296,72 +296,70 @@ fi
 
 if [ $CONTROL = delete ]
 then
-#Delete iso from itadmin
-#[ -e /home/itadminshare/distributions/linux/"$DISTROCHOICE" ] && rm -f /home/itadminshare/distributions/linux/"$DISTROCHOICE"
-#Delete symlink
-[ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
+	#Delete iso from itadmin
+	#[ -e /home/itadminshare/distributions/linux/"$DISTROCHOICE" ] && rm -f /home/itadminshare/distributions/linux/"$DISTROCHOICE"
+	#Delete symlink
+	[ -e /home/distributions/linux_iso/"$DISTROCHOICE" ] && rm -f /home/distributions/linux_iso/"$DISTROCHOICE"
 
-if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
-then
-[ -d /home/tftpboot/images/"$DISTROFOLDER"/ ] && rm -f -R /home/tftpboot/images/"$DISTROFOLDER"/
-[ -e /home/tftpboot/menus/"$DISTROFOLDER" ] && rm -f /home/tftpboot/menus/"$DISTROFOLDER"
-[ -d /home/distributions/linux_distro/"$DISTROFOLDER" ] && rm -f -R /home/distributions/linux_distro/"$DISTROFOLDER"
+	if [ $DISTRIBUTIONSERVER = `hostname-fqdn` ]
+	then
+		[ -d /home/tftpboot/images/"$DISTROFOLDER"/ ] && rm -f -R /home/tftpboot/images/"$DISTROFOLDER"/
+		[ -e /home/tftpboot/menus/"$DISTROFOLDER" ] && rm -f /home/tftpboot/menus/"$DISTROFOLDER"
+		[ -d /home/distributions/linux_distro/"$DISTROFOLDER" ] && rm -f -R /home/distributions/linux_distro/"$DISTROFOLDER"
 
-TIMEOUT=10
-[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+		TIMEOUT=10
+		[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
-[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
-then
-	for MENUITEMS in /home/tftpboot/menus/*
-	do
-		MENUITEM=`basename $MENUITEMS`
-		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-		echo >> /home/tftpboot/imagelist.cfg
-	done
-fi
+		[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+		if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
+		then
+			for MENUITEMS in /home/tftpboot/menus/*
+			do
+				MENUITEM=`basename $MENUITEMS`
+				cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+				echo >> /home/tftpboot/imagelist.cfg
+			done
+		fi
 
-#Restart nfs server
-echo "<li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
-source /opt/karoshi/serversetup/variables/distro
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
-echo "</pre>"
+		#Restart nfs server
+		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Restarting NFS Server""</li></ul>"
+		source /opt/karoshi/serversetup/variables/distro
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		echo "</pre>"
+	else
+		ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
+		[ -e /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
+		[ -d /home/tftpboot/images/"'$DISTROFOLDER'"/ ] && rm -f -R /home/tftpboot/images/"'$DISTROFOLDER'"/
+		[ -e /home/tftpboot/menus/"'$DISTROFOLDER'" ] && rm -f  /home/tftpboot/menus/"'$DISTROFOLDER'"
+		[ -d /home/distributions/linux_distro/"'$DISTROFOLDER'" ] && rm -f -R /home/distributions/linux_distro/"'$DISTROFOLDER'"
 
-else
-ssh -x -o PasswordAuthentication=no $DISTRIBUTIONSERVER '
-[ -e /home/distributions/linux_iso/"'$DISTROCHOICE'" ] && rm -f /home/distributions/linux_iso/"'$DISTROCHOICE'"
-[ -d /home/tftpboot/images/"'$DISTROFOLDER'"/ ] && rm -f -R /home/tftpboot/images/"'$DISTROFOLDER'"/
-[ -e /home/tftpboot/menus/"'$DISTROFOLDER'" ] && rm -f  /home/tftpboot/menus/"'$DISTROFOLDER'"
-[ -d /home/distributions/linux_distro/"'$DISTROFOLDER'" ] && rm -f -R /home/distributions/linux_distro/"'$DISTROFOLDER'"
+		TIMEOUT=10
+		[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
 
-TIMEOUT=10
-[ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 1 ] && TIMEOUT=200
+		[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
+		if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
+		then
+			for MENUITEMS in /home/tftpboot/menus/*
+			do
+				MENUITEM=`basename $MENUITEMS`
+				cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
+				echo >> /home/tftpboot/imagelist.cfg
+			done
+		fi
 
-[ -f /home/tftpboot/imagelist.cfg ] && rm -f /home/tftpboot/imagelist.cfg
-if [ `ls -1 /home/tftpboot/menus/ | wc -l` -gt 0 ]
-then
-	for MENUITEMS in /home/tftpboot/menus/*
-	do
-		MENUITEM=`basename $MENUITEMS`
-		cat /home/tftpboot/menus/$MENUITEM >> /home/tftpboot/imagelist.cfg
-		echo >> /home/tftpboot/imagelist.cfg
-	done
-fi
-
-#Restart nfs server
-echo "<li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
-source /opt/karoshi/serversetup/variables/distro
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
-echo "</pre>"
-'
-fi
-
+		#Restart nfs server
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Restarting NFS Server"'"</li></ul>"
+		source /opt/karoshi/serversetup/variables/distro
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start
+		echo "</pre>"
+		'
+	fi
 fi
 
 exit
