@@ -1,6 +1,6 @@
-#  ubuntu-gnome-logo.script - boot splash plugin
+#  ubuntu-logo.script - boot splash plugin
 # 
-#  Copyright (C) 2013 Canonical Ltd.
+#  Copyright (C) 2009 Canonical Ltd.
 # 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,35 +18,32 @@
 #  02111-1307, USA.
 # 
 #  Written by: Alberto Milone <alberto.milone@canonical.com>
-#  Adapted to Ubuntu GNOME by: Alfredo Hernández <aldomann.designs@gmail.com>
 #
 #  Based on the example provided with the "script plugin" written by:
 #              Charlie Brej   <cbrej@cs.man.ac.uk>
-#
-#  Question stuff written by: Markus Waas <mail@markuswaas.de>
-#
+# 
 
-# Set the text colour in (RGB / 256)
-text_colour.red = 1.0;
-text_colour.green = 1.0;
-text_colour.blue = 1.0;
+# Set the text colour in (rgb / 256)
+text_colour.red = 0.0;
+text_colour.green = 0.0;
+text_colour.blue = 0.0;
 
-# Tinted text #ffffff
-tinted_text_colour.red = 1.0;
-tinted_text_colour.green = 1.0;
-tinted_text_colour.blue = 1.0;
+# Tinted text #988592
+tinted_text_colour.red = 0.0;
+tinted_text_colour.green = 0.0;
+tinted_text_colour.blue = 0.0;
 
-# Action Text - #ffffff
-action_text_colour.red = 1.0;
-action_text_colour.green = 1.0;
-action_text_colour.blue = 1.0;
+# Action Text - #ffffff - RGB 255 255 255
+action_text_colour.red = 0.0;
+action_text_colour.green = 0.0;
+action_text_colour.blue = 0.0;
 
-# Blue - #0087ed
+# Orange - #ff4012 - RGB 255 64 18
 debugsprite = Sprite();
 debugsprite_bottom = Sprite();
 debugsprite_medium = Sprite();
 
-# Are we currently prompting for a password?
+# are we currently prompting for a password?
 prompt_active = 0;
 
 # General purpose function to create text
@@ -90,7 +87,7 @@ fun TextYOffset() {
     local.min_height;
 
     # Put the 1st line below the logo + some spacing 
-    y = logo.y + logo.height + (progress_indicator.bullet_height * 7); # + logo_spacing;
+    y = logo.y + logo.height + (progress_indicator.bullet_height * 7 ); # + logo_spacing;
 
     text_height = first_line_height * 7.5;
 
@@ -160,45 +157,26 @@ fun StringToInteger (str) {
     return int;
 }
 
-
-
-#--------------------------------------Background functions --------------------------
-noise.image = Image ("noise-texture.png");
-
-fun draw_bg () {
-    noise.i = 0;
-    noise.j = 0;
-
-    while (noise.j*256 < Window.GetHeight ()) {
-        while (noise.i*256 < Window.GetWidth ()) {
-            noise.sprite[noise.i][noise.j] = Sprite ();
-            noise.sprite[noise.i][noise.j].SetImage (noise.image);
-            noise.sprite[noise.i][noise.j].SetX (noise.i*256);
-            noise.sprite[noise.i][noise.j].SetY (noise.j*256);
-            noise.i++;
-        }
-        noise.i = 0;
-        noise.j++;
-    }
-}
-
-Window.SetBackgroundTopColor (0, 0, 0);     # Nice colour on top of the screen fading to
-Window.SetBackgroundBottomColor (0, 0, 0);  # an equally nice colour on the bottom
-
 #-----------------------------------------------------------------------------
+# Previous background colour
+# #300a24 --> 0.19, 0.04, 0.14
+# New background colour
+# #2c001e --> 0.16, 0.00, 0.12
+#
+Window.SetBackgroundTopColor (0.156, 0.156, 0.156);     # Nice colour on top of the screen fading to
+Window.SetBackgroundBottomColor (0.00, 0.00, 0.00);  # an equally nice colour on the bottom
+
 bits_per_pixel = Window.GetBitsPerPixel ();
 if (bits_per_pixel == 4) {
     logo_filename = "karoshi_logo16.png";
     progress_dot_off_filename = "progress_dot_off16.png";
     progress_dot_on_filename = "progress_dot_on16.png";
     password_field_filename = "password_field16.png";
-    question_field_filename = "password_field16.png";
 } else {
     logo_filename = "karoshi_logo.png";
     progress_dot_off_filename = "progress_dot_off.png";
     progress_dot_on_filename = "progress_dot_on.png";
     password_field_filename = "password_field.png";
-    question_field_filename = "password_field.png";
 }
 
 logo.image = Image (logo_filename);
@@ -207,15 +185,12 @@ logo.sprite.SetImage (logo.image);
 logo.width = logo.image.GetWidth ();
 logo.height = logo.image.GetHeight ();
 logo.x = Window.GetX () + Window.GetWidth () / 2 - logo.width  / 2;
-#logo.y = Window.GetY () + Window.GetHeight () / 2 - logo.height;
-logo.y = Window.GetY () + Window.GetHeight () - logo.height;
-
+logo.y = Window.GetY () + Window.GetHeight () / 2 - logo.height;
 logo.z = 1000;
 logo.sprite.SetX (logo.x);
 logo.sprite.SetY (logo.y);
 logo.sprite.SetZ (logo.z);
 logo.sprite.SetOpacity (1);
-draw_bg ();
 
 # Spacing below the logo - in pixels
 logo_spacing = logo.height * 4;
@@ -230,12 +205,10 @@ progress_indicator.bullet_off = Image (progress_dot_off_filename);
 progress_indicator.bullet_on = Image (progress_dot_on_filename);
 progress_indicator.bullet_width = progress_indicator.bullet_off.GetWidth ();
 progress_indicator.bullet_height = progress_indicator.bullet_off.GetHeight ();
-progress_indicator.bullet_hspacing = progress_indicator.bullet_width * 1.35;
-progress_indicator.width = progress_indicator.bullet_width * 3.6;
+progress_indicator.bullet_hspacing = progress_indicator.bullet_width * 1.1;
+progress_indicator.width = progress_indicator.bullet_width * 5;
 progress_indicator.height = progress_indicator.bullet_height;
-#progress_indicator.y = logo.y + logo.height + (logo.height / 3);
-progress_indicator.y = Window.GetY () + Window.GetHeight () / 2;
-
+progress_indicator.y = logo.y + logo.height + (logo.height / 4);
 progress_indicator.x = Window.GetX () + Window.GetWidth () / 2 - progress_indicator.width / 2; # logo.x + 26;
 
 # use a fixed string with ascending and descending stems to calibrate the
@@ -267,7 +240,7 @@ fun set_progress_indicator () {
     # together with some spacing
     local.x = progress_indicator.x;
     
-    for (index = 0; index <= 2; index++) {
+    for (index = 0; index <= 4; index++) {
         # Set the "off" bullets
         progress_indicator.bullets_off[index].sprite = Sprite (progress_indicator.bullet_off);
         progress_indicator.bullets_off[index].sprite.SetPosition (local.x, progress_indicator.y, 1000);
@@ -346,7 +319,7 @@ fun animate_progress_indicator (progress, time) {
 #    Debug ("progress = " + progress + ", time = " + time + " times switched = " + global.times_bullets_switched + " on_off " + global.on_off);
 
 #    if (global.times_bullets_switched == NULL)
-#        global.times_bullets_switched = 3;
+#        global.times_bullets_switched = 5;
 
 #    if (global.on_off == NULL)
 #        global.on_off = 0;
@@ -354,7 +327,7 @@ fun animate_progress_indicator (progress, time) {
     if ((progress - global.progress_time) >= 1.0) {
         global.progress_time = progress;
         
-        if (global.times_bullets_switched == 3) {
+        if (global.times_bullets_switched == 5) {
             # Change which bullets are switched on
             # and which ones are switched off
             global.on_off = !global.on_off;
@@ -415,7 +388,7 @@ fun get_message_label (label, is_fake, is_action_line) {
         message_label.y = local.fsck_label.y + (first_line_height * 2);
     }
 
-    # Debug("action label x = " + message_label.x + " y = " + message_label.y);
+    # Debug("action label x = " + message_label.x + " y = " + message_label.y );
 
 #    message_debug = "msg_x = " + message_label.x + " msg_y = " + message_label.y +
 #                    "msg_width = " + message_label.width + " msg_height = " +
@@ -510,6 +483,12 @@ fun message_callback (message)
     if (keys != NULL)
         message = StringCopy (message, keys + StringLength(local.substring), NULL);
 
+    # Get the message without the "fsckd-cancel-msg" prefix as we don't support i18n
+    substring = "fsckd-cancel-msg:";
+    keys = StringString(message, substring);
+    if (keys != NULL)
+        message = StringCopy(message, keys + StringLength(substring), NULL);
+
     local.label.is_fake = is_fake;
     label = get_message_label(message, is_fake, is_action_line);
     label.z = 10000;
@@ -596,23 +575,23 @@ fun display_password_callback (prompt, bullets) {
                password_dialogue.entry.image.GetHeight () / 2 -
                password_dialogue.bullet_image.GetHeight () / 2;
     margin = bullet_width;
-    spaces = Math.Int( (password_dialogue.entry.image.GetWidth () - (margin * 2) ) / (2 * bullet_width / 3) );
+    spaces = Math.Int( (password_dialogue.entry.image.GetWidth () - (margin * 2)) / (bullet_width / 2 ) );
     #Debug ("spaces = " + spaces + ", bullets = " + bullets);
-    bullets_area.width = margin + spaces * (2 * bullet_width / 3);
+    bullets_area.width = margin + spaces * (bullet_width / 2);
     bullets_area.x = Window.GetX () + Window.GetWidth () / 2 - bullets_area.width / 2;
     #DebugBottom ("pwd_entry x = " + password_dialogue.entry.x + ", bullets_area.x = " + bullets_area.x + ", bullets_area.width = " + bullets_area.width);
     if (bullets > spaces)
         bullets = spaces;
-    for (index = 0; password_dialogue.bullets[index] || index < spaces ; index++){
+    for (index = 0; password_dialogue.bullets[index] || index < bullets; index++){
         if (!password_dialogue.bullets[index]) {
             password_dialogue.bullets[index].sprite = Sprite ();
             password_dialogue.bullets[index].sprite.SetImage (password_dialogue.bullet_image);
             password_dialogue.bullets[index].x = bullets_area.x + # password_dialogue.entry.x + margin +
-                                                 index * (2 * bullet_width / 3) ;
+                                                 index * bullet_width / 2;
             password_dialogue.bullets[index].sprite.SetX (password_dialogue.bullets[index].x);
             password_dialogue.bullets[index].y = bullet_y;
             password_dialogue.bullets[index].sprite.SetY (password_dialogue.bullets[index].y);
-            password_dialogue.bullets[index].z = password_dialogue.entry.z + 100 - index;
+            password_dialogue.bullets[index].z = password_dialogue.entry.z + 1;
             password_dialogue.bullets[index].sprite.SetZ (password_dialogue.bullets[index].z);
         }
 
@@ -1020,81 +999,38 @@ fun update_status_callback (status) {
         
     }
 
+    # systemd-fsckd pass fsckd:<number_devices>:<progress>:<l10n_string>
+    if (update_strings[0] == "fsckd") {
+        number_devices = StringToInteger(update_strings[1]);
+
+        if (number_devices > 0) {
+            label = update_strings[3];
+
+            progress_label = get_fsck_label (label, 0);
+            progress_label.sprite = Sprite (progress_label.image);
+            progress_label.sprite.SetPosition(progress_label.x, progress_label.y, 1);
+            progress_label.sprite.SetOpacity (1);
+        } else {
+            if (progress_label.sprite)
+                progress_label.sprite.SetOpacity (0);
+        }
+    }
+
 }
 Plymouth.SetUpdateStatusFunction (update_status_callback); 
 
 #-----------------------------------------Display Question stuff -----------------------
-
-fun question_dialogue_setup (message_label, text_image) {
-    #Debug("Question dialog setup");
-    
-    local.field;
-    local.content;
-    local.margin;
-    
-    field.image = Image (question_field_filename);
-    content = Sprite ();    
-    bullet_image = Image (progress_dot_off_filename);
-    margin = bullet_image.GetWidth() / 2;
-    
-    # Hide the normal labels
-    prompt_active = 1;
-    if (message_notification[1].sprite) hide_message (1);
-    
-    # Set the prompt label
-    label = get_message_label(message_label, 0, 1);
-    label.z = 10000;
-    
-    setup_message (message_label, label.x, label.y, label.z, 2);
-    show_message (2);
-
-    # Set up the text field which contains the contents
-    field.sprite = Sprite ();
-    field.sprite.SetImage (field.image);
-    
-    # Centre the box horizontally
-    field.x = Window.GetX () + Window.GetWidth () / 2 - field.image.GetWidth () / 2;    
-    content_x = field.x + margin;
-
-    # Put the field below the second label.
-    field.y = message_notification[2].y + label.height;
-    content_y = field.y + field.image.GetHeight () / 2 - text_image.GetHeight () / 2;
-
-    #Debug ("field x = " + field.x + ", y = " + field.y);
-    field.z = 10000;
-    field.sprite.SetX (field.x);
-    field.sprite.SetY (field.y);
-    field.sprite.SetZ (field.z);   
-    
-    #Debug ("content_x = " + content_x + " content_y = " + content_y);
-    content_z = field.z + 1;
-    content.SetPosition (content_x, content_y, content_z);
-
-    global.question_dialogue = local;
-}
-
+#
+# TODO: Implement this if needed
+#
 # The callback function is called when the display should display a question dialogue.
-# First arg is prompt string, the second is the field contents.
-fun display_question_callback (prompt, contents) {  
-    global.status = "question";
-    #Debug ("Reply: " + contents);
-
-    textImage = ImageToText(contents); 
-    if (!global.question_dialogue) {
-        question_dialogue_setup(prompt, textImage);
-    }    
-
-    margin = global.question_dialogue.margin;
-    fieldWidth = global.question_dialogue.field.image.GetWidth ();
-    for (i = 0; ( (textImage.GetWidth () + 2 * margin) > fieldWidth); i++) {        
-        textImage = ImageToText(StringCopy (contents, i, StringLength (contents)));
-    }
-     
-    global.question_dialogue.content.SetImage (textImage);   
-}
-
-
-Plymouth.SetDisplayQuestionFunction (display_question_callback); 
+# First arg is prompt string, the second is the entry contents.
+#fun display_question_callback (prompt_string, entry_contents)
+#{
+# time++;
+#}
+#
+#Plymouth.SetDisplayQuestionFunction (display_question_callback); 
 
 #-----------------------------------------Refresh stuff --------------------------------
 #
@@ -1123,14 +1059,9 @@ fun display_normal_callback ()
         if (message_notification[2].sprite) hide_message(2);
         prompt_active = 0;
     }
-    if (global.question_dialogue) {
-        question_dialogue_opacity (0);
-        global.question_dialogue = NULL;
-        if (message_notification[2].sprite) hide_message(2);
-        prompt_active = 0;
-    }
     
-    if (message_notification[1].sprite) show_message (1);    
+    if (message_notification[1].sprite) show_message (1);
+    
     
 }
 
