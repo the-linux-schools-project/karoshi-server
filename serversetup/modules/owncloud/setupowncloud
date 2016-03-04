@@ -108,8 +108,8 @@ chown -R www-data:www-data /var/www/html/owncloud/config
 if [ `grep -c "#owncloud" /etc/apache2/sites-enabled/default-ssl` = 0 ]
 then
 	#Remove last lines
-	sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
-	sed -i 's/<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
+	sed -i 's/^<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
+	sed -i 's/^<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
 
 	#Add in kerberos
 	#echo -e '	#owncloud-kerberos-support
