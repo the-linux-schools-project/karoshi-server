@@ -28,6 +28,7 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/web_controls/menusettings
 TEXTDOMAIN=karoshi-server
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME'</span> <small><small>
@@ -38,9 +39,14 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 
 <ul id="nav">
-	<li class="top"><a href="/cgi-bin/all/change_my_password_fm.cgi" class="top_link"><span>'$"All"'</span></a></li>
-	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" class="top_link"><span>'$"Staff"'</span></a></li>
-	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>'$"Technician"'</span></a></li>
+	<li class="top"><a href="/cgi-bin/all/change_my_password_fm.cgi" class="top_link"><span>'$"All"'</span></a></li>'
+
+if [ $STAFFCTRL = yes ]
+then
+	echo '<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" class="top_link"><span>'$"Staff"'</span></a></li>'
+fi
+
+echo '	<li class="top"><a href="/cgi-bin/tech/redirect.cgi" class="top_link"><span>'$"Technician"'</span></a></li>
 	<li class="top"><a href="/cgi-bin/admin/redirect.cgi" class="top_link"><span>'$"Administrator"'</span></a></li>
 </ul>
 </div>

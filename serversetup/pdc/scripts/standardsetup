@@ -4,6 +4,8 @@ source /opt/karoshi/serversetup/variables/choice
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/language
 
+INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+
 TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
@@ -71,11 +73,22 @@ function do_setup {
 
 do_setup | yad --title $"Main Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
+#Setup minidlna if this is a home server.
+if [ $INSTALL_TYPE = home ]
+then
+	/opt/karoshi/serversetup/modules/minidlna/setupminidlna
+fi
 #Add in thunderbird support
 /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/configure_thunderbird_windows
 
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+
+#Do businesses want google safesearch?
+if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = home ]
+then
+	/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
+fi
 
 #Backup essential data
 /opt/karoshi/serversetup/pdc/"useful scripts"/backup_essentials

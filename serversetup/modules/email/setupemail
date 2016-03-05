@@ -72,9 +72,9 @@ then
 fi
 
 #Install required packages for dovecot sieve
-echo "<ul><li>Installing Dovecot Sieve Support</li></ul>"
-apt-get update
-apt-get install -y dovecot-managesieved dovecot-sieve pyzor razor
+#echo "<ul><li>Installing Dovecot Sieve Support</li></ul>"
+#apt-get update
+#apt-get install -y dovecot-managesieved dovecot-sieve pyzor razor
 
 [ ! -d /opt/karoshi/.tempdata ] && mkdir /opt/karoshi/.tempdata
 [ ! -d /var/www/html ] && mkdir -p /var/www/html

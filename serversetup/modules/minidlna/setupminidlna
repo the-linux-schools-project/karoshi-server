@@ -1,0 +1,61 @@
+#!/bin/bash
+#setupwebsite
+#Copyright (C) 2016  Paul Sharrad
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jharris@karoshi.org.uk
+#
+#Website: http://www.karoshi.org.uk
+
+[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
+[ -d /var/www/html ] || mkdir -p /var/www/html
+[ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Edit minidlna.conf
+sed -i 's%/var/lib/minidlna%/home/multimedia%g' /etc/minidlna.conf
+
+#Add the minidlna user to the multimedia group
+
+#Start minidlna
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/minidlna_start
+
+#Set minidlna to start on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/minidlna
+
+#Create flag file for minidlna server
+echo $"MiniDlna Server""<br>" > /opt/karoshi/server_network/servers/$(hostname-fqdn)/minidlnaserver
+
+#####################################
+#Ensure that minidlna ports are open in shorewall
+#####################################
+
+if [ $(grep -c -w "#minidlnarule /etc/shorewall/rules") = 0 ]
+then
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'minidlnarule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+exit
+
+

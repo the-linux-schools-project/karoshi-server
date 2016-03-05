@@ -297,7 +297,7 @@ echo `date`: "Provisioning samba4" >> /opt/karoshi/serversetup/install_log
 echo Provisioning samba 4
 #Delete smb.conf it exists
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
-echo `date`: Realm: $$REALM Domain: $SAMBADOMAIN >> /opt/karoshi/serversetup/install_log
+echo `date`: Realm: $REALM Domain: $SAMBADOMAIN >> /opt/karoshi/serversetup/install_log
 samba-tool domain provision --use-rfc2307 --realm=$REALM --domain=$SAMBADOMAIN --adminpass=''$SAMBAROOTPASSWORD1'' --server-role=dc 2>&1 | tee /opt/karoshi/server_network/domain_information/provisioning_info
 }
 
@@ -708,7 +708,7 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 function creategpos {
 #Create GPO
-echo `date`: "Addding gpo: $LDAPPATH $GPOREF" >> /opt/karoshi/serversetup/install_log
+echo `date`: "Adding gpo: $LDAPPATH $GPOREF" >> /opt/karoshi/serversetup/install_log
 GPOINFO=`samba-tool gpo create ''"$DESC"' Group Policy' --username=Administrator --password=$LDAPPASS`
 echo gpoinfo: $GPOINFO
 GPOREF=`echo "$GPOINFO" | cut -d"{" -f2 | sed 's/^/{/g'`
@@ -725,6 +725,7 @@ DESC="People"
 LDAPPATH="OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
+
 #All subcontainers for People
 
 NAME="personnel"
@@ -756,6 +757,33 @@ DESC="Technician users"
 LDAPPATH="OU=tech,OU=personnel,OU=People,$LDAPBASE"
 add_organisational_unit
 creategpos
+
+if [ "$INSTALL_TYPE" = home ]
+then
+	NAME="family"
+	DESC="Family"
+	LDAPPATH="OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="adults"
+	DESC="Adults"
+	LDAPPATH="OU=adults,OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="teenagers"
+	DESC="Teenagers"
+	LDAPPATH="OU=teenagers,OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="Children"
+	DESC="Children"
+	LDAPPATH="OU=children,OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+fi
 
 
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
@@ -866,11 +894,50 @@ then
 	echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
 
 	#Make Groups
+	if [ "$INSTALL_TYPE" != home ]
+	then
+		echo -e ''$"Adding group"' staff'
+		NEWGROUP=staff
+		NEWGROUPDISP=Staff
+		add_samba4_group
 
-	echo -e ''$"Adding group"' staff'
-	NEWGROUP=staff
-	NEWGROUPDISP=Staff
-	add_samba4_group
+		echo -e ''$"Adding group"' officestaff'
+		NEWGROUP=officestaff
+		NEWGROUPDISP="Office Staff"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' bursar'
+		NEWGROUP=bursar
+		NEWGROUPDISP="Bursars"
+		add_samba4_group
+
+		echo "$"Adding group" tech"
+		NEWGROUP=tech
+		NEWGROUPDISP="Tech Users"
+		add_samba4_group
+
+	else
+		echo -e ''$"Adding group"' adults'
+		NEWGROUP=adults
+		NEWGROUPDISP="Adults"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' teenagers'
+		NEWGROUP=teenagers
+		NEWGROUPDISP="Teenagers"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' children'
+		NEWGROUP=children
+		NEWGROUPDISP="Children"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' multimedia'
+		NEWGROUP=multimedia
+		NEWGROUPDISP="Multimedia"
+		add_samba4_group
+	
+	fi
 
 	echo -e ''$"Adding group"' guestusers'
 	NEWGROUP=guestusers
@@ -882,25 +949,11 @@ then
 	NEWGROUPDISP="Itadmin Users"
 	add_samba4_group
 
-	echo "$"Adding group" tech"
-	NEWGROUP=tech
-	NEWGROUPDISP="Tech Users"
-	add_samba4_group
-
-	echo -e ''$"Adding group"' officestaff'
-	NEWGROUP=officestaff
-	NEWGROUPDISP="Office Staff"
-	add_samba4_group
-
-	echo -e ''$"Adding group"' bursar'
-	NEWGROUP=bursar
-	NEWGROUPDISP="Bursars"
-	add_samba4_group
-
 	echo -e ''$"Adding group"' profilemanagement'
 	NEWGROUP=profilemanagement
 	NEWGROUPDISP="Profile Management"
 	add_samba4_group
+
 
 	#Add education groups
 	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
@@ -954,6 +1007,15 @@ chown root.root /home
 chmod 0755 /home/users
 chown root.root /home/users
 
+#Add multimedia area for home use
+if [ "$INSTALL_TYPE" = home ]
+then
+	[ -d /home/multimedia ] || mkdir /home/multimedia
+	chmod 0770 /home/multimedia
+	chown root.multimedia /home/multimedia
+	chown .multimedia -R /home/multimedia
+fi
+
 #Add education home areas
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
@@ -1001,22 +1063,6 @@ then
 	done
 fi
 
-#Staff users home areas
-[ -d /home/users/staff ] || mkdir /home/users/staff
-chmod 0750 /home/users/staff
-chown root.staff /home/users/staff
-chown .staff -R /home/users/staff
-
-#Office staff users home area
-[ -d /home/users/officestaff ] || mkdir /home/users/officestaff
-chmod 0750 /home/users/officestaff
-chown root.officestaff /home/users/officestaff
-chown .officestaff -R /home/users/officestaff
-#Tech staff users home area
-[ -d /home/users/techstaff ] || mkdir /home/users/techstaff
-chmod 0750 /home/users/techstaff
-chown root.tech /home/users/techstaff
-chown .tech -R /home/users/techstaff
 #Itadmin staff users home area
 [ -d /home/users/itadminstaff ] || mkdir /home/users/itadminstaff
 chmod 0750 /home/users/itadminstaff
@@ -1057,9 +1103,6 @@ then
 	chown root.itadmin -R /home/applications
 fi
 
-#Subjects area
-echo `date`: "Creating subjects area" >> /opt/karoshi/serversetup/install_log
-
 #Add education home areas
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
@@ -1079,59 +1122,65 @@ chmod u+X,g+X,o+X -R  /home/subjects
 chown root.itadmin -R /home/subjects
 fi
 
-#Staffshare area
-echo `date`: "Creating staffshare area" >> /opt/karoshi/serversetup/install_log
-echo $"Creating" staffshare
-[ -d /home/staffshare ] || mkdir /home/staffshare
+if [ "$INSTALL_TYPE" != home ]
+then 
+	#Staffshare area
+	echo `date`: "Creating staffshare area" >> /opt/karoshi/serversetup/install_log
+	echo $"Creating" staffshare
+	[ -d /home/staffshare ] || mkdir /home/staffshare
 
-#Add education home areas
-if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
-then
-	[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
-	[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
-	[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
-	[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
-	[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
-	[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
-	[ -d /home/staffshare/careers ] || mkdir /home/staffshare/careers
-	[ -d /home/staffshare/childcare ] || mkdir /home/staffshare/childcare
-	[ -d /home/staffshare/citizenship ] || mkdir /home/staffshare/citizenship
-	[ -d /home/staffshare/drama ] || mkdir /home/staffshare/drama
-	[ -d /home/staffshare/english ] || mkdir /home/staffshare/english
-	[ -d /home/staffshare/french ] || mkdir /home/staffshare/french
-	[ -d /home/staffshare/geography ] || mkdir /home/staffshare/geography
-	[ -d /home/staffshare/german ] || mkdir /home/staffshare/german
-	[ -d /home/staffshare/"health and social care" ] || mkdir /home/staffshare/"health and social care"
-	[ -d /home/staffshare/history ] || mkdir /home/staffshare/history
-	[ -d /home/staffshare/ict ] || mkdir /home/staffshare/ict
-	[ -d /home/staffshare/"leisure and tourism" ] || mkdir /home/staffshare/"leisure and tourism"
-	[ -d /home/staffshare/literacy ] || mkdir /home/staffshare/literacy
-	[ -d /home/staffshare/mathematics ] || mkdir /home/staffshare/mathematics
-	[ -d /home/staffshare/"media studies" ] || mkdir /home/staffshare/"media studies"
-	[ -d /home/staffshare/music ] || mkdir /home/staffshare/music
-	[ -d /home/staffshare/olc ] || mkdir /home/staffshare/olc
-	[ -d /home/staffshare/"physical education" ] || mkdir /home/staffshare/"physical education"
-	[ -d /home/staffshare/science ] || mkdir /home/staffshare/science
-	[ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
-	[ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
-	[ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
-	fi
+	#Add education home areas
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
+	then
+		[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
+		[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
+		[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
+		[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
+		[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
+		[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
+		[ -d /home/staffshare/careers ] || mkdir /home/staffshare/careers
+		[ -d /home/staffshare/childcare ] || mkdir /home/staffshare/childcare
+		[ -d /home/staffshare/citizenship ] || mkdir /home/staffshare/citizenship
+		[ -d /home/staffshare/drama ] || mkdir /home/staffshare/drama
+		[ -d /home/staffshare/english ] || mkdir /home/staffshare/english
+		[ -d /home/staffshare/french ] || mkdir /home/staffshare/french
+		[ -d /home/staffshare/geography ] || mkdir /home/staffshare/geography
+		[ -d /home/staffshare/german ] || mkdir /home/staffshare/german
+		[ -d /home/staffshare/"health and social care" ] || mkdir /home/staffshare/"health and social care"
+		[ -d /home/staffshare/history ] || mkdir /home/staffshare/history
+		[ -d /home/staffshare/ict ] || mkdir /home/staffshare/ict
+		[ -d /home/staffshare/"leisure and tourism" ] || mkdir /home/staffshare/"leisure and tourism"
+		[ -d /home/staffshare/literacy ] || mkdir /home/staffshare/literacy
+		[ -d /home/staffshare/mathematics ] || mkdir /home/staffshare/mathematics
+		[ -d /home/staffshare/"media studies" ] || mkdir /home/staffshare/"media studies"
+		[ -d /home/staffshare/music ] || mkdir /home/staffshare/music
+		[ -d /home/staffshare/olc ] || mkdir /home/staffshare/olc
+		[ -d /home/staffshare/"physical education" ] || mkdir /home/staffshare/"physical education"
+		[ -d /home/staffshare/science ] || mkdir /home/staffshare/science
+		[ -d /home/staffshare/spanish ] || mkdir /home/staffshare/spanish
+		[ -d /home/staffshare/welsh ] || mkdir /home/staffshare/welsh
+		[ -d /home/staffshare/technology ] || mkdir /home/staffshare/technology
+		fi
 
-chmod 2660 -R /home/staffshare
-chmod u+X,g+X /home/staffshare
-chown -R root.itadmin /home/staffshare
+	chmod 2660 -R /home/staffshare
+	chmod u+X,g+X /home/staffshare
+	chown -R root.itadmin /home/staffshare
+fi
 
+if [ "$INSTALL_TYPE" != home ]
+then 
 #Officeshare area
-echo `date`: "Creating officeshare area" >> /opt/karoshi/serversetup/install_log
-echo $"Creating" officeshare
-[ -d /home/officeshare ] || mkdir /home/officeshare
-[ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
-[ -d /home/officeshare/bursar ] || mkdir /home/officeshare/bursar
+	echo `date`: "Creating officeshare area" >> /opt/karoshi/serversetup/install_log
+	echo $"Creating" officeshare
+	[ -d /home/officeshare ] || mkdir /home/officeshare
+	[ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
+	[ -d /home/officeshare/bursar ] || mkdir /home/officeshare/bursar
 
-chmod 2660 -R /home/officeshare
-chmod u+X,g+X -R /home/officeshare
-chown -R root.officestaff /home/officeshare
-chown root.bursar -R /home/officeshare/bursar
+	chmod 2660 -R /home/officeshare
+	chmod u+X,g+X -R /home/officeshare
+	chown -R root.officestaff /home/officeshare
+	chown root.bursar -R /home/officeshare/bursar
+fi
 #Itadminshare area
 echo `date`: "Creating itadminshare area" >> /opt/karoshi/serversetup/install_log
 echo $"Creating" itadminshare
@@ -1246,18 +1295,38 @@ then
 	SECONDARYGROUP=""
 	make_primary_group_info
 
-	PRIMARY_GROUP=staff
-	SUBUNIT=personnel
-	HOMEPATH=/home/users/staff
-	SECONDARYGROUP=""
-	make_primary_group_info
+	if [ $INSTALL_TYPE != home ]
+	then
+		PRIMARY_GROUP=staff
+		SUBUNIT=personnel
+		HOMEPATH=/home/users/staff
+		SECONDARYGROUP=""
+		make_primary_group_info
 
-	PRIMARY_GROUP=officestaff
-	SUBUNIT=personnel
-	HOMEPATH=/home/users/officestaff
-	SECONDARYGROUP=staff
-	make_primary_group_info
+		PRIMARY_GROUP=officestaff
+		SUBUNIT=personnel
+		HOMEPATH=/home/users/officestaff
+		SECONDARYGROUP=staff
+		make_primary_group_info
+	else
+		PRIMARY_GROUP=adults
+		SUBUNIT=family
+		HOMEPATH=/home/users/adults
+		SECONDARYGROUP=multimedia
+		make_primary_group_info
 
+		PRIMARY_GROUP=teenagers
+		SUBUNIT=family
+		HOMEPATH=/home/users/teenagers
+		SECONDARYGROUP=multimedia
+		make_primary_group_info
+
+		PRIMARY_GROUP=children
+		SUBUNIT=family
+		HOMEPATH=/home/users/children
+		SECONDARYGROUP=multimedia
+		make_primary_group_info
+	fi
 	PRIMARY_GROUP=tech
 	SUBUNIT=personnel
 	HOMEPATH=/home/users/techstaff
@@ -1469,10 +1538,10 @@ echo `date`: "Creating user: $NEWUSERNAME" >> /opt/karoshi/serversetup/install_l
 
 if [ $NEWUSERNAME = profileuser ]
 then
-#Dont add in a profile path for profileuser - so that this account has a local profile.
-samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+	#Dont add in a profile path for profileuser - so that this account has a local profile.
+	samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 else
-samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+	samba-tool user add $NEWUSERNAME --userou="$SUBPATH" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\$PROFILEFOLDER --script-path="logon.bat $PRIMARYGROUP" --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$REALM 1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 fi
 
 #Add user to primary group
@@ -1482,8 +1551,8 @@ samba-tool group addmembers "$PRIMARYGROUP" $NEWUSERNAME  1>/dev/null 2>>/opt/ka
 #Add tech and itadmin users to the domain admins group
 if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
 then
-echo `date`: "Adding $NEWUSERNAME to Domain Admins" >> /opt/karoshi/serversetup/install_log
-samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
+	echo `date`: "Adding $NEWUSERNAME to Domain Admins" >> /opt/karoshi/serversetup/install_log
+	samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/serversetup/install_log
 fi
 
 PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
@@ -1520,7 +1589,6 @@ chmod u+X -R $NEWUSERPATH
 chown $NEWUSERNAME -R $NEWUSERPATH
 }
 
-
 function make_default_users {
 echo `date`: "Making default users" >> /opt/karoshi/serversetup/install_log
 #Get samba 4 database password
@@ -1547,7 +1615,10 @@ create_user
 
 #Add guest accounts
 COUNTER=1
-while [  $COUNTER -le 10 ]
+GUESTNUM=10
+[ $INSTALL_TYPE = home ] && GUESTNUM=4
+
+while [  $COUNTER -le $GUESTNUM ]
 do
 	NEWUSERNAME=guest$COUNTER
 	NEWUSERPATH=/home/users/guestusers/guest$COUNTER
@@ -1560,18 +1631,21 @@ do
 done
 
 #Add tech accounts
-COUNTER=1
-while [  $COUNTER -le 4 ]
-do
-	NEWUSERNAME=tech$COUNTER
-	NEWUSERPATH=/home/users/techstaff/tech$COUNTER
-	SUBPATH='OU=tech,OU=personnel,OU=People'
-	PRIMARYGROUP=tech
-	PROFILEFOLDER=tech
-	NEWUSERDISP="Tech $COUNTER"
-	create_user
-	let COUNTER=COUNTER+1
-done
+if [ $INSTALL_TYPE != home ]
+then
+	COUNTER=1
+	while [  $COUNTER -le 4 ]
+	do
+		NEWUSERNAME=tech$COUNTER
+		NEWUSERPATH=/home/users/techstaff/tech$COUNTER
+		SUBPATH='OU=tech,OU=personnel,OU=People'
+		PRIMARYGROUP=tech
+		PROFILEFOLDER=tech
+		NEWUSERDISP="Tech $COUNTER"
+		create_user
+		let COUNTER=COUNTER+1
+	done
+fi
 
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
@@ -1750,6 +1824,11 @@ then
 	[ ! -d /opt/karoshi/server_network/network_shares ] && mkdir -p /opt/karoshi/server_network/network_shares
 	SERVERNAME=`hostname-fqdn`
 	[ ! -d /opt/karoshi/server_network/network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVERNAME
+
+	SERVERSHARES="applications subjects staffshare sysvol itadmin officeshare netlogon"
+	[ $INSTALL_TYPE = business ] && SERVERSHARES="applications staffshare sysvol itadmin officeshare netlogon"
+	[ $INSTALL_TYPE = home ] && SERVERSHARES="applications multimedia sysvol itadmin netlogon"
+
 	for SHARENAME in applications subjects staffshare sysvol itadmin officeshare netlogon
 	do
 		if [ `grep -c "$SHARENAME" /etc/samba/smb.conf` -gt 0 ]
@@ -1814,6 +1893,14 @@ then
 				MASK="0770"
 				MAP_DRIVE="1"
 			fi
+			if [ "$SHARENAME" = multimedia ]
+			then
+				NETGROUPS="multimedia"
+				SHAREPATH="/home/multimedia"
+				GROUPPERMS="7"
+				MASK="0770"
+				MAP_DRIVE="1"
+			fi
 
 			echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
@@ -1832,12 +1919,6 @@ then
 
 	#Create drive maps
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
-
-	#Do businesses want google safesearch?
-	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
-	then
-		/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add &
-	fi
 
 fi
 

@@ -315,9 +315,6 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_edi
 
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printer_accounting_view_group_usage_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/printers_control.cgi /var/www/cgi-bin_karoshi/tech/
-
-cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/reset_password_fm.cgi /var/www/cgi-bin_karoshi/tech/
-cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/reset_password.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_access_fm.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_access.cgi /var/www/cgi-bin_karoshi/tech/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/remote_management_change_password_fm.cgi /var/www/cgi-bin_karoshi/tech/
@@ -805,10 +802,20 @@ echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
 ############################
 
 EXAMCTRL=yes
+HELPDESKCTRL=yes
+STAFFCTRL=yes
 if [ -f /opt/karoshi/server_network/install_type ]
 then
 	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
-	[ $INSTALL_TYPE = business ] && EXAMCTRL=no
+	if [ $INSTALL_TYPE = business ] || [ $INSTALL_TYPE = home ]
+	then
+		EXAMCTRL=no
+	fi
+	if [ $INSTALL_TYPE = home ]
+	then
+		HELPDESKCTRL=no
+		STAFFCTRL=no
+	fi
 fi
 
 ADDUSERCTRL=yes
@@ -883,6 +890,7 @@ echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/web_controls/menusett
 echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo DISTROCTRL=$DISTROCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo EMAILCTRL=$EMAILCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo HELPDESKCTRL=$HELPDESKCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo FEDERATEDCTL=$FEDERATEDCTL >> /opt/karoshi/server_network/web_controls/menusettings
 echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/web_controls/menusettings

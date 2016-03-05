@@ -114,6 +114,8 @@ then
 	echo '<li class="top"><a href="/cgi-bin/admin/alerts.cgi" class="top_link"><span class="warnings">'$"Warning Messages"'</span></a></li>'
 fi
 
+if [ $HELPDESKCTRL = yes ]
+then
 echo '	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
@@ -121,8 +123,10 @@ echo '	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk
 			<li><a href="/cgi-bin/admin/helpdesk_view_completed_fm.cgi">'$"View Completed Requests"'</a></li>
 			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set Defaults"'</a></li>
 		</ul>
-	</li>
-	<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
+	</li>'
+fi
+
+echo 	'<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
 		<ul class="sub">'
 
 if [ $ADDUSERCTRL = yes ]

@@ -144,6 +144,7 @@ then
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,rpcbind,tftpd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,mysql,mailscanner,memcached,postfix,dovecot,sogo,clamd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/minidlna ] && DSERVICES=$DSERVICES,minidlna
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
@@ -230,7 +231,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached mon monitorix mysql nfs nginx nslcd openvpn postfix postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {
@@ -262,6 +263,7 @@ then
 	mon=$"Network monitoring"
 	monitorix=$"System Monitor"
 	mysql=$"Web server database"
+	minidlna=$"MiniDLNA Server"
 	postgresql=$"SQL database server"
 	nfs=$"Distribution server"
 	nginx=$"Reverse proxy server"

@@ -90,15 +90,17 @@ then
 	then
 		#If choice is install, ask if this is server installation is for education or business use.
 		yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-	   	--button=''$"Education"':1'  --button=''$"Business"':2' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups."
+	   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Home"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Home""</span>: "$"Installs with multimedia options."
 		CHOICETYPE="$?"
 		if [ $CHOICE = 5 ]
 		then
 			[ "$CHOICETYPE" = 1 ] && CHOICE=6
 			[ "$CHOICETYPE" = 2 ] && CHOICE=7
+			[ "$CHOICETYPE" = 3 ] && CHOICE=10
 		else
 			[ "$CHOICETYPE" = 1 ] && CHOICE=8
 			[ "$CHOICETYPE" = 2 ] && CHOICE=9
+			[ "$CHOICETYPE" = 3 ] && CHOICE=10
 		fi
 	fi
 	
@@ -108,6 +110,7 @@ then
 	[ "$CHOICE" = 7 ] && INSTALL_TYPE=joindomain_business
 	[ "$CHOICE" = 8 ] && INSTALL_TYPE=education
 	[ "$CHOICE" = 9 ] && INSTALL_TYPE=business
+	[ "$CHOICE" = 10 ] && INSTALL_TYPE=home
 	
 	[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
 
