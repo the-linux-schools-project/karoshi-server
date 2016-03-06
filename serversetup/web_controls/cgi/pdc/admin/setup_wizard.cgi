@@ -32,6 +32,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -41,12 +42,8 @@ fi
 
 #Change default page to stop recursion problem
 if [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ]
-TEXTDOMAIN=karoshi-server
-
 then
-sed -i 's/DEFAULTPAGE=setup_wizard.cgi/DEFAULTPAGE=change_password_fm.cgi/g' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
-
+	sed -i 's/DEFAULTPAGE=setup_wizard.cgi/DEFAULTPAGE=change_password_fm.cgi/g' /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 fi
 ############################
 #Show page
@@ -70,28 +67,28 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign VIEWEDPAGES
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = VIEWEDPAGEScheck ]
-then
-let COUNTER=$COUNTER+1
-VIEWEDPAGES=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = VIEWEDPAGEScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		VIEWEDPAGES=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 IMAGE1=incomplete.png
 IMAGE2=incomplete.png
@@ -176,21 +173,27 @@ echo '<div id="wizard">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE3'" value=""></a>
 </td><td>
 <input name="_ACTION_3_" value="'$"Management Users"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
 
-<tr><td style="width: 50px; height: 35px;">
+
+if [ "$INSTALL_TYPE" != home ]
+then
+	echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE4'" value=""></a>
 </td><td>
 <input name="_ACTION_4_" value="'$"Label Groups"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
+fi
 
-<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_5_" type="image" class="images" src="/images/submenus/system/'$IMAGE5'" value=""></a>
 </td><td>
 <input name="_ACTION_5_" value="'$"Add a User"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
 
-<tr><td style="width: 50px; height: 35px;">
+if [ "$INSTALL_TYPE" != home ]
+then
+	echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_6_" type="image" class="images" src="/images/submenus/system/'$IMAGE6'" value=""></a>
 </td><td>
 <input name="_ACTION_6_" value="'$"Room Locations"'" class="button wizardbutton" type="submit">
@@ -212,9 +215,10 @@ echo '<div id="wizard">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_9_" type="image" class="images" src="/images/submenus/system/'$IMAGE9'" value=""></a>
 </td><td>
 <input name="_ACTION_9_" value="'$"Add Assets"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
+fi
 
-<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_a_" type="image" class="images" src="/images/submenus/system/'$IMAGEa'" value=""></a>
 </td><td>
 <input name="_ACTION_a_" value="'$"Setup Printers"'" class="button wizardbutton" type="submit">
@@ -224,15 +228,18 @@ echo '<div id="wizard">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_b_" type="image" class="images" src="/images/submenus/system/'$IMAGEb'" value=""></a>
 </td><td>
 <input name="_ACTION_b_" value="'$"User Settings"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
 
-<tr><td style="width: 50px; height: 35px;">
+if [ "$INSTALL_TYPE" != home ]
+then
+	echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_c_" type="image" class="images" src="/images/submenus/system/'$IMAGEc'" value=""></a>
 </td><td>
 <input name="_ACTION_c_" value="'$"Bulk User Creation"'" class="button wizardbutton" type="submit">
-</td></tr>
+</td></tr>'
+fi
 
-<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="width: 50px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_d_" type="image" class="images" src="/images/submenus/system/'$IMAGEd'" value=""></a>
 </td><td>
 <input name="_ACTION_d_" value="'$"Set Default Page"'" class="button wizardbutton" type="submit">

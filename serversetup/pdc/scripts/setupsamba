@@ -553,27 +553,6 @@ else
 	oplocks = No
 	level2 oplocks = No
 
-[itadmin]
-	comment = Itadmin Share
-	path = /home/itadminshare
-	invalid users = root,administrator
-	read only = No
-	browseable = Yes
-
-[staffshare]
-	comment = Staff Share
-	path = /home/staffshare
-	invalid users = root,administrator
-	read only = No
-	browseable = Yes
-
-[subjects]
-	comment = Subjects Share
-	path = /home/subjects
-	invalid users = root,administrator
-	read only = No
-	browseable = Yes
-
 [netlogon]
 	comment = Netlogon Share
 	path = /var/lib/samba/netlogon
@@ -584,14 +563,52 @@ else
 	oplocks = No
 	level2 oplocks = No
 
+[itadmin]
+	comment = Itadmin Share
+	path = /home/itadminshare
+	invalid users = root,administrator
+	read only = No
+	browseable = Yes' > /etc/samba/smb.conf
+
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = business ]
+	then
+		echo '
+[staffshare]
+	comment = Staff Share
+	path = /home/staffshare
+	invalid users = root,administrator
+	read only = No
+	browseable = Yes
+
 [officeshare]
 	comment = Office Share
 	path = /home/officeshare
 	invalid users = root,administrator
 	read only = No
-	browseable = Yes
-' > /etc/samba/smb.conf
+	browseable = Yes' >> /etc/samba/smb.conf
+fi
 
+	if [ "$INSTALL_TYPE" = education ]
+	then
+		echo '
+[subjects]
+	comment = Subjects Share
+	path = /home/subjects
+	invalid users = root,administrator
+	read only = No
+	browseable = Yes' >> /etc/samba/smb.conf
+fi
+
+	if [ "$INSTALL_TYPE" = home ]
+	then
+		echo '
+[multimedia]
+	comment = Multimedia Share
+	path = /home/multimedia
+	invalid users = root,administrator
+	read only = No
+	browseable = Yes' >> /etc/samba/smb.conf
+fi
 	#Turn off complex password settings
 	echo `date`: "Turning off complex password settings" >> /opt/karoshi/serversetup/install_log
 	echo Setting password settings >> /opt/karoshi/serversetup/install_log
@@ -1829,7 +1846,7 @@ then
 	[ $INSTALL_TYPE = business ] && SERVERSHARES="applications staffshare sysvol itadmin officeshare netlogon"
 	[ $INSTALL_TYPE = home ] && SERVERSHARES="applications multimedia sysvol itadmin netlogon"
 
-	for SHARENAME in applications subjects staffshare sysvol itadmin officeshare netlogon
+	for SHARENAME in $SERVERSHARES
 	do
 		if [ `grep -c "$SHARENAME" /etc/samba/smb.conf` -gt 0 ]
 		then

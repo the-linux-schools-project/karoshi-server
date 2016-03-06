@@ -170,6 +170,8 @@ POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+	#Make sure zfs kernel module is loaded
+	modprobe zfs
 	#Add cron job for zpool scrub
 	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
 	echo 0 0 '*' '*' 6 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
@@ -515,6 +517,15 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
 			echo '#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          zfs-mount-all
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start zfs-mount-all
+### END INIT INFO
+
 COUNTER=0
 while [ $COUNTER -le 100 ]
 do
@@ -543,6 +554,8 @@ fi
 if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	#Make sure zfs kernel module is loaded
+	modprobe zfs
 
 	SORTGLUSTER=no
 	if [ -d /home/gluster-volumes/ ] && [ "'$MOUNTPOINT'" = /home ]
@@ -798,6 +811,15 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
 			echo "#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          zfs-mount-all
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start zfs-mount-all
+### END INIT INFO
+
 COUNTER=0
 while [ \$COUNTER -le 100 ]
 do

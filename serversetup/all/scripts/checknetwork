@@ -109,8 +109,9 @@ fi
 ##########################
 function getnetworksettings {
 
-[ -z "$NAMESERVERCUSTOM" ] && NAMESERVERCUSTOM=208.67.222.123
+[ -z "$NAMESERVERCUSTOM" ] && NAMESERVERCUSTOM=208.67.222.123 #OpenDNS Familyshield
 [ -z "$GATEWAYCUSTOM" ] && GATEWAYCUSTOM=$(netstat -nr | awk '$1 == "0.0.0.0"{print$2}')
+[ -z "$NETMASKCUSTOM" ] && NETMASKCUSTOM=$(ifconfig | awk '/Mask:/{ print $4;} ' | sed -n 1,1p | tr -cd 0-9.)
 
 if [ $SCARDCOUNT -gt 1 ]
 then
