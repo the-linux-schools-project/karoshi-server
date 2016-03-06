@@ -77,6 +77,13 @@ then
 	fi
 fi
 
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+fi
+
 ########################
 #Check data
 ########################
@@ -171,6 +178,12 @@ fi
 mv /etc/ssh/sshd_config /etc/ssh/sshd_configbackup
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/configfiles/sshd_config /etc/ssh/
 sleep .5
+
+#Modify ssh config to allow normal users if this is a home server setup.
+if [ "$INSTALL_TYPE" = home ]
+then
+	sed -i 's/^#UsePAM no/UsePAM yes/g' /etc/ssh/sshd_config
+fi
 
 #Create ssh folder
 [ ! -d /root/.ssh ] && mkdir /root/.ssh
