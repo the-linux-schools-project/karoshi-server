@@ -683,6 +683,7 @@ echo 0 8 '*' '*' 1-7 /opt/karoshi/serversetup/all/scripts/check_reboot > /opt/ka
 [ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
 cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/acceptable_use_authorisations /opt/karoshi/"useful scripts"/
 echo 0 8 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/acceptable_use_authorisations > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/acceptable_use_authorisations.cron
+
 #Schedule add_user_offile_servers
 echo 0 6 '*' '*' 1-7 /opt/karoshi/web_controls/exec/offline_servers > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/offline_servers.cron
 
@@ -815,6 +816,18 @@ then
 	then
 		HELPDESKCTRL=no
 		STAFFCTRL=no
+	fi
+
+	#Disable acceptable use for home installs
+	if [ $INSTALL_TYPE = home ]
+	then
+		if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations ]
+		then
+			mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations
+			chmod 0750 /opt/karoshi/server_network/acceptable_use_authorisations
+			chown root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations
+		fi
+		touch /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 	fi
 fi
 
