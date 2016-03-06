@@ -1690,9 +1690,12 @@ samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null 2>>/opt/kar
 function setfolderpermissions {
 echo `date`: "Setting acl folder permissions" >> /opt/karoshi/serversetup/install_log
 setfacl -Rm u::rwx,g::---,o::---,g:itadmin:rwx,d:u::rwx,d:g::---,d:o::---,d:g:itadmin:rwx /home/itadminshare
-setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
-setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
-setfacl -m g:staff:r-x,u::r-x /home/staffshare
+if [ "$INSTALL_TYPE" != home ]
+then
+	setfacl -Rm u::rwx,g::---,o::---,g:staff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:staff:rwx /home/staffshare
+	setfacl -Rm u::rwx,g::---,o::---,g:officestaff:rwx,d:u::rwx,d:g::---,d:o::---,d:g:officestaff:rwx /home/officeshare
+	setfacl -m g:staff:r-x,u::r-x /home/staffshare
+fi
 
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then

@@ -172,6 +172,8 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	#Make sure zfs kernel module is loaded
 	modprobe zfs
+	#Make sure zfs is going to load on boot and load created pools
+	echo "zfs zfs_autoimport_disable=0" > /etc/modules-load.d/zfs.conf
 	#Add cron job for zpool scrub
 	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
 	echo 0 0 '*' '*' 6 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
@@ -556,6 +558,8 @@ then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	#Make sure zfs kernel module is loaded
 	modprobe zfs
+	#Make sure zfs is going to load on boot and load created pools
+	echo "zfs zfs_autoimport_disable=0" > /etc/modules-load.d/zfs.conf
 
 	SORTGLUSTER=no
 	if [ -d /home/gluster-volumes/ ] && [ "'$MOUNTPOINT'" = /home ]

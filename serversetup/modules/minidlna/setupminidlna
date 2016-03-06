@@ -32,7 +32,8 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Edit minidlna.conf
 sed -i 's%/var/lib/minidlna%/home/multimedia%g' /etc/minidlna.conf
 
-#Add the minidlna user to the multimedia group
+#Set facl for minidlna
+setfacl -Rm d:u:minidlna:rwx /home/multimedia
 
 #Start minidlna
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/minidlna_start
@@ -50,7 +51,9 @@ echo $"MiniDlna Server""<br>" > /opt/karoshi/server_network/servers/$(hostname-f
 if [ $(grep -c -w "#minidlnarule /etc/shorewall/rules") = 0 ]
 then
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'minidlnarule /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'8200'	'-'#'minidlnarule /etc/shorewall/rules
+	echo 'ACCEPT	net	fw	udp	8200	-#minidlnarule' >> /etc/shorewall/rules
+	echo 'ACCEPT	net	fw	udp	1900	-#minidlnarule' >> /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
