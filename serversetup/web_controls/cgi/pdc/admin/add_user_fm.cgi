@@ -37,6 +37,12 @@ NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+fi
 
 if [ -f /opt/karoshi/server_network/default_username_style ]
 then
@@ -151,7 +157,7 @@ if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 192px\;\" size=\"20\" type=\"text\">";
 usernameValue = "Enter a username";
 	status10 = "true";
 }
@@ -174,19 +180,30 @@ if (enrollmentValue == "") {
 	enrollmentValue = "Enrollment number as username";
 }
 
+'
 
+if [ $INSTALL_TYPE = education ]
+then
+	echo 'document.myform.____USERNAMESTYLE____.options[0]=new Option("" + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
+document.myform.____USERNAMESTYLE____.options[1]=new Option("" + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
+document.myform.____USERNAMESTYLE____.options[2]=new Option("" + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
+document.myform.____USERNAMESTYLE____.options[3]=new Option("" + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
+document.myform.____USERNAMESTYLE____.options[4]=new Option("" + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
+document.myform.____USERNAMESTYLE____.options[5]=new Option("" + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
+document.myform.____USERNAMESTYLE____.options[6]=new Option("" + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
+document.myform.____USERNAMESTYLE____.options[7]=new Option("" + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
+document.myform.____USERNAMESTYLE____.options[8]=new Option("" + enrollmentValue, "userstyleS9", false, status9);
+document.myform.____USERNAMESTYLE____.options[9]=new Option("" + usernameValue, "userstyleS10", false, status10);'
+else
+	echo 'document.myform.____USERNAMESTYLE____.options[0]=new Option("" + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
+document.myform.____USERNAMESTYLE____.options[1]=new Option("" + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
+document.myform.____USERNAMESTYLE____.options[2]=new Option("" + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
+document.myform.____USERNAMESTYLE____.options[3]=new Option("" + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
+document.myform.____USERNAMESTYLE____.options[4]=new Option("" + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
+document.myform.____USERNAMESTYLE____.options[5]=new Option("" + usernameValue, "userstyleS10", false, status10);'
 
-document.myform.____USERNAMESTYLE____.options[0]=new Option("'$"Style"' 1: " + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
-document.myform.____USERNAMESTYLE____.options[1]=new Option("'$"Style"' 2: " + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
-document.myform.____USERNAMESTYLE____.options[2]=new Option("'$"Style"' 3: " + surnameValue + firstnameValue[0] + yearValue, "userstyleS3", false, status3);
-document.myform.____USERNAMESTYLE____.options[3]=new Option("'$"Style"' 4: " + firstnameValue + "." + surnameValue + yearValue, "userstyleS4", false, status4);
-document.myform.____USERNAMESTYLE____.options[4]=new Option("'$"Style"' 5: " + surnameValue + "." + firstnameValue + yearValue, "userstyleS5", false, status5);
-document.myform.____USERNAMESTYLE____.options[5]=new Option("'$"Style"' 6: " + yearValue + surnameValue + firstnameValue[0], "userstyleS6", false, status6);
-document.myform.____USERNAMESTYLE____.options[6]=new Option("'$"Style"' 7: " + yearValue + firstnameValue + surnameValue[0], "userstyleS7", false, status7);
-document.myform.____USERNAMESTYLE____.options[7]=new Option("'$"Style"' 8: " + firstnameValue + surnameValue[0], "userstyleS8", false, status8);
-document.myform.____USERNAMESTYLE____.options[8]=new Option("'$"Style"' 9: " + enrollmentValue, "userstyleS9", false, status9);
-document.myform.____USERNAMESTYLE____.options[9]=new Option("'$"Style"' 10: " + usernameValue, "userstyleS10", false, status10);
-}
+fi
+echo '}
 </script>
 </head><body onLoad="rewriteselect(); start();"><div id="pagecontainer">'
 #########################
@@ -267,16 +284,16 @@ then
 	echo '<br>
 	'$"Username style"'<br>
 	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px;" onClick="rewriteselect();">
-		<option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"auser09"'</option>
-		<option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>
-		<option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"usera09"'</option>
-		<option value="userstyleS4" '$SELECT4'>'$"Style"' 4: '$"arnold.user09"'</option>
-		<option value="userstyleS5" '$SELECT5'>'$"Style"' 5: '$"user.arnold09"'</option>
-		<option value="userstyleS6" '$SELECT6'>'$"Style"' 6: '$"09usera"'</option>
-		<option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnoldu"'</option>
-		<option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnoldu"'</option>
-		<option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
-		<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
+		<option value="userstyleS1" '$SELECT1'>'$"auser09"'</option>
+		<option value="userstyleS2" '$SELECT2'>'$"09auser"'</option>
+		<option value="userstyleS3" '$SELECT3'>'$"usera09"'</option>
+		<option value="userstyleS4" '$SELECT4'>'$"arnold.user09"'</option>
+		<option value="userstyleS5" '$SELECT5'>'$"user.arnold09"'</option>
+		<option value="userstyleS6" '$SELECT6'>'$"09usera"'</option>
+		<option value="userstyleS7" '$SELECT7'>'$"09arnoldu"'</option>
+		<option value="userstyleS8" '$SELECT8'>'$"arnoldu"'</option>
+		<option value="userstyleS9" '$SELECT9'>'$"Enrollment number as username."'</option>
+		<option value="userstyleS10" '$SELECT10'>'$"Enter a username"'</option>
 		</select><br>
 		<span id="extraoptions1"></span><br>
 		<span id="extraoptions2"></span><br><br>'
@@ -309,16 +326,16 @@ else
         <td>'$"Username style"'</td>
         <td>
         <select name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$"Style"' 1: '$"auser09"'</option>
-        <option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>
-        <option value="userstyleS3" '$SELECT3'>'$"Style"' 3: '$"usera09"'</option>
-        <option value="userstyleS4" '$SELECT4'>'$"Style"' 4: '$"arnold.user09"'</option>
-        <option value="userstyleS5" '$SELECT5'>'$"Style"' 5: '$"user.arnold09"'</option>
-        <option value="userstyleS6" '$SELECT6'>'$"Style"' 6: '$"09usera"'</option>
-        <option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnoldu"'</option>
-        <option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnoldu"'</option>
-        <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username"'</option>
-	<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
+        <option value="userstyleS1" '$SELECT1'>'$"auser09"'</option>'
+        [ $INSTALL_TYPE = education ] && echo '<option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>'
+        echo '<option value="userstyleS3" '$SELECT3'>'$"usera09"'</option>
+        <option value="userstyleS4" '$SELECT4'>'$"arnold.user09"'</option>
+        <option value="userstyleS5" '$SELECT5'>'$"user.arnold09"'</option>'
+	[ $INSTALL_TYPE = education ] && echo '<option value="userstyleS6" '$SELECT6'>'$"09usera"'</option>'
+	[ $INSTALL_TYPE = education ] && echo '<option value="userstyleS7" '$SELECT7'>'$"09arnoldu"'</option>'
+        echo '<option value="userstyleS8" '$SELECT8'>'$"arnoldu"'</option>'
+        [ $INSTALL_TYPE = education ] && echo '<option value="userstyleS9" '$SELECT9'>'$"Enrollment number as username"'</option>'
+	echo '<option value="userstyleS10" '$SELECT10'>'$"Enter a username"'</option>
 	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
 	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
 	</tbody></table><br>
