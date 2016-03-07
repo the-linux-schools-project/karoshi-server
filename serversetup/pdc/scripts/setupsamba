@@ -586,7 +586,7 @@ else
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes' >> /etc/samba/smb.conf
-fi
+	fi
 
 	if [ "$INSTALL_TYPE" = education ]
 	then
@@ -597,7 +597,7 @@ fi
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes' >> /etc/samba/smb.conf
-fi
+	fi
 
 	if [ "$INSTALL_TYPE" = home ]
 	then
@@ -608,7 +608,7 @@ fi
 	invalid users = root,administrator
 	read only = No
 	browseable = Yes' >> /etc/samba/smb.conf
-fi
+	fi
 	#Turn off complex password settings
 	echo `date`: "Turning off complex password settings" >> /opt/karoshi/serversetup/install_log
 	echo Setting password settings >> /opt/karoshi/serversetup/install_log
@@ -927,12 +927,6 @@ then
 		NEWGROUP=bursar
 		NEWGROUPDISP="Bursars"
 		add_samba4_group
-
-		echo "$"Adding group" tech"
-		NEWGROUP=tech
-		NEWGROUPDISP="Tech Users"
-		add_samba4_group
-
 	else
 		echo -e ''$"Adding group"' adults'
 		NEWGROUP=adults
@@ -955,6 +949,11 @@ then
 		add_samba4_group
 	
 	fi
+
+	echo "$"Adding group" tech"
+	NEWGROUP=tech
+	NEWGROUPDISP="Tech Users"
+	add_samba4_group
 
 	echo -e ''$"Adding group"' guestusers'
 	NEWGROUP=guestusers
@@ -1325,6 +1324,12 @@ then
 		HOMEPATH=/home/users/officestaff
 		SECONDARYGROUP=staff
 		make_primary_group_info
+
+		PRIMARY_GROUP=tech
+		SUBUNIT=personnel
+		HOMEPATH=/home/users/techstaff
+		SECONDARYGROUP=""
+		make_primary_group_info
 	else
 		PRIMARY_GROUP=adults
 		SUBUNIT=family
@@ -1344,16 +1349,12 @@ then
 		SECONDARYGROUP=multimedia
 		make_primary_group_info
 	fi
-	PRIMARY_GROUP=tech
-	SUBUNIT=personnel
-	HOMEPATH=/home/users/techstaff
-	SECONDARYGROUP=""
-	make_primary_group_info
 
 	PRIMARY_GROUP=itadmin
 	SUBUNIT=personnel
 	HOMEPATH=/home/users/itadminstaff
 	SECONDARYGROUP="staff,tech,officestaff"
+	[ $INSTALL_TYPE = home ] && SECONDARYGROUP="multimedia"
 	make_primary_group_info
 
 	if [ $INSTALL_TYPE = education ]
