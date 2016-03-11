@@ -247,43 +247,160 @@ echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.x
 
 if [ -f /opt/karoshi/server_network/owncloudserver ]
 then
-OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
-[ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
+	OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
+	[ ! -d /home/owncloud/data ] && mkdir -p /home/owncloud/data
 
-MAINSERVER=`hostname-fqdn`
-#Groups
-MAPEXTRASHARES=no
-echo '{"group":{' > /home/owncloud/data/mount.json
+	MAINSERVER=`hostname-fqdn`
+	#Groups
+	MAPEXTRASHARES=no
+	echo '{"group":{' > /home/owncloud/data/mount.json
 
 
-#Get number of groups
-GROUPCOUNT=`ls /opt/karoshi/server_network/group_information/ | wc -l`
-COUNTER=1
-COMMA=","
-for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
-do
-	PRI_GROUP=`basename $PRI_GROUPS`
-	source /opt/karoshi/server_network/group_information/$PRI_GROUP
-	SERVER=`echo $SERVER | cut -d, -f1`
-	[ "$COUNTER" = "$GROUPCOUNT" ] && COMMA=""
-	echo '"'$PRI_GROUP'":{"\/$user\/files\/home":{"class":"\\OC\\Files\\Storage\\SMB_OC","options":{"host":"'$SERVER'","username_as_share":"true","share":"","root":""}}}'$COMMA' ' >> /home/owncloud/data/mount.json
-	let COUNTER=$COUNTER+1
-done
+	#Get number of groups
+	GROUPCOUNT=`ls /opt/karoshi/server_network/group_information/ | wc -l`
+	COUNTER=1
+	COMMA=","
+	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
+	do
+		PRI_GROUP=`basename $PRI_GROUPS`
+		source /opt/karoshi/server_network/group_information/$PRI_GROUP
+		SERVER=`echo $SERVER | cut -d, -f1`
+		[ "$COUNTER" = "$GROUPCOUNT" ] && COMMA=""
+		echo '"'$PRI_GROUP'":{"\/$user\/files\/home":{"class":"\\OC\\Files\\Storage\\SMB_OC","options":{"host":"'$SERVER'","username_as_share":"true","share":"","root":""}}}'$COMMA' ' >> /home/owncloud/data/mount.json
+		let COUNTER=$COUNTER+1
+	done
 
-echo '}}' >> /home/owncloud/data/mount.json
+	echo '}}' >> /home/owncloud/data/mount.json
 
-chown www-data:www-data /home/owncloud/data/mount.json
-chmod 0640 /home/owncloud/data/mount.json
+	chown www-data:www-data /home/owncloud/data/mount.json
+	chmod 0640 /home/owncloud/data/mount.json
 
-if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
+	if [ $OWNCLOUDSERVER != `hostname-fqdn` ]
+	then
+		scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
+		chown www-data /home/owncloud/data/mount.json
+		'
+	fi
+fi
+
+#Create external storage for owncloud V9
+#owncloud v9 mount info now stored in the database and not in mount.json
+if [ -f /opt/karoshi/server_network/owncloudserver ]
 then
-	scp -p -o PasswordAuthentication=no /home/owncloud/data/mount.json $OWNCLOUDSERVER:/home/owncloud/data/
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
-	chown www-data /home/owncloud/data/mount.json
-	'
-fi
-fi
+	OWNCLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/owncloudserver`
+	SERVERLIST=""
+	#Delete any existing json files and recreate the folder
+	[ -d /home/owncloud/import_json ] && rm -f -R /home/owncloud/import_json
+	mkdir -p /home/owncloud/import_json
 
+	#Get a list of all servers and primary groups
+	for PRI_GROUP in $(ls -1 /opt/karoshi/server_network/group_information)
+	do
+		source /opt/karoshi/server_network/group_information/$PRI_GROUP
+		SERVERLIST="$SERVERLIST\n$SERVER:$PRI_GROUP"
+	done
+
+	function start_json_file {
+	echo '[
+    {
+        "mount_point": "\/home",
+        "storage": "\\OC\\Files\\Storage\\SMB",
+        "authentication_type": "password::sessioncredentials",
+        "configuration": {
+            "host": "'$SERVER'",
+            "share": "$user",
+            "root": "",
+            "domain": ""
+        },
+        "options": {
+            "encrypt": true,
+            "previews": true,
+            "filesystem_check_changes": 1,
+            "enable_sharing": false
+        },
+        "applicable_users": [],
+        "applicable_groups": [
+		"'$PRI_GROUP'",' > /home/owncloud/import_json/$SERVER.json
+	}
+
+	function complete_json_file {
+	#Remove comma from after the final group.
+	sed -i 's/"'$PRI_GROUP'",/"'$PRI_GROUP'"/g' /home/owncloud/import_json/$SERVER.json
+	#Add in closing brackets.
+	echo '        ]
+    }
+]
+' >> /home/owncloud/import_json/$LASTSERVER.json
+	}
+
+	LASTSERVER=notset
+	for SERVERDATA in $(echo -e "$SERVERLIST" | sed 's/^ //g' | sort)
+	do
+		SERVER=$(echo $SERVERDATA | cut -d: -f1)
+		PRI_GROUP=$(echo $SERVERDATA | cut -d: -f2)
+		if [ $LASTSERVER != $SERVER ]
+		then
+			#Complete the last server if a json file exists for it
+			if [ -f /home/owncloud/import_json/$LASTSERVER.json ]
+			then
+				complete_json_file
+			fi
+
+		        #New server so start a new json file
+			start_json_file
+		else
+			#Same server so add to the same json file
+		        echo  '		"'$PRI_GROUP'",' >> /home/owncloud/import_json/$SERVER.json
+		fi
+		LASTSERVER="$SERVER"
+	done
+	#Complete the last json file
+	complete_json_file
+
+	if [ $OWNCLOUDSERVER = $(hostname-fqdn) ]
+	then
+		#Check that owncloud is version 9 or higher
+		VERSION=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ -V | tr -cd "0-9\n")
+		if [ $VERSION -gt 900 ]
+		then
+			#Get existing external mount ids
+			MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
+			#Delete any existing external mounts from owncloud
+			for MOUNTID in $(echo -e "$MOUNTIDS")
+			do
+				sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:delete "$MOUNTID" -y
+			done
+			#Import the json files into owncloud
+			for JSONFILE in $(ls -1 /home/owncloud/import_json)
+			do
+				sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:import /home/owncloud/import_json/$JSONFILE
+			done
+		fi
+	else
+		#Copy the json files to the owncloud server
+		rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group -o "/home/owncloud/import_json" $OWNCLOUDSERVER:/home/owncloud/ 1>/dev/null
+
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
+		#Check that owncloud is version 9 or higher
+		VERSION=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ -V | tr -cd "0-9\n")
+		if [ $VERSION -gt 900 ]
+		then
+			#Get existing external mount ids
+			MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
+			#Delete any existing external mounts from owncloud
+			for MOUNTID in $(echo -e "$MOUNTIDS")
+			do
+				sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:delete "$MOUNTID" -y
+			done
+			#Import the json files into owncloud
+			for JSONFILE in $(ls -1 /home/owncloud/import_json)
+			do
+				sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:import /home/owncloud/import_json/$JSONFILE
+			done
+		fi
+		'
+	fi
+fi
 exit
-
 

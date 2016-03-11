@@ -1030,6 +1030,12 @@ then
 	chmod 0770 /home/multimedia
 	chown root.multimedia /home/multimedia
 	chown .multimedia -R /home/multimedia
+else
+	#Guardian users home areas
+	[ -d /home/users/techstaff ] || mkdir /home/users/techstaff
+	chmod 0750 /home/users/techstaff
+	chown root.tech /home/users/techstaff
+	chown .tech -R /home/users/techstaff
 fi
 
 #Add education home areas

@@ -258,6 +258,8 @@ fi
 #Warn about reboot
 yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text=''$"Rebooting to change the server name and TCPIP address."' '$"Please wait"...'' --no-buttons
 
+sleep 1
+
 #Set Computer name
 echo $KAROSHISERVER > /etc/hostname
 hostname $KAROSHISERVER

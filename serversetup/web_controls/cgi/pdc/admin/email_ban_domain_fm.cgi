@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Ban E-Mail Domain"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Allow"' - '$"Ban E-Mail Domain"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -95,21 +95,21 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Ban E-Mail Domain"'</span>
+	<span>'$"Allow"' - '$"Ban E-Mail Domain"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox"><table class="mobilestandard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;">
 <td style="vertical-align: top;">
-<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$"Banned Domains"'"></a>
+<a href="email_view_banned_domains_fm.cgi"><input class="button" type="button" name="" value="'$"Allowed" "-" $"Banned Domains"'"></a>
 </td></tr>
 </tbody></table><br>
 '
 else
 	echo '<div id="'$DIV_ID'">
-<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Ban E-Mail Domain"'</b></td>
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Allow"' - '$"Ban E-Mail Domain"'</b></td>
 <td style="vertical-align: top;">
 
 <button class="button" formaction="email_view_banned_domains_fm.cgi" name="_ViewBannedDomains_" value="_">
-'$"Banned Domains"'
+'$"Allowed"' - '$"Banned Domains"'
 </button>
 </td></tr>
 </tbody></table><br>'
@@ -118,7 +118,9 @@ fi
 echo '
 <table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody><tr><td style="width: 180px;">'$"E-Mail Domain"'</td><td><input tabindex= "1" name="_EMAILDOMAIN_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
-<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the E-mail domain that you want to ban."'<br><br>'$"This will stop emails from being delivered from the domain."'</span></a></td></tr>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the E-mail domain that you want to allow or ban."'<br><br>'$"Banning will stop emails from being delivered from the domain."'</span></a></td></tr>
+<tr><td>'$"Allow"'</td><td><input type="radio" name="_DROPTYPE_" value="OK" checked></td><td>
+<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This option will remove dns and spam blocklist checks from the domain."'</span></a></td></tr>
 <tr><td>'$"Reject"'</td><td><input type="radio" name="_DROPTYPE_" value="REJECT" checked></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This option will send a rejected message back to the sender."'</span></a></td></tr>
 <tr><td>'$"Discard"'</td><td><input type="radio" name="_DROPTYPE_" value="DISCARD"></td><td>
@@ -128,7 +130,7 @@ echo '
 
 if [ $MOBILE = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit">
 </div></form></div></body></html>

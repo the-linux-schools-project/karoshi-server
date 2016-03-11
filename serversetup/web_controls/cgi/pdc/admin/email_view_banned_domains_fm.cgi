@@ -49,7 +49,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Banned E-mail Domains"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Allowed"' - '$"Banned E-mail Domains"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -101,7 +101,7 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Banned E-mail Domains"'</span>
+	<span>'$"Allowed"'-'$"Banned E-mail Domains"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <table class="mobilestandard" style="text-align: left;" ><tbody><tr>
@@ -113,12 +113,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<div id="'$DIV_ID'"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Banned E-mail Domains"'</b></td>
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"Allowed"' - '$"Banned E-mail Domains"'</b></td>
 <td style="vertical-align: top;">
 <button class="button" formaction="email_ban_domain_fm.cgi" name="_DoBanDomain_" value="_">
-'$"Ban Domain"'
+'$"Allow"' - '$"Ban Domain"'
 </button>
-</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Banned_E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"Any E-mail domains shown in the list below are banned from e-mailing to your server."'</span></a>
+</td><td style="vertical-align: middle;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Banned_E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"Any E-mail domains shown in the list below are allowed and do not have any DNS checks placed on them or banned from e-mailing to your server."'</span></a>
 </td></tr>
 </tbody></table><br></div><div id="infobox">
 '
