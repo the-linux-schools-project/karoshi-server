@@ -199,11 +199,9 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d
 #Modify settings
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 0 ]
+if [ $EXEC_STATUS != 0 ]
 then
-	MESSAGE=$"The deault user settings have been saved."
-else
 	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	show_status
 fi
-show_status
 exit

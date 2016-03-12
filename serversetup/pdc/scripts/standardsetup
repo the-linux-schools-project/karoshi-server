@@ -89,9 +89,6 @@ if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
 fi
-
-#Backup essential data
-/opt/karoshi/serversetup/pdc/"useful scripts"/backup_essentials
 exit
 
 

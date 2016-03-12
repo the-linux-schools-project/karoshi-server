@@ -671,6 +671,7 @@ echo 0 7 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/disk_usage > /opt/karoshi/s
 ######################
 #Schedule system update checks
 ######################
+[ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
 cp /opt/karoshi/serversetup/pdc/"useful scripts"/check_system_upgraded /opt/karoshi/"useful scripts"/
 echo 30 6 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/check_system_upgraded > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/check_system_upgraded.cron
 ######################
@@ -680,7 +681,6 @@ echo 0 8 '*' '*' 1-7 /opt/karoshi/serversetup/all/scripts/check_reboot > /opt/ka
 ######################
 #Schedule acceptable use authorisations
 ######################
-[ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
 cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/acceptable_use_authorisations /opt/karoshi/"useful scripts"/
 echo 0 8 '*' '*' 1-7 /opt/karoshi/\"useful scripts\"/acceptable_use_authorisations > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/acceptable_use_authorisations.cron
 
@@ -903,8 +903,9 @@ echo BACKUPCTRL=$BACKUPCTRL >> /opt/karoshi/server_network/web_controls/menusett
 echo DHCPCTRL=$DHCPCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo DISTROCTRL=$DISTROCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo EMAILCTRL=$EMAILCTRL >> /opt/karoshi/server_network/web_controls/menusettings
-echo HELPDESKCTRL=$HELPDESKCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo FEDERATEDCTL=$FEDERATEDCTL >> /opt/karoshi/server_network/web_controls/menusettings
+echo HELPDESKCTRL=$HELPDESKCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo MONITORINGCTRL=$MONITORINGCTRL >> /opt/karoshi/server_network/web_controls/menusettings
@@ -913,10 +914,13 @@ echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/web_controls/menusettings
-echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/web_controls/menusettings
-echo EXAMCTRL=$EXAMCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo STAFFCTRL=$STAFFCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+
+
+
 
 ###########################
 #Check for updates

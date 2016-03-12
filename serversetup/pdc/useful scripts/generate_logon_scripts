@@ -362,7 +362,7 @@ then
 	then
 		#Check that owncloud is version 9 or higher
 		VERSION=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ -V | tr -cd "0-9\n")
-		if [ $VERSION -gt 900 ]
+		if [ $VERSION -ge 900 ]
 		then
 			#Get existing external mount ids
 			MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
@@ -384,7 +384,7 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $OWNCLOUDSERVER '
 		#Check that owncloud is version 9 or higher
 		VERSION=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ -V | tr -cd "0-9\n")
-		if [ $VERSION -gt 900 ]
+		if [ $VERSION -ge 900 ]
 		then
 			#Get existing external mount ids
 			MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/owncloud/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
