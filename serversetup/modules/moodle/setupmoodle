@@ -221,7 +221,7 @@ sed -i $DOMAINLINENO'c'\$CFG-">"wwwroot"    "=" ""'"https://$ALIAS.$REALM/moodle
 #Schedule a refresh job for moodle
 ##############################
 [ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
-echo '*'/5 '*' '*' '*' '*' lynx -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/refresh_moodle.cron
+echo '*'/5 '*' '*' '*' '*' links -dump http://localhost/moodle/admin/cron.php '>' /dev/null > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/refresh_moodle.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 
