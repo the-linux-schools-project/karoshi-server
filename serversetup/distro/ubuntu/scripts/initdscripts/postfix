@@ -42,7 +42,7 @@ running() {
 	pid=$(sed 's/ //g' ${queue}/pid/master.pid)
 	# what directory does the executable live in.  stupid prelink systems.
 	dir=$(ls -l /proc/$pid/exe 2>/dev/null | sed 's/.* -> //; s/\/[^\/]*$//')
-	if [ "X$dir" = "X/usr/lib/postfix" ]; then
+	if [ "X$dir" = "X/usr/lib/postfix/sbin" ]; then
 	    echo y
 	fi
     fi
