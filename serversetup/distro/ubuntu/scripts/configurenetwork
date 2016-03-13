@@ -53,7 +53,7 @@ sleep 1
 #Check a few times since some cards take a while to be online.
 
 PINGCOUNTER=0
-while [ $PINGCOUNTER -lt 10 ]
+while [ $PINGCOUNTER -lt 5 ]
 do
 	ping -c 1 $NAMESERVER
 	PINGCHECK=$?
@@ -73,7 +73,7 @@ LOOKUPCHECK=$?
 if [ $PINGCHECK != 0 ] || [ $LOOKUPCHECK != 0 ]
 then
 	#Show warning message
-	yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --text=''$"The dns server could not be contacted on"': '$NAMESERVER'\n\n'$"The DNS has been changed to 8.8.8.8."' '$"The performance of this server will be affected if it cannot contact a dns server."'' --no-buttons
+	yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --timeout-indicator=bottom --text=''$"The dns server could not be contacted on"': '$NAMESERVER'\n\n'$"The DNS has been changed to 8.8.8.8."' '$"The performance of this server will be affected if it cannot contact a dns server."'' --no-buttons
 	#Change DNS if default is not available
 	NAMESERVER=8.8.8.8
 	echo `date`: "The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
@@ -256,7 +256,7 @@ fi
 ###########################
 
 #Warn about reboot
-yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text=''$"Rebooting to change the server name and TCPIP address."' '$"Please wait"...'' --no-buttons
+yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --text=''$"Rebooting to change the server name and TCPIP address."' '$"Please wait"...'' --no-buttons
 
 sleep 1
 

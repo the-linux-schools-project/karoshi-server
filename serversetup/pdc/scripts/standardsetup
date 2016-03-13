@@ -22,7 +22,7 @@ function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
 then
-	yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --no-buttons 2>/dev/null
+	yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --timeout-indicator=bottom --no-buttons 2>/dev/null
 	exit
 fi
 if [ $EXITSTATUS = 103 ]

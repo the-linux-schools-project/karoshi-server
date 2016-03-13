@@ -48,7 +48,7 @@ echo `date`: '##############'setupshorewall'##############' >> /opt/karoshi/serv
 if ! test -f /etc/init.d/$SHOREWALLVER
 then
 echo /etc/init.d/$SHOREWALLVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title ''$"Setup"' '$"Shorewall"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --text='Shorewall - '$"This package is not installed."'' --no-buttons 2>/dev/null
+yad --title ''$"Setup"' '$"Shorewall"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --text='Shorewall - '$"This package is not installed."'' --no-buttons 2>/dev/null
 exit 101
 fi
 

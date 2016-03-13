@@ -158,6 +158,6 @@ sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/ka
 ###########################
 #Display completed message
 ############################
-yad --title ''$"Setup"' '$"Karoshi Desktop"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --text=''$"Standard setup completed."'\n\n'$"Install extra modules and servers in the web managment modules section."'' --no-buttons 2>/dev/null
+yad --title ''$"Setup"' '$"Karoshi Desktop"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10 --timeout-indicator=bottom --text=''$"Standard setup completed."'\n\n'$"Install extra modules and servers in the web managment modules section."'' --no-buttons 2>/dev/null
 sleep 1
 exit
