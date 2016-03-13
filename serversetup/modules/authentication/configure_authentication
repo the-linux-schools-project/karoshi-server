@@ -139,8 +139,20 @@ echo -e "# Global parameters
 	host msdfs = yes
 	dns round robin = yes
 	printing = bsd
+" > /etc/samba/smb.conf
 
-[dfs]
+if [ '$ZONE' = internal ]
+then
+	echo "[homes]
+	comment = Home Directories
+	invalid users = root
+	read only = No
+	browseable = No
+	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/
+" >> /etc/samba/smb.conf
+fi
+
+echo "[dfs]
 	path = /var/lib/samba/dfs
 	msdfs root = yes
 	guest ok = Yes
@@ -172,7 +184,7 @@ echo -e "# Global parameters
 	oplocks = No
 	level2 oplocks = No
 
-" > /etc/samba/smb.conf
+" >> /etc/samba/smb.conf
 
 #Point adc and rodc servers at themselves for resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
@@ -220,12 +232,12 @@ echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rul
 echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 #Restart shorewall
-echo "<li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li></ul>"
+echo "<ul><li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
+echo "<ul><li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
@@ -319,7 +331,7 @@ fi
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<li><b>'$"Configure Authentication"'</b></li></ul>"
+echo "<ul><li><b>'$"Configure Authentication"'</b></li></ul>"
 
 source /opt/karoshi/serversetup/variables/distro
 

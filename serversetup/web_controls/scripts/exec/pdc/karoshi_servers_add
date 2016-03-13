@@ -406,7 +406,7 @@ scp -r /opt/karoshi/serversetup/scripts/uptime $TCPIPNUMBER:/opt/karoshi/servers
 
 #Copy in update server scripts
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $TCPIPNUMBER:/opt/karoshi/serversetup/all/samba4/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $TCPIPNUMBER:/opt/karoshi/serversetup/all/samba4/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 echo `date`: karoshi_servers_add - configuring initd scripts and "uptime" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
@@ -676,6 +676,11 @@ then
 		echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
 	done
 
+	#Add in fileserver flag if the domain controller is in the internal zone.
+	if [ $ZONE = internal ]
+	then
+		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
+	fi
 	#Re-create logon scripts to add in additional servers
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi

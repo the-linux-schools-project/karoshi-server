@@ -86,7 +86,7 @@ TEXTDOMAIN=karoshi-server
 ######################
 #Setup Samba
 ######################
-echo '<b>'$"Setup File Server" - $HOSTNAME'</b><br><br>'
+echo '<ul><li><b>'$"Setup File Server" - $HOSTNAME'</b></li></ul>'
 
 
 #Restart shorewall
@@ -106,8 +106,6 @@ echo -e '
 ' >> /etc/samba/smb.conf
 fi
 
-
-
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
@@ -117,19 +115,6 @@ echo "<li>"$"Starting Samba""</li><br>"
 #Create the folders
 chmod 0755 /home
 chown root.root /home
-
-[ -d /home/users/students ] || mkdir -p /home/users/students
-[ -d /home/programs ] || mkdir /home/programs
-[ -d /home/programs/programs ] || mkdir /home/programs/programs
-#Note this would be done better with acl support
-chown -c root.tech /home/programs 1>/dev/null
-chown -c root.itadmin -R /home/programs/programs 1>/dev/null
-chmod 0750 /home/programs
-chmod 0775 /home/programs/programs
-
-[ -d /home/remastersys ] && rm -f -R /home/remastersys
-
-setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 
 ###########################
 #Show completed message

@@ -131,11 +131,9 @@ fi
 if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
-	echo "<li>"$HOSTNAME - $"Restarting shorewall""</li></ul>"
+	echo "<ul><li>"$HOSTNAME - $"Restarting shorewall""</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	echo "<br><br>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-	echo "<br><br>"
 fi
 
 #Configure shorewall to use the tunnel inteface on the vpn client
@@ -154,11 +152,9 @@ fi
 if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
-	echo "<li>"$HOSTNAME - '$"Restarting shorewall"'"</li></ul>"
+	echo "<ul><li>"$HOSTNAME - '$"Restarting shorewall"'"</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	echo "<br><br>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-	echo "<br><br>"
 fi
 '
 }
@@ -214,11 +210,14 @@ fi
 #Allow keys to be regenerated
 echo unique_subject = no > /etc/openvpn/easy-rsa/keys/index.txt.attr
 
+#Change keysize to 2048
+sed -i 's/export KEY_SIZE=1024/export KEY_SIZE=2048/g' /etc/openvpn/easy-rsa/vars
+
 cd /etc/openvpn/easy-rsa
 source vars 1>/dev/null 2>/dev/null
 
 #Generate master certificate authority and key
-if [ ! -f /etc/openvpn/$HOSTNAMEFQDN.key ] || [ ! -f /etc/openvpn/$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/dh1024.pem ]
+if [ ! -f /etc/openvpn/$HOSTNAMEFQDN.key ] || [ ! -f /etc/openvpn/$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/dh2048.pem ]
 then
 	echo '<ul><li>'$"Generating certificate authority and key"'</li></ul>'
 
@@ -241,7 +240,7 @@ then
 	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.key /etc/openvpn/
 	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.crt /etc/openvpn/
 	cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_$HOSTNAMEFQDN.crt
-	cp /etc/openvpn/easy-rsa/keys/dh1024.pem /etc/openvpn/
+	cp /etc/openvpn/easy-rsa/keys/dh2048.pem /etc/openvpn/
 
 	chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.key
 	chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.crt
@@ -401,7 +400,7 @@ sleep 2
 }
 
 function open_firewall_port {
-echo "<li>"$"UDP hole punching port" 1194"</li></ul>"
+echo "<ul><li>"$"UDP hole punching port" 1194"</li></ul>"
 nmap -P0 -sU -p1194 -g1194 $SERVERNAME 1>/dev/null 2>/dev/null
 }
 
@@ -413,14 +412,14 @@ echo OpenVPN client"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/open
 }
 
 function schedule_cron {
-echo "<li>"$"Scheduling vpn checking""</li></ul>"
+echo "<ul><li>"$"Scheduling vpn checking""</li></ul>"
 [ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 echo '*'/5 '*' '*' '*' '*' /opt/karoshi/serversetup/modules/authentication/openvpnclients > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/openvpnclients.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 echo '<br><br>'
 }
 
-echo "<b>"$"Configure OpenVPN""</b><br><br>"
+echo "<ul><li><b>"$"Configure OpenVPN""</b></li></ul>"
 get_tunnel_details
 configure_shorewall
 create_secret
