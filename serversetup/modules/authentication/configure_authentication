@@ -103,7 +103,7 @@ echo exit 0 >> /etc/rc.local
 mount -t tmpfs tmpfs /run/lock -o remount,size=50M
 fi
 
-echo "<li><b>'$"Join Domain"'</b></li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<ul><li><b>'$"Join Domain"'</b></li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]

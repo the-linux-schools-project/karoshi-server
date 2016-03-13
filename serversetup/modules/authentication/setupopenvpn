@@ -132,8 +132,8 @@ if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
 	echo "<ul><li>"$HOSTNAME - $"Restarting shorewall""</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Configure shorewall to use the tunnel inteface on the vpn client
@@ -153,8 +153,8 @@ if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
 	echo "<ul><li>"$HOSTNAME - '$"Restarting shorewall"'"</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 '
 }

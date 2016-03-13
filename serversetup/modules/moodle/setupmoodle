@@ -94,8 +94,8 @@ RESTARTAPACHE=no
 if [ `grep -c "#moodle-kerberos-support" /etc/apache2/sites-enabled/default-ssl` = 0 ]
 then
 #Remove last lines
-sed -i 's/<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
-sed -i 's/<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
+sed -i 's/^<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
+sed -i 's/^<\/IfModule>//g' /etc/apache2/sites-enabled/default-ssl
 
 #Add in kerberos
 echo -e '	#moodle-kerberos-support
@@ -183,7 +183,7 @@ then
 fi
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<ul><li>"'$"Apache was not running"'</li'
+	echo '<ul><li>"'$"Apache was not running"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 	echo "<br>"
 fi

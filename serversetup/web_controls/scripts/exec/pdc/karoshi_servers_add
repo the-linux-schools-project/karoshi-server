@@ -679,7 +679,7 @@ then
 	#Add in fileserver flag if the domain controller is in the internal zone.
 	if [ $ZONE = internal ]
 	then
-		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/fileserver
+		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVER.$REALM/fileserver
 	fi
 	#Re-create logon scripts to add in additional servers
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts

@@ -59,6 +59,7 @@
 [ -L /etc/init.d/winbind ] && rm -f /etc/init.d/winbind
 [ -L /etc/init.d/openvpn ] && rm -f /etc/init.d/openvpn
 [ -L /etc/init.d/openvpn ] && rm -f /etc/init.d/nfs-kernel-server
+[ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -94,6 +95,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocsmanager /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openvpn /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nfs-kernel-server /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nginx /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
@@ -120,6 +122,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nfs-kernel-ser
 [ `ls /etc/init/openvpn* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/openvpn*
 [ `ls /etc/init/nfs-kernel-server* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nfs-kernel-server*
 [ `ls /etc/init/statd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/statd*
+[ `ls /etc/init/nginx* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nginx*
 
 #May need to add more to this list.
 
