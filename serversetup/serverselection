@@ -61,72 +61,80 @@ then
 	echo GPL_Karoshi_Licence_Accepted > /opt/karoshi/serversetup/variables/acceptlicence
 	echo $ACCEPTDATE >> /opt/karoshi/serversetup/variables/acceptlicence
 else
-	yad --title ''$"Linux Schools Server Setup"' '$VERSION'' --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text=$"The Linux Schools Server Setup has been cancelled." --timeout=3 --no-buttons 2>/dev/null
+	yad --title ''$"Linux Schools Server Setup"' '$VERSION'' --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --text=$"The Linux Schools Server Setup has been cancelled." --timeout=3 --timeout-indicator=bottom --no-buttons 2>/dev/null
 	exit
 fi
 
 #Set mysql root password so that it is not blank.
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_initial_install &
-
-while [ -z "$CHOICE" ]
-do
-
-yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   --button=''$"Setup the main server"':1'  --button=''$"Setup an extra server"':2' --text $"Choose the type of server you want to install."
-CHOICE="$?"
-done
-
 #Setup cronjobs common to all servers
 [ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 
-if [ "$CHOICE" = 1 ]
+
+function choose_server {
+yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 --button=''$"Setup the main server"':1'  --button=''$"Setup an extra server"':2' --text $"Choose the type of server you want to install."
+CHOICE="$?"
+[ "$CHOICE" = 252 ] && exit
+}
+
+function main_server_choice {
+#Ask to install, restore, or join an existing domain
+yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
+--button=''$"Install"':3'  --button=''$"Restore"':4' --text '<span font_weight="bold" foreground="blue">'$"Install"':</span> '$"Install the main server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore"':</span> '$"Join this server to an existing additional Karoshi Server that is a domain controller."''
+CHOICE=$?
+if [ "$CHOICE" = 3 ] || [ $CHOICE = 5 ]
 then
-	#Ask to install, restore, or join an existing domain
+	#If choice is install, ask if this is server installation is for education or business use.
 	yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   --button=''$"Install"':3'  --button=''$"Restore"':4' --text '<span font_weight="bold" foreground="blue">'$"Install"':</span> '$"Install the main server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore"':</span> '$"Join this server to an existing additional Karoshi Server that is a domain controller."''
-	CHOICE=$?
-
-	if [ "$CHOICE" = 3 ] || [ $CHOICE = 5 ]
+   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Home"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Home""</span>: "$"Installs with multimedia options."
+	CHOICETYPE="$?"
+	[ $CHOICETYPE = 252 ] && CHOICE=252
+	if [ $CHOICE = 5 ]
 	then
-		#If choice is install, ask if this is server installation is for education or business use.
-		yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-	   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Home"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Home""</span>: "$"Installs with multimedia options."
-		CHOICETYPE="$?"
-		if [ $CHOICE = 5 ]
-		then
-			[ "$CHOICETYPE" = 1 ] && CHOICE=6
-			[ "$CHOICETYPE" = 2 ] && CHOICE=7
-			[ "$CHOICETYPE" = 3 ] && CHOICE=10
-		else
-			[ "$CHOICETYPE" = 1 ] && CHOICE=8
-			[ "$CHOICETYPE" = 2 ] && CHOICE=9
-			[ "$CHOICETYPE" = 3 ] && CHOICE=10
-		fi
+		[ "$CHOICETYPE" = 1 ] && CHOICE=6
+		[ "$CHOICETYPE" = 2 ] && CHOICE=7
+		[ "$CHOICETYPE" = 3 ] && CHOICE=10
+	else
+		[ "$CHOICETYPE" = 1 ] && CHOICE=8
+		[ "$CHOICETYPE" = 2 ] && CHOICE=9
+		[ "$CHOICETYPE" = 3 ] && CHOICE=10
 	fi
-	
-	[ "$CHOICE" = 4 ] && INSTALL_TYPE=restore
-	[ "$CHOICE" = 5 ] && INSTALL_TYPE=joindomain
-	[ "$CHOICE" = 6 ] && INSTALL_TYPE=joindomain_education
-	[ "$CHOICE" = 7 ] && INSTALL_TYPE=joindomain_business
-	[ "$CHOICE" = 8 ] && INSTALL_TYPE=education
-	[ "$CHOICE" = 9 ] && INSTALL_TYPE=business
-	[ "$CHOICE" = 10 ] && INSTALL_TYPE=home
-	
-	[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
-
-	echo "$INSTALL_TYPE" > /opt/karoshi/server_network/install_type
-
-	if [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = joindomain_business ]
-	then
-		#Show warning message for joining an existing domain
-		yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-		   	--button=''$"Ok"':1'  --button=''$"Cancel"':2' --text $"<span font_weight='bold' foreground='red'>"$"Warning""</span>: "$"You have chosen to join an existing windows domain.""\n\n"$"This will create sub containers in OU=People and additional groups.""\n\n"$"Cancel this installation of you are not happy with this choice."
-	[ $? != 1 ] && exit
-	fi
-
-	#Run pdc standard setup
-	/opt/karoshi/serversetup/pdc/scripts/standardsetup
 fi
+
+[ "$CHOICE" = 4 ] && INSTALL_TYPE=restore
+[ "$CHOICE" = 5 ] && INSTALL_TYPE=joindomain
+[ "$CHOICE" = 6 ] && INSTALL_TYPE=joindomain_education
+[ "$CHOICE" = 7 ] && INSTALL_TYPE=joindomain_business
+[ "$CHOICE" = 8 ] && INSTALL_TYPE=education
+[ "$CHOICE" = 9 ] && INSTALL_TYPE=business
+[ "$CHOICE" = 10 ] && INSTALL_TYPE=home
+
+[ ! -d /opt/karoshi/server_network ] && mkdir /opt/karoshi/server_network
+
+echo "$INSTALL_TYPE" > /opt/karoshi/server_network/install_type
+
+if [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = joindomain_business ]
+then
+	#Show warning message for joining an existing domain
+	yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 --button=''$"Ok"':1'  --button=''$"Cancel"':2' --text $"<span font_weight='bold' foreground='red'>"$"Warning""</span>: "$"You have chosen to join an existing windows domain.""\n\n"$"This will create sub containers in OU=People and additional groups.""\n\n"$"Cancel this installation of you are not happy with this choice."
+[ $? != 1 ] && exit
+fi
+
+#Run pdc standard setup
+/opt/karoshi/serversetup/pdc/scripts/standardsetup
+}
+
+function setup_extra_server {
 [ "$CHOICE" = 2 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
+}
+
+while [ -z "$CHOICE" ] || [ "$CHOICE" = 252 ]
+do
+	choose_server
+	if [ "$CHOICE" = 1 ]
+	then
+		main_server_choice
+	fi
+done
 
 exit
