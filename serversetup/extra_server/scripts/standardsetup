@@ -56,17 +56,13 @@ killall yad
 
 do_setup | yad --title $"Extra Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text ''$"Extra Server Setup"'\n\n\n'$STATUS'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
 
-
-#Configure /opt/karoshi/serversetup for git in case this is a development server
-/opt/karoshi/serversetup/all/scripts/configure_git
-
 ###########################
 #Display completed message
 ############################
 yad --title $"Extra Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 100 --timeout=10  --timeout-indicator=bottom --text=''$"The standard setup is now complete."' '$"Please join this server to the system using the web management on your main server."'' --no-buttons
 
 #Create initial disk usage report
-/opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+#/opt/karoshi/serversetup/all/"useful scripts"/disk_usage
 
 exit
 

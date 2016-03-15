@@ -504,7 +504,8 @@ cp -f -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/ubiq
 cp -f /opt/karoshi/serversetup/all/reserveports/reserveports /usr/sbin
 cp -f /opt/karoshi/serversetup/all/reserveports/releaseports /usr/sbin
 cp -f -r /opt/karoshi/serversetup/all/reserveports/services /etc/reserveports
-ln -s /usr/sbin/reserveports /etc/rc2.d/S17reserveports
+ln -s /usr/sbin/reserveports /etc/init.d/reserveports
+ln -s /etc/init.d/reserveports /etc/rc2.d/S17reserveports
 
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
