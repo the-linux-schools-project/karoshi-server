@@ -45,7 +45,7 @@ fi
 #############################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/install_distro
 #Exit if this was running live
-[ `echo $?` = 101 ] && exit
+[ $? = 101 ] && exit
 
 ############################
 #View the full agreement
@@ -118,11 +118,11 @@ then
 fi
 
 #Run pdc standard setup
-/opt/karoshi/serversetup/pdc/scripts/standardsetup
+echo setting up main server/opt/karoshi/serversetup/pdc/scripts/standardsetup
 }
 
 function setup_extra_server {
-[ "$CHOICE" = 2 ] && /opt/karoshi/serversetup/extra_server/scripts/standardsetup
+/opt/karoshi/serversetup/extra_server/scripts/standardsetup
 }
 
 while [ -z "$CHOICE" ] || [ "$CHOICE" = 252 ]
@@ -132,6 +132,12 @@ do
 	then
 		main_server_choice
 	fi
+
+	if [ "$CHOICE" = 2 ]
+	then
+		setup_extra_server
+	fi
+
 done
 
 exit

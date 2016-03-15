@@ -372,6 +372,10 @@ sed -i 's/^console output/#console output/g' /etc/init/rc-sysinit.conf
 #Make sure there is a printcap file
 touch /etc/printcap
 
+#Update freshclam
+echo -e "\nRunning freshclam\n"
+freshclam
+
 #Remove staff group
 groupdel staff
 
