@@ -1764,7 +1764,7 @@ then
 	#Setup Scheduled Jobs
 	#######################
 	echo `date`: "Setting up scheduled jobs" >> /opt/karoshi/serversetup/install_log
-	[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+	[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 	echo 0 0 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/resetguestaccounts > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/resetguestaccounts.cron
 	echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/resettechaccounts.cron
 	echo 0 23 '*' '*' 1-5 /opt/karoshi/serversetup/all/'"'useful scripts'"'/backup_servers/samba_backup > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/samba_backup.cron

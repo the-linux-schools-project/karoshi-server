@@ -135,12 +135,6 @@ fi
 echo `date`: "Stopping karoshi setup from running on login" >> /opt/karoshi/serversetup/install_log
 [ -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop ] && rm -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop
 
-#Schedule disk_usage
-echo `date`: "Scheduling disk usage check" >> /opt/karoshi/serversetup/install_log
-[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
-echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/disk_usage_report.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
-
 ###########################
 #Delete remastersys folder
 ###########################

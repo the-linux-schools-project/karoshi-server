@@ -33,6 +33,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 sed -i 's%/var/lib/minidlna%/home/multimedia%g' /etc/minidlna.conf
 
 #Set facl for minidlna
+setfacl -Rm u:minidlna:rwx /home/multimedia
 setfacl -Rm d:u:minidlna:rwx /home/multimedia
 setfacl -Rm d:g:multimedia:rwx /home/multimedia
 

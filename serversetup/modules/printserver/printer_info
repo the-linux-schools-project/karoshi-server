@@ -224,7 +224,7 @@ then
 		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 		then
 			echo '<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="_SetPpd_" value="_'$PRINTER_NAME'_setppd_">
+			<button class="'$INFOCLASS'" name="_'$PRINTER_NAME'_setppd_" value="_'$PRINTER_NAME'_setppd_">
 			<img src="'$PRINTER_ICON'" alt="'$"Set PPD"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span>
 			</button>

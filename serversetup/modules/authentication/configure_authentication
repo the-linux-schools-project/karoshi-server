@@ -516,10 +516,10 @@ then
 		UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
 	fi
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo "<li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li></ul>"
+	echo "<ul><li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li></ul>"
 	for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 	do
-	echo Checking $PORT on server '$PORTSCANIP'"<br>"
+	echo '$"Port"': $PORT - '$"Server"': '$PORTSCANIP'"<br>"
 	nc -zv -w5 '$PORTSCANIP' $PORT
 	[ $? != 0 ] && exit $PORT
 	done

@@ -207,7 +207,7 @@ fi
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show logs"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show logs" notset updateserver
 
 [ $MOBILE = no ] && echo '</div>'
 

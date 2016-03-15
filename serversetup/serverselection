@@ -67,9 +67,6 @@ fi
 
 #Set mysql root password so that it is not blank.
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_initial_install &
-#Setup cronjobs common to all servers
-[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
-
 
 function choose_server {
 yad --title $"Linux Schools Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 --button=''$"Setup the main server"':1'  --button=''$"Setup an extra server"':2' --text $"Choose the type of server you want to install."

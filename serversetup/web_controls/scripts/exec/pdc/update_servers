@@ -162,7 +162,7 @@ then
 	[ $DAY = 7 ] && DAY2=$"Sunday"
 	[ $DAY = 8 ] && DAY2=$"Every day"
 
-	echo "$DAY2 - $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+	echo "$DAY2 $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 else
 	[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 fi

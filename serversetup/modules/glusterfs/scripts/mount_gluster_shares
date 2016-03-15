@@ -1,0 +1,43 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          samba4
+# Required-Start:    $network $local_fs $remote_fs
+# Required-Stop:     $network $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Mount gluster shares
+### END INIT INFO
+
+#Check if glusterfs is needed
+if [ `grep -c gluster /etc/fstab` -gt 0 ]
+then
+	#Wait for glusterfs to start
+	source /opt/karoshi/serversetup/variables/distro
+	STATUS=1
+	COUNTER=0
+	while [ $COUNTER != 120 ]
+	do
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
+		STATUS=$?
+		sleep 1
+
+		if [ $STATUS = 0 ]
+		then
+			#Make sure gluster mount folders exists
+			for glustervol in `grep -w glusterfs /etc/fstab | grep -v glusterfs- | sed "s/ /,/g"`
+			do
+				glustermount=`echo $glustervol | cut -d, -f2`
+				#Make sure that the folder exists
+				[ ! -d "$glustermount" ] && mkdir -p "$glustermount"
+			done
+			#Hopefully gluster is now started so mount the gluster shares
+
+			mount -a
+			[ $? = 0 ] && exit
+		fi
+
+		let COUNTER=$COUNTER+1
+	done
+fi
+exit
