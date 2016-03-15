@@ -88,11 +88,6 @@ then
 	#Mount volume
 	echo '<ul><li>'$SERVER' - '$"mounting"' '$MOUNTBASE/$VOLUME'</li></ul>'
 	mount -a
-	#Copy in mount command
-	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_shares /etc/init.d/
-	chmod 0755 /etc/init.d/mount_gluster_shares
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/mount_gluster_shares on 1>/dev/null 2>/dev/null
-
 else
 	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
