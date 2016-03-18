@@ -110,6 +110,7 @@ chmod u+X,g+X,o+X -R /usr/share/z-push
 sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /usr/share/z-push/backend/ldap/config.php
 sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /usr/share/z-push/backend/ldap/config.php
 
+
 #Add in z-push configuration file to apache
 [ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/z-push.conf /etc/apache2/conf.d/
 [ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/z-push.conf /etc/apache2/conf-enabled/

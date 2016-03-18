@@ -46,7 +46,9 @@
 // config file
 require_once("backend/imap/config.php");
 
+require_once("backend/imap/mime_calendar.php");
 require_once("backend/imap/mime_encode.php");
+require_once("backend/imap/user_identity.php");
 
 class BackendIMAP extends BackendDiff implements ISearchProvider {
     private $wasteID;
@@ -141,23 +143,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return boolean
      */
     public function Logoff() {
-        if ($this->mbox) {
-            // list all errors
-            $errors = imap_errors();
-            if (is_array($errors)) {
-                foreach ($errors as $e) {
-                    if (stripos($e, "fail") !== false) {
-                        $level = LOGLEVEL_WARN;
-                    }
-                    else {
-                        $level = LOGLEVEL_DEBUG;
-                    }
-                    ZLog::Write($level, "BackendIMAP->Logoff(): IMAP said: " . $e);
-                }
-            }
-            @imap_close($this->mbox);
-            ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->Logoff(): IMAP connection closed");
-        }
+        $this->close_connection();
         $this->SaveStorages();
     }
 
@@ -195,7 +181,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 $this->imap_reopen_folder($parent);
                 $sourceMail = @imap_fetchheader($this->mbox, $sm->source->itemid, FT_UID) . @imap_body($this->mbox, $sm->source->itemid, FT_PEEK | FT_UID);
                 $mobj = new Mail_mimeDecode($sourceMail);
-                $sourceMessage = $mobj->decode(array('decode_headers' => false, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
+                $sourceMessage = $mobj->decode(array('decode_headers' => false, 'decode_bodies' => true, 'include_bodies' => true, 'rfc_822bodies' => true, 'charset' => 'utf-8'));
                 unset($mobj);
                 //We will need $sourceMail if the message is forwarded and not inlined
 
@@ -217,7 +203,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): We get the new message"));
         $mobj = new Mail_mimeDecode($sm->mime);
-        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
+        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'rfc_822bodies' => true, 'charset' => 'utf-8'));
         unset($mobj);
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): We get the From and To"));
@@ -246,8 +232,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $finalBody = "";
         $finalHeaders = array();
 
-        // if it's a S/MIME message I don't do anything with it
-        if (is_smime($message)) {
+        // if it's a S/MIME message or has VCALENDAR objects I don't do anything with it
+        if (is_smime($message) || has_calendar_object($message)) {
             $mobj = new Mail_mimeDecode($sm->mime);
             $parts =  $mobj->getSendArray();
             unset($mobj);
@@ -403,13 +389,13 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
         if (strlen($plainBody) > 0) {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextParts(): The message has PLAIN body"));
-            if (strlen($htmlSource) > 0) {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextParts(): The original message had HTML body, we cast new PLAIN to HTML"));
-                $altEmail->addSubPart('<html><body><p>' . str_replace("\n", "<br/>", str_replace("\r\n", "\n", $plainBody)) . "</p>" . $separatorHtml . $htmlSource . $separatorHtmlEnd, array('content_type' => 'text/html; charset=utf-8', 'encoding' => 'base64'));
-            }
             if (strlen($plainSource) > 0) {
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextParts(): The original message had PLAIN body"));
-                $altEmail->addSubPart($plainBody . $separator . str_replace("\n", "\n> ", "> ".$plainSource), array('content_type' => 'text/plain; charset=utf-8', 'encoding' => 'base64'));
+                $altEmail->addSubPart($plainBody . $separator . str_replace("\n", "\n> ", "> " . $plainSource), array('content_type' => 'text/plain; charset=utf-8', 'encoding' => 'base64'));
+            }
+            else {
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextParts(): The original message had not PLAIN body, we use original HTML body to create PLAIN"));
+                $altEmail->addSubPart($plainBody . $separator . str_replace("\n", "\n> ", "> " . Utils::ConvertHtmlToText($htmlSource)), array('content_type' => 'text/plain; charset=utf-8', 'encoding' => 'base64'));
             }
         }
 
@@ -436,20 +422,17 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return void
      */
     private function addTextPartsMessage(&$email, &$message) {
-        $htmlBody = $plainBody = '';
-        Mail_mimeDecode::getBodyRecursive($message, "html", $htmlBody);
-        Mail_mimeDecode::getBodyRecursive($message, "plain", $plainBody);
-
         $altEmail = new Mail_mimePart('', array('content_type' => 'multipart/alternative'));
 
-        if (strlen($htmlBody) > 0) {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextPartsMessage(): The message has HTML body"));
-            $altEmail->addSubPart($htmlBody, array('content_type' => 'text/html; charset=utf-8', 'encoding' => 'base64'));
+        foreach (array("plain", "html", "calendar") as $type) {
+            $body = '';
+            Mail_mimeDecode::getBodyRecursive($message, $type, $body);
+            if (strlen($body) > 0) {
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextPartsMessage(): The message has %s body", $type));
+                $altEmail->addSubPart($body, array('content_type' => sprintf("text/%s; charset=utf-8", $type), 'encoding' => 'base64'));
+            }
         }
-        if (strlen($plainBody) > 0) {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->addTextPartsMessage(): The message has PLAIN body"));
-            $altEmail->addSubPart($plainBody, array('content_type' => 'text/plain; charset=utf-8', 'encoding' => 'base64'));
-        }
+        unset($body);
 
         $boundary = '=_' . md5(rand() . microtime());
         $altEmail = $altEmail->encode($boundary);
@@ -457,9 +440,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $email->addSubPart($altEmail['body'], array('content_type' => 'multipart/alternative;'."\n".' boundary="'.$boundary.'"'));
 
         unset($altEmail);
-
-        unset($htmlBody);
-        unset($plainBody);
     }
 
     /**
@@ -516,7 +496,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
 
         $mobj = new Mail_mimeDecode($mail);
-        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
+        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'rfc_822bodies' => true, 'charset' => 'utf-8'));
 
         if (!isset($message->parts)) {
             throw new StatusException(sprintf("BackendIMAP->GetAttachmentData('%s'): Error, message without parts. Requesting part key: '%d'", $attname, $part), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
@@ -681,40 +661,48 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             return $notifications;
         }
 
+        // Reconnect IMAP server
+        $this->imap_reconnect();
+
         // Check folder hierarchy and create change
         if (count(array_diff($this->folderhierarchy, $this->get_folder_list())) > 0) {
             ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->ChangesSink(): Changes in folder hierarchy detected!!");
-             throw new StatusException("BackendIMAP->ChangesSink(): HierarchySync required.", SyncCollections::ERROR_WRONG_HIERARCHY);
+             throw new StatusException("BackendIMAP->ChangesSink(): HierarchySync required.", SyncCollections::HIERARCHY_CHANGED);
         }
 
-        while($stopat > time() && empty($notifications)) {
-            foreach ($this->sinkfolders as $i => $imapid) {
-                $this->imap_reopen_folder($imapid);
+        // only check once to reduce pressure in the IMAP server
+        foreach ($this->sinkfolders as $i => $imapid) {
+            $this->imap_reopen_folder($imapid);
 
-                // courier-imap only cleares the status cache after checking
-                @imap_check($this->mbox);
+            // courier-imap only clears the status cache after checking
+            @imap_check($this->mbox);
 
-                $status = @imap_status($this->mbox, $this->server . $imapid, SA_ALL);
-                if (!$status) {
-                    ZLog::Write(LOGLEVEL_WARN, sprintf("ChangesSink: could not stat folder '%s': %s ", $this->getFolderIdFromImapId($imapid), imap_last_error()));
+            $status = @imap_status($this->mbox, $this->server . $imapid, SA_ALL);
+            if (!$status) {
+                ZLog::Write(LOGLEVEL_WARN, sprintf("ChangesSink: could not stat folder '%s': %s ", $this->getFolderIdFromImapId($imapid), imap_last_error()));
+            }
+            else {
+                $newstate = "M:". $status->messages ."-R:". $status->recent ."-U:". $status->unseen;
+
+                if (! isset($this->sinkstates[$imapid]) ) {
+                    $this->sinkstates[$imapid] = $newstate;
                 }
-                else {
-                    $newstate = "M:". $status->messages ."-R:". $status->recent ."-U:". $status->unseen;
 
-                    if (! isset($this->sinkstates[$imapid]) ) {
-                        $this->sinkstates[$imapid] = $newstate;
-                    }
-
-                    if ($this->sinkstates[$imapid] != $newstate) {
-                        $notifications[] = $this->getFolderIdFromImapId($imapid);
-                        $this->sinkstates[$imapid] = $newstate;
-                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->ChangesSink(): ChangesSink detected!!");
-                    }
+                if ($this->sinkstates[$imapid] != $newstate) {
+                    $notifications[] = $this->getFolderIdFromImapId($imapid);
+                    $this->sinkstates[$imapid] = $newstate;
+                    ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->ChangesSink(): ChangesSink detected!!");
                 }
             }
+        }
+        // Close IMAP connection, we will reconnect in the next execution. This will reduce IMAP pressure
+        $this->close_connection();
 
-            if (empty($notifications))
-                sleep(5);
+        // Wait to timeout
+        if (empty($notifications)) {
+            while ($stopat > time()) {
+                sleep(1);
+            }
         }
 
         return $notifications;
@@ -1036,90 +1024,118 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $truncsize = Utils::GetTruncSize($contentparameters->GetTruncation());
         $mimesupport = $contentparameters->GetMimeSupport();
         $bodypreference = $contentparameters->GetBodyPreference(); /* fmbiete's contribution r1528, ZP-320 */
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage('%s','%s')", $folderid,  $id));
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage('%s', '%s', '%s')", $folderid,  $id, implode(",", $bodypreference)));
 
         $folderImapid = $this->getImapIdFromFolderId($folderid);
+
+        $is_sent_folder = strcasecmp($folderImapid, $this->create_name_folder(IMAP_FOLDER_SENT)) == 0;
 
         // Get flags, etc
         $stat = $this->StatMessage($folderid, $id);
 
         if ($stat) {
             $this->imap_reopen_folder($folderImapid);
-            $mail = @imap_fetchheader($this->mbox, $id, FT_UID) . @imap_body($this->mbox, $id, FT_PEEK | FT_UID);
+            $mail_headers = @imap_fetchheader($this->mbox, $id, FT_UID);
+            $mail =  $mail_headers . @imap_body($this->mbox, $id, FT_PEEK | FT_UID);
 
             if (empty($mail)) {
                 throw new StatusException(sprintf("BackendIMAP->GetMessage(): Error, message not found, maybe was moved"), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
             }
 
             $mobj = new Mail_mimeDecode($mail);
-            $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
+            $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'rfc_822bodies' => true, 'charset' => 'utf-8'));
 
-            /* BEGIN fmbiete's contribution r1528, ZP-320 */
-            $output = new SyncMail();
+            $is_multipart = is_multipart($message);
+            $is_smime = is_smime($message);
+            $is_encrypted = $is_smime ? is_encrypted($message) : false;
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): Message is multipart: %d, smime: %d, smime encrypted: %d", $is_multipart, $is_smime, $is_encrypted));
 
             //Select body type preference
             $bpReturnType = SYNC_BODYPREFERENCE_PLAIN;
             if ($bodypreference !== false) {
                 $bpReturnType = Utils::GetBodyPreferenceBestMatch($bodypreference); // changed by mku ZP-330
             }
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - getBodyPreferenceBestMatch: %d", $bpReturnType));
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): getBodyPreferenceBestMatch: %d", $bpReturnType));
 
-            if (is_smime($message)) {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - Message is SMIME, forcing to work with MIME"));
+            // Prefered format is MIME -OR- message is SMIME -OR- the device supports MIME (iPhone) and doesn't really understand HTML
+            if ($bpReturnType == SYNC_BODYPREFERENCE_MIME || $is_smime || in_array(SYNC_BODYPREFERENCE_MIME, $bodypreference)) {
                 $bpReturnType = SYNC_BODYPREFERENCE_MIME;
             }
 
-            //Get body data
-            Mail_mimeDecode::getBodyRecursive($message, "plain", $plainBody);
-            Mail_mimeDecode::getBodyRecursive($message, "html", $htmlBody);
-            if ($plainBody == "") {
-                $plainBody = Utils::ConvertHtmlToText($htmlBody);
+            // We need the text body even though MIME is used, for the preview
+            $textBody = "";
+            Mail_mimeDecode::getBodyRecursive($message, "html", $textBody, true);
+            if (strlen($textBody) > 0) {
+                if ($bpReturnType != SYNC_BODYPREFERENCE_MIME) {
+                    $bpReturnType = SYNC_BODYPREFERENCE_HTML;
+                }
             }
-            $htmlBody = str_replace("\n","\r\n", str_replace("\r","",$htmlBody));
-            $plainBody = str_replace("\n","\r\n", str_replace("\r","",$plainBody));
+            else {
+                Mail_mimeDecode::getBodyRecursive($message, "plain", $textBody, true);
+                if ($bpReturnType != SYNC_BODYPREFERENCE_MIME) {
+                    $bpReturnType = SYNC_BODYPREFERENCE_PLAIN;
+                }
+            }
+
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): after thinking a bit we will use: %d", $bpReturnType));
+
+
+            $output = new SyncMail();
 
             if (Request::GetProtocolVersion() >= 12.0) {
                 $output->asbody = new SyncBaseBody();
 
                 switch($bpReturnType) {
                     case SYNC_BODYPREFERENCE_PLAIN:
-                        $output->asbody->data = $plainBody;
+                        $output->asbody->data = $textBody;
                         break;
                     case SYNC_BODYPREFERENCE_HTML:
-                        if ($htmlBody == "") {
-                            $output->asbody->data = $plainBody;
-                            $bpReturnType = SYNC_BODYPREFERENCE_PLAIN;
-                        }
-                        else {
-                            $output->asbody->data = $htmlBody;
-                        }
+                        $output->asbody->data = $textBody;
                         break;
                     case SYNC_BODYPREFERENCE_MIME:
-                        if (is_smime($message)) {
-                            $output->asbody->data = $mail;
+                        if ($is_smime) {
+                            if ($is_encrypted) {
+                                // #190, KD 2015-06-04 - If message body is encrypted only send the headers, as data should only be in the attachment
+                                $output->asbody->data = $mail_headers;
+                            }
+                            else {
+                                $output->asbody->data = $mail;
+                            }
                         }
                         else {
                             $output->asbody->data = build_mime_message($message);
                         }
                         break;
                     case SYNC_BODYPREFERENCE_RTF:
-                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->GetMessage RTF Format NOT CHECKED");
-                        $output->asbody->data = base64_encode($plainBody);
+                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->GetMessage(): RTF Format NOT CHECKED");
+                        $output->asbody->data = base64_encode($textBody);
                         break;
                 }
-                // truncate body, if requested, but never truncate MIME messages
-                if($bpReturnType !== SYNC_BODYPREFERENCE_MIME && strlen($output->asbody->data) > $truncsize) {
-                    $output->asbody->data = Utils::Utf8_truncate($output->asbody->data, $truncsize);
-                    $output->asbody->truncated = 1;
+
+                // truncate body, if requested.
+                // MIME should not be truncated, but encrypted messages are truncated always to the headers size
+                if ($bpReturnType == SYNC_BODYPREFERENCE_MIME) {
+                    if ($is_encrypted) {
+                        $output->asbody->truncated = 1;
+                    }
+                    else {
+                        $output->asbody->truncated = 0;
+                    }
                 }
                 else {
-                    $output->asbody->truncated = 0;
+                    if (strlen($output->asbody->data) > $truncsize) {
+                        $output->asbody->data = Utils::Utf8_truncate($output->asbody->data, $truncsize);
+                        $output->asbody->truncated = 1;
+                    }
+                    else {
+                        $output->asbody->truncated = 0;
+                    }
                 }
 
                 $output->asbody->type = $bpReturnType;
                 if ($bpReturnType == SYNC_BODYPREFERENCE_MIME) {
+                    // NativeBodyType can be only (1 => PLAIN, 2 => HTML, 3 => RTF). MIME uses 1
                     $output->nativebodytype = SYNC_BODYPREFERENCE_PLAIN;
-                    // http://msdn.microsoft.com/en-us/library/ee220018%28v=exchg.80%29.aspx
                 }
                 else {
                     $output->nativebodytype = $bpReturnType;
@@ -1128,11 +1144,20 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
 
                 $bpo = $contentparameters->BodyPreference($output->asbody->type);
                 if (Request::GetProtocolVersion() >= 14.0 && $bpo->GetPreview()) {
-                    $output->asbody->preview = Utils::Utf8_truncate(Utils::ConvertHtmlToText($plainBody), $bpo->GetPreview());
+                    // Preview must be always plaintext
+                    $previewText = "";
+                    Mail_mimeDecode::getBodyRecursive($message, "plain", $previewText, true);
+                    if (strlen($previewText) == 0) {
+                        Mail_mimeDecode::getBodyRecursive($message, "html", $previewText, true);
+                        $previewText = Utils::ConvertHtmlToText($previewText);
+                    }
+                    $output->asbody->preview = Utils::Utf8_truncate($previewText, $bpo->GetPreview());
                 }
             }
             /* END fmbiete's contribution r1528, ZP-320 */
             else { // ASV_2.5
+                //DEPRECATED : very old devices, and incomplete code
+
                 $output->bodytruncated = 0;
                 /* BEGIN fmbiete's contribution r1528, ZP-320 */
                 if ($bpReturnType == SYNC_BODYPREFERENCE_MIME) {
@@ -1143,12 +1168,12 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 }
                 else {
                     // truncate body, if requested
-                    if (strlen($plainBody) > $truncsize) {
-                        $output->body = Utils::Utf8_truncate($plainBody, $truncsize);
+                    if (strlen($textBody) > $truncsize) {
+                        $output->body = Utils::Utf8_truncate($textBody, $truncsize);
                         $output->bodytruncated = 1;
                     }
                     else {
-                        $output->body = $plainBody;
+                        $output->body = $textBody;
                         $output->bodytruncated = 0;
                     }
                     $output->bodysize = strlen($output->body);
@@ -1156,9 +1181,19 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 /* END fmbiete's contribution r1528, ZP-320 */
             }
 
+            unset($textBody);
+            unset($mail_headers);
+
             $output->datereceived = isset($message->headers["date"]) ? $this->cleanupDate($message->headers["date"]) : null;
-            if (is_smime($message)) {
-                $output->messageclass = "IPM.Note.SMIME.MultipartSigned";
+
+            if ($is_smime) {
+                // #190, KD 2015-06-04 - Add Encrypted (and possibly signed) to the classifications emitted
+                if ($is_encrypted) {
+                    $output->messageclass = "IPM.Note.SMIME";
+                }
+                else {
+                    $output->messageclass = "IPM.Note.SMIME.MultipartSigned";
+                }
             }
             else {
                 $output->messageclass = "IPM.Note";
@@ -1226,25 +1261,30 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 }
                 else {
                     foreach($addrlist as $addr) {
-                        if (isset($addr->mailbox) && isset($addr->host) && isset($addr->personal)) {
-                            $address = $addr->mailbox . "@" . $addr->host;
-                            $name = $addr->personal;
-
-                            if (!isset($output->displayto) && $name != "")
-                                $output->displayto = $name;
-
-                            if($name == "" || $name == $address)
-                                $fulladdr = $address;
-                            else {
-                                if (substr($name, 0, 1) != '"' && substr($name, -1) != '"') {
-                                    $fulladdr = "\"" . $name ."\" <" . $address . ">";
-                                }
-                                else {
-                                    $fulladdr = $name ." <" . $address . ">";
+                        // If the address was a group we have "groupname" and "addresses" atributes
+                        if (isset($addr->addresses)) {
+                            if (count($addr->addresses) == 0) {
+                                // readd the empty group delimiter
+                                array_push($output->$type, sprintf("%s:;", $addr->groupname));
+                                if (!isset($output->displayto) && strlen($addr->groupname) > 0) {
+                                    $output->displayto = $addr->groupname;
                                 }
                             }
-
-                            array_push($output->$type, $fulladdr);
+                            else {
+                                foreach($addr->addresses as $addr_group) {
+                                    $name = $this->add_address_to_list($output->$type, $addr_group);
+                                    if (!isset($output->displayto) && strlen($name) > 0) {
+                                        $output->displayto = $name;
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            // Not a group
+                            $name = $this->add_address_to_list($output->$type, $addr);
+                            if (!isset($output->displayto) && strlen($name) > 0) {
+                                $output->displayto = $name;
+                            }
                         }
                     }
                 }
@@ -1269,18 +1309,23 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             // Attachments are also needed for MIME messages
             if(isset($message->parts)) {
                 $mparts = $message->parts;
-                for ($i=0; $i<count($mparts); $i++) {
+                for ($i=0; $i < count($mparts); $i++) {
                     $part = $mparts[$i];
-                    //recursively add parts
+
+                    //recursively add subparts to later processing
                     if ((isset($part->ctype_primary) && $part->ctype_primary == "multipart") && (isset($part->ctype_secondary) && ($part->ctype_secondary == "mixed" || $part->ctype_secondary == "alternative"  || $part->ctype_secondary == "related"))) {
-                        foreach($part->parts as $spart)
-                            $mparts[] = $spart;
+                        if (isset($part->parts)) {
+                            foreach($part->parts as $spart)
+                                $mparts[] = $spart;
+                        }
+                        // Go to the for again
                         continue;
                     }
+
                     if (is_calendar($part)) {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - text/calendar part found, trying to convert"));
+                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): text/calendar part found, trying to convert"));
                         $output->meetingrequest = new SyncMeetingRequest();
-                        $this->parseMeetingCalendar($part, $output);
+                        parse_meeting_calendar($part, $output, $is_sent_folder);
                     }
                     else {
                         //add part as attachment if it's disposition indicates so or if it is not a text part
@@ -1310,20 +1355,23 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                                 $attachment->contentid = isset($part->headers['content-id']) ? str_replace("<", "", str_replace(">", "", $part->headers['content-id'])) : "";
                                 if (isset($part->disposition) && $part->disposition == "inline") {
                                     $attachment->isinline = 1;
-                                    // We try to fix the name for the inline file.
-                                    // FIXME: This is a dirty hack as the used in the Zarafa backend, if you have a better method let me know!
-                                    if (isset($part->ctype_primary) && isset($part->ctype_secondary)) {
-                                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - Guessing extension for inline attachment [primary_type %s secondary_type %s]", $part->ctype_primary, $part->ctype_secondary));
-                                        if (isset(BackendIMAP::$mimeTypes[$part->ctype_primary.'/'.$part->ctype_secondary])) {
-                                            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - primary_type %s secondary_type %s", $part->ctype_primary, $part->ctype_secondary));
-                                            $attachment->displayname = "inline_".$i.".".BackendIMAP::$mimeTypes[$part->ctype_primary.'/'.$part->ctype_secondary];
+                                    // #209 - KD 2015-06-16 If we got a filename use it, otherwise guess
+                                    if (!isset($part->filename)) {
+                                        // We try to fix the name for the inline file.
+                                        // FIXME: This is a dirty hack as the used in the Zarafa backend, if you have a better method let me know!
+                                        if (isset($part->ctype_primary) && isset($part->ctype_secondary)) {
+                                            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): Guessing extension for inline attachment [primary_type %s secondary_type %s]", $part->ctype_primary, $part->ctype_secondary));
+                                            if (isset(BackendIMAP::$mimeTypes[$part->ctype_primary.'/'.$part->ctype_secondary])) {
+                                                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): primary_type %s secondary_type %s", $part->ctype_primary, $part->ctype_secondary));
+                                                $attachment->displayname = "inline_".$i.".".BackendIMAP::$mimeTypes[$part->ctype_primary.'/'.$part->ctype_secondary];
+                                            }
+                                            else {
+                                                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): no extension found in '%s'!!", SYSTEM_MIME_TYPES_MAPPING));
+                                            }
                                         }
                                         else {
-                                            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - no extension found in /etc/mime.types'!!"));
+                                            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage(): no primary_type or secondary_type"));
                                         }
-                                    }
-                                    else {
-                                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->GetMessage - no primary_type or secondary_type"));
                                     }
                                 }
                                 else {
@@ -1352,9 +1400,11 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                     }
                 }
             }
-            // unset mimedecoder & mail
+
+            unset($message);
             unset($mobj);
             unset($mail);
+
             return $output;
         }
 
@@ -1627,36 +1677,14 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $mail = @imap_fetchheader($this->mbox, $requestid, FT_UID) . @imap_body($this->mbox, $requestid, FT_PEEK | FT_UID);
 
         if (empty($mail)) {
-            throw new StatusException(sprintf("BackendIMAP->MeetingResponse(): Error, message not found, maybe was moved"), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
+            throw new StatusException("BackendIMAP->MeetingResponse(): Error, message not found, maybe was moved", SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
         }
 
+        // Get the original calendar request, so we don't need to create it from scratch
         $mobj = new Mail_mimeDecode($mail);
         unset($mail);
-        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'charset' => 'utf-8'));
+        $message = $mobj->decode(array('decode_headers' => true, 'decode_bodies' => true, 'include_bodies' => true, 'rfc_822bodies' => true, 'charset' => 'utf-8'));
         unset($mobj);
-
-        $Mail_RFC822 = new Mail_RFC822();
-        $from_header = $this->getDefaultFromValue();
-        $fromaddr = $this->parseAddr($Mail_RFC822->parseAddressList($from_header));
-        $to_header = "";
-        if (isset($message->headers["from"])) {
-            $to_header = $message->headers["from"];
-        }
-        else {
-            if (isset($message->headers["return-path"])) {
-                $to_header = $message->headers["return-path"];
-            }
-            else {
-                throw new StatusException(sprintf("BackendIMAP->MeetingResponse(): Error, no reply address"), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
-            }
-        }
-        $toaddr = $this->parseAddr($Mail_RFC822->parseAddressList($to_header));
-        if (isset($message->headers["subject"])) {
-            $subject_header = $message->headers["subject"];
-        }
-        else {
-            $subject_header = "";
-        }
 
         $body_part = null;
         if(isset($message->parts)) {
@@ -1664,15 +1692,17 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             for ($i=0; $i < count($mparts); $i++) {
                 $part = $mparts[$i];
                 //recursively add parts
-                if ((isset($part->ctype_primary) && $part->ctype_primary == "multipart") && (isset($part->ctype_secondary) && ($part->ctype_secondary == "mixed" || $part->ctype_secondary == "alternative"  || $part->ctype_secondary == "related"))) {
+                if ((isset($part->ctype_primary) && $part->ctype_primary == "multipart")
+                        && (isset($part->ctype_secondary) && ($part->ctype_secondary == "mixed" || $part->ctype_secondary == "alternative"  || $part->ctype_secondary == "related"))) {
                     foreach($part->parts as $spart)
                         $mparts[] = $spart;
                     continue;
                 }
 
                 if (is_calendar($part)) {
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->MeetingResponse - text/calendar part found, trying to reply"));
-                    $body_part = $this->replyMeetingCalendar($part, $response);
+                    ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->MeetingResponse - text/calendar part found, trying to reply");
+                    // FIXME: here we should use the user email address, that could not be username
+                    $body_part = reply_meeting_calendar($part, $response, $this->username);
                 }
             }
             unset($mparts);
@@ -1680,37 +1710,44 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         unset($message);
 
         if ($body_part === null) {
-            throw new StatusException(sprintf("BackendIMAP->MeetingResponse(): Error, no calendar part modified"), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
+            throw new StatusException("BackendIMAP->MeetingResponse(): Error, no calendar part modified", SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
         }
 
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->MeetingResponse - Creating response message"));
-        $mail = new Mail_mimepart();
-        $headers = array("MIME-version" => "1.0",
-                "From" => $mail->encodeHeader("from", $from_header, "UTF-8"),
-                "To" => $mail->encodeHeader("to", $to_header, "UTF-8"),
-                "Date" => gmdate("D, d M Y H:i:s", time())." GMT",
-                "Subject" => $mail->encodeHeader("subject", $subject_header, "UTF-8"),
-                "Content-class" => "urn:content-classes:calendarmessage",
-                "Content-transfer-encoding" => "8BIT");
-        unset($mail);
-        $mail = new Mail_mimepart($body_part, array("content_type" => "text/calendar; method=REPLY; charset=UTF-8", "headers" => $headers));
-
-        $encoded_mail = $mail->encode();
-        unset($mail);
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->MeetingResponse - Response message"));
-        foreach ($encoded_mail["headers"] as $k => $v) {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("%s: %s", $k, $v));
+        $uuid_calendar = "";
+        switch($response) {
+            case 1: // ACCEPTED
+            case 2: // TENTATIVE
+                $uuid_calendar = create_calendar_dav($body_part);
+                break;
+            case 3: // DECLINED
+                // Do nothing
+                break;
         }
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("%s", $encoded_mail["body"]));
 
-        $send = $this->sendMessage($fromaddr, $toaddr, $encoded_mail["headers"], $encoded_mail["body"]);
+        // We don't need to send a reply, because the client will do it
 
-        if ($send) {
-            $this->saveSentMessage($encoded_mail["headers"], $encoded_mail["body"]);
-        }
-        unset($encoded_mail);
+        // Remove message: answered invitation
+            // Roundcube client doesn't remove the original message, but Zarafa backend does
+        $s1 = @imap_delete ($this->mbox, $requestid, FT_UID);
+        $s11 = @imap_setflag_full($this->mbox, $requestid, "\\Deleted", FT_UID);
+        $s2 = @imap_expunge($this->mbox);
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->MeetingResponse('%s','%s'): removing message result: s-delete: '%s' s-expunge: '%s' setflag: '%s'", $folderid, $requestid, $s1, $s2, $s11));
 
-        return $send;
+        return $uuid_calendar;
+    }
+
+
+    /**
+     * Resolves recipients
+     *
+     * @param SyncObject        $resolveRecipients
+     *
+     * @access public
+     * @return SyncObject       $resolveRecipients
+     */
+    public function ResolveRecipients($resolveRecipients) {
+        // TODO:
+        return false;
     }
 
 
@@ -1728,7 +1765,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         if (strpos($username, "@") === false && strlen($this->domain) > 0) {
             $email .= "@" . $this->domain;
         }
-        return array('emailaddress' => $email, 'fullname' => $this->getDefaultFullNameValue($username));
+        return array('emailaddress' => $email, 'fullname' => getDefaultFullNameValue($username, $this->domain));
     }
 
 
@@ -1825,7 +1862,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         $search = true;
 
         if (empty($searchFolderId)) {
-            $searchFolderId = $this->getFolderIdFromImapId('INBOX');
+            $searchFolderId = $this->getFolderIdFromImapId($this->create_name_folder(IMAP_FOLDER_INBOX), false);
         }
 
         // Convert searchFolderId to IMAP id
@@ -1944,8 +1981,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      */
     private function getSearchRestriction($cpo) {
         $searchText = $cpo->GetSearchFreeText();
-        $searchGreater = $cpo->GetSearchValueGreater();
-        $searchLess = $cpo->GetSearchValueLess();
+        $searchGreater = strftime("%Y-%m-%d", strtotime($cpo->GetSearchValueGreater()));
+        $searchLess = strftime("%Y-%m-%d", strtotime($cpo->GetSearchValueLess()));
 
         $filter = '';
         if ($searchGreater != '') {
@@ -2033,10 +2070,22 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @access protected
      * @return string       hex folder id
      */
-    protected function getFolderIdFromImapId($imapid) {
+    protected function getFolderIdFromImapId($imapid, $case_sensitive = true) {
         $this->InitializePermanentStorage();
 
-        if (isset($this->permanentStorage->fmFimapFid)) {
+        if (!isset($this->permanentStorage->fmFimapFid)) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFolderIdFromImapId('%s') IMAP cache folder not found, creating one", $imapid));
+            // folderId to folderImap mapping
+            $this->permanentStorage->fmFidFimap = array();
+            // folderImap to folderId mapping
+            $this->permanentStorage->fmFimapFid = array();
+            // folderImap to folderId mapping - lowercase
+            $this->permanentStorage->fmFimapFidLowercase = array();
+
+            $this->GetFolderList();
+        }
+
+        if ($case_sensitive) {
             if (isset($this->permanentStorage->fmFimapFid[$imapid])) {
                 $folderid = $this->permanentStorage->fmFimapFid[$imapid];
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFolderIdFromImapId('%s') = %s", $imapid, $folderid));
@@ -2047,6 +2096,18 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 return false;
             }
         }
+        else {
+            if (isset($this->permanentStorage->fmFimapFidLowercase[strtolower($imapid)])) {
+                $folderid = $this->permanentStorage->fmFimapFidLowercase[strtolower($imapid)];
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFolderIdFromImapId('%s', false) = %s", $imapid, $folderid));
+                return $folderid;
+            }
+            else {
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFolderIdFromImapId('%s', false) = %s", $imapid, 'not found'));
+                return false;
+            }
+        }
+
         ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->getFolderIdFromImapId('%s') = %s", $imapid, 'not initialized!'));
         return false;
     }
@@ -2072,21 +2133,28 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             // generate folderid and add it to the mapping
             $folderid = sprintf('%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ));
 
-            // folderId to folderImap mapping
-            if (!isset($this->permanentStorage->fmFidFimap))
-                $this->permanentStorage->fmFidFimap = array();
+//             // folderId to folderImap mapping
+//             if (!isset($this->permanentStorage->fmFidFimap))
+//                 $this->permanentStorage->fmFidFimap = array();
 
             $a = $this->permanentStorage->fmFidFimap;
             $a[$folderid] = $imapid;
             $this->permanentStorage->fmFidFimap = $a;
 
-            // folderImap to folderid mapping
-            if (!isset($this->permanentStorage->fmFimapFid))
-                $this->permanentStorage->fmFimapFid = array();
+//             // folderImap to folderid mapping
+//             if (!isset($this->permanentStorage->fmFimapFid))
+//                 $this->permanentStorage->fmFimapFid = array();
 
             $b = $this->permanentStorage->fmFimapFid;
             $b[$imapid] = $folderid;
             $this->permanentStorage->fmFimapFid = $b;
+
+//             if (!isset($this->permanentStorage->fmFimapFidLowercase))
+//                 $this->permanentStorage->fmFimapFidLowercase = array();
+
+            $c = $this->permanentStorage->fmFimapFidLowercase;
+            $c[strtolower($imapid)] = $folderid;
+            $this->permanentStorage->fmFimapFidLowercase = $c;
         }
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->convertImapId('%s') = %s", $imapid, $folderid));
@@ -2129,11 +2197,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @return boolean      if folder is opened
      */
     protected function imap_reopen_folder($folderid, $force = false) {
-        // if the stream is not alive, we open it again
-        if (!@imap_ping($this->mbox)) {
-            $this->mbox = @imap_open($this->server, $this->username, $this->password, OP_HALFOPEN);
-            $this->mboxFolder = "";
-        }
+        // Reconnect
+        $this->imap_reconnect();
 
         // to see changes, the folder has to be reopened!
         if ($this->mboxFolder != $folderid || $force) {
@@ -2149,6 +2214,20 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         return true;
     }
 
+    /**
+     * Reconnect IMAP connection if needed
+     *
+     * @access private
+     */
+    private function imap_reconnect() {
+        if ($this->mbox) {
+            imap_ping($this->mbox);
+        }
+        else {
+            $this->mbox = @imap_open($this->server, $this->username, $this->password, OP_HALFOPEN);
+            $this->mboxFolder = "";
+        }
+    }
 
     /**
      * Creates a new IMAP folder.
@@ -2301,7 +2380,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      */
     protected function checkIfIMAPFolder($folderName) {
         $folder_name = $folderName;
-        if (defined(IMAP_FOLDER_PREFIX) && strlen(IMAP_FOLDER_PREFIX) > 0) {
+        if (defined('IMAP_FOLDER_PREFIX') && strlen(IMAP_FOLDER_PREFIX) > 0) {
             // TODO: We don't care about the inbox exception with the prefix, because we won't check inbox
             $folder_name = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $folder_name;
         }
@@ -2332,230 +2411,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         return $receivedtime;
     }
 
-    /**
-     * Returns the default value for "From"
-     *
-     * @access private
-     * @return string
-     */
-    private function getDefaultFromValue() {
-        $v = "";
-        switch (IMAP_DEFAULTFROM) {
-            case 'username':
-                $v = $this->username;
-                break;
-            case 'domain':
-                $v = $this->domain;
-                break;
-            case 'ldap':
-                $v = $this->getIdentityFromLdap($this->username, $this->domain, IMAP_FROM_LDAP_FROM, true);
-                break;
-            case 'sql':
-                $v = $this->getIdentityFromSql($this->username, $this->domain, IMAP_FROM_SQL_FROM, true);
-                break;
-            case 'passwd':
-                $v = $this->getIdentityFromPasswd($this->username, $this->domain, 'FROM', true);
-                break;
-            default:
-                $v = $this->username . IMAP_DEFAULTFROM;
-                break;
-        }
-
-        return $v;
-    }
-
-    /**
-     * Return the default value for "FullName"
-     *
-     * @access private
-     * @param string     $username          Username
-     * @return string
-     */
-    private function getDefaultFullNameValue($username) {
-        $v = $this->username;
-        switch (IMAP_DEFAULTFROM) {
-            case 'ldap':
-                $v = $this->getIdentityFromSql($username, $this->domain, IMAP_FROM_LDAP_FULLNAME, false);
-                break;
-            case 'sql':
-                $v = $this->getIdentityFromSql($username, $this->domain, IMAP_FROM_SQL_FULLNAME, false);
-                break;
-            case 'passwd':
-                $v = $this->getIdentityFromPasswd($username, $this->domain, 'FULLNAME', false);
-                break;
-        }
-
-        return $v;
-    }
-
-    /**
-     * Generate the "From"/"FullName" value stored in a LDAP server
-     *
-     * @access private
-     * @params string   $username    username value
-     * @params string   $domain      domain value
-     * @params string   $identity    pattern to fill with ldap values
-     * @params boolean  $encode      if the result should be encoded as a header
-     * @return string
-     */
-    private function getIdentityFromLdap($username, $domain, $identity, $encode = true) {
-        $ret_value = $username;
-
-        $ldap_conn = null;
-        try {
-            $ldap_conn = ldap_connect(IMAP_FROM_LDAP_SERVER, IMAP_FROM_LDAP_SERVER_PORT);
-            if ($ldap_conn) {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Connected to LDAP"));
-                ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-                ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
-                $ldap_bind = ldap_bind($ldap_conn, IMAP_FROM_LDAP_USER, IMAP_FROM_LDAP_PASSWORD);
-
-                if ($ldap_bind) {
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Authenticated in LDAP"));
-                    $filter = str_replace('#username', $username, str_replace('#domain', $domain, IMAP_FROM_LDAP_QUERY));
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Searching From with filter: %s", $filter));
-                    $search = ldap_search($ldap_conn, IMAP_FROM_LDAP_BASE, $filter, unserialize(IMAP_FROM_LDAP_FIELDS));
-                    $items = ldap_get_entries($ldap_conn, $search);
-                    if ($items['count'] > 0) {
-                        $ret_value = $identity;
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Found entry in LDAP. Generating From"));
-                        // We get the first object. It's your responsability to make the query unique
-                        foreach (unserialize(IMAP_FROM_LDAP_FIELDS) as $field) {
-                            $ret_value = str_replace('#'.$field, $items[0][$field][0], $ret_value);
-                        }
-                        if ($encode) {
-                            $ret_value = $this->encodeFrom($ret_value);
-                        }
-                    }
-                    else {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - No entry found in LDAP"));
-                    }
-                }
-                else {
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Not authenticated in LDAP server"));
-                }
-            }
-            else {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromLdap() - Not connected to LDAP server"));
-            }
-        }
-        catch(Exception $ex) {
-            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->getIdentityFromLdap() - Error getting From value from LDAP server: %s", $ex));
-        }
-
-        ldap_close($ldap_conn);
-
-        return $ret_value;
-    }
-
-
-    /**
-     * Generate the "From" value stored in a SQL Database
-     *
-     * @access private
-     * @params string   $username    username value
-     * @params string   $domain      domain value
-     * @return string
-     */
-    private function getIdentityFromSql($username, $domain, $identity, $encode = true) {
-        $ret_value = $username;
-
-        $dbh = $sth = $record = null;
-        try {
-            $dbh = new PDO(IMAP_FROM_SQL_DSN, IMAP_FROM_SQL_USER, IMAP_FROM_SQL_PASSWORD, unserialize(IMAP_FROM_SQL_OPTIONS));
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromSql() - Connected to SQL Database"));
-
-            $sql = str_replace('#username', $username, str_replace('#domain', $domain, IMAP_FROM_SQL_QUERY));
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromSql() - Searching From with filter: %s", $sql));
-            $sth = $dbh->prepare($sql);
-            $sth->execute();
-            $record = $sth->fetch(PDO::FETCH_ASSOC);
-            if ($record) {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromSql() - Found entry in SQL Database. Generating From"));
-                $ret_value = $identity;
-                foreach (unserialize(IMAP_FROM_SQL_FIELDS) as $field) {
-                    $ret_value = str_replace('#'.$field, $record[$field], $ret_value);
-                }
-                if ($encode) {
-                    $ret_value = $this->encodeFrom($ret_value);
-                }
-            }
-            else {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromSql() - No entry found in SQL Database"));
-            }
-        }
-        catch(PDOException $ex) {
-            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->getIdentityFromSql() - Error getting From value from SQL Database: %s", $ex));
-        }
-
-        $dbh = $sth = $record = null;
-
-        return $ret_value;
-    }
-
-    /**
-     * Generate the "From" value from the local posix passwd database
-     *
-     * @access private
-     * @params string   $username    username value
-     * @params string   $domain      domain value
-     * @return string
-     */
-    private function getIdentityFromPasswd($username, $domain, $identity, $encode = true) {
-        $ret_value = $username;
-
-        try {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromPasswd() - Fetching info for user %s", $username));
-
-            $local_user = posix_getpwnam($username);
-            if ($local_user) {
-                $tmp = $local_user['gecos'];
-                $tmp = explode(',', $tmp);
-                $name = $tmp[0];
-                unset($tmp);
-
-                switch ($identity) {
-                    case 'FROM':
-                        if (strlen($domain) > 0) {
-                            $ret_value = sprintf("%s <%s@%s>", $name, $username, $domain);
-                        } else {
-                            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->getIdentityFromPasswd() - No domain passed. Cannot construct From address."));
-                        }
-                        break;
-                    case 'FULLNAME':
-                        $ret_value = sprintf("%s", $name);
-                        break;
-                }
-                if ($encode) {
-                    $ret_value = $this->encodeFrom($ret_value);
-                }
-            } else {
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getIdentityFromPasswd() - No entry found in Password database"));
-
-            }
-
-        }
-        catch(Exception $ex) {
-            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendIMAP->getIdentityFromPasswd() - Error getting From value from passwd database: %s", $ex));
-        }
-
-        return $ret_value;
-    }
-
-
-    /**
-     * Encode the From value as Base64
-     *
-     * @access private
-     * @param string    $from   From value
-     * @return string
-     */
-    private function encodeFrom($from) {
-        $items = explode("<", $from);
-        $name = trim($items[0]);
-        return "=?UTF-8?B?" . base64_encode($name) . "?= <" . $items[1];
-    }
-
 
     /**
      * Returns a list of mime-types with extension files
@@ -2565,9 +2420,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      */
     private function SystemExtensionMimeTypes() {
         $out = array();
-        $mime_file = '/etc/mime.types';
-        if (file_exists($mime_file)) {
-            $file = fopen($mime_file, 'r');
+        if (file_exists(SYSTEM_MIME_TYPES_MAPPING)) {
+            $file = fopen(SYSTEM_MIME_TYPES_MAPPING, 'r');
             while(($line = fgets($file)) !== false) {
                 $line = trim(preg_replace('/#.*/', '', $line));
                 if(!$line)
@@ -2586,174 +2440,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
 
         return $out;
-    }
-
-
-    /**
-     * Modify a text/calendar part to transform it in a reply
-     *
-     * @access private
-     * @param $part             MIME part
-     * @param $response         Response numeric value
-     * @return string MIME text/calendar
-     */
-    private function replyMeetingCalendar($part, $response) {
-        $response_text = "ACCEPTED"; // 1 or default is ACCEPTED
-        switch ($response) {
-            case 1:
-                $response_text = "ACCEPTED";
-                break;
-            case 2:
-                $response_text = "TENTATIVE";
-                break;
-            case 3:
-                $response_text = "DECLINED";
-                break;
-        }
-
-        $ical = new iCalComponent();
-        $ical->ParseFrom($part->body);
-
-        $ical->SetPValue("METHOD", "REPLY");
-        $ical->SetCPParameterValue("VEVENT", "ATTENDEE", "PARTSTAT", $response_text);
-
-        return $ical->Render();
-    }
-
-
-    /**
-     * Converts a text/calendar part into SyncMeetingRequest
-     *
-     * @access private
-     * @param $part    MIME part
-     * @param $output  SyncMail object
-     */
-    private function parseMeetingCalendar($part, &$output) {
-        $ical = new iCalComponent();
-        $ical->ParseFrom($part->body);
-
-        if (isset($part->ctype_parameters["method"])) {
-            switch (strtolower($part->ctype_parameters["method"])) {
-                case "cancel":
-                    $output->messageclass = "IPM.Schedule.Meeting.Canceled";
-                    break;
-                case "counter":
-                    $output->messageclass = "IPM.Schedule.Meeting.Resp.Tent";
-                    break;
-                case "reply":
-                    $props = $ical->GetPropertiesByPath('!VTIMEZONE/ATTENDEE');
-                    if (count($props) == 1) {
-                        $props_params = $props[0]->Parameters();
-                        if (isset($props_params["PARTSTAT"])) {
-                            switch (strtolower($props_params["PARTSTAT"])) {
-                                case "accepted":
-                                    $output->messageclass = "IPM.Schedule.Meeting.Resp.Pos";
-                                    break;
-                                case "needs-action":
-                                case "tentative":
-                                    $output->messageclass = "IPM.Schedule.Meeting.Resp.Tent";
-                                    break;
-                                case "declined":
-                                    $output->messageclass = "IPM.Schedule.Meeting.Resp.Neg";
-                                    break;
-                                default:
-                                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - Unknown reply status %s", strtolower($props_params["PARTSTAT"])));
-                                    $output->messageclass = "IPM.Appointment";
-                                    break;
-                            }
-                        }
-                        else {
-                            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - No reply status found"));
-                            $output->messageclass = "IPM.Appointment";
-                        }
-                    }
-                    else {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - There are not attendees"));
-                        $output->messageclass = "IPM.Appointment";
-                    }
-                    break;
-                case "request":
-                    $output->messageclass = "IPM.Schedule.Meeting.Request";
-                    break;
-                default:
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - Unknown method %s", strtolower($part->headers["method"])));
-                    $output->messageclass = "IPM.Appointment";
-                    break;
-            }
-        }
-        else {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - No method header"));
-            $output->messageclass = "IPM.Appointment";
-        }
-
-        $props = $ical->GetPropertiesByPath('VEVENT/DTSTAMP');
-        if (count($props) == 1) {
-            $output->meetingrequest->dtstamp = Utils::MakeUTCDate($props[0]->Value());
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/UID');
-        if (count($props) == 1) {
-            $output->meetingrequest->globalobjid = $props[0]->Value();
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/DTSTART');
-        if (count($props) == 1) {
-            $output->meetingrequest->starttime = Utils::MakeUTCDate($props[0]->Value());
-            if (strlen($props[0]->Value()) == 8) {
-                $output->meetingrequest->alldayevent = 1;
-            }
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/DTEND');
-        if (count($props) == 1) {
-            $output->meetingrequest->endtime = Utils::MakeUTCDate($props[0]->Value());
-            if (strlen($props[0]->Value()) == 8) {
-                $output->meetingrequest->alldayevent = 1;
-            }
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/ORGANIZER');
-        if (count($props) == 1) {
-            $output->meetingrequest->organizer = str_ireplace("MAILTO:", "", $props[0]->Value());
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/LOCATION');
-        if (count($props) == 1) {
-            $output->meetingrequest->location = $props[0]->Value();
-        }
-        $props = $ical->GetPropertiesByPath('VEVENT/CLASS');
-        if (count($props) == 1) {
-            switch ($props[0]->Value()) {
-                case "PUBLIC":
-                    $output->meetingrequest->sensitivity = "0";
-                    break;
-                case "PRIVATE":
-                    $output->meetingrequest->sensitivity = "2";
-                    break;
-                case "CONFIDENTIAL":
-                    $output->meetingrequest->sensitivity = "3";
-                    break;
-                default:
-                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parseMeetingCalendar() - No sensitivity class. Using 2"));
-                    $output->meetingrequest->sensitivity = "2";
-                    break;
-            }
-        }
-
-        // Get $tz from first timezone
-        $props = $ical->GetPropertiesByPath("VTIMEZONE/TZID");
-        if (count($props) > 0) {
-            // TimeZones shouldn't have dots
-            $tzname = str_replace(".", "", $props[0]->Value());
-            $tz = TimezoneUtil::GetFullTZFromTZName($tzname);
-        }
-        else {
-            $tz = TimezoneUtil::GetFullTZ();
-        }
-        $output->meetingrequest->timezone = base64_encode(TimezoneUtil::getSyncBlobFromTZ($tz));
-
-        // Fixed values
-        $output->meetingrequest->instancetype = 0;
-        $output->meetingrequest->responserequested = 1;
-        $output->meetingrequest->busystatus = 2;
-
-        // TODO: reminder
-        $output->meetingrequest->reminder = "";
     }
 
 
@@ -2835,19 +2521,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             $headers .= "$k: $v";
         }
 
-        if ($this->sentID == false) {
-            // We don't have sentID loaded, try to find it
-            $folder_name = IMAP_FOLDER_SENT;
-            if (defined('IMAP_FOLDER_SENT') && strlen(IMAP_FOLDER_PREFIX) > 0)
-                $folder_name = IMAP_FOLDER_PREFIX . $this->getServerDelimiter() . $folder_name;
-            $sentfolder = @imap_getmailboxes($this->mbox, $this->server, $folder_name);
-            if (isset($sentfolder[0])) {
-                $this->sentID = $this->convertImapId(substr($sentfolder[0]->name, strlen($this->server)));
-            }
-            else {
-                // We didn't find it, so we will do a full search
-                $this->GetHierarchy();
-            }
+        if ($this->sentID === false) {
+            $this->sentID = $this->getFolderIdFromImapId($this->create_name_folder(IMAP_FOLDER_SENT), false);
         }
 
         $saved = false;
@@ -2873,9 +2548,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
      * @access private
      */
     private function setFromHeaderValue(&$headers) {
-        $from = $this->getDefaultFromValue();
+        $from = getDefaultFromValue($this->username, $this->domain);
 
-        // If the message is not s/mime
         if (isset($headers["from"])) {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFromHeaderValue(): from defined: %s", $headers["from"]));
             if (strlen(IMAP_DEFAULTFROM) > 0) {
@@ -2884,7 +2558,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             }
         }
         elseif (isset($headers["From"])) {
-            // if the message is s/mime
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFromHeaderValue(): From defined: %s", $headers["From"]));
             if (strlen(IMAP_DEFAULTFROM) > 0) {
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->getFromHeaderValue(): Overwriting From: %s", $from));
@@ -2971,5 +2644,64 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
         }
 
         return $folders;
+    }
+
+    /**
+     * Add one address to the list
+     *
+     * @access private
+     * @param array $addresses
+     * @param RFC822 address object $addr
+     * @return string
+     */
+    private function add_address_to_list(&$addresses, $addr) {
+        $name = "";
+
+        if (isset($addr->mailbox) && isset($addr->host) && isset($addr->personal)) {
+            $address = sprintf("%s@%s", $addr->mailbox, $addr->host);
+            $name = $addr->personal;
+
+            if(strlen($name) == 0 || $name == $address) {
+                $fulladdr = $address;
+            }
+            else {
+                if (preg_match('/^\".*\"$/', $name)) {
+                    $fulladdr = sprintf("%s <%s>", $name, $address);
+                }
+                else {
+                    $fulladdr = sprintf("\"%s\" <%s>", $name, $address);
+                }
+            }
+
+            array_push($addresses, $fulladdr);
+        }
+
+        return $name;
+    }
+
+    /**
+     * Close the IMAP connection.
+     *
+     * @access private
+     */
+    private function close_connection() {
+        if ($this->mbox) {
+            // list all errors
+            $errors = imap_errors();
+            if (is_array($errors)) {
+                foreach ($errors as $e) {
+                    if (stripos($e, "fail") !== false) {
+                        $level = LOGLEVEL_WARN;
+                    }
+                    else {
+                        $level = LOGLEVEL_DEBUG;
+                    }
+                    ZLog::Write($level, "BackendIMAP->close_connection(): IMAP said: " . $e);
+                }
+            }
+            @imap_close($this->mbox);
+            ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->close_connection(): disconnected from IMAP server");
+            $this->mbox = false;
+        }
     }
 };

@@ -44,7 +44,13 @@
 ************************************************/
 
 
-ob_start(null, 1048576);
+// #190, KD 2015-06-08 - We are missing the flags to truncate the buffer in PHP >= 5.4
+if (version_compare(phpversion(), '5.4.0') < 0) {
+    ob_start(null, 1048576);
+}
+else {
+    ob_start(null, 1048576, PHP_OUTPUT_HANDLER_STDFLAGS);
+}
 
 // ignore user abortions because this can lead to weird errors - see ZP-239
 ignore_user_abort(true);
@@ -83,7 +89,7 @@ if (defined('LOG_MEMORY_PROFILER') && LOG_MEMORY_PROFILER) {
         // Stop here if this is an OPTIONS request
         if (Request::IsMethodOPTIONS()) {
             if (!$autenticationInfo || !$GETUser) {
-                throw new AuthenticationRequiredException("Access denied. Please send authorisation information");
+                throw new AuthenticationRequiredException("Access denied. Please send authentication information");
             }
             else {
                 throw new NoPostRequestException("Options request", NoPostRequestException::OPTIONS_REQUEST);
@@ -153,11 +159,6 @@ if (defined('LOG_MEMORY_PROFILER') && LOG_MEMORY_PROFILER) {
         // log amount of data transferred
         // TODO check $len when streaming more data (e.g. Attachments), as the data will be send chunked
         ZPush::GetDeviceManager()->SentData(ob_get_length());
-
-        ZPush::FinishResponse();
-
-        // destruct backend after all data is on the stream
-        ZPush::GetBackend()->Logoff();
     }
 
     catch (NoPostRequestException $nopostex) {
@@ -179,8 +180,6 @@ if (defined('LOG_MEMORY_PROFILER') && LOG_MEMORY_PROFILER) {
             if (!headers_sent() && $nopostex->showLegalNotice())
                 ZPush::PrintZPushLegal('GET not supported', $nopostex->getMessage());
         }
-
-        ZPush::FinishResponse();
     }
 
     catch (Exception $ex) {
@@ -236,19 +235,19 @@ if (defined('LOG_MEMORY_PROFILER') && LOG_MEMORY_PROFILER) {
 
         // Announce exception if the TopCollector if available
         ZPush::GetTopCollector()->AnnounceInformation(get_class($ex), true);
-
-        ZPush::FinishResponse();
     }
+
+    // FinishResponse
+    ZPush::FinishResponse();
+    // destruct backend after all data is on the stream
+    ZPush::GetBackend()->Logoff();
 
     // save device data if the DeviceManager is available
     if (ZPush::GetDeviceManager(false))
         ZPush::GetDeviceManager()->Save();
 
     // end gracefully
-    if (version_compare(phpversion(), '5.4.0') < 0)
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("-------- End - max mem: %s/%s - time: %s - code: %s", memory_get_peak_usage(false), memory_get_peak_usage(true), number_format(time() - $_SERVER["REQUEST_TIME"], 4), http_response_code()));
-    else
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("-------- End - max mem: %s/%s - time: %s - code: %s", memory_get_peak_usage(false), memory_get_peak_usage(true), number_format(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"], 4), http_response_code()));
+    ZLog::WriteEnd();
 
 if (defined('LOG_MEMORY_PROFILER') && LOG_MEMORY_PROFILER) {
     if (function_exists('memprof_enable')) {

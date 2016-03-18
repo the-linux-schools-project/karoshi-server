@@ -6,7 +6,9 @@
 *
 * Created   :   27.11.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2012 - 2014 Jean-Louis Dupond
+*
+* Jean-Louis Dupond released this code as AGPLv3 here: https://github.com/dupondje/PHP-Push-2/issues/93
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
@@ -45,10 +47,13 @@
 //  BackendCalDAV settings
 // ************************
 
-// Server address
-define('CALDAV_SERVER', 'http://127.0.0.1');
+// Server protocol: http or https
+define('CALDAV_PROTOCOL', 'http');
 
-// Port
+// Server name
+define('CALDAV_SERVER', '127.0.0.1');
+
+// Server port
 define('CALDAV_PORT', '80');
 
 // Path
@@ -62,3 +67,8 @@ define('CALDAV_PERSONAL', 'personal');
 // SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower
 define('CALDAV_SUPPORTS_SYNC', true);
+
+
+// Maximum period to sync.
+// Some servers don't support more than 10 years so you will need to change this
+define('CALDAV_MAX_SYNC_PERIOD', 2147483647);

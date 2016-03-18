@@ -253,31 +253,9 @@ function build_mime_message($message) {
     return $built_message;
 }
 
-/**
- * Detect if the message-part is VCALENDAR
- * Content-Type: text/calendar;
- *
- * @param Mail_mimeDecode $message
- * @return boolean
- * @access public
- */
-function is_calendar($message) {
-    $res = false;
-
-    if (isset($message->ctype_primary) && isset($message->ctype_secondary)) {
-        if ($message->ctype_primary == "text" && $message->ctype_secondary == "calendar") {
-            $res = true;
-        }
-    }
-
-    return $res;
-}
-
 
 /**
  * Detect if the message-part is SMIME
- * Content-Type: multipart/signed;
- * Content-Type: application/pkcs7-mime;
  *
  * @param Mail_mimeDecode $message
  * @return boolean
@@ -294,4 +272,36 @@ function is_smime($message) {
     }
 
     return $res;
+}
+
+
+/**
+ * Detect if the message-part is SMIME, encrypted but not signed
+ * #190, KD 2015-06-04
+ *
+ * @param Mail_mimeDecode $message
+ * @return boolean
+ * @access public
+ */
+function is_encrypted($message) {
+    $res = false;
+
+    if (is_smime($message) && !($message->ctype_primary == "multipart" && $message->ctype_secondary == "signed")) {
+        $res = true;
+    }
+
+    return $res;
+}
+
+
+/**
+ * Detect if the message is multipart.
+ * #198, KD 2015-06-15
+ *
+ * @param Mail_mimeDecode $message
+ * @return boolean
+ * @access public
+ */
+function is_multipart($message) {
+    return isset($message->ctype_primary) && $message->ctype_primary == "multipart";
 }

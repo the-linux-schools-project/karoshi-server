@@ -54,6 +54,7 @@ class SyncCollections implements Iterator {
     const ERROR_NO_COLLECTIONS = 1;
     const ERROR_WRONG_HIERARCHY = 2;
     const OBSOLETE_CONNECTION = 3;
+    const HIERARCHY_CHANGED = 4;
 
     private $stateManager;
 
@@ -473,7 +474,7 @@ class SyncCollections implements Iterator {
 
             // Check if a hierarchy sync is necessary
             if (ZPush::GetDeviceManager()->IsHierarchySyncRequired())
-                throw new StatusException("SyncCollections->CheckForChanges(): HierarchySync required.", self::ERROR_WRONG_HIERARCHY);
+                throw new StatusException("SyncCollections->CheckForChanges(): HierarchySync required.", self::HIERARCHY_CHANGED);
 
             // Check if there are newer requests
             // If so, this process should be terminated if more than 60 secs to go
@@ -505,15 +506,19 @@ class SyncCollections implements Iterator {
 
                 $validNotifications = false;
                 foreach ($notifications as $folderid) {
-                    // check if the notification on the folder is within our filter
-                    if ($this->CountChange($folderid)) {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->CheckForChanges(): Notification received on folder '%s'", $folderid));
-                        $validNotifications = true;
-                        $this->waitingTime = time()-$started;
-                    }
-                    else {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->CheckForChanges(): Notification received on folder '%s', but it is not relevant", $folderid));
-                    }
+                    // ZP-631 - temporary disable checking validity of notifications
+                    // notify mobile for all received notifications
+                    $this->changes[$folderid] = 1;
+                    $validNotifications = true;
+//                     // check if the notification on the folder is within our filter
+//                     if ($this->CountChange($folderid)) {
+//                         ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->CheckForChanges(): Notification received on folder '%s'", $folderid));
+//                         $validNotifications = true;
+//                         $this->waitingTime = time()-$started;
+//                     }
+//                     else {
+//                         ZLog::Write(LOGLEVEL_DEBUG, sprintf("SyncCollections->CheckForChanges(): Notification received on folder '%s', but it is not relevant", $folderid));
+//                     }
                 }
                 if ($validNotifications)
                     return true;

@@ -276,7 +276,7 @@
  *  Backend settings
  */
     // the backend data provider
-     define('BACKEND_PROVIDER', 'BackendCombined');
+    define('BACKEND_PROVIDER', 'BackendCombined');
 
     // top collector backend class name
     //    Default is: TopCollector

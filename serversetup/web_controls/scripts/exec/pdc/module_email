@@ -359,7 +359,7 @@ echo $SERVERNAME2 > /var/lib/samba/netlogon/domain_information/mail_server
 #echo $SERVERNAME.$REALM > /var/lib/samba/netlogon/domain_information/mail_server_fqdn
 
 #Add in a cron job to check the mail queue for excessive mail
-echo '*/15' '*' '*' '*' '1-7' /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/check_mail_queue.cron
+echo '*/15' '*' '*' '*' '1-7' /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/check_mail_queue.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Allow monitoring server and the main server to send email alerts

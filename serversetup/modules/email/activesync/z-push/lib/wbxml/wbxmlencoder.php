@@ -456,7 +456,8 @@ class WBXMLEncoder extends WBXMLDefs {
     private function processMultipart() {
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("WBXMLEncoder->processMultipart() with %d parts to be processed", $this->getBodypartsCount()));
         $len = ob_get_length();
-        $buffer = ob_get_flush();
+        // #190 - KD 2015-06-08 Replace ob_get_flush with ob_get_clean; because we don't want to disable the buffering
+        $buffer = ob_get_clean();
         $nrBodyparts = $this->getBodypartsCount();
         $blockstart = (($nrBodyparts + 1) * 2) * 4 + 4;
 
@@ -494,12 +495,19 @@ class WBXMLEncoder extends WBXMLDefs {
     }
 
     /**
-     * Writes the sent WBXML data to the log
+     * Writes the sent WBXML data to the log if it is not bigger than 512K.
      *
      * @access private
      * @return void
      */
     private function writeLog() {
-        ZLog::Write(LOGLEVEL_WBXML, "WBXML-OUT: ". base64_encode(stream_get_contents($this->_outLog, -1,0)), false);
+        $stat = fstat($this->_outLog);
+        if ($stat['size'] < 524288) {
+            $data = base64_encode(stream_get_contents($this->_outLog, -1,0));
+        }
+        else {
+            $data = "more than 512K of data";
+        }
+        ZLog::Write(LOGLEVEL_WBXML, "WBXML-OUT: ". $data, false);
     }
 }

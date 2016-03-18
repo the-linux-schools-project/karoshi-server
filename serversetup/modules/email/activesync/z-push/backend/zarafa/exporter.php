@@ -12,7 +12,7 @@
 *
 * Created   :   14.02.2011
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2013, 2015 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
@@ -210,7 +210,7 @@ class ExportChangesICS implements IExportChanges{
             throw new StatusException("ExportChangesICS->InitializeExporter(): Error, exporter or essential data not available", SYNC_FSSTATUS_CODEUNKNOWN, null, LOGLEVEL_ERROR);
 
         // PHP wrapper
-        $phpwrapper = new PHPWrapper($this->session, $this->store, $importer);
+        $phpwrapper = new PHPWrapper($this->session, $this->store, $importer, $this->folderid);
 
         // with a folderid we are going to get content
         if($this->folderid) {
@@ -234,7 +234,7 @@ class ExportChangesICS implements IExportChanges{
 
         $changes = mapi_exportchanges_getchangecount($this->exporter);
         if($changes || !($this->flags & BACKEND_DISCARD_DATA))
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ExportChangesICS->InitializeExporter() successfully. %d changes ready to sync.", $changes));
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ExportChangesICS->InitializeExporter() successfully. %d changes ready to sync for '%s'.", $changes, ($this->folderid)?bin2hex($this->folderid) : 'hierarchy'));
 
         return $ret;
     }

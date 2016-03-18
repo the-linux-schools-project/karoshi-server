@@ -22,27 +22,18 @@ $caldav = new CalDAVClient(CALDAV_SERVER . ":" . CALDAV_PORT . $caldav_path, $us
 
 printf("Connected %d\n", $caldav->CheckConnection());
 
-// Show options supported by server
-$options = $caldav->DoOptionsRequest();
-print_r($options);
-
-$calendars = $caldav->FindCalendars();
-print_r($calendars);
-
 $path = $caldav_path . CALDAV_PERSONAL . "/";
-$val = $caldav->GetCalendarDetails($path);
+
+$filter =<<<EOFFILTER
+  <C:filter>
+    <C:comp-filter name="VCALENDAR">
+          <C:comp-filter name="VEVENT">
+                <C:prop-filter name="UID">
+                        <C:text-match>040000008200E00074C5B7101A82E00800000000B72BEB1EF3CCD00100000000000000001000000067299FC1A8990B4EB88510710DB15426</C:text-match>
+                </C:prop-filter>
+          </C:comp-filter>
+    </C:comp-filter>
+  </C:filter>
+EOFFILTER;
+$val = $caldav->DoCalendarQuery($filter, $path);
 print_r($val);
-
-$begin = gmdate("Ymd\THis\Z", time() - 24*7*60*60);
-$finish = gmdate("Ymd\THis\Z", CALDAV_MAX_SYNC_PERIOD);
-$msgs = $caldav->GetEvents($begin, $finish, $path);
-print_r($msgs);
-
-// Initial sync
-$results = $caldav->GetSync($path, true, CALDAV_SUPPORTS_SYNC);
-print_r($results);
-
-sleep(60);
-
-$results = $caldav->GetSync($path, false, CALDAV_SUPPORTS_SYNC);
-print_r($results);

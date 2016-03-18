@@ -106,6 +106,7 @@ class ZPushAdminCLI {
     static private $device = false;
     static private $type = false;
     static private $backend = false;
+    static private $mappedUsername = false;
     static private $errormessage;
 
     /**
@@ -120,6 +121,7 @@ class ZPushAdminCLI {
                 "Parameters:\n\t-a list/wipe/remove/resync/clearloop/fixstates/map/unmap\n" .
                 "\t[-u] username\n" .
                 "\t[-d] deviceid\n" .
+                "\t[-m] mappedUsername\n" .
                 "\t[-b] backend\n\n" .
                 "Actions:\n" .
                 "\tlist\t\t\t\t Lists all devices and synchronized users\n" .
@@ -140,7 +142,7 @@ class ZPushAdminCLI {
                 "\tclearloop\t\t\t Clears system wide loop detection data\n" .
                 "\tclearloop -d DEVICE -u USER\t Clears all loop detection data of a device DEVICE and an optional user USER\n" .
                 "\tfixstates\t\t\t Checks the states for integrity and fixes potential issues\n" .
-                "\tmap -u USER -b BACKEND -t USER2\t Maps USER for BACKEND to username USER2 (when using 'combined' backend)\n" .
+                "\tmap -u USER -b BACKEND -m USER2\t Maps USER for BACKEND to username USER2 (when using 'combined' backend)\n" .
                 "\tunmap -u USER -b BACKEND\t Removes the mapping for USER and BACKEND (when using 'combined' backend)\n" .
                 "\n";
     }
@@ -169,7 +171,7 @@ class ZPushAdminCLI {
         if (self::$errormessage)
             return;
 
-        $options = getopt("u:d:a:t:b:");
+        $options = getopt("u:d:a:t:b:m:");
 
         // get 'user'
         if (isset($options['u']) && !empty($options['u']))
@@ -196,17 +198,17 @@ class ZPushAdminCLI {
         elseif (isset($options['type']) && !empty($options['type']))
             self::$type = strtolower(trim($options['type']));
 
-        // if type is set, it must be one of known types or a 48 byte long folder id
+        // if type is set, it must be one of known types or a 44 byte long folder id
         if (self::$type !== false) {
             if (self::$type !== self::TYPE_OPTION_EMAIL &&
                 self::$type !== self::TYPE_OPTION_CALENDAR &&
                 self::$type !== self::TYPE_OPTION_CONTACT &&
                 self::$type !== self::TYPE_OPTION_TASK &&
                 self::$type !== self::TYPE_OPTION_NOTE &&
-                strlen(self::$type) !== 48) {
+                strlen(self::$type) !== 44) {
                     self::$errormessage = "Wrong 'type'. Possible values are: ".
                         "'".self::TYPE_OPTION_EMAIL."', '".self::TYPE_OPTION_CALENDAR."', '".self::TYPE_OPTION_CONTACT."', '".self::TYPE_OPTION_TASK."', '".self::TYPE_OPTION_NOTE."' ".
-                        "or a 48 byte long folder id.";
+                        "or a 44 byte long folder id (as hex).";
                     return;
                 }
         }
@@ -216,6 +218,12 @@ class ZPushAdminCLI {
             self::$backend = strtolower(trim($options['b']));
         elseif (isset($options['backend']) && !empty($options['backend']))
             self::$backend = strtolower(trim($options['backend']));
+
+        // get 'map'
+        if (isset($options['m']) && !empty($options['m']))
+            self::$mappedUsername = trim($options['m']);
+        elseif (isset($options['mappedUsername']) && !empty($options['mappedUsername']))
+            self::$mappedUsername = trim($options['mappedUsername']);
 
         // get a command for the requested action
         switch ($action) {
@@ -285,7 +293,7 @@ class ZPushAdminCLI {
 
             // map users for 'combined' backend
             case "map":
-                if (self::$user === false || self::$backend === false || self::$type === false)
+                if (self::$user === false || self::$backend === false || self::$mappedUsername === false)
                     self::$errormessage = "Not possible to map. User, backend and target user must be specified.";
                 else
                     self::$command = self::COMMAND_MAP;
@@ -700,7 +708,7 @@ class ZPushAdminCLI {
      * @access private
      */
     static private function CommandMap() {
-        if (ZPushAdmin::AddUsernameMapping(self::$user, self::$backend, self::$type))
+        if (ZPushAdmin::AddUsernameMapping(self::$user, self::$backend, self::$mappedUsername))
             printf("Successfully mapped username.\n");
         else
             echo ZLog::GetLastMessage(LOGLEVEL_ERROR) . "\n";

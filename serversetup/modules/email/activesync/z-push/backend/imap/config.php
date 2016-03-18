@@ -212,6 +212,16 @@ $imap_smtp_params = array();
 //$imap_smtp_params = array('host' => 'ssl://localhost', 'port' => 465, 'auth' => true, 'username' => 'imap_username', 'password' => 'imap_password');
 
 
+
 // If you are using IMAP_SMTP_METHOD = mail or sendmail and your sent messages are not correctly displayed you can change this to "\n".
 //   BUT, it doesn't comply with RFC 2822 and will break if using smtp method
 define('MAIL_MIMEPART_CRLF', "\r\n");
+
+
+// A file containing file mime types->extension mappings.
+//  SELINUX users: make sure the file has a security context accesible by your apache/php-fpm process
+define('SYSTEM_MIME_TYPES_MAPPING', '/etc/mime.types');
+
+
+// Use BackendCalDAV for Meetings. You cannot hope to get that functionality working without a caldav backend.
+define('IMAP_MEETING_USE_CALDAV', false);

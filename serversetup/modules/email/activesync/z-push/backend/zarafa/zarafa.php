@@ -63,7 +63,6 @@ include_once('backend/zarafa/mapi/class.meetingrequest.php');
 include_once('backend/zarafa/mapi/class.freebusypublish.php');
 
 // processing of RFC822 messages
-include_once('include/mimeDecode.php');
 require_once('include/z_RFC822.php');
 
 // components of Zarafa backend
@@ -167,7 +166,7 @@ class BackendZarafa implements IBackend, ISearchProvider {
                 // send Z-Push version and user agent to ZCP - ZP-589
                 if (Utils::CheckMapiExtVersion('7.2.0')) {
                     $zpush_version = 'Z-Push_' . @constant('ZPUSH_VERSION');
-                    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+                    $user_agent = ZPush::GetDeviceManager()->GetUserAgent();
                     $this->session = @mapi_logon_zarafa($user, $pass, MAPI_SERVER, null, null, 0, $zpush_version, $user_agent);
                 }
                 else {
@@ -461,17 +460,13 @@ class BackendZarafa implements IBackend, ISearchProvider {
         // @see http://jira.zarafa.com/browse/ZP-68
         $meetingRequestProps = MAPIMapping::GetMeetingRequestProperties();
         $meetingRequestProps = getPropIdsFromStrings($this->store, $meetingRequestProps);
-        $props = mapi_getprops($mapimessage, array(PR_MESSAGE_CLASS, $meetingRequestProps["goidtag"], $sendMailProps["internetcpid"]));
+        $props = mapi_getprops($mapimessage, array(PR_MESSAGE_CLASS, $meetingRequestProps["goidtag"], $sendMailProps["internetcpid"], $sendMailProps["body"], $sendMailProps["html"], $sendMailProps["rtf"], $sendMailProps["rtfinsync"]));
 
-        // Convert sent message's body to UTF-8.
-        // @see http://jira.zarafa.com/browse/ZP-505
-        if (isset($props[$sendMailProps["internetcpid"]]) && $props[$sendMailProps["internetcpid"]] != INTERNET_CPID_UTF8) {
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Sent email cpid is not unicode (%d). Set it to unicode and convert email body.", $props[$sendMailProps["internetcpid"]]));
+        // Convert sent message's body to UTF-8 if it was a HTML message.
+        // @see http://jira.zarafa.com/browse/ZP-505 and http://jira.zarafa.com/browse/ZP-555
+        if (isset($props[$sendMailProps["internetcpid"]]) && $props[$sendMailProps["internetcpid"]] != INTERNET_CPID_UTF8 && MAPIUtils::GetNativeBodyType($props) == SYNC_BODYPREFERENCE_HTML) {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Sent email cpid is not unicode (%d). Set it to unicode and convert email html body.", $props[$sendMailProps["internetcpid"]]));
             $mapiprops[$sendMailProps["internetcpid"]] = INTERNET_CPID_UTF8;
-
-            $body = MAPIUtils::readPropStream($mapimessage, PR_BODY);
-            $body = Utils::ConvertCodepageStringToUtf8($props[$sendMailProps["internetcpid"]], $body);
-            $mapiprops[$sendMailProps["body"]] = $body;
 
             $bodyHtml = MAPIUtils::readPropStream($mapimessage, PR_HTML);
             $bodyHtml = Utils::ConvertCodepageStringToUtf8($props[$sendMailProps["internetcpid"]], $bodyHtml);

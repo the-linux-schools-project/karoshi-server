@@ -67,6 +67,8 @@ class BackendCombined extends Backend implements ISearchProvider {
     private $activeBackendID;
     private $numberChangesSink;
 
+    private $logon_done = false;
+
     /**
      * Constructor of the combined backend
      *
@@ -133,6 +135,7 @@ class BackendCombined extends Backend implements ISearchProvider {
             $this->backends[$i]->SetOriginalUsername($username);
         }
 
+        $this->logon_done = true;
         ZLog::Write(LOGLEVEL_DEBUG, "Combined->Logon() success");
         return true;
     }
@@ -182,6 +185,10 @@ class BackendCombined extends Backend implements ISearchProvider {
      * @return boolean
      */
     public function Logoff() {
+        // If no Logon in done, omit Logoff
+        if (!$this->logon_done)
+            return true;
+
         ZLog::Write(LOGLEVEL_DEBUG, "Combined->Logoff()");
         foreach ($this->backends as $i => $b){
             $this->backends[$i]->Logoff();
@@ -386,6 +393,19 @@ class BackendCombined extends Backend implements ISearchProvider {
         return $backend->MeetingResponse($requestid, $this->GetBackendFolder($folderid), $response);
     }
 
+    /**
+     * Resolves recipients
+     *
+     * @param SyncObject        $resolveRecipients
+     *
+     * @access public
+     * @return SyncObject       $resolveRecipients
+     */
+    public function ResolveRecipients($resolveRecipients) {
+        // TODO:
+        return false;
+    }
+
 
     /**
      * Deletes all contents of the specified folder.
@@ -444,7 +464,7 @@ class BackendCombined extends Backend implements ISearchProvider {
 
         $backend = $this->GetBackend($folderid);
         if($backend === false) {
-            // if not backend is found we return true, we don't want this to never cause an error
+            // if not backend is found we return true, we don't want this to cause an error
             return true;
         }
 
@@ -452,10 +472,9 @@ class BackendCombined extends Backend implements ISearchProvider {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCombined->ChangesSinkInitialize('%s') is supported, initializing", $folderid));
             return $backend->ChangesSinkInitialize($this->GetBackendFolder($folderid));
         }
-        else {
-            // if the backend doesn't support ChangesSink, we also return true so we don't get an error
-            return true;
-        }
+            
+        // if the backend doesn't support ChangesSink, we also return true so we don't get an error
+        return true;
      }
 
     /**
@@ -476,25 +495,19 @@ class BackendCombined extends Backend implements ISearchProvider {
         if ($this->numberChangesSink == 0) {
             ZLog::Write(LOGLEVEL_DEBUG, "BackendCombined doesn't include any Sinkable backends");
         } else {
-            $stopat = time() + $timeout - 1;
-            //we will spend 2 seconds at least in each backend that support changessink
-            // why 2 seconds? because it's the minimum to ensure we run at least once the changessink
-            // I think it's fairer than run for 10 continuos seconds the same backend (run backend1, run backend2, run backend1, run backend2... vs run backend1, run backend1, run backend2, run backend2)
-            do {
-                foreach ($this->backends as $i => $b) {
-                    if ($this->backends[$i]->HasChangesSink()) {
-                        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCombined->ChangesSink - Calling in '%s' with %d", get_class($b), 2));
+            $time_each = $timeout / $this->numberChangesSink;
+            foreach ($this->backends as $i => $b) {
+                if ($this->backends[$i]->HasChangesSink()) {
+                    ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCombined->ChangesSink - Calling in '%s' with %d", get_class($b), $time_each));
 
-                        // 2 seconds hardcoded timeout!!!
-                        $notifications_backend = $this->backends[$i]->ChangesSink(2);
-                        //preppend backend delimiter
-                        for ($c = 0; $c < count($notifications_backend); $c++) {
-                            $notifications_backend[$c] = $i . $this->config['delimiter'] . $notifications_backend[$c];
-                        }
-                        $notifications = array_merge($notifications, $notifications_backend);
+                    $notifications_backend = $this->backends[$i]->ChangesSink($time_each);
+                    //preppend backend delimiter
+                    for ($c = 0; $c < count($notifications_backend); $c++) {
+                        $notifications_backend[$c] = $i . $this->config['delimiter'] . $notifications_backend[$c];
                     }
+                    $notifications = array_merge($notifications, $notifications_backend);
                 }
-            } while($stopat > time() && empty($notifications));
+            }
         }
 
         return $notifications;

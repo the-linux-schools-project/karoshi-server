@@ -529,7 +529,7 @@ class ZPush {
                 $loaded = false;
                 foreach (self::$autoloadBackendPreference as $autoloadBackend) {
                     ZLog::Write(LOGLEVEL_DEBUG, sprintf("ZPush::GetBackend(): trying autoload backend '%s'", $autoloadBackend));
-                    $loaded = self::IncludeBackend($autoloadBackend);
+                    $loaded = class_exists($autoloadBackend) || self::IncludeBackend($autoloadBackend);
                     if ($loaded) {
                         $ourBackend = $autoloadBackend;
                         break;
@@ -538,7 +538,7 @@ class ZPush {
                 if (!$ourBackend || !$loaded)
                     throw new FatalMisconfigurationException("No Backend provider can not be loaded. Check your installation and configuration!");
             }
-            else
+            elseif (!class_exists($ourBackend))
                 self::IncludeBackend($ourBackend);
 
             if (class_exists($ourBackend))
@@ -855,15 +855,20 @@ END;
         return $defcapa;
     }
 
+    /**
+     * End Response
+     *
+     * @access public
+     */
     public static function FinishResponse() {
         $len = ob_get_length();
         if ($len !== false) {
             if (!headers_sent()) {
-                header("Content-Length: $len");
+                header(sprintf("Content-Length: %s", $len));
                 if ($len == 0)
                     header("Content-Type:");
             }
-            ZLog::Write(LOGLEVEL_DEBUG, "Flushing $len, headers already sent ? ".(headers_sent()?'true':'false'));
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Flushing %d, headers already sent? %s", $len , headers_sent() ? "yes" : "no"));
             if (!ob_end_flush())
                 ZLog::Write(LOGLEVEL_ERROR, "Unable to flush buffer!?");
         }

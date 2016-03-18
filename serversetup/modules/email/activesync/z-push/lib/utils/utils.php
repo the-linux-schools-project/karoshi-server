@@ -545,6 +545,19 @@ class Utils {
     }
 
     /**
+     * Checks for valid empty group of email
+     * e.g.: undisclosed-recipients:;
+     *
+     * @param string $email
+     *
+     * @access public
+     * @return boolean
+     */
+    static public function CheckEmailEmptyGroup($email) {
+        return (bool) preg_match('/.*:;/', $email);
+    }
+
+    /**
      * Checks if a string is base64 encoded
      *
      * @param string $string    the string to be checked
@@ -1030,7 +1043,7 @@ class Utils {
         if (preg_match('/\/[.[:word:]]+\/\w+\/(\w+)\/([\w\/]+)/', $timezone, $matches)) {
             return $matches[1] . "/" . $matches[2];
         }
-        return trim($timezone, '"');
+        return TimezoneUtil::getMSTZnameFromTZName(trim($timezone, '"'));
     }
 
     /**
