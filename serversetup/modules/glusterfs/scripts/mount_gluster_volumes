@@ -1,0 +1,35 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          mount_gluster_volumes
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: mounts gluster volumes
+### END INIT INFO
+sleep 20
+DO_MOUNT=no
+#Check that gluster volumes in /etc/fstab have started
+for GLUSTERDATA in $(grep "/mnt-gluster/" /etc/fstab | sed 's/ /,/g')
+do
+	GLUSTERSERVER=$(echo $GLUSTERDATA | cut -d, -f1)
+	MOUNTPATH=$(echo $GLUSTERDATA | cut -d, -f2)
+	GLUSTERVOL=$(basename $MOUNTPATH)
+	#Check if the gluster volume is mounted
+	if [ $(mount | grep -c $MOUNTPATH) = 0 ]
+	then
+		DO_MOUNT=yes
+		echo Attempting to start $GLUSTERVOL >> /tmp/glusterlog
+		#Force start the gluster volume
+		gluster volume start $GLUSTERVOL force >> /tmp/glusterlog 2>&1
+	fi
+done
+
+if [ $DO_MOUNT = yes ]
+then
+	sleep 5
+	echo "Attempting to mount all" >> /tmp/glusterlog
+	mount -a >> /tmp/glusterlog 2>&1
+fi
+exit
+

@@ -88,6 +88,11 @@ then
 	#Mount volume
 	echo '<ul><li>'$SERVER' - '$"mounting"' '$MOUNTBASE/$VOLUME'</li></ul>'
 	mount -a
+
+	#Add in script to make sure the gluster volume gets mounted on boot
+	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
+	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S100mount_gluster_volumes
+
 else
 	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
@@ -103,13 +108,12 @@ else
 	fi
 
 	#Mount volume
-	echo "<li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li></ul>"
+	echo "<ul><li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li></ul>"
 	mount -a
 
-	#Copy in mount command
-	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_shares /etc/init.d/
-	chmod 0755 /etc/init.d/mount_gluster_shares
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/mount_gluster_shares on 1>/dev/null 2>/dev/null
+	#Add in script to make sure the gluster volume gets mounted on boot
+	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
+	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S100mount_gluster_volumes
 	'
 fi
 }
@@ -147,7 +151,7 @@ else
 	#Open ports on firewall
 	if [ `grep -c "karoshi_gluster" /etc/shorewall/rules` = 0 ]
 	then
-		echo "<li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>"
+		echo "<ul><li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>"
 
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$PORTS'"	"-"#"karoshi_gluster /etc/shorewall/rules
@@ -163,7 +167,7 @@ else
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then
-		echo "<li>'$SERVER' - '$"starting glusterfs"'</li></ul>"
+		echo "<ul><li>'$SERVER' - '$"starting glusterfs"'</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
 	fi
 '
@@ -212,7 +216,7 @@ do
 			let PCOUNTER=$PCOUNTER+1
 			if [ $PCOUNTER = 20 ]
 			then
-				echo "<li>"$MAINSERVER - $NEWSERVER $"Gluster peer probe failure""</li>"
+				echo "<ul><li>"$MAINSERVER - $NEWSERVER $"Gluster peer probe failure""</li></ul>"
 				echo `date`: "karoshi_gluster peer probe failure for $MAINSERVER - $NEWSERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				sleep 5
 				exit 101
@@ -234,7 +238,7 @@ do
 		'	
 		if [ $? = 101 ]
 		then
-			echo "<li>"$NEWSERVER - $MAINSERVER $"Gluster peer probe failure""</li>"
+			echo "<ul><li>"$NEWSERVER - $MAINSERVER $"Gluster peer probe failure""</li></ul>"
 			echo `date`: "karoshi_gluster peer probe failure for $NEWSERVER - $MAINSERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			sleep 5
 			exit 101
@@ -255,7 +259,7 @@ do
 							let PCOUNTER=$PCOUNTER+1
 							if [ $PCOUNTER = 30 ]
 							then
-								echo "<li>"$CURRENTSERVER - $NEWSERVER $"Gluster peer probe failure""</li>"
+								echo "<ul><li>"$CURRENTSERVER - $NEWSERVER $"Gluster peer probe failure""</li></ul>"
 								echo `date`: "karoshi_gluster peer probe failure for $CURRENTSERVER - $NEWSERVER" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 								sleep 5
 								exit 101
@@ -278,7 +282,7 @@ do
 						'	
 						if [ $? = 101 ]
 						then
-							echo "<li>"$CURRENTSERVER - $NEWSERVER $"Gluster peer probe failure""</li>"
+							echo "<ul><li>"$CURRENTSERVER - $NEWSERVER $"Gluster peer probe failure""</li></ul>"
 							echo `date`: "karoshi_gluster peer probe failure for $CURRENTSERVER - $MAINSERVER" >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 							sleep 5
 							exit 101
@@ -350,7 +354,7 @@ then
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FIRSTSERVER '
 		#Create glusterfs volume
-		echo "<li>'$FIRSTSERVER' - '$"Creating GlusterFS volume"' - '$VOLUME'</li></ul>"
+		echo "<ul><li>'$FIRSTSERVER' - '$"Creating GlusterFS volume"' - '$VOLUME'</li></ul>"
 		gluster volume create '$VOLUME' '$TYPE' '$COUNTER' '$GLUSTERCLUSTER' force 1>/dev/null 
 		if [ $? != 0 ]
 		then
@@ -359,11 +363,11 @@ then
 			exit 101
 		fi
 		#Start Gluster volume
-		echo "<li>'$"Starting GlusterFS volume"' - '$VOLUME'</li></ul>"
+		echo "<ul><li>'$"Starting GlusterFS volume"' - '$VOLUME'</li></ul>"
 		gluster volume start '$VOLUME' 1>/dev/null
 		if [ $? != 0 ]
 		then
-			echo "<li>'$"There was a problem starting the volume"' - '$VOLUME'</li></ul>"
+			echo "<ul><li>'$"There was a problem starting the volume"' - '$VOLUME'</li></ul>"
 			sleep 3
 			exit 101
 		fi
@@ -536,7 +540,7 @@ then
 				let VCOUNTER=$VCOUNTER+1
 				if [ $VCOUNTER = 30 ]
 				then
-					echo "<li>"$SERVER - "$No volume information""</li>"
+					echo "<ul><li>"$SERVER - "$No volume information""</li></ul>"
 					exit 101
 				fi
 			done
@@ -551,10 +555,10 @@ then
 			[ ! -d "'$GLUSTERBASE'"/"'$VOLUME'" ] && mkdir -p "'$GLUSTERBASE'"/"'$VOLUME'"
 			[ ! -d "'$MOUNTBASE'" ] && mkdir -p "'$MOUNTBASE'"
 
-			echo "<li>"$HOSTNAME.'$REALM' - '$"stopping glusterfs"'"</li></ul>"
+			echo "<ul><li>"$HOSTNAME.'$REALM' - '$"stopping glusterfs"'"</li></ul>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
 			sleep 1
-			echo "<li>"$HOSTNAME.'$REALM' - '$"Starting glusterfs"'"</li></ul>"
+			echo "<ul><li>"$HOSTNAME.'$REALM' - '$"Starting glusterfs"'"</li></ul>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 			#Wait for volinfo to appear
 			VCOUNTER=1
@@ -565,7 +569,7 @@ then
 				let VCOUNTER=$VCOUNTER+1
 				if [ $VCOUNTER = 30 ]
 				then
-					echo "<li>"'$SERVER' - '$"No volume information"'"</li>"
+					echo "<ul><li>"'$SERVER' - '$"No volume information"'"</li></ul>"
 					exit 101
 				fi
 			done
