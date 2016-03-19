@@ -501,7 +501,7 @@ then
 	then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
 		<thead>
-		<tr><th style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></th><th><b>'$"Actions"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 		do
 			#Get data

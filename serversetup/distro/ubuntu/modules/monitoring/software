@@ -9,10 +9,10 @@ dpkg -S libfile-type-perl 1>/dev/null
 
 if [ $INSTALL_DEPS = yes ]
 then
-echo "<li>"Updating repository list"</li><br>"
-apt-get update
-echo "<li>"Installing libmime-lite-perl"</li><br>"
-apt-get install -y libmime-lite-perl libfile-type-perl
-echo "<br>"
+	echo "<ul><li>"Updating repository list"</li></ul>"
+	apt-get update
+	echo "<ul><li>"Installing libmime-lite-perl"</li></ul>"
+	apt-get install -y libmime-lite-perl libfile-type-perl
+	echo "<br>"
 fi
 

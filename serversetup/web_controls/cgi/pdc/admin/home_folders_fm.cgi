@@ -111,7 +111,7 @@ do
 		START_LINE=no
 	else
 		echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;">
-		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
+		<button class="info infoleft" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
 		<img src="'$ICON1'" alt="'$"Rename"'">
 		<span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span>
 		</button>

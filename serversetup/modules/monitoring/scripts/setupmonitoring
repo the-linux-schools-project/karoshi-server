@@ -61,6 +61,14 @@ then
 	chmod 0550 /var/www/cgi-bin
 fi
 
+#Configure apache to use cgi scripts
+ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled/
+sed -i 's/#Include conf-available/serve-cgi-bin.conf/Include conf-available/serve-cgi-bin.conf/g' /etc/apache2/sites-enabled/000-default.conf
+sed -i 's%/usr/lib/cgi-bin%/var/www/cgi-bin%g' /etc/apache2/conf-available/serve-cgi-bin.conf
+
+
+
+
 [ ! -d /opt/karoshi/"useful scripts" ] && mkdir -p /opt/karoshi/"useful scripts"
 [ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
 [ ! -d /opt/karoshi/server_network/mon/monitors_disabled ] && mkdir /opt/karoshi/server_network/mon/monitors_disabled

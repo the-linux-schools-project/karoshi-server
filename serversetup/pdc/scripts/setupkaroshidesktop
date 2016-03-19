@@ -153,7 +153,7 @@ sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanage
 
 #Modify defaullt home page to point at the web management
 echo `date`: "Modifying firefox default home page to point at the web management" >> /opt/karoshi/serversetup/install_log
-sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/usihywjy.default/prefs.js
+sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/prefs.js
 
 ###########################
 #Display completed message

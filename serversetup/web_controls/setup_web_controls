@@ -971,7 +971,7 @@ if [ ! -d /etc/fail2ban ]
 then
 	if [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall ]
 	then
-		echo "<li>"Installing fail2ban"</li>"
+		echo "<ul><li>"Installing fail2ban"</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/fail2baninstall
 	fi
 fi

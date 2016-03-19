@@ -110,7 +110,7 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 1
 #start samba
-echo "<li>"$"Starting Samba""</li><br>"
+echo "<ul><li>"$"Starting Samba""</li></ul>"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 #Create the folders
 chmod 0755 /home

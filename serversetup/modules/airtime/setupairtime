@@ -15,27 +15,27 @@ NEWUSERNAME=`echo "$DATA" | cut -s -d: -f6`
 mkdir /opt/karoshi/.tempdata/airtime.$$
 
 #Dowload latest version of airtime
-echo "<li>Downloading the latest version of airtime./</li>"
+echo "<ul><li>Downloading the latest version of airtime./</li></ul>"
 cd /opt/karoshi/.tempdata/airtime.$$
 wget  http://apt.sourcefabric.org/misc/airtime-easy-setup.deb
 [ `echo $?` != 0 ] && exit 102
 
 #Install easy setup
-echo "<li>Installaling airtime easy-setup.deb</li>"
+echo "<ulli>Installaling airtime easy-setup.deb</li></ul>"
 dpkg -i airtime-easy-setup.deb
 [ `echo $?` != 0 ] && exit 103
 
 #Update repos
-echo "<li>Updating repositories</li>"
+echo "<ul><li>Updating repositories</li></ul>"
 sudo apt-get update
 [ `echo $?` != 0 ] && exit 104
 
 #Install airtime
-echo "<li>Installing airtime</li>"
+echo "<ul><li>Installing airtime</li></ul>"
 sudo apt-get install airtime 
 [ `echo $?` != 0 ] && exit 105
 
 #Configure airtime
-echo "<li>Reconfiguring airtime</li>"
+echo "<ul><li>Reconfiguring airtime</li></ul>"
 dpkg-reconfigure airtime
 [ `echo $?` != 0 ] && exit 106

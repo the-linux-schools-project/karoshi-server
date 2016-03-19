@@ -63,7 +63,7 @@ TEXTDOMAIN=karoshi-server
 which memcached 1>/dev/null
 if [ $? != 0 ]
 then
-	echo "<li>Installing memcached</li></ul>"
+	echo "<ul><li>Installing memcached</li></ul>"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	apt-get update
 	apt-get install -y memcached
@@ -328,7 +328,7 @@ echo '<ul><li>'$"Configuring MailScanner"'</li></ul>'
 MAILSCANNERVER=4.85.2-3
 if [ $(dpkg -l | grep mailscanner | tr -cd "0-9\-.\n") != $MAILSCANNERVER ]
 then
-	echo "<li>$EMAILSERVER - updating MailScanner</li>"
+	echo "<ul><li>$EMAILSERVER - updating MailScanner</li>"
 
 	#Install dependencies
 	apt-get update

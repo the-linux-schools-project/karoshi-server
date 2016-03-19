@@ -208,11 +208,11 @@ if [ $SERVERNAME != `hostname-fqdn` ]
 then
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	PORTCHECK=53,88,389
-	echo "<li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
+	echo "<ul><li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
 	SCANRESULT=`nmap '$LDAPSERVER' -p $PORTCHECK -PN`
 	for PORT in `echo $PORTCHECK | sed "s/,/ /g"`
 	do
-		echo "<li>"Checking $PORT"</li></ul>"
+		echo "<ul><li>"Checking $PORT"</li></ul>"
 		if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
 		then
 			echo Error - The ldap server cannot be contacted on $PORT"<br>"

@@ -5,9 +5,9 @@ which ajaxterm 1>/dev/null
 if [ $? != 0 ]
 then
 echo '"<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"'
-echo "<li>"Updating repositories"</li>"
+echo "<ul><li>"Updating repositories"</li></ul>"
 apt-get update
-echo "<li>"Installing ajaxterm"</li>"
+echo "<ul><li>"Installing ajaxterm"</li></ul>"
 apt-get install -y ajaxterm
 echo "</pre>"
 fi

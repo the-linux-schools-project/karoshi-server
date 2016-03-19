@@ -38,7 +38,7 @@ source /opt/karoshi/web_controls/language/$LANGCHOICE/all
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><META HTTP-EQUIV="refresh" CONTENT="120"></head><body>'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"System Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><META HTTP-EQUIV="refresh" CONTENT="120"></head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_mon
@@ -46,11 +46,11 @@ echo '<div id="actionbox">'
 
 
 #Show title
-echo '<hr style="width: 100%; height: 2px;"><b>'$TITLE'</b>'
+echo '<b>'$TITLE'</b>'
 
 #Create table
 echo '<br><br>
-<table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: 180px;"><b>Host Group</b></td><td></td><td style="width: 80px;"><b>ping</b></td><td style="width: 80px;"><b>smb</b></td><td style="width: 80px;"><b>http</b></td><td style="width: 80px;"><b>https</b></td><td style="width: 80px;"><b>pop3</b></td><td style="width: 80px;"><b>pop3s</b></td><td style="width: 80px;"><b>imap</b></td><td style="width: 80px;"><b>imaps</b></td><td style="width: 80px;"><b>smtp</b></td><td style="width: 80px;"><b>dg</b></td><td style="width: 80px;"><b>dns</b></td><td style="width: 80px;"><b>cups</b></td></tr>'
+<table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: 180px;"><b>Host Group</b></td><td></td><td style="width: 100px;"><b>ping</b></td><td style="width: 100px;"><b>smb</b></td><td style="width: 100px;"><b>http</b></td><td style="width: 100px;"><b>https</b></td><td style="width: 100px;"><b>pop3</b></td><td style="width: 100px;"><b>pop3s</b></td><td style="width: 100px;"><b>imap</b></td><td style="width: 100px;"><b>imaps</b></td><td style="width: 100px;"><b>smtp</b></td><td style="width: 100px;"><b>dg</b></td><td style="width: 100px;"><b>dns</b></td><td style="width: 100px;"><b>cups</b></td></tr>'
 
 if [ -f  /opt/karoshi/server_network/mon/mon_data_html ]
 then
@@ -59,5 +59,5 @@ else
 echo "<tr><td>No Data</td></tr></tbody></table>"
 fi 
 
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

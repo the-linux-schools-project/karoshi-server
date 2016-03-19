@@ -231,7 +231,7 @@ then
 		umount /media/iso.'$$'
 		rm -f -R /media/iso.'$$'
 		#Copy out files
-		echo "<li>"'$DISTRIBUTIONSERVER' - '$"Copying out files"'"</li>"
+		echo "<ul><li>"'$DISTRIBUTIONSERVER' - '$"Copying out files"'"</li></ul>"
 
 		[ -d /home/tftpboot/images/'$DISTROFOLDER'/ ] && rm -f -R /home/tftpboot/images/'$DISTROFOLDER'/
 		mkdir -p /home/tftpboot/images/'$DISTROFOLDER'/

@@ -7,41 +7,39 @@ INSTALLNFS=no
 INSTALLWAKEONLAN=no
 
 dpkg -S tftpd-hpa 1>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-INSTALLTFTP=yes
-INSTALL_DEPS=yes
+	INSTALLTFTP=yes
+	INSTALL_DEPS=yes
 fi
 
 dpkg -S nfs-kernel-server 1>/dev/null
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-INSTALLNFS=yes
-INSTALL_DEPS=yes
+	INSTALLNFS=yes
+	INSTALL_DEPS=yes
 fi
 
 if [ $INSTALL_DEPS = yes ]
 then
-echo "<li>"Updating repository list"</li><br>"
-echo
-apt-get update
+	echo "<ul><li>"Updating repository list"</li></ul>"
+	apt-get update
 fi
 
 if [ $INSTALLTFTP = yes ]
 then
-echo "<li>"Installing tftpd-hpa"</li><br>"
-echo 
-apt-get install -y tftpd-hpa
-echo
+	echo "<ul><li>"Installing tftpd-hpa"</li></ul>"
+	echo 
+	apt-get install -y tftpd-hpa
 fi
 
 if [ $INSTALLNFS = yes ]
 then
-echo "<li>"Installing nfs-kernel-server"</li><br>"
-echo 
-apt-get install -y nfs-kernel-server
-cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver/nfs-kernel-server /etc/default
-echo
-chkconfig -y nfs-kernel-server on 1>/dev/null 2>/dev/null
+	echo "<ul><li>"Installing nfs-kernel-server"</li></ul>"
+	echo 
+	apt-get install -y nfs-kernel-server
+	cp -f /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver/nfs-kernel-server /etc/default
+	echo
+	chkconfig -y nfs-kernel-server on 1>/dev/null 2>/dev/null
 fi
 

@@ -16,87 +16,8 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Gen random string for client cert
 function create_random_string {
-ALPHABET=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9 0 . / + - _ ,)
-RANGE=`echo ${#ALPHABET[@]}`
-C1=$RANDOM
-let "C1 %= $RANGE"
-C2=$RANDOM
-let "C2 %= $RANGE"
-C3=$RANDOM
-let "C3 %= $RANGE"
-C4=$RANDOM
-let "C4 %= $RANGE"
-C5=$RANDOM
-let "C5 %= $RANGE"
-C6=$RANDOM
-let "C6 %= $RANGE"
-C7=$RANDOM
-let "C7 %= $RANGE"
-C8=$RANDOM
-let "C8 %= $RANGE"
-C9=$RANDOM
-let "C9 %= $RANGE"
-C10=$RANDOM
-let "C10 %= $RANGE"
-C11=$RANDOM
-let "C11 %= $RANGE"
-C12=$RANDOM
-let "C12 %= $RANGE"
-C13=$RANDOM
-let "C13 %= $RANGE"
-C14=$RANDOM
-let "C14 %= $RANGE"
-C15=$RANDOM
-let "C15 %= $RANGE"
-C16=$RANDOM
-let "C16 %= $RANGE"
-C17=$RANDOM
-let "C17 %= $RANGE"
-C18=$RANDOM
-let "C18 %= $RANGE"
-C19=$RANDOM
-let "C19 %= $RANGE"
-C20=$RANDOM
-let "C20 %= $RANGE"
-C21=$RANDOM
-let "C21 %= $RANGE"
-C22=$RANDOM
-let "C22 %= $RANGE"
-C23=$RANDOM
-let "C23 %= $RANGE"
-C24=$RANDOM
-let "C24 %= $RANGE"
-C25=$RANDOM
-let "C25 %= $RANGE"
-C1=${ALPHABET[C1]}
-C2=${ALPHABET[C2]}
-C3=${ALPHABET[C3]}
-C4=${ALPHABET[C4]}
-C5=${ALPHABET[C5]}
-C6=${ALPHABET[C6]}
-C7=${ALPHABET[C7]}
-C8=${ALPHABET[C8]}
-C9=${ALPHABET[C9]}
-C10=${ALPHABET[C10]}
-C11=${ALPHABET[C11]}
-C12=${ALPHABET[C12]}
-C13=${ALPHABET[C13]}
-C14=${ALPHABET[C14]}
-C15=${ALPHABET[C15]}
-C16=${ALPHABET[C16]}
-C17=${ALPHABET[C17]}
-C18=${ALPHABET[C18]}
-C19=${ALPHABET[C19]}
-C20=${ALPHABET[C20]}
-C21=${ALPHABET[C21]}
-C22=${ALPHABET[C22]}
-C23=${ALPHABET[C23]}
-C24=${ALPHABET[C24]}
-C25=${ALPHABET[C25]}
-CLIENT_PASS=`echo $C1$C2$C3$C4$C5$C6$C7$C8$C9$C10$C11$C12$C13$C14$C15$C16$C17$C18$C19$C20$C21$C22$C23$C24$C25`
+CLIENT_PASS=$(openssl rand -hex 25)
 }
-
-
 
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
@@ -113,43 +34,37 @@ touch /etc/ssl/webmanagement/server_web_management.key
 touch /etc/ssl/webmanagement/server_web_management_50002.crt
 touch /etc/ssl/webmanagement/server_web_management_50002.key
 touch /etc/ssl/webmanagement/server_web_management.req
-touch /etc/ssl/webmanagement/server_web_management_50002.srl
-
 chmod 0600 /etc/ssl/webmanagement/server_web_management.pem
 chmod 0600 /etc/ssl/webmanagement/server_web_management.key
 chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.crt
 chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.key
 chmod 0600 /etc/ssl/webmanagement/server_web_management.req
-chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.srl
 
-echo "<li>Creating Host Certificate</li>"
+echo "<ul><li>Creating Host Certificate</li></ul>"
 #Create host certificate
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
-
+echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\nmanage."$LOCALNAME"\nmanage."$SERVERNAME"\n"$EMAILADDRESS"\n"webmanagement"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout server_web_management.key -nodes -out server_web_management.req
 #Create client csr
-
-openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out server_web_management.pem -infiles server_web_management.req 
-echo "<li>Creating Client csr</li>"
+openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out server_web_management.pem -infiles server_web_management.req
+echo "<ul><li>Creating Client csr</li></ul>"
 #Create self signed for 50002 access
-echo "<li>Creating key for 50002 access</li>"
+echo "<ul><li>Creating key for 50002 access</li></ul>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n" | openssl req -new -x509 -days 3650 -nodes -out server_web_management_50002.crt -keyout server_web_management_50002.key
-
 #Create client certificate
-echo "<li>Creating client key</li>"
-openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 4096
+echo "<ul><li>Creating client key</li></ul>"
+openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 8129
 chmod 0600 /etc/ssl/webmanagement/client_web_management.key
-
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"manage.$LOCALNAME"\n"manage.$SERVERNAME"\n"$EMAILADDRESS"\n""\n\n"$UNIQUE_REF"\n"Karoshi Web Management"\n" | openssl req -new -passin pass:$LDAPPASS -key client_web_management.key -out client_web_management.csr
 chmod 0600 /etc/ssl/webmanagement/client_web_management.csr
-echo "<li>Creating client crt</li>"
+echo "<ul><li>Creating client crt</li></ul>"
 #Create client self signed cert
 create_random_string
 openssl x509 -req -in client_web_management.csr -out client_web_management.crt -sha1 -CA server_web_management_50002.crt -CAkey server_web_management_50002.key -CAcreateserial -days 3650
-
+chmod 0600 /etc/ssl/webmanagement/server_web_management_50002.srl
 chmod 0600 /etc/ssl/webmanagement/client_web_management.crt
 
 openssl pkcs12 -passin pass:$LDAPPASS -passout pass:$CLIENT_PASS -export -in client_web_management.crt -inkey client_web_management.key -name "Karoshi Web Management" -out client_web_management.p12
 chmod 0600 /etc/ssl/webmanagement/client_web_management.p12
+
 #Copy client certificate to itadminshare
 [ -d /home/itadminshare/ssl_certificates/ ] || mkdir -p /home/itadminshare/ssl_certificates/
 chown root.itadmin /home/itadminshare/ssl_certificates/

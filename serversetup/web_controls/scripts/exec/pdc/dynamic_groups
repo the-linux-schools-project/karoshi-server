@@ -99,7 +99,7 @@ do
 			getent group "$group" 1>/dev/null
 			if [ $? != 0 ]
 			then
-				echo "<li>"$"Creating group" "$group</li>"
+				echo "<ul><li>"$"Creating group" "$group</li></ul>"
 				echo `date`: groups - creating "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				samba-tool group add --groupou="OU=Groups,OU=People" "$group" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 				#Add group to restriction list if an email server has been setup.
@@ -154,11 +154,11 @@ gidnumber: $GIDNUMBER
 			#Check to see that this is a dynamic group and add in the user.
 			if [ -f /opt/karoshi/server_network/group_information_dynamic/"$group" ]
 			then
-				echo "<li>$USERNAME - "$"adding to group" "$group</li>"
+				echo "<ul><li>$USERNAME - "$"adding to group" "$group</li></ul>"
 				echo `date`: groups - adding "$USERNAME" to "$group" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 				samba-tool group addmembers "$group" "$USERNAME" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			else
-				echo "<li>$group - "$"This is not a dynamic group""</li>"
+				echo "<ul><li>$group - "$"This is not a dynamic group""</li></ul>"
 				sleep 1
 			fi
 		fi

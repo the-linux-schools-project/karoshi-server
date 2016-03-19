@@ -29,7 +29,7 @@ TEXTDOMAIN=karoshi-server
 function usercheck {
 #Make sure that the server can see samba 4 users. It can take a while for nslcd to see the users after a samba4 restart - assume there is at least one user.
 USERCHECK=0
-echo '<br><li>'$HOSTNAME' - '$"Checking for users"'</li></ul>'
+echo '<ul><li>'$HOSTNAME' - '$"Checking for users"'</li></ul>'
 while [ `getent passwd | grep -c /home/users` = 0 ]
 do
 	let USERCHECK=$USERCHECK+1
@@ -41,7 +41,7 @@ done
 usercheck
 
 #Provision Samba4 for openchange
-echo '<br><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo '<uk><li>'$HOSTNAME' - '$"Provisioning Samba4 for openchange"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 openchange_provision --standalone
 echo '</pre>'
 #Create database for openchange
@@ -52,7 +52,7 @@ OPENCHANGEPASS=`openssl rand -hex 16`
 #Get root mysql password
 MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 
-echo '<br><li>'$HOSTNAME' - '$"Creating a mysql database for openchange"'</li></ul>'
+echo '<ul><li>'$HOSTNAME' - '$"Creating a mysql database for openchange"'</li></ul>'
 #Create openchange database
 mysqladmin --password=$MYSQLPASS create openchange 1>/dev/null
 
@@ -75,7 +75,7 @@ chmod 0600 /etc/samba/smb.conf
 sed -i '/\[global\]/a \\tmapistore:namedproperties = mysql\n\tnamedproperties:mysql_user = openchange_user\n\tnamedproperties:mysql_pass = '$OPENCHANGEPASS'\n\tnamedproperties:mysql_host = localhost\n\tnamedproperties:mysql_db = openchange\n\tmapistore:indexing_backend = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tmapiproxy:openchangedb = mysql://openchange_user:'$OPENCHANGEPASS'@localhost/openchange\n\tdcerpc endpoint servers = +epmapper, +mapiproxy\n\tdcerpc_mapiproxy:server = true\n\tdcerpc_mapiproxy:interfaces = exchange_emsmdb, exchange_nsp, exchange_ds_rfr' /etc/samba/smb.conf
 
 #Restart samba
-echo '<br><li>'$HOSTNAME' - '$"Restarting Samba4"'</li></ul>'
+echo '<ul><li>'$HOSTNAME' - '$"Restarting Samba4"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
 sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
@@ -100,7 +100,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 
 #Start ocsmanager
-echo '<br><li>'$HOSTNAME' - '$"Starting OCSManager"'</li></ul>'
+echo '<ul><li>'$HOSTNAME' - '$"Starting OCSManager"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ocsmanager_start
 
 #Set ocsmanager to run on boot
@@ -109,7 +109,7 @@ echo '<br><li>'$HOSTNAME' - '$"Starting OCSManager"'</li></ul>'
 usercheck
 
 #Add in openchange parameters for each user
-echo '<br><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo '<ul><li>'$HOSTNAME' - '$"Adding openchange support for all existing users"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 for user in `getent passwd | grep /home/users | cut -d: -f1`
 do
 	openchange_newuser --create $user

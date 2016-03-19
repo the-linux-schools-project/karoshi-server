@@ -231,7 +231,7 @@ then
 
 	echo "<ul><li>"'$"Syncing Server"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	ntpdate -t 3 '$TIMESYNCSERVER' 2>/dev/null
-	echo "</pre><ul><li>>"$HOSTNAME - '$"Starting NTP Service"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+	echo "</pre><ul><li>"$HOSTNAME - '$"Starting NTP Service"'"</li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start 1>/dev/null
 	echo "</pre>"
 

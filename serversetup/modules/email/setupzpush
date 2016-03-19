@@ -90,7 +90,7 @@ echo '<ul><li>'$"Installing"' z-push</li></ul>'
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2`
+[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
 
 #Create folders needed for z-push
 [ -d /var/lib/z-push ] && rm -f -R /var/lib/z-push
@@ -122,11 +122,11 @@ sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /usr/share/z-push/backend/ldap/config.
 [ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync.conf $SOGoPath/sogoactivesync.conf
 [ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync-2.4.conf $SOGoPath/sogoactivesync.conf
 
-sed -i 's/CHANGETHISWEBDOMAIN/'$ALIAS.$REALM'/g' $SOGoPath/sogoactivesync.conf
-sed -i 's/CHANGETHISKRBPATH/'$HOSTNAME.$REALM'/g' $SOGoPath/sogoactivesync.conf
-sed -i 's/CHANGETHISSERVERNAME/'$HOSTNAME'/g' $SOGoPath/sogoactivesync.conf
-sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' $SOGoPath/sogoactivesync.conf
-sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISWEBDOMAIN%'$ALIAS.$REALM'%g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISKRBPATH%'$HOSTNAME.$REALM'%g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISSERVERNAME%'$HOSTNAME'%g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISLDAPSERVER%'$LDAPSERVER'%g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISBASEDN%'$LDAPBASE'%g' $SOGoPath/sogoactivesync.conf
 
 #Set path to the correct version of sogo - /usr/local/lib or /usr/lib
 

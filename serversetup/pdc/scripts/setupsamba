@@ -616,6 +616,12 @@ else
 	samba-tool domain passwordsettings set --min-pwd-length=3
 	samba-tool domain passwordsettings set --min-pwd-age=0
 	samba-tool domain passwordsettings set --max-pwd-age=999
+
+	if [ "$INSTALL_TYPE" = home ]
+	then
+		#Set the default username style for home installs to enter in a username.
+		echo DEFAULTSTYLE="10" > /opt/karoshi/server_network/default_username_style
+	fi
 fi
 
 #Add entry to /etc/hosts

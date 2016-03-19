@@ -190,14 +190,14 @@ then
 	source /opt/karoshi/serversetup/variables/distro
 	if [ "$GLUSTERACTION" = stop ]
 	then
-		echo '<br><li>'$"Stopping Samba4"'</li>'
+		echo '<ul><li>'$"Stopping Samba4"'</li></ul>'
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
-		echo '<br><li>'$"Stopping GlusterFS"'</li>'
+		echo '<ul><li>'$"Stopping GlusterFS"'</li></ul>'
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
 	fi
 	if [ "$GLUSTERACTION" = start ]
 	then
-		echo '<br><li>'$"Starting GlusterFS"'</li>'
+		echo '<ul><li>'$"Starting GlusterFS"'</li></ul>'
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 	fi
 	for GLUSTERVOL in `ls /home/gluster-volumes/`
@@ -205,7 +205,7 @@ then
 		if [ "$GLUSTERACTION" = stop ]
 		then
 			#Clear out all of the gluster data
-			echo '<br><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li>'
+			echo '<ul><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li></ul>'
 			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
 			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
 		fi		
@@ -225,7 +225,7 @@ then
 	then
 		#Mount gluster volume and start samba4
 		mount -a
-		echo '<br><li>'$"Starting Samba4"'</li>'
+		echo '<ul><li>'$"Starting Samba4"'</li></ul>'
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 	fi
 	}
@@ -237,9 +237,9 @@ then
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		if [ $PARITY = 0 ]
 		then
-			echo '<ul><li>'$"Creating ZFS mirror"'</li>'
+			echo '<ul><li>'$"Creating ZFS mirror"'</li></ul>'
 		else		
-			echo '<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li>'
+			echo '<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li></ul>'
 		fi
 		#Check that there is not already a pool created for this zfs raid
 		if [ `zpool status | grep -c -w $POOLNAME` -gt 0 ]
@@ -312,7 +312,7 @@ then
 				STATUS=$?
 			done
 
-			echo '<ul><li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>'
+			echo '<ul><li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li></ul>'
 
 			COUNTER=1
 			while [ $COUNTER -lt 30 ]
@@ -323,7 +323,7 @@ then
 			done
 
 			#Format the partition as ext4
-			echo '<ul><li>'$"Formating the partition"' - ext4</li>'
+			echo '<ul><li>'$"Formating the partition"' - ext4</li></ul>'
 			mkfs.ext4 /$ZPOOLTOPPATH/$POOLNAME/storage
 		fi
 
@@ -355,7 +355,7 @@ then
 				#Stop service if it is running
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li>'
+					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li></ul>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
 				fi
 				let COUNTER=$COUNTER+1
@@ -370,7 +370,7 @@ then
 				GLUSTERACTION=stop
 				sort_gluster
 			fi
-			echo '<br><li>'$"Copying existing data onto the raid."'</b></li>'
+			echo '<ul><li>'$"Copying existing data onto the raid."'</b></li></ul>'
 			sleep 2
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --acls --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
 			
@@ -384,11 +384,11 @@ then
 		if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
 		then
 			#Umount the partition
-			echo '<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>'
+			echo '<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li></ul>'
 			umount $MOUNTPOINT
 
 			#Backup /etc/fstab
-			echo "<li>"Backing up fstab"</li>"
+			echo "<ul><li>"Backing up fstab"</li></ul>"
 			cp /etc/fstab /etc/fstab-backup.$$
 
 			#Remove entry from fstab
@@ -432,6 +432,14 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
 			echo '#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          zfs-mount-all
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start zfs-mount-all
+### END INIT INFO
 COUNTER=0
 while [ $COUNTER -le 100 ]
 do
@@ -451,7 +459,7 @@ done' > /etc/rc2.d/S90zfs-mount-all
 			do
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li>'
+					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li></ul>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
 				fi
 				let COUNTER=$COUNTER+1
@@ -571,14 +579,14 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	source /opt/karoshi/serversetup/variables/distro
 	if [ "$GLUSTERACTION" = stop ]
 	then
-		echo "<br><li>'$"Stopping Samba4"'</li>"
+		echo "<ul><li>'$"Stopping Samba4"'</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
-		echo "<br><li>'$"Stopping GlusterFS"'</li>"
+		echo "<ul><li>'$"Stopping GlusterFS"'</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
 	fi
 	if [ "$GLUSTERACTION" = start ]
 	then
-		echo "<br><li>'$"Starting GlusterFS"'</li>"
+		echo "<ul><li>'$"Starting GlusterFS"'</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
 	fi
 	for GLUSTERVOL in `ls /home/gluster-volumes/`
@@ -586,7 +594,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		if [ "$GLUSTERACTION" = stop ]
 		then
 			#Clear out all of the gluster data
-			echo "<br><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li>"
+			echo "<ul><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li></ul>"
 			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
 			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
 		fi		
@@ -606,7 +614,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	then
 		#Mount gluster volume and start samba4
 		mount -a
-		echo "<br><li>'$"Starting Samba4"'</li>"
+		echo "<ul><li>'$"Starting Samba4"'</li></ul>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 	fi
 	}
@@ -619,9 +627,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 		if [ '$PARITY' = 0 ]
 		then
-			echo "<li>'$"Creating ZFS mirror"'</li>"
+			echo "<ul><li>'$"Creating ZFS mirror"'</li></ul>"
 		else		
-			echo "<li>'$"Creating ZFS raid"' z'$PARITY'</li>"
+			echo "<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li></ul>"
 		fi
 
 		#Check that there is not already a pool created for this zfs raid
@@ -695,7 +703,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				STATUS=$?
 			done
 
-			echo "<li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li>"
+			echo "<ul><li>'$"Creating ZFS partition"' - '$ZFSSIZE''$STORAGEUNIT'</li></ul>"
 
 			COUNTER=1
 			while [ $COUNTER -lt 30 ]
@@ -706,7 +714,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			done
 
 			#Format the partition as ext4
-			echo "<li>'$"Formating the partition"' - ext4</li>"
+			echo "<ul><li>'$"Formating the partition"' - ext4</li></ul>"
 			mkfs.ext4 /'$ZPOOLTOPPATH'/'$POOLNAME'/storage
 		fi		
 
@@ -739,7 +747,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				#Stop service if it is running
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo "<li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li>"
+					echo "<ul><li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li></ul>"
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
 				fi
 				let COUNTER=$COUNTER+1
@@ -755,7 +763,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				sort_gluster
 			fi
 
-			echo "<br><li>'$"Copying existing data onto the raid."'</b></li>"
+			echo "<ul><li>'$"Copying existing data onto the raid."'</b></li></ul>"
 			sleep 2
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
 
@@ -769,11 +777,11 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
 		then
 			#Umount the partition
-			echo "<li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li>"
+			echo "<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li></ul>"
 			umount $MOUNTPOINT
 
 			#Backup /etc/fstab
-			echo "<li>"Backing up fstab"</li>"
+			echo "<ul><li>"Backing up fstab"</li></ul>"
 			cp /etc/fstab /etc/fstab-backup.'$$'
 
 			#Remove entry from fstab
@@ -844,7 +852,7 @@ done" > /etc/rc2.d/S90zfs-mount-all
 			do
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
-					echo "<li>${SERVICEARRAY[$COUNTER]} - '$"Starting this service."'</li>"
+					echo "<ul><li>${SERVICEARRAY[$COUNTER]} - '$"Starting this service."'</li></ul>"
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
 				fi
 				let COUNTER=$COUNTER+1

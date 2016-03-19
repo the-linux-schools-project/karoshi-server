@@ -3,24 +3,24 @@
 #Check for software
 INSTALL_DEPS=no
 dpkg -S libapache2-mod-perl2 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S libapache-dbi-perl 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S libxml-simple-perl 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S libsoap-lite-perl 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S php5-gd 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 dpkg -S php-soap 1>/dev/null
-[ `echo $?` != 0 ] && INSTALL_DEPS=yes
+[ $? != 0 ] && INSTALL_DEPS=yes
 
 
 if [ $INSTALL_DEPS = yes ]
 then
-	echo "<li>"Updating repository list"</li>"
+	echo "<ul><li>"Updating repository list"</li></ul>"
 	apt-get update
-	echo "<li>"Installing libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap"</li>"
+	echo "<ul><li>"Installing libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap"</li></ul>"
 	apt-get install -y libapache2-mod-perl2 libapache-dbi-perl libxml-simple-perl libsoap-lite-perl php5-gd php-soap
 fi
 

@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/web_management_upload_files_select_cgi
 then
-echo `date`: web_management_upload_files - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/web_management_upload_files_select_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $web_management_upload_files_select_cgi'check' ]
 then
-echo `date`: web_management_upload_files - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: web_management_upload_files - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f2`
@@ -61,40 +61,40 @@ SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f6`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: web_management_upload_files - Not called by web_management_upload_files.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Not called by web_management_upload_files.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: web_management_upload_files - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: web_management_upload_files - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $UPLOADFOLDER'null' = null ]
+if [ -z "$UPLOADFOLDER" ]
 then
-echo `date`: web_management_upload_files - Blank upload folder >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Blank upload folder >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $UPLOADID'null' = null ]
+if [ -z "$UPLOADID" ]
 then
-echo `date`: web_management_upload_files - Blank upload id >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Blank upload id >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: web_management_upload_files - Blank SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - Blank SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: web_management_upload_files - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: web_management_upload_files - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ############################
@@ -117,19 +117,19 @@ mv /var/www/karoshi/webfiles /var/www/karoshi/webfiles.$UPLOADID
 ########################
 if [ `sed -n 1,1p /var/www/karoshi/webfiles.$UPLOADID/web_management_upload_id` != $UPLOADID ]
 then
-echo '<b>'$"The upload file process has been overwritten by another admin user."'</b><br>'
-echo `date`: web_management_upload_files - file overwrite "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo '<b>'$"The upload file process has been overwritten by another admin user."'</b><br>'
+	echo `date`: web_management_upload_files - file overwrite "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Remove process id file
 rm -f /var/www/karoshi/webfiles.$UPLOADID/web_management_upload_id
 #Log files to be copied
 for UPLOADEDFILE in /var/www/karoshi/webfiles.$UPLOADID/*
 do
-FILENAME=`basename $UPLOADEDFILE`
-#Replace spaces with underscores
-FILENAME=`echo $FILENAME | sed "s/ /_/g"`
-echo `date`: web_management_upload_files $FILENAME uploaded to $UPLOADFOLDER on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	FILENAME=`basename $UPLOADEDFILE`
+	#Replace spaces with underscores
+	FILENAME=`echo $FILENAME | sed "s/ /_/g"`
+	echo `date`: web_management_upload_files $FILENAME uploaded to $UPLOADFOLDER on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
 
 ########################
@@ -137,78 +137,78 @@ done
 ########################
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-#Create tar archive
-tar -z -c -f /var/www/karoshi/webfiles$UPLOADID.tar.gz /var/www/karoshi/webfiles.$UPLOADID/ 1>/dev/null 2>/dev/null
-#Transfer archive to SERVERNAME
-scp /var/www/karoshi/webfiles$UPLOADID.tar.gz root@$SERVERNAME:"/opt/karoshi/.tempdata"
-#Delete tar archive on pdc
-rm -f /var/www/karoshi/webfiles$UPLOADID.tar.gz
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-[ ! -d /var/www/html/'$UPLOADFOLDER'/ ] && mkdir -p /var/www/html/'$UPLOADFOLDER'/
-#Extract archive
-cd /
-tar -xzf /opt/karoshi/.tempdata/webfiles'$UPLOADID'.tar.gz 1>/dev/null 2>/dev/null
-#Delete archive
-rm -f /opt/karoshi/.tempdata/webfiles'$UPLOADID'.tar.gz
-#Copy files to web folder
-for UPLOADEDFILE in /var/www/karoshi/webfiles.'$UPLOADID'/*
-do
-FILENAME=`basename $UPLOADEDFILE`
-#Replace spaces with underscores
-FILENAME=`echo $FILENAME | sed "s/ /_/g"`
-if [ $FILENAME"null" != null ]
-then
-#Copy file and change permissions
-echo "<li>'$SERVERNAME' - '$"Copying"' $FILENAME</li>"
-cp -f $UPLOADEDFILE '$UPLOADFOLDER'/
+	#Create tar archive
+	tar -z -c -f /var/www/karoshi/webfiles$UPLOADID.tar.gz /var/www/karoshi/webfiles.$UPLOADID/ 1>/dev/null 2>/dev/null
+	#Transfer archive to SERVERNAME
+	scp /var/www/karoshi/webfiles$UPLOADID.tar.gz root@$SERVERNAME:"/opt/karoshi/.tempdata"
+	#Delete tar archive on pdc
+	rm -f /var/www/karoshi/webfiles$UPLOADID.tar.gz
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	source /opt/karoshi/serversetup/variables/distro
+	source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+	[ ! -d /var/www/html/'$UPLOADFOLDER'/ ] && mkdir -p /var/www/html/'$UPLOADFOLDER'/
+	#Extract archive
+	cd /
+	tar -xzf /opt/karoshi/.tempdata/webfiles'$UPLOADID'.tar.gz 1>/dev/null 2>/dev/null
+	#Delete archive
+	rm -f /opt/karoshi/.tempdata/webfiles'$UPLOADID'.tar.gz
+	#Copy files to web folder
+	for UPLOADEDFILE in /var/www/karoshi/webfiles.'$UPLOADID'/*
+	do
+		FILENAME=`basename $UPLOADEDFILE`
+		#Replace spaces with underscores
+		FILENAME=`echo $FILENAME | sed "s/ /_/g"`
+		if [ $FILENAME"null" != null ]
+		then
+			#Copy file and change permissions
+			echo "<ul><li>'$SERVERNAME' - '$"Copying"' $FILENAME</li></ul>"
+			cp -f $UPLOADEDFILE '$UPLOADFOLDER'/
 
-#Extract file if it is a zip or tar.gz
-if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
-then
-echo "<li>'$SERVERNAME' - '$"Extracting"' $FILENAME</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-tar -zxvf '$UPLOADFOLDER'/"$FILENAME" -C /var/www/html/
-echo "</pre>"
-fi
+			#Extract file if it is a zip or tar.gz
+			if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
+			then
+				echo "<ul><li>'$SERVERNAME' - '$"Extracting"' $FILENAME</li></ul>"
+				echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+				tar -zxvf '$UPLOADFOLDER'/"$FILENAME" -C /var/www/html/
+				echo "</pre>"
+			fi
 
-chown root.$APACHEGROUP '$UPLOADFOLDER'/$FILENAME
-chmod 0440 '$UPLOADFOLDER'/$FILENAME
-fi
-done
-#Remove uploaded folder
-rm -f -R /var/www/karoshi/webfiles.'$UPLOADID'/
-'
+			chown root.$APACHEGROUP '$UPLOADFOLDER'/$FILENAME
+			chmod 0440 '$UPLOADFOLDER'/$FILENAME
+		fi
+	done
+	#Remove uploaded folder
+	rm -f -R /var/www/karoshi/webfiles.'$UPLOADID'/
+	'
 else
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-[ ! -d $UPLOADFOLDER/ ] && mkdir -p $UPLOADFOLDER/
-#Copy files to web folder
-for UPLOADEDFILE in /var/www/karoshi/webfiles.$UPLOADID/*
-do
-FILENAME=`basename $UPLOADEDFILE`
-#Replace spaces with underscores
-FILENAME=`echo $FILENAME | sed "s/ /_/g"`
-#Copy file and change permissions
-if [ $FILENAME"null" != null ]
-then
-echo "<li>$SERVERNAME - $"Copying" $FILENAME</li>"
-cp -f $UPLOADEDFILE "$UPLOADFOLDER"/
+	source /opt/karoshi/serversetup/variables/distro
+	source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+	[ ! -d $UPLOADFOLDER/ ] && mkdir -p $UPLOADFOLDER/
+	#Copy files to web folder
+	for UPLOADEDFILE in /var/www/karoshi/webfiles.$UPLOADID/*
+	do
+		FILENAME=`basename $UPLOADEDFILE`
+		#Replace spaces with underscores
+		FILENAME=`echo $FILENAME | sed "s/ /_/g"`
+		#Copy file and change permissions
+		if [ -z "$FILENAME" ]
+		then
+			echo "<ul><li>$SERVERNAME - $"Copying" $FILENAME</li></ul>"
+			cp -f $UPLOADEDFILE "$UPLOADFOLDER"/
 
-#Extract file if it is a zip or tar.gz
-if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
-then
-echo "<li>$SERVERNAME - $"Extracting" $FILENAME</li>"
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-tar -zxvf $UPLOADFOLDER/"$FILENAME" -C /var/www/html/
-echo "</pre>"
-fi
+			#Extract file if it is a zip or tar.gz
+			if [ `echo "$FILENAME" | grep -c .tar.gz` -gt 0 ]
+			then
+				echo "<ul><li>$SERVERNAME - $"Extracting" $FILENAME</li></ul>"
+				echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+				tar -zxvf $UPLOADFOLDER/"$FILENAME" -C /var/www/html/
+				echo "</pre>"
+			fi
 
-chown root.$APACHEGROUP "$UPLOADFOLDER/$FILENAME"
-chmod 0440 "$UPLOADFOLDER/$FILENAME"
-fi
-done
+			chown root.$APACHEGROUP "$UPLOADFOLDER/$FILENAME"
+			chmod 0440 "$UPLOADFOLDER/$FILENAME"
+		fi
+	done
 fi
 #######################
 #Remove upload folder

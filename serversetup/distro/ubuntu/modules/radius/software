@@ -30,19 +30,19 @@ fi
 
 if [ $INSTALL_DEPS = yes ]
 then
-	echo "<li>"Updating repository list"</li><br>"
+	echo "<ul><li>"Updating repository list"</li></ul>"
 	apt-get update
 fi
 
 if [ $INSTALLRADIUS = yes ]
 then
-	echo "<br><li>"Installing freeradius"</li><br>"
+	echo "<ul><li>"Installing freeradius"</li></ul>"
 	apt-get install -y freeradius
 fi
 
 if [ $INSTALLRADIUSKRB5 = yes ]
 then
-echo "<br><li>"Installing freeradius-krb5"</li><br>"
+echo "<ul><li>"Installing freeradius-krb5"</li></ul>"
 	apt-get install -y freeradius-krb5
 fi
 

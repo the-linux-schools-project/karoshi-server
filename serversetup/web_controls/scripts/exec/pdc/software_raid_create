@@ -136,12 +136,12 @@ which mdadm 1>/dev/null
 if [ $? != 0 ]
 then
 	RELOADPAGE=yes
-	echo "<li>"Updating repositories"</li>"
+	echo "<ul><li>"Updating repositories"</li></ul>"
 	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	apt-get update
 	echo "</pre>"
 	UPDATEREPOS=no
-	echo "<li>"Installing mdadm"</li>"
+	echo "<ul><li>"Installing mdadm"</li></ul>"
 	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	apt-get install -y mdadm
 	echo "</pre>"
@@ -155,12 +155,12 @@ then
 	if [ $UPDATEREPOS = yes ]
 	then
 		UPDATEREPOS=no
-		echo "<li>"Updating repositories"</li>"
+		echo "<ul><li>"Updating repositories"</li></ul>"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		apt-get update
 		echo "</pre>"
 	fi
-	echo "<li>"Installing smartmontools"</li>"
+	echo "<ul><li>"Installing smartmontools"</li></ul>"
 	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	apt-get install -y smartmontools
 	echo "</pre>"
@@ -300,12 +300,12 @@ which mdadm 1>/dev/null
 if [ `echo $?` != 0 ]
 then
 RELOADPAGE=yes
-echo "<li>"Updating repositories"</li>"
+echo "<ul><li>"Updating repositories"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get update
 echo "</pre>"
 UPDATEREPOS=no
-echo "<li>"Installing mdadm"</li>"
+echo "<ul><li>"Installing mdadm"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get install -y mdadm
 echo "</pre>"
@@ -319,12 +319,12 @@ RELOADPAGE=yes
 if [ $UPDATEREPOS = yes ]
 then
 UPDATEREPOS=no
-echo "<li>"Updating repositories"</li>"
+echo "<ul><li>"Updating repositories"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get update
 echo "</pre>"
 fi
-echo "<li>"Installing smartmontools"</li>"
+echo "<ul><li>"Installing smartmontools"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get install -y smartmontools
 echo "</pre>"
@@ -468,12 +468,12 @@ which mdadm 1>/dev/null
 if [ `echo $?` != 0 ]
 then
 RELOADPAGE=yes
-echo "<li>"Updating repositories"</li>"
+echo "<ul><li>"Updating repositories"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get update
 echo "</pre>"
 UPDATEREPOS=no
-echo "<li>"Installing mdadm"</li>"
+echo "<ul><li>"Installing mdadm"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get install -y mdadm
 echo "</pre>"
@@ -487,12 +487,12 @@ RELOADPAGE=yes
 if [ $UPDATEREPOS = yes ]
 then
 UPDATEREPOS=no
-echo "<li>"Updating repositories"</li>"
+echo "<ul><li>"Updating repositories"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get update
 echo "</pre>"
 fi
-echo "<li>"Installing smartmontools"</li>"
+echo "<ul><li>"Installing smartmontools"</li></ul>"
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 apt-get install -y smartmontools
 echo "</pre>"

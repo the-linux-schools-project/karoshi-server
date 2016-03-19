@@ -93,11 +93,11 @@ if [ $? != 0 ]
 then
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	#Install dependencies
-	echo '<ul><li>'$HOSTNAME - Updating repositories'</li>'
+	echo '<ul><li>'$HOSTNAME - Updating repositories'</li></ul>'
 	apt-get update
-	echo '<br><li>'$HOSTNAME -Installing dependencies "for" e2guardian'</li>'
+	echo '<ul><li>'$HOSTNAME -Installing dependencies "for" e2guardian'</li></ul>'
 	apt-get install libtommath0
-	echo '<br><li>'$HOSTNAME - Installing e2guardian'</li>'
+	echo '<ul><li>'$HOSTNAME - Installing e2guardian'</li></ul>'
 	dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
 	echo '</pre><br>'
 fi

@@ -94,7 +94,7 @@ then
 	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S100mount_gluster_volumes
 
 else
-	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/S99mount_gluster_shares root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
+	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
 	#Create empty folder to mount to 
@@ -188,7 +188,7 @@ do
 			gluster peer detach $SERVER
 		else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PEERSERVER '
-			echo "<li>'$PEERSERVER' - '$"Detaching"' '$SERVER'</li></ul>"
+			echo "<ul><li>'$PEERSERVER' - '$"Detaching"' '$SERVER'</li></ul>"
 			gluster peer detach '$SERVER'
 		'
 		fi

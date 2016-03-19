@@ -223,16 +223,16 @@ if [ $SERVERNAME != `hostname-fqdn` ]
 then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 PORTCHECK=53,88,389
-echo "<li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
+echo "<ul><li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
 SCANRESULT=`nmap '$LDAPSERVER' -p $PORTCHECK -PN`
 for PORT in `echo $PORTCHECK | sed "s/,/ /g"`
 do
-echo "<li>"Checking $PORT"</li></ul>"
-if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
-then
-echo Error - The ldap server cannot be contacted on $PORT"<br>"
-exit $PORT
-fi
+	echo "<ul><li>"Checking $PORT"</li></ul>"
+	if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
+	then
+		echo Error - The ldap server cannot be contacted on $PORT"<br>"
+		exit $PORT
+	fi
 done
 '
 EXITSTATUS=$?
@@ -263,7 +263,7 @@ URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUX
 }
 
 function add_moodle_users {
-echo '<ul><li>'$"Adding users to the moodle database"'</li>'
+echo '<ul><li>'$"Adding users to the moodle database"'</li></ul>'
 /opt/karoshi/serversetup/modules/moodle/moodle_add_all_users
 }
 
@@ -302,30 +302,30 @@ NOPROXYSERVERS=`echo $NOPROXYSERVERS, $NOPROXYSERVERS2`
 
 if [ `grep -c 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH"` -gt 0 ]
 then
-LINE=`grep -n 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' "$PREFSJSPATH"
+	LINE=`grep -n 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH" | cut -d: -f1`
+	sed -i $LINE'c''user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' "$PREFSJSPATH"
 else
-echo 'user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' >> "$PREFSJSPATH"
+	echo 'user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' >> "$PREFSJSPATH"
 fi
 }
 
 #Windows clients
 for PROFILE in /home/applications/profiles/*
 do
-unset PREFSJSPATH 
-#Find prefs.js
-PREFSJSPATH=`find $PROFILE/ -name "prefs.js"`
-#Check that PREFSJSPATH has been set
-if [ -n "$PREFSJSPATH" ]
-then
-modify_prefs.js
-fi
+	unset PREFSJSPATH 
+	#Find prefs.js
+	PREFSJSPATH=`find $PROFILE/ -name "prefs.js"`
+	#Check that PREFSJSPATH has been set
+	if [ -n "$PREFSJSPATH" ]
+	then
+		modify_prefs.js
+	fi
 done
 
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
 
 ###########################
@@ -347,7 +347,7 @@ if [ $COPYMOODLE = yes ]
 then
 CURRENTSERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/SERVERNAME`
 echo "<b>"$TRANSFERMSG1"</b><br><br>"
-echo "<li>"$CURRENTSERVERNAMEMSG - $CURRENTSERVERNAME - $NEWSERVERNAMEMSG - $SERVERNAME"</li></ul>"
+echo "<ul><li>"$CURRENTSERVERNAMEMSG - $CURRENTSERVERNAME - $NEWSERVERNAMEMSG - $SERVERNAME"</li></ul>"
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
@@ -355,7 +355,7 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 
 function set_moodle_perms {
 
-echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li></ul>"
+echo "<ul><li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li></ul>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 chmod 0440 -R /var/www/html/moodle
@@ -399,7 +399,7 @@ fi
 ############################
 #Copy /var/www/html/moodle
 ############################
-echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li></ul><br>"
+echo "<ul><li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li></ul><br>"
 sleep 2
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -441,7 +441,7 @@ fi
 ############################
 #Copy /var/www/moodle-data
 ############################
-echo "<li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li></ul><br>"
+echo "<ul><li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li></ul><br>"
 sleep 2
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -487,7 +487,7 @@ set_moodle_perms
 ##########################
 #Dump existing moodle database
 ##########################
-echo "<li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li></ul><br>"
+echo "<ul><li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li></ul><br>"
 
 if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
 then
@@ -530,7 +530,7 @@ fi
 ######################
 #Pipe in database
 ######################
-echo "<li>"$SERVERNAME - $PIPEDBMSG"</li></ul><br>"
+echo "<ul><li>"$SERVERNAME - $PIPEDBMSG"</li></ul><br>"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 #Get moodle password

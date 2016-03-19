@@ -349,7 +349,7 @@ sleep 2
 COUNTER=1
 while [ $COUNTER -lt 20 ]
 do
-	echo "<li>"'$SERVERNAME' - '$"checking openvpn tunnnel"' - $COUNTER"</li></ul>"
+	echo "<ul><li>"'$SERVERNAME' - '$"checking openvpn tunnnel"' - $COUNTER"</li></ul>"
 	[ `ifconfig | grep -c tun'$TUNVAL'` -gt 0 ] && break
 	sleep 1
 

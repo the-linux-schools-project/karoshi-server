@@ -79,9 +79,10 @@ fi
 
 
 FOLDER_SHORT=`basename "$FOLDER"`
+FOLDERPATH=$(echo $FOLDER | sed 's%/'$FOLDER_SHORT'$%%g')
 
 #Copy in data to the gluster volume or create an empty folder
-echo "<br><li>"$SERVER - $"Copying" $FOLDER"</li><br>"
+echo "<ul><li>"$SERVER - $"Copying" $FOLDER"</li></ul>"
 if [ "$SERVER" = `hostname-fqdn` ]
 then
 	if [ "$ACTION" = copydata ]
@@ -113,6 +114,8 @@ if [ "$SERVER" = `hostname-fqdn` ]
 then
 	if [ ! -L "$FOLDER" ]
 	then
+		#Create parent folder if it does not exist
+		[ ! -d "$FOLDERPATH" ] && mkdir -p "$FOLDERPATH"
 		#Move existing folder
 		[ -d "$FOLDER" ] && mv "$FOLDER" "$FOLDER".pregluster.$$
 		#Symlink folder
@@ -122,6 +125,8 @@ else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	if [ ! -L "'$FOLDER'" ]
 	then
+		#Create parent folder if it does not exist
+		[ ! -d "'$FOLDERPATH'" ] && mkdir -p "'$FOLDERPATH'"
 		#Move existing folder
 		[ -d "'$FOLDER'" ] && mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
 		#Symlink folder

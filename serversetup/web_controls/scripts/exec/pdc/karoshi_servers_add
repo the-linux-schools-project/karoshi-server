@@ -609,7 +609,7 @@ source /opt/karoshi/serversetup/variables/distro
 MODCHECK=`grep -c -w \#monitorix /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo '$"The following extra ports are being allowed"' - tcp 50005"<br><br>"
+	echo "<ul><li>"'$"The following extra ports are being allowed"' - tcp 50005"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"monitorix /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -673,14 +673,19 @@ then
 		echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
 	done
 
-	#Add in fileserver flag if the domain controller is in the internal zone.
-	if [ $ZONE = internal ]
-	then
-		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVER.$REALM/fileserver
-	fi
 	#Re-create logon scripts to add in additional servers
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi
+
+if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] || [ $AUTHENTICATION = member ] 
+then
+	if [ $ZONE = internal ]
+	then
+		#Add in fileserver flag if the server is in the internal zone.
+		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVER.$REALM/fileserver
+	fi
+fi
+
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then

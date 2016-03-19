@@ -210,6 +210,18 @@ echo -e "#karoshi_member_server
 
 " > /etc/samba/smb.conf
 
+if [ '$ZONE' = internal ]
+then
+echo -e "
+[homes]
+	comment = Home Directories
+	invalid users = root
+	read only = No
+	browseable = No
+	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/
+" >> /etc/samba/smb.conf
+fi
+
 #Join the domain
 net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS'
 JOINDOMAINSTATUS=`echo $?`

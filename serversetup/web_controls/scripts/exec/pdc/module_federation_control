@@ -108,7 +108,7 @@ do
 
 	if [ $? != 0 ]
 	then
-		echo "<li>"Creating User"</li>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
+		echo "<ul><li>"Creating User"</li></ul>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
 		#Add user
 		echo "'$REMOTE_USER':'$REMOTE_ADDR':$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
 	fi
@@ -196,7 +196,7 @@ done
 ########################
 #Copy any missing profiles to the federated server
 ########################
-echo "<li>"Copying any missing windows profiles"</li>"
+echo "<ul><li>"Copying any missing windows profiles"</li></ul>"
 for WINPROFILES in /home/applications/profiles/*
 do
 	WINPROFILE=`basename $WINPROFILES`
@@ -207,7 +207,7 @@ do
 	'
 	if [ `echo $?` = 105 ]
 	then
-		echo "<li>"Copying /home/applications/profiles/$WINPROFILE"<'/li>"
+		echo "<ul><li>"Copying /home/applications/profiles/$WINPROFILE"<'/li></ul>"
 		scp -p -r /home/applications/profiles/$WINPROFILE/ root@$SERVERNAME:/home/applications/profiles/ 1> /dev/null
 		ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		chown root.itadmin /home/applications/profiles/'$WINPROFILE'/

@@ -95,9 +95,11 @@ then
 	PING_LAST_CHECK=$LAST_CHECK
 	PING_NEXT_CHECK=$NEXT_CHECK
 	PINGSTATUS=pass
+	PINGSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		PINGSTATUS=fail
+		PINGSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && PINGSTATUS=untested
 fi
@@ -106,9 +108,11 @@ then
 	SAMBA_LAST_CHECK=$LAST_CHECK
 	SAMBA_NEXT_CHECK=$NEXT_CHECK
 	SAMBASTATUS=pass
+	SAMBASTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		SAMBASTATUS=fail 
+		SAMBASTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && SAMBASTATUS=untested
 fi
@@ -117,9 +121,11 @@ then
 	DNS_LAST_CHECK=$LAST_CHECK
 	DNS_NEXT_CHECK=$NEXT_CHECK
 	DNSSTATUS=pass
+	DNSSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		DNSSTATUS=fail
+		DNSSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && DNSSTATUS=untested 
 fi
@@ -128,9 +134,11 @@ then
 	CUPS_LAST_CHECK=$LAST_CHECK
 	CUPS_NEXT_CHECK=$NEXT_CHECK
 	CUPSSTATUS=pass
+	CUPSSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		CUPSSTATUS=fail
+		CUPSSTATUS2=$"Fail2"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && CUPSSTATUS=untested 
 fi
@@ -139,9 +147,11 @@ then
 	IMAP_LAST_CHECK=$LAST_CHECK
 	IMAP_NEXT_CHECK=$NEXT_CHECK
 	IMAPSTATUS=pass
+	IMAPSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		IMAPSTATUS=fail
+		IMAPSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && IMAPSTATUS=untested
 fi
@@ -150,9 +160,11 @@ then
 	IMAPS_LAST_CHECK=$LAST_CHECK
 	IMAPS_NEXT_CHECK=$NEXT_CHECK
 	IMAPSSTATUS=pass
+	IMAPSSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		IMAPSSTATUS=fail
+		IMAPSSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && IMAPSTATUS=untested
 fi
@@ -161,9 +173,11 @@ then
 	POP3_LAST_CHECK=$LAST_CHECK
 	POP3_NEXT_CHECK=$NEXT_CHECK
 	POP3STATUS=pass
+	POP3STATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		POP3STATUS=fail
+		POP3STATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && POP3STATUS=untested 
 	fi
@@ -172,9 +186,11 @@ then
 	POP3S_LAST_CHECK=$LAST_CHECK
 	POP3S_CHECK=$NEXT_CHECK
 	POP3SSTATUS=pass
+	POP3SSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		POP3SSTATUS=fail
+		POP3SSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && POP3SSTATUS=untested 
 fi
@@ -183,9 +199,11 @@ then
 	HTTP_LAST_CHECK=$LAST_CHECK
 	HTTP_NEXT_CHECK=$NEXT_CHECK
 	HTTPSTATUS=pass
+	HTTPSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ] 
 	then
 		HTTPSTATUS=fail
+		HTTPSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && HTTPSTATUS=untested 
 fi
@@ -194,9 +212,11 @@ then
 	HTTPS_LAST_CHECK=$LAST_CHECK
 	HTTPS_NEXT_CHECK=$NEXT_CHECK
 	HTTPSSTATUS=pass
+	HTTPSSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		HTTPSSTATUS=fail
+		HTTPSSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && HTTPSSTATUS=untested 
 fi
@@ -205,9 +225,11 @@ then
 	SMPT_LAST_CHECK=$LAST_CHECK
 	SMPT_NEXT_CHECK=$NEXT_CHECK
 	SMTPSTATUS=pass
+	SMPTSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		SMTPSTATUS=fail
+		SMPTSTATUS2=$"Pass"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && SMTPSTATUS=untested
 fi
@@ -216,9 +238,11 @@ then
 	DG_LAST_CHECK=$LAST_CHECK
 	DG_NEXT_CHECK=$NEXT_CHECK
 	DGSTATUS=pass
+	DGSTATUS2=$"Pass"
 	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
 	then
 		DGSTATUS=fail
+		DGSTATUS2=$"Fail"
 	fi
 	[ `echo 'check'$STATUS | grep -c untested` -gt 0 ] && DGSTATUS=untested 
 fi
@@ -237,7 +261,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Ping_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_ping_">
 <img src="/images/warnings/'$ICON'" alt="'$"Ping"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$PING_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$PING_NEXT_CHECK'</span>
+<span><br>'$PINGSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$PING_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$PING_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -249,7 +273,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Samba_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_samba_">
 <img src="/images/warnings/'$ICON'" alt="'$"Samba"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$SAMBA_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$SAMBA_NEXT_CHECK'</span>
+<span><br>'$SAMBASTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$SAMBA_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$SAMBA_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -261,7 +285,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Http_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_http_">
 <img src="/images/warnings/'$ICON'" alt="'$"Http"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$HTTP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$HTTP_NEXT_CHECK'</span>
+<span>'$HTTPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$HTTP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$HTTP_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -273,7 +297,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Https_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_https_">
 <img src="/images/warnings/'$ICON'" alt="'$"Https"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$HTTPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$HTTPS_NEXT_CHECK'</span>
+<span>'$HTTPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$HTTPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$HTTPS_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -285,7 +309,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Pop3_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3_">
 <img src="/images/warnings/'$ICON'" alt="'$"Pop3"'">
-<span>'$LAST_CHECKMSG': '$POP3_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$POP3_NEXT_CHECK'</span>
+<span>'$POP3STATUS2'<br><br>'$LAST_CHECKMSG'<br>'$POP3_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$POP3_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -297,7 +321,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Pop3s_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3s_">
 <img src="/images/warnings/'$ICON'" alt="'$"Pop3"'">
-<span>'$LAST_CHECKMSG': '$POP3S_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$POP3S_NEXT_CHECK'</span>
+<span>'$POP3SSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$POP3S_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$POP3S_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -309,7 +333,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Imap_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_imap_">
 <img src="/images/warnings/'$ICON'" alt="'$"Imap"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$IMAP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$IMAP_NEXT_CHECK'</span>
+<span>'$IMAPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$IMAP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$IMAP_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -321,7 +345,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Imaps_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_imaps_">
 <img src="/images/warnings/'$ICON'" alt="'$"Imaps"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$IMAPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$IMAPS_NEXT_CHECK'</span>
+<span>'$IMAPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$IMAPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$IMAPS_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -333,7 +357,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Smtp_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_smtp_">
 <img src="/images/warnings/'$ICON'" alt="'$"Smtp"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$SMTP_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$SMTP_NEXT_CHECK'</span>
+<span>'$SMTPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$SMTP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$SMTP_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -345,7 +369,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_E2Guardian_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dg_">
 <img src="/images/warnings/'$ICON'" alt="'$"E2Guardian"'">
-<span>'$GROUP_NAME' '$SUMMARY_LAST'<br><br>'$LAST_CHECKMSG': '$DG_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$DG_NEXT_CHECK'</span>
+<span>'$DGSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$DG_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$DG_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -357,7 +381,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Dns_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dns_">
 <img src="/images/warnings/'$ICON'" alt="'$"DNS"'">
-<span>'$LAST_CHECKMSG': '$DNS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$DNS_NEXT_CHECK'</span>
+<span>'$DNSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$DNS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$DNS_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -369,7 +393,7 @@ then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
 <button class="info" name="_Cups_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_cups_">
 <img src="/images/warnings/'$ICON'" alt="'$"Cups Printing System"'">
-<span>'$LAST_CHECKMSG': '$CUPS_LAST_CHECK'<br><br>'$NEXT_CHECKMSG': '$CUPS_NEXT_CHECK'</span>
+<span>'$CUPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$CUPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$CUPS_NEXT_CHECK'</span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -405,7 +429,18 @@ HTTPSSTATUS=not_set
 SMTPSTATUS=not_set
 DGSTATUS=not_set
 CUPSSTATUS=not_set
-
+PINGSTATUS2=$"Not tested"
+SAMBASTATUS2=$"Not tested"
+DNSSTATUS2=$"Not tested"
+IMAPSTATUS2=$"Not tested"
+IMAPSSTATUS2=$"Not tested"
+POP3STATUS2=$"Not tested"
+POP3SSTATUS2=$"Not tested"
+HTTPSTATUS2=$"Not tested"
+HTTPSSTATUS2=$"Not tested"
+SMTPSTATUS2=$"Not tested"
+DGSTATUS2=$"Not tested"
+CUPSSTATUS2=$"Not tested"
 }
 
 reset_status
@@ -441,7 +476,7 @@ do
 	LAST_CHECK=`echo $LINE_DATA | cut -d, -f5`
 	NEXT_CHECK=`echo $LINE_DATA | cut -d, -f6`
 	ALERTS=`echo $LINE_DATA | cut -d, -f7`
-	SUMMARY=`echo $LINE_DATA | cut -d, -f8-`
+	SUMMARY=`echo $LINE_DATA | cut -d, -f8- | sed 's/,/<br>/g'`
 
 	if [ $STATUS = FAIL ]
 	then
