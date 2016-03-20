@@ -172,6 +172,7 @@ fi
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $"Monitoring Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
+echo '<a href="https://'$SERVERNAME'/mon.cgi" target="_blank">https://'$SERVERNAME'/mon.cgi</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
 echo $SERVERNAME > /opt/karoshi/server_network/monitoringserver
 sed -i 's/MONITORINGCTRL=no/MONITORINGCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role

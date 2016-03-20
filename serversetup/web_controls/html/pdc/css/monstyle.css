@@ -1,9 +1,17 @@
 body {
-font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
-color: #ffffff;
-font-size: 16pt;
-background-color: #010204;
+	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+	color: #ffffff;
+	font-size: 16pt;
+	background-color: #010204;
+	margin: 0;
+	position:fixed;
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0;
 }
+
 
 #pagecontainer {
 	background-repeat: repeat-x;
@@ -11,10 +19,35 @@ background-color: #010204;
 	margin: 0 auto 0 auto;
 	height: 100%;
 	min-width: 1200px;
-	max-width: 1400px;
+	max-width: 1800px;
 	display: flex;
 	flex-direction: column;
 	position: relative;
+}
+
+#header {
+	position: relative;
+	margin: 6px 6px 0 6px;
+	flex: none;
+	height: 60px;
+}
+
+#alertlevel {
+	height: 30px;
+	text-align: right;
+	float: right;
+        margin: 2px 2px 2px 2px;
+        z-index:500;
+}
+
+.webmanagement-title {
+	font-weight: bold;
+	font-size : 18pt;
+	vertical-align: text-top;	
+}
+
+.texttop {
+	vertical-align:text-top;
 }
 
 .button
@@ -109,16 +142,32 @@ A:hover {
         margin: 2px 2px 2px 2px;
 }
 
-#actionbox {
+#titlebox {
+	flex: none;
+        margin: 2px 2px 2px 2px;
+
+}
+
+#infobox {
+	overflow: auto;
+	flex: auto;
+	margin: 10px 2px 2px 2px;
+	height: 1px;
+}
+
+#actionbox3 {
+	position: relative;
+	display: flex;
+	flex: auto;
+	flex-direction: column;
         margin: 2px 2px 2px 2px;
 	background-color: #030F20;
-	border-color: #1A2650;
-	position: relative;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	border-style:solid;
 	border-width:3px;
 	padding: 10px;
+	border-color: #1A2650;
 }
 
 #submitbox {

@@ -36,7 +36,7 @@ STYLESHEET=monstyle.css
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$TITLE'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Monitor Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body>'
 #########################
 #Get data input
 #########################
@@ -50,27 +50,27 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SERVICE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -89,7 +89,7 @@ echo '<div id="actionbox">'
 #Show title
 echo '<hr style="width: 100%; height: 2px;">'
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="2"><tbody><tr><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/mon_status.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SHOWMONITORS_" type="image" class="images" src="'$ICON'" value=""><span>'$VIEWMONITORS'</span></a></form></td><td style="vertical-align: top;"><b>'$TITLE' : '$GROUPNAME' - '$SERVICE'</b></td></tr></tbody></table>'
+<form action="/cgi-bin/admin/mon_status.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SHOWMONITORS_" type="image" class="images" src="'$ICON'" value=""><span>'$VIEWMONITORS'</span></a></form></td><td style="vertical-align: top;"><b>'$"View Monitor Logs"' : '$GROUPNAME' - '$SERVICE'</b></td></tr></tbody></table>'
 f
 
 
@@ -97,10 +97,10 @@ f
 
 if [ -f /opt/karoshi/server_network/mon/events/$GROUPNAME/$SERVICE.log ]
 then
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-cat /opt/karoshi/server_network/mon/events/$GROUPNAME/$SERVICE.log
-echo "</pre>"
-else
-echo No Logs available
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	cat /opt/karoshi/server_network/mon/events/$GROUPNAME/$SERVICE.log
+	echo "</pre>"
+	else
+	echo No Logs available
 fi
 echo "</div></body></html>"

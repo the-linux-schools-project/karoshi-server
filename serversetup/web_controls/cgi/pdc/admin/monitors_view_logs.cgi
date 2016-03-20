@@ -55,27 +55,27 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign SERVICE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -91,38 +91,38 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that GROUPNAME is not blank
-if [ $GROUPNAME'null' = null ]
+if [ -z "$GROUPNAME" ]
 then
-MESSAGE=$"The groupname cannot be blank."
-show_status
+	MESSAGE=$"The groupname cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVICE is not blank
-if [ $SERVICE'null' = null ]
+if [ -z "$SERVICE" ]
 then
-MESSAGE=$"The service cannot be blank."
-show_status
+	MESSAGE=$"The service cannot be blank."
+	show_status
 fi
 ICON=/images/submenus/system/computer.png
 
@@ -133,11 +133,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 
 echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -145,11 +145,11 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">'
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<table class="standard" style="text-align: left;" >
+	echo '<table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mon_status.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mon_status.cgi"><b>'$"View Monitor Logs"' : '$GROUPNAME' - '$SERVICE'</b></a></td></tr></tbody></table>'
 else
-echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><b>'$"View Monitor Logs"' : '$GROUPNAME' - '$SERVICE'</b></td>
 <td style="vertical-align: top;"><a href="mon_status.cgi"><input class="button" type="button" name="" value="'$"View status"'"></a></td>
 </tr></tbody></table><br></div><div id="infobox">
@@ -162,8 +162,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$SERVICE:" | sudo -H /opt/kar
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=$"No Monitor Server has been set up."
-show_status
+	MESSAGE=$"No Monitor Server has been set up."
+	show_status
 fi
 echo '</div></div></div></body></html>'
 exit

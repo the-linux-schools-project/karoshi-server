@@ -36,6 +36,10 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+#Get defcon level
+DEFCON=5
+[ -f /opt/karoshi/server_network/mon/network_status ] && source /opt/karoshi/server_network/mon/network_status
+
 ############################
 #Show page
 ############################
@@ -155,7 +159,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 #Show title
 echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="vertical-align: top; width: 110px;"><div class="sectiontitle">'$"System Status"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td style="vertical-align: top;">
+<tbody><tr><td style="vertical-align: top; width: 200px;"><div class="sectiontitle">'$"System Status"' Defcon '$DEFCON'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
 	<button class="button" name="_AddMonitor_" value="_">
 	'$"Add Monitor"'
