@@ -24,7 +24,11 @@
 locale 1>/dev/null
 TEXTDOMAIN=karoshi-server
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/mon/network_status
+#Get system status
 
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$LONGNAME' '$"System Status"'</span> 
+<div id="alertlevel"><span class="webmanagement-title">Defcon '$DEFCON'</span></div>
+</div>
+'
 
-echo '<table class="standard" style="text-align: left; height: 91px;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td><img src="/images/smalllogo.png" alt="Karoshi"></td><td style="vertical-align: middle;"><font style="font-weight: bold;" size="+3">'$"Web Management"' '$SHORTNAME'</font></td></tr></tbody></table>'

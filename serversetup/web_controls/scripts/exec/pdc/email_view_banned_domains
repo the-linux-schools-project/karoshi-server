@@ -118,7 +118,7 @@ then
 
 		EMAILDOMAIN=$(echo ${EMAILARRAY[$COUNTER]} | cut -d, -f1)
 		ACTION=$(echo ${EMAILARRAY[$COUNTER]} | cut -d, -f2 | tr 'A-Z' 'a-z')
-		echo '<tr><td>'$EMAILDOMAIN'</td><td>'$ACTION'</td>
+		echo '<tr><td>'$EMAILDOMAIN'</td><td>'$ACTION'</td><td>
 		<button class="'$HELPCLASS'" name="_DoDelete_" value="_ACTION_DELETE_DOMAIN_'${EMAILARRAY[$COUNTER]}'_">
 		<img src="'$ICON1'" alt="'$"Delete"' - '${EMAILARRAY[$COUNTER]}'">
 		<span>'$"Delete"' - '${EMAILARRAY[$COUNTER]}'</span>
