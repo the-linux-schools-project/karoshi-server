@@ -61,6 +61,11 @@ fi
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 
+
+source /etc/lsb-release
+# DISTRIB_CODENAME=trusty
+# DISTRIB_CODENAME=precise
+
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
@@ -87,9 +92,97 @@ RESTARTAPACHE=no
 
 [ -f /etc/apache2/sites-available/gitlab-ssl.conf ] || echo >> /etc/apache2/sites-available/gitlab-ssl.conf
 
-if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ssl.conf) == 0 ]; then
-	echo '<ul><li>Configuring Gitlab apache virtual host.</li></ul>'
-	echo -e "#gitlab-ssl virtual host
+if [ "$DISTRIB_CODENAME" == "precise" ]; then
+  # Base on ubuntu precise which uses apache 2.2
+  if [ $(grep -c "#gitlab-ssl virtual host for apache 2.2 legacy" /etc/apache2/sites-available/gitlab-ssl.conf) == 0 ]; then
+    echo '<ul><li>Removing existing apache virtual host (if one exists).</li></ul>'
+    rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+    echo '<ul><li>Configuring Gitlab apache virtual host.</li></ul>'
+    echo -e "#gitlab-ssl virtual host for apache 2.2 legacy
+
+# Modules required:
+#  rewrite
+#  headers
+#  proxy
+#  proxy_http
+#  ssl
+
+# Based on the Gitlab Apache Recipes:
+# https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/web-server/apache
+
+# gitlab-workhorse is hosted on port 50010
+# gitlab-unicorn is hosten on port 50009
+
+<IfModule ssl_module>
+<VirtualHost _default_:443>" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "	ServerName $ALIAS.$REALM" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e '	ServerSignature Off
+ServerAdmin webmaster@localhost
+
+DocumentRoot /opt/gitlab/embedded/service/gitlab-rails/public
+
+# Apache log directory
+LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b" common_forwarded
+ErrorLog  ${APACHE_LOG_DIR}/gitlab_error.log
+
+CustomLog ${APACHE_LOG_DIR}/gitlab_forwarded.log common_forwarded
+CustomLog ${APACHE_LOG_DIR}/gitlab_access.log combined env=!dontlog
+CustomLog ${APACHE_LOG_DIR}/gitlab.log combined
+
+# SSL Engine Switch: Enable/Disable SSL for this virtual host.
+SSLEngine on
+SSLProtocol all -SSLv2
+SSLHonorCipherOrder on
+SSLCipherSuite "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+SSLCompression Off' >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "  	SSLCertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "  	SSLCertificateKeyFile /etc/ssl/apache/$REALM.key" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "  	SSLCACertificateFile /etc/ssl/apache/$REALM.pem" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo "" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e '	ProxyPreserveHost On
+
+# Leave slashed encoded
+AllowEncodedSlashes NoDecode
+
+<Location />
+  # Authorisation Apache 2.2
+  Order deny,allow
+  Allow from all
+
+  # Allow forwarding to gitlab-workhorse (50010)
+  ProxyPassReverse http://127.0.0.1:50010' >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "		ProxyPassReverse http://$ALIAS.$REALM/" >> /etc/apache2/sites-available/gitlab-ssl.conf
+echo -e "	</Location>
+
+# Apache equivalent of ngix try files
+RewriteEngine on
+
+# Forward requests to gitlab-workhorse
+RewriteRule .* http://127.0.0.1:50010%{REQUEST_URI} [P,QSA]
+RequestHeader set X_FORWARDED_PROTO 'https'
+RequestHeader set X-Forwarded-Ssl on
+
+# Apache error webpages
+ErrorDocument 404 /404.html
+ErrorDocument 422 /422.html
+ErrorDocument 500 /500.html
+ErrorDocument 503 /deploy.html
+
+</VirtualHost>
+</IfModule>" >> /etc/apache2/sites-available/gitlab-ssl.conf
+  RESTARTAPACHE=yes
+  fi
+else
+  # Default to ubuntu trusty (14.04) which uses apache 2.4+
+  if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ssl.conf) == 0 ]; then
+    echo '<ul><li>Removing existing apache virtual host (if one exists).</li></ul>'
+    rm -f /etc/apache2/sites-available/gitlab-ssl.conf
+    echo '<ul><li>Configuring Gitlab apache virtual host.</li></ul>'
+    echo -e "#gitlab-ssl virtual host
 
 # Modules required:
 #  rewrite
@@ -165,6 +258,7 @@ if [ $(grep -c "#gitlab-ssl virtual host" /etc/apache2/sites-available/gitlab-ss
 </VirtualHost>
 </IfModule>" >> /etc/apache2/sites-available/gitlab-ssl.conf
 	RESTARTAPACHE=yes
+  fi
 fi
 
 if [ $(grep -c "<IfModule ssl_module>" /etc/apache2/ports.conf) == 0 ]; then
@@ -221,6 +315,15 @@ mkdir /opt/karoshi/.tempdata/gitlab_temp
 
 timeStamp="$(date +"%F-%H-%M-%S")"
 
+WGET_URL=""
+if [ "$DISTRIB_CODENAME" == "precise" ]; then
+  WGET_URL="https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/precise/gitlab-ce_8.5.1-ce.0_amd64.deb/download"
+else
+  # Default to ubuntu trusty (14.04)
+  WGET_URL="https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.5.1-ce.0_amd64.deb/download"
+fi
+
+
 [ ! -f /opt/karoshi/serversetup/modules/gitlab/gitlab.deb ] && echo -e "" >> /opt/karoshi/serversetup/modules/gitlab/gitlab.deb
 checksum=$(md5sum "/opt/karoshi/serversetup/modules/gitlab/gitlab.deb" | cut -d ' ' -f 1)
 
@@ -232,7 +335,7 @@ if [ "$checksum" != "09f06c616c5aebba1ca7be23855df678" ]; then
 
 	echo '<div style="height: 180px;width:70%;font-size: 100%;overflow:scroll;"><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
-	wget --progress=dot:mega --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb https://packages.gitlab.com/gitlab/gitlab-ce/packages/ubuntu/trusty/gitlab-ce_8.5.1-ce.0_amd64.deb/download 2>&1
+	wget --progress=dot:mega --timeout=10 -O /opt/karoshi/serversetup/modules/gitlab/gitlab.deb $WGET_URL 2>&1
 	wgetOut=$?
 
 	echo "</pre></div>"
