@@ -73,7 +73,17 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body><div id="pagecontainer">'
+echo '
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -188,6 +198,8 @@ fi
 
 SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 
+
+
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -199,13 +211,23 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Scheduled Jobs"' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></td>
-<td style="vertical-align: top;"><a href="cron_view_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
-<td style="vertical-align: top;"><a href="cron_add_fm.cgi"><input class="button" type="button" name="" value="'$"Schedule Job"'"></a></td>
-</tr></tbody></table><br>'
+<td style="vertical-align: top;">
+<button class="button" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
+'$"Select server"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
+'$"Schedule Job"'
+</button>
+</td>
+</tr></tbody></table><br></form></div><div id="infobox">'
 fi
+
 echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1`
 #View cron jobs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_view

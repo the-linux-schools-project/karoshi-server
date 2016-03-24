@@ -37,7 +37,18 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -100,10 +111,8 @@ fi
 #Show current rooms
 if [ $LOCATION_COUNT -gt 0 ]
 then
-	echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" >
-<tbody><tr><td style="width: 180px;"><b>Current Locations</b></td><td><b>Delete</b></td></tr></tbody></table><br>
-<table class="standard" style="text-align: left;" >
-<tbody>'
+	echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
+<thead><tr><th style="width: 200px;"><b>'$"Locations"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 COUNTER=1
 while [ $COUNTER -lt $LOCATION_COUNT ]
 do

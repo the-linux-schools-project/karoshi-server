@@ -66,6 +66,15 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
 MOBILE=`echo "$DATA" | cut -s -d: -f7`
+
+WIDTH1="70"
+WIDTH2="515"
+if [ "$MOBILE" = yes ]
+then
+	WIDTH1="20"
+	WIDTH2="200"
+fi
+
 ########################
 #Check data
 ########################
@@ -164,7 +173,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td style="width: 40px;"></td><td style="width: 180px;"><b>'$"Command"'</b></td><td></td><td></td></tr>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: '$WIDTH1'px;"></th><th style="width: '$WIDTH2'px;"><b>'$"Command"'</b></th><th style="width: '$WIDTH1'px;"></th><th style="width: '$WIDTH1'px;"></th></tr></thead><tbody>'
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -179,13 +188,21 @@ then
 			SHORTCOMMAND=`echo $COMMAND | sed "s/\/\*/SLASHWILDCARD/g"`
 			SHORTCOMMAND=`basename "$SHORTCOMMAND" | sed "s/SLASHWILDCARD/\/\*/g" | sed "s/\"//g"`
 			echo '<tr><td>
-
 			<a class="info3" href="javascript:void(0)"><img class="images" alt="" src="'$INFOICON'"><span>
 			'$"Minutes"' : '$MINUTES'<br>'$"Hour"' : '$HOUR'<br>'$"Weekday"' : '$"Day"'<br>'$"Month"' : '$MONTH'<br>'$"Weekday"' : '$DOFW'<br><br>
 			'$"Command"'<br>'$COMMAND'<br><br>
 			</span></a></td><td>'$CRON_NAME'</td>
-			<td><a class="info" href="javascript:void(0)"><input name="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$EDITICON'" value=""><span>'$"Edit the scheduled job."'</span></a></td><td><a class="info" href="javascript:void(0)"><input name="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___" type="image" class="images" src="'$DELETEICON'" value=""><span>'$"Delete the scheduled job."'</span></a></td></tr>'
-
+			<td>
+			<button class="info" name="_EditJob_" value="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
+			<img src="'$EDITICON'" alt="'$"Edit"'">
+			<span>'$"Edit the scheduled job."'</span>
+			</button>
+			</td><td>
+			<button class="info" name="_DeleteJob_" value="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
+			<img src="'$DELETEICON'" alt="'$"Delete"'">
+			<span>'$"Delete the scheduled job."'</span>
+			</button>
+			</td></tr>'
 		done
 		echo '</tbody></table>'
 	else
@@ -208,7 +225,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
-		echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody><tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>'$"Command"'</b></td><td></td><td></td></tr>"
+		echo "<table id="myTable" class=\"tablesorter\" style=\"text-align: left;\"><thead><tr><th style=\"width: 40px;\"></th><th style=\"width: 2500px;\"><b>'$"Command"'</b></th><th style=\"width: 40px;\"></th><th style=\"width: 40px;\"></th></tr></thead><tbody>"
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -228,8 +245,17 @@ then
 			'$"Minutes"' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $DAY<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
 			'$"Command"'<br>$COMMAND<br><br>
 			</span></a>
-			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
-			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
+			</td><td>$CRON_NAME</td><td>
+			<button class=\"info\" name=\"_EditJob_\" value=\"___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___\">
+			<img src=\"'$EDITICON'\" alt=\"'$"Edit"'\">
+			<span>'$"Edit the scheduled job."'</span>
+			</button>
+			</td><td>
+			<button class=\"info\" name=\"_DeleteJob_\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<img src=\"'$DELETEICON'\" alt=\"'$"Delete"'\">
+			<span>'$"Delete the scheduled job."'</span>
+			</button>
+			</td></tr>"
 		done
 		echo "</tbody></table>"
 	else
@@ -252,7 +278,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
-		echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody><tr><td style=\"width: 40px;\"></td><td style=\"width: 180px;\"><b>'$"Command"'</b></td><td></td><td></td></tr>"
+		echo "<table id="myTable" class=\"tablesorter\" style=\"text-align: left;\"><thead><tr><th style=\"width: 40px;\"></th><th style=\"width: 250px;\"><b>'$"Command"'</b></th><th style=\"width: 40px;\"></th><th style=\"width: 40px;\"></th></tr></thead><tbody>"
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -272,8 +298,18 @@ then
 			'$Mins' : $MINUTES<br>'$"Hour"' : $HOUR<br>'$"Weekday"' : $"Day"<br>'$"Month"' : $MONTH<br>'$"Weekday"' : $DOFW<br><br>
 			'$"Command"'<br>$COMMAND<br><br>
 			</span></a>
-			</td><td>$CRON_NAME</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$EDITICON'\" value=\"\"><span>'$"Edit the scheduled job."'</span></a></td><td>
-			<a class=\"info\" href=\"javascript:void(0)\"><input name=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\" type=\"image\" class=\"images\" src=\"'$DELETEICON'\" value=\"\"><span>'$"Delete the scheduled job."'</span></a></td></tr>"
+			</td><td>$CRON_NAME</td><td>
+
+			<button class=\"info\" name=\"_EditJob_\" value=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<img src=\"'$EDITICON'\" alt=\"'$"Edit"'\">
+			<span>'$"Edit the scheduled job."'</span>
+			</button>
+			</td><td>
+			<button class=\"info\" name=\"_DeleteJob_\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<img src=\"'$DELETEICON'\" alt=\"'$"Delete"'\">
+			<span>'$"Delete the scheduled job."'</span>
+			</button>
+			</td></tr>"
 		done
 		echo "</tbody></table>"
 	else
