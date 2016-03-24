@@ -434,7 +434,7 @@ killall nc
 #Schedule disk_usage
 [ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/disk_usage_report.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Uptime
 cp /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d

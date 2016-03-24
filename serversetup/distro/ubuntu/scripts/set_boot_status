@@ -16,6 +16,7 @@ PRI_NUM=S99
 [ $SERVICE = dansguardian ] && PRI_NUM=S05
 [ $SERVICE = dnsmasq ] && PRI_NUM=S04
 [ $SERVICE = fail2ban ] && PRI_NUM=S05
+[ $SERVICE = glusterfs ] && PRI_NUM=S100
 [ $SERVICE = mailscanner ] && PRI_NUM=S01
 [ $SERVICE = mysql ] && PRI_NUM=S05
 [ $SERVICE = nginx ] && PRI_NUM=S04

@@ -386,7 +386,7 @@ then
 		echo '<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'$FOLDER'" style="width: 200px;" size="20" type="text"></td>
 <td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
-<tr><td></td><td><select name="_FOLDERLIST_" style="width: 200px;" size="1" onchange="document.combobox._FOLDER_.value = document.combobox._FOLDERLIST_.options[document.combobox._FOLDERLIST_.selectedIndex].value;document.combobox._FOLDERLIST_.value=&#39;&#39;">
+<tr><td></td><td><select name="_FOLDERLIST_" style="width: 192px;" size="1" onchange="document.combobox._FOLDER_.value = document.combobox._FOLDERLIST_.options[document.combobox._FOLDERLIST_.selectedIndex].value;document.combobox._FOLDERLIST_.value=&#39;&#39;">
 <option value=""></option>'
 	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
 	do

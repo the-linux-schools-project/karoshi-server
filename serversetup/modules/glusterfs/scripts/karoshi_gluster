@@ -91,7 +91,7 @@ then
 
 	#Add in script to make sure the gluster volume gets mounted on boot
 	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
-	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S100mount_gluster_volumes
+	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S101mount_gluster_volumes
 
 else
 	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
@@ -113,7 +113,7 @@ else
 
 	#Add in script to make sure the gluster volume gets mounted on boot
 	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
-	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S100mount_gluster_volumes
+	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S101mount_gluster_volumes
 	'
 fi
 }

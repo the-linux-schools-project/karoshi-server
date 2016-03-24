@@ -95,34 +95,63 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
 
+function restart_samba {
+echo "<ul><li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
+#Stop samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+sleep 5
+#start samba
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+#Make sure samba runs on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+}
+
+
 #Make sure /run/lock is large enough for samba
 if [ `grep -c /run/lock /etc/rc.local` = 0 ]
 then
-echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
-echo exit 0 >> /etc/rc.local
-mount -t tmpfs tmpfs /run/lock -o remount,size=50M
+	echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
+	echo exit 0 >> /etc/rc.local
+	mount -t tmpfs tmpfs /run/lock -o remount,size=50M
 fi
 
-echo "<ul><li><b>'$"Join Domain"'</b></li></ul><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+
+#Check firewall rules for adc, rodc and domain member
+MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
+if [ $MODCHECK = 0 ]
+then
+	echo "<ul><li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
+	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
+	echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
+	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+	#Restart shorewall
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+echo "<ul><li><b>'$"Join Domain"'</b></li></ul>"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 then
-[ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
-[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
-[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
-samba-tool domain join '$REALM' '$JOINTYPE' --server='$HOSTNAME' --username=Administrator --password='$LDAPPASS' --realm='$SAMBADOMAIN'.'$REALM'
-JOINDOMAINSTATUS=`echo $?`
-if [ $JOINDOMAINSTATUS != 0 ]
-then
-echo '$"There was a problem with joining the domain."'"<br><br>"
-exit 101
-fi
-echo "</pre><br><br>"
-sleep 2
+	[ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
+	[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
+	[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
 
-#Get forwarding dns server
-DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
+	samba-tool domain join '$SAMBADOMAIN' '$JOINTYPE' --server='$HOSTNAME'.'$REALM'  --username=Administrator --password='$LDAPPASS' --realm='$REALM' 2>&1
+	JOINDOMAINSTATUS=$?
+	if [ $JOINDOMAINSTATUS != 0 ]
+	then
+		echo '$"There was a problem with joining the domain."'"<br><br>"
+		exit 101
+	fi
+	echo "</pre><br><br>"
+
+	#Get forwarding dns server
+	DNSFORWARD=`grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p`
 
 #Create simple smb.conf
 echo -e "# Global parameters
@@ -132,9 +161,7 @@ echo -e "# Global parameters
 	netbios name = $HOSTNAME
 	server role = '$SERVERROLE'
 	dns forwarder = $DNSFORWARD
-	allow dns updates = nonsecure
 	idmap_ldb:use rfc2307 = yes
-	acl:search=false
 	log level = 1
 	host msdfs = yes
 	dns round robin = yes
@@ -186,19 +213,16 @@ echo "[dfs]
 
 " >> /etc/samba/smb.conf
 
-#Point adc and rodc servers at themselves for resolv.conf
-echo domain '$REALM' > /etc/resolv.conf
-echo nameserver '$SERVERIP' >> /etc/resolv.conf
-echo timeout:1 >> /etc/resolv.conf
+	restart_samba
 fi
 
 if [ '$AUTHTYPE' = member ]
 then
 
-#Using smbd and nmbd instead of samba
+	#Using smbd and nmbd instead of samba
 
-#Create smb.conf
-echo -e "#karoshi_member_server
+	#Create smb.conf
+	echo -e "#karoshi_member_server
 
 # Global parameters
 [global]
@@ -212,8 +236,7 @@ echo -e "#karoshi_member_server
 
 if [ '$ZONE' = internal ]
 then
-echo -e "
-[homes]
+	echo "[homes]
 	comment = Home Directories
 	invalid users = root
 	read only = No
@@ -222,48 +245,25 @@ echo -e "
 " >> /etc/samba/smb.conf
 fi
 
-#Join the domain
-net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS'
-JOINDOMAINSTATUS=`echo $?`
-if [ $JOINDOMAINSTATUS != 0 ]
-then
-exit 101
-fi
-fi
+	#Join the domain
+	net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS'
+	JOINDOMAINSTATUS=`echo $?`
+	if [ $JOINDOMAINSTATUS != 0 ]
+	then
+		exit 101
+	fi
 
-echo "<br>"
-
-#Check firewall rules for adc, rodc and domain member
-MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-echo "<ul><li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
-echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-
-#Restart shorewall
-echo "<ul><li><b>"$HOSTNAME - '$"Restarting Shorewall"'"</b></li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	restart_samba
 fi
 
-echo "<ul><li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
-#Stop samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
-sleep 1
-#start samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
-#Make sure samba runs on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Exit if the server did not join the domain
 if [ $? = 101 ]
 then
-echo $"There was a problem with joining the domain.""<br>"
-sleep 4
-exit 101
+	echo $"There was a problem with joining the domain.""<br>"
+	sleep 4
+	exit 101
 fi
 
 #Add role information
@@ -279,19 +279,17 @@ fi
 #Authtypes adc rodc member users none
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] 
 then
-DCROLE=$"Domain Controller"
-[ $AUTHTYPE = rodc ] && DCROLE=$"Read Only Domain Controller"
+	DCROLE=$"Domain Controller"
+	[ $AUTHTYPE = rodc ] && DCROLE=$"Read Only Domain Controller"
 
-echo "$DCROLE""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
+	echo "$DCROLE""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1dc
 
-[ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
-echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
-
-
+	[ ! -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/
+	echo $AUTHTYPE > /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME
 else
-echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
-[ ! -d /opt/karoshi/server_network/zones/$ZONE/domain_members/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/domain_members
-touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
+	echo Domain member"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember
+	[ ! -d /opt/karoshi/server_network/zones/$ZONE/domain_members/ ] && mkdir -p /opt/karoshi/server_network/zones/$ZONE/domain_members
+	touch /opt/karoshi/server_network/zones/$ZONE/domain_members/$SERVERNAME
 fi
 }
 
@@ -300,125 +298,123 @@ function configure_nslcd {
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 
-source /opt/karoshi/serversetup/variables/distro
-cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+	source /opt/karoshi/serversetup/variables/distro
+	cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
 
-#Create nslcd.conf
-echo uid nslcd > /etc/nslcd.conf
-echo gid nslcd >> /etc/nslcd.conf
-echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
-echo base OU=People,$LDAPBASE >> /etc/nslcd.conf
-#Not needed for anonymous bind
-#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,$LDAPBASE >> /etc/nslcd.conf
-#echo bindpw $LDAPPASS >> /etc/nslcd.conf
-echo >> /etc/nslcd.conf
-echo nss_min_uid 1000 >> /etc/nslcd.conf
-echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /etc/nslcd.conf
-echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
-echo map passwd uid sAMAccountName >> /etc/nslcd.conf
-echo map passwd uidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
-#echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
-echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
-echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
-echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
-echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
-echo map shadow uid sAMAccountName >> /etc/nslcd.conf
-echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
-echo filter group \(objectClass=group\) >> /etc/nslcd.conf
-echo map group cn sAMAccountName >> /etc/nslcd.conf
-echo map group gidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
-echo nss_min_uid 1001 >> /etc/nslcd.conf
-#echo map group member nogroupmembers >> /etc/nslcd.conf
+	#Create nslcd.conf
+	echo uid nslcd > /etc/nslcd.conf
+	echo gid nslcd >> /etc/nslcd.conf
+	echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
+	echo base OU=People,$LDAPBASE >> /etc/nslcd.conf
+	#Not needed for anonymous bind
+	#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,$LDAPBASE >> /etc/nslcd.conf
+	#echo bindpw $LDAPPASS >> /etc/nslcd.conf
+	echo >> /etc/nslcd.conf
+	echo nss_min_uid 1000 >> /etc/nslcd.conf
+	echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /etc/nslcd.conf
+	echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+	echo map passwd uid sAMAccountName >> /etc/nslcd.conf
+	echo map passwd uidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
+	#echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+	echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
+	echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
+	echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
+	echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+	echo map shadow uid sAMAccountName >> /etc/nslcd.conf
+	echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
+	echo filter group \(objectClass=group\) >> /etc/nslcd.conf
+	echo map group cn sAMAccountName >> /etc/nslcd.conf
+	echo map group gidNumber objectSid:$DOMAINSID >> /etc/nslcd.conf
+	echo nss_min_uid 1001 >> /etc/nslcd.conf
+	#echo map group member nogroupmembers >> /etc/nslcd.conf
 
-source /opt/karoshi/serversetup/variables/distro
-#Stop nslcd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
-#Start nslcd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
+	source /opt/karoshi/serversetup/variables/distro
+	#Stop nslcd
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
+	#Start nslcd
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
 
-#Set nslcd to start on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
+	#Set nslcd to start on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo "<ul><li><b>'$"Configure Authentication"'</b></li></ul>"
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	echo "<ul><li><b>'$"Configure Authentication"'</b></li></ul>"
 
-source /opt/karoshi/serversetup/variables/distro
+	source /opt/karoshi/serversetup/variables/distro
 
-#Create domain_name file
-if [ ! -d /opt/karoshi/server_network/domain_information/ ]
-then
-mkdir -p /opt/karoshi/server_network/domain_information/
-fi
-echo SAMBADOMAIN=\"'$SAMBADOMAIN'\" > /opt/karoshi/server_network/domain_information/domain_name
-echo SAMBADOMAINCAPS=\"'$SAMBADOMAINCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo WEBADDRESS=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo REALM=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo LONGNAME=\"'$LONGNAME'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo SHORTNAME=\"'$SHORTNAME'\" >> /opt/karoshi/server_network/domain_information/domain_name
-echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	#Create domain_name file
+	if [ ! -d /opt/karoshi/server_network/domain_information/ ]
+	then
+		mkdir -p /opt/karoshi/server_network/domain_information/
+	fi
+	echo SAMBADOMAIN=\"'$SAMBADOMAIN'\" > /opt/karoshi/server_network/domain_information/domain_name
+	echo SAMBADOMAINCAPS=\"'$SAMBADOMAINCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo WEBADDRESS=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo REALM=\"'$WEBADDRESS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
 
-#Set up krb5
-echo "[libdefaults]" > /etc/krb5.conf
-echo  "dns_lookup_realm = false" >> /etc/krb5.conf
-echo  "dns_lookup_kdc = true" >> /etc/krb5.conf
-echo >> /etc/krb5.conf
-echo  "default_realm = '$REALMCAPS'" >> /etc/krb5.conf
-echo "[realms]" >> /etc/krb5.conf
-echo "'$REALMCAPS' = {" >> /etc/krb5.conf
-echo "	kdc = '$KRBSERVER'" >> /etc/krb5.conf
-echo "}" >> /etc/krb5.conf
+	#Set up krb5
+	echo "[libdefaults]" > /etc/krb5.conf
+	echo  "dns_lookup_realm = false" >> /etc/krb5.conf
+	echo  "dns_lookup_kdc = true" >> /etc/krb5.conf
+	echo >> /etc/krb5.conf
+	echo  "default_realm = '$REALMCAPS'" >> /etc/krb5.conf
+	echo "[realms]" >> /etc/krb5.conf
+	echo "'$REALMCAPS' = {" >> /etc/krb5.conf
+	echo "	kdc = '$KRBSERVER'" >> /etc/krb5.conf
+	echo "}" >> /etc/krb5.conf
 
-#Modify nsswitch 
-cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
+	#Modify nsswitch 
+	cp /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/configfiles/nsswitch.conf /etc/
 
-#Create nslcd.conf
-echo uid nslcd > /etc/nslcd.conf
-echo gid nslcd >> /etc/nslcd.conf
-if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
-then
-echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
-else
-if [ '$ZONE' = dmz ]
-then
-echo uri ldap://'$KRBSERVER' >> /etc/nslcd.conf
-else
-echo uri DNS >> /etc/nslcd.conf
-fi
-fi
-echo base OU=People,'$LDAPBASE' >> /etc/nslcd.conf
-#Not needed for anonymous bind
-#echo binddn cn=nslcd-server,OU=karoshi,OU=other,OU=People,'$LDAPBASE' >> /etc/nslcd.conf
-#echo bindpw '$LDAPPASS' >> /etc/nslcd.conf
-echo >> /etc/nslcd.conf
-echo nss_min_uid 1000 >> /etc/nslcd.conf
-echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /tmp/nslcd.conf
-echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
-echo map passwd uid sAMAccountName >> /etc/nslcd.conf
-echo map passwd uidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
-#echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
-echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
-echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
-echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
-echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
-echo map shadow uid sAMAccountName >> /etc/nslcd.conf
-echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
-echo filter group \(objectClass=group\) >> /etc/nslcd.conf
-echo map group cn sAMAccountName >> /etc/nslcd.conf
-echo map group gidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
-echo map group member nogroupmembers >> /etc/nslcd.conf
-#Stop nslcd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
-#Start nslcd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
-#Set nslcd to start on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-EXITCHECK=`echo $?`
+	#Create nslcd.conf
+	echo uid nslcd > /etc/nslcd.conf
+	echo gid nslcd >> /etc/nslcd.conf
+	if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
+	then
+		echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
+	else
+		if [ '$ZONE' = dmz ]
+		then
+			echo uri ldap://'$KRBSERVER' >> /etc/nslcd.conf
+		else
+			echo uri DNS >> /etc/nslcd.conf
+		fi
+	fi
+	echo base OU=People,'$LDAPBASE' >> /etc/nslcd.conf
+	#Not needed for anonymous bind
+	#echo binddn cn=nslcd-server,OU=karoshi,OU=other,OU=People,'$LDAPBASE' >> /etc/nslcd.conf
+	#echo bindpw '$LDAPPASS' >> /etc/nslcd.conf
+	echo >> /etc/nslcd.conf
+	echo nss_min_uid 1000 >> /etc/nslcd.conf
+	echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /tmp/nslcd.conf
+	echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+	echo map passwd uid sAMAccountName >> /etc/nslcd.conf
+	echo map passwd uidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
+	#echo map passwd gidNumber primaryGroupID >> /etc/nslcd.conf
+	echo map passwd gecos \"\${displayName:-\${sAMAccountName}},,,\" >> /etc/nslcd.conf
+	echo map passwd homeDirectory \"\${unixHomeDirectory:-/home/\$sAMAccountName}\" >> /etc/nslcd.conf
+	echo map passwd loginShell \"\${loginShell:-/bin/bash}\" >> /etc/nslcd.conf
+	echo filter shadow \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
+	echo map shadow uid sAMAccountName >> /etc/nslcd.conf
+	echo map shadow shadowLastChange pwdLastSet >> /etc/nslcd.conf
+	echo filter group \(objectClass=group\) >> /etc/nslcd.conf
+	echo map group cn sAMAccountName >> /etc/nslcd.conf
+	echo map group gidNumber objectSid:'$DOMAINSID' >> /etc/nslcd.conf
+	echo map group member nogroupmembers >> /etc/nslcd.conf
+	#Stop nslcd
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_stop 1>/dev/null
+	#Start nslcd
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nslcd_start 1>/dev/null
+	#Set nslcd to start on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nslcd
+	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	EXITCHECK=`echo $?`
 fi
 
 #Add ldap client flag
@@ -433,35 +429,35 @@ function choose_krbserver {
 #Decide which krb server to use
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-#Authtypes adc rodc member users none 
-[ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
-[ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
+	#Authtypes adc rodc member users none 
+	[ $AUTHTYPE = adc ] && KRBSERVER=$SERVERNAME
+	[ $AUTHTYPE = rodc ] && KRBSERVER=$SERVERNAME
 
-if [ $AUTHTYPE = member ] || [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = none ]
-then
-KRBSERVER=$HOSTNAME.$REALM
-if [ $ZONE != internal ]
-then
-#Check to see if there is an adc in the zone to use
-if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
-then
-KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
-fi
-fi
-fi
-fi
+	if [ $AUTHTYPE = member ] || [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = none ]
+	then
+		KRBSERVER=$HOSTNAME.$REALM
+		if [ $ZONE != internal ]
+		then
+			#Check to see if there is an adc in the zone to use
+			if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
+			then
+				if [ `ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | wc -l` -gt 0 ]
+				then
+					KRBSERVER=`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ | sed -n 1,1p`
+				fi
+			fi
+		fi
+	fi
 
-KRBSERVERIP=`net lookup $KRBSERVER`
+	KRBSERVERIP=`net lookup $KRBSERVER`
 
-if [ $ZONE = dmz ]
-then
-if [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = member ]
-then
-PORTSCANIP=$KRBSERVERIP
-fi
-fi
+	if [ $ZONE = dmz ]
+	then
+		if [ $AUTHTYPE = usersandgroups ] || [ $AUTHTYPE = member ]
+		then
+			PORTSCANIP=$KRBSERVERIP
+		fi
+	fi
 fi
 }
 
@@ -472,14 +468,14 @@ then
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 if [ `grep -c $HOSTNAME /etc/hosts` = 0 ]
 then
-echo '$SERVERIP'"	"$HOSTNAME.'$REALM'"	"$HOSTNAME >> /etc/hosts
+	echo '$SERVERIP'"	"$HOSTNAME.'$REALM'"	"$HOSTNAME >> /etc/hosts
 fi
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 then
-if [ `grep -c '$HOSTNAME'.'$REALM' /etc/hosts` = 0 ]
-then
-echo '$PDCIP'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
-fi
+	if [ `grep -c '$HOSTNAME'.'$REALM' /etc/hosts` = 0 ]
+	then
+		echo '$PDCIP'"	"'$HOSTNAME'.'$REALM'"	"'$HOSTNAME' >> /etc/hosts
+	fi
 fi
 ' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
@@ -488,31 +484,32 @@ fi
 function configure_resolvconf {
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Write resolve.conf
-if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
-then
-#Setup resolv.conf
-echo domain '$REALM' > /etc/resolv.conf
-fi
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	#Write resolve.conf
 
-if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
-then
-	if [ '$AUTHTYPE' != adc ] && [ '$AUTHTYPE' != rodc ]
+	if [ '$ZONE' = internal ] || [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
 	then
-		echo "domain '$REALM'" > /etc/resolv.conf
-		echo "nameserver '$KRBSERVERIP'" >> /etc/resolv.conf
-		echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-		echo "nameserver 8.8.4.4" >> /etc/resolv.conf
-		echo "timeout:1" >> /etc/resolv.conf
+		#Setup resolv.conf
+		echo domain '$REALM' > /etc/resolv.conf
 	fi
-fi
 
-if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
-then
-	echo nameserver '$PDCIP' >> /etc/resolv.conf
-fi
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ '$ZONE' = internal ] || [ '$ZONE' = dmz ]
+	then
+		if [ '$AUTHTYPE' != adc ] && [ '$AUTHTYPE' != rodc ]
+		then
+			echo "domain '$REALM'" > /etc/resolv.conf
+			echo "nameserver '$KRBSERVERIP'" >> /etc/resolv.conf
+			echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+			echo "nameserver 8.8.4.4" >> /etc/resolv.conf
+			echo "timeout:1" >> /etc/resolv.conf
+		fi
+	fi
+
+	if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
+	then
+		echo nameserver '$PDCIP' >> /etc/resolv.conf
+	fi
+	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 }
 
@@ -556,7 +553,7 @@ echo '<ul><li><b>'$"Configuring NTP"'</b></li></ul>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
-NTPSERVER=$HOSTNAME.$REALM
+	NTPSERVER=$HOSTNAME.$REALM
 fi
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo server '$NTPSERVER' iburst > /etc/ntp.conf
@@ -606,19 +603,19 @@ configure_resolvconf
 #Configure samba4
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ] || [ $AUTHTYPE = member ]
 then
-echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-configure_samba4
+	echo `date`: configure_authentication - configuring samba4 $AUTHTYPE "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	configure_samba4
 fi
 #Configure nslcd
 if [ $AUTHTYPE != none ]
 then
-echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-configure_nslcd
+	echo `date`: configure_authentication - configuring nslcd "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	configure_nslcd
 fi
 if [ $SERVERNAME != `hostname-fqdn` ] && [ $ZONE != external ]
 then
-echo `date`: configure_authentication - configuring ntp "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-configure_ntp
+	echo `date`: configure_authentication - configuring ntp "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	configure_ntp
 fi
 echo `date`: configure_authentication - completed "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -628,4 +625,29 @@ touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 
 #Reconfigure krb5.conf for all servers that are not domain controllers
 /opt/karoshi/serversetup/modules/authentication/configure_krb5.conf
+
+#Reconfigure resolv.conf for domain controllers - this needs to be done after samba has finished syncing.
+
+function configure_adc_resolv {
+sleep 60
+COUNTER=0
+while [ $(dig "$REALM" | grep -c -w "$SERVERIP") = 0 ]
+do
+	sleep 10
+	let COUNTER="$COUNTER"+1
+	[ $COUNTER = 60 ] && break
+done
+
+ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Point adc and rodc servers at themselves for resolv.conf
+echo domain '$REALM' > /etc/resolv.conf
+echo nameserver '$SERVERIP' >> /etc/resolv.conf
+echo timeout:1 >> /etc/resolv.conf
+'
+}
+
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+	configure_adc_resolv &
+fi
 exit

@@ -557,15 +557,15 @@ then
 	if [ -z "$NEWUSERNAME" ]
 	then
 		DETAILCHECK=error
-		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --text=$"The username cannot be blank." --no-buttons
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3  --timeout-indicator=bottom --text=$"The username cannot be blank." --no-buttons
 	elif [ -z "$NEWUSERPASSWORD" ] || [ $CHECKUSERPASSWORD'null' = null ]
 	then
 		DETAILCHECK=error
-		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The password cannot be blank." --no-buttons
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --timeout-indicator=bottom --text=$"The password cannot be blank." --no-buttons
 	elif [ $NEWUSERPASSWORD != $CHECKUSERPASSWORD ]
 	then
 		DETAILCHECK=error
-		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --text=$"The passwords do not match." --no-buttons
+		yad --title "$TITLE" --image="/opt/karoshi/serversetup/essentials/smalllogo3.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=3 --timeout-indicator=bottom --text=$"The passwords do not match." --no-buttons
 	fi
 	}
 

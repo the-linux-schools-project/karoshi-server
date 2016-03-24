@@ -513,9 +513,7 @@ else
 	netbios name = '$HOSTNAME'
 	server role = active directory domain controller
 	dns forwarder = '$DNSFORWARD'
-	allow dns updates = secure
 	idmap_ldb:use rfc2307 = yes
-	acl:search=false
 	log level = 1
 	log file = /var/log/samba/log.%U
 	# maximum size of 50KB per log file, then rotate:
@@ -563,7 +561,7 @@ else
 	oplocks = No
 	level2 oplocks = No
 
-[itadmin]
+[itadminshare]
 	comment = Itadmin Share
 	path = /home/itadminshare
 	invalid users = root,administrator

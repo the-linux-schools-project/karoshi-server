@@ -309,7 +309,7 @@ sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/pi
 ###########################
 #Make sure that apache2_karoshi is running on the main server.
 ###########################
-if [ `ps aux | grep -c apache2_karoshi` -lt 2 ] && [ -d /opt/karoshi/web_controls ]
+if [ `ps aux | grep -c apache2_karoshi` -lt 2 ] && [ -d /opt/karoshi/web_controls/exec ]
 then
 	echo -e "$HOSTNAME: `date` - Starting apache2_karoshi since it was not running." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 	service apache2_karoshi start
