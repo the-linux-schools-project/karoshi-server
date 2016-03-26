@@ -605,8 +605,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 fi
 echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: middle;"><b>'$TITLETXT'</b></td>
-<td style="vertical-align: top;">
+<tr><td style="height:30px;"><div class="sectiontitle">'$TITLETXT'</div></td>
+<td>
 <input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
 </td>
 <td>

@@ -112,13 +112,23 @@ echo `date`: uptime - "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /op
 
 if [ $MOBILE = no ]
 then
-SERVERICON="/images/submenus/system/uptime_reset.png"
-ICON1=/images/submenus/system/computer.png
-TABLECLASS=standard
+	SERVERICON="/images/submenus/system/uptime_reset.png"
+	ICON1=/images/submenus/system/computer.png
+	TABLECLASS=standard
+	WIDTH1=220
+	WIDTH2=80
+	WIDTH3=158
+	WIDTH4=150
+	WIDTH5=100
 else
-SERVERICON="/images/submenus/system/uptime_resetm.png"
-ICON1=/images/submenus/system/computerm.png
-TABLECLASS=mobilestandard
+	SERVERICON="/images/submenus/system/uptime_resetm.png"
+	ICON1=/images/submenus/system/computerm.png
+	TABLECLASS=mobilestandard
+	WIDTH1=90
+	WIDTH2=80
+	WIDTH3=140
+	WIDTH4=100
+	WIDTH5=100
 fi
 ############################
 #Language
@@ -152,10 +162,10 @@ fi
 if [ $MOBILE = yes ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 90px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Uptime"'</b></th></tr></thead><tbody>'
 else
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 250px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"Uptime"'</b></th><th style="width: 140px;"><b>'$"Est. Downtime  Year"'</b></th><th><b>'$"Start Date"'</b></th><th><b>'$"Reset"'</b></th></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Uptime"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Est. Downtime  Year"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Start Date"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Reset"'</b></th></thead><tbody>'
 fi
 }
 

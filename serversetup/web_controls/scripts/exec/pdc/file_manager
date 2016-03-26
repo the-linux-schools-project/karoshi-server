@@ -151,6 +151,9 @@ then
 	ICON16=/images/submenus/file/folder.png
 	COLSPAN=5
 	COLWIDTH=22
+	VIEWWIDTH1=35
+	VIEWWIDTH2=520
+	VIEWHEIGHT1=36
 else
 ROWCOUNT=3
 	WIDTH=70
@@ -175,8 +178,11 @@ ROWCOUNT=3
 	ICON14=/images/submenus/file/createm.png
 	ICON15=/images/submenus/file/filem.png
 	ICON16=/images/submenus/file/folderm.png
-	COLSPAN=6
+	COLSPAN=5
 	COLWIDTH=32
+	VIEWWIDTH1=50
+	VIEWWIDTH2=520
+	VIEWHEIGHT1=35
 fi
 
 LINECOLOUR1="#A0A0A0"
@@ -256,7 +262,20 @@ then
 else
 	DISPLOCATION=$LOCATION
 fi
-[ $MOBILE = yes ] && DISPLOCATION=${DISPLOCATION:0:20}
+
+DISPLOCATIONLENGTH=${#DISPLOCATION}
+MAXPATHLENTH=70
+if [ $MOBILE = yes ]
+then
+	MAXPATHLENTH=30
+fi
+
+if [ "$DISPLOCATIONLENGTH" -gt $MAXPATHLENTH ]
+then
+	let STARTPOINT=$DISPLOCATIONLENGTH-$MAXPATHLENTH
+	DISPLOCATION="...${DISPLOCATION:$STARTPOINT:$DISPLOCATIONLENGTH}"
+fi
+
 echo '<br>
 <button class="button" name="Top" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_">
 '$"Top Directory"'
@@ -270,7 +289,7 @@ echo '<br>
 <button class="button" name="NewFile" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 '$"New File"'
 </button>
-<br><br><b>'$"Location"': '$DISPLOCATION'</b><br>'
+<br><br>'
 
 if [ $SHOWMOVE = yes ]
 then
@@ -289,11 +308,19 @@ then
 	fi
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;"><tr><td style="width: 30px;"></td><td style="width: 30px;"></td><td style="width: 30px;"></td><td style="width: 30px;"></td><td style="width: 30px;"></td><td style="width: 30px;"></td><td style="width: 30px;"></td></tr>'
+if [ $MOBILE = yes ]
+then
+	echo "$DISPLOCATION<br>"
+fi
+
+echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="height: 20px; width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th>'
+
+[ $MOBILE = no ] && echo '<th style="word-wrap:break-word; width: '$VIEWWIDTH2'px;"><b>'$DISPLOCATION'</b></th></tr></thead><tbody>'
+
+echo '</tr>'
 
 #[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
 
-echo '<tbody>'
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 LINECOLOUR=$LINECOLOUR1
@@ -332,7 +359,7 @@ then
 				fi
 				echo '<tr style="background-color:'$LINECOLOUR'"><td colspan="'$COLSPAN'">'$FILENAME'</td></tr><tr style="background-color:'$LINECOLOUR'">'
 			else
-				echo '<tr>'
+				echo '<tr style="height: '$VIEWHEIGHT1'px;">'
 			fi
 
 			echo '
@@ -370,9 +397,9 @@ then
 			fi
 			if [ $MOBILE = no ]
 			then
-				echo '</td><td>'$FILENAME'</td><td></td></tr>'
+				echo '</td><td>'$FILENAME'</td></tr>'
 			else
-				echo '</td><td></td></tr>'
+				echo '</td></tr>'
 			fi
 		done
 	fi
@@ -426,7 +453,7 @@ then
 
 			echo "<tr style=\"background-color:$LINECOLOUR\"><td colspan=\"'$COLSPAN'\">$FILENAME</td></tr><tr style=\"background-color:$LINECOLOUR\">"
 		else
-			echo "<tr>"
+			echo "<tr style=\"height: '$VIEWHEIGHT1'px;\">"
 		fi
 
 		echo "<td>
@@ -456,17 +483,16 @@ then
 		else
 			echo "<button class=\"info\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
 		fi
-		[ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
+
 
 		if [ '$MOBILE' = no ]
 		then
-			echo "</td><td style=\"text-align: left;\">$FILENAME</td><td></td></tr>"
+			echo "</td><td style=\"text-align: left;\">$FILENAME</td>"
 		else
 			echo "</td>"
-			[ $SHOWRESTORE != yes ] && echo "</td><td>"
-			echo "</tr>"
 		fi
-
+		[ $SHOWRESTORE = yes ] && echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a></td>"
+		echo "</tr>"
 		done
 fi
 '
@@ -1318,23 +1344,23 @@ MOVECHECK=yes
 #Check that file is not in a banned path
 if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$ITEMTOCOPY"` -gt 0 ]
 then
-MOVECHECK=no
+	MOVECHECK=no
 fi
 for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
 do
-if [ `echo "$ITEMTOCOPY" | grep -c $PATHCHECK` -gt 0 ]
-then
-MOVECHECK=no 
-fi
+	if [ `echo "$ITEMTOCOPY" | grep -c $PATHCHECK` -gt 0 ]
+	then
+		MOVECHECK=no 
+	fi
 done
 
 if [ $MOVECHECK = yes ]
 then
-echo "$ITEMTOCOPY2" - $"Move here?" '<input type="image" src="'$ICON9'" name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
-echo $"Copy here?" '<input type="image" src="'$ICON4'" name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
-echo $"Cancel" '<input type="image" src="'$ICON8'" name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" value=""><br>'
+	echo "$ITEMTOCOPY2" - $"Move here?" '<input type="image" src="'$ICON9'" name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
+	echo $"Copy here?" '<input type="image" src="'$ICON4'" name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ITEMMOVE_'$ITEMTOCOPY'_" value="">'
+	echo $"Cancel" '<input type="image" src="'$ICON8'" name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" value=""><br>'
 else
-echo $"This item is protected and cannot be moved or copied.""<br>"
+	echo $"This item is protected and cannot be moved or copied.""<br>"
 fi
 #Browse to directory to move to
 show_directory
@@ -1366,55 +1392,55 @@ ITEMMOVE=""
 echo `date`: file_manager - renaming "$LOCATION" to "$NEWNAME" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-if [ -e "$LOCATION" ]
-then
-if [ ! -e "$CURRENTLOCATION/$NEWNAME" ]
-then
-mv -f "$LOCATION" "$CURRENTLOCATION/$NEWNAME"
-else
-echo ''$"An item with this name already exists."'<br><br><a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" border="0"></a>'
-exit
-fi
-fi
+	if [ -e "$LOCATION" ]
+	then
+		if [ ! -e "$CURRENTLOCATION/$NEWNAME" ]
+		then
+			mv -f "$LOCATION" "$CURRENTLOCATION/$NEWNAME"
+		else
+			echo ''$"An item with this name already exists."'<br><br><a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" border="0"></a>'
+		exit
+		fi
+	fi
 fi
 
 if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-if [ -e "'$LOCATION'" ]
-then
-if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
-then
-mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
-else
-echo "'$"An item with this name already exists."'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
-exit 100
-fi
-fi
-'
-[ `echo $?` = 100 ] && exit
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	if [ -e "'$LOCATION'" ]
+	then
+		if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
+		then
+			mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
+		else
+			echo "'$"An item with this name already exists."'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+		exit 100
+		fi
+	fi
+	'
+	[ `echo $?` = 100 ] && exit
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-if [ -e "'$LOCATION'" ]
-then
-if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
-then
-mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
-else
-echo "'$"An item with this name already exists."'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
-exit 100
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+	echo `date`: file_manager \(federated mode\) - renaming "'$LOCATION'" to "'$NEWNAME'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	if [ -e "'$LOCATION'" ]
+	then
+	if [ ! -e "'$CURRENTLOCATION'/'$NEWNAME'" ]
+	then
+		mv -f "'$LOCATION'" "'$CURRENTLOCATION'/'$NEWNAME'"
+	else
+		echo "'$"An item with this name already exists."'<br><br><A HREF=\"javascript:history.go(-1)\"> <IMG SRC=\"/images/submenus/file/back.gif\" BORDER=\"0\"></A>"
+		exit 100
+	fi
 fi
-fi
-'\''
-[ `echo $?` = 100 ] && exit 100
-'
-[ `echo $?` = 100 ] && exit
+	'\''
+	[ `echo $?` = 100 ] && exit 100
+	'
+	[ `echo $?` = 100 ] && exit
 fi
 
 
@@ -1448,15 +1474,18 @@ else
 	convert_special_chars
 	RENAMEFILE=`basename "$LOCATION"`
 	LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
-	echo '<b>'$"Rename"'</b>' $LOCATION'<br><br>'
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;"><b>'$"Current Name"'</b></td>'
+	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	<tr><td style="height: 25px; width: 180px;"><b>'$"Location"'</b></td>'
 	[ $MOBILE = yes ] && echo "</tr><tr>" 
-	echo '<td>'$RENAMEFILE'<td></tr>
-	<tr><td><b>'$"New Name"'</b></td>'
+	echo '<td>'$LOCATION'</td></tr>
+	<tr><td style="height: 25px;"><b>'$"Current Name"'</b></td>'
 	[ $MOBILE = yes ] && echo "</tr><tr>" 
-	echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr></tbody></table><br>
+	echo '<td>'$RENAMEFILE'</td></tr>
+	<tr><td style="height: 25px;"><b>'$"New Name"'</b></td>'
+	[ $MOBILE = yes ] && echo "</tr><tr>" 
+	echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr>
+	</tbody></table><br>
 	<input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Rename"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'"><br>'
 
 fi
@@ -1473,67 +1502,67 @@ echo `date`: file_manager - editing "$LOCATION" on $SERVERNAME by $REMOTE_USER f
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-if [ -f "$LOCATION" ]
-then
-echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "$LOCATION"
-#replace speech marks
-sed -i 's/%22/"/g' "$LOCATION"
-#replace tabs
-sed -i 's/%09/\t/g' "$LOCATION"
-#Replace quotation marks
-sed -i "s/%27/'/g" "$LOCATION"
-#Replace `
-sed -i "s/%60/\`/g" "$LOCATION"
-#Replace back slash
-sed -i "s/%5C/\\\/g" "$LOCATION"
-fi
+	if [ -f "$LOCATION" ]
+	then
+	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "$LOCATION"
+	#replace speech marks
+	sed -i 's/%22/"/g' "$LOCATION"
+	#replace tabs
+	sed -i 's/%09/\t/g' "$LOCATION"
+	#Replace quotation marks
+	sed -i "s/%27/'/g" "$LOCATION"
+	#Replace `
+	sed -i "s/%60/\`/g" "$LOCATION"
+	#Replace back slash
+	sed -i "s/%5C/\\\/g" "$LOCATION"
+	fi
 fi
 
 if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
-echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
-#replace speech marks
-sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
-#replace tabs
-sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace quotation marks
-sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace `
-sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace back slash
-sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#cat file back to correct SERVERNAME
-LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
-cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME 'cat - > '$LOCATION2''
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-'
-rm -f /opt/karoshi/.tempdata/file_edit.$$
+	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
+	#replace speech marks
+	sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
+	#replace tabs
+	sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace quotation marks
+	sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace `
+	sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace back slash
+	sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#cat file back to correct SERVERNAME
+	LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
+	cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME 'cat - > '$LOCATION2''
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	'
+	rm -f /opt/karoshi/.tempdata/file_edit.$$
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
-#replace speech marks
-sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
-#replace tabs
-sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace quotation marks
-sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace `
-sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#Replace back slash
-sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
-#cat file back to correct SERVERNAME
-LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
-cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER 'cat - > /opt/karoshi/.tempdata/file_edit.'$$''
+	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
+	#replace speech marks
+	sed -i 's/%22/"/g' "/opt/karoshi/.tempdata/file_edit.$$"
+	#replace tabs
+	sed -i 's/%09/\t/g' "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace quotation marks
+	sed -i "s/%27/'/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace `
+	sed -i "s/%60/\`/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#Replace back slash
+	sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
+	#cat file back to correct SERVERNAME
+	LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
+	cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER 'cat - > /opt/karoshi/.tempdata/file_edit.'$$''
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-cat /opt/karoshi/.tempdata/file_edit.'$$' | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''cat - > '$LOCATION2''\''
-rm -f /opt/karoshi/.tempdata/file_edit.'$$'
-'
-rm -f /opt/karoshi/.tempdata/file_edit.$$
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	cat /opt/karoshi/.tempdata/file_edit.'$$' | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''cat - > '$LOCATION2''\''
+	rm -f /opt/karoshi/.tempdata/file_edit.'$$'
+	'
+	rm -f /opt/karoshi/.tempdata/file_edit.$$
 fi
 
 

@@ -202,7 +202,7 @@ then
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td style="vertical-align: top;">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td style="height:30px;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">
 <button class="button" name="ChooseServer" value="_">
 '$"Select Server"'

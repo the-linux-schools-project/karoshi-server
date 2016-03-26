@@ -436,7 +436,7 @@ fi
 if [ $DNSSTATUS != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Dns_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dns_">
+<button class="info infoleft" name="_Dns_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dns_">
 <img src="/images/warnings/'$ICON'" alt="'$"DNS"'">
 <span><br>DNS '$DNSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$DNS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$DNS_NEXT_CHECK'</span>
 </button>
@@ -448,7 +448,7 @@ fi
 if [ $CUPSSTATUS != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Cups_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_cups_">
+<button class="info infoleft" name="_Cups_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_cups_">
 <img src="/images/warnings/'$ICON'" alt="'$"Cups Printing System"'">
 <span><br>CUPS '$CUPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$CUPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$CUPS_NEXT_CHECK'</span>
 </button>

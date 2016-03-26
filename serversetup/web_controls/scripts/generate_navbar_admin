@@ -452,23 +452,14 @@ echo '	<li class="top"><a href="/cgi-bin/admin/e2g_filtergroups.cgi" id="Interne
 fi
 
 #Web
-echo '	<li class="top"><a href="#nogo53" id="Web" class="top_link"><span class="down">Web</span></a>
-		<ul class="sub">
-			<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a></li>
-				'
-
-if [ $WEBCTRL = yes ]
-then
-	echo '
-			<li><a href="/cgi-bin/admin/web_management_upload_files_fm.cgi">'$"Upload Files"'</a></li>
-			<li><a href="/cgi-bin/admin/web_management_view_files_choose_server_fm.cgi">'$"View - Delete Files"'</a></li>'
-fi
 if [ $REVERSEPROXYCTRL = yes ]
 then
-	echo '<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$"Reverse Proxy Sites"'</a></li>'
+	echo '	<li class="top"><a href="#nogo53" id="Web" class="top_link"><span class="down">Web</span></a>
+		<ul class="sub">
+			<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$"Reverse Proxy Sites"'</a></li>
+		</ul>
+		</li>'
 fi
-echo '		</ul>
-	</li>'
 
 #Show logout
 echo '<li class="top"><a href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Main_Page"  id="Help" class="top_link"><span class="down">'$"Help"'</span></a>

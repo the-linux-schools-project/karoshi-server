@@ -65,7 +65,7 @@ $(document).ready(function()
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
+<td style="height:30px;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
 
 #Check for gluster support
 [ `grep -c dfs /etc/samba/smb.conf` -gt 0 ] && echo '<td>

@@ -258,7 +258,7 @@ then
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 <form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">Gluster - '$TITLE'</div></td>
+<tr><td style="height:30px;"><div class="sectiontitle">Gluster - '$TITLE'</div></td>
 <td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></td>
 <td>
 <button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">

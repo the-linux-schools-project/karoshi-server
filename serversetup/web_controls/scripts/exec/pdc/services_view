@@ -124,9 +124,15 @@ if [ $MOBILE = no ]
 then
 	ICON1=/images/submenus/system/service_running.png
 	ICON2=/images/submenus/system/service_stopped.png
+	WIDTH1=236
+	WIDTH2=400
+	WIDTH3=100
 else
 	ICON1=/images/submenus/system/service_runningm.png
 	ICON2=/images/submenus/system/service_stoppedm.png
+	WIDTH1=120
+	WIDTH2=180
+	WIDTH3=60
 fi
 
 function get_status {
@@ -217,7 +223,7 @@ echo '<form name="myform" action="/cgi-bin/admin/services_view2.cgi" method="pos
 echo '<input name="_SERVERNAME_'$SERVERNAME''$ALLSERVERS'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_" value="" type="hidden">
 
 <table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr>
-<th style="width: 120px;"><b>'$"Service"'</b></th><th style="width: 180px;"><b>'$"Function"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+<th style="width: '$WIDTH1'px;"><b>'$"Service"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Function"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 #Make sure the list of suggested services is unique
 DSERVICES2=""

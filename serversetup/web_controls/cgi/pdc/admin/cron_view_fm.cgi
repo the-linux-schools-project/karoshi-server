@@ -138,10 +138,10 @@ else
 echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Scheduled Jobs"'</div></td>
-<td style="vertical-align: top;">
+<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"'</div></td>
+<td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
-<td style="vertical-align: top;">
+<td>
 <form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
 <button class="button" name="ScheduleJob" value="_">
 '$"Schedule Job"'

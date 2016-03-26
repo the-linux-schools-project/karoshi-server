@@ -50,16 +50,26 @@ echo '
 
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Apply SSL Certificate"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Apply SSL Certificate"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectservers" method="post"><b></b>
   <div id="actionbox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Apply SSL Certificate"'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create an ssl certificate signed by the root signing authority on your server."' '$"Your client computers will need to have the root signing authority installed into their web browsers."'</span></a></td></tr></tbody></table>
-  <br><table class="standard" style="text-align: left;" >
-    <tbody>
-<tr><td style="width: 180px;"><b>Server</b></td><td style="width: 300px;"><b>Alias</b></td><td></td></tr>
+  <br><table  id="myTable" class="tablesorter" style="text-align: left;" >
+    <thead>
+<tr><th style="width: 180px;"><b>Server</b></th><th style="width: 300px;"><b>Alias</b></th><th></th></tr></thead><tbody>
 <tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;">
 <button class="button" name="_ApplyCert_" value="_SERVER_'$HOSTNAME'_">
 '$"Apply Certificate"'

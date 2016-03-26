@@ -58,7 +58,11 @@ echo '
 <script id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
+        $("#myTable").tablesorter({
+	headers: {
+	4: { sorter: false}
+    		}
+		});
     } 
 );
 </script>
@@ -568,13 +572,13 @@ then
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"File Manager"' '$SERVER2'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></td>'
+	<td style="height:30px;"><div class="sectiontitle">'$"File Manager"' '$SERVER2'</div></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></td>'
 
 	if [ $SERVERNAME != notset ]
 	then
 		echo '
-	<td style="vertical-align: top;">
+	<td>
 	<form action="/cgi-bin/admin/file_manager.cgi" method="post">
 	<button class="button" name="_">'$"Choose Server"'</button>
 	</form>

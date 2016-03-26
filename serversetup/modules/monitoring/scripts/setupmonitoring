@@ -156,16 +156,13 @@ fi
 echo '<ul><li>'$"Starting Mon"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null 2>/dev/null
 sleep 1
-
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-APACHESTATUS=`ps -e | grep -c -w $APACHEVER`
-if [ $APACHESTATUS = 0 ]
-then
-	echo '<ul><li>'$"Starting Apache"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
-fi
+
+echo '<ul><li>'$"Starting Apache"'</li></ul>'
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+sleep 1
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+
 
 ############################
 #Add Desktop Icon
@@ -192,7 +189,7 @@ chmod 0755 /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 ##########################
 if [ -f /opt/karoshi/karoshi_user/.xscreensaver ]
 then
-sed -i 's/blank/off/g' /opt/karoshi/karoshi_user/.xscreensaver
+	sed -i 's/blank/off/g' /opt/karoshi/karoshi_user/.xscreensaver
 fi
 exit
 

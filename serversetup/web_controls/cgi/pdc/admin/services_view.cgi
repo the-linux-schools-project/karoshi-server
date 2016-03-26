@@ -198,7 +198,7 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"Service Status"' - '$SERVERNAME'</div></td>
+	<td style="height:30px; vertical-align: top;"><div class="sectiontitle">'$"Service Status"' - '$SERVERNAME'</div></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the services that you want to start or stop."'</span></a></td>
 	<td style="vertical-align: top;">
 	<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
