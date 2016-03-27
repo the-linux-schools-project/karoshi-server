@@ -85,10 +85,10 @@ fi
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
 
 #Do businesses want google safesearch?
-if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = home ]
-then
-	/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
-fi
+#if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = home ]
+#then
+/opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
+#fi
 exit
 
 

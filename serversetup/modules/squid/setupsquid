@@ -48,8 +48,6 @@ source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-echo '<b>'$"Setup Internet Proxy Server" - $HOSTNAME'</b><br><br>'
-
 if [ -z "$REMOTE_USER" ]
 then
 	echo `date`: setupsquid - Blank remote user."<br>"
