@@ -162,6 +162,7 @@ echo -e "# Global parameters
 	server role = '$SERVERROLE'
 	dns forwarder = $DNSFORWARD
 	idmap_ldb:use rfc2307 = yes
+	acl:search=false
 	log level = 1
 	host msdfs = yes
 	dns round robin = yes

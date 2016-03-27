@@ -153,6 +153,9 @@ cp /sbin/initctl /sbin/initctl.$$
 #Run configure chroot
 chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
 
+#Copy out karoshi_build.log
+mv chroot/var/log/karoshi_build.log $BUILDPATH/
+
 umount $BUILDPATH/chroot/dev 
 
 echo -e "\nCreate ISO image\n"

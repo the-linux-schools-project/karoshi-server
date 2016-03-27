@@ -514,6 +514,7 @@ else
 	server role = active directory domain controller
 	dns forwarder = '$DNSFORWARD'
 	idmap_ldb:use rfc2307 = yes
+	acl:search=false
 	log level = 1
 	log file = /var/log/samba/log.%U
 	# maximum size of 50KB per log file, then rotate:
