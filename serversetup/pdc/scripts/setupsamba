@@ -1413,24 +1413,27 @@ then
 		done
 	fi
 fi
+#Create a default location
+echo default > /var/lib/samba/netlogon/locations.txt
+
 #######################
 #Make printers.txt
 #######################
 echo `date`: "Creating printers.txt" >> /opt/karoshi/serversetup/install_log
 if ! test -e /var/lib/samba/netlogon/printers.txt
 then
-echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
-echo '*'Printer names must match share names on the printer server >> /var/lib/samba/netlogon/printers.txt
-echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt
-echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt
-echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt
-echo '*' >> /var/lib/samba/netlogon/printers.txt
-echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt
-echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt
-echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt
-echo >> /var/lib/samba/netlogon/printers.txt
-echo --start-- >> /var/lib/samba/netlogon/printers.txt
-chmod 0644 /var/lib/samba/netlogon/printers.txt
+	echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
+	echo '*'Printer names must match share names on the printer server >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt
+	echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt
+	echo '*' >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt
+	echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt
+	echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt
+	echo >> /var/lib/samba/netlogon/printers.txt
+	echo --start-- >> /var/lib/samba/netlogon/printers.txt
+	chmod 0644 /var/lib/samba/netlogon/printers.txt
 fi
 }
 

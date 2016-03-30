@@ -15,7 +15,8 @@ echo '
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 	GROUPNAME=`basename $GROUPNAMES`
-	UPPERGROUPNAME=${GROUPNAME^^}
+	GROUPNAME2=`echo $GROUPNAME | sed 's/-/HYPHEN/g'`
+	UPPERGROUPNAME=${GROUPNAME2^^}
 	LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
 	if [ $GROUPNAME != profilemanagement ]
 	then

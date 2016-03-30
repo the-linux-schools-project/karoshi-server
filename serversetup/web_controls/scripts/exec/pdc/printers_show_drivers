@@ -33,16 +33,16 @@ DRIVERHELPMSG="Choose a printer driver for this queue. If the printer driver is 
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign1_cgi
 then
-echo `date`: printers_show_drivers - No MD5Checksum "for" printers_ppd_assign23 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - No MD5Checksum "for" printers_ppd_assign23 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign1_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_ppd_assign1_cgi'check' ]
 then
-echo `date`: printers_show_drivers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -50,8 +50,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: printers_show_drivers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
@@ -62,156 +62,166 @@ REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: printers_show_drivers - Not called by printers_show_drivers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - Not called by printers_show_drivers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
 echo `date`: printers_show_drivers - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printers_show_drivers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ ! -f /opt/karoshi/server_network/printserver ]
 then
-echo `date`: printers - no print server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers - no print server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: printers_show_drivers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_show_drivers - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
 if [ $PRINTSERVER != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $PRINTSERVER '
-if [ -d /usr/share/ppd/ ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	then
+	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	if [ -d /usr/share/ppd/Brother ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/Brother/*.ppd | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">Brother $PRINTER</option>"
+		done
+	fi
 
-if [ -d /usr/share/ppd/hplip/HP ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/hplip/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/hplip/HP ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/hplip/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
 
-if [ -d /usr/share/ppd/openprinting ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/openprinting/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/hp-ppd/HP ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/hp-ppd/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
 
-if [ -d /usr/share/ppd/splix ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/splix/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/openprinting ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/openprinting/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
 
-if [ -d /usr/share/ppd/hp-ppd/HP/ ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/hp-ppd/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/splix ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/splix/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
 
-if [ -d /usr/share/ppd/cupsfilters/ ]
-then
-for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
-'
+	if [ -d /usr/share/ppd/cupsfilters/ ]
+	then
+		for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
+	'
 else
-if [ -d /usr/share/ppd/ ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
-done
-fi
+	if [ -d /usr/share/ppd/Brother ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/Brother/*.ppd | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo '<option value="'$PPDFILE'">Brother '$PRINTER'</option>'
+		done
+	fi
 
-if [ -d /usr/share/ppd/hplip/HP ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/hplip/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
-done
-fi
+	if [ -d /usr/share/ppd/hplip/HP ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/hplip/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
+		done
+	fi
 
-if [ -d /usr/share/ppd/openprinting ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/openprinting/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
-done
-fi
+	if [ -d /usr/share/ppd/hp-ppd/HP ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/hp-ppd/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
+		done
+	fi
 
-if [ -d /usr/share/ppd/splix ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/splix/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
-done
-fi
+	if [ -d /usr/share/ppd/openprinting ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/openprinting/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
+		done
+	fi
 
-if [ -d /usr/share/ppd/hp-ppd/HP/ ]
-then
-for PPDFILE in `ls -d /usr/share/ppd/hp-ppd/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/splix ]
+	then
+		for PPDFILE in `ls -d /usr/share/ppd/splix/*/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo '<option value="'$PPDFILE'">'$PRINTER'</option>'
+		done
+	fi
 
-if [ -d /usr/share/ppd/cupsfilters/ ]
-then
-for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
-do
-PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
-PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
-echo "<option value=\"$PPDFILE\">$PRINTER</option>"
-done
-fi
+	if [ -d /usr/share/ppd/hp-ppd/HP/ ]
+	then
+	for PPDFILE in `ls -d /usr/share/ppd/hp-ppd/HP/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
+
+	if [ -d /usr/share/ppd/cupsfilters/ ]
+	then
+		for PPDFILE in `ls -d //usr/share/ppd/cupsfilters/*.ppd* | sed "s/\/\//\//g" |  sed "s/.gz$//g" | sort -u`
+		do
+			PRINTER=`basename $PPDFILE | sed "s/.ppd$//g"`
+			PPDFILE=`echo $PPDFILE | sed "s/_/123456789/g"`
+			echo "<option value=\"$PPDFILE\">$PRINTER</option>"
+		done
+	fi
 
 fi
 exit

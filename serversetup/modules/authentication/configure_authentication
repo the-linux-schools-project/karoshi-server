@@ -358,6 +358,8 @@ then
 	echo REALMCAPS=\"'$REALMCAPS'\" >> /opt/karoshi/server_network/domain_information/domain_name
 	echo LDAPBASE=\"'$LDAPBASE'\" >> /opt/karoshi/server_network/domain_information/domain_name
 	echo DOMAINSID=\"'$DOMAINSID'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo SHORTNAME=\"'$SHORTNAME'\" >> /opt/karoshi/server_network/domain_information/domain_name
+	echo LONGNAME=\"'$LONGNAME'\" >> /opt/karoshi/server_network/domain_information/domain_name
 
 	#Set up krb5
 	echo "[libdefaults]" > /etc/krb5.conf

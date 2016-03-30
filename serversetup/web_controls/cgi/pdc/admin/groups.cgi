@@ -167,20 +167,6 @@ fi
 
 if [ "$ACTION" = reallyadd ] && [ "$TYPE" = primary ]
 then
-	#Assign PROFILE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PROFILEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PROFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-	done
-
 	#Assign HOMESERVER
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -231,15 +217,22 @@ then
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
 	do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EXTRAGROUPNAMEcheck ]
-	then
-	let COUNTER=$COUNTER+1
-	EXTRAGROUPS=`echo $DATA | cut -s -d'_' -f$COUNTER- | sed 's/_EXTRAGROUPNAME_/,/g'`
-	break
-	fi
-	let COUNTER=$COUNTER+1
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = EXTRAGROUPNAMEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			EXTRAGROUPS=`echo $DATA | cut -s -d'_' -f$COUNTER- | sed 's/_EXTRAGROUPNAME_/,/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
 	done
+fi
+
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
 fi
 
 PROTECTEDLIST="itadmin exams karoshi staff nogroup"
@@ -338,6 +331,7 @@ then
 	WIDTH3=200
 	WIDTH4=70
 	WIDTH5=80
+	WIDTH6=192
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
@@ -351,6 +345,7 @@ else
 	WIDTH3=150
 	WIDTH4=60
 	WIDTH5=50
+	WIDTH6=142
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/usersm.png
@@ -522,24 +517,9 @@ if [ $ACTION = add ] && [ $TYPE = primary ]
 then
 	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" >
 	    <tbody>
-	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '$WIDTH3'px;" size="20" type="text"></td><td>
+	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '$WIDTH6'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the new primary group that you want to create."'<br><br>'$"This could be used where you need different profiles for staff and require more staff groups."'</span></a>
 
-	</td></tr>
-
-	<tr><td>'$"Profile"'</td><td>'
-	#Generate list of profiles
-	echo '<select name="____PROFILE____" style="width: '$WIDTH3'px;"><option label="blank"></option>'
-	for PROFILES in `ls -1 /home/applications/profiles | grep -v .V2`
-	do
-		PROFILE=`basename $PROFILES`
-		if [ $PROFILE != default_roaming_profile ]
-		then
-			echo '<option value="'$PROFILE'">'$PROFILE'</option>'
-		fi
-	done
-	echo '</select></td><td>
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a profile to use for the new group. This can be modified later."'</span></a>
 	</td></tr>
 	<tr><td>'$"Home Server"'</td><td><select name="____HOMESERVER____" style="width: '$WIDTH3'px;">'
 
@@ -564,11 +544,21 @@ then
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server you require for the home areas to be stored on for this group."'</span></a></td></tr>'
 	#Show categories
 	echo '<tr><td>'$"Category"'</td><td><select name="____CATEGORY____" style="width: '$WIDTH3'px;">
-	<option value="" label="blank"></option>
-	<option value="students">'$"Student"'</option>
-	<option value="personnel">'$"Personnel"'</option>
-	<option value="other">'$"Other"'</option>
-	<option value="trustees">'$"Trustee"'</option></select>
+	<option value="" label="blank"></option>'
+
+	if [ "$INSTALL_TYPE" = home ]
+	then
+		echo '	<option value="family">'$"Family"'</option>'
+	fi
+	if [ "$INSTALL_TYPE" = business ] || [ "$INSTALL_TYPE" = education ]
+	then
+		echo '	<option value="personnel">'$"Personnel"'</option>'
+	fi
+	if [ "$INSTALL_TYPE" = education ]
+	then
+		echo '	<option value="students">'$"Student"'</option>'
+	fi
+	echo '<option value="other">'$"Other"'</option>
 	</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category that you want this group to be placed in."'</span></a></td></tr>
 	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
@@ -721,7 +711,7 @@ then
 	#Get a list of groups already asociated with this group
 	source /opt/karoshi/server_network/group_information/"$GROUPNAME"
 
-	echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
 
 	#Show list of groups
 	GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )

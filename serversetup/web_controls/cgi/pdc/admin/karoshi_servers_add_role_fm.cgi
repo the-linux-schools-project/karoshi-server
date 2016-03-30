@@ -603,7 +603,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	echo '<form action="/cgi-bin/admin/module_ssh_access_fm.cgi" method="post">
 
-	<button class="info" name="_AddSSHServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<button class="info infoabove" name="_AddSSHServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON'" alt="'$"SSH Server"'">
 	<span>'$"This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span>
 	</button>
@@ -611,7 +611,7 @@ then
 else
 	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddSSHServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<button class="info infoabove" name="_AddSSHServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"SSH Server"'">
 	<span>'$"This will allow remote ssh access to your main server."' '$"This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."'</span>
 	</button>
@@ -639,7 +639,7 @@ echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"VPN Server
 if [ $SERVERNAME != `hostname-fqdn` ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
 then
 	echo '<form action="/cgi-bin/admin/module_vpn_fm.cgi" method="post">
-	<button class="info" name="_AddVPNServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<button class="info infoabove" name="_AddVPNServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON'" alt="'$"VPN Server"'">
 	<span>'$"This will setup a VPN server for client devices to connect to your network."'</span>
 	</button>
@@ -647,7 +647,7 @@ then
 else
 	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddVPNerver_" value="_SERVERNAME_'$SERVERNAME'_">
+	<button class="info infoabove" name="_AddVPNerver_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"VPN Server"'">
 	<span>'$"This will setup a VPN server for client devices to connect to your network."'</span>
 	</button>
@@ -662,7 +662,7 @@ then
 	if [ $SERVERNAME != `hostname-fqdn` ]
 	then
 		echo '<form action="/cgi-bin/admin/module_federation_control_fm.cgi" method="post">
-	<button class="info" name="_AddFederationServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<button class="info infoabove" name="_AddFederationServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON'" alt="'$"Federation Server"'">
 	<span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems."' '$"This module can only be applied to a main server."'</span>
 	</button>
@@ -670,7 +670,7 @@ then
 	else
 		echo '
 		<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-		<button class="info" name="_AddFederatedServer_" value="_SERVERNAME_'$SERVERNAME'_">
+		<button class="info infoabove" name="_AddFederatedServer_" value="_SERVERNAME_'$SERVERNAME'_">
 		<img src="'$ICON2'" alt="'$"Federated Server"'">
 		<span>'$"This will modify a Karoshi main server to be part of a federation so that all users created on the main system are also created on the federated systems."' '$"This module can only be applied to a main server."'<br><br>'$"This module cannot be applied to your main server."'</span>
 		</button>

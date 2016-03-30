@@ -313,7 +313,6 @@ then
 	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 3128,3142 udp 3128,8000'</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'squid_proxy_rule /etc/shorewall/rules
-	echo ACCEPT'	'net'	'fw'	'udp'	'3128,8000'	'-'#'squid_proxy_rule >> /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 

@@ -88,6 +88,7 @@ table.standard th, table.standard td {
 
 table.mon th, table.mon td {
   font-size : 14pt;
+ background-color: #050032;
   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
 }
 
@@ -204,15 +205,9 @@ A:hover {
         margin: 2px 2px 2px 2px;
 }
 
-	.info {
-	background-color: #E3EDEE;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	border-style:solid;
-	color:#000000; 
-	}
 
-        a.info{
+       .info{
+	background-color: #E3EDEE;
         position:relative;           /*this is the key*/
         z-index:24;
         color:#000000;               /* colour of display text */
@@ -221,6 +216,41 @@ A:hover {
         font-style:italic;
 	background-color: inherit;
         }
+
+        .info:hover {
+        z-index:25;
+        background-color: inherit;
+
+        }
+
+        .info span{
+        display: none;  /* hide the span text using this css */
+        }
+
+        .info:hover span{ /*the span will display just on :hover state*/
+        display:block;
+        position:absolute;
+        top: 2.5em;
+        left: 3em;
+        min-width:15em;
+        border:1px solid #3B6694; /* border colour */
+        background-color:#ffffff; /* background colour here */
+        color:#000000;         /* text colour */
+        text-align: center;
+        font-size: .8em;
+        font-style:italic;
+        z-index:30;
+        }
+
+        a.info{
+        position:relative;           /*this is the key*/
+        z-index:24;
+        color:#000000;               /* colour of display text */
+        border:1px;    /* border colour */
+        text-decoration:none;
+        font-style:italic;
+        }
+
 
         a.info:hover {
         z-index:25;

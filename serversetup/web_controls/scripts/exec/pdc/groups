@@ -109,11 +109,6 @@ fi
 
 if [ $ACTION = reallyadd ] && [ $TYPE = primary ]
 then
-	if [ -z "$PROFILE" ]
-	then
-		echo `date`: groups - Blank profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		exit 101
-	fi
 	if [ -z "$HOMESERVER" ]
 	then
 		echo `date`: groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -288,23 +283,6 @@ usncreated: 3371
 whenchanged: $CREATETIME
 whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 
-		##########################
-		#Copy profile and background
-		##########################
-		#Main server
-		if [ ! -d /home/applications/profiles/$GROUPNAME ]
-		then
-			cp -f -R /home/applications/profiles/$PROFILE /home/applications/profiles/$GROUPNAME 
-			chmod 0644 /home/applications/profiles/$GROUPNAME
-			chmod u+X,g+X,o+X /home/applications/profiles/$GROUPNAME
-		fi
-
-		if [ -d /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME ] && [ ! -L /home/applications/profiles/$GROUPNAME.V2 ]
-		then
-			ln -s /home/applications/profiles/$GROUPNAME  /home/applications/profiles/$GROUPNAME.V2
-		fi
-
-		[ -f /home/applications/backgrounds/$GROUPNAME.bmp ] && cp -f /home/applications/backgrounds/$GROUPNAME.bmp /home/applications/backgrounds/$GROUPNAME.bmp
 
 		##########################
 		#Create data files

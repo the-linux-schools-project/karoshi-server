@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/label_groups_cgi
 then
-echo `date`: label_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/label_groups_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/label_groups.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $label_groups_cgi'check' ]
 then
-echo `date`: label_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,17 +47,17 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: label_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-+'`
 
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: label_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -69,23 +69,23 @@ LABELDATA=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: label_groups - Not called by label_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - Not called by label_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: label_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: label_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: label_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: label_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: label_groups - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -103,62 +103,11 @@ LABELARRYCOUNT=`echo ${#LABELARRAY[@]}`
 COUNTER=0
 while [ $COUNTER -lt $LABELARRYCOUNT ]
 do
-GROUP=`echo ${LABELARRAY[$COUNTER]} | cut -d: -f1`
-LABEL=`echo ${LABELARRAY[$COUNTER]} | cut -d: -f2`
-special_chars
-echo $GROUP='"'"$LABEL"'"' >> /opt/karoshi/web_controls/group_dropdown_def
-let COUNTER=$COUNTER+1
+	GROUP=`echo ${LABELARRAY[$COUNTER]} | cut -d: -f1 | sed 's/-/HYPHEN/g'`
+	LABEL=`echo ${LABELARRAY[$COUNTER]} | cut -d: -f2`
+	special_chars
+	echo $GROUP='"'"$LABEL"'"' >> /opt/karoshi/web_controls/group_dropdown_def
+	let COUNTER=$COUNTER+1
 done
-
 exit
-echo YR2002=$YR2002 > /opt/karoshi/web_controls/group_dropdown_def
-echo YR2003=$YR2003 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2004=$YR2004 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2005=$YR2005 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2006=$YR2006 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2007=$YR2007 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2008=$YR2008 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2009=$YR2009 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2010=$YR2010 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2011=$YR2011 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2012=$YR2012 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2013=$YR2013 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2014=$YR2014 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2015=$YR2015 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2016=$YR2016 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2017=$YR2017 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2018=$YR2018 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2019=$YR2019 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2020=$YR2020 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2021=$YR2021 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2022=$YR2022 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2023=$YR2023 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2024=$YR2024 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2025=$YR2025 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2026=$YR2026 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2027=$YR2027 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2028=$YR2028 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2029=$YR2029 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2030=$YR2030 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2031=$YR2031 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2032=$YR2032 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2033=$YR2033 >> /opt/karoshi/web_controls/group_dropdown_def
-echo YR2034=$YR2034 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF=$STAFF >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF2=$STAFF2 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF3=$STAFF3 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF4=$STAFF4 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF5=$STAFF5 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF6=$STAFF6 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF7=$STAFF7 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF8=$STAFF8 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF9=$STAFF9 >> /opt/karoshi/web_controls/group_dropdown_def
-echo STAFF10=$STAFF10 >> /opt/karoshi/web_controls/group_dropdown_def
-echo NONTEACHINGSTAFF=$NONTEACHINGSTAFF>> /opt/karoshi/web_controls/group_dropdown_def
-echo OFFICESTAFF=$OFFICESTAFF >> /opt/karoshi/web_controls/group_dropdown_def
-echo STUDENTSTAFF=$STUDENTSTAFF >> /opt/karoshi/web_controls/group_dropdown_def
-echo GUARDIANS=$GUARDIANS >> /opt/karoshi/web_controls/group_dropdown_def
-echo TECH=$TECH>> /opt/karoshi/web_controls/group_dropdown_def
-echo ITADMIN=$ITADMIN >> /opt/karoshi/web_controls/group_dropdown_def
 
-exit

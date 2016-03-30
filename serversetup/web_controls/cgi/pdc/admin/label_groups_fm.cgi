@@ -76,11 +76,12 @@ echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 	GROUPNAME=`basename $GROUPNAMES`
-	UPPERGROUPNAME=${GROUPNAME^^}
+	GROUPNAME2=`echo $GROUPNAME | sed 's/-/HYPHEN/g'`
+	UPPERGROUPNAME=${GROUPNAME2^^}
 	LABEL=${!UPPERGROUPNAME}
-	echo '<td style="width: 100px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="10" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 40px;"></td>'
+	echo '<td style="width: 200px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="20" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 60px;"></td>'
 
-	if [ $COUNTER = 3 ]
+	if [ $COUNTER = 2 ]
 	then
 		echo "</tr><tr>"
 		COUNTER=0
