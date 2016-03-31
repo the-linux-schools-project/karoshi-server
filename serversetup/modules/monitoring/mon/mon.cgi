@@ -58,7 +58,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 echo '<div id="actionbox3"><div id="infobox">'
 
 #Create table
-echo '<table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><tbody><tr><td style="width: 180px;"><b>Host Group</b></td><td></td><td style="width: 100px;"><b>ping</b></td><td style="width: 100px;"><b>smb</b></td><td style="width: 100px;"><b>http</b></td><td style="width: 100px;"><b>https</b></td><td style="width: 100px;"><b>pop3</b></td><td style="width: 100px;"><b>pop3s</b></td><td style="width: 100px;"><b>imap</b></td><td style="width: 100px;"><b>imaps</b></td><td style="width: 100px;"><b>smtp</b></td><td style="width: 100px;"><b>Proxy</b></td><td style="width: 100px;"><b>dns</b></td><td style="width: 100px;"><b>cups</b></td></tr>'
+echo '<table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><thead><tr><th style="width: 180px;"><b>Host Group</b></th><th></th><th style="width: 100px;"><b>ping</b></th><th style="width: 100px;"><b>smb</b></th><th style="width: 100px;"><b>http</b></th><th style="width: 100px;"><b>https</b></th><th style="width: 100px;"><b>pop3</b></th><th style="width: 100px;"><b>pop3s</b></th><th style="width: 100px;"><b>imap</b></th><th style="width: 100px;"><b>imaps</b></th><th style="width: 100px;"><b>smtp</b></th><th style="width: 100px;"><b>Proxy</b></th><th style="width: 100px;"><b>dns</b></th><th style="width: 100px;"><b>cups</b></th></tr></thead><tbody>'
 
 if [ -f  /opt/karoshi/server_network/mon/mon_data_html ]
 then

@@ -46,7 +46,8 @@ EXAMACCOUNTS=40
 TRAININGACCOUNTS=30
 DAY=`date +%d`
 MONTH=`date +%m`
-LINUXCLIENTVERSION=karoshi4.4
+LINUXCLIENTVERSION=karoshi5.0
+OLDERCLIENTVERSIONS="karoshi4.0 karoshi4.2 karoshi4.3 karoshi4.4 karoshi4.4"
 
 #Get install type
 INSTALL_TYPE=education
@@ -1811,6 +1812,13 @@ then
 	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"Helpdesk.desktop"
 	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"karoshimanagement.desktop"
 
+	#Add in support for older client versions
+	for OLDERCLIENTVERSION in $OLDERCLIENTVERSIONS
+	do
+		[ ! -d /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION
+		cp -f -R /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/desktop-icons
+	done
+
 	#Create zone information
 	echo `date`: "Creating zone information" >> /opt/karoshi/serversetup/install_log
 	[ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
@@ -1843,11 +1851,25 @@ if [ $INSTALL_TYPE != restore ]
 then 
 	#Create dfs links
 	ln -s msdfs:$HOSTNAME.$REALM\\applications /var/lib/samba/dfs/applications
-	ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
-	ln -s msdfs:$HOSTNAME.$REALM\\staffshare /var/lib/samba/dfs/staffshare
-	ln -s msdfs:$HOSTNAME.$REALM\\officeshare /var/lib/samba/dfs/officeshare
-	ln -s msdfs:$HOSTNAME.$REALM\\itadmin /var/lib/samba/dfs/itadmin
+	ln -s msdfs:$HOSTNAME.$REALM\\itadminshare /var/lib/samba/dfs/itadminshare
 	ln -s msdfs:$HOSTNAME.$REALM\\netlogon /var/lib/samba/dfs/netlogon
+	ln -s msdfs:$HOSTNAME.$REALM\\sysvol /var/lib/samba/dfs/sysvol
+
+	if [ $INSTALL_TYPE = education ]
+	then 
+		ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
+	fi
+
+	if [ $INSTALL_TYPE = education ] || [ $INSTALL_TYPE = business ] 
+	then
+		ln -s msdfs:$HOSTNAME.$REALM\\staffshare /var/lib/samba/dfs/staffshare
+		ln -s msdfs:$HOSTNAME.$REALM\\officeshare /var/lib/samba/dfs/officeshare
+	fi
+
+	if [ $INSTALL_TYPE = home ]
+	then 
+		ln -s msdfs:$HOSTNAME.$REALM\\multimedia /var/lib/samba/dfs/multimedia
+	fi
 
 	#Create dfs links for existing users
 	for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1` 
@@ -1860,9 +1882,9 @@ then
 	SERVERNAME=`hostname-fqdn`
 	[ ! -d /opt/karoshi/server_network/network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVERNAME
 
-	SERVERSHARES="applications subjects staffshare sysvol itadmin officeshare netlogon"
-	[ $INSTALL_TYPE = business ] && SERVERSHARES="applications staffshare sysvol itadmin officeshare netlogon"
-	[ $INSTALL_TYPE = home ] && SERVERSHARES="applications multimedia sysvol itadmin netlogon"
+	SERVERSHARES="applications subjects staffshare sysvol itadminshare officeshare netlogon"
+	[ $INSTALL_TYPE = business ] && SERVERSHARES="applications staffshare sysvol itadminshare officeshare netlogon"
+	[ $INSTALL_TYPE = home ] && SERVERSHARES="applications multimedia sysvol itadminshare netlogon"
 
 	for SHARENAME in $SERVERSHARES
 	do
@@ -1906,7 +1928,7 @@ then
 				GROUPPERMS="7,7,7"
 				MAP_DRIVE="1,1,1"
 			fi
-			if [ "$SHARENAME" = itadmin ]
+			if [ "$SHARENAME" = itadminshare ]
 			then
 				NETGROUPS="itadmin"
 				SHAREPATH="/home/itadminshare"
@@ -1930,11 +1952,11 @@ then
 			fi
 			if [ "$SHARENAME" = multimedia ]
 			then
-				NETGROUPS="multimedia"
+				NETGROUPS="adults,teenagers,children"
 				SHAREPATH="/home/multimedia"
-				GROUPPERMS="7"
+				GROUPPERMS="7,7,5"
 				MASK="0770"
-				MAP_DRIVE="1"
+				MAP_DRIVE="1,1,1,"
 			fi
 
 			echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME

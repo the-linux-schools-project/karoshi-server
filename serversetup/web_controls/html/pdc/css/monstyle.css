@@ -82,14 +82,24 @@ body {
 }
 
 table.standard th, table.standard td {
+  text-align: center;
   font-size : 16pt;
   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
  }
 
 table.mon th, table.mon td {
-  font-size : 14pt;
- background-color: #050032;
-  font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+	text-align: center;
+	font-size : 14pt;
+	border: 1px solid #1A2650;
+	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
+}
+
+table.mon td {
+	background-color: #000000;
+}
+
+table.mon th {
+	background-color: #111832;
 }
 
 table.menu th, table.menu td {
@@ -162,12 +172,12 @@ A:hover {
 	flex: auto;
 	flex-direction: column;
         margin: 2px 2px 2px 2px;
-	background-color: #030F20;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	border-style:solid;
 	border-width:3px;
 	padding: 10px;
+	background-color: #030F20;
 	border-color: #1A2650;
 }
 

@@ -493,8 +493,8 @@ touch /etc/postfix/main.cf
 /opt/karoshi/serversetup/scripts/language/create_karoshi_locale
 
 #Modify langlist for ubiquity installer
-mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
+#mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
+#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
 
 #Copy in ubiquity-slideshow
 [ -d /usr/share/ubiquity-slideshow ] && rm -f -R /usr/share/ubiquity-slideshow

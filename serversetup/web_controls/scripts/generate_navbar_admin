@@ -408,10 +408,10 @@ if [ $EMAILCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$"E-Mail"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Allowed"' - '$"Banned E-Mail domains"'</a></li>
+			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Domain Controls"'</a></li>
 			<li><a href="/cgi-bin/admin/email_access.cgi">'$"Access Controls"'</a></li>
 			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$"Aliases"'</a></li>
-			<li><a href="/cgi-bin/admin/email_domains.cgi">'$"Domains"'</a></li>
+			<li><a href="/cgi-bin/admin/email_domains.cgi">'$"Hosted Domains"'</a></li>
 			<li><a href="/cgi-bin/admin/email_protected_distribution_lists.cgi">'$"Protected Distribution Lists"'</a></li>
 			<li><a href="/cgi-bin/admin/email_relay.cgi">'$"E-Mail relay"'</a></li>
 			<li><a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a></li>
