@@ -108,8 +108,8 @@ RESTARTICON=/images/submenus/system/ups_restart.png
 ########################
 #Create table header
 ########################
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 160px; height: 30px;"><b>'$"Server"'</b></td><td style="width: 160px;"><b>'$"UPS Model"'</b></td><td style="width: 60px;"><b>Status</b></td><td style="width: 60px;"><b>'$"Charge"'</b></td><td style="width: 60px;"><b>Volts</b></td><td style="width: 60px;"><b>'$"Load"'</b></td><td style="width: 60px;"><b>'$"Temp"'</b></td><td style="width: 60px;"><b>'$"Run time"'</b></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$DELETEICON'"><span>'$"Delete"'</span></a></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$RESTARTICON'"><span>'$"Restart UPS deamon"'</span></a></td></tr>
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 160px;"><b>'$"Server"'</b></th><th style="width: 160px;"><b>'$"UPS Model"'</b></th><th style="width: 60px;"><b>Status</b></th><th style="width: 60px;"><b>'$"Charge"'</b></th><th style="width: 60px;"><b>Volts</b></th><th style="width: 60px;"><b>'$"Load"'</b></th><th style="width: 60px;"><b>'$"Temp"'</b></th><th style="width: 60px;"><b>'$"Run time"'</b></th><th></th><th></th></tr></thead><tbody>
 '
 
 function process_ups_data {
@@ -197,7 +197,7 @@ fi
 
 #Show data
 
-echo '<tr><td style="vertical-align: top;"><b><i>'$SERVER'</i></b></td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
+echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
 <form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 	<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_">
 	<img src="'$DELETEICON'" alt="'$"Delete" $UPSMODEL'">
