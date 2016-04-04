@@ -48,7 +48,24 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	1: { sorter: "MAC" },
+	2: { sorter: "ipAddress" },
+    		}
+		});
+    } 
+);
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -80,7 +97,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\+-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=6
+END_POINT=8
 
 #Assign _LOCATION_
 COUNTER=2
@@ -91,6 +108,20 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign _NETBOOT_
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NETBOOTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NETBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -179,83 +210,92 @@ else
 	TABLECLASS=mobilestandard
 fi
 
+echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Client Boot Controls"'</span>
-<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$LOCATION'</a>
-</div></div><div id="mobileactionbox">
-'
-ICON1=/images/submenus/client/activate_changesm.png
-ICON2=/images/submenus/client/wakeupallm.png
-ICON3=/images/submenus/client/reset_allm.png
-ICON4=/images/assets/locationm.png
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Client Boot Controls"'</span>
+	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$LOCATION'</a>
+	</div></div><div id="mobileactionbox">
+	'
+	ICON1=/images/submenus/client/activate_changesm.png
+	ICON2=/images/submenus/client/wakeupallm.png
+	ICON3=/images/submenus/client/reset_allm.png
+	ICON4=/images/assets/locationm.png
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" >
-<tbody><tr>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Enable All"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Reset All"'">
-</form></td></tr>
-<tr>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Activate Changes"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
-<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Asset Register"'">
-</form></td>
-</tr></tbody></table>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+	<tbody><tr>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_EnableAll_" value="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Enable All"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_ResetAll_" value="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Reset All"'
+	</button>
+	</td></tr>
+	<tr>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_ActivateChanges_" value="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Activate Changes"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/asset_register_view.cgi" name="_AssetRegister_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+	'$"Asset Register"'
+	</button>
+	</td>
+	</tr></tbody></table>'
 
 else
-ICON1=/images/submenus/client/activate_changes.png
-ICON2=/images/submenus/client/wakeupall.png
-ICON3=/images/submenus/client/reset_all.png
-ICON4=/images/assets/location.png
+	ICON1=/images/submenus/client/activate_changes.png
+	ICON2=/images/submenus/client/wakeupall.png
+	ICON3=/images/submenus/client/reset_all.png
+	ICON4=/images/assets/location.png
 
-echo '<b>'$"Client Boot Controls"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" >
-<tr><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls_fm.cgi" method="post">
-<input name="_LOCATION_NOTSET_" type="submit" class="button" value="'$"Choose Location"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Activate Changes"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Enable All"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Reset All"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">
-<input name="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_" type="submit" class="button" value="'$"Wake location"'">
-</form></td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/asset_register_view.cgi" method="post">
-<input name="_ACTION_view_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Asset Register"'">
-</form>
-</td>
-</tr></table>'
+	echo '<b>'$"Client Boot Controls"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" >
+	<tr><td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/client_boot_controls_fm.cgi" name="_ChooseLocation_" value="_">
+	'$"Choose Location"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_ActivateChanges_" value="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Activate Changes"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_EnableAll_" value="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Enable All"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_ResetAll_" value="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Reset All"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button"  name="_WakeOnLanAll_" value="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+	'$"Wake location"'
+	</button>
+	</td>
+	<td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/asset_register_view.cgi" name="_AssetRegister_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+	'$"Asset Register"'
+	</button>
+	</td>
+	</tr></table>'
 fi
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
-echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/client_boot_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:
+sudo -H /opt/karoshi/web_controls/exec/client_boot_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:$NETBOOT:
 
-echo '</form>'
+echo ''
 [ $MOBILE = no ] && echo '</div>'
-echo "</div></div></body></html>"
+echo "</div></form></div></body></html>"
 exit

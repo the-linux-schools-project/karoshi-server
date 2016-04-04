@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -66,53 +66,53 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign EMAILTO
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMAILTOcheck ]
-then
-let COUNTER=$COUNTER+1
-EMAILTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EMAILTOcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EMAILTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign EMAILFROM
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMAILFROMcheck ]
-then
-let COUNTER=$COUNTER+1
-EMAILFROM=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EMAILFROMcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EMAILFROM=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+		fi
+	let COUNTER=$COUNTER+1
 done
 #Assign MAILSERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAILSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-MAILSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAILSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAILSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Generate navigation bar
@@ -120,7 +120,7 @@ done
 #Check to see if a monitoring server has been setup
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
+	echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
 <table class="standard" style="text-align: left;" >
 <tbody><tr><td style="vertical-align: top; width: 130px;"><b>'$"E-Mail - SMS Alerts"'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
 <td style="vertical-align: top;">
@@ -154,7 +154,7 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
       <tr>
         <td>
 '$"E-Mail Server"'</td>
-        <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="20" type="text"></td><td>
+        <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="35" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the address of the mail server that you want to send the email to."'</span></a>
       </td></tr>
     </tbody>
@@ -165,7 +165,7 @@ echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><
 </div>
 </form>'
 else
-echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail - SMS Alerts"'</div><br>'$"A monitoring server has not been setup."'<br><br></div>'
+	echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail - SMS Alerts"'</div><br>'$"A monitoring server has not been setup."'<br><br></div>'
 fi
 echo '</div></body>
 </html>

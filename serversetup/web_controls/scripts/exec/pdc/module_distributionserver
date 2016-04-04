@@ -144,16 +144,19 @@ then
 	echo TFTP_ADDRESS=\"0.0.0.0:69\" >> /etc/default/tftpd-hpa
 	echo TFTP_OPTIONS=\"--secure\" >> /etc/default/tftpd-hpa
 
-	cp -f -R /opt/karoshi/serversetup/modules/distributionserver/tftpboot/ /home/
-	cd /home/tftpboot
-	tar -xvf netboot.tar.gz 1>/dev/null
-	rm netboot.tar.gz
-	cp -f /home/tftpboot/splash.png /home/tftpboot/ubuntu-installer/i386/boot-screens/
-	rm -f /home/tftpboot/splash.png
-	cp -f /home/tftpboot/menu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
-	rm -f /home/tftpboot/menu.cfg
-	cp -f /home/tftpboot/stdmenu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
-	rm -f /home/tftpboot/stdmenu.cfg
+	#Extract all netboot variants
+	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
+	do
+		DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
+		mkdir -p /home/tftpboot/$DISTROVERSION
+		tar -xvzf /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot-$DISTROVERSION.tar.gz -C /home/tftpboot/$DISTROVERSION 1>/dev/null
+
+		#Copy in splash
+		cp -f /opt/karoshi/serversetup/modules/distributionserver/tftpboot/splash.png /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/
+
+		#Remove message that would appear at the bottom of the screen.
+		sed -i "s/Press ENTER to boot or TAB to edit a menu entry//g" /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/stdmenu.cfg
+	done
 
 	echo "<ul><li>"Restarting tftpd"</li></ul>"
 
@@ -184,8 +187,6 @@ then
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_start 1>/dev/null
-	#Modify ip
-	sed -i "s/CHANGETHISIP/$DISTROSERVERIP/g" /home/tftpboot/pxelinux.cfg/default
 
 	###########################
 	#Open shorewall ports
@@ -247,148 +248,146 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
 else
 
-#Copy in start on boot files
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 1> /dev/null
-#Copy in distro module
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
-#Remove existing module
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-rm -f -R /opt/karoshi/serversetup/modules/distributionserver
-'
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	#Copy in distro module
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+	#Remove existing module
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	rm -f -R /opt/karoshi/serversetup/modules/distributionserver
+	'
+	#Copy in module
+	scp -p -r /opt/karoshi/serversetup/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
-##########################
-#Make sure software is installed
-##########################
+	##########################
+	#Make sure software is installed
+	##########################
 
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/distributionserver/software
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/distributionserver/software
 
-#########################
-#Configure tftpboot
-#########################
+	#########################
+	#Configure tftpboot
+	#########################
 
-if [ ! -d /home/tftpboot ]
-then
-mkdir -p /home/tftpboot
-chmod 0755 /home/tftpboot
-fi
+	if [ ! -d /home/tftpboot ]
+	then
+		mkdir -p /home/tftpboot
+		chmod 0755 /home/tftpboot
+	fi
 
-echo \# /etc/default/tftpd-hpa > /etc/default/tftpd-hpa
-echo OPTIONS=\"-l -s /home/tftpboot\" >> /etc/default/tftpd-hpa
-echo TFTP_USERNAME=\"tftp\" >> /etc/default/tftpd-hpa
-echo TFTP_DIRECTORY=\"/home/tftpboot\" >> /etc/default/tftpd-hpa
-echo TFTP_ADDRESS=\"0.0.0.0:69\" >> /etc/default/tftpd-hpa
-echo TFTP_OPTIONS=\"--secure\" >> /etc/default/tftpd-hpa
+	echo \# /etc/default/tftpd-hpa > /etc/default/tftpd-hpa
+	echo OPTIONS=\"-l -s /home/tftpboot\" >> /etc/default/tftpd-hpa
+	echo TFTP_USERNAME=\"tftp\" >> /etc/default/tftpd-hpa
+	echo TFTP_DIRECTORY=\"/home/tftpboot\" >> /etc/default/tftpd-hpa
+	echo TFTP_ADDRESS=\"0.0.0.0:69\" >> /etc/default/tftpd-hpa
+	echo TFTP_OPTIONS=\"--secure\" >> /etc/default/tftpd-hpa
 
-cp -f -R /opt/karoshi/serversetup/modules/distributionserver/tftpboot /home/
-cd /home/tftpboot
-tar -xvf netboot.tar.gz 1>/dev/null
-rm netboot.tar.gz
-cp -f /home/tftpboot/splash.png /home/tftpboot/ubuntu-installer/i386/boot-screens/
-rm -f /home/tftpboot/splash.png
-cp -f /home/tftpboot/menu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
-rm -f /home/tftpboot/menu.cfg
-cp -f /home/tftpboot/stdmenu.cfg /home/tftpboot/ubuntu-installer/i386/boot-screens/
-rm -f /home/tftpboot/stdmenu.cfg
+	#Extract all netboot variants
+	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
+	do
+		DISTROVERSION=$(basename $DISTROVERSIONS | sed "s/^netboot-//g" | sed "s/.tar.gz$//g")
+		mkdir -p /home/tftpboot/$DISTROVERSION
+		tar -xvzf /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot-$DISTROVERSION.tar.gz -C /home/tftpboot/$DISTROVERSION 1>/dev/null
 
-echo "<ul><li>"Restarting tftpd"</li></ul>"
+		#Copy in splash
+		cp -f /opt/karoshi/serversetup/modules/distributionserver/tftpboot/splash.png /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start 1>/dev/null
+		#Remove message that would appear at the bottom of the screen.
+		sed -i "s/Press ENTER to boot or TAB to edit a menu entry//g" /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/stdmenu.cfg
+	done
 
-#Start portmap
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start 1>/dev/null
-sleep 1
+	echo "<ul><li>"Restarting tftpd"</li></ul>"
 
-#########################
-#Configure nfs
-#########################
-if [ ! -d /home/distributions/linux_distro ]
-then
-	mkdir -p /home/distributions/linux_distro
-	chmod 0755 /home/distributions/linux_distro
-fi
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start 1>/dev/null
 
-#Modify /etc/exports
-touch /etc/exports
-if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
-then
-echo "<ul><li>"Modifying /etc/exports"</li></ul>"
-echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
-fi
-echo "<ul><li>"Restarting nfs"</li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start 1>/dev/null
+	#Start portmap
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start 1>/dev/null
+	sleep 1
 
-#Modify ip
-sed -i "s/CHANGETHISIP/'$DISTROSERVERIP'/g" /home/tftpboot/pxelinux.cfg/default
+	#########################
+	#Configure nfs
+	#########################
+	if [ ! -d /home/distributions/linux_distro ]
+	then
+		mkdir -p /home/distributions/linux_distro
+		chmod 0755 /home/distributions/linux_distro
+	fi
 
-###########################
-#Open shorewall ports
-###########################
-RESTART_SHOREWALL=no
-MODCHECK=`grep -c -w \#tftp_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 69</li></ul>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"69"	"-"#"tftp_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	#Modify /etc/exports
+	touch /etc/exports
+	if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
+	then
+		echo "<ul><li>"Modifying /etc/exports"</li></ul>"
+		echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
+	fi
+	echo "<ul><li>"Restarting nfs"</li></ul>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start 1>/dev/null
 
-MODCHECK=`grep -c -w \#nfs_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 2049</li></ul>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"2049"	"-"#"nfs_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	###########################
+	#Open shorewall ports
+	###########################
+	RESTART_SHOREWALL=no
+	MODCHECK=`grep -c -w \#tftp_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 69</li></ul>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"69"	"-"#"tftp_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
 
-MODCHECK=`grep -c -w \#portmap_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 111</li></ul>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"111"	"-"#"portmap_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	MODCHECK=`grep -c -w \#nfs_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 2049</li></ul>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"2049"	"-"#"nfs_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
 
-MODCHECK=`grep -c -w \#mountd_server_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-RESTART_SHOREWALL=yes
-echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 33777</li></ul>"
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"33777"	"-"#"mountd_server_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	MODCHECK=`grep -c -w \#portmap_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 111</li></ul>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"111"	"-"#"portmap_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
 
-######################
-#Restart shorewall
-######################
-if [ $RESTART_SHOREWALL = yes ]
-then
-echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
+	MODCHECK=`grep -c -w \#mountd_server_rule /etc/shorewall/rules`
+	if [ $MODCHECK = 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		echo "<ul><li>'$"The following extra ports are being allowed"' - tcp 33777</li></ul>"
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"33777"	"-"#"mountd_server_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	fi
 
-#Ensure services start on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
+	######################
+	#Restart shorewall
+	######################
+	if [ $RESTART_SHOREWALL = yes ]
+	then
+		echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	fi
 
-'
+	#Ensure services start on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
+
+	'
 fi
 
 #Add role information
@@ -400,5 +399,5 @@ echo $SERVERNAME > /opt/karoshi/server_network/distribution_server
 sed -i 's/DISTROCTRL=no/DISTROCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Show completed message
-echo "<ul><li>"$TITLE - $"Completed""</li></ul>"
+echo '<ul><li>'$"Setup Distribution Server"' - '$"Completed"'</li></ul>'
 

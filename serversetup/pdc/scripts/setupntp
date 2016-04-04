@@ -79,6 +79,18 @@ echo server pool.ntp.org >> /etc/ntp.conf
 echo driftfile /etc/ntp/drift >> /etc/ntp.conf
 echo broadcastdelay	0.008 >> /etc/ntp.conf
 
+#Ensure drift file is created
+if [ ! -d /etc/ntp/ ]
+then
+	mkdir -p /etc/ntp/
+	chown ntp /etc/ntp/
+fi
+if [ ! -f /etc/ntp/drift ]
+then
+	touch /etc/ntp/drift
+	chown ntp /etc/ntp/drift
+fi
+
 ###############################
 #Do initial time syncronisation
 ###############################

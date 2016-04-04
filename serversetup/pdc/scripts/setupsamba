@@ -1416,6 +1416,7 @@ then
 fi
 #Create a default location
 echo default > /var/lib/samba/netlogon/locations.txt
+echo >> /var/lib/samba/netlogon/locations.txt
 
 #######################
 #Make printers.txt

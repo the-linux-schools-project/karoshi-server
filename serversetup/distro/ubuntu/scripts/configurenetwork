@@ -55,6 +55,7 @@ sleep 1
 PINGCOUNTER=0
 while [ $PINGCOUNTER -lt 5 ]
 do
+	echo `date`: Pinging $NAMESERVER >> /opt/karoshi/serversetup/install_log
 	ping -c 1 $NAMESERVER
 	PINGCHECK=$?
 	[ $PINGCHECK = 0 ] && break
@@ -64,6 +65,7 @@ done
 
 
 #Check that the dns actually works
+echo `date`: Looking up $NAMESERVER >> /opt/karoshi/serversetup/install_log
 host www.google.com $NAMESERVER 1> /dev/null
 LOOKUPCHECK=$?
 

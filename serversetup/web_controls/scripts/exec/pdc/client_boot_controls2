@@ -79,7 +79,7 @@ ACTION=`echo "$DATA" | cut -s -d: -f5`
 ASSET=`echo "$DATA" | cut -s -d: -f6`
 TCPIP=`echo "$DATA" | cut -s -d: -f7`
 MACADDRESS=`echo "$DATA" | cut -s -d: -f8 | sed 's/%3A/:/g'`
-
+NETBOOT=`echo "$DATA" | cut -s -d: -f9`
 ########################
 #Check data
 ########################
@@ -124,6 +124,14 @@ then
 	echo `date`: client_boot_controls2 - Blank macaddress by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+if [ "$ACTION" = install ] || [ "$ACTION" = enableall ]
+then
+	if [ -z "$NETBOOT" ]
+	then
+		echo `date`: client_boot_controls2 - Blank netboot by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
 	echo `date`: client_boot_controls2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -143,7 +151,7 @@ then
 		if [ $TCPIP != N.A. ] && [ $MACADDRESS != N.A. ]
 		then
 			echo `date`: client_boot_controls2 - setting asset $ASSET to install $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo $TCPIP,$MACADDRESS, > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
+			echo $TCPIP,$MACADDRESS,$NETBOOT > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
 			[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
 		fi
 	fi
@@ -210,7 +218,7 @@ cat /opt/karoshi/server_network/dhcp/network_boot_list > /etc/dhcp/dhcpd_client_
 
 source /opt/karoshi/serversetup/variables/distro
 #Restart DHCP
-echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li>'
+echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li></ul>'
 echo `date`: client_boot_controls2 - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -223,7 +231,7 @@ then
 		if [ "$DHCPSERVER" != `hostname-fqdn` ]
 		then
 			DHCPSERVER2=`echo "$DHCPSERVER" | cut -d. -f1`
-			echo '<ul><li>'$DHCPSERVER2' - '$"Restarting dhcp"'</li>'
+			echo '<ul><li>'$DHCPSERVER2' - '$"Restarting dhcp"'</li></ul>'
 			echo `date`: client_boot_controls2 - $DHCPSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			scp /etc/dhcp/dhcpd_client_boot.conf root@$DHCPSERVER:/etc/dhcp/
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '
@@ -250,6 +258,7 @@ then
 			CLIENT_DATA=`sed -n 1,1p /opt/karoshi/server_network/dhcp/network_install/install/$CLIENT`
 			TCPIP=`echo $CLIENT_DATA | cut -d, -f1`
 			MACADDRESS=`echo $CLIENT_DATA | cut -d, -f2`
+			NETBOOT=`echo $CLIENT_DATA | cut -d, -f3`
 
 			echo >> $BOOT_CONTROL_CONFIG
 			echo 'host '$TCPIP' {' >> $BOOT_CONTROL_CONFIG
@@ -257,7 +266,7 @@ then
 			echo '	fixed-address '$TCPIP';' >> $BOOT_CONTROL_CONFIG
 			echo '	option host-name "'$TCPIP'";' >> $BOOT_CONTROL_CONFIG
 			echo '	next-server '$SERVERIP';' >> $BOOT_CONTROL_CONFIG 
-			echo '	filename "pxelinux.0";' >> $BOOT_CONTROL_CONFIG
+			echo '	filename "'$NETBOOT'/pxelinux.0";' >> $BOOT_CONTROL_CONFIG
 			echo '}' >> $BOOT_CONTROL_CONFIG
 			echo >> $BOOT_CONTROL_CONFIG
 		done
@@ -316,7 +325,7 @@ then
 				if [ $TCPIP1 != N.A. ] && [ $MAC1 != N.A. ]
 				then
 					echo `date`: client_boot_controls2 - setting asset $ASSET to install $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					echo $TCPIP1,$MAC1, > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
+					echo $TCPIP1,$MAC1,$NETBOOT > /opt/karoshi/server_network/dhcp/network_install/install/$ASSET
 					[ -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET ] && rm -f /opt/karoshi/server_network/dhcp/asset_register/network_install/memtest/$ASSET
 				fi
 			fi

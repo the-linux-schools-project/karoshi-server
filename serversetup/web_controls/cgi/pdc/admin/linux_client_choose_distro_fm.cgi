@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -56,7 +56,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 <b>'$"Linux Client - Choose Distribution"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the linux client iso that you want to distribute to your linux clients over the network."'</span></a><br><br></div><div id="infobox">
         <form name="myform" action="/cgi-bin/admin/linux_client_choose_distro.cgi" method="post">'
 
-#Get list of distributions in /home/itadminshare/distributions in the main server
+#Get list of distributions in /home/itadminshare/distributions in the main server and get a list of netboots from the distribution server.
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro

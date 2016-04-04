@@ -47,35 +47,50 @@ DATA=`echo $DATA | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
+END_POINT=15
 #Assign DISTROCHOICE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DISTROCHOICEcheck ]
-then
-let COUNTER=$COUNTER+1
-DISTROCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-DISTROCHOICE=`echo $DISTROCHOICE | sed 's/UNDERSCORE/_/g'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DISTROCHOICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DISTROCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		DISTROCHOICE=`echo $DISTROCHOICE | sed 's/UNDERSCORE/_/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign CONTROL
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = CONTROLcheck ]
-then
-let COUNTER=$COUNTER+1
-CONTROL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-CONTROL=`echo $CONTROL | sed 's/UNDERSCORE/_/g'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = CONTROLcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		CONTROL=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		CONTROL=`echo $CONTROL | sed 's/UNDERSCORE/_/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign NETBOOT
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NETBOOTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NETBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		NETBOOT=`echo $NETBOOT | sed 's/UNDERSCORE/_/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -100,31 +115,31 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that DISTROCHOICE is not blank
-if [ $DISTROCHOICE'null' = null ]
+if [ -z "$DISTROCHOICE" ]
 then
-MESSAGE=$"This folder does not contain any iso images."
-show_status
+	MESSAGE=$"This folder does not contain any iso images."
+	show_status
 fi
 
 #Generate navigation bar
@@ -135,19 +150,19 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
 #Copy iso
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DISTROCHOICE:$CONTROL:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro2
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DISTROCHOICE:$CONTROL:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro2
 EXEC_STATUS=`echo $?`
 
 if [ $CONTROL = copy ]
 then
-MESSAGE=$"The iso image has been copied to the distribution server."
+	MESSAGE=$"The iso image has been copied to the distribution server."
 else
-MESSAGE="$DISTROCHOICE - $"deleted""
+	MESSAGE="$DISTROCHOICE - $"deleted""
 fi
 
 if [ $EXEC_STATUS != 0 ]
 then
-MESSAGE=`echo $ERRORMSG3`
+	MESSAGE=`echo $ERRORMSG3`
 fi
 
 completed

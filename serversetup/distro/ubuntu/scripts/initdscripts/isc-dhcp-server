@@ -16,11 +16,13 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
-if [ ! -d /var/run/dhcpd ]
+if [ ! -d /var/run/dhcp-server ]
 then
-mkdir /var/run/dhcpd
-chown dhcpd:dhcpd /var/run/dhcpd
+	mkdir /var/run/dhcp-server
+	#chown dhcpd:dhcpd /var/run/dhcp-server
 fi
+touch /var/lib/dhcp/dhcpd.leases
+#chown dhcpd:dhcpd /var/lib/dhcp/dhcpd.leases
 
 test -f /usr/sbin/dhcpd || exit 0
 
@@ -44,11 +46,11 @@ NAME=dhcpd
 DESC="ISC DHCP server"
 # fallback to default config file
 DHCPD_CONF=${DHCPD_CONF:-/etc/dhcp/dhcpd.conf}
-# try to read pid file name from config file, with fallback to /var/run/dhcpd.pid
+# try to read pid file name from config file, with fallback to /var/run/dhcp-server.pid
 if [ -z "$DHCPD_PID" ]; then
 	DHCPD_PID=$(sed -n -e 's/^[ \t]*pid-file-name[ \t]*"(.*)"[ \t]*;.*$/\1/p' < "$DHCPD_CONF" 2>/dev/null | head -n 1)
 fi
-DHCPD_PID="${DHCPD_PID:-/var/run/dhcpd/dhcpd.pid}"
+DHCPD_PID="${DHCPD_PID:-/var/run/dhcp-server/dhcpd.pid}"
 
 test_config()
 {
