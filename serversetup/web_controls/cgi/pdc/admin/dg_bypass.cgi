@@ -75,6 +75,19 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 }
 // -->
   </script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: "ipAddress" }
+    		}
+		});
+    } 
+);
+</script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -107,7 +120,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=7
 #Assign action
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

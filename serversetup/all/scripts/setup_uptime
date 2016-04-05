@@ -1,0 +1,12 @@
+#!/bin/bash
+echo `date`: "Adding karoshi-uptime" >> /opt/karoshi/serversetup/install_log
+source /opt/karoshi/serversetup/variables/distro
+#Copy in uptime script
+cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime.sh /usr/sbin/
+cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d/
+#Start update script
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_start
+#Set update script to run on boot
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
+#Reset the uptime data
+karoshi-uptime.sh reset

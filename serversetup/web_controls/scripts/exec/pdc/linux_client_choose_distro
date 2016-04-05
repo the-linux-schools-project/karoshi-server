@@ -118,7 +118,6 @@ then
 	echo /home/itadminshare/distributions/linux/ - $"This folder does not contain any iso images."
 fi
 
-echo '<b>Itadminshare '$"ISO Images"'</b><br><br>'
 if [ `ls -1 /home/itadminshare/distributions/linux/ | wc -l` -gt 0 ]
 then
 	#Show list of distros in itadminshare
@@ -129,19 +128,20 @@ then
 
 	echo '<select name="___NETBOOT___" style="width: 200px; height: 30px;" onClick="rewriteselect();">'
 
-	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
+	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz | sort -r)
 	do
 		DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
 		echo '<option value="'$DISTROVERSION'">'$DISTROVERSION'</option>'
 	done
-	echo '</select></td></tr>'
+	echo '</select></td></tr></tbody></table>'
 
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 512px;"><b>Itadminshare '$"ISO Images"'</b></th><th style="width: 80px;"><b>'$"Copy"'</b></th></tr></thead><tbody>'
 
 
 	for ISOIMAGES in /home/itadminshare/distributions/linux/*.iso
 	do
 		ISOIMAGE=`basename "$ISOIMAGES"`
-		echo '<tr><td style="width: 250px; vertical-align: top;">'$ISOIMAGE'</td><td style="vertical-align: top;">
+		echo '<tr><td>'$ISOIMAGE'</td><td style="vertical-align: top;">
 		<button class="info" name="___ChooseISO___" value="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___">
 		<img src="/images/submenus/client/copy_iso.png" alt="'$"Copy"'">
 		<span>'$"Copy the iso to the distribution server and make it available for network installation."'</span>
@@ -152,14 +152,14 @@ then
 
 	echo '</tbody></table>'
 else
-	echo ''$"There are no iso images in this area."'<br>'
+	echo '<b>Itadminshare '$"ISO Images"'</b><br><br>'$"There are no iso images in this area."'<br>'
 fi
 
 DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
 
 #Show a list of distributions on the distribution server
 
-echo '<br><br><b>'$"Distribution Server"' '$"ISO Images"'</b><br><br>'
+echo '<br>'
 
 
 if [ $DISTROSERVER = `hostname-fqdn` ]
@@ -167,8 +167,8 @@ then
 	[ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
 	if [ `ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l` -gt 0 ]
 	then
-		echo '<table class="standard" style="text-align: left;" >
-		<tbody>'
+		echo "<table id=\"myTable2\" class=\"tablesorter\" style=\"text-align: left;\">
+		<thead><th style=\"width: 300px;\">'$"Distribution Server ISO Images"'</th><th style=\"width: 200px;\">'$"Netboot Version"'</th><th style=\"width: 80px;\">'$"Delete"'</th></tr></thead><tbody>"
 		for ISOIMAGES in /home/distributions/linux_iso/*.iso
 		do
 			ISOIMAGE=`basename "$ISOIMAGES"`
@@ -182,23 +182,23 @@ then
 			</td></tr>
 			'
 		done
+		echo "</tbody></table>"
 	else
 		echo ''$"There are no iso images in this area."'<br>'
 	fi
-
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
 	[ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
 	if [ `ls -1 /home/distributions/linux_iso/ | wc -l` -gt 0 ]
 	then
-		echo "<table class=\"standard\" style=\"text-align: left;\">
-		<tbody>"
+		echo "<table id=\"myTable2\" class=\"tablesorter\" style=\"text-align: left;\">
+		<thead><th style=\"width: 300px;\">'$"Distribution Server ISO Images"'</th><th style=\"width: 200px;\">'$"Netboot Version"'</th><th style=\"width: 80px;\">'$"Delete"'</th></tr></thead><tbody>"
 
 		for ISOIMAGES in /home/distributions/linux_iso/*.iso
 		do
 			ISOIMAGE=`basename "$ISOIMAGES"`
 			NETBOOT=$(cat /home/distributions/linux_iso/$ISOIMAGE.netboot)
-			echo "<tr><td style=\"width: 200px; vertical-align: top;\">$ISOIMAGE</td><td style=\"width: 200px; vertical-align: top;\">$NETBOOT</td>
+			echo "<tr><td>$ISOIMAGE</td><td>$NETBOOT</td>
 			<td style=\"vertical-align: top;\">
 			<button class=\"info\" name=\"___DeleteISO___\" value=\"___DISTROCHOICE___${ISOIMAGE}___NETBOOT___${NETBOOT}___CONTROL___delete___\">
 			<img src=\"/images/submenus/client/delete_iso.png\" alt=\"'$"Delete"'\">
@@ -207,11 +207,11 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
 			</td></tr>
 			"
 		done
+		echo "</tbody></table>"
 	else
 		echo "<br>'$"There are no iso images in this area."'<br>"
 	fi
 	'
 fi
-echo "</tbody></table>"
 exit
 

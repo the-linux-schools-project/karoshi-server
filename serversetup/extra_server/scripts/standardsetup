@@ -56,6 +56,9 @@ killall yad
 
 do_setup | yad --title $"Extra Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+0 --no-buttons --text ''$"Extra Server Setup"'\n\n\n'$STATUS'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress
 
+#Setup uptime data for the server
+/opt/karoshi/serversetup/all/scripts/setup_uptime
+
 ###########################
 #Display completed message
 ############################
@@ -63,6 +66,7 @@ yad --title $"Extra Server Setup" --image="/opt/karoshi/serversetup/essentials/s
 
 #Create initial disk usage report
 #/opt/karoshi/serversetup/all/"useful scripts"/disk_usage
+
 
 exit
 

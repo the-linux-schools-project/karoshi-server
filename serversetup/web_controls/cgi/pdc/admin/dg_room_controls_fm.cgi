@@ -98,7 +98,7 @@ fi
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	ICON1=/images/assets/location.png
 #Generate navigation bar
@@ -109,7 +109,7 @@ else
 	ICON1=/images/assets/locationm.png
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -122,7 +122,7 @@ then
 '
 else
 	echo '<table class="standard" style="text-align: left;" >
-<tr><td><b>'$"Client Internet Controls"' - '$"Location"'</b></td>
+<tr><td style="height:30px;"><div class="sectiontitle">'$"Client Internet Controls"' - '$"Location"'</div></td>
 <td>
 	<form action="dg_reset_room_controls_fm.cgi" method="post">	
 		<button class="button" name="Top" value="_">
@@ -132,7 +132,7 @@ else
 </td>
 <td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a>
-</td></tr></tbody></table><br>'
+</td></tr></tbody></table><br></div><div id=infobox>'
 
 fi
 
@@ -180,5 +180,6 @@ then
 else
 	echo $"No locations have been created."
 fi
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

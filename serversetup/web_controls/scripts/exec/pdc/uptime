@@ -124,8 +124,8 @@ else
 	SERVERICON="/images/submenus/system/uptime_resetm.png"
 	ICON1=/images/submenus/system/computerm.png
 	TABLECLASS=mobilestandard
-	WIDTH1=90
-	WIDTH2=80
+	WIDTH1=95
+	WIDTH2=95
 	WIDTH3=140
 	WIDTH4=100
 	WIDTH5=100
@@ -162,7 +162,7 @@ fi
 if [ $MOBILE = yes ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Uptime"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Uptime"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Reset"'</b></th></tr></thead><tbody>'
 else
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Uptime"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Est. Downtime  Year"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Start Date"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Reset"'</b></th></thead><tbody>'
@@ -224,7 +224,7 @@ fi
 
 if [ $MOBILE = yes ]
 then
-	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td></td>'
+	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td>'
 else
 	echo '<tr><td>'$DISPLAY_NAME'</td><td>'$UPPRCENT''$SYMBOL'</td><td>'$DPY' '$SUFFIX'</td><td>'$START_TIME'</td>'
 fi

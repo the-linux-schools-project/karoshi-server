@@ -221,8 +221,8 @@ if [ "$ACTION" = view ]
 then
 	if [ `grep -v "^#" /etc/e2guardian/exceptioniplist | sed "/^$/d" | wc -l` != 0 ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-		<tr><td style="width: 180px;"><b>'$"TCPIP Number"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+		<tr><th style="width: 200px;"><b>'$"TCPIP Number"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		for tcpipnumber in `grep -v "^#" /etc/e2guardian/exceptioniplist`
 		do
 		echo '<tr><td>'$tcpipnumber'</td><td>

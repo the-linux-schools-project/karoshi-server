@@ -146,15 +146,21 @@ then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=70
-	WIDTH2=120
-	WIDTH3=120
+	WIDTH2=140
+	WIDTH3=165
 	TABLETITLE=''$"Client Internet Controls"' - '$LOCATION''
 	ICON1=/images/submenus/internet/client_allowed.png
 	ICON2=/images/submenus/internet/client_denied.png
 	ICON3=/images/assets/location.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$TABLETITLE'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the client computers that you want to allow or deny internet access to."'</span></a><br>'
+	echo '<div id="'$DIV_ID'"><div id="titlebox">
+<table class="standard" style="text-align: left;" >
+<tr><td style="height:30px;"><div class="sectiontitle">'$TABLETITLE'</div></td>
+<td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the client computers that you want to allow or deny internet access to."'</span></a>
+</td></tr></tbody></table><br>
+'
 else
 	DIV_ID=menubox
 	TABLECLASS=mobilestandard

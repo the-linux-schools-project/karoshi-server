@@ -151,7 +151,7 @@ then
 fi
 echo '<th style="width: 120px;"><b>'$"Boot status"'</b></th><td style="width: 150px;">'
 echo '<select name="_NETBOOT_" style="width: '$WIDTH1'px; height: 30px;" onClick="rewriteselect();">'
-for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
+for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz | sort -r)
 do
 	DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
 	SELECTED=""

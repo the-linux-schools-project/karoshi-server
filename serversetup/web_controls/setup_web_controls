@@ -1008,17 +1008,6 @@ then
 	samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
 fi
 
-#Copy in uptime script
-cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime.sh /usr/sbin/
-cp -f /opt/karoshi/serversetup/scripts/uptime/karoshi-uptime /etc/init.d/
-
-#Start uptime script
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_start
-#Set uptimescript to run on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
-#Reset the uptime data
-karoshi-uptime.sh reset
-
 #Create some statistics for the front page
 /opt/karoshi/web_controls/statistics
 
