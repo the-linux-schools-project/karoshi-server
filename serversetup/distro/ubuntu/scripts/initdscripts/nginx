@@ -15,6 +15,9 @@ DAEMON=/usr/sbin/nginx
 NAME=nginx
 DESC=nginx
 
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
+[ -f /etc/reserveports/apache2 ] && /usr/sbin/releaseports apache2
+
 # Include nginx defaults if available
 if [ -r /etc/default/nginx ]; then
 	. /etc/default/nginx

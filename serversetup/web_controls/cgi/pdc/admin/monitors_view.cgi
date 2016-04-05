@@ -146,7 +146,7 @@ fi
 #Show table of sites
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" >'
 echo "<thead>"
-echo '<tr><th style="width: 180px;"><b>'$"Monitors"'</b></th><th style="width: 70px;"><b>'$"Enabled"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Info"'</b></th></tr></thead><tbody>'
+echo '<tr><th style="width: 180px;"><b>'$"Monitors"'</b></th><th style="width: 70px;"><b>'$"Status"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Info"'</b></th></tr></thead><tbody>'
 
 for MONITORNAME in /opt/karoshi/server_network/mon/monitors/*
 do
@@ -160,9 +160,8 @@ do
 	<td style="vertical-align: top;">'$MONITORNAME'</td>
 	<td style="vertical-align: top;">
 		<form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-			<button class="info" name="_Disable_" value="_MONITOR_'$MONITORNAME2'_">
-			<img src="/images/submenus/system/enable_monitor.png" alt="'$"Disable"' - '$MONITORNAME'">
-			<span>'$"Disable"' - '$MONITORNAME'</span>
+			<button class="button smallbutton" name="_Disable_" value="_MONITOR_'$MONITORNAME2'_">
+			<span>'$"On"'</span>
 			</button>
 		</form>
 	</td>
@@ -203,14 +202,12 @@ then
 			<td style="vertical-align: top;">'$MONITORNAME'</td>
 			<td style="vertical-align: top;">
 				<form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-					<button class="info" name="_Enable_" value="_MONITOR_'$MONITORNAME2'_">
-					<img src="/images/submenus/system/disable_monitor.png" alt="'$"Enable"' - '$MONITORNAME'">
-					<span>'$"Enable"' - '$MONITORNAME'</span>
+					<button class="button smallbutton" name="_Enable_" value="_MONITOR_'$MONITORNAME2'_">
+					<span>'$"Off"'</span>
 					</button>
 				</form>
 			</td>
-			<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post"><a class="info" href="javascript:void(0)"><input name="_MONITOR_'$MONITORNAME2'_" type="image" class="images" src="/images/submenus/system/edit.png" value=""><span>'$"Edit function not implemented yet."' - '$MONITORNAME'</span></a></form></td>
-
+			<td style="vertical-align: top;"></td>
 			<td style="vertical-align: top;">
 				<form action="/cgi-bin/admin/monitors_delete.cgi" name="monitors" method="post">
 					<button class="info" name="_Delete_" value="_MONITOR_'$MONITORNAME2'_">

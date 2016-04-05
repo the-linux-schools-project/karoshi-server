@@ -47,6 +47,7 @@ fi
 WIDTH1=180
 WIDTH2=180
 WIDTH3=300
+WIDTH4=80
 TABLECLASS=standard
 ICON1=/images/submenus/web/delete.png
 if [ $MOBILE = yes ]
@@ -54,6 +55,7 @@ then
 	WIDTH1=180
 	WIDTH2=90
 	WIDTH3=300
+	WIDTH4=80
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/web/deletem.png
 fi
@@ -67,7 +69,17 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Reverse Proxy Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then
@@ -95,7 +107,7 @@ echo '</head>
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+[ ! -z "$MESSAGE" ] && echo 'alert("'$MESSAGE'")'
 echo 'window.location = "reverse_proxy_add_fm.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -105,13 +117,11 @@ exit
 #Check to see if there are any proxy sites
 if [ ! -d /opt/karoshi/server_network/reverseproxy/sites/ ]
 then
-	MESSAGE=$"No web sites have been added to the reverse proxy list."
 	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites/ | wc -l` = 0 ]
 then
-	MESSAGE=$"No web sites have been added to the reverse proxy list."
 	show_status
 fi
 
@@ -161,10 +171,10 @@ echo '<td style="vertical-align: top;">
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr>'
 
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH2'px;"><b>'$"Target"'</b></td>'
-echo '<td style="width: '$WIDTH3'px;"><b>'$"Destination"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Target"'</b></th>'
+echo '<th style="width: '$WIDTH3'px;"><b>'$"Destination"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 for SITES in /opt/karoshi/server_network/reverseproxy/sites/*
 do

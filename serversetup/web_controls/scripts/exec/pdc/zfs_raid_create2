@@ -447,9 +447,11 @@ do
 	[ $? = 0 ] && exit
 	sleep 1
 	let COUNTER=$COUNTER+1
-done' > /etc/rc2.d/S90zfs-mount-all
+done' > /etc/init.d/S90zfs-mount-all
 
-			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+			chmod 0700 /etc/init.d/S90zfs-mount-all
+
+			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
 		fi
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
@@ -543,9 +545,10 @@ do
 	[ $? = 0 ] && exit
 	sleep 1
 	let COUNTER=$COUNTER+1
-done' > /etc/rc2.d/S90zfs-mount-all
+done' > /etc/init.d/zfs-mount-all
 
-			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+			chmod 0700 /etc/init.d/zfs-mount-all
+			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
 		fi
 	fi
 
@@ -839,9 +842,10 @@ do
 	[ \$? = 0 ] && exit
 	sleep 1
 	let COUNTER=\$COUNTER+1
-done" > /etc/rc2.d/S90zfs-mount-all
+done" > /etc/init.d/zfs-mount-all
 
-			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+			chmod 0700 /etc/init.d/zfs-mount-all
+			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
 		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
@@ -920,6 +924,15 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
 			echo "#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          zfs-mount-all
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start zfs-mount-all
+### END INIT INFO
+
 COUNTER=0
 while [ \$COUNTER -le 100 ]
 do
@@ -927,9 +940,10 @@ do
 	[ \$? = 0 ] && exit
 	sleep 1
 	let COUNTER=\$COUNTER+1
-done" > /etc/rc2.d/S90zfs-mount-all
+done" > /etc/init.d/zfs-mount-all
 
-			chmod 0700 /etc/rc2.d/S90zfs-mount-all
+			chmod 0700 /etc/init.d/zfs-mount-all
+			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
 		fi
 	fi
 

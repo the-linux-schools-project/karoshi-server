@@ -93,64 +93,81 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left; " ><t
 </tr></tbody></table>
 <br>'
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
-    <thead>
-<tr><th style="width: 120px;"><b>'$"Contact Name"'</b></th><th style="width: 180px;"><b>'$"E-Mail"'</b></th><th style="width: 180px;"><b>'$"Sender"'</b></th><th style="width: 140px;"><b>'$"E-Mail Server"'</b></th><th style="width: 70px;"><b>'$"Enabled"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Test"'</b></th></tr></thead><tbody>'
-
-#Enabled alerts
+SHOWENABLEDLAERTS=no
 if [ -d /opt/karoshi/server_network/mon/email_alerts/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/mon/email_alerts/ | wc -l` -gt 0 ]
-then
-
-for EMAILALERT in /opt/karoshi/server_network/mon/email_alerts/*
-do
-EMAILALERT=`basename $EMAILALERT`
-source /opt/karoshi/server_network/mon/email_alerts/$EMAILALERT
-echo '<tr><td style="vertical-align: top;">'$EMAILALERT'</td><td style="vertical-align: top;">'$EMAILADDRESS'</td><td style="vertical-align: top;">'$SENDER'</td><td style="vertical-align: top;">'$EMAILSERVER'</td>
-<td>
-	<form action="/cgi-bin/admin/monitors_disable_email_alert.cgi" method="post">
-		<button class="info" name="_Disable_" value="_NAME_'$EMAILALERT'_">
-		<img src="/images/submenus/system/enable_monitor.png" alt="'$"Disable"' '$EMAILALERT'">
-		<span>'$"Disable"' '$EMAILALERT'</span>
-		</button>
-	</form>
-</td>
-<td>
-	<form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
-		<button class="info" name="_Edit_" value="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_">
-		<img src="/images/submenus/system/edit.png" alt="'$"Edit"' '$EMAILALERT'">
-		<span>'$"Edit"' '$EMAILALERT'</span>
-		</button>
-	</form>
-</td>
-<td>
-	<form action="/cgi-bin/admin/monitors_delete_email_alert.cgi" method="post">
-		<button class="info" name="_Delete_" value="_NAME_'$EMAILALERT'_">
-		<img src="/images/submenus/system/delete.png" alt="'$"Delete"' '$EMAILALERT'">
-		<span>'$"Delete"' '$EMAILALERT'</span>
-		</button>
-	</form>
-</td>
-<td>
-	<form action="/cgi-bin/admin/monitors_test_email_alert.cgi" method="post">
-		<button class="info" name="_Test_" value="_NAME_'$EMAILALERT'_">
-		<img src="/images/submenus/system/test.png" alt="'$"Test"' '$EMAILALERT'">
-		<span>'$"Test"' '$EMAILALERT'</span>
-		</button>
-	</form>
-</td>
-</tr>'
-done
-fi
+	if [ `ls -1 /opt/karoshi/server_network/mon/email_alerts/ | wc -l` -gt 0 ]
+	then
+		SHOWENABLEDLAERTS=yes
+	fi
 fi
 
-#Disabled alerts
+SHOWDISABLEDLAERTS=no
 if [ -d /opt/karoshi/server_network/mon/email_alerts_disabled/ ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/mon/email_alerts_disabled/ | wc -l` -gt 0 ]
 	then
+		SHOWDISABLEDLAERTS=yes
+	fi
+fi
 
+
+if [ $SHOWENABLEDLAERTS = yes ] && [ $SHOWDISABLEDLAERTS = yes ]
+then
+	echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
+    <thead>
+<tr><th style="width: 120px;"><b>'$"Contact Name"'</b></th><th style="width: 180px;"><b>'$"E-Mail"'</b></th><th style="width: 180px;"><b>'$"Sender"'</b></th><th style="width: 140px;"><b>'$"E-Mail Server"'</b></th><th style="width: 70px;"><b>'$"Enabled"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Test"'</b></th></tr></thead><tbody>'
+fi
+
+
+#Enabled alerts
+
+if [ $SHOWENABLEDLAERTS = yes ]
+then
+	for EMAILALERT in /opt/karoshi/server_network/mon/email_alerts/*
+	do
+		EMAILALERT=`basename $EMAILALERT`
+		source /opt/karoshi/server_network/mon/email_alerts/$EMAILALERT
+		echo '<tr><td style="vertical-align: top;">'$EMAILALERT'</td><td style="vertical-align: top;">'$EMAILADDRESS'</td><td style="vertical-align: top;">'$SENDER'</td><td style="vertical-align: top;">'$EMAILSERVER'</td>
+		<td>
+			<form action="/cgi-bin/admin/monitors_disable_email_alert.cgi" method="post">
+				<button class="info" name="_Disable_" value="_NAME_'$EMAILALERT'_">
+				<img src="/images/submenus/system/enable_monitor.png" alt="'$"Disable"' '$EMAILALERT'">
+				<span>'$"Disable"' '$EMAILALERT'</span>
+				</button>
+			</form>
+		</td>
+		<td>
+			<form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
+				<button class="info" name="_Edit_" value="_NAME_'$EMAILALERT'_EMAILTO_'$EMAILADDRESS'_EMAILFROM_'$SENDER'_MAILSERVER_'$EMAILSERVER'_">
+				<img src="/images/submenus/system/edit.png" alt="'$"Edit"' '$EMAILALERT'">
+				<span>'$"Edit"' '$EMAILALERT'</span>
+				</button>
+			</form>
+		</td>
+		<td>
+			<form action="/cgi-bin/admin/monitors_delete_email_alert.cgi" method="post">
+				<button class="info" name="_Delete_" value="_NAME_'$EMAILALERT'_">
+				<img src="/images/submenus/system/delete.png" alt="'$"Delete"' '$EMAILALERT'">
+				<span>'$"Delete"' '$EMAILALERT'</span>
+				</button>
+			</form>
+		</td>
+		<td>
+			<form action="/cgi-bin/admin/monitors_test_email_alert.cgi" method="post">
+				<button class="info" name="_Test_" value="_NAME_'$EMAILALERT'_">
+				<img src="/images/submenus/system/test.png" alt="'$"Test"' '$EMAILALERT'">
+				<span>'$"Test"' '$EMAILALERT'</span>
+				</button>
+			</form>
+		</td>
+		</tr>'
+	done
+fi
+
+#Disabled alerts
+if [ $SHOWDISABLEDLAERTS = yes ]
+then
 	for EMAILALERT in /opt/karoshi/server_network/mon/email_alerts_disabled/*
 	do
 		EMAILALERT=`basename $EMAILALERT`
@@ -190,8 +207,12 @@ then
 		</td>
 		</tr>'
 	done
-	fi
+
 fi
 
-echo ' </tbody></table><br><br></div></div></body></html>'
+if [ $SHOWENABLEDLAERTS = yes ] && [ $SHOWDISABLEDLAERTS = yes ]
+then
+	echo ' </tbody></table>'
+fi
+echo '<br><br></div></div></body></html>'
 exit
