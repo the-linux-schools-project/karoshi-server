@@ -206,6 +206,7 @@ then
 		then
 			#Clear out all of the gluster data
 			echo '<ul><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li></ul>'
+			umount /mnt-gluster/"$GLUSTERVOL"
 			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
 			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
 		fi		
@@ -215,10 +216,13 @@ then
 		then
 			#Create new volume id otherwise the gluster volume will not start.
 			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed 's/-//g') $brick)
-			#Start the gluster volume
+			#Restart the gluster volume
+			echo -e "y\n" | gluster volume stop "$GLUSTERVOL" force
+			sleep 1
 			gluster volume start "$GLUSTERVOL" force
 			#Repair the volume with data from the other server.
 			gluster volume heal "$GLUSTERVOL" full
+			mount -a
 		fi			
 	done
 	if [ "$GLUSTERACTION" = start ]
@@ -431,27 +435,15 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
-			echo '#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          zfs-mount-all
-# Required-Start:    $local_fs $remote_fs $network $syslog
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start zfs-mount-all
-### END INIT INFO
-COUNTER=0
-while [ $COUNTER -le 100 ]
-do
-	zfs mount -a
-	[ $? = 0 ] && exit
-	sleep 1
-	let COUNTER=$COUNTER+1
-done' > /etc/init.d/S90zfs-mount-all
-
-			chmod 0700 /etc/init.d/S90zfs-mount-all
-
-			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+			#Set gluster to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+			fi
 		fi
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
@@ -528,27 +520,15 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
-			echo '#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          zfs-mount-all
-# Required-Start:    $local_fs $remote_fs $network $syslog
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start zfs-mount-all
-### END INIT INFO
-
-COUNTER=0
-while [ $COUNTER -le 100 ]
-do
-	zfs mount -a
-	[ $? = 0 ] && exit
-	sleep 1
-	let COUNTER=$COUNTER+1
-done' > /etc/init.d/zfs-mount-all
-
-			chmod 0700 /etc/init.d/zfs-mount-all
-			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+			#Set gluster to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+			fi
 		fi
 	fi
 
@@ -597,7 +577,8 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		if [ "$GLUSTERACTION" = stop ]
 		then
 			#Clear out all of the gluster data
-			echo "<ul><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li></ul>"
+			echo "<ul><li>'$"Glusterfs"' - '$"Removing"' "$GLUSTERVOL" - '$"This will be restored after the ZFS array has been created"'</li></ul>"
+			umount /mnt-gluster/"$GLUSTERVOL"
 			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
 			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
 		fi		
@@ -606,11 +587,13 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		if [ "$GLUSTERACTION" = start ]
 		then
 			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed "s/-//g") $brick)
-
-			#Start the gluster volume
+			#Restart the gluster volume
+			echo -e "y\n" | gluster volume stop "$GLUSTERVOL" force
+			sleep 1
 			gluster volume start "$GLUSTERVOL" force
 			#Repair the volume with data from the other server.
 			gluster volume heal "$GLUSTERVOL" full
+			mount -a
 		fi			
 	done
 	if [ "$GLUSTERACTION" = start ]
@@ -825,27 +808,15 @@ do
 done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
-			echo "#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          zfs-mount-all
-# Required-Start:    $local_fs $remote_fs $network $syslog
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start zfs-mount-all
-### END INIT INFO
-
-COUNTER=0
-while [ \$COUNTER -le 100 ]
-do
-	zfs mount -a
-	[ \$? = 0 ] && exit
-	sleep 1
-	let COUNTER=\$COUNTER+1
-done" > /etc/init.d/zfs-mount-all
-
-			chmod 0700 /etc/init.d/zfs-mount-all
-			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+			#Set gluster to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+			fi
 		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
@@ -923,27 +894,15 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
-			echo "#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          zfs-mount-all
-# Required-Start:    $local_fs $remote_fs $network $syslog
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start zfs-mount-all
-### END INIT INFO
-
-COUNTER=0
-while [ \$COUNTER -le 100 ]
-do
-	zfs mount -a
-	[ \$? = 0 ] && exit
-	sleep 1
-	let COUNTER=\$COUNTER+1
-done" > /etc/init.d/zfs-mount-all
-
-			chmod 0700 /etc/init.d/zfs-mount-all
-			ln -s /etc/init.d/zfs-mount-all /etc/rc2.d/S90zfs-mount-all
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+			#Set gluster to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+			fi
 		fi
 	fi
 

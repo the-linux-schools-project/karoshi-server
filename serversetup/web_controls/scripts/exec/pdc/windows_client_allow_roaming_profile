@@ -114,26 +114,34 @@ chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USE
 
 if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 ]
 then
-cp -R /home/applications/profiles/default_roaming_profile.V2 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
-chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 1>/dev/null
-chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
-chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+	cp -R /home/applications/profiles/default_roaming_profile.V2 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
 fi
 
 if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 ]
 then
-cp -R /home/applications/profiles/default_roaming_profile.V3 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
-chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 1>/dev/null
-chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
-chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+	cp -R /home/applications/profiles/default_roaming_profile.V3 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
 fi
 
 if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 ]
 then
-cp -R /home/applications/profiles/default_roaming_profile.V4 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
-chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 1>/dev/null
-chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
-chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+	cp -R /home/applications/profiles/default_roaming_profile.V4 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+fi
+
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 ]
+then
+	cp -R /home/applications/profiles/default_roaming_profile.V5 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
 fi
 
 #Get samba 4 database password

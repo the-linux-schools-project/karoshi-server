@@ -24,23 +24,23 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
 then
-echo `date`: services_view2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $services_view2_cgi'check' ]
 then
-echo `date`: services_view2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -48,15 +48,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: services_view2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: services_view2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
@@ -81,46 +81,46 @@ SERVERNAME=`echo $SERVERNAME | sed 's/showallservers//g'`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: services_view2 - Not called by services_view2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Not called by services_view2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: services_view2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: services_view2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: services_view2 - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: services_view2 - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $SERVICE'null' = null ]
+if [ -z "$SERVICE" ]
 then
-echo `date`: services_view2 - Blank service by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - Blank service by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: services_view2 - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: services_view2 - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: services_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 echo `date`: services_view2 $SERVERNAME $SERVICE $ACTION - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -147,60 +147,60 @@ exit
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"$ACTION
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"$ACTION
 
-if [ $ACTION = start ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE
-fi
-if [ $ACTION = stop ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/$SERVICE
-fi
+	if [ $ACTION = start ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE
+	fi
+	if [ $ACTION = stop ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/$SERVICE
+	fi
 
-redirect
+	redirect
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
+	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	then
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERNAME '
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
 
-if [ '$ACTION' = start ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
-fi
-if [ '$ACTION' = stop ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
-fi
-'
-redirect
-fi
+	if [ '$ACTION' = start ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
+	fi
+	if [ '$ACTION' = stop ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
+	fi
+	'
+	redirect
+	fi
 fi
 
 if [ $SERVERTYPE = federatedslave ]
 then
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERMASTER '
-ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 '$SERVERNAME' '\''
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 $SERVERMASTER '
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 '$SERVERNAME' '\''
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"'$ACTION'
 
-if [ '$ACTION' = start ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
-fi
-if [ '$ACTION' = stop ]
-then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
-fi
-'\''
-'
-redirect
+	if [ '$ACTION' = start ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/'$SERVICE'
+	fi
+	if [ '$ACTION' = stop ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/'$SERVICE'
+	fi
+	'\''
+	'
+	redirect
 fi
 exit
 

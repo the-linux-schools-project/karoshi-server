@@ -89,14 +89,22 @@ then
 	echo '<ul><li>'$SERVER' - '$"mounting"' '$MOUNTBASE/$VOLUME'</li></ul>'
 	mount -a
 
-	#Add in script to make sure the gluster volume gets mounted on boot
-	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
-	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S101mount_gluster_volumes
+	#Check to see if this server has zfs
+	if [ $(mount | grep zfs) -gt 0 ]
+	then
+		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+		then
+			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+		fi
+	fi
+
+	#Make sure the gluster volume gets mounted on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mount-gluster-volumes
 
 else
 	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-
+	source /opt/karoshi/serversetup/variables/distro
 	#Create empty folder to mount to 
 	[ ! -d "'$MOUNTBASE'"/"'$VOLUME'" ] && mkdir -p "'$MOUNTBASE'"/"'$VOLUME'"
 
@@ -111,9 +119,17 @@ else
 	echo "<ul><li>'$SERVER' - '$"mounting"' '$MOUNTBASE'/'$VOLUME'</li></ul>"
 	mount -a
 
-	#Add in script to make sure the gluster volume gets mounted on boot
-	cp -f /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes /etc/init.d
-	ln -s /etc/init.d/mount_gluster_volumes /etc/rc2.d/S101mount_gluster_volumes
+	#Check to see if this server has zfs
+	if [ $(mount | grep zfs) -gt 0 ]
+	then
+		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+		then
+			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+		fi
+	fi
+
+	#Make sure the gluster volume gets mounted on boot
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mount-gluster-volumes
 	'
 fi
 }

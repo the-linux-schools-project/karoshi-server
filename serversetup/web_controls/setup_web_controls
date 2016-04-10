@@ -1011,6 +1011,12 @@ fi
 #Create some statistics for the front page
 /opt/karoshi/web_controls/statistics
 
+#Add an entry into /etc/hosts for manage.realm so that the web management can be accessed from the main server in the event that samba4 is not running.
+if [ $(grep -c manage."$REALM" /etc/hosts) = 0 ]
+then
+	echo "$TCPIP""	"manage."$REALM" >> /etc/hosts
+fi
+
 ############################
 #Display completed message
 ############################

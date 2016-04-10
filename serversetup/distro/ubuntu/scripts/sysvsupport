@@ -96,6 +96,8 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openchange-ocs
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/openvpn /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nfs-kernel-server /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nginx /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/zfs-mount-all /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mount-gluster-volumes /etc/init.d/
 
 #Make sure no scripts have been added to /etc/init for upstart.
 [ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
