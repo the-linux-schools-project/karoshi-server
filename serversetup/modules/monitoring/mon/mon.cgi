@@ -41,7 +41,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
  #show1{height:15px !important; width:100px !important; padding-top:6px !important; color: #000 !important }
  #show1:hover{color: #fff !important }
  #hide1:hover{color: #fff !important } 
- .row { vertical-align: top; height:auto !important; }
+ .row { vertical-align: top; margin: 0 auto 0 auto; width 100%; height:auto; display:none !important; }
  .list {display:none; }
  .show {display: none; }
  .hide:target + .show {display: inline-block; }
@@ -55,10 +55,10 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 /opt/karoshi/web_controls/generate_navbar_mon
 
 #Show title
-echo '<div id="actionbox3"><div id="infobox">'
+echo '<div id="actionbox3">'
 
 #Create table
-echo '<table class="mon" style="text-align: left;" border="0" cellpadding="1" cellspacing="1"><thead><tr><th style="width: 180px;"><b>Host Group</b></th><th></th><th style="width: 100px;"><b>ping</b></th><th style="width: 100px;"><b>smb</b></th><th style="width: 100px;"><b>http</b></th><th style="width: 100px;"><b>https</b></th><th style="width: 100px;"><b>pop3</b></th><th style="width: 100px;"><b>pop3s</b></th><th style="width: 100px;"><b>imap</b></th><th style="width: 100px;"><b>imaps</b></th><th style="width: 100px;"><b>smtp</b></th><th style="width: 100px;"><b>proxy</b></th><th style="width: 100px;"><b>dns</b></th><th style="width: 100px;"><b>cups</b></th></tr></thead><tbody>'
+echo '<table class="mon" style="text-align: left;"><thead><tr><th style="width: 180px;"><b>Host Group</b></th><th></th><th style="width: 100px;"><b>ping</b></th><th style="width: 100px;"><b>smb</b></th><th style="width: 100px;"><b>http</b></th><th style="width: 100px;"><b>https</b></th><th style="width: 100px;"><b>pop3</b></th><th style="width: 100px;"><b>pop3s</b></th><th style="width: 100px;"><b>imap</b></th><th style="width: 100px;"><b>imaps</b></th><th style="width: 100px;"><b>smtp</b></th><th style="width: 100px;"><b>proxy</b></th><th style="width: 100px;"><b>dns</b></th><th style="width: 100px;"><b>cups</b></th></tr></thead><tbody>'
 
 if [ -f  /opt/karoshi/server_network/mon/mon_data_html ]
 then
@@ -67,5 +67,5 @@ else
 	echo "<tr><td>No Data</td></tr></tbody></table>"
 fi 
 
-echo '</div></div></div></body></html>'
+echo '</div></div></body></html>'
 exit

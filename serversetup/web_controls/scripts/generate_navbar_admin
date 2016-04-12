@@ -291,13 +291,13 @@ then
 fi
 
 echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a></li>'
-echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$"System Monitoring"'</a></li>'
-
 #VPN
 if [ $VPNCTRL = yes ]
 then
 	echo '<li><a href="/cgi-bin/admin/vpn_certificates.cgi">'$"VPN Certificates"'</a></li>'
 fi
+echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$"System Monitoring"'</a></li>'
+
 
 #Monitoring
 if [ $MONITORINGCTRL = yes ]

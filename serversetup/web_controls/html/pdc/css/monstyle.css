@@ -81,11 +81,25 @@ body {
    height: 15px;
 }
 
+table.standard {
+    margin-left:auto; 
+    margin-right:auto;
+    width 100%;
+}
+
+
 table.standard th, table.standard td {
   text-align: center;
   font-size : 16pt;
   font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
  }
+
+table.mon {
+    margin-left:auto; 
+    margin-right:auto; 
+    width 100%;
+}
+
 
 table.mon th, table.mon td {
 	text-align: center;
@@ -171,6 +185,7 @@ A:hover {
 	display: flex;
 	flex: auto;
 	flex-direction: column;
+	text-align: center;
         margin: 2px 2px 2px 2px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;

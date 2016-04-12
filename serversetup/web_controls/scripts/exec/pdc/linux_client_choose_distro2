@@ -160,7 +160,7 @@ then
 		#Copy out files
 		echo "<ul><li>"$DISTRIBUTIONSERVER - $"Copying out files""</li></ul>"
 
-		[ -d /home/tftpboot/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/images/$DISTROFOLDER/
+		[ -d /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/ ] && rm -f -R /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
 		mkdir -p /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
@@ -176,6 +176,10 @@ then
 		TIMEZONE=$(cat /etc/timezone)
 		sed -i "s%CHANGETHISTIMEZONE%$TIMEZONE%" /home/distributions/linux_distro/$DISTROFOLDER/casper/preseed.cfg
 		echo "</pre>"
+
+		#Find which initrd
+		INITRD=`ls /home/tftpboot/$NETBOOT/images/$DISTROFOLDER/initrd.* | sed -n 1,1p`
+		INITRD=`basename "$INITRD"`
 
 		#Create boot entry
 		[ ! -d /home/tftpboot/$NETBOOT/menus ] && mkdir -p /home/tftpboot/$NETBOOT/menus
