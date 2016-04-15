@@ -232,7 +232,7 @@ COUNTER=1
 while [ $COUNTER -le $DAYCOUNT ]
 do
 	#Check to see that DAY is not blank
-	if [ -Z "$DAY" ]
+	if [ -z "$DAY" ]
 	then
 		MESSAGE=$"The date cannot be blank."
 		show_status

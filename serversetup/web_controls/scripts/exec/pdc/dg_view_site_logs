@@ -141,9 +141,16 @@ if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	[ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied ] && ls -1 /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied/ | grep "$SEARCH1" >> /opt/karoshi/.tempdata/searchlistdenied.$$
 	[ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed ] && ls -1 /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed/ | grep "$SEARCH1" >>  /opt/karoshi/.tempdata/searchlistallowed.$$
+
+	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied.tar.gz ] && tar tzf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/denied.tar.gz | sed "s%^denied/%%g" | grep "$SEARCH1" >> /opt/karoshi/.tempdata/searchlistdenied.$$
+	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed.tar.gz ] && tar tzf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/sites/allowed.tar.gz | sed "s%^allowed/%%g" | grep "$SEARCH1" >> /opt/karoshi/.tempdata/searchlistallowed.$$
+
 else
 	ssh $PROXYSERVER ' [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied ] && ls -1 /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied/ | grep '$SEARCH1' ' >> /opt/karoshi/.tempdata/searchlistdenied.$$
 	ssh $PROXYSERVER ' [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed ] && ls -1 /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed/ | grep '$SEARCH1' ' >> /opt/karoshi/.tempdata/searchlistallowed.$$
+	ssh $PROXYSERVER '[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied.tar.gz ] && tar tzf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/denied.tar.gz | sed "s%^denied/%%g" | grep "'$SEARCH1'"' >> /opt/karoshi/.tempdata/searchlistdenied.$$
+	ssh $PROXYSERVER '[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed.tar.gz ] && tar tzf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/sites/allowed.tar.gz | sed "s%^allowed/%%g" | grep "'$SEARCH1'"' >> /opt/karoshi/.tempdata/searchlistallowed.$$
+
 fi
 }
 

@@ -180,19 +180,24 @@ then
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP.tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP >> /opt/karoshi/.tempdata/$TCPIP.$$
 	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP.tar.gz >> /opt/karoshi/.tempdata/$TCPIP.$$
+	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES.tar.gz $MACHINES/$TCPIP >> /opt/karoshi/.tempdata/$TCPIP.$$
 else
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP' ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && exit 105
 	[ $LOGTYPE = archive ] && exit 106
+	[ $LOGTYPE = globalarchive ] && exit 107
 	'
 	LOGTYPE=$?
 	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP' ' >> /opt/karoshi/.tempdata/$TCPIP.$$
 	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ' >> /opt/karoshi/.tempdata/$TCPIP.$$
+	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'.tar.gz '$MACHINES'/'$TCPIP'' >> /opt/karoshi/.tempdata/$TCPIP.$$
 fi
 }
 

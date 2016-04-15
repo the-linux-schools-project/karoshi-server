@@ -151,38 +151,47 @@ then
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE" ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed.$$
 	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_allowed.$$
+	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed.tar.gz allowed/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed.$$
 
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE" ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied.$$
 	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_denied.$$
+	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied.tar.gz denied/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied.$$
 
 else
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'" ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && exit 105
 	[ $LOGTYPE = archive ] && exit 106
+	[ $LOGTYPE = globalarchive ] && exit 107
 	'
 	LOGTYPE=$?
 	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'" ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
 	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
+	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed.tar.gz allowed/"'$WEBSITE'"' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
 
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 	LOGTYPE="notset"
 	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'" ] && LOGTYPE=text
 	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && exit 105
 	[ $LOGTYPE = archive ] && exit 106
+	[ $LOGTYPE = globalarchive ] && exit 107
 	'
 	LOGTYPE=$?
 	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'" ' >> /opt/karoshi/.tempdata/sitelog_denied.$$
 	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_denied.$$
-
+	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied.tar.gz denied/"'$WEBSITE'"' >> /opt/karoshi/.tempdata/sitelog_denied.$$
 fi
 }
 
