@@ -237,7 +237,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {

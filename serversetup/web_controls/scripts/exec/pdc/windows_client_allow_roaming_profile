@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_allow_roaming_profile_cgi
 then
-echo `date`: windows_client_allow_roaming_profile - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_allow_roaming_profile_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_allow_roaming_profile.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $windows_client_allow_roaming_profile_cgi'check' ]
 then
-echo `date`: windows_client_allow_roaming_profile - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -46,15 +46,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: windows_client_allow_roaming_profile - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: windows_client_allow_roaming_profile - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -65,35 +65,35 @@ USERNAME=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: windows_client_allow_roaming_profile - Not called by windows_client_allow_roaming_profile.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - Not called by windows_client_allow_roaming_profile.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_USER'null' = null ]
 then
-echo `date`: windows_client_allow_roaming_profile - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $REMOTE_ADDR'null' = null ]
 then
-echo `date`: windows_client_allow_roaming_profile - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $USERNAME'null' = null ]
 then
-echo `date`: windows_client_allow_roaming_profile - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: windows_client_allow_roaming_profile - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 #Check to see that this user does not already have a roaming profile
 if [ -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME ]
 then
-echo `date`: windows_client_allow_roaming_profile - $USERNAME already has a roaming profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: windows_client_allow_roaming_profile - $USERNAME already has a roaming profile by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi 
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: windows_client_allow_roaming_profile - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_allow_roaming_profile - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 PRIMARYGROUP=`id -g -n $USERNAME`

@@ -263,6 +263,12 @@ then
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
 		sleep 1
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"start
+
+		#Restart nslcd - needed for moving to Samba 4.3.8
+		echo Restarting nslcd due to version change >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nslcd_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nslcd_start		
 	fi
 fi
 
