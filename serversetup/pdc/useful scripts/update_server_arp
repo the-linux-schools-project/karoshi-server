@@ -8,6 +8,6 @@ MAC_ADDRESS=`ip addr | grep -B1 $TCPIPNUMBER | sed -n 1p | sed "s/ * / /g" | cut
 
 if [ ! -z $MAC_ADDRESS ] && [ ! -z $TCPIPNUMBER ]
 then
-echo $MAC_ADDRESS $TCPIPNUMBER > /opt/karoshi/server_network/mac_addresses/$HOSTNAME
-cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
+	echo $MAC_ADDRESS $TCPIPNUMBER > /opt/karoshi/server_network/mac_addresses/$HOSTNAME
+	cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
 fi

@@ -152,40 +152,8 @@ sleep 1
 #Create owncloud mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating mysql database for Owncloud"'</li></ul>'
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-	row[$COUNTER]=$RANDOM
-	let "row[$COUNTER] %= $RANGE"
-	while [ ${row[$COUNTER]} = 0 ]
-	do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-	done
-	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-	let COUNTER=COUNTER+1
-done
-
-CLOUDPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-
-
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-	row[$COUNTER]=$RANDOM
-	let "row[$COUNTER] %= $RANGE"
-	while [ ${row[$COUNTER]} = 0 ]
-	do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-	done
-	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-	let COUNTER=COUNTER+1
-done
-
-CLOUDID=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+CLOUDPASS=`openssl rand -hex 16`
+CLOUDID=`openssl rand -hex 16`
 
 #############################
 #Make sure that we know the root mysql password
@@ -204,7 +172,10 @@ sleep 1
 mysqladmin --password=$MYSQLPASS create owncloud 1>/dev/null
 sleep 1
 
-echo GRANT ALL PRIVILEGES ON owncloud.\* TO "'"owncloud_user"'"@"'"localhost"'" IDENTIFIED BY "'"$CLOUDPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+#Create moodule_user in mysql
+echo CREATE USER "'"owncloud_userr"'"@"'"localhost"'"  IDENTIFIED BY "'"$CLOUDPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+#Grant mysql permissions to owncloud
+echo GRANT ALL PRIVILEGES ON owncloud.\* TO "'"owncloud_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 echo ALTER DATABASE owncloud DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql

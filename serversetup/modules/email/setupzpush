@@ -36,49 +36,6 @@ then
 	exit
 fi
 
-#Make sure that the required software is installed
-UPDATEREPO=no
-INSTALL_LIBAWL=no
-INSTALL_PHPXSL=no
-
-dpkg -l libawl-php 1>/dev/null 2>/dev/null
-if [ $? != 0 ]
-then
-	UPDATEREPO=yes
-	INSTALL_LIBAWL=yes
-fi
-
-dpkg -l php5-xsl 1>/dev/null 2>/dev/null
-if [ $? != 0 ]
-then
-	UPDATEREPO=yes
-	INSTALL_PHPXSL=yes
-fi
-
-if [ $UPDATEREPO = yes ]
-then
-	echo '<ul><li>'$"Updating the repositories"'</li></ul>'
-	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	apt-get update
-	echo '</pre>'
-fi
-
-if [ $INSTALL_LIBAWL = yes ]
-then
-	echo "<li>Installing libawl-php</li></ul>"
-	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	apt-get install -y libawl-php
-	echo '</pre>'
-fi
-
-if [ $INSTALL_PHPXSL = yes ]
-then
-	echo '<ul><li>'$"Installing"' php5-xsl</li>'
-	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	apt-get install -y php5-xsl
-	echo '</pre>'
-fi
-
 #Activate libawl-php in php.conf
 if [ `grep -c /usr/share/awl/inc /etc/php5/apache2/php.ini` = 0 ]
 then

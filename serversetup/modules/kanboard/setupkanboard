@@ -60,22 +60,7 @@ fi
 #Create kanboard mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating the kanboard database in mysql"'</li></ul>'
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-	row[$COUNTER]=$RANDOM
-	let "row[$COUNTER] %= $RANGE"
-	while [ ${row[$COUNTER]} = 0 ]
-	do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-	done
-	CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-	let COUNTER=COUNTER+1
-done
-
-WBPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+WBPASS=`openssl rand -hex 16`
 
 #############################
 #Make sure that we know the root mysql password
@@ -91,7 +76,11 @@ mysqladmin -f --password=$MYSQLPASS drop kanboard 1>/dev/null 2>/dev/null
 mysqladmin --password=$MYSQLPASS create kanboard 1>/dev/null
 CONNECT_STATUS=`echo $?`
 #mysql --password=$MYSQLPASS kanboard < /opt/karoshi/serversetup/modules/kanboard/kanboard.sql
-echo GRANT ALL PRIVILEGES ON kanboard.\* TO "'"kanboard_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+
+#Create kanboard_user in mysql
+echo CREATE USER "'"kanboard_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+#Grant mysql permissions to kanboard
+echo GRANT ALL PRIVILEGES ON kanboard.\* TO "'"kanboard_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
 rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################

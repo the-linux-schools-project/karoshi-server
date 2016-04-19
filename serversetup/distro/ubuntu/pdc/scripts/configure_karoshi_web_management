@@ -71,8 +71,15 @@ fi
 [ ! -f /etc/apache2/mods-enabled_karoshi/mpm_prefork.load ] && ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled_karoshi/mpm_prefork.load
 [ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.conf ] && ln -s /etc/apache2/mods-available/negotiation.conf /etc/apache2/mods-enabled_karoshi/negotiation.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.load ] && ln -s /etc/apache2/mods-available/negotiation.load /etc/apache2/mods-enabled_karoshi/negotiation.load
-[ ! -f /etc/apache2/mods-enabled_karoshi/php5.conf ] && ln -s /etc/apache2/mods-available/php5.conf /etc/apache2/mods-enabled_karoshi/php5.conf
-[ ! -f /etc/apache2/mods-enabled_karoshi/php5.load ] && ln -s /etc/apache2/mods-available/php5.load /etc/apache2/mods-enabled_karoshi/php5.load
+if [ -f /etc/apache2/mods-available/php5.conf ]
+then
+	PHPVER=php5.0
+else
+	PHPVER=php7.0
+fi
+[ ! -f /etc/apache2/mods-enabled_karoshi/$PHPVER.conf ] && ln -s /etc/apache2/mods-available/$PHPVER.conf /etc/apache2/mods-enabled_karoshi/$PHPVER.conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/$PHPVER.load ] && ln -s /etc/apache2/mods-available/$PHPVER.load /etc/apache2/mods-enabled_karoshi/$PHPVER.load
+
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.conf ] && ln -s /etc/apache2/mods-available/setenvif.conf /etc/apache2/mods-enabled_karoshi/setenvif.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.load ] && ln -s /etc/apache2/mods-available/setenvif.load /etc/apache2/mods-enabled_karoshi/setenvif.load
 [ ! -f /etc/apache2/mods-enabled_karoshi/socache_shmcb.load ] && ln -s /etc/apache2/mods-available/socache_shmcb.load /etc/apache2/mods-enabled_karoshi/socache_shmcb.load

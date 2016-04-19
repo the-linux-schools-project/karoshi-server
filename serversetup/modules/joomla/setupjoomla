@@ -45,13 +45,13 @@ MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
 APACHESTATUS=`ps -e | grep -c $APACHEVER`
 if [ $MYSQLSTATUS = 0 ]
 then
-echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ $APACHESTATUS = 0 ]
 then
-echo '<ul><li>'$"Starting Apache"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	echo '<ul><li>'$"Starting Apache"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 fi
 
 
@@ -63,24 +63,7 @@ WBPASS=`openssl rand -hex 16`
 #####################
 #Create secret key
 #####################
-RANGE=61
-COUNTER=1
-while [ $COUNTER -lt 16 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-
-let COUNTER=COUNTER+1
-
-done
-
-SECRETKEY=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
+SECRETKEY=`openssl rand -hex 16`
 
 #############################
 #Make sure that we know the root mysql password
@@ -94,9 +77,13 @@ MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 ########################
 mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
 mysqladmin --password=$MYSQLPASS create joomla 1>/dev/null
-CONNECT_STATUS=`echo $?`
+CONNECT_STATUS=$?
 mysql --password=$MYSQLPASS joomla < /opt/karoshi/serversetup/modules/joomla/joomla.sql
-echo GRANT ALL PRIVILEGES ON joomla.\* TO "'"joomla_user"'"@"'"localhost"'" IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+
+#Create joomla_user in mysql
+echo CREATE USER "'"joomla_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+#Grant mysql permissions to joomla
+echo GRANT ALL PRIVILEGES ON joomla.\* TO "'"joomla_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
 #rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################
@@ -140,27 +127,27 @@ MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 MOD_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80"
+	MOD_SHOREWALL=yes
+	PORTS="80"
 fi
 
 if [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="443"
+	MOD_SHOREWALL=yes
+	PORTS="443"
 fi
 
 if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
 then
-MOD_SHOREWALL=yes
-PORTS="80,443"
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
 fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 ######################
@@ -168,9 +155,9 @@ fi
 ######################
 if [ $MOD_SHOREWALL = yes ]
 then
-echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #############################

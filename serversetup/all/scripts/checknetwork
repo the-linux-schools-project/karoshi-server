@@ -266,7 +266,7 @@ touch /opt/karoshi/.tempdata/network_set
 if [ $SERVERTYPE = pdc ]
 then
 	#Create script to update arp table on boot
-	ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
+	#ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
 	#Create list of DNS servers for the clients to use
 	if [ ! -d /var/lib/samba/netlogon/domain_information/ ]
 	then
