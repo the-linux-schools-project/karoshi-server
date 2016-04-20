@@ -436,6 +436,13 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+
+			#Set minidlna to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
+
 			#Set gluster to wait for zfs-mount-all
 			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 			then
@@ -521,6 +528,13 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			chmod 0700 /etc/rc2.d/S90zfs-mount-$POOLNAME
 		else
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+
+			#Set minidlna to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
+
 			#Set gluster to wait for zfs-mount-all
 			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 			then
@@ -529,6 +543,7 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
 				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 			fi
+
 		fi
 	fi
 
@@ -809,6 +824,13 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+
+			#Set minidlna to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
+
 			#Set gluster to wait for zfs-mount-all
 			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 			then
@@ -895,6 +917,13 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+
+			#Set minidlna to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
+
 			#Set gluster to wait for zfs-mount-all
 			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 			then

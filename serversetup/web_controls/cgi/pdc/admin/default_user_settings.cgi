@@ -51,7 +51,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=14
+END_POINT=22
 #Assign LOCKOUTDURATION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -115,6 +115,90 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		USERNAMESTYLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STUDENTMINPASSWORDLENGTH
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STUDENTMINPASSWORDLENGTHcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STUDENTMINPASSWORDLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STUDENTCHARSANDNUMBERS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STUDENTCHARSANDNUMBERScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STUDENTCHARSANDNUMBERS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STUDENTUPPERANDLOWERCASE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STUDENTUPPERANDLOWERCASEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STUDENTUPPERANDLOWERCASE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STAFFMINPASSWORDLENGTH
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STAFFMINPASSWORDLENGTHcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STAFFMINPASSWORDLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STAFFCHARSANDNUMBERS
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STAFFCHARSANDNUMBERScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STAFFCHARSANDNUMBERS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign STAFFUPPERANDLOWERCASE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = STAFFUPPERANDLOWERCASEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		STAFFUPPERANDLOWERCASE=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -197,7 +281,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
 #Modify settings
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:$STUDENTMINPASSWORDLENGTH:$STUDENTCHARSANDNUMBERS:$STUDENTUPPERANDLOWERCASE:$STAFFMINPASSWORDLENGTH:$STAFFCHARSANDNUMBERS:$STAFFUPPERANDLOWERCASE" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

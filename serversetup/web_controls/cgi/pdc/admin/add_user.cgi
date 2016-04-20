@@ -63,7 +63,7 @@ do
 	if [ `echo $DATAHEADER'check'` = FIRSTNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		FIRSTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		FIRSTNAME=`echo $DATA | cut -s -d'_' -f$COUNTER  | tr -cd 'A-Za-z0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -76,7 +76,7 @@ do
 	if [ `echo $DATAHEADER'check'` = SURNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		SURNAME=`echo $DATA | cut -s -d'_' -f$COUNTER  | tr -cd 'A-Za-z0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -128,7 +128,7 @@ do
 	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -141,7 +141,7 @@ do
 	if [ `echo $DATAHEADER'check'` = USERNAMESTYLEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		USERNAMESTYLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		USERNAMESTYLE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -155,7 +155,7 @@ do
 	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr 'A-Z' 'a-z'`
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9' | tr 'A-Z' 'a-z'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -173,7 +173,7 @@ do
 		break
 	fi
 	let COUNTER=$COUNTER+1
-	done
+done
 
 STARTCGI=add_user_fm.cgi
 [ $REQUESTFILE'null' != null ] && STARTCGI=request_new_users_fm.cgi

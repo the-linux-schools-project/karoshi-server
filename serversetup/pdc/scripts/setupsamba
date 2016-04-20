@@ -790,9 +790,21 @@ then
 	add_organisational_unit
 	creategpos
 
-	NAME="adults"
-	DESC="Adults"
-	LDAPPATH="OU=adults,OU=family,OU=People,$LDAPBASE"
+	NAME="parents"
+	DESC="Parents"
+	LDAPPATH="OU=parents,OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="relatives"
+	DESC="Relatives"
+	LDAPPATH="OU=parents,OU=family,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
+	NAME="carers"
+	DESC="Carers"
+	LDAPPATH="OU=parents,OU=family,OU=People,$LDAPBASE"
 	add_organisational_unit
 	creategpos
 
@@ -808,7 +820,6 @@ then
 	add_organisational_unit
 	creategpos
 fi
-
 
 if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
