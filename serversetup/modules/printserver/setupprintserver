@@ -28,8 +28,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupprintserver - incorrect number of arguments."<br>"
-exit 101
+	echo `date`: setupprintserver - incorrect number of arguments."<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
@@ -60,7 +60,7 @@ then
 fi
 if [ $PDCSERVER != `hostname-fqdn` ]
 then
-	if [ $LDAPPASS'null' = null ]
+	if [ -z "$LDAPPASS" ]
 	then
 		echo `date`: setupprintserver - Blank root password."<br>"
 		exit 101
@@ -104,57 +104,65 @@ SAMBADOMAINCAPS=`echo $SAMBADOMAIN | tr 'a-z' 'A-Z'`
 
 if [ `grep -c "All Printers" /etc/samba/smb.conf` = 0 ]
 then
-#Backup smb.conf
-cp /etc/samba/smb.conf /etc/samba/smb.$$.conf
+	#Backup smb.conf
+	cp /etc/samba/smb.conf /etc/samba/smb.$$.conf
 
-###########################
-#Modify samba to add in printing
-###########################
+	###########################
+	#Modify samba to add in printing
+	###########################
 
-GLOBALLINE=`cat /etc/samba/smb.conf | grep -n global | cut -d: -f1`
-let GLOBALLINE=$GLOBALLINE+1
+	GLOBALLINE=`cat /etc/samba/smb.conf | grep -n global | cut -d: -f1`
+	let GLOBALLINE=$GLOBALLINE+1
 
-sed -i ''$GLOBALLINE' i \\tload printers = yes\n\tcups options = raw\n\tprintcap name = cups' /etc/samba/smb.conf
-sed -i 's/printing = bsd/printing = cups/g' /etc/samba/smb.conf
+	sed -i ''$GLOBALLINE' i \\tload printers = yes\n\tcups options = raw\n\tprintcap name = cups' /etc/samba/smb.conf
+	sed -i 's/printing = bsd/printing = cups/g' /etc/samba/smb.conf
 
-echo >> /etc/samba/smb.conf
-echo '[printers]' >> /etc/samba/smb.conf
-echo "	"comment = All Printers >> /etc/samba/smb.conf
-echo "	"path = /var/spool/samba >> /etc/samba/smb.conf
-echo "	"guest ok = No >> /etc/samba/smb.conf
-echo "	"printable = Yes >> /etc/samba/smb.conf
-echo "	"browsable = Yes >> /etc/samba/smb.conf
-echo >> /etc/samba/smb.conf
-echo '[print$]' >> /etc/samba/smb.conf
-echo "	"comment = All Printers >> /etc/samba/smb.conf
-echo "	"path = /var/lib/samba/printers >> /etc/samba/smb.conf
-echo "	"guest ok = Yes >> /etc/samba/smb.conf
-echo "	"browsable = Yes >> /etc/samba/smb.conf
-echo "	"read only = yes >> /etc/samba/smb.conf
-echo "	"write list = "@"itadmin, "@"adm, root, Administrator >> /etc/samba/smb.conf
+	echo >> /etc/samba/smb.conf
+	echo '[printers]' >> /etc/samba/smb.conf
+	echo "	"comment = All Printers >> /etc/samba/smb.conf
+	echo "	"path = /var/spool/samba >> /etc/samba/smb.conf
+	echo "	"guest ok = No >> /etc/samba/smb.conf
+	echo "	"printable = Yes >> /etc/samba/smb.conf
+	echo "	"browsable = Yes >> /etc/samba/smb.conf
+	echo >> /etc/samba/smb.conf
+	echo '[print$]' >> /etc/samba/smb.conf
+	echo "	"comment = All Printers >> /etc/samba/smb.conf
+	echo "	"path = /var/lib/samba/printers >> /etc/samba/smb.conf
+	echo "	"guest ok = Yes >> /etc/samba/smb.conf
+	echo "	"browsable = Yes >> /etc/samba/smb.conf
+	echo "	"read only = yes >> /etc/samba/smb.conf
+	echo "	"write list = "@"itadmin, "@"adm, root, Administrator >> /etc/samba/smb.conf
 
-echo >> /etc/samba/smb.conf
+	echo >> /etc/samba/smb.conf
 
-#Create spool areas
-[ ! -d /var/spool/samba ] && mkdir -p /var/spool/samba
-chmod 1777 /var/spool/samba
+	#Create spool areas
+	[ ! -d /var/spool/samba ] && mkdir -p /var/spool/samba
+	chmod 1777 /var/spool/samba
 
-[ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
-chmod 0755 /var/lib/samba/printers
-chown root:itadmin /var/lib/samba/printers
+	[ ! -d /var/lib/samba/printers ] && mkdir -p /var/lib/samba/printers
+	chmod 0755 /var/lib/samba/printers
+	chown root:itadmin /var/lib/samba/printers
 
-#Restart samba
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
-sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	#Restart samba
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 fi
 
 ########################
 #Set printer admin rights to allow windows printer drivers to be modified by itadmin group
 ########################
+sleep 1
 ROOTUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && ROOTUSER=root
-net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS" 1>/dev/null
+
+for (( c=1; c<=10; c++ ))
+do
+	echo "<ul><li>Setting printer admin rights</li></ul>"
+	net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS" 1>/dev/null
+	[ $? = 0 ] && break
+	sleep 1
+done
 
 ###########################
 #Open shorewall ports for samba

@@ -186,7 +186,7 @@ then
 fi
 if [ $APACHESTATUS = 0 ]
 then
-	echo '<ul><li>"'$"Apache was not running"'</li></ul>'
+	echo '<ul><li>'$"Apache was not running"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 	echo "<br>"
 fi

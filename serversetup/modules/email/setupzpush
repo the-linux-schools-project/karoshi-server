@@ -109,5 +109,5 @@ fi
 [ ! -e /etc/apache2/mods-enabled/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled/authnz_ldap.load
 
 #Enable php5-imap
-[ -d /etc/apache2/conf-enabled ] && php5enmod imap 1>/dev/null
+[ -d /etc/apache2/conf-enabled ] && phpenmod imap 1>/dev/null
 

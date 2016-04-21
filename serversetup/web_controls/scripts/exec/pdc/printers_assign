@@ -32,16 +32,16 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_cgi
 then
-echo `date`: printers_assign - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_assign_cgi'check' ]
 then
-echo `date`: printers_assign - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -50,8 +50,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: printers_assign - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
@@ -65,37 +65,37 @@ LOCATIONS=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: printers_assign - Not called by printers_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Not called by printers_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: printers_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: printers_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Check to see that LOCATIONS is not blank
-if [ $LOCATIONS'null' = null ]
+if [ -z "$LOCATIONS" ]
 then
-echo `date`: printers_assign - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check to see that PRINTER is not blank
-if [ $PRINTER'null' = null ]
+if [ -z "$PRINTER" ]
 then
-echo `date`: printers_assign - Blank Printers by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - Blank Printers by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: printers_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: printers_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 function sortprinterstxt {
@@ -137,24 +137,24 @@ NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
 
 while [ $COUNTER -le $NOOFLINES ]
 do
-DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt | grep -w $PRINTER`
-if [ $DATAENTRY'null' != null ]
-then
-PRINTERCOUNT=`echo $DATAENTRY | cut -d, -f2`
-sed -i $COUNTER'd' /var/lib/samba/netlogon/printers.txt
-if [ $PRINTERCOUNT -gt 1 ]
-then
-LOCATION=`echo $DATAENTRY | cut -d, -f1`
-let DEFAULTPCOUNT=$PRINTERCOUNT+3
-DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f$DEFAULTPCOUNT | sed 's/'$PRINTER'//g'`
-[ $DEFAULTPRINTER'null' = null ] && DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f3`
-let LASTPCOUNT=$PRINTERCOUNT+2
-PRINTERS=`echo $DATAENTRY | cut -d, -f3-$LASTPCOUNT | sed 's/'$PRINTER'//g'`
-let PRINTERCOUNT=$PRINTERCOUNT-1
-echo $LOCATION,$PRINTERCOUNT,$PRINTERS,$DEFAULTPRINTER | sed 's/,,/,/g' >> /var/lib/samba/netlogon/printers.txt
-fi
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/printers.txt | grep -w $PRINTER`
+	if [ ! -z "$DATAENTRY" ]
+	then
+		PRINTERCOUNT=`echo $DATAENTRY | cut -d, -f2`
+		sed -i $COUNTER'd' /var/lib/samba/netlogon/printers.txt
+		if [ $PRINTERCOUNT -gt 1 ]
+		then
+			LOCATION=`echo $DATAENTRY | cut -d, -f1`
+			let DEFAULTPCOUNT=$PRINTERCOUNT+3
+			DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f$DEFAULTPCOUNT | sed 's/'$PRINTER'//g'`
+			[ $DEFAULTPRINTER'null' = null ] && DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f3`
+			let LASTPCOUNT=$PRINTERCOUNT+2
+			PRINTERS=`echo $DATAENTRY | cut -d, -f3-$LASTPCOUNT | sed 's/'$PRINTER'//g'`
+			let PRINTERCOUNT=$PRINTERCOUNT-1
+			echo $LOCATION,$PRINTERCOUNT,$PRINTERS,$DEFAULTPRINTER | sed 's/,,/,/g' >> /var/lib/samba/netlogon/printers.txt
+		fi
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Add printer to locations

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -69,56 +69,56 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"No Printers are available."
-show_status
+	export MESSAGE=$"No Printers are available."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LOCATION is not blank
-if [ $LOCATIONS'null' = null ]
+if [ -z "$LOCATIONS" ]
 then
-MESSAGE=$"You have not chosen a location."
-show_status
+	MESSAGE=$"You have not chosen a location."
+	show_status
 fi
 #Check to see that PRINTER is not blank
-if [ $PRINTER'null' = null ]
+if [ -z "$PRINTER" ]
 then
-MESSAGE=$"You have not chosen any printers."
-show_status
+	MESSAGE=$"You have not chosen any printers."
+	show_status
 fi
 #Check to see that LOCATION exists
 if [ ! -f /var/lib/samba/netlogon/locations.txt ]
 then
-MESSAGE=$"No Printers are available."
-show_status
+	MESSAGE=$"No Printers are available."
+	show_status
 fi
 
 COUNTER=0
 LOCATIONCOUNT=${#LOCATIONS[*]}
 while [ $COUNTER -lt $LOCATIONCOUNT ]
 do
-LOCATION=`echo ${LOCATIONS[$COUNTER]}`
-if [ `grep -c "$LOCATION" /var/lib/samba/netlogon/locations.txt` = 0 ]
-then
-MESSAGE=$"No Printers are available."
-show_status
-fi
-let COUNTER=$COUNTER+1
+	LOCATION=`echo ${LOCATIONS[$COUNTER]}`
+	if [ `grep -c "$LOCATION" /var/lib/samba/netlogon/locations.txt` = 0 ]
+	then
+		MESSAGE=$"No Printers are available."
+		show_status
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1`

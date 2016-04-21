@@ -41,7 +41,6 @@ smtpd_client_restrictions =
 	check_client_access hash:/etc/postfix/access,
 	reject_rbl_client bl.spamcop.net,
 	reject_rbl_client zen.spamhaus.org,
-	reject_rbl_client list.dsbl.org,
 	reject_rbl_client cbl.abuseat.org,
 	reject_unknown_client_hostname
 

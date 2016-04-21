@@ -140,15 +140,13 @@ then
 	LOCKOUTDATA=$(samba-tool domain passwordsettings show)
 	LOCKOUTTHRESHOLD=$(echo -e "$LOCKOUTDATA" | grep -w "lockout threshold" | tr -cd 0-9)
 	LOCKOUTDURATION=$(echo -e "$LOCKOUTDATA" | grep -w "lockout duration" | tr -cd 0-9)
-	LOCKOUTOBS=$(echo -e "$LOCKOUTDATA" | grep -w "lockout after" | tr -cd 0-9)	
+	LOCKOUTOBS=$(echo -e "$LOCKOUTDATA" | grep -w "lockout after" | tr -cd 0-9)
+	SHADOWMAX=$(echo -e "$LOCKOUTDATA" | grep -w "Maximum password age" | tr -cd 0-9)	
 
 	[ -z "$LOCKOUTTHRESHOLD" ] && LOCKOUTTHRESHOLD=0
 	[ -z "$LOCKOUTDURATION" ] && LOCKOUTDURATION=30
-	[ -z "$LOCKOUTOBS" ] && LOCKOUTOBS=30
-
-	#Get shadowmax global setting
-	[ -f /opt/karoshi/server_network/ldap_settings/shadowmax ] && SHADOWMAX=`sed -n 1,1p /opt/karoshi/server_network/ldap_settings/shadowmax | tr -cd '0-9'`
-	[ -z "$SHADOWMAX" ] && SHADOWMAX=3650
+	[ -z "$LOCKOUTOBS" ] && LOCKOUTOBS=3
+	[ -z "$SHADOWMAX" ] && SHADOWMAX=999
 
 	#Get password complexity data
 	source /opt/karoshi/server_network/security/password_settings
@@ -171,7 +169,7 @@ then
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Number of login attempts to trigger the lockout."'</span></a></td></tr>
 	<tr><td>'$"Lockout observation period"'</td><td><input style="width: 192px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time duration that the login attempts are monitored over."'</span></a></td></tr>
-	<tr><td>'$"Password change time"'</td><td><input style="width: 192px;" tabindex= "2" name="_SHADOWMAX_" maxlength="4" size="3" type="text" value="'$SHADOWMAX'"></td>
+	<tr><td>'$"Password change time"'</td><td><input style="width: 192px;" tabindex= "2" name="_SHADOWMAX_" maxlength="3" size="3" type="text" value="'$SHADOWMAX'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>'
 
 	if [ $INSTALL_TYPE = education ]
@@ -292,19 +290,7 @@ then
 	samba-tool domain passwordsettings set --account-lockout-duration="$LOCKOUTDURATION" 1>/dev/null
 	samba-tool domain passwordsettings set --account-lockout-threshold="$LOCKOUTTHRESHOLD" 1>/dev/null
 	samba-tool domain passwordsettings set --reset-account-lockout-after="$LOCKOUTOBS" 1>/dev/null
-
-	#Get current shadowmax
-	[ -f /opt/karoshi/server_network/ldap_settings/shadowmax ] && CURRENTSHADOWMAX=`sed -n 1,1p /opt/karoshi/server_network/ldap_settings/shadowmax | tr -cd '0-9'`
-	[ -z "$CURRENTSHADOWMAX" ] && CURRENTSHADOWMAX=3650
-
-#Change shadowmax for all users if it has changed
-if [ $CURRENTSHADOWMAX != $SHADOWMAX ]
-then
-	echo $SHADOWMAX > /opt/karoshi/server_network/ldap_settings/shadowmax
 	samba-tool domain passwordsettings set --max-pwd-age="$SHADOWMAX" 1>/dev/null
-	chmod 0640 /opt/karoshi/server_network/ldap_settings/shadowmax
-	chown root.apache_karoshi /opt/karoshi/server_network/ldap_settings/shadowmax
-fi
 
 	#Set username style
 	[ $USERNAMESTYLE = userstyleS1 ] && USERNAMESTYLE=1

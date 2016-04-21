@@ -305,7 +305,7 @@ then
 		[ ! -d /etc/quosnmp ] && mkdir -p /etc/quosnmp
 		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp /usr/lib/cups/backend
 		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp-util /usr/local/sbin
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/lib/Quosnmp.pm /usr/lib/perl/site_perl
+		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/lib/Quosnmp.pm /usr/share/perl5/
 		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/etc/quosnmp.conf /etc/quosnmp
 
 		chown root:root /usr/lib/cups/backend/quosnmp

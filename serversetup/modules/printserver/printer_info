@@ -243,7 +243,7 @@ then
 		then
 			echo '<td><form action="printers_control.cgi" method="post">
 
-			<button class="'$INFOCLASS'" name="_SetprinterLocation_" value="_'$PRINTER_NAME'_setlocation_">
+			<button class="'$INFOCLASS'" name="_'$PRINTER_NAME'_setlocation_" value="_'$PRINTER_NAME'_setlocation_">
 			<img src="'$PRINTER_LOCATION_ICON'" alt="'$"Set Location"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span>
 			</button>
