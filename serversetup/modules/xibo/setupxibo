@@ -109,7 +109,8 @@ mysql --password=$MYSQLPASS xibo < /opt/karoshi/serversetup/modules/xibo/xibo.sq
 
 #Create xibo_user in mysql
 echo DROP USER "'"xibo_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
-echo CREATE USER "'"xibo_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$xiboPASS"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql 1>/dev/null
+echo CREATE USER "'"xibo_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$xiboPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
 echo SET PASSWORD FOR "'"xibo_user"'"@"'"localhost"'" '=' "'"$xiboPASS"'"';'>> /opt/karoshi/.tempdata/mysqlperms.sql
 #Grant mysql permissions to xibo
 echo GRANT ALL PRIVILEGES ON xibo.\* TO "'"xibo_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql

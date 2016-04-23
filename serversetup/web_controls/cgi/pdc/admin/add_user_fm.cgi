@@ -315,12 +315,14 @@ else
 
 	if [ $INSTALL_TYPE != home ]
 	then
-		echo '	<tr><td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 192px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
+		echo '	<tr>'
+	else
+		echo '	<tr style="display:none;">'
 	fi
-	
-	echo '<tr><td>'$"Primary group"'</td><td>'
+	echo '<td>'$"Enrolment number / staff code"'</td>
+        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 192px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
+	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'

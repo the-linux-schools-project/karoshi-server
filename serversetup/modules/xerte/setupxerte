@@ -105,7 +105,8 @@ sleep 1
 
 #Create xerte_user in mysql
 echo DROP USER "'"xerte_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
-echo CREATE USER "'"xerte_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$XERTEPASS"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+echo CREATE USER "'"xerte_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$XERTEPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
 #Grant mysql permissions to xerte
 echo GRANT ALL PRIVILEGES ON xerte.\* TO "'"xerte_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 echo ALTER DATABASE xerte DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql

@@ -25,6 +25,8 @@ INSTALL_BATCH=no
 INSTALL_MAILSCANNER=yes
 #Install ZFS
 INSTALL_ZFS=yes
+#Install Monitorix
+INSTALL_MONITORIX=yes
 #We are currently using sysv startup scripts instead of upstart.
 SYSVSUPPORT=yes
 #Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
@@ -51,7 +53,7 @@ TURN_OFF_SERVICES=yes
 REBOOT=yes
 
 #Main list of packages to install (apart from samba4 and SOGo which are compiled).
-packages=" glusterfs-server apache2 libapache2-mod-php libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php-mysql php-ldap php-sqlite3 php-pear php-cli php-common php-imap php-mcrypt php-curl php-fpm php-gd php-intl php-xml php-xmlrpc php-mysql php-ldap php-mbstring php-zip php-gd php-curl postfix postfix-ldap postfwd mb2md clamav clamav-daemon clamav-freshclam memcached php-memcached dovecot-core dovecot-gssapi dovecot-imapd  dovecot-managesieved dovecot-sieve squid3 squid-deb-proxy shorewall mon isc-dhcp-server openvpn openvpn-auth-ldap cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp monitorix freeradius freeradius-krb5 libawl-php php-xsl php-soap acl samba sogo dnsmasq nginx"
+packages=" glusterfs-server apache2 libapache2-mod-php libapache2-mod-auth-kerb libssl-dev apache2-utils mysql-server php-mysql php-ldap php-sqlite3 php-pear php-cli php-common php-imap php-mcrypt php-curl php-fpm php-gd php-intl php-xml php-xmlrpc php-mysql php-ldap php-mbstring php-zip php-gd php-curl postfix postfix-ldap postfwd mb2md clamav clamav-daemon clamav-freshclam memcached php-memcached dovecot-core dovecot-gssapi dovecot-imapd  dovecot-managesieved dovecot-sieve squid3 squid-deb-proxy shorewall mon isc-dhcp-server openvpn openvpn-auth-ldap cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp freeradius freeradius-krb5 libawl-php php-xsl php-soap acl samba sogo dnsmasq nginx"
 
 #Utilities and other extras to install.
 extrapackages="nano apache2-suexec-pristine wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd brother-lpr-drivers-ac brother-lpr-drivers-bh7 brother-lpr-drivers-extra brother-lpr-drivers-laser brother-lpr-drivers-laser1 brother-lpr-drivers-mfc9420cn smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 virtualbox-guest-dkms gksu yad gedit synaptic plymouth plymouth-label zip unzip unrar bleachbit links gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath0 language-pack-nl firefox-locale-nl language-pack-de firefox-locale-de language-pack-pl firefox-locale-pl language-pack-fr firefox-locale-fr language-pack-sv firefox-locale-sv language-pack-da firefox-locale-da language-pack-fi firefox-locale-fi language-pack-es firefox-locale-es language-pack-it firefox-locale-it language-pack-pt firefox-locale-pt language-pack-cs firefox-locale-cs language-pack-el firefox-locale-el language-pack-ru firefox-locale-ru language-pack-nb firefox-locale-nb language-pack-zh-hans firefox-locale-zh-hans language-pack-ko firefox-locale-ko language-pack-id firefox-locale-id language-pack-ar firefox-locale-ar language-pack-he firefox-locale-he language-pack-cy firefox-locale-cy language-pack-en language-pack-hi firefox-locale-hi fonts-nanum-coding fonts-gargi hdparm printer-driver-escpr krb5-user dnsutils winbind rng-tools sshpass gridsite-clients qrencode dos2unix mdadm busybox-static pyzor razor upstart-sysv minidlna smbclient attr lnav"
@@ -122,11 +124,11 @@ sleep 1
 
 apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
 #Xenial sogo version does not work with mysql atm
-add-apt-repository -y "deb http://inverse.ca/ubuntu xenial trusty"
+add-apt-repository -y "deb http://inverse.ca/ubuntu trusty trusty"
 
-#Monitorix
-wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -
-add-apt-repository -y "deb http://apt.izzysoft.de/ubuntu generic universe"
+#Monitorix - weak key
+#wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -
+#add-apt-repository -y "deb http://apt.izzysoft.de/ubuntu generic universe"
 
 #Yad
 add-apt-repository -y ppa:webupd8team/y-ppa-manager
@@ -150,6 +152,11 @@ apt-get update
 
 function install_xorg {
 apt-get -y install xorg 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+function install_monitorix {
+apt-get install rrdtool perl libwww-perl libmailtools-perl libmime-lite-perl librrds-perl libdbi-perl libxml-simple-perl libhttp-server-simple-perl libconfig-general-perl libio-socket-ssl-perl
+dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/monitorix_3.8.1-izzy1_all.deb
 }
 
 function install_dm {
@@ -264,7 +271,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi clamd cron cups dhcp dns dovecot e2guardian fail2ban glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius rpcbind samba4 sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
+services="apache apache_karoshi clamd cron cups dhcp dns dovecot e2guardian fail2ban glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
 for service in `echo $services`
 do
 	echo -e "\nStopping $service\n"
@@ -535,6 +542,7 @@ ischroot
 [ $INSTALL_ZFS = yes ] && install_zfs
 #[ $INSTALL_SAMBA4 = yes ] && install_samba4
 #[ $INSTALL_SOGO = yes ] && install_sogo
+[ $INSTALL_MONITORIX = yes ] && install_monitorix
 [ $SYSVSUPPORT = yes ] && sysvsupport
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software
