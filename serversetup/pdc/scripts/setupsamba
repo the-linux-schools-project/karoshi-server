@@ -814,7 +814,7 @@ then
 	add_organisational_unit
 	creategpos
 
-	NAME="Children"
+	NAME="children"
 	DESC="Children"
 	LDAPPATH="OU=children,OU=family,OU=People,$LDAPBASE"
 	add_organisational_unit
@@ -946,9 +946,19 @@ then
 		NEWGROUPDISP="Bursars"
 		add_samba4_group
 	else
-		echo -e ''$"Adding group"' adults'
-		NEWGROUP=adults
-		NEWGROUPDISP="Adults"
+		echo -e ''$"Adding group"' parents'
+		NEWGROUP=parents
+		NEWGROUPDISP="Parents"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' relatives'
+		NEWGROUP=relatives
+		NEWGROUPDISP="Relatives"
+		add_samba4_group
+
+		echo -e ''$"Adding group"' carers'
+		NEWGROUP=carers
+		NEWGROUPDISP="Carers"
 		add_samba4_group
 
 		echo -e ''$"Adding group"' teenagers'
@@ -1355,9 +1365,21 @@ then
 		SECONDARYGROUP=""
 		make_primary_group_info
 	else
-		PRIMARY_GROUP=adults
+		PRIMARY_GROUP=parents
 		SUBUNIT=family
-		HOMEPATH=/home/users/adults
+		HOMEPATH=/home/users/parents
+		SECONDARYGROUP=multimedia
+		make_primary_group_info
+
+		PRIMARY_GROUP=relatives
+		SUBUNIT=family
+		HOMEPATH=/home/users/relatives
+		SECONDARYGROUP=multimedia
+		make_primary_group_info
+
+		PRIMARY_GROUP=carers
+		SUBUNIT=family
+		HOMEPATH=/home/users/carers
 		SECONDARYGROUP=multimedia
 		make_primary_group_info
 

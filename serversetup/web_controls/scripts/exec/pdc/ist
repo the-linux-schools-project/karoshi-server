@@ -225,12 +225,32 @@ then
 				then
 					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/* | cut -d"/" -f8 | sed 's/.tar.gz//g' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
 				fi
+
+				#Check if a compressed folder log exists for the day we are searching on.
+				if [ -f /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz ]
+				then
+					for USERDATA in $(tar -ztf /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz | cut -d"/" -f2)
+					do
+						tar -xzOf /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz users_detailed/$USERDATA | grep -i -c "google" | sed "s%^%$USERDATA:%g" >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
+					done
+				fi
+
+
 			else
 				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 				#Check if the folder log exists for the day we are searching on.
 				if [ -d /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed ]
 				then
 					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/* | cut -d"/" -f8 | sed "s/.tar.gz//g"
+				fi' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
+				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+				#Check if a compressed folder log exists for the day we are searching on.
+				if [ -f /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz ]
+				then
+					for USERDATA in $(tar -ztf /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz | cut -d"/" -f2)
+					do
+						tar -xzOf /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz users_detailed/$USERDATA | grep -i -c "google" | sed "s%^%$USERDATA:%g"
+					done
 				fi' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
 			fi
 		done

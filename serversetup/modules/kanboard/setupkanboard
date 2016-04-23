@@ -78,7 +78,8 @@ CONNECT_STATUS=`echo $?`
 #mysql --password=$MYSQLPASS kanboard < /opt/karoshi/serversetup/modules/kanboard/kanboard.sql
 
 #Create kanboard_user in mysql
-echo CREATE USER "'"kanboard_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo DROP USER "'"kanboard_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo CREATE USER "'"kanboard_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 #Grant mysql permissions to kanboard
 echo GRANT ALL PRIVILEGES ON kanboard.\* TO "'"kanboard_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql

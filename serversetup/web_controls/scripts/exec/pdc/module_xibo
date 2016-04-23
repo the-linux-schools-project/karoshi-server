@@ -96,7 +96,17 @@ then
 	echo `date`: module_xibo - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+
+#Check ubuntu version and bail if we are on Xenial
+if [ $(lsb_release -a 2>/dev/null | grep -w -c 16.04) -gt 0 ]
+then
+	echo $"This module currently does not work on php 7 and cannot be applied to this server.""<br>"
+	sleep 5
+	exit 101
+fi
+
 echo `date`: setupxibo by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server

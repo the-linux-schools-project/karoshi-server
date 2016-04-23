@@ -43,26 +43,35 @@ WEBPATH=`echo "$DATA" | cut -s -d: -f5`
 
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: setupfileserver - Blank remote user."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank remote user."<br>"
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: setupfileserver - Blank remote tcpip address."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank remote tcpip address."<br>"
+	exit 101
 fi
 
 if [ -z "$PDCSERVER" ]
 then
-echo `date`: setupfileserver - Blank PDC."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank PDC."<br>"
+	exit 101
 fi
 
 if [ -z "$WEBPATH" ]
 then
-echo `date`: setupfileserver - Blank webpath."<br>"
-exit 101
+	echo `date`: setupfileserver - Blank webpath."<br>"
+	exit 101
 fi
+
+#Check ubuntu version and bail if we are on Xenial
+if [ $(lsb_release -a 2>/dev/null | grep -w -c 16.04) -gt 0 ]
+then
+	echo $"This module currently does not work on php 7 and cannot be applied to this server.""<br>"
+	sleep 5
+	exit 101
+fi
+
 
 APACHEGROUP=apache
 
@@ -126,19 +135,19 @@ MODCHECK=`grep -c -w 50000 /etc/shorewall/rules`
 
 if [ $MODCHECK = 0 ]
 then
-echo '<ul><li>'$"Modifying shorewall rules to allow port 50000."'</li></ul>'
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	echo '<ul><li>'$"Modifying shorewall rules to allow port 50000."'</li></ul>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 ######################
 #Restart shorewall
 ######################
 if [ $MODCHECK = 0 ]
 then
-echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #########################
@@ -147,10 +156,10 @@ fi
 
 if [ ! -d /var/www/smbwebclient-data ]
 then
-mkdir /var/www/smbwebclient-data
-chmod 0660 /var/www/smbwebclient-data
-chmod u+X,g+X /var/www/smbwebclient-data
-chown root.$APACHEGROUP /var/www/smbwebclient-data
+	mkdir /var/www/smbwebclient-data
+	chmod 0660 /var/www/smbwebclient-data
+	chmod u+X,g+X /var/www/smbwebclient-data
+	chown root.$APACHEGROUP /var/www/smbwebclient-data
 fi
 
 #################################

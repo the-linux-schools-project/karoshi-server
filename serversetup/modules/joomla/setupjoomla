@@ -81,7 +81,8 @@ CONNECT_STATUS=$?
 mysql --password=$MYSQLPASS joomla < /opt/karoshi/serversetup/modules/joomla/joomla.sql
 
 #Create joomla_user in mysql
-echo CREATE USER "'"joomla_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo DROP USER "'"joomla_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo CREATE USER "'"joomla_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 #Grant mysql permissions to joomla
 echo GRANT ALL PRIVILEGES ON joomla.\* TO "'"joomla_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql

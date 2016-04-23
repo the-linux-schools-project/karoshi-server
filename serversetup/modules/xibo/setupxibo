@@ -108,9 +108,11 @@ sleep 1
 mysql --password=$MYSQLPASS xibo < /opt/karoshi/serversetup/modules/xibo/xibo.sql
 
 #Create xibo_user in mysql
-echo CREATE USER "'"xibo_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$xiboPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo DROP USER "'"xibo_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo CREATE USER "'"xibo_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$xiboPASS"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+echo SET PASSWORD FOR "'"xibo_user"'"@"'"localhost"'" '=' "'"$xiboPASS"'"';'>> /opt/karoshi/.tempdata/mysqlperms.sql
 #Grant mysql permissions to xibo
-echo GRANT ALL PRIVILEGES ON xibo.\* TO "'"xibo_user"'"@"'"localhost"'" IDENTIFIED BY "'"$xiboPASS"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
+echo GRANT ALL PRIVILEGES ON xibo.\* TO "'"xibo_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 echo ALTER DATABASE xibo DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql 1>/dev/null
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql

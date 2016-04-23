@@ -220,7 +220,7 @@ fi
 }
 
 function viewlogs {
-if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ]
+if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ] && [ $(wc -l /opt/karoshi/.tempdata/$USERNAME.$$ | cut -d" " -f1) -gt 0 ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Client"'</b></th><th></th><th><b>'$"Website"'</b></th></tr></thead><tbody>'

@@ -121,7 +121,8 @@ echo -e "\nAdding SOGo, monitorix, yad, and zfs repositories\n"
 sleep 1
 
 apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
-add-apt-repository -y "deb http://inverse.ca/ubuntu xenial xenial"
+#Xenial sogo version does not work with mysql atm
+add-apt-repository -y "deb http://inverse.ca/ubuntu xenial trusty"
 
 #Monitorix
 wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -

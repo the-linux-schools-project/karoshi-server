@@ -71,8 +71,8 @@ MOBILE=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: services_view - Not called by services_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: services_view - Not called by services_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
@@ -277,6 +277,7 @@ then
 	openvpn=$"Open VPN service"
 	portmap=$"Portmap"
 	postfix=$"E-mail server"
+	postfwd=$"E-mail policy daemon"
 	radius=$"Authentication service"
 	rpcbind=$"Port Mapper"
 	samba=$"File and print server"
@@ -349,6 +350,7 @@ else
 		openvpn="'$"Open VPN service"'"
 		portmap="'$"Portmap"'"
 		postfix="'$"E-mail server"'"
+		postfwd="'$"E-mail policy daemon"'"
 		radius="'$"Authentication service"'"
 		rpcbind="'$"Port Mapper"'"
 		samba="'$"File and print server"'"

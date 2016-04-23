@@ -270,11 +270,13 @@ then
 	'$"Password"'<br>
 	<input tabindex= "3" name="____PASSWORD1____" style="width: 192px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="____PASSWORD2____" style="width: 192px; height: 30px;" size="20" type="password"><br>
-	'$"Enrolment number / staff code"'<br>
-	<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 192px; height: 30px;" size="20" type="text"><br>
-	'$"Primary group"'<br>
-'
+	<input tabindex= "4" name="____PASSWORD2____" style="width: 192px; height: 30px;" size="20" type="password"><br>'
+	if [ $INSTALL_TYPE != home ]
+	then
+		echo ''$"Enrolment number / staff code"'<br>
+		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 192px; height: 30px;" size="20" type="text"><br>'
+	fi
+	echo ''$"Primary group"'<br>'
 	if [ -z "$FILE" ]
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
@@ -309,11 +311,16 @@ else
 	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 192px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 192px;" size="20" type="password"></td><td></td></tr>
-	<tr><td>'$"Enrolment number / staff code"'</td>
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 192px;" size="20" type="password"></td><td></td></tr>'
+
+	if [ $INSTALL_TYPE != home ]
+	then
+		echo '	<tr><td>'$"Enrolment number / staff code"'</td>
         <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 192px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
-      <tr><td>'$"Primary group"'</td><td>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
+	fi
+	
+	echo '<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'

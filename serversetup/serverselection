@@ -145,5 +145,6 @@ echo the choice is $CHOICE
 	esac
 
 done
-
+#Run freshclam on all servers
+freshclam &
 exit

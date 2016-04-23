@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ `ps -e | grep -c "postfwd"` -gt 0 ]
+if [ `ps -e | grep -w -c "postfwd"` -gt 0 ]
 then
 	exit 0
 else
