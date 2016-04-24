@@ -29,8 +29,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: setupfileserver - incorrect number of arguments."<br>"
-exit 101
+	echo `date`: setupfileserver - incorrect number of arguments."<br>"
+	exit 101
 fi
 read -t 3 DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`

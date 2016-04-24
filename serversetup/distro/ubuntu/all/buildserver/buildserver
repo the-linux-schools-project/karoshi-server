@@ -27,6 +27,8 @@ INSTALL_MAILSCANNER=yes
 INSTALL_ZFS=yes
 #Install Monitorix
 INSTALL_MONITORIX=yes
+#Install sogo_mysql_fix
+INSTALL_SOGO_MYSQL_FIX=yes
 #We are currently using sysv startup scripts instead of upstart.
 SYSVSUPPORT=yes
 #Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
@@ -126,18 +128,8 @@ apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
 #Xenial sogo version does not work with mysql atm
 add-apt-repository -y "deb http://inverse.ca/ubuntu trusty trusty"
 
-#Monitorix - weak key
-#wget -O - http://apt.izzysoft.de/izzysoft.asc | apt-key add -
-#add-apt-repository -y "deb http://apt.izzysoft.de/ubuntu generic universe"
-
 #Yad
 add-apt-repository -y ppa:webupd8team/y-ppa-manager
-
-#ZFS
-#gpg --keyserver keyserver.ubuntu.com --recv-key 1196ba81f6b0fc61
-#gpg -a --export F6B0FC61 | sudo apt-key add -
-#add-apt-repository -y "deb http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main"
-#add-apt-repository -y "deb-src http://ppa.launchpad.net/zfs-native/stable/ubuntu trusty main"
 
 #Linux Schools backports
 add-apt-repository -y "ppa:linux-schools/backports"
@@ -155,8 +147,15 @@ apt-get -y install xorg 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_buil
 }
 
 function install_monitorix {
-apt-get install rrdtool perl libwww-perl libmailtools-perl libmime-lite-perl librrds-perl libdbi-perl libxml-simple-perl libhttp-server-simple-perl libconfig-general-perl libio-socket-ssl-perl
+#Needed because monitorix repo has a week key
+apt-get install -y rrdtool perl libwww-perl libmailtools-perl libmime-lite-perl librrds-perl libdbi-perl libxml-simple-perl libhttp-server-simple-perl libconfig-general-perl libio-socket-ssl-perl
 dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/monitorix_3.8.1-izzy1_all.deb
+}
+
+function install_sogo_mysql_packages {
+#Needed due to problem with sogo repositories and dependency on libmysqlclient18 - ubuntu 16.04 now has libmysqlclient20
+dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/libmysqlclient18_5.6.25-0ubuntu1_amd64.deb
+apt-get install -y sope4.9-gdl1-mysql
 }
 
 function install_dm {
@@ -543,6 +542,7 @@ ischroot
 #[ $INSTALL_SAMBA4 = yes ] && install_samba4
 #[ $INSTALL_SOGO = yes ] && install_sogo
 [ $INSTALL_MONITORIX = yes ] && install_monitorix
+[ $INSTALL_SOGO_MYSQL_FIX = yes ] && install_sogo_mysql_packages
 [ $SYSVSUPPORT = yes ] && sysvsupport
 [ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
 [ $REMOVE_SOFTWARE = yes ] && remove_software

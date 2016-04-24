@@ -103,6 +103,27 @@ echo `date`: setupsmbwebclient on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR 
 
 source /opt/karoshi/serversetup/variables/distro
 
+#Check ubuntu version and bail if we are on Xenial
+if [ $SERVERNAME = `hostname-fqdn` ]
+then
+	if [ $(lsb_release -a 2>/dev/null | grep -w -c 16.04) -gt 0 ]
+	then
+		echo $"This module currently does not work on php 7 and cannot be applied to this server.""<br>"
+		sleep 5
+		exit 101
+	fi
+else
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	if [ $(lsb_release -a 2>/dev/null | grep -w -c 16.04) -gt 0 ]
+	then
+		echo $"This module currently does not work on php 7 and cannot be applied to this server.""<br>"
+		sleep 5
+		exit 101
+	fi
+	'
+	[ $? = 101 ] && exit 101
+fi
+
 #Check that this server has been setup with the correct authentication
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 if [ $? = 101 ]
@@ -119,14 +140,14 @@ SERVERIP=`net lookup $SERVERNAME`
 source /opt/karoshi/server_network/domain_information/domain_name
 echo `date`: module_smbwebclient - checking "if" $ALIAS.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
+if [ $? != 0 ]
 then
-echo `date`: dnsadd - adding $DOMAINPATH $SERVERIP to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dnsadd - adding $DOMAINPATH $SERVERIP to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-[ `echo $?` != 0 ] && exit 101 
+[ $? != 0 ] && exit 101 
 
 
 #Update alias entry for the server
@@ -136,44 +157,42 @@ touch /opt/karoshi/server_network/aliases/$SERVERNAME
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-#Install smbwebclient
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$ALIAS.$REALM: | /opt/karoshi/serversetup/modules/smbwebclient/setup_smbwebclient
+	#Install smbwebclient
+	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$ALIAS.$REALM: | /opt/karoshi/serversetup/modules/smbwebclient/setup_smbwebclient
 else
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
-'
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/smbwebclient root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-#Copy in realm information
-scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
-#Install smbwebclient
-PDCIP=`net lookup $HOSTNAME`
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
+	'
+	#Copy in module
+	scp -p -r /opt/karoshi/serversetup/modules/smbwebclient root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	#Copy in realm information
+	scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
+	#Install smbwebclient
+	PDCIP=`net lookup $HOSTNAME`
 
-#Check that we can ping the pdc
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Check to see that we can ping the PDC
-ping -c 2 '$PDCIP' 1>/dev/null
-if [  echo $? != 0 ]
-then
-echo `date` : setupfileserver - '$PINGFAIL'."<br>"
-exit 101
-fi
-fi
+	#Check that we can ping the pdc
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	#Check to see that we can ping the PDC
+	ping -c 2 '$PDCIP' 1>/dev/null
+	if [ $? != 0 ]
+	then
+		echo `date` : setupfileserver - '$PINGFAIL'."<br>"
+		exit 101
+	fi
+	'
+	if [ $? = 101 ]
+	then
+		echo `date`: module_smbwebclient - cannot ping $PDCIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	fi
 
-'
-if [ $? = 101 ]
-then
-	echo `date`: module_smbwebclient - cannot ping $PDCIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ ! -d /opt/karoshi/server_network/ ] && mkdir -p /opt/karoshi/server_network/
+	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$ALIAS.$REALM' | /opt/karoshi/serversetup/modules/smbwebclient/setup_smbwebclient
+	'
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ ! -d /opt/karoshi/server_network/ ] && mkdir -p /opt/karoshi/server_network/
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$ALIAS.$REALM' | /opt/karoshi/serversetup/modules/smbwebclient/setup_smbwebclient
-'
-
-#Copy group information to the home access server
-scp -p -r /opt/karoshi/server_network/group_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
+	#Copy group information to the home access server
+	scp -p -r /opt/karoshi/server_network/group_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
 fi
 
 #Create completed info file
@@ -205,7 +224,7 @@ sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/men
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
 fi
 
 
