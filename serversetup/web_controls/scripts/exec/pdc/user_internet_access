@@ -164,10 +164,10 @@ if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
 	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
 	do
-		[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid3/badusers.list root@$PROXYSERVER:/etc/squid/
+		[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid/badusers.list root@$PROXYSERVER:/etc/squid/
 	done
 else 
-	[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid3/badusers.list root@$PROXYSERVER:/etc/squid/
+	[ $PROXYSERVER != `hostname-fqdn` ] && scp /etc/squid/badusers.list root@$PROXYSERVER:/etc/squid/
 fi
 }
 
@@ -245,12 +245,12 @@ echo '</tr>
 
 #Show any currently banned users.
 
-if [ `cat /etc/squid3/badusers.list | wc -l` -gt 0 ]
+if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
 then
 	echo '<b>'$"Banned Users"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH1'px;"><b>'$"Users"'</b></td><td><b>'$"Duration"'</b></td><td><b>'$"View Incidents"'</b></td><td><b>'$"Allow"'</b></td></tr>'
 
-	for BADUSER in `cat /etc/squid3/badusers.list`
+	for BADUSER in `cat /etc/squid/badusers.list`
 	do
 		BANLENGTH="-"
 		[ -f /opt/karoshi/logs/banned_user_internet_durations/$BADUSER ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_internet_durations/$BADUSER`
@@ -300,16 +300,16 @@ do
 		fi
 
 		#Ban the user
-		touch /etc/squid3/badusers.list
-		if [ ! -f /etc/squid3/badusers.list ]
+		touch /etc/squid/badusers.list
+		if [ ! -f /etc/squid/badusers.list ]
 		then
-			echo sampleuser > /etc/squid3/badusers.list
+			echo sampleuser > /etc/squid/badusers.list
 		fi
-		if [ `grep -c -w ^$USERNAME /etc/squid3/badusers.list` = 0 ]
+		if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
 		then
-			echo $USERNAME >> /etc/squid3/badusers.list
-			sort /etc/squid3/badusers.list > /etc/squid3/badusers.list1
-			mv -f /etc/squid3/badusers.list1 /etc/squid3/badusers.list
+			echo $USERNAME >> /etc/squid/badusers.list
+			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
 		fi
 	fi
 	let COUNTER=$COUNTER+1
@@ -329,15 +329,15 @@ echo `date`: user_internet_access - allowing $USERNAME by $REMOTE_USER from $REM
 
 
 #Remove the username from the list
-USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid3/badusers.list | cut -d: -f1`
-[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid3/badusers.list
+USERLINENUMBER=`grep -n -w ^$USERNAME /etc/squid/badusers.list | cut -d: -f1`
+[ ! -z "$USERLINENUMBER" ] && sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
 #Remove the username from the auto ban
 [ -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME ] && rm -f /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
 #Remove blank lines
-sed -i "/^$/d" /etc/squid3/badusers.list
+sed -i "/^$/d" /etc/squid/badusers.list
 #Make sure that the list is not empty
-SITECOUNT=`cat /etc/squid3/badusers.list | wc -l`
-[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid3/badusers.list
+SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
+[ $SITECOUNT = 0 ] && echo sampleuser > /etc/squid/badusers.list
 
 
 #Copy badusers.list to all proxy servers

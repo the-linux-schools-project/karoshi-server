@@ -1,8 +1,17 @@
 #!/bin/bash
-if [ `ps aux | grep -w -c /etc/squid3/squid.conf` -gt 1 ]
+
+#Check which init.d script to use
+if [ -f /etc/init.d/squid3 ]
 then
-exit 0
+	SQUIDVER=squid3
 else
-exit 1
+	SQUIDVER=squid
+fi
+
+if [ `ps aux | grep -w -c /etc/squid/$SQUIDVER.conf` -gt 1 ]
+then
+	exit 0
+else
+	exit 1
 fi
 

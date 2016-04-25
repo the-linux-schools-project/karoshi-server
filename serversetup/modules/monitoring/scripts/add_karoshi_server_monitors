@@ -54,13 +54,9 @@ then
 	done
 else
 	SERVERNAME=$SERVER
-	if [ $SERVERNAME != $MONITORING_SERVER ]
-	then
-		GROUPNAME=`echo $SERVER | cut -d. -f1`
-		TCPIP=`net lookup $SERVER`
-		get_monitors
-		sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS 1> /dev/null
-	fi
+	GROUPNAME=`echo $SERVER | cut -d. -f1`
+	TCPIP=`net lookup $SERVER`
+	get_monitors
 fi
 
 exit

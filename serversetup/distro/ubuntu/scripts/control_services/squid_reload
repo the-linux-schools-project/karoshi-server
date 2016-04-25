@@ -1,7 +1,3 @@
 #!/bin/bash
-if [ -d /etc/squid3 ]
-then
-service squid3 reload
-else
 service squid reload
-fi
+

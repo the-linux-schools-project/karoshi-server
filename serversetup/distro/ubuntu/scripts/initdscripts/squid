@@ -2,26 +2,26 @@
 #
 # squid		Startup script for the SQUID HTTP proxy-cache.
 #
-# Version:	@(#)squid.rc  2.20  01-Oct-2001  miquels@cistron.nl
+# Version:	@(#)squid.rc  1.0  07-Jul-2006  luigi@debian.org
 #
 ### BEGIN INIT INFO
 # Provides:          squid
-# Required-Start:    $local_fs $network
-# Required-Stop:     $local_fs $network
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
 # Should-Start:      $named
 # Should-Stop:       $named
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Squid HTTP Proxy
+# Short-Description: Squid HTTP Proxy version 3.x
 ### END INIT INFO
 
 NAME=squid
+DESC="Squid HTTP Proxy 3.x"
 DAEMON=/usr/sbin/squid
-LIB=/usr/lib/squid
 PIDFILE=/var/run/$NAME.pid
-SQUID_ARGS="-D -YC"
+CONFIG=/etc/squid/squid.conf
+SQUID_ARGS="-YC -f $CONFIG"
 
-#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
 [ -f /etc/reserveports/squid ] && /usr/sbin/releaseports squid
 
 [ ! -f /etc/default/squid ] || . /etc/default/squid
@@ -32,84 +32,55 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 
 [ -x $DAEMON ] || exit 0
 
-grepconf () {
+ulimit -n 65535
+
+find_cache_dir () {
+        w="     " # space tab
+        res=`sed -ne '
+                s/^'$1'['"$w"']\+[^'"$w"']\+['"$w"']\+\([^'"$w"']\+\).*$/\1/p;
+                t end;
+                d;
+                :end q' < $CONFIG`
+        [ -n "$res" ] || res=$2
+        echo "$res"
+}
+
+find_cache_type () {
 	w=" 	" # space tab
-	sq=/etc/squid/squid.conf
-	# sed is cool.
 	res=`sed -ne '
 		s/^'$1'['"$w"']\+\([^'"$w"']\+\).*$/\1/p;
 		t end;
 		d;
-		:end q' < $sq`
+		:end q' < $CONFIG`
 	[ -n "$res" ] || res=$2
 	echo "$res"
-}
-
-grepconf2 () {
-	w=" 	" # space tab
-	sq=/etc/squid/$NAME.conf
-	# sed is cool.
-	res=`sed -ne '
-		s/^'$1'['"$w"']\+[^'"$w"']\+['"$w"']\+\([^'"$w"']\+\).*$/\1/p;
-		t end;
-		d;
-		:end q' < $sq`
-	[ -n "$res" ] || res=$2
-	echo "$res"
-}
-
-#
-#	Try to increase the # of filedescriptors we can open.
-#
-maxfds () {
-	[ -n "$SQUID_MAXFD" ] || return
-	[ -f /proc/sys/fs/file-max ] || return 0
-	global_file_max=`cat /proc/sys/fs/file-max`
-	minimal_file_max=$(($SQUID_MAXFD + 4096))
-	if [ "$global_file_max" -lt $minimal_file_max ]
-	then
-		echo $minimal_file_max > /proc/sys/fs/file-max
-	fi
-	ulimit -n $SQUID_MAXFD
 }
 
 start () {
-	cdr=`grepconf2 cache_dir /var/spool/$NAME`
-	ctp=`grepconf cache_dir ufs`
+	cache_dir=`find_cache_dir cache_dir /var/spool/squid`
+	cache_type=`find_cache_type cache_dir ufs`
 
-	case "$cdr" in
-		[0-9]*)
-			log_failure_msg "squid: squid.conf contains 2.2.5 syntax - not starting!"
-			log_end_msg 1
-			exit 1
-			;;
-	esac
-	
 	#
     # Create spool dirs if they don't exist.
     #
-	if [ -d "$cdr" -a ! -d "$cdr/00" ] || [ "$ctp" = "coss" -a ! -w "$cdr" ]
+	if [ "$cache_type" = "coss" -a -d "$cache_dir" -a ! -f "$cache_dir/stripe" ] || [ "$cache_type" != "coss" -a -d "$cache_dir" -a ! -d "$cache_dir/00" ]
 	then
-		log_warning_msg "Creating squid cache structure"
-		$DAEMON $SQUID_ARGS -z
+		log_warning_msg "Creating $DESC cache structure"
+		$DAEMON -z
 	fi
 
-	if [ "$CHUID" = "" ]; then
-		CHUID=root
-	fi
-
-	maxfds
 	umask 027
+	ulimit -n 65535
+	cd $cache_dir
 	start-stop-daemon --quiet --start \
 		--pidfile $PIDFILE \
-		--chuid $CHUID \
 		--exec $DAEMON -- $SQUID_ARGS < /dev/null
 	return $?
 }
 
 stop () {
 	PID=`cat $PIDFILE 2>/dev/null`
-	start-stop-daemon --stop --quiet --pidfile $PIDFILE --name squid
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE --exec $DAEMON
 	#
 	#	Now we have to wait until squid has _really_ stopped.
 	#
@@ -138,7 +109,7 @@ stop () {
 
 case "$1" in
     start)
-	log_daemon_msg "Starting Squid HTTP proxy" "squid"
+	log_daemon_msg "Starting $DESC" "$NAME"
 	if start ; then
 		log_end_msg $?
 	else
@@ -146,7 +117,7 @@ case "$1" in
 	fi
 	;;
     stop)
-	log_daemon_msg "Stopping Squid HTTP proxy" "squid"
+	log_daemon_msg "Stopping $DESC" "$NAME"
 	if stop ; then
 		log_end_msg $?
 	else
@@ -154,12 +125,13 @@ case "$1" in
 	fi
 	;;
     reload|force-reload)
-	log_action_msg "Reloading Squid configuration files"
-	$DAEMON -k reconfigure
+	log_action_msg "Reloading $DESC configuration files"
+	start-stop-daemon --stop --signal 1 \
+		--pidfile $PIDFILE --quiet --exec $DAEMON
 	log_action_end_msg 0
 	;;
     restart)
-	log_daemon_msg "Restarting Squid HTTP proxy" "squid"
+	log_daemon_msg "Restarting $DESC" "$NAME"
 	stop
 	if start ; then
 		log_end_msg $?
@@ -167,11 +139,8 @@ case "$1" in
 		log_end_msg $?
 	fi
 	;;
-    status)
-	status_of_proc -p "$PIDFILE" "$DAEMON" squid && exit 0 || exit $?
-	;;
     *)
-	echo "Usage: /etc/init.d/$NAME {start|stop|reload|force-reload|restart|status}"
+	echo "Usage: /etc/init.d/$NAME {start|stop|reload|force-reload|restart}"
 	exit 3
 	;;
 esac

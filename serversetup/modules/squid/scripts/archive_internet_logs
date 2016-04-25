@@ -33,7 +33,7 @@ DURATION=1825
 find /home/internetdata/rawinternetlogs/* -mtime +$DURATION -exec rm {} \;
 
 #Copy logs to archive folder
-cp /var/log/squid3/access.log /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log
+cp /var/log/squid/access.log /home/internetdata/rawinternetlogs/"$DATE"_squid_access.log
 cp /var/log/e2guardian/access.log /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log
 
 #Compress log files in archive folder - this avoids tar moaning if the log file is still being written to.
@@ -48,5 +48,5 @@ rm -f /home/internetdata/rawinternetlogs/"$DATE"_dg_access.log
 ############################
 #Clear logs
 ############################
-echo > /var/log/squid3/access.log
+echo > /var/log/squid/access.log
 echo > /var/log/e2guardian/access.log

@@ -1,15 +1,16 @@
 #!/bin/bash
-if [ -d /etc/squid3 ]
+
+#Check which init.d script to use
+if [ -f /etc/init.d/squid3 ]
 then
-	service squid3 start 2>&1
-	if [ "$?" != 0 ]
-	then
-		sleep 5
-	fi
+	SQUIDVER=squid3
 else
-	service squid start 2>&1
-	if [ "$?" != 0 ]
-	then
-		sleep 5
-	fi
+	SQUIDVER=squid
 fi
+
+service $SQUIDVER start 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+

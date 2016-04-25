@@ -10,7 +10,7 @@
 # config: /etc/e2guardian/e2guardian.conf
 ### BEGIN INIT INFO
 # Provides:          e2guardian
-# Required-Start:    $remote_fs $network $syslog squid3
+# Required-Start:    $remote_fs $network $syslog squid
 # Required-Stop:     $remote_fs $network $syslog
 # Default-Start:     2 3 4 5 
 # Default-Stop:      0 1 6 

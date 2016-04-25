@@ -1,14 +1,17 @@
 #!/bin/bash
-if [ -d /etc/squid3 ]
+
+#Check which init.d script to use
+if [ -f /etc/init.d/squid3 ]
 then
-	SQUID=squid3
+	SQUIDVER=squid3
 else
-	SQUID=squid
+	SQUIDVER=squid
 fi
+
 COUNTER=0
-while [ `ps -e | grep -w -c $SQUID` -gt 0 ]
+while [ `ps aux | grep -w -c /etc/squid/$SQUIDVER.conf` -gt 1 ]
 do
-	$SQUID -k interrupt
+	squid -k interrupt
 	let COUNTER=$COUNTER+1
 	#Give up after 5 tries
 	[ $COUNTER = 5 ] && break

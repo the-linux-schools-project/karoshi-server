@@ -78,11 +78,18 @@ fi
 #Get squid version
 #############################
 
-SQUIDVER=squid
-if [ -d /etc/squid3 ]
+SQUIDVER=precise
+SQUIDPATH=squid
+if [ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]
 then
-SQUIDVER=squid3
-[ ! -e /etc/squid ] && ln -s /etc/squid3 /etc/squid
+	SQUIDVER=trusty
+	SQUIDPATH=squid3
+fi
+
+if [ $(lsb_release -a 2>/dev/null | grep -c xenial) -gt 0 ]
+then
+	SQUIDVER=xenial
+	SQUIDPATH=squid
 fi
 
 #Make sure that e2guardian is installed
@@ -108,13 +115,11 @@ fi
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/squiddebproxy
 
-mkdir /home/multimedia 2>/dev/null
 mkdir /home/internetdata 2>/dev/null
 mkdir /home/internetdata/internetlogs 2>/dev/null
 chown -R root.staff /home/internetdata 2>/dev/null
 chown -R root.itadmin /home/multimedia 2>/dev/null
 chmod 0750 -R /home/internetdata 2>/dev/null
-chmod 0775 /home/multimedia 2>/dev/null
 
 #########################
 #Stopping Squid and Apache if they are running
@@ -130,7 +135,7 @@ chmod 0775 /home/multimedia 2>/dev/null
 [ $? = 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
 
 #Configure squid to use a different krb5
-[ -d /etc/default ] && echo export KRB5_KTNAME=/etc/keytabs/squid.keytab > /etc/default/squid3
+[ -d /etc/default ] && echo export KRB5_KTNAME=/etc/keytabs/squid.keytab > /etc/default/$SQUIDPATH
 
 #Configure e2guardian to be able to have more open files
 
@@ -150,14 +155,20 @@ cp -f -R  /opt/karoshi/serversetup/modules/squid/squidfiles/squid/* /etc/squid
 cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/webwarning.htm /var/www/html/index.html
 sed -i "s/CHANGETHISSERVERNAME/`hostname-fqdn`/g" /var/www/html/index.html
 
-if [ $SQUIDVER = squid3 ]
-then
 
-if [ -f /usr/lib/squid3/basic_msnt_auth ]
+if [ $SQUIDVER = precise ]
+then
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
+fi
+
+if [ $SQUIDVER = trusty ]
 then
 	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi10-squid3.conf /etc/squid/squid.conf
-else
-	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/squid.conf /etc/squid/
+fi
+
+if [ $SQUIDVER = xenial ]
+then
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi11-squid3.conf /etc/squid/squid.conf
 fi
 
 if [ ! -f /etc/squid/location_tcpip.list ]
@@ -196,12 +207,9 @@ then
 .translate.google.com" > /etc/squid/location_banned_sites.list
 fi
 
-	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid3/errors/en/
-	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/squid3
-	chmod 755 /usr/lib/squid3/karoshi_kerb_auth
-else
-	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/squid/errors/en/
-fi
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/errors/en/* /usr/share/$SQUIDPATH/errors/en/
+cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/karoshi_kerb_auth /usr/lib/$SQUIDPATH
+chmod 755 /usr/lib/squid3/karoshi_kerb_auth
 
 #Create msntauth.conf
 source /opt/karoshi/server_network/domain_information/domain_name
@@ -214,6 +222,10 @@ echo server' '$PDCSERVER'	'$PDCSERVER'	'$REALM > /etc/squid/msntauth.conf
 sed -i 's/SERVERNAME/'$HOSTNAME'/g' /etc/squid/squid.conf
 sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
 
+if [ $SQUIDVER = xenial ]
+then
+	sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /etc/squid/squid.conf
+fi
 #########################
 #Configure effective user for squid to run as
 #########################
@@ -343,4 +355,5 @@ sysctl -w net.netfilter.nf_conntrack_max=196608 1>/dev/null
 echo net.ipv4.netfilter.ip_conntrack_max = 196608 >> /etc/sysctl.conf
 
 exit
+
 

@@ -1,17 +1,18 @@
 #!/bin/bash
 #Start squid on boot
 
-if [ -d /etc/squid3 ]
+#Check which init.d script to use
+if [ -f /etc/init.d/squid3 ]
 then
-	SQUID=squid3
+	SQUIDVER=squid3
 else
-	SQUID=squid
+	SQUIDVER=squid
 fi
 
 if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
 then
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SQUID on 1>/dev/null 2>/dev/null
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status $SQUIDVER on 1>/dev/null 2>/dev/null
 else
-	chkconfig -f $SQUID on 1>/dev/null 2>/dev/null
+	chkconfig -f $SQUIDVER on 1>/dev/null 2>/dev/null
 fi
 

@@ -90,7 +90,7 @@ then
 	mount -a
 
 	#Check to see if this server has zfs
-	if [ $(mount | grep zfs) -gt 0 ]
+	if [ $(mount | grep -c zfs) -gt 0 ]
 	then
 		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 		then
@@ -102,7 +102,6 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mount-gluster-volumes
 
 else
-	scp /opt/karoshi/serversetup/modules/glusterfs/scripts/mount_gluster_volumes root@$SERVER://opt/karoshi/serversetup/modules/glusterfs/scripts
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	source /opt/karoshi/serversetup/variables/distro
 	#Create empty folder to mount to 
@@ -120,7 +119,7 @@ else
 	mount -a
 
 	#Check to see if this server has zfs
-	if [ $(mount | grep zfs) -gt 0 ]
+	if [ $(mount | grep -c zfs) -gt 0 ]
 	then
 		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 		then
