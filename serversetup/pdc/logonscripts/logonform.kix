@@ -396,7 +396,7 @@ EndFunction
 ;***********************************************************************
 Function ConnectHomeDrive()
 
-	ConnectShare("$homedrive, $lserver.$realm\dfs\homes\$username")
+	ConnectShare("$homedrive, $lserver\dfs\homes\$username")
 
 EndFunction
 

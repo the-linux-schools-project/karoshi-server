@@ -424,7 +424,9 @@ then
 	then
 		create_network_share
 		#Add in dfs link
-		ln -s msdfs:$SERVERNAME\\$SHARENAME /var/lib/samba/dfs/$SHARENAME
+		#Use short names for windows
+		SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
+		ln -s msdfs:$SERVERNAME2\\$SHARENAME /var/lib/samba/dfs/$SHARENAME
 	else
 		#Get a list of servers in the gluster volume.
 		GLUSTERSERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$SERVERNAME/servers`
@@ -433,7 +435,9 @@ then
 
 		for SERVERNAME in $GLUSTERSERVERS
 		do
-			DFSPATH=$DFSPATH,$SERVERNAME\\$SHARENAME
+			#Use short names for windows
+			SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
+			DFSPATH=$DFSPATH,$SERVERNAME2\\$SHARENAME
 			create_network_share
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVERNAME" "$SHAREPATH" "$GLUSTERVOL" copydata 1>/dev/null
 		done

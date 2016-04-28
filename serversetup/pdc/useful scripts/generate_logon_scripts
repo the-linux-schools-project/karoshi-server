@@ -42,7 +42,7 @@ function add_drive_map_windows {
 #Set paths to shares
 if [ "$DFS" = yes ]
 then
-	SMBSERVER2='$lserver.$realm'
+	SMBSERVER2='$lserver'
 	CLIENTPATH2='\dfs\'$SHARE''
 else
 	SMBSERVER2='\\'$SERVER''

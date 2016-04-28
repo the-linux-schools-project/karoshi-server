@@ -1265,10 +1265,10 @@ then
 	cp -R /opt/karoshi/serversetup/pdc/logonscripts/logonform.kix /var/lib/samba/netlogon/
 
 	sed -i 's/CHANGETHISREALM/'$REALM'/g' /var/lib/samba/netlogon/logonform.kix
-	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/logon.bat
-	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/getdll.bat
-	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
-	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'.'$REALM'/g' /var/lib/samba/netlogon/kix/Setup_Workstation.bat
+	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/logon.bat
+	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/getdll.bat
+	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/kixinstall.bat
+	sed -i 's/CHANGETHISSERVER/'$HOSTNAME'/g' /var/lib/samba/netlogon/kix/Setup_Workstation.bat
 
 	chmod 0644 /var/lib/samba/netlogon/*
 	chmod 0755 /var/lib/samba/netlogon/logon.bat
@@ -1282,23 +1282,23 @@ then
 	#make group file information for kixtart windows logon script
 	#############################
 
-	echo itadmin,$HOSTNAME.$REALM > /var/lib/samba/netlogon/groups.txt
-	echo guestusers,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-	echo officestaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-	echo profileuser,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-	echo staff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-	echo Domain Admins,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+	echo itadmin,$HOSTNAME > /var/lib/samba/netlogon/groups.txt
+	echo guestusers,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+	echo officestaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+	echo profileuser,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+	echo staff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+	echo Domain Admins,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 	if [ $INSTALL_TYPE = education ]
 	then
 		echo exams,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-		echo governors,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-		echo nonteachingstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-		echo guardians,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
-		echo studentstaff,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+		echo governors,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+		echo nonteachingstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+		echo guardians,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
+		echo studentstaff,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 
 		COUNTER=$STARTYEAR
 		while [  $COUNTER -le $ENDYEAR ]; do
-			echo yr$COUNTER,$HOSTNAME.$REALM >> /var/lib/samba/netlogon/groups.txt
+			echo yr$COUNTER,$HOSTNAME >> /var/lib/samba/netlogon/groups.txt
 			let COUNTER=COUNTER+1
 		done
 
@@ -1885,31 +1885,31 @@ check_ldap_port
 if [ $INSTALL_TYPE != restore ]
 then 
 	#Create dfs links
-	ln -s msdfs:$HOSTNAME.$REALM\\applications /var/lib/samba/dfs/applications
-	ln -s msdfs:$HOSTNAME.$REALM\\itadminshare /var/lib/samba/dfs/itadminshare
-	ln -s msdfs:$HOSTNAME.$REALM\\netlogon /var/lib/samba/dfs/netlogon
-	ln -s msdfs:$HOSTNAME.$REALM\\sysvol /var/lib/samba/dfs/sysvol
+	ln -s msdfs:$HOSTNAME\\applications /var/lib/samba/dfs/applications
+	ln -s msdfs:$HOSTNAME\\itadminshare /var/lib/samba/dfs/itadminshare
+	ln -s msdfs:$HOSTNAME\\netlogon /var/lib/samba/dfs/netlogon
+	ln -s msdfs:$HOSTNAME\\sysvol /var/lib/samba/dfs/sysvol
 
 	if [ $INSTALL_TYPE = education ]
 	then 
-		ln -s msdfs:$HOSTNAME.$REALM\\subjects /var/lib/samba/dfs/subjects
+		ln -s msdfs:$HOSTNAME\\subjects /var/lib/samba/dfs/subjects
 	fi
 
 	if [ $INSTALL_TYPE = education ] || [ $INSTALL_TYPE = business ] 
 	then
-		ln -s msdfs:$HOSTNAME.$REALM\\staffshare /var/lib/samba/dfs/staffshare
-		ln -s msdfs:$HOSTNAME.$REALM\\officeshare /var/lib/samba/dfs/officeshare
+		ln -s msdfs:$HOSTNAME\\staffshare /var/lib/samba/dfs/staffshare
+		ln -s msdfs:$HOSTNAME\\officeshare /var/lib/samba/dfs/officeshare
 	fi
 
 	if [ $INSTALL_TYPE = home ]
 	then 
-		ln -s msdfs:$HOSTNAME.$REALM\\multimedia /var/lib/samba/dfs/multimedia
+		ln -s msdfs:$HOSTNAME\\multimedia /var/lib/samba/dfs/multimedia
 	fi
 
 	#Create dfs links for existing users
 	for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1` 
 	do
-		ln -s msdfs:$HOSTNAME.$REALM\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
+		ln -s msdfs:$HOSTNAME\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
 	done
 
 	#Add in server declarations

@@ -39,7 +39,8 @@ then
 			DFSPATH=""
 			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/dc-data/servers/*
 			do
-				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+				#Use short names for windows
+				GLUSTERSERVER=`basename "$GLUSTERSERVERS" | cut -d"." -f1`
 				DFSPATH=$DFSPATH,$GLUSTERSERVER\\$SHAREPATH
 			done
 			DFSPATH=`echo $DFSPATH | sed 's/^,//g'`

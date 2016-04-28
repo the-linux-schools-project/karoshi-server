@@ -441,11 +441,15 @@ do
 		DFSPATH=""
 		for GLUSTERSERVER in `echo $GLUSTERSERVERS | sed 's/,/ /g'`
 		do
+			#Use short names for windows
+			GLUSTERSERVER=$(echo $GLUSTERSERVER | cut -d"." -f1)
 			DFSPATH=$DFSPATH,$GLUSTERSERVER\\$USERNAME
 		done
 		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
 	else
-		DFSPATH=$NEWSERVER\\$USERNAME
+		#Use short names for windows
+		NEWSERVER2=$(echo $NEWSERVER2 | cut -d"." -f1)
+		DFSPATH=$NEWSERVER2\\$USERNAME
 	fi
 	[ -L /var/lib/samba/dfs/homes/$USERNAME ] && rm -f /var/lib/samba/dfs/homes/$USERNAME
 	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$USERNAME

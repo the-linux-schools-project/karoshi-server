@@ -259,7 +259,8 @@ then
 	DFSPATH=""
 	for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/servers/*
 	do
-		GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+		#Use short names for windows
+		GLUSTERSERVER=`basename "$GLUSTERSERVERS" | cut -d"." -f1`
 		DFSPATH=$DFSPATH,$GLUSTERSERVER\\$NEW_USERNAME
 	done
 	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
@@ -267,7 +268,9 @@ then
 	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$NEW_USERNAME
 
 else
-	ln -s msdfs:$SERVER\\$NEW_USERNAME /var/lib/samba/dfs/homes/$NEW_USERNAME
+	#Use short names for windows
+	SERVER2=$(echo $SERVER | cut -d"." -f1)
+	ln -s msdfs:$SERVER2\\$NEW_USERNAME /var/lib/samba/dfs/homes/$NEW_USERNAME
 fi
 
 exit $CHANGE_PASS_STATUS

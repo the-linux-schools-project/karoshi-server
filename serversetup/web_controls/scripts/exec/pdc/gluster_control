@@ -224,6 +224,8 @@ then
 
 	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
 	do
+		#Use short names for windows
+		GLUSTERSERVER=$(echo $GLUSTERSERVER | cut -d"." -f1)
 		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$FOLDERSHORT"
 	done
 	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
