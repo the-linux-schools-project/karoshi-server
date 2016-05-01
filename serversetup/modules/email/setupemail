@@ -436,7 +436,7 @@ fi
 
 #Set sogo limits
 
-echo PREFORK=25 > /etc/default/sogo
+echo PREFORK=30 > /etc/default/sogo
 echo USER=sogo >> /etc/default/sogo  
 
 #Modify /etc/sogo/sogo.conf
@@ -462,7 +462,9 @@ a2enmod headers 1>/dev/null
 a2enmod rewrite 1>/dev/null
 
 #Setup z-push for SOGo
-/opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
+
+#Z-Push does not currrently work with php7 - using sogo-activesync instead.
+#/opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
 
 #Setup openchange
 #/opt/karoshi/serversetup/modules/email/setupopenchange

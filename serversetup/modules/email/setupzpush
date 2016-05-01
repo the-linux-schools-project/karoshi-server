@@ -37,10 +37,17 @@ then
 fi
 
 #Activate libawl-php in php.conf
-if [ `grep -c /usr/share/awl/inc /etc/php5/apache2/php.ini` = 0 ]
+PHPINIPATH=/etc/php5/apache2
+if [ -f /etc/php/7.0/apache2/php.ini ]
+then
+	PHPINIPATH=/etc/php/7.0/apache2
+fi
+
+fi
+if [ `grep -c /usr/share/awl/inc "$PHPINIPATH"/php.ini` = 0 ]
 then
 	echo '<ul><li>'$"Activating"' libawl.php</li></ul>'
-	echo include_path = ".:/usr/share/php:/usr/share/awl/inc" >> /etc/php5/apache2/php.ini
+	echo include_path = ".:/usr/share/php:/usr/share/awl/inc" >> "$PHPINIPATH"/php.ini
 fi
 
 echo '<ul><li>'$"Installing"' z-push</li></ul>'
