@@ -1,0 +1,5 @@
+#!/bin/bash
+#Used for showing servername and tcpip address in XFCE4 panel via xfce4-genmon-plugin
+SERVERNAME=$(hostname-fqdn)
+TCPIP=$(net lookup $SERVERNAME)
+echo $SERVERNAME - $TCPIP

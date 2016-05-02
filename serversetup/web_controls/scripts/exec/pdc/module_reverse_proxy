@@ -169,11 +169,11 @@ fi
 
 if [ $MOD_SHOREWALL = yes ]
 then
-	echo "<br>"'$"Modifying shorewall rules to allow ports 80 and 443."'
+	echo "<ul><li>"'$"Modifying shorewall rules to allow ports 80 and 443."'"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apacherule /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-	echo "<br>"'$"Restarting shorewall"'
+	echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
@@ -194,7 +194,7 @@ source /opt/karoshi/serversetup/variables/distro
 #Make sure apache is not running
 ###########################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
 
 ##########################
 #Install nginx
@@ -213,7 +213,7 @@ touch /etc/nginx/proxysites
 #Restart nginx
 ###########################
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start 1>/dev/null
 ###########################
 #Ensure that nginx is running on boot
 ###########################
@@ -252,7 +252,7 @@ sed -i 's/REVERSEPROXYCTRL=no/REVERSEPROXYCTRL=yes/g' /opt/karoshi/server_networ
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $WEBSERVER
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $WEBSERVER
 fi
 
 exit

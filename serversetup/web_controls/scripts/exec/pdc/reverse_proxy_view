@@ -138,7 +138,7 @@ scp /opt/karoshi/server_network/reverseproxy/proxysites root@$PROXYSERVER:"/etc/
 ssh -x -o PasswordAuthentication=no $PROXYSERVER '
 #Restart nginx
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload 1>/dev/null
 '
 exit
 

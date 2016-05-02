@@ -252,14 +252,17 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 }
 
 function create_linux_client_icon {
-[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all
-echo '[Desktop Entry]
-Version=1.0
-Type=Link
-Name=Moodle
-Comment=Moodle
-Icon=moodle
-URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all/Moodle.desktop
+for KAROSHICLIENT in $(ls -1 /var/lib/samba/netlogon/linuxclient/ | grep ^karoshi) 
+do
+	[ ! -d /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all
+	echo '[Desktop Entry]
+	Version=1.0
+	Type=Link
+	Name=Moodle
+	Comment=Moodle
+	Icon=moodle
+	URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all/Moodle.desktop
+done
 }
 
 function add_moodle_users {

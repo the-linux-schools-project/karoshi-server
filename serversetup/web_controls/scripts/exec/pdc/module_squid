@@ -149,8 +149,7 @@ fi
 
 PDCIP=`net lookup $HOSTNAME`
 LDAPSTATUS=notset
-
-echo '<ul><li>'$SERVERNAME' - '$"Setup Internet Proxy Server"'</li></ul>'
+echo '<div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>'
 
 if [ "$SERVERNAME" != `hostname-fqdn` ]
 then

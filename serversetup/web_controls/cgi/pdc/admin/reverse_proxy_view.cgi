@@ -46,7 +46,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=5
+END_POINT=9
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -92,7 +92,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status

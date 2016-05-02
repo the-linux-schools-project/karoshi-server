@@ -225,7 +225,9 @@ SERVER=$MAINSERVER
 FILLCOLOUR=green
 ZONE=$"Internal"
 show_servers
+
 #Show servers in the internal zone
+
 if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
