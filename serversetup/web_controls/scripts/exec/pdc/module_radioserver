@@ -107,6 +107,8 @@ fi
 
 echo `date`: module_radioserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
@@ -138,8 +140,17 @@ then
 
 	RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
 	sed -i $RELAYLINENUM"c""<relay-password>"$RELAYPASS"</relay-password>" /etc/icecast2/icecast.xml
-	sleep 3
 
+	#Set hostname
+	sed -i "s%<hostname>localhost</hostname>%<hostname>radio.$REALM</hostname>%g" /etc/icecast2/icecast.xml
+
+	#Set location
+	LOCATION=$(cat /etc/timezone)
+	sed -i "s%<location>Earth</location>%<location>$LOCATION</location></hostname>%g" /etc/icecast2/icecast.xml
+	
+	#Set admin contact
+	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@$REALM</admin></hostname>%g" /etc/icecast2/icecast.xml
+ 
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 
 	###########################
@@ -206,8 +217,17 @@ else
 	RELAYLINENUM=`grep -n "<relay-password>" /etc/icecast2/icecast.xml | cut -d: -f1`
 	sed -i $RELAYLINENUM"c""<relay-password>"'$RELAYPASS'"</relay-password>" /etc/icecast2/icecast.xml
 
-	sleep 3
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start
+	#Set hostname
+	sed -i "s%<hostname>localhost</hostname>%<hostname>radio.'$REALM'</hostname>%g" /etc/icecast2/icecast.xml
+
+	#Set location
+	LOCATION=$(cat /etc/timezone)
+	sed -i "s%<location>Earth</location>%<location>$LOCATION</location></hostname>%g" /etc/icecast2/icecast.xml
+	
+	#Set admin contact
+	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@'$REALM'</admin></hostname>%g" /etc/icecast2/icecast.xml
+ 
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/icecast 2>/dev/null
 
 	###########################

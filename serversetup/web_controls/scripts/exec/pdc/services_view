@@ -154,6 +154,7 @@ then
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,cups,samba
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && DSERVICES=$DSERVICES,icecast
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
@@ -237,7 +238,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache clamd cups cron e2guardian dhcp dns dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {
@@ -264,6 +265,7 @@ then
 	dhcp=$"DHCP server"
 	dns=$"Domain name resolution"
 	dovecot=$"Dovecot imap server"
+	icecast=$"Internet Radio Server"
 	mailscanner=$"E-mail server"
 	memcached=$"Memcache"
 	mon=$"Network monitoring"
@@ -337,6 +339,7 @@ else
 		dhcp="'$"DHCP server"'"
 		dns="'$"Domain name resolution"'"
 		dovecot="'$"Dovecot imap server"'"
+		icecast="'$"Internet Radio Server"'"
 		mailscanner="'$"E-mail server"'"
 		memcached="'$"Memcache"'"
 		minidlna="'$"MiniDLNA"'"
@@ -412,20 +415,20 @@ echo '</tbody></table></form>'
 
 if [ $SERVERNAME != allservers ]
 then
-#Show status for individual server
-get_status
+	#Show status for individual server
+	get_status
 else
 #Show status for all servers
 
 #Network servers
 for SERVERNAMES in /opt/karoshi/server_network/servers/*
 do
-SERVERNAME=`basename $SERVERNAMES`
-SERVERTYPE=network
-echo '<b>'$SERVERNAME' '$LOCATION_NAME'</b><br><br>'
-get_status
+	SERVERNAME=`basename $SERVERNAMES`
+	SERVERTYPE=network
+	echo '<b>'$SERVERNAME' '$LOCATION_NAME'</b><br><br>'
+	get_status
 
-#Federated servers
+	#Federated servers
 
 done
 fi

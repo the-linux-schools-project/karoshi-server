@@ -513,18 +513,18 @@ echo '<tr><td style="width: '$WIDTH5'px;">'$"Share Name"'</td><td>'
 #Only allow share name to be entered if creating a new share.
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "2" name="____SHARENAME____" value="'$SHARENAME'" style="width: 192px;" size="20" type="text"></td><td style="width: '$WIDTH6'px;">
+	echo '<input tabindex= "2" name="____SHARENAME____" value="'$SHARENAME'" style="width: 200px;" size="20" type="text"></td><td style="width: '$WIDTH6'px;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name for the network share."'</span></a>'
 else
 	echo '<input type="hidden" name="____SHARENAME____" value="'$SHARENAME'">'"$SHARENAME"	
 fi
 echo '</td></tr>
-<tr><td>'$"Comment"'</td><td><input tabindex= "1" name="____COMMENT____" value="'$COMMENT'" style="width: 192px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
+<tr><td>'$"Comment"'</td><td><input tabindex= "1" name="____COMMENT____" value="'$COMMENT'" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
 <tr><td>'$"Folder Path"'</td><td>'
 
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "2"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 192px;" size="20" type="text"></td><td>
+	echo '<input tabindex= "2"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the path that you want the share to use."'</span></a>'
 else
 	echo '<input type="hidden" name="____SHAREPATH____" value="'$SHAREPATH'">'"$SHAREPATH"	

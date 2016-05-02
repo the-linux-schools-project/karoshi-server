@@ -80,8 +80,8 @@ fi
 
 echo '<table class="standard" style="text-align: left; height: 91px;" >
 <tbody>
-<tr><td style="width: 180px;">'$"Request Summary"'</td><td><input tabindex= "1" maxlength="24" style="width: 192px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Computer Number"'</td><td><input tabindex= "3" maxlength="10" style="width: 192px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td><input tabindex= "1" maxlength="24" style="width: 200px;" size="20" name="_JOBTITLE_"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Computer Number"'</td><td><input tabindex= "3" maxlength="10" style="width: 200px;" size="20" name="_ASSETNUMBER_">  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td></tr>
 <tr><td>'$"Location"'</td><td>
 '
 

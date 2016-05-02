@@ -225,7 +225,7 @@ then
 <tr><td style="width: 180px;"><b>'$POOL'</b></td></tr>
 <tr><td style="width: 180px;">'$"Reuse Drives for a new array"'</td><td><input type="radio" name="_CREATETYPE_" value="reuse"></td></tr>
 <tr><td>'$"Restore ZFS Array"'</td><td><input type="radio" name="_CREATETYPE_" value="restore"></td></tr>
-<tr><td>'$"Mount point"'</td><td><input tabindex= "1" value="'$MOUNTPOINT'" name="_MOUNTPOINT_" size="20" style="width: 192px;" type="text"></td><td>
+<tr><td>'$"Mount point"'</td><td><input tabindex= "1" value="'$MOUNTPOINT'" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
 </tbody></table><br>
 <input class="button" value='$"Submit"' type="submit"><br><br>'
@@ -276,7 +276,7 @@ then
 				then
 					echo '
 					<table class="standard" style="text-align: left;" ><tbody>
-		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 192px;" type="text"></td><td>
+		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>
@@ -414,7 +414,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 <tr><td style=\"width: 180px;\"><b>$POOL</b></td></tr>
 <tr><td style=\"width: 180px;\">'$"Reuse Drives for a new array"'</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
 <tr><td>'$"Restore ZFS Array"'</td><td><input type=\"radio\" name="_CREATETYPE_" value="restore"></td></tr>
-<tr><td>'$"Mount point"'</td><td><input tabindex= \"1\" value=\"$MOUNTPOINT\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 192px;\" type=\"text\"></td><td>
+<tr><td>'$"Mount point"'</td><td><input tabindex= \"1\" value=\"$MOUNTPOINT\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
 <a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
 </tbody></table><br>
 <input class=\"button\" value='$"Submit"' type=\"submit\"><br><br>"
@@ -465,7 +465,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				then
 					echo "
 					<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-		<tr><td style=\"width: 180px;\"><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 192px;\" type=\"text\"></td><td>
+		<tr><td style=\"width: 180px;\"><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
 		<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class="images" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>

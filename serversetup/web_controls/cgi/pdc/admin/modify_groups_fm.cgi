@@ -79,7 +79,7 @@ echo '</td><td>
 <tr><td style="width: 180px;">
 '$"Exceptions"'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 192px;" size="20" type="text">
+<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any user accounts that you do not want to modify separated by spaces."'</span></a>
 </td></tr>

@@ -71,30 +71,30 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">Job Title</td>
-        <td><input name="_JOBTITLE_" style="width: 192px;" size="20"></td>
+        <td><input name="_JOBTITLE_" style="width: 200px;" size="20"></td>
       </tr>
       <tr>
         <td>Forename</td>
-        <td><input name="_FORENAME_" style="width: 192px;" size="20"></td>
+        <td><input name="_FORENAME_" style="width: 200px;" size="20"></td>
       </tr>
       <tr>
         <td>Surname</td>
-        <td><input name="_SURNAME_" style="width: 192px;" size="20"></td>
+        <td><input name="_SURNAME_" style="width: 200px;" size="20"></td>
       </tr>
       <tr>
         <td>
 '$"Username"'</td>
-        <td><input name="_USERNAME_" style="width: 192px;" size="20" type="text"></td>
+        <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
       </tr>
       <tr>
         <td>
 '$"Password"'</td>
-        <td><input name="_PASSWORD1_" style="width: 192px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td>
       </tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input name="_PASSWORD2_" style="width: 192px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
       </tr>
       <tr>
         <td>'$"Access Level"'</td><td>

@@ -1037,7 +1037,7 @@ echo '<option value="21">'$"Other"'</option>'
 echo '<option label="blank" value=""></option>'
 echo '</select></td>'
 #Value
-echo '<td style="width: 180px;">'$"Value"'</td><td><input size="17" name="_VALUE_" value="'$VALUE'" style="width: 192px;" tabindex= "9" ></td></tr>'
+echo '<td style="width: 180px;">'$"Value"'</td><td><input size="17" name="_VALUE_" value="'$VALUE'" style="width: 200px;" tabindex= "9" ></td></tr>'
 #Location
 echo '<tr><td>'$"Location"'<td><select name="_LOCATION_" style="width: 200px;" tabindex= "2">
 <option value="'$LOCATION'">'$LOCATION'</option>'
@@ -1057,12 +1057,12 @@ done
 echo '</select></td>'
 #Serial Code
 DATE=`date +%d-%m-%y`
-echo '<td>'$"Serial Number"'</td><td><input size="23" style="width: 192px;" value="'$SERIAL'" name="_SERIALKEY_" tabindex= "10"></td></tr>'
+echo '<td>'$"Serial Number"'</td><td><input size="23" style="width: 200px;" value="'$SERIAL'" name="_SERIALKEY_" tabindex= "10"></td></tr>'
 if [ "$ACTION" = edit ]
 then
 	#Identity
 	echo '<tr><td>'$"Name"'</td><td>
-	<input size="23" style="width: 192px;" value="'$IDENTITY'" name="_IDENTITY_" tabindex= "3">
+	<input size="23" style="width: 200px;" value="'$IDENTITY'" name="_IDENTITY_" tabindex= "3">
 	</td>'
 else
 	#os type
@@ -1077,7 +1077,7 @@ else
 	</td>'
 fi
 #Assigned to
-echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 192px;" tabindex= "11"></td></tr>'
+echo '<td>'$"Assigned to"'</td><td><input size="17" name="_ASSIGNED_" value="'$ASSIGNED'" style="width: 200px;" tabindex= "11"></td></tr>'
 #Budget
 echo '<tr><td><a href="/cgi-bin/admin/asset_register_add_budget_fm.cgi">'$"Budget"'</a></td><td><select name="_BUDGET_" style="width: 200px;" tabindex= "4">'
 echo '<option label="CurrentBudget" value="'$BUDGET'">'$BUDGET'</option>'
@@ -1088,7 +1088,7 @@ echo '</select></td>'
 
 [ $ACTION = add ] && PURCHASEDATE=`date +%d-%m-%y`
 
-echo '<td>'$"Purchased"'</td><td><input maxlength="15" size="17" name="_PURCHASEDATE_" value="'$PURCHASEDATE'" style="width: 192px;" tabindex= "12"></td></tr>'
+echo '<td>'$"Purchased"'</td><td><input maxlength="15" size="17" name="_PURCHASEDATE_" value="'$PURCHASEDATE'" style="width: 200px;" tabindex= "12"></td></tr>'
 #Description
 echo '<tr><td><a href="/cgi-bin/admin/asset_register_add_description_fm.cgi">'$"Description"'</a></td><td><select name="_DESCRIPTION_" style="width: 200px;" tabindex= "5">'
 echo '<option label="CurrentDescription" value="'$DESCRIPTION'">'$DESCRIPTION'</option>'
@@ -1101,19 +1101,19 @@ echo '<option label="CurrentSupplier" value="'$SUPPLIER'">'$SUPPLIER'</option>'
 [ -f /opt/karoshi/asset_register/supplier_list ] && cat /opt/karoshi/asset_register/supplier_list
 echo '<option label="blank" value=""></option></select></td></tr>'
 #TCPIP1
-echo '<tr><td>TCPIP 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 192px;" tabindex= "6"></td>'
+echo '<tr><td>TCPIP 1</td><td><input maxlength="15" size="17" name="_TCPIP1_" value="'$TCPIP1'" style="width: 200px;" tabindex= "6"></td>'
 #MAC Address1
-echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MAC1_" value="'$MAC1'" style="width: 192px;" tabindex= "14"></td></tr>'
+echo '<td>'$"Mac Address"' 1</td><td><input maxlength="17" size="17" name="_MAC1_" value="'$MAC1'" style="width: 200px;" tabindex= "14"></td></tr>'
 #TCPIP2
-echo '<tr><td>TCPIP 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 192px;" tabindex= "7"></td>'
+echo '<tr><td>TCPIP 2</td><td><input maxlength="15" size="17" name="_TCPIP2_" value="'$TCPIP2'" style="width: 200px;" tabindex= "7"></td>'
 #MAC address2
-echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MAC2_" value="'$MAC2'" style="width: 192px;" tabindex= "15"></td></tr>'
+echo '<td>'$"Mac Address"' 2</td><td><input maxlength="17" size="17" name="_MAC2_" value="'$MAC2'" style="width: 200px;" tabindex= "15"></td></tr>'
 #TCPIP3
-echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 192px;" tabindex= "8"></td>'
+echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" value="'$TCPIP3'" style="width: 200px;" tabindex= "8"></td>'
 #MAC address3
-echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 192px;" tabindex= "16"></td></tr>'
+echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 200px;" tabindex= "16"></td></tr>'
 #Extra information
-echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 192px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
+echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 200px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
 </td></tr>'
 echo '</tbody></table><br>
 

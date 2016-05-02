@@ -92,7 +92,7 @@ echo '<ul><li>'$"Extracting Kanboard"'</li></ul>'
 cd /var/www/html/
 tar -xzf /opt/karoshi/serversetup/modules/kanboard/kanboard.tar.gz
 
-echo '<ul><li>'$"Setting permissions for the kanboard data folder."'</li></ul>'
+echo '<ul><li>'$"Setting permissions for the kanboard data folder"'</li></ul>'
 
 chown -R root.$APACHEUSER /var/www/html/kanboard
 chmod -R 0640 /var/www/html/kanboard

@@ -137,7 +137,7 @@ done
 echo '</select><br><br>'
 else
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" value="'$USERNAME'" name="_NAME_" style="width: 192px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<tr><td style="width: 180px;">'$"Username"'</td><td><input tabindex= "1" value="'$USERNAME'" name="_NAME_" style="width: 200px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Printer_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to view printer data for."'</span></a>
 </td></tr>
 <tr><td style="width: 180px;">'$"Month"'</td><td>

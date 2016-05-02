@@ -43,7 +43,6 @@ then
 	PHPINIPATH=/etc/php/7.0/apache2
 fi
 
-fi
 if [ `grep -c /usr/share/awl/inc "$PHPINIPATH"/php.ini` = 0 ]
 then
 	echo '<ul><li>'$"Activating"' libawl.php</li></ul>'

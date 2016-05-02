@@ -382,7 +382,7 @@ SUBTITLE="#Adding_extra_filter_groups"
 showtitle
 
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">'$"The filter lists are loaded into memory for each filter group so use as few filter groups as possible."'<br><br><input type="hidden" name="_ACTION_" value="reallyadd"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 192px;" size="20" type="text"></td></tr>
+<tr><td style="width: 180px;">'$"Description"'</td><td><input tabindex= "1" name="_FILTERDATA2_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td style="width: 180px;">'$"Filter group to clone from"'</td><td><select name="_FILTERDATA3_" style="width: 200px;">'
 
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*

@@ -122,9 +122,9 @@ else
 	echo '<input name="_TYPE_" value="user" type="hidden">
   <table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: '$WIDTH'px;">'$"Username"'</td><td><input tabindex= "1" name="_NAME_" style="width: 192px;" size="20" type="text"></td><td>
+<tr><td style="width: '$WIDTH'px;">'$"Username"'</td><td><input tabindex= "1" name="_NAME_" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add a printer limit for."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Limit"'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 192px;" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"Limit"'</td><td><input tabindex= "1" name="_LIMIT_" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Accounting#User_Limits"><img class="images" alt="" src="/images/help/info.png"><span>'$"Set the page limits that you want for each user or group."'</span></a></td></tr>
 </tbody></table><br>'
 fi

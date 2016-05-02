@@ -378,7 +378,7 @@ then
 	</button>
 	</form></td>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td></td><td style="vertical-align: top; height: 40px;">
+	echo '</tr><tr><td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td></td><td style="vertical-align: top; height: 40px;">
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info" name="_AddownCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"Owncloud Server"'">
@@ -526,7 +526,7 @@ else
 	<span>'$"This will setup Kanboard which is a web based project management system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
 	</button>
 	</form>
-	</a></td>'
+	</td>'
 fi
 
 echo '</tr><tr>'

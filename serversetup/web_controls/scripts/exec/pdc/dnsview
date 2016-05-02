@@ -332,9 +332,9 @@ then
 	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
 	<tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 192px; height: '$HEIGHT2'px;" size="25" type="text"></td><td>
+	<tr><td style="width: '$WIDTH1'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: 200px; height: '$HEIGHT2'px;" size="25" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: 192px; height: '$HEIGHT2'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: 200px; height: '$HEIGHT2'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td>'$"DNS Type"'</td><td>'$DNSTYPE'
 	<select name="_DNSTYPE_" style="width: 200px; height: '$HEIGHT'px;">
 	<option value="CNAME">CNAME</option>

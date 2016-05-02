@@ -157,7 +157,7 @@ if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 192px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 usernameValue = "Enter a username";
 	status10 = "true";
 }
@@ -264,17 +264,17 @@ if [ $MOBILE = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 192px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 192px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Password"'<br>
-	<input tabindex= "3" name="____PASSWORD1____" style="width: 192px; height: 30px;" size="20" type="password"><br>
+	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="____PASSWORD2____" style="width: 192px; height: 30px;" size="20" type="password"><br>'
+	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
 	if [ $INSTALL_TYPE != home ]
 	then
 		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 192px; height: 30px;" size="20" type="text"><br>'
+		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px; height: 30px;" size="20" type="text"><br>'
 	fi
 	echo ''$"Primary group"'<br>'
 	if [ -z "$FILE" ]
@@ -303,15 +303,15 @@ else
 
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 192px;" size="20" type="text"></td>
+        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
-        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 192px;" size="20" type="text"></td>
+        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 192px;" size="20" type="password"></td><td>
+	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 192px;" size="20" type="password"></td><td></td></tr>'
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
 
 	if [ $INSTALL_TYPE != home ]
 	then
@@ -320,7 +320,7 @@ else
 		echo '	<tr style="display:none;">'
 	fi
 	echo '<td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 192px;" size="20" type="text"></td>
+        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
 	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
