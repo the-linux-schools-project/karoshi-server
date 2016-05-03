@@ -136,7 +136,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Backup Essential Data"'</div><br></div><div id="infobox">'
+echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Backup Essential Data"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Backup_Essential_Data"><img class="images" alt="" src="/images/help/info.png"><span>'$"Backup essential data for restoring the server in the evident of a re-install."'</span></a></td></tr></tbody></table></div><div id="infobox">'
 fi
 
 echo $"This will create an archive of configuration files that you can download and store on a memory stick for later use if you have to re-install the server.""<br><br>"
