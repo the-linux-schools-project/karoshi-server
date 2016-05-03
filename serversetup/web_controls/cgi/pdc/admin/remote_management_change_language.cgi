@@ -112,7 +112,7 @@ fi
 function create_lang_list {
 #Generate dropdown list of langauges
 echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option label="blank" ></option>'
-echo '<option value="ar_AE.UTF-8">العربية</option>
+echo '
 <option value="cs_CZ.UTF-8">Čeština</option>
 <option value="cy_GB.UTF-8">Cymraeg</option>
 <option value="da_DK.UTF-8">Dansk</option>
@@ -122,7 +122,6 @@ echo '<option value="ar_AE.UTF-8">العربية</option>
 <option value="es_ES.UTF-8">Español</option>
 <option value="fr_FR.UTF-8">Français</option>
 <option value="hi_IN.UTF-8">हिन्द</option>
-<option value="he_IL.UTF-8">עברית</option>
 <option value="it_IT.UTF-8">Italiano</option>
 <option value="ko_KO.UTF-8">한국어</option>
 <option value="nb_NO.UTF-8">Bokmål</option>

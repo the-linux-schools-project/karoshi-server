@@ -3,7 +3,7 @@
 
 CREATE_TEMPLATE=yes
 CREATEPOFILES=yes
-LANGLIST="ar+cs+cy+da+de+el+es+fr+hi+he+it+ko+nb+nl+pl+pt+ru+sv+zh"
+LANGLIST="cs+cy+da+de+el+es+fr+hi+it+ko+nb+nl+pl+pt+ru+sv+zh"
 
 APPEND=no
 POTFILE=karoshi-server.pot
@@ -38,7 +38,8 @@ fi
 }
 
 function translatetxt {
-TRANSDATA=`trs {en=$LANGLIST} "$MSGIDTEXT"`
+
+TRANSDATA=`trans -brief -s en -t "$LANGLIST" "$MSGIDTEXT"`
 if [ $? != 0 ]
 then
 	echo An error has been detected.
@@ -48,7 +49,7 @@ then
 	#Translate each language in turn
 	for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
 	do
-		TRANSDATA=`trs {en=$KLANG} "$MSGIDTEXT"`
+		TRANSDATA=`trans -brief -s en -t "$KLANG" "$MSGIDTEXT"`
 		echo msgid \""$MSGIDTEXT"\"  >> /opt/karoshi/serversetup/language/$KLANG.po
 		echo msgstr \"`echo -e "$TRANSDATA"`\" >> /opt/karoshi/serversetup/language/$KLANG.po
 		echo >> /opt/karoshi/serversetup/language/$KLANG.po	

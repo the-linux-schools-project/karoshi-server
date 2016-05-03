@@ -137,7 +137,7 @@ do
 	setup_extra_server
 	;;
 	esac
-echo the choice is $CHOICE
+
 	case "$CHOICE" in
 	4|6|7|8|9|10)
 	setup_main_server
@@ -145,6 +145,8 @@ echo the choice is $CHOICE
 	esac
 
 done
+#Reload xfce4 panel to show server name and tcpip number
+xfce4-panel -r &
 #Run freshclam on all servers
 freshclam &
 exit
