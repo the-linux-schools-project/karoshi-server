@@ -195,7 +195,7 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 </button>
 </td>
 <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Linux Schools server so that it can be controlled by the web management."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."'</span></a>
 </td>
 </tr></tbody></table>
 <br>

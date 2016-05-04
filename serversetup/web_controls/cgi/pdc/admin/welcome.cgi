@@ -69,7 +69,7 @@ then
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
-	echo '<div class="sectiontitle">'$"Setup Wizard"'</div><br>'$"Welcome to The Linux Schools Project."'<br><br>'
+	echo '<div class="sectiontitle">'$"Setup Wizard"'</div><br>'$"Welcome to Karoshi."'<br><br>'
 fi
 
 

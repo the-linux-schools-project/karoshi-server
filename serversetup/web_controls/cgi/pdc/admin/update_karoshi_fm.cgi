@@ -159,7 +159,7 @@ then
 	</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Linux Schools Server patches that are available."'</span></a></td></tr></tbody></table><br>'
+	<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Karoshi Server patches that are available."'</span></a></td></tr></tbody></table><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>

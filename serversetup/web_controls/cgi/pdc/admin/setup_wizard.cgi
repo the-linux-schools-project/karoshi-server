@@ -37,7 +37,7 @@ INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 #Change default page to stop recursion problem
@@ -107,7 +107,7 @@ IMAGEd=incomplete.png
 [ -f /opt/karoshi/server_network/web_controls/setup_wizard ] && source /opt/karoshi/server_network/web_controls/setup_wizard
 
 SITEURL=welcome.cgi
-if [ $ACTION'null' != null ]
+if [ ! -z "$ACTION" ]
 then
 [ $ACTION = 1 ] && SITEURL=karoshi_servers_add_fm.cgi
 [ $ACTION = 2 ] && SITEURL=karoshi_servers_view.cgi
@@ -163,13 +163,13 @@ echo '<div id="wizard">
 
 <table class="standard" style="text-align: left;">
 <tbody>
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="width: 20px; height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_2_" type="image" class="images"  src="/images/submenus/system/'$IMAGE2'" value=""></a>
-</td><td>
+</td><td style="width: 140px;">
 <input name="_ACTION_2_" value="'$"Add Server Roles"'" class="button wizardbutton" type="submit">
 </td></tr>
 
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE3'" value=""></a>
 </td><td>
 <input name="_ACTION_3_" value="'$"Management Users"'" class="button wizardbutton" type="submit">
@@ -178,14 +178,14 @@ echo '<div id="wizard">
 
 if [ "$INSTALL_TYPE" != home ]
 then
-	echo '<tr><td style="width: 50px; height: 35px;">
+	echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_4_" type="image" class="images" src="/images/submenus/system/'$IMAGE4'" value=""></a>
 </td><td>
 <input name="_ACTION_4_" value="'$"Label Groups"'" class="button wizardbutton" type="submit">
 </td></tr>'
 fi
 
-echo '<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_5_" type="image" class="images" src="/images/submenus/system/'$IMAGE5'" value=""></a>
 </td><td>
 <input name="_ACTION_5_" value="'$"Add a User"'" class="button wizardbutton" type="submit">
@@ -193,38 +193,38 @@ echo '<tr><td style="width: 50px; height: 35px;">
 
 if [ "$INSTALL_TYPE" != home ]
 then
-	echo '<tr><td style="width: 50px; height: 35px;">
+	echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_6_" type="image" class="images" src="/images/submenus/system/'$IMAGE6'" value=""></a>
 </td><td>
 <input name="_ACTION_6_" value="'$"Room Locations"'" class="button wizardbutton" type="submit">
 </td></tr>
 
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_7_" type="image" class="images" src="/images/submenus/system/'$IMAGE7'" value=""></a>
 </td><td>
 <input name="_ACTION_7_" value="'$"Join Clients"'" class="button wizardbutton" type="submit">
 </td></tr>
 
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_8_" type="image" class="images" src="/images/submenus/system/'$IMAGE8'" value=""></a>
 </td><td>
 <input name="_ACTION_8_" value="'$"Profiles"'" class="button wizardbutton" type="submit">
 </td></tr>
 
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_9_" type="image" class="images" src="/images/submenus/system/'$IMAGE9'" value=""></a>
 </td><td>
 <input name="_ACTION_9_" value="'$"Add Assets"'" class="button wizardbutton" type="submit">
 </td></tr>'
 fi
 
-echo '<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_a_" type="image" class="images" src="/images/submenus/system/'$IMAGEa'" value=""></a>
 </td><td>
 <input name="_ACTION_a_" value="'$"Setup Printers"'" class="button wizardbutton" type="submit">
 </td></tr>
 
-<tr><td style="width: 50px; height: 35px;">
+<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_b_" type="image" class="images" src="/images/submenus/system/'$IMAGEb'" value=""></a>
 </td><td>
 <input name="_ACTION_b_" value="'$"User Settings"'" class="button wizardbutton" type="submit">
@@ -232,14 +232,14 @@ echo '<tr><td style="width: 50px; height: 35px;">
 
 if [ "$INSTALL_TYPE" != home ]
 then
-	echo '<tr><td style="width: 50px; height: 35px;">
+	echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_c_" type="image" class="images" src="/images/submenus/system/'$IMAGEc'" value=""></a>
 </td><td>
 <input name="_ACTION_c_" value="'$"Bulk User Creation"'" class="button wizardbutton" type="submit">
 </td></tr>'
 fi
 
-echo '<tr><td style="width: 50px; height: 35px;">
+echo '<tr><td style="height: 35px;">
 <a class="info" href="javascript:void(0)"><input name="_ACTION_d_" type="image" class="images" src="/images/submenus/system/'$IMAGEd'" value=""></a>
 </td><td>
 <input name="_ACTION_d_" value="'$"Set Default Page"'" class="button wizardbutton" type="submit">
