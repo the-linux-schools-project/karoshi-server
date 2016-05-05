@@ -158,7 +158,7 @@ if (selectedstyle == "userstyleS10") {
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
 el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
-usernameValue = "Enter a username";
+usernameValue = "'$"Enter a username"'";
 	status10 = "true";
 }
 

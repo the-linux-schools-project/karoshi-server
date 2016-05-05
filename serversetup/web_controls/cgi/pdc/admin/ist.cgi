@@ -114,9 +114,26 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign SEARCHDATE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SEARCHDATEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SEARCHDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Internet Usage Trends"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script src="/all/calendar2/calendar_eu.js"></script>
+        <!-- Timestamp input popup (European Format) -->
+<link rel="stylesheet" href="/all/calendar2/calendar.css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>'
@@ -350,7 +367,7 @@ fi
 if [ $ACTION = viewdata ] || [ $ACTION = viewuserdata ]
 then
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ist
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:$USERNAME:$SEARCHDATE:" | sudo -H /opt/karoshi/web_controls/exec/ist
 fi
 
 [ $MOBILE = no ] && echo '</div>'

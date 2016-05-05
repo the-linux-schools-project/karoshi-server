@@ -3,8 +3,9 @@
 if [ -f /etc/hostname-fqdn ]
 then
 	SERVERNAME=$(hostname-fqdn)
+	TCPIP=$(grep "$SERVERNAME." /etc/hosts | cut -f1)
+	echo $SERVERNAME - $TCPIP
 else
-	SERVERNAME=Karoshi-Server
+	echo Karoshi-Server
 fi
-TCPIP=$(grep "$SERVERNAME." /etc/hosts | cut -f1)
-echo $SERVERNAME $TCPIP
+exit

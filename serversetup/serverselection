@@ -145,8 +145,6 @@ do
 	esac
 
 done
-#Reload xfce4 panel to show server name and tcpip number
-xfce4-panel -r &
 #Run freshclam on all servers
 freshclam &
 exit

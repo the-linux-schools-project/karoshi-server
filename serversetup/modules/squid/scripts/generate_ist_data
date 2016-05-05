@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#Check if any ist searches have been set up.
+[ ! -d /opt/karoshi/server_network/ist/categories ] && exit
+[ $(ls -1 /opt/karoshi/server_network/ist/categories | wc -l) = 0 ] && exit
+
+SEARCHDATE=$(date +%d-%m-%Y)
+
+[ ! -d /opt/karoshi/server_network/ist/logs/$SEARCHDATE ] && mkdir -p /opt/karoshi/server_network/ist/logs/$SEARCHDATE
+
+for CATEGORY in $(ls -1 /opt/karoshi/server_network/ist/categories)
+do
+	CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
+	CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
+
+	#Get the search criteria for the category
+	CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
+	CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
+
+	#Do the search on each proxy server and collate the info
+	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers/`
+	do
+		if [ $PROXYSERVER = $(hostname-fqdn) ]
+		then
+			#Check if the folder log exists for the day we are searching on.
+			if [ -d /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed ]
+			then
+				zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/* | cut -d"/" -f8 | sed 's/.tar.gz//g' >> /opt/karoshi/server_network/ist/logs/$SEARCHDATE/temp-$CATEGORY.$$
+			fi
+		else
+			ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+			#Check if the folder log exists for the day we are searching on.
+			if [ -d /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed ]
+			then
+				zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/* | cut -d"/" -f8 | sed "s/.tar.gz//g"
+			fi' >> /opt/karoshi/server_network/ist/logs/$SEARCHDATE/temp-$CATEGORY.$$
+		fi
+	done
+
+	#Sort the raw data
+	for DATALINE in $(sort /opt/karoshi/server_network/ist/logs/$SEARCHDATE/temp-$CATEGORY.$$)
+	do
+		LASTUSER="$CURRENTUSER"
+		LASTSCORE="$CURRENTSCORE"
+		CURRENTUSER="${DATALINE%:*}"
+		CURRENTSCORE="${DATALINE#*:}"
+		if [[ $CURRENTUSER == $LASTUSER ]]
+		then
+			#Need to add lastscore to current score
+			CURRENTSCORE=$(( $LASTSCORE+$CURRENTSCORE ))
+		else
+			#We have finished processing that user so output the data
+			if [ ! -z "$LASTUSER" ] && [ "$LASTUSER" != 0 ] && [ "$LASTUSER" != - ]
+			then
+				echo "$LASTUSER,$LASTSCORE" >> /opt/karoshi/server_network/ist/logs/$SEARCHDATE/$CATEGORY
+			fi
+		fi
+	done
+	#Remove tempfiles
+	[ -f /opt/karoshi/server_network/ist/logs/$SEARCHDATE/temp-$CATEGORY.$$ ] && rm -f /opt/karoshi/server_network/ist/logs/$SEARCHDATE/temp-$CATEGORY.$$	
+done

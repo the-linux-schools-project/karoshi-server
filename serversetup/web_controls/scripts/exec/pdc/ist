@@ -67,7 +67,7 @@ ACTION=`echo "$DATA" | cut -s -d: -f5`
 CATEGORY=`echo "$DATA" | cut -s -d: -f6`
 SEARCHTERMS=`echo "$DATA" | cut -s -d: -f7`
 USERNAME=`echo "$DATA" | cut -s -d: -f8`
-
+SEARCHDATE=`echo "$DATA" | cut -s -d: -f9`
 ########################
 #Check data
 ########################
@@ -200,7 +200,7 @@ then
 	ICON3=/images/submenus/internet/detailed_logs.png
 
 	#Get the date to do the search on
-	TODAY=$(date +%Y-%m-%d)
+	[ -z "$SEARCHDATE" ] && SEARCHDATE=$(date +%d-%m-%Y)
 	CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
 	CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
 
@@ -208,83 +208,26 @@ then
 	CRITERIA=$(cat /opt/karoshi/server_network/ist/categories/"$CATEGORY")
 	CRITERIA2=$(echo "$CRITERIA" | sed 's/\\|/ /g')
 
-	#Default to getting data for the last 5 days
-	DATE_RANGE=4
-	let DATE_RANGE_VIEW=$DATE_RANGE+1
-
-	for d in $(seq 0 $DATE_RANGE)
-	do
-		SEARCHDATE=$(date -d "$TODAY - $d days" +'%d-%m-%Y')
-		#Do the search on each proxy server and collate the info
-		for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers/`
-		do
-			if [ $PROXYSERVER = $(hostname-fqdn) ]
-			then
-				#Check if the folder log exists for the day we are searching on.
-				if [ -d /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed ]
-				then
-					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed/* | cut -d"/" -f8 | sed 's/.tar.gz//g' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
-				fi
-
-				#Check if a compressed folder log exists for the day we are searching on.
-				if [ -f /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz ]
-				then
-					for USERDATA in $(tar -ztf /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz | cut -d"/" -f2)
-					do
-						tar -xzOf /opt/karoshi/logs/internetlogs/$SEARCHDATE/users_detailed.tar.gz users_detailed/$USERDATA | grep -i -c "google" | sed "s%^%$USERDATA:%g" >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
-					done
-				fi
-
-
-			else
-				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-				#Check if the folder log exists for the day we are searching on.
-				if [ -d /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed ]
-				then
-					zgrep -i -c "'$CRITERIA'" /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed/* | cut -d"/" -f8 | sed "s/.tar.gz//g"
-				fi' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
-				ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-				#Check if a compressed folder log exists for the day we are searching on.
-				if [ -f /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz ]
-				then
-					for USERDATA in $(tar -ztf /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz | cut -d"/" -f2)
-					do
-						tar -xzOf /opt/karoshi/logs/internetlogs/'$SEARCHDATE'/users_detailed.tar.gz users_detailed/$USERDATA | grep -i -c "google" | sed "s%^%$USERDATA:%g"
-					done
-				fi' >> /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
-			fi
-		done
-	done
-	#Sort the raw data
-	for DATALINE in $(sort /opt/karoshi/server_network/ist/temp-$CATEGORY.$$ ; echo "LASTLINE")
-	do
-		LASTUSER="$CURRENTUSER"
-		LASTSCORE="$CURRENTSCORE"
-		CURRENTUSER="${DATALINE%:*}"
-		CURRENTSCORE="${DATALINE#*:}"
-		if [[ $CURRENTUSER == $LASTUSER ]]
-		then
-			#Need to add lastscore to current score
-			CURRENTSCORE=$(( $LASTSCORE+$CURRENTSCORE ))
-		else
-			#We have finished processing that user so output the data
-			if [ ! -z "$LASTUSER" ] && [ "$LASTUSER" != 0 ] && [ "$LASTUSER" != - ]
-			then
-				echo "$LASTUSER,$LASTSCORE" >> /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$
-			fi
-		fi
-	done
-
 	#View the data
-	echo '<form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td></tr>
-	<tr><td><b>'$"Search Criteria"'</b></td><td>'$CRITERIA2'</td></tr>
-	<tr><td><b>'$"Search Date"'</b></td><td>'$TODAY'</td></tr>
-	<tr><td><b>'$"Date Range"'</b></td><td>'$DATE_RANGE_VIEW'</td></tr>
-	</tbody></table><br>
-	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	echo '<form id="testform" name="testform" action="/cgi-bin/admin/ist.cgi" method="post">
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td style="width: 180px;"><b>'$"Category"'</b></td><td>'$CATEGORY2'</td><td></td><td></td></tr>
+	<tr><td><b>'$"Search Criteria"'</b></td><td colspan="3">'$CRITERIA2'</td></tr>
+	<tr><td><b>'$"Search Date"'</b></td><td>'
+	echo "<!-- calendar attaches to existing form element -->
+	<input type=\"text\" value=\"$SEARCHDATE\" style=\"width: 200px\" size=14 maxlength=10 name=\"_SEARCHDATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+	<script>
+	new tcal ({
+		// form name
+		'formname': 'testform',
+		// input name
+		'controlname': '_SEARCHDATE_'
+	});
+	</script></td><td><button class=\"button\" name=\"_View_\" value=\"_ACTION_viewdata_CATEGORY_$CATEGORY"_"\">Show data</button></td></tr></tbody></table></form><br>"
+
+	echo '<form action="/cgi-bin/admin/ist.cgi" method="post" target="_blank"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 	<tr><th style="width: 180px;"><b>'$"Username"'</b></th><th style="width: 80px;"><b>'$"Score"'</b></th><th></th></tr></thead><tbody>'
-	for SORTDATA in $(sort -k2 -n -r --field-separator=',' /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$)
+	for SORTDATA in $(sort -k2 -n -r --field-separator=',' /opt/karoshi/server_network/ist/logs/$SEARCHDATE/$CATEGORY)
 	do
 		USERNAME=$(echo "$SORTDATA" | cut -d, -f1)
 		SCORE=$(echo "$SORTDATA" | cut -d, -f2)
@@ -296,8 +239,6 @@ then
 		</tr>'
 	done
 	echo '</tbody></table></form>'
-	rm -f /opt/karoshi/server_network/ist/temp-$CATEGORY.$$
-	rm -f /opt/karoshi/server_network/ist/temp-unique-$CATEGORY.$$	
 fi
 
 

@@ -189,6 +189,10 @@ then
 	fi
 fi
 
+#Schedule IST checks
+echo 23 05 '*' '*' '*' /opt/karoshi/serversetup/modules/squid/scripts/generate_ist_data > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/generate_ist_data.cron
+/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 echo $"Squid Internet Proxy - port 3128""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid
