@@ -573,7 +573,7 @@ echo '[applications]
 	path = /home/itadminshare
 	invalid users = root,administrator
 	read only = No
-	browseable = Yes' > /etc/samba/smb.conf
+	browseable = Yes' >> /etc/samba/smb.conf
 
 	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = business ]
 	then
@@ -1326,6 +1326,8 @@ fi
 echo `date`: "Creating group information for primary groups" >> /opt/karoshi/serversetup/install_log
 source /opt/karoshi/serversetup/variables/years
 [ ! -d /opt/karoshi/server_network/group_information ] && mkdir -p /opt/karoshi/server_network/group_information
+[ ! -d /opt/karoshi/server_network/group_information_secondary ] && mkdir -p /opt/karoshi/server_network/group_information_secondary
+[ ! -d /opt/karoshi/server_network/group_information_dynamic ] && mkdir -p /opt/karoshi/server_network/group_information_dynamic
 
 function make_primary_group_info {
 echo SERVER'='$HOSTNAME.$REALM > /opt/karoshi/server_network/group_information/$PRIMARY_GROUP

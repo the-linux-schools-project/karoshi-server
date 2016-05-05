@@ -1,11 +1,26 @@
 #!/bin/bash
 #Used for showing servername and tcpip address in XFCE4 panel via xfce4-genmon-plugin
+
+#Get servername
 if [ -f /etc/hostname-fqdn ]
 then
 	SERVERNAME=$(hostname-fqdn)
-	TCPIP=$(grep "$SERVERNAME." /etc/hosts | cut -f1)
-	echo $SERVERNAME - $TCPIP
 else
-	echo Karoshi-Server
+	SERVERNAME="$HOSTNAME"
+fi
+
+TCPIP=$(grep "$SERVERNAME." /etc/hosts | cut -f1)
+if [ -z "$TCPIP" ]
+then
+	TCPIP=$(grep address /etc/network/interfaces | tr -cd 0-9.)
+fi
+
+
+if [ -z "$TCPIP" ]
+then
+	
+	echo "$SERVERNAME"
+else
+	echo "$SERVERNAME" - "$TCPIP"
 fi
 exit
