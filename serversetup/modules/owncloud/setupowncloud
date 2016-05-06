@@ -209,14 +209,37 @@ mv /opt/karoshi/serversetup/modules/owncloud/owncloud_original.sql /opt/karoshi/
 
 MODCHECK=`grep -c -w 443 /etc/shorewall/rules`
 
+#####################################
+#Ensure that apache ports are open in shorewall
+#####################################
+MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
+MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+
+MOD_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'443'	'-'#'apacherule /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	MOD_SHOREWALL=yes
+	PORTS="80"
+fi
+
+if [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="443"
+fi
+
+if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+then
+	MOD_SHOREWALL=yes
+	PORTS="80,443"
+fi
+
+if [ $MOD_SHOREWALL = yes ]
+then
+	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 80,443</li></ul>'
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 
 ###########################
