@@ -200,7 +200,15 @@ then
 	ICON3=/images/submenus/internet/detailed_logs.png
 
 	#Get the date to do the search on
-	[ -z "$SEARCHDATE" ] && SEARCHDATE=$(date +%d-%m-%Y)
+	if [ -z "$SEARCHDATE" ]
+	then
+
+		EPOCH_TODAY=`date +%s`
+		let ONEDAY=60*60*24
+		let EPOCH_YESTERDAY=$EPOCH_TODAY-$ONEDAY
+		SEARCHDATE=`date +%d-%m-%Y -d @$EPOCH_YESTERDAY`
+
+	fi
 	CATEGORY=$(echo $CATEGORY | sed 's/%2B/+/g')
 	CATEGORY2=$(echo "$CATEGORY" | sed 's/+/ /g')
 

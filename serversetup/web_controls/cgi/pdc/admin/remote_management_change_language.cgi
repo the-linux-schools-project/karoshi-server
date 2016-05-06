@@ -123,14 +123,12 @@ echo '
 <option value="fr_FR.UTF-8">Français</option>
 <option value="hi_IN.UTF-8">हिन्द</option>
 <option value="it_IT.UTF-8">Italiano</option>
-<option value="ko_KO.UTF-8">한국어</option>
 <option value="nb_NO.UTF-8">Bokmål</option>
 <option value="nl_NL.UTF-8">Nederlands</option>
 <option value="pl_PL.UTF-8">Polski</option>
 <option value="pt_PT.UTF-8">Português</option>
 <option value="ru_RU.UTF-8">Pусский</option>
-<option value="sv_FI.UTF-8">Svenska</option>
-<option value="zh_CN.UTF-8">语</option> ' | sed 's/"'$LANG'"/"'$LANG'" selected="selected" style="color:green"/g'
+<option value="sv_FI.UTF-8">Svenska</option> ' | sed 's/"'$LANG'"/"'$LANG'" selected="selected" style="color:green"/g'
 echo '</select>'
 }
 
