@@ -3,11 +3,13 @@
 
 CREATE_TEMPLATE=yes
 CREATEPOFILES=yes
-LANGLIST="cs+cy+da+de+el+es+fr+hi+it+nb+nl+pl+pt+ru+sv"
+source /opt/karoshi/serversetup/variables/langlist
+
+LANGLIST=$(echo -e "$LANGLIST" | sed 's/ /\n/g' | cut -d"_" -f1)
+LANGLIST=$(echo $LANGLIST | sed 's/ /+/g')
 
 APPEND=no
 POTFILE=karoshi-server.pot
-
 
 function createtemplate {
 #Create a karoshi server language template

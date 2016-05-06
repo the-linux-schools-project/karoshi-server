@@ -7,6 +7,7 @@ then
 	SERVERNAME=$(hostname-fqdn)
 else
 	SERVERNAME="$HOSTNAME"
+	[ "$SERVERNAME" = ubuntu ] && SERVERNAME="Karoshi Server"
 fi
 
 TCPIP=$(grep "$SERVERNAME." /etc/hosts | cut -f1)

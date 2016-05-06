@@ -449,17 +449,19 @@ then
 	LDAPBASE=`echo $REALM | sed 's/\./,DC=/g' | sed 's/^/DC=/g'`
 
 	[ ! -d /opt/karoshi/server_network/domain_information/ ] && mkdir -p /opt/karoshi/server_network/domain_information/
-
-	echo SAMBADOMAIN=\"$SAMBADOMAIN\" > /opt/karoshi/server_network/domain_information/domain_name
-	echo SAMBADOMAINCAPS=\"$SAMBADOMAINCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo REALM=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo LONGNAME=\"$LONGNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo SHORTNAME=\"$SHORTNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
-	echo LINUXCLIENTVER=\"$LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domain_information/domain_name
-
+	
+	if [ "$INSTALL_TYPE" != restore ]
+	then
+		echo SAMBADOMAIN=\"$SAMBADOMAIN\" > /opt/karoshi/server_network/domain_information/domain_name
+		echo SAMBADOMAINCAPS=\"$SAMBADOMAINCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo WEBADDRESS=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo REALM=\"$WEBADDRESS\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo REALMCAPS=\"$REALMCAPS\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo LDAPBASE=\"$LDAPBASE\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo LONGNAME=\"$LONGNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo SHORTNAME=\"$SHORTNAME\" >> /opt/karoshi/server_network/domain_information/domain_name
+		echo LINUXCLIENTVER=\"$LINUXCLIENTVERSION\" >> /opt/karoshi/server_network/domain_information/domain_name
+	fi
 	SAMBAROOTPASSWORD1="$DPASS"
 else
 	provisionsamba 2>> /opt/karoshi/serversetup/install_log | show_info
@@ -540,7 +542,7 @@ else
 	comment = Home Directories
 	invalid users = root
 	read only = No
-	browseable = No' >> /etc/samba/smb.conf
+	browseable = No' > /etc/samba/smb.conf
 
 	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = business ]
 	then
@@ -1223,7 +1225,7 @@ fi
 
 if [ "$INSTALL_TYPE" != home ]
 then 
-#Officeshare area
+	#Officeshare area
 	echo `date`: "Creating officeshare area" >> /opt/karoshi/serversetup/install_log
 	echo $"Creating" officeshare
 	[ -d /home/officeshare ] || mkdir /home/officeshare

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-LANGLIST="cs+cy+da+de+el+es+fr+hi+it+nb+nl+pl+pt+ru+sv"
+source /opt/karoshi/serversetup/variables/langlist
 
 for LANGFILE in `echo $LANGLIST | sed 's/+/ /g'`
 do
+	LANGFILE=$(echo $LANGFILE | cut -d"_" -f1)
 	[ -f /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo ] && rm -f /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo
 	msgfmt -o /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/$LANGFILE.po
 done

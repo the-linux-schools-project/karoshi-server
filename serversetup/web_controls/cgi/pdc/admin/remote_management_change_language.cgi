@@ -112,23 +112,18 @@ fi
 function create_lang_list {
 #Generate dropdown list of langauges
 echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option label="blank" ></option>'
-echo '
-<option value="cs_CZ.UTF-8">Čeština</option>
-<option value="cy_GB.UTF-8">Cymraeg</option>
-<option value="da_DK.UTF-8">Dansk</option>
-<option value="de_DE.UTF-8">Deutsch</option>
-<option value="el_GR.UTF-8">Eλληνικά</option>
-<option value="en_EN.UTF-8">English</option>
-<option value="es_ES.UTF-8">Español</option>
-<option value="fr_FR.UTF-8">Français</option>
-<option value="hi_IN.UTF-8">हिन्द</option>
-<option value="it_IT.UTF-8">Italiano</option>
-<option value="nb_NO.UTF-8">Bokmål</option>
-<option value="nl_NL.UTF-8">Nederlands</option>
-<option value="pl_PL.UTF-8">Polski</option>
-<option value="pt_PT.UTF-8">Português</option>
-<option value="ru_RU.UTF-8">Pусский</option>
-<option value="sv_FI.UTF-8">Svenska</option> ' | sed 's/"'$LANG'"/"'$LANG'" selected="selected" style="color:green"/g'
+source /opt/karoshi/serversetup/variables/langlist
+for LANGDATA in $LANGLIST
+do
+	LANGCODE=$(echo "$LANGDATA" | cut -d"," -f1)
+	LANGTITLE=$(echo "$LANGDATA" | cut -d"," -f2)
+	SELECTED=""
+	if [ "$LANGCODE" = "$LANG" ]
+	then
+		SELECTED='selected="selected"'
+	fi
+echo '<option value="'"$LANGCODE"' '$SELECTED'">'"$LANGTITLE"'</option>'
+done
 echo '</select>'
 }
 
