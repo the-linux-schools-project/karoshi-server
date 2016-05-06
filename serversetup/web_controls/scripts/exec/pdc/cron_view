@@ -193,12 +193,12 @@ then
 			'$"Command"'<br>'$COMMAND'<br><br>
 			</span></a></td><td>'$CRON_NAME'</td>
 			<td>
-			<button class="info" name="_EditJob_" value="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
+			<button class="info" name="___EditJob___" value="___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
 			<img src="'$EDITICON'" alt="'$"Edit"'">
 			<span>'$"Edit the scheduled job."'</span>
 			</button>
 			</td><td>
-			<button class="info" name="_DeleteJob_" value="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
+			<button class="info" name="___DeleteJob___" value="___ACTION___DELETE___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___">
 			<img src="'$DELETEICON'" alt="'$"Delete"'">
 			<span>'$"Delete the scheduled job."'</span>
 			</button>
@@ -246,12 +246,12 @@ then
 			'$"Command"'<br>$COMMAND<br><br>
 			</span></a>
 			</td><td>$CRON_NAME</td><td>
-			<button class=\"info\" name=\"_EditJob_\" value=\"___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___\">
+			<button class=\"info\" name=\"___EditJob___\" value=\"___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___\">
 			<img src=\"'$EDITICON'\" alt=\"'$"Edit"'\">
 			<span>'$"Edit the scheduled job."'</span>
 			</button>
 			</td><td>
-			<button class=\"info\" name=\"_DeleteJob_\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<button class=\"info\" name=\"___DeleteJob___\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federated___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
 			<img src=\"'$DELETEICON'\" alt=\"'$"Delete"'\">
 			<span>'$"Delete the scheduled job."'</span>
 			</button>
@@ -300,12 +300,12 @@ then
 			</span></a>
 			</td><td>$CRON_NAME</td><td>
 
-			<button class=\"info\" name=\"_EditJob_\" value=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<button class=\"info\" name=\"___EditJob___\" value=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
 			<img src=\"'$EDITICON'\" alt=\"'$"Edit"'\">
 			<span>'$"Edit the scheduled job."'</span>
 			</button>
 			</td><td>
-			<button class=\"info\" name=\"_DeleteJob_\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
+			<button class=\"info\" name=\"___DeleteJob___\" value=\"___ACTION___DELETE___JOBNAME___"$CRON_NAME"___SERVERTYPE___federatedslave___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___\">
 			<img src=\"'$DELETEICON'\" alt=\"'$"Delete"'\">
 			<span>'$"Delete the scheduled job."'</span>
 			</button>
