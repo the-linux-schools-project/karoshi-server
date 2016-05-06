@@ -545,10 +545,11 @@ else
 
 	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = business ]
 	then
-		echo 'veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/' >> /etc/samba/smb.conf
+		echo '	veto files = /*.exe/*.msi/*.mp3/*.wma/*.ram/*.mov/*.mpg/*.mpeg/*.bat/*.lnk/*.zip/"Folder Settings"/desktop.ini/' >> /etc/samba/smb.conf
 	fi
 
-echo '[applications]
+echo '
+[applications]
 	comment = Applications Share
 	path = /home/applications
 	invalid users = root
