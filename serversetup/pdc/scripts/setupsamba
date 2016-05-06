@@ -2034,6 +2034,28 @@ then
 		done
 	fi
 
+	#Restore any other gluster volumes that have been setup for the main server
+	for GLUSTERVOLUME in $(ls -1 /opt/karoshi/server_network/gluster-volumes)
+	do
+		if [ "$GLUSTERVOLUME" != dc-data ]
+		then
+			#Check if this server is on the gluster volume
+			if [ -f /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/$(hostname-fqdn) ]
+			then
+				#Restore gluster volume
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn` "$GLUSTERVOLUME" restore
+				if [ $? = 0 ]
+				then
+					for FOLDER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/folders)
+					do
+						FOLDER=$(echo $FOLDER | sed 's%-%/%g')
+						/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $(hostname-fqdn) "$FOLDER" "$GLUSTERVOLUME"
+					done
+				fi
+			fi
+		fi
+	done
+
 	#Flag existing roles on the main server as needed re-installing.
 	SERVERNAME=`hostname-fqdn`
 	if [ -d /opt/karoshi/server_network/servers/"$SERVERNAME" ]
