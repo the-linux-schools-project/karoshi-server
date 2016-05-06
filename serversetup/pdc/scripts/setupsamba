@@ -339,11 +339,10 @@ then
 		#Restore data from a backup archive.
 		restoredata
 		#Source domain information if available
-		[ -f opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
+		[ -f /opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
 	fi
 
 	JOINSTATUS=1
-	REALM=""
 	DUSER="Administrator"
 	DPASS=""
 	PINGCHECK=fail

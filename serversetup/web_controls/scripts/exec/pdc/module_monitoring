@@ -93,6 +93,7 @@ echo `date`: module_monitoring - Setting up $SERVERNAME by $REMOTE_USER from $RE
 TEXTDOMAIN=karoshi-server
 
 #Create ssl certificate for web access
+source /opt/karoshi/serversetup/variables/distro
 echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 [ $? != 0 ] && exit 101 
 
