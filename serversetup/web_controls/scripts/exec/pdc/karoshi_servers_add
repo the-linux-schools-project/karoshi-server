@@ -687,12 +687,6 @@ then
 	fi
 fi
 
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
-#Change update time on genmon
-sed -i "s/UpdatePeriod=30000/UpdatePeriod=36000000/g" /opt/karoshi/karoshi_user/.config/xfce4/panel/genmon-3.rc
-'
-
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then

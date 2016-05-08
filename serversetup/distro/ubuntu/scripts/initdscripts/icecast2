@@ -1,0 +1,95 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          icecast2
+# Required-Start:    $remote_fs $network
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Icecast2 streaming media server
+# Description:       Starts the icecast audio streaming server daemon
+### END INIT INFO
+#
+# icecast2
+#
+#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#		Modified for Debian
+#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#
+#		Further modified by Keegan Quinn <ice@thebasement.org>
+#		for use with Icecast 2
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/bin/icecast2
+NAME=icecast2
+DESC="streaming media server"
+
+#Release the reserved port for this service - this is needed in case glusterfs decides to use ports designated for other services.
+[ -f /etc/reserveports/mysql ] && /usr/sbin/releaseports icecast2
+
+test -x $DAEMON || exit 0
+
+. /lib/lsb/init-functions
+
+# Defaults
+CONFIGFILE="/etc/icecast2/icecast.xml"
+CONFIGDEFAULTFILE="/etc/default/icecast2"
+USERID=icecast2
+GROUPID=icecast
+ENABLE="false"
+
+# Reads config file (will override defaults above)
+[ -r "$CONFIGDEFAULTFILE" ] && . $CONFIGDEFAULTFILE
+
+set -e
+
+cancel() { log_failure_msg "$NAME daemon is disabled - read $CONFIGDEFAULTFILE"; };
+
+case "$1" in
+  start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+	if [ "$ENABLE" != "true" ];then
+		cancel
+	else
+		start-stop-daemon --start --quiet --chuid $USERID:$GROUPID \
+			--exec $DAEMON -- -b -c $CONFIGFILE > /dev/null
+	fi
+	log_end_msg $?
+	;;
+  stop)
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	# Send TERM after 5 seconds, wait at most 30 seconds.
+	start-stop-daemon --stop --oknodo --retry TERM/5/0/30 --quiet --exec $DAEMON
+	log_end_msg $?
+	;;
+  reload|force-reload)
+	log_daemon_msg "Reloading $DESC configuration" "$NAME"
+	if [ "$ENABLE" != "true" ];then
+		cancel
+	else
+		start-stop-daemon --stop --signal 1 --quiet --exec $DAEMON
+	fi
+	log_end_msg $?
+	;;
+  restart)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	if [ "$ENABLE" != "true" ];then
+		cancel
+	else
+		# Send TERM after 5 seconds, wait at most 30 seconds.
+		start-stop-daemon --stop --oknodo --retry TERM/5/0/30 --quiet --exec $DAEMON
+		start-stop-daemon --start --quiet --chuid $USERID:$GROUPID \
+			--exec $DAEMON -- -b -c $CONFIGFILE > /dev/null
+	fi
+	log_end_msg $?
+	;;
+  status)
+	status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|reload|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

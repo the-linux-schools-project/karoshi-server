@@ -120,9 +120,9 @@ do
 	SELECTED=""
 	if [ "$LANGCODE" = "$LANG" ]
 	then
-		SELECTED='selected="selected"'
+		SELECTED='selected="selected" style="color:green"'
 	fi
-echo '<option value="'"$LANGCODE"' '$SELECTED'">'"$LANGTITLE"'</option>'
+echo '<option value="'"$LANGCODE"'" '$SELECTED'>'"$LANGTITLE"'</option>'
 done
 echo '</select>'
 }

@@ -146,10 +146,10 @@ then
 
 	#Set location
 	LOCATION=$(cat /etc/timezone)
-	sed -i "s%<location>Earth</location>%<location>$LOCATION</location></hostname>%g" /etc/icecast2/icecast.xml
+	sed -i "s%<location>Earth</location>%<location>$LOCATION</location>%g" /etc/icecast2/icecast.xml
 	
 	#Set admin contact
-	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@$REALM</admin></hostname>%g" /etc/icecast2/icecast.xml
+	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@$REALM</admin>%g" /etc/icecast2/icecast.xml
  
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 
@@ -222,10 +222,10 @@ else
 
 	#Set location
 	LOCATION=$(cat /etc/timezone)
-	sed -i "s%<location>Earth</location>%<location>$LOCATION</location></hostname>%g" /etc/icecast2/icecast.xml
+	sed -i "s%<location>Earth</location>%<location>$LOCATION</location>%g" /etc/icecast2/icecast.xml
 	
 	#Set admin contact
-	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@'$REALM'</admin></hostname>%g" /etc/icecast2/icecast.xml
+	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@'$REALM'</admin>%g" /etc/icecast2/icecast.xml
  
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/icecast 2>/dev/null
@@ -263,8 +263,8 @@ then
 	SERVERIP=`net lookup $SERVERNAME`
 	[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-	echo $"ROLE""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
-	echo '<a href="http://'$SERVERIP':8000" target="_blank">http://'$SERVERIP':8000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	echo $"Internet Radio Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	echo '<a href="http://'$SERVERNAME':8000" target="_blank">http://'$SERVERNAME':8000</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
 	echo $SERVERNAME > /opt/karoshi/server_network/radioserver
 fi
 exit

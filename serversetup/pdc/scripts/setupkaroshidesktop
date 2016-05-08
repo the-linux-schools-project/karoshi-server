@@ -155,9 +155,6 @@ sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanage
 echo `date`: "Modifying firefox default home page to point at the web management" >> /opt/karoshi/serversetup/install_log
 sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/prefs.js
 
-#Change update time on genmon
-sed -i 's/UpdatePeriod=30000/UpdatePeriod=36000000/g' /opt/karoshi/karoshi_user/.config/xfce4/panel/genmon-3.rc
-
 ###########################
 #Display completed message
 ############################

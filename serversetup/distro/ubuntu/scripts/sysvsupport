@@ -60,11 +60,13 @@
 [ -L /etc/init.d/openvpn ] && rm -f /etc/init.d/openvpn
 [ -L /etc/init.d/openvpn ] && rm -f /etc/init.d/nfs-kernel-server
 [ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
+[ -L /etc/init.d/icecast2 ] && rm -f /etc/init.d/icecast2
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/e2guardian /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/icecast2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mon /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mysql /etc/init.d/

@@ -74,9 +74,9 @@ do
 	SELECTED=""
 	if [ "$LANGCODE" = "$LANG" ]
 	then
-		SELECTED='selected="selected"'
+		SELECTED='selected="selected" style="color:green"'
 	fi
-echo '<option value="'"$LANGCODE"' '$SELECTED'">'"$LANGTITLE"'</option>'
+echo '<option value="'"$LANGCODE"'" '$SELECTED'>'"$LANGTITLE"'</option>'
 done
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the language that you want for the Web Management."'<br><br>'$"This will affect all general web management pages."'</span></a></td>
