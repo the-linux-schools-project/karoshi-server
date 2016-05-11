@@ -143,7 +143,6 @@ then
 	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete smart_warning_$KAROSHI_SERVER
 fi
 
-
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
 then
 	#Show free space

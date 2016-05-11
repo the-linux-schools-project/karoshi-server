@@ -32,7 +32,12 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+INSTALL_TYPE=$1
 
+if [ -z "$INSTALL_TYPE" ]
+then
+	INSTALL_TYPE=education
+fi
 ########################
 #Ensure htaccess is enabled
 ########################
@@ -111,6 +116,11 @@ LDAPSERVER=127.0.0.1
 sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /var/www/html/kanboard/config.php
 sed -i 's/CHANGETHISLDAPPATH/'$LDAPBASE'/g' /var/www/html/kanboard/config.php
 sed -i 's/CHANGETHISPASS/'$WBPASS'/g' /var/www/html/kanboard/config.php
+
+if [ "$INSTALL_TYPE" = home ]
+then
+	sed -i 's/OU=personnel,//g' /var/www/html/kanboard/config.php
+fi
 
 #####################################
 #Ensure that apache ports are open in shorewall

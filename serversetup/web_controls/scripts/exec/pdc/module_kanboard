@@ -34,7 +34,7 @@ then
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_kanboard_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_kanboard.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 
 if [ $MD5SUM'check' != $module_kanboard_cgi'check' ]
 then
@@ -54,7 +54,7 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
 	echo `date`: module_kanboard - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -115,8 +115,8 @@ echo `date`: module_kanboard - checking "if" $ALIAS.$REALM is "in" the dns recor
 samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ `echo $?` != 0 ]
 then
-echo `date`: dnsadd - adding $ALIAS "for" $KANBOARDSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $KANBOARDSERVER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dnsadd - adding $ALIAS "for" $KANBOARDSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $KANBOARDSERVER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 #Update alias entry for the server
@@ -127,10 +127,18 @@ touch /opt/karoshi/server_network/aliases/$KANBOARDSERVER
 #Create ssl cert
 echo "$REMOTE_USER:$REMOTE_ADDR:$KANBOARDSERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
 
+
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
+then
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+fi
+
 if [ $KANBOARDSERVER = `hostname-fqdn` ]
 then
 	#Install kanboard
-	/opt/karoshi/serversetup/modules/kanboard/setupkanboard
+	/opt/karoshi/serversetup/modules/kanboard/setupkanboard $INSTALL_TYPE
 else
 	ssh -x -o PasswordAuthentication=no $KANBOARDSERVER '
 	[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
@@ -142,7 +150,7 @@ else
 	scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$KANBOARDSERVER:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
 	#Install kanboard
 	ssh -x -o PasswordAuthentication=no $KANBOARDSERVER '
-	/opt/karoshi/serversetup/modules/kanboard/setupkanboard
+	/opt/karoshi/serversetup/modules/kanboard/setupkanboard '$INSTALL_TYPE'
 '
 fi
 

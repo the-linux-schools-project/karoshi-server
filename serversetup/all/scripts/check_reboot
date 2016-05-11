@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 
 function add_warning {
 echo `date`: check_reboot - $SERVER: reboot required after an upgrade. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi $"A Reboot is required." 3
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi ''$SERVER' - '$"Reboot required"'' 3
 }
 
 #Check servers for reboot

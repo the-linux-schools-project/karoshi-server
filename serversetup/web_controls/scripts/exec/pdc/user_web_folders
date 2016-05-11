@@ -237,7 +237,7 @@ then
 			echo '<ul><li>'$"Updating the repository"'</li></ul><br>'
 			sleep 1
 			apt-get update
-			echo '<br><br><li>'$"Installing suphp and suexec"'</li></ul><br>'
+			echo '<ul><li>'$"Installing suphp and suexec"'</li></ul><br>'
 			apt-get install -y libapache2-mod-suphp apache2-suexec
 		fi
 
@@ -364,12 +364,14 @@ then
 	ICON2=/images/submenus/user/web_folder_disabled.png
 	WIDTH1=180
 	WIDTH2=200
+	WIDTH3=80
 	TABLECLASS=standard
 else
 	ICON1=/images/submenus/user/web_folder_enabledm.png
 	ICON2=/images/submenus/user/web_folder_disabledm.png
 	WIDTH1=120
 	WIDTH2=80
+	WIDTH3=80
 	TABLECLASS=mobilestandard
 fi
 
@@ -402,8 +404,8 @@ echo '</td></tr><tr><td><b>'$"Primary Group"'</b></td><td>'$GROUP'</td><td>
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$"Username"'</b></td><td><b>'$"Status"'</b></td></tr>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 if [ "$SERVER" = `hostname-fqdn` ]
 then

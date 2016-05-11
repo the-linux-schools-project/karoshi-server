@@ -91,15 +91,17 @@ echo `date`: clear_warnings - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/
 if [ ! -d /opt/karoshi/web_controls/warnings ]
 then
 	mkdir -p /opt/karoshi/web_controls/warnings/messages
+	mkdir -p /opt/karoshi/web_controls/warnings/raw_messages
 	chmod 0750 /opt/karoshi/web_controls/warnings
 	chmod 0750 /opt/karoshi/web_controls/warnings/messages
-	chown root.apache_karoshi /opt/karoshi/web_controls/warnings
-	chown root.apache_karoshi /opt/karoshi/web_controls/warnings/messages
+	chmod 0750 /opt/karoshi/web_controls/warnings/raw_messages
+	chown root.apache_karoshi -R /opt/karoshi/web_controls/warnings
 fi
 
 #Clear alerts
 [ ! -f /opt/karoshi/web_controls/warnings/summary.txt ] && exit 102
 
 rm -f /opt/karoshi/web_controls/warnings/messages/*
+rm -f /opt/karoshi/web_controls/warnings/raw_messages/*
 rm -f /opt/karoshi/web_controls/warnings/summary.txt
 exit

@@ -31,8 +31,8 @@ BAD_SECTOR_WARN=10
 
 function warning_alert {
 #/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER /cgi-bin/admin/view_disk_usage_logs_fm.cgi "$ERRORALERT" 3
-
-/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER '/cgi-bin/admin/view_disk_usage_logs.cgi?_SERVERNAME_'$SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_' "$ERRORALERT" 3
+DISK_DATE=$(date +%d-%m-%Y)
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add disk_usage_$SERVER '/cgi-bin/admin/view_disk_usage_logs.cgi?_LOGVIEW_today_DATE_'$DISK_DATE'_SERVERNAME_'$SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_' "$ERRORALERT" 3
 }
 
 function warning_alert2 {
