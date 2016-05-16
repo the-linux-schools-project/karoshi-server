@@ -446,8 +446,8 @@ chmod 0755 /etc/init.d/karoshi-uptime
 #Set update script to run on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
 #restrict ssh to the main server
-LINENUM=`grep -n "#pdc_ssh_rule" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"22"	"-"#"pdc_ssh_rule /etc/shorewall/rules
+LINENUM=`grep -n "#SSH-Access-PDC" /etc/shorewall/rules | cut -d: -f1`
+sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"22"	"-"#"SSH-Access-PDC /etc/shorewall/rules
 #Restart shorewall
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 0.5
@@ -607,12 +607,12 @@ source /opt/karoshi/serversetup/variables/distro
 
 #Add in firewall rule for monitorix
 
-MODCHECK=`grep -c -w \#monitorix /etc/shorewall/rules`
+MODCHECK=`grep -c -w \#Monitorix /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 	echo "<ul><li>"'$"The following extra ports are being allowed"' - tcp 50005"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"monitorix /etc/shorewall/rules
+	sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"Monitorix /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	#Restart shorewall
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop

@@ -50,12 +50,11 @@ echo $"MiniDlna Server""<br>" > /opt/karoshi/server_network/servers/$(hostname-f
 #Ensure that minidlna ports are open in shorewall
 #####################################
 
-if [ $(grep -c -w "#minidlnarule /etc/shorewall/rules") = 0 ]
+if [ $(grep -c -w "#minidlna-tcp /etc/shorewall/rules") = 0 ]
 then
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'8200'	'-'#'minidlnarule /etc/shorewall/rules
-	echo 'ACCEPT	net	fw	udp	8200	-#minidlnarule' >> /etc/shorewall/rules
-	echo 'ACCEPT	net	fw	udp	1900	-#minidlnarule' >> /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'8200'	'-'#'Minidlna-tcp /etc/shorewall/rules
+	echo 'ACCEPT	net	fw	udp	1900,8200	-#Minidlna-udp' >> /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null

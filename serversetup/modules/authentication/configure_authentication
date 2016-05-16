@@ -82,11 +82,13 @@ function configure_samba4 {
 #Set Join type
 JOINTYPE=member
 SERVERROLE="domain member"
+RULESET=Samba4-DM
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
 	JOINTYPE=DC
 	[ $AUTHTYPE = rodc ] && JOINTYPE=RODC
 	SERVERROLE="active directory domain controller"
+	RULESET=Samba4
 fi
 
 #Get samba 4 database password
@@ -123,8 +125,8 @@ if [ $MODCHECK = 0 ]
 then
 	echo "<ul><li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"auth_rule /etc/shorewall/rules
-	echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"auth_rule >> /etc/shorewall/rules
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"'$RULESET'-tcp /etc/shorewall/rules
+	echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"'$RULESET'-udp >> /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 	#Restart shorewall

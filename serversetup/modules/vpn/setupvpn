@@ -66,7 +66,7 @@ source /opt/karoshi/serversetup/variables/network_card_info
 #fi
 
 #Open Shorewall on udp 1194
-if [ $(grep -c -w \#openvpn_client_connect /etc/shorewall/rules) = 0 ]
+if [ $(grep -c -w \#OpenVPN-RoadWarrior /etc/shorewall/rules) = 0 ]
 then
 	#Configure shorewall to use the tunnel inteface on the vpn server
 	MODCHECK=0
@@ -81,7 +81,7 @@ then
 	echo '<ul><li>'$"The following extra ports are being allowed" - udp 1194'</li>'
 
 	LINENUM=`wc -l /etc/shorewall/rules | cut -d" " -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'openvpn_client_connect /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'OpenVPN-RoadWarrior /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 

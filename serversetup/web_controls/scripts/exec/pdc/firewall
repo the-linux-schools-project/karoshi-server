@@ -1,0 +1,461 @@
+#!/bin/bash
+#Copyright (C) 2007 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/firewall_cgi
+then
+	echo `date`: firewall - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/firewall_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/firewall.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $firewall_cgi'check' ]
+then
+	echo `date`: firewall - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: firewall - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-,+'`
+if [ -z "$DATA" ]
+then
+	echo `date`: firewall - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
+ACTION=`echo "$DATA" | cut -d: -f8`
+RULESET=`echo "$DATA" | cut -d: -f9`
+FIREWALLACTION=`echo "$DATA" | cut -d: -f10`
+PROTOCOL=`echo "$DATA" | cut -d: -f11`
+PORTS=`echo "$DATA" | cut -d: -f12 | sed 's/-/:/g'`
+TCPIP=`echo "$DATA" | cut -d: -f13`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: firewall - Not called by firewall.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: firewall - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: firewall - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ $ACTION != view ] && [ $ACTION != delete ] && [ $ACTION != add ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != edit ] && [ $ACTION != reallyedit ]
+then
+	echo `date`: firewall - Incorrect firewall option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`: firewall - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$SERVERTYPE" ]
+then
+	echo `date`: firewall - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ $SERVERTYPE = federatedslave ]
+then
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo `date`: firewall - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: firewall - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ "$ACTION" = edit ] || [ "$ACTION" = delete ]
+then
+	if [ -z "$RULESET" ]
+	then
+		echo `date`: firewall - blank ruleset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+if [ "$ACTION" = reallyadd ] || [ $ACTION = reallyedit ]
+then
+	if [ -z "$RULESET" ]
+	then
+		echo `date`: firewall - blank ruleset by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$FIREWALLACTION" ]
+	then
+		echo `date`: firewall - blank firewall action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$PROTOCOL" ]
+	then
+		echo `date`: firewall - blank protocol by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+	if [ -z "$PORTS" ]
+	then
+		echo `date`: firewall - blank ports by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+fi
+
+ICON1=/images/submenus/system/edit.png
+ICON2=/images/submenus/system/delete.png
+if [ $MOBILE = yes ]
+then
+	ICON1=/images/submenus/system/editm.png
+	ICON2=/images/submenus/system/deletem.png
+fi
+
+############################
+#Language
+############################
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
+TEXTDOMAIN=karoshi-server
+
+PORT_ARRAY=( 8 "Ping" 22 "SSH Server" 25 "SMTP" 53 "DNS" 80 "HTTP" 88 "Kerberos" 110 "POP3" 123 "NTP" 135 "Microsoft EPMAP (End Point Mapper)" 137 "NetBIOS Name Service" 138 "NetBIOS Datagram Service" 139 "NetBIOS Session Service" 143 "Internet Message Access Protocol (IMAP)" 389 "Lightweight Directory Access Protocol (LDAP)" 443 "Hypertext Transfer Protocol over TLS/SSL (HTTPS)" 445 "Microsoft-DS Active Directory, Windows shares" 464 "Kerberos Change/Set password" 636 "Lightweight Directory Access Protocol over TLS/SSL (LDAPS)" 993 "Internet Message Access Protocol over TLS/SSL (IMAPS)" 995 "Post Office Protocol 3 over TLS/SSL (POP3S)" 1024:1100 "Dynamic RPC Ports" 3268 "msft-gc, Microsoft Global Catalog" 1900 "MiniDLNA" 8200 "MiniDLNA" 50001 "Web Management - Internal Access" 50002 "Web Management - External Access" 50005 "Monitorix" 24007:24009 "GlusterFS" 34865:34867 "GlusterFS" 49152:49200 "GlusterFS")
+
+function start_table {
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 60px;">'$"Action"'</th><th style="width: 60px;">'$"Zone"'</th><th style="width: 80px;">'$"Protocol"'</th><th style="width: 70px;">'$"Port"'</th><th style="width: 250px;">'$"Comment"'</th><th style="width: 120px;">'$"Rule Set"'</th>'
+if [ "$ACTION" = view ]
+then
+	echo '<th style="width: 80px;">'$"Edit"'</th><th style="width: 80px;">'$"Delete"'</th>'
+fi
+echo '</tr></thead><tbody>'
+}
+
+function lookup_port {
+PORT_DESC=""
+index=0; while ((index<${#PORT_ARRAY[*]})); do
+	if [ "${PORT_ARRAY[$index]}" = "$PORT" ]
+	then
+		let index=$index+1
+		PORT_DESC=${PORT_ARRAY[$index]}
+		return
+	fi
+((index++)); done
+return 1
+
+}
+
+function get_raw_ruleset_data {
+#Get raw ruleset data
+if [ "$SERVERNAME" = $(hostname-fqdn) ]
+then
+	LINEDATA=$(grep -w "$RULESET" /etc/shorewall/rules)
+else
+	LINEDATA=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	grep -w "'$RULESET'" /etc/shorewall/rules
+	')	
+fi
+}
+
+function get_ruleset_data {
+#Get the shorewall information from a single line obtained from /etc/shorewall/rules
+FIREWALL_ACTION=$(echo -e "$LINEDATA" | cut -f1)
+ZONE=$(echo -e "$LINEDATA" | cut -f2)
+PROTOCOL=$(echo -e "$LINEDATA" | cut -f4)
+PORTS=$(echo -e "$LINEDATA" | cut -f5)
+RULESET=$(echo -e "$LINEDATA" | cut -d"#" -s -f2)
+}
+
+function backup_rules {
+echo `date`: firewall backing up /etc/shorewall/rules to /etc/shorewall/backup_rules/rules."$LOG_DATE".$$ on "$SERVERNAME" - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+if [ "$SERVERNAME" = $(hostname-fqdn) ]
+then
+	[ ! -d /etc/shorewall/backup_rules ] && mkdir -p /etc/shorewall/backup_rules
+	cp /etc/shorewall/rules /etc/shorewall/backup_rules/rules."$LOG_DATE".$$
+else
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	[ ! -d /etc/shorewall/backup_rules ] && mkdir -p /etc/shorewall/backup_rules
+	cp /etc/shorewall/rules /etc/shorewall/backup_rules/rules."'$LOG_DATE'".'$$'
+	'
+fi
+}
+
+if [ "$ACTION" = reallyadd ] || [ $ACTION = reallyedit ]
+then
+	backup_rules
+	echo `date`: firewall adding "$RULESET" - "$ACTION" - "$PROTOCOL" - "$PORTS" on "$SERVERNAME" - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	backup_rules
+	if [ ! -z "$TCPIP" ]
+	then
+		TCPIP=":$TCPIP"
+	fi
+	if [ "$SERVERNAME" = $(hostname-fqdn) ]
+	then
+		if [ $ACTION = reallyedit ]
+		then
+			#Delete the existing ruleset
+			sed -i "/#$RULESET/d" /etc/shorewall/rules
+		fi
+		if [ $(grep -c "$RULESET" /etc/shorewall/rules) = 0 ]
+		then
+			sed -i "/^#LAST LINE/d" /etc/shorewall/rules
+			echo -e "$FIREWALLACTION\tnet$TCPIP\tfw\t$PROTOCOL\t$PORTS\t-#$RULESET" >> /etc/shorewall/rules
+			echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		if [ '$ACTION' = reallyedit ]
+		then
+			#Delete the existing ruleset
+			sed -i "/#'$RULESET'/d" /etc/shorewall/rules
+		fi
+		if [ $(grep -c "'$RULESET'" /etc/shorewall/rules) = 0 ]
+		then
+			sed -i "/^#LAST LINE/d" /etc/shorewall/rules
+			echo -e "'$FIREWALLACTION'\tnet'$TCPIP'\tfw\t'$PROTOCOL'\t'$PORTS'\t-#'$RULESET'" >> /etc/shorewall/rules
+			echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		fi	
+		'
+	fi
+	ACTION=view
+fi
+
+if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
+then
+	echo `date`: firewall asking to "$ACTION" on "$SERVERNAME" - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+	#Get data if we are editing
+	if [ "$ACTION" = edit ]
+	then
+		ACTION2=reallyedit
+		BUTTONACTION=$"Edit"
+		#Get raw ruleset data
+		get_raw_ruleset_data
+
+		#Get the rule information for the ruleset
+		get_ruleset_data
+	else
+		ACTION2=reallyadd
+		BUTTONACTION=$"Add"
+	fi
+
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td style="width: 180px;">'$"Ruleset Name"'</td><td>'
+	if [ "$ACTION" = add ]
+	then
+		echo '<input tabindex= "1" value="'$RULESET'" name="___RULESET___" style="width: 200px;" size="20" type="text">'
+	else
+		echo "$RULESET"'<input type="hidden" name="___HiddenData" value="___RULESET___'$RULESET'___PROTOCOL___'$PROTOCOL'___FIREWALLACTION___'$FIREWALL_ACTION'___">' 
+	fi
+	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this ruleset."'</span></a></td></tr>
+	<tr><td>'$"Ports"'</td><td><input tabindex= "2" value="'$PORTS'" name="___PORTS___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
+	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'$TCPIP'" name="___TCPIP___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
+	<tr><td>'$"Action"'</td><td>'
+	if [ "$ACTION" = add ]
+	then
+		echo '<select name="___FIREWALLACTION___" style="width: 200px;">
+	<option value="ACCEPT">'$"Accept"'</option>
+	<option value="DROP">'$"Drop"'</option>
+	</select>'
+	else
+		echo "$FIREWALL_ACTION"
+	fi
+	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose either accept or drop."'</span></a></td></tr>
+	<tr><td>'$"Protocol"'</td><td>'
+	if [ "$ACTION" = add ]
+	then
+		echo '<select name="___PROTOCOL___" style="width: 200px;">
+	<option value="udp">tcp</option>
+	<option value="tcp" selected="selected">tcp</option>
+	<option value="tcp,udp">tcp + udp</option>
+	</select>'
+	else
+		echo "$PROTOCOL"
+	fi
+	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the protocol that you want the ruleset to apply to."'</span></a></td></tr>
+	</tbody></table><br>
+
+	<button class="button" name="___DoAdd" value="___ACTION___'$ACTION2'___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">
+	'$BUTTONACTION'
+	</button>
+	<button class="button" name="___DoCancel___" value="___ACTION___view___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">
+	'$"Cancel"'
+	</button>
+	'
+fi
+
+if [ "$ACTION" = reallydelete ]
+then
+	backup_rules
+	echo `date`: firewall deleting "$RULESET" on "$SERVERNAME" - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+	if [ "$SERVERNAME" = $(hostname-fqdn) ]
+	then
+		sed -i "/$RULESET/d" /etc/shorewall/rules
+		sed -i "/^$/d" /etc/shorewall/rules
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	else
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		sed -i "/'$RULESET'/d" /etc/shorewall/rules
+		sed -i "/^$/d" /etc/shorewall/rules
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		'
+	fi
+	ACTION=view
+fi
+
+if [ "$ACTION" = delete ]
+then
+	echo `date`: firewall asking to delete "$RULESET" on "$SERVERNAME" - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	#Show ruleset to be deleted and confirm
+
+	#Get raw ruleset data
+	get_raw_ruleset_data
+
+	#Get the rule information for the ruleset
+	get_ruleset_data
+	#Show information for the rule to be deleted and confirm delete.	
+	start_table
+	#Show all ports in the ruleset.
+	for PORT in $(echo $PORTS | sed 's/,/ /g')
+	do
+		#Lookup port information for standard ports.
+		lookup_port
+		echo '<tr><td>'$FIREWALL_ACTION'</td><td>'$ZONE'</td><td>'$PROTOCOL'</td><td>'$PORT'</td><td>'$PORT_DESC'</td><td>'$RULESET'</td>'
+	done
+	echo '</tbody></table>'$"Are you sure you want to delete this rule set?"'<br><br>
+	<button class="button" name="___DoDelete___" value="___ACTION___reallydelete___RULESET___'$RULESET'___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">
+	'$"Delete"'
+	</button>
+	<button class="button" name="___DoCancel___" value="___ACTION___view___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">
+	'$"Cancel"'
+	</button>
+	'
+fi
+
+
+if [ "$ACTION" = view ]
+then
+	echo `date`: firewall viewing $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	function parse_rules {
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		DATA=$(grep ^"$ACTION" /etc/shorewall/rules)
+	else
+		DATA=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		grep ^'$ACTION' /etc/shorewall/rules
+		')	
+	fi
+
+	LINECOUNT=$(echo -e "$DATA" | wc -l)
+
+	COUNTER=1
+	while [ $COUNTER -le $LINECOUNT ]
+	do
+		RULESET=""
+		LINEDATA=$(echo -e "$DATA" | sed -n $COUNTER,$COUNTER"p")
+		get_ruleset_data
+
+		for PORT in $(echo $PORTS | sed 's/,/ /g')
+		do
+			#Lookup port information for standard ports.
+			lookup_port
+			echo '<tr><td>'$ACTION2'</td><td>'$ZONE'</td><td>'$PROTOCOL'</td><td>'$PORT'</td><td>'$PORT_DESC'</td><td>'$RULESET'</td>'
+			if [ ! -z "$RULESET" ]
+			then
+				echo '<td>
+					<button class="info infoleftinline" name="___Edit___" value="___ACTION___edit___SERVERTYPE___'$SERVERTYPE'___SERVERNAME___'$SERVERNAME'___RULESET___'$RULESET'___">
+					<img src="'$ICON1'" alt="'$"Edit"'">
+					<span>'$"Edit"'<br>'$RULESET'</span>
+					</button>
+					</td><td>
+					<button class="info infoleftinline" name="___Delete___" value="___ACTION___delete___SERVERTYPE___'$SERVERTYPE'___SERVERNAME___'$SERVERNAME'___RULESET___'$RULESET'___">
+					<img src="'$ICON2'" alt="'$"Edit"'">
+					<span>'$"Delete"'<br>'$RULESET'</span>
+					</button>
+					</td>
+					'
+			else
+				echo '<td></td><td></td>'
+			fi
+			echo '</tr>'
+		done
+		let COUNTER=$COUNTER+1
+	done
+	}
+
+	#Show all open ports
+	start_table
+	ACTION=ACCEPT
+	ACTION2=$"Accept"
+	parse_rules
+	ACTION=DROP
+	ACTION2=$"Drop"
+	parse_rules
+
+	echo '</tbody></table>'
+
+fi
+exit
+

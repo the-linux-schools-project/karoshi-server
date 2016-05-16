@@ -167,19 +167,19 @@ done
 ###########################
 #Open shorewall ports for samba
 ###########################
-MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
-if [ $MODCHECK = 0 ]
-then
-	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 139,445 udp 137,138,445'</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
-	echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+#MODCHECK=`grep -c -w samba_fileserver_rule /etc/shorewall/rules`
+#if [ $MODCHECK = 0 ]
+#then
+#	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 139,445 udp 137,138,445'</li></ul>'
+#	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+#	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268'	'-'#'samba_fileserver_rule /etc/shorewall/rules
+#	echo ACCEPT'	'net'	'fw'	'udp'	'53,88,123,137,138,139,389,445,464,636,1024:1100'	'-'#'samba_fileserver_rule >> /etc/shorewall/rules
+#	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
-	echo '<ul><li>'$"Restarting Shorewall"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
+#	echo '<ul><li>'$"Restarting Shorewall"'</li></ul>'
+#	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+#	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+#fi
 
 #Make sure that lpstat can see usernames
 if [ `grep -c "JobPrivateAccess all" /etc/cups/cupsd.conf` = 0 ]

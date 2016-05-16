@@ -137,7 +137,7 @@ if [ $MODCHECK = 0 ]
 then
 	echo '<ul><li>'$"Modifying shorewall rules to allow port 50000."'</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclientrule /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50000'	'-'#'smbwebclient /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 ######################

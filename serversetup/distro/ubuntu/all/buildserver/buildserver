@@ -153,8 +153,6 @@ dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/monitorix_3.8
 }
 
 function install_sogo_mysql_packages {
-#Needed due to problem with sogo repositories and dependency on libmysqlclient18 - ubuntu 16.04 now has libmysqlclient20
-dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/libmysqlclient18_5.6.25-0ubuntu1_amd64.deb
 apt-get install -y sope4.9-gdl1-mysql
 }
 

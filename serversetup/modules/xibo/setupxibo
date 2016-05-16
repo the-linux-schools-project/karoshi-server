@@ -193,7 +193,7 @@ if [ $MOD_SHOREWALL = yes ]
 then
 	echo '<br>'$SHOREWALLMSG
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apacherule /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'Web-Services /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 

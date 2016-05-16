@@ -224,6 +224,12 @@ echo -e "_________________________________________________\n" >>/opt/karoshi/log
 #Check sysv
 /opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 
+#Remove apache sogo conf symlink
+if [ -L /etc/apache2/conf-enabled/SOGo.conf ]
+then
+	rm -f /etc/apache2/conf-enabled/SOGo.conf
+fi
+
 #Get the new samba version
 NEW_SAMBA_VER=`samba-tool -V`
 RESTART_SAMBA=no

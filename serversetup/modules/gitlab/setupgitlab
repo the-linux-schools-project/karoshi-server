@@ -512,14 +512,14 @@ fi
 
 if [ "$MOD_SHOREWALL_GITLAB" == yes ]; then
 	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
-	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	$PORTSGITLAB	-#gitlab_server_rule/" /etc/shorewall/rules
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	$PORTSGITLAB	-#gitlab_server/" /etc/shorewall/rules
 	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	ANNOUNCEPORTS=yes
 fi
 
 if [ "$MOD_SHOREWALL_APACHE" == yes ]; then
 	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
-	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	80,443	-#apache_webserver_rule/" /etc/shorewall/rules
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	80,443	-#Web-Services/" /etc/shorewall/rules
 	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	ANNOUNCEPORTS=yes
 fi

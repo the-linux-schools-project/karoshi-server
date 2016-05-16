@@ -138,13 +138,13 @@ function openshorewall {
 if [ $SERVER = `hostname-fqdn` ]
 then
 	source /opt/karoshi/serversetup/variables/distro
-	if [ `grep -c "karoshi_gluster" /etc/shorewall/rules` = 0 ]
+	if [ `grep -c "Gluster-tcp" /etc/shorewall/rules` = 0 ]
 	then
 		echo '<ul><li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>'
 
 		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'karoshi_gluster /etc/shorewall/rules
-		echo ACCEPT'	'net'	'fw'	'udp'	'$PORTS'	'-'#'karoshi_gluster >> /etc/shorewall/rules
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'Gluster-tcp/etc/shorewall/rules
+		echo ACCEPT'	'net'	'fw'	'udp'	'$PORTS'	'-'#'Gluster-udp >> /etc/shorewall/rules
 		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
