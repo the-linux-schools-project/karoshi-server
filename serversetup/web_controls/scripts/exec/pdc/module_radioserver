@@ -151,19 +151,22 @@ then
 	#Set admin contact
 	sed -i "s%<admin>icemaster@localhost</admin>%<admin>icemaster@$REALM</admin>%g" /etc/icecast2/icecast.xml
  
+	#Change port to 80001
+	sed -i "s%8000%8001%g" /etc/icecast2/icecast.xml
+
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_start 1>/dev/null
 
 	###########################
 	#Open shorewall ports
 	###########################
 	RESTART_SHOREWALL=no
-	MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
+	MODCHECK=`grep -c -w \#Icecast /etc/shorewall/rules`
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
+		echo ''$SHOREWALLMSG - tcp 8001"<br><br>"
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8001"	"-"#"Icecast /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
 
@@ -234,13 +237,13 @@ else
 	#Open shorewall ports
 	###########################
 	RESTART_SHOREWALL=no
-	MODCHECK=`grep -c -w \#radio_server_rule /etc/shorewall/rules`
+	MODCHECK=`grep -c -w \#Icecast /etc/shorewall/rules`
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
 		echo ''$SHOREWALLMSG - tcp 8000"<br><br>"
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"radio_server_rule /etc/shorewall/rules
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"8000"	"-"#"Icecast /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
 

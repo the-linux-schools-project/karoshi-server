@@ -168,7 +168,7 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
 TEXTDOMAIN=karoshi-server
 
-PORT_ARRAY=( 8 "Ping" 22 "SSH Server" 25 "SMTP" 53 "DNS" 80 "HTTP" 88 "Kerberos" 110 "POP3" 123 "NTP" 135 "Microsoft EPMAP (End Point Mapper)" 137 "NetBIOS Name Service" 138 "NetBIOS Datagram Service" 139 "NetBIOS Session Service" 143 "Internet Message Access Protocol (IMAP)" 389 "Lightweight Directory Access Protocol (LDAP)" 443 "Hypertext Transfer Protocol over TLS/SSL (HTTPS)" 445 "Microsoft-DS Active Directory, Windows shares" 464 "Kerberos Change/Set password" 636 "Lightweight Directory Access Protocol over TLS/SSL (LDAPS)" 993 "Internet Message Access Protocol over TLS/SSL (IMAPS)" 995 "Post Office Protocol 3 over TLS/SSL (POP3S)" 1024:1100 "Dynamic RPC Ports" 3268 "msft-gc, Microsoft Global Catalog" 1900 "MiniDLNA" 8200 "MiniDLNA" 50001 "Web Management - Internal Access" 50002 "Web Management - External Access" 50005 "Monitorix" 24007:24009 "GlusterFS" 34865:34867 "GlusterFS" 49152:49200 "GlusterFS")
+PORT_ARRAY=( 8 "Ping" 22 "SSH" 25 "SMTP" 53 "DNS" 80 "HTTP" 88 "Kerberos" 110 "POP3" 111 "Portmapper" 123 "NTP" 135 "Microsoft EPMAP (End Point Mapper)" 137 "NetBIOS Name Service" 138 "NetBIOS Datagram Service" 139 "NetBIOS Session Service" 143 "Internet Message Access Protocol (IMAP)" 389 "Lightweight Directory Access Protocol (LDAP)" 443 "Hypertext Transfer Protocol over TLS/SSL (HTTPS)" 445 "Microsoft-DS Active Directory, Windows shares" 464 "Kerberos Change/Set password" 636 "Lightweight Directory Access Protocol over TLS/SSL (LDAPS)" 993 "Internet Message Access Protocol over TLS/SSL (IMAPS)" 995 "Post Office Protocol 3 over TLS/SSL (POP3S)" 1024:1100 "Dynamic RPC Ports" 1812 "Radius" 1813 "Radius" 3128 "Squid Proxy" 3268 "msft-gc, Microsoft Global Catalog" 1900 "MiniDLNA" 8200 "MiniDLNA" 8000 "Squid Deb Proxy" 50001 "Web Management - Internal Access" 50002 "Web Management - External Access" 50005 "Monitorix" 24007:24009 "GlusterFS" 34865:34867 "GlusterFS" 49152:49200 "GlusterFS")
 
 function start_table {
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
@@ -178,6 +178,11 @@ then
 	echo '<th style="width: 80px;">'$"Edit"'</th><th style="width: 80px;">'$"Delete"'</th>'
 fi
 echo '</tr></thead><tbody>'
+}
+
+function shorewall_failure {
+echo `date`: firewall shorewall failed to restart correctly on "$SERVERNAME". Check /etc/shorewall/rules - by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+echo "<br>"$"Shorwall failed to restart correctly. Please check /etc/shorewall/rules for errors.""<br>"
 }
 
 function lookup_port {
@@ -254,6 +259,10 @@ then
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+			if [ $? != 0 ]
+			then
+				shorewall_failure
+			fi
 		fi
 	else
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -271,8 +280,13 @@ then
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+			[ $? != 0 ] && exit 101
 		fi	
 		'
+		if [ $? = 101 ]
+		then
+			shorewall_failure
+		fi
 	fi
 	ACTION=view
 fi
@@ -353,6 +367,10 @@ then
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		if [ $? != 0 ]
+		then
+			shorewall_failure
+		fi
 	else
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 		sed -i "/'$RULESET'/d" /etc/shorewall/rules
@@ -360,7 +378,12 @@ then
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		[ $? != 0 ] && exit 101
 		'
+		if [ $? = 101 ]
+		then
+			shorewall_failure
+		fi
 	fi
 	ACTION=view
 fi

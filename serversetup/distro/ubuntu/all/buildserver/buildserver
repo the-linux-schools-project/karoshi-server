@@ -512,6 +512,9 @@ ln -s /etc/init.d/reserveports /etc/rc2.d/S17reserveports
 #Delete install_log
 [ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
 
+#fail2ban mail.warn
+touch /var/log/mail.warn
+
 #show_server_info
 cp -f /opt/karoshi/serversetup/all/"useful scripts"/show_server_info /usr/sbin/
 }

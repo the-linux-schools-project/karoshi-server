@@ -88,7 +88,7 @@ then
 	JOINTYPE=DC
 	[ $AUTHTYPE = rodc ] && JOINTYPE=RODC
 	SERVERROLE="active directory domain controller"
-	RULESET=Samba4
+	RULESET=Samba4-DC
 fi
 
 #Get samba 4 database password
@@ -120,7 +120,7 @@ fi
 echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 #Check firewall rules for adc, rodc and domain member
-MODCHECK=`grep -c -w auth_rule /etc/shorewall/rules`
+MODCHECK=`grep -c -w '$RULESET' /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 	echo "<ul><li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"

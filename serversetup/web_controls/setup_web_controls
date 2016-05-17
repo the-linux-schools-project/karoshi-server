@@ -978,6 +978,7 @@ fi
 
 if [ -d /etc/fail2ban ]
 then
+	touch /var/log/mail.warn
 	[ ! -d /opt/karoshi/server_network/security/fail2ban ] && mkdir -p /opt/karoshi/server_network/security/fail2ban
 	cp -f /opt/karoshi/serversetup/all/fail2ban/jails/web_management /opt/karoshi/server_network/security/fail2ban/
 	cat /opt/karoshi/server_network/security/fail2ban/* > /etc/fail2ban/jail.local
