@@ -120,10 +120,10 @@ then
 	MODCHECK=1
 fi
 
-if [ `grep -c -w vpn_rule /etc/shorewall/rules` = 0 ]
+if [ `grep -c -w VPN-Tunnel /etc/shorewall/rules` = 0 ]
 then
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1194"	"-"#"vpn_rule /etc/shorewall/rules
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1194"	"-"#"VPN-Tunnel /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	MODCHECK=1
 fi

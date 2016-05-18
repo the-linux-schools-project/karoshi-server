@@ -155,10 +155,16 @@ fi
 
 ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
+WIDTH1=200
+WIDTH2=200
+TABLECLASS=standard
 if [ $MOBILE = yes ]
 then
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
+	WIDTH1=120
+	WIDTH2=160
+	TABLECLASS=mobilestandard
 fi
 
 ############################
@@ -168,11 +174,17 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
 TEXTDOMAIN=karoshi-server
 
-PORT_ARRAY=( 8 "Ping" 22 "SSH" 25 "SMTP" 53 "DNS" 80 "HTTP" 88 "Kerberos" 110 "POP3" 111 "Portmapper" 123 "NTP" 135 "Microsoft EPMAP (End Point Mapper)" 137 "NetBIOS Name Service" 138 "NetBIOS Datagram Service" 139 "NetBIOS Session Service" 143 "Internet Message Access Protocol (IMAP)" 389 "Lightweight Directory Access Protocol (LDAP)" 443 "Hypertext Transfer Protocol over TLS/SSL (HTTPS)" 445 "Microsoft-DS Active Directory, Windows shares" 464 "Kerberos Change/Set password" 636 "Lightweight Directory Access Protocol over TLS/SSL (LDAPS)" 993 "Internet Message Access Protocol over TLS/SSL (IMAPS)" 995 "Post Office Protocol 3 over TLS/SSL (POP3S)" 1024:1100 "Dynamic RPC Ports" 1812 "Radius" 1813 "Radius" 3128 "Squid Proxy" 3268 "msft-gc, Microsoft Global Catalog" 1900 "MiniDLNA" 8200 "MiniDLNA" 8000 "Squid Deb Proxy" 50001 "Web Management - Internal Access" 50002 "Web Management - External Access" 50005 "Monitorix" 24007:24009 "GlusterFS" 34865:34867 "GlusterFS" 49152:49200 "GlusterFS")
+PORT_ARRAY=( 8 "Ping" 22 "SSH" 25 "SMTP" 53 "DNS" 80 "HTTP" 88 "Kerberos" 110 "POP3" 111 "Portmapper" 123 "NTP" 135 "Microsoft EPMAP (End Point Mapper)" 137 "NetBIOS Name Service" 138 "NetBIOS Datagram Service" 139 "NetBIOS Session Service" 143 "Internet Message Access Protocol (IMAP)" 389 "Lightweight Directory Access Protocol (LDAP)" 443 "Hypertext Transfer Protocol over TLS/SSL (HTTPS)" 445 "Microsoft-DS Active Directory, Windows shares" 464 "Kerberos Change/Set password" 636 "Lightweight Directory Access Protocol over TLS/SSL (LDAPS)" 647 "DHCP Failover protocol" 993 "Internet Message Access Protocol over TLS/SSL (IMAPS)" 995 "Post Office Protocol 3 over TLS/SSL (POP3S)" 1024:1100 "Dynamic RPC Ports" 1812 "Radius" 1813 "Radius" 1194 "OpenVPN" 3128 "Squid Proxy" 3268 "msft-gc, Microsoft Global Catalog" 1900 "MiniDLNA" 7911 "Omapi" 8200 "MiniDLNA" 8000 "Squid Deb Proxy" 8001 "Icecast" 50001 "Web Management - Internal Access" 50002 "Web Management - External Access" 50005 "Monitorix" 24007:24009 "GlusterFS" 34865:34867 "GlusterFS" 49152:49200 "GlusterFS" 50009 "Gitlab" 50010 "Gitlab" )
 
 function start_table {
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 60px;">'$"Action"'</th><th style="width: 60px;">'$"Zone"'</th><th style="width: 80px;">'$"Protocol"'</th><th style="width: 70px;">'$"Port"'</th><th style="width: 250px;">'$"Comment"'</th><th style="width: 120px;">'$"Rule Set"'</th>'
+<tr>'
+[ $MOBILE = no ] && echo '<th style="width: 60px;">'$"Action"'</th>'
+[ $MOBILE = no ] && echo '<th style="width: 60px;">'$"Zone"'</th>'
+[ $MOBILE = no ] && echo '<th style="width: 80px;">'$"Protocol"'</th>'
+echo '<th style="width: 70px;">'$"Port"'</th>'
+[ $MOBILE = no ] && echo '<th style="width: 250px;">'$"Comment"'</th>'
+[ "$MOBILE" = no ] && echo '<th style="width: 120px;">'$"Rule Set"'</th>'
 if [ "$ACTION" = view ]
 then
 	echo '<th style="width: 80px;">'$"Edit"'</th><th style="width: 80px;">'$"Delete"'</th>'
@@ -310,8 +322,8 @@ then
 		BUTTONACTION=$"Add"
 	fi
 
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;">'$"Ruleset Name"'</td><td>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '$WIDTH1'px;">'$"Ruleset Name"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
 		echo '<input tabindex= "1" value="'$RULESET'" name="___RULESET___" style="width: 200px;" size="20" type="text">'
@@ -319,8 +331,8 @@ then
 		echo "$RULESET"'<input type="hidden" name="___HiddenData" value="___RULESET___'$RULESET'___PROTOCOL___'$PROTOCOL'___FIREWALLACTION___'$FIREWALL_ACTION'___">' 
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this ruleset."'</span></a></td></tr>
-	<tr><td>'$"Ports"'</td><td><input tabindex= "2" value="'$PORTS'" name="___PORTS___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
-	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'$TCPIP'" name="___TCPIP___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
+	<tr><td>'$"Ports"'</td><td><input tabindex= "2" value="'$PORTS'" name="___PORTS___" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
+	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'$TCPIP'" name="___TCPIP___" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
 	<tr><td>'$"Action"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
@@ -405,7 +417,13 @@ then
 	do
 		#Lookup port information for standard ports.
 		lookup_port
-		echo '<tr><td>'$FIREWALL_ACTION'</td><td>'$ZONE'</td><td>'$PROTOCOL'</td><td>'$PORT'</td><td>'$PORT_DESC'</td><td>'$RULESET'</td>'
+		echo '<tr>'
+		[ "$MOBILE" = no ] && echo '<td>'$FIREWALL_ACTION'</td>'
+		[ "$MOBILE" = no ] && echo '<td>'$ZONE'</td>'
+		[ "$MOBILE" = no ] && echo '<td>'$PROTOCOL'</td>'
+		echo '<td>'$PORT'</td>'
+		echo '<td>'$PORT_DESC'</td>'
+		[ "$MOBILE" = no ] && echo '<td>'$RULESET'</td>'
 	done
 	echo '</tbody></table>'$"Are you sure you want to delete this rule set?"'<br><br>
 	<button class="button" name="___DoDelete___" value="___ACTION___reallydelete___RULESET___'$RULESET'___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">
@@ -437,14 +455,20 @@ then
 	while [ $COUNTER -le $LINECOUNT ]
 	do
 		RULESET=""
-		LINEDATA=$(echo -e "$DATA" | sed -n $COUNTER,$COUNTER"p")
+		LINEDATA=$(echo -e "$DATA" | sed -n $COUNTER,$COUNTER"p" | sed 's/ * / /g' | sed 's/ /\t/g')
 		get_ruleset_data
 
 		for PORT in $(echo $PORTS | sed 's/,/ /g')
 		do
 			#Lookup port information for standard ports.
 			lookup_port
-			echo '<tr><td>'$ACTION2'</td><td>'$ZONE'</td><td>'$PROTOCOL'</td><td>'$PORT'</td><td>'$PORT_DESC'</td><td>'$RULESET'</td>'
+			echo '<tr>'
+			[ "$MOBILE" = no ] && echo '<td>'$ACTION2'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$ZONE'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$PROTOCOL'</td>'
+			echo '<td>'$PORT'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$PORT_DESC'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$RULESET'</td>'
 			if [ ! -z "$RULESET" ]
 			then
 				echo '<td>
@@ -478,7 +502,6 @@ then
 	parse_rules
 
 	echo '</tbody></table>'
-
 fi
 exit
 

@@ -297,18 +297,18 @@ then
 
 	#Check that required ports are open in shorewall on the primary server
 	RESTARTSHOREWALL=no
-	if [ `grep -c dhcp_failover_rule /etc/shorewall/rules` = 0 ]
+	if [ `grep -c DHCP-failover /etc/shorewall/rules` = 0 ]
 	then
 		RESTARTSHOREWALL=yes
 		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'647'	'-'#'dhcp_failover_rule /etc/shorewall/rules
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'647'	'-'#'DHCP-failover /etc/shorewall/rules
 		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
-	if [ `grep -c dhcp_omapi_failover_rule /etc/shorewall/rules` = 0 ]
+	if [ `grep -c DHCP-OMAPI-failover /etc/shorewall/rules` = 0 ]
 	then
 		RESTARTSHOREWALL=yes
 		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'7911'	'-'#'dhcp_omapi_failover_rule /etc/shorewall/rules
+		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'7911'	'-'#'DHCP-OMAPI-failover /etc/shorewall/rules
 		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
 
@@ -327,18 +327,18 @@ then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SECONDARYSERVER '
 	source /opt/karoshi/serversetup/variables/distro
 	RESTARTSHOREWALL=no
-	if [ `grep -c dhcp_failover_rule /etc/shorewall/rules` = 0 ]
+	if [ `grep -c DHCP-failover /etc/shorewall/rules` = 0 ]
 	then
 		RESTARTSHOREWALL=yes
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"647"	"-"#"dhcp_failover_rule /etc/shorewall/rules
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"647"	"-"#"DHCP-failover /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
-	if [ `grep -c dhcp_omapi_failover_rule /etc/shorewall/rules` = 0 ]
+	if [ `grep -c DHCP-OMAPI-failover /etc/shorewall/rules` = 0 ]
 	then
 		RESTARTSHOREWALL=yes
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"7911"	"-"#"dhcp_omapi_failover_rule /etc/shorewall/rules
+		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"7911"	"-"#"DHCP-OMAPI-failover /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
 

@@ -140,6 +140,7 @@ echo '	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a
         <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$"Change Theme"'</a>
         <a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Custom Command"'</a>
         <a href="/cgi-bin/admin/services_view_fm.cgi">'$"Control Services"'</a>
+	<a href="/cgi-bin/admin/firewall.cgi">'$"Firewall Rules"'</a>
         <a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$"Management Passwords"'</a>
         <a href="/cgi-bin/admin/shutdown_fm.cgi">'$"Shutdown"'</a>
       </div>

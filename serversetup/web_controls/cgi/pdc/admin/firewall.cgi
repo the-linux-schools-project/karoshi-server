@@ -233,7 +233,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	DIV_ID=actionbox2
+	DIV_ID=mobileactionbox
 	TABLECLASS=mobilestandard
 	WIDTH=160
 fi
@@ -247,8 +247,6 @@ window.location = "/cgi-bin/admin/firewall.cgi";
 exit
 }
 
-
-
 if [ "$ACTION" = edit ] || [ "$ACTION" = delete ]
 then
 	if [ -z "$RULESET" ]
@@ -260,6 +258,13 @@ fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
+
+	if [ -z "$RULESET" ]
+	then
+		MESSAGE=$"You have not entered the name of the ruleset."
+		show_status
+	fi	
+
 	if [ -z "$PORTS" ]
 	then
 		MESSAGE=$"You have not entered in any ports."
