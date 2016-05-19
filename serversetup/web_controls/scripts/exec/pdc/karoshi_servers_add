@@ -445,8 +445,14 @@ chmod 0755 /etc/init.d/karoshi-uptime
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_start 1>/dev/null
 #Set update script to run on boot
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/karoshi-uptime
-#restrict ssh to the main server
-LINENUM=`grep -n "#SSH-Access-PDC" /etc/shorewall/rules | cut -d: -f1`
+#Restrict ssh to the main server
+if [ $(grep -c pdc_ssh_rule /etc/shorewall/rules) -gt 0 ]
+then
+	RULESET=pdc_ssh_rule
+else
+	RULESET=SSH-Access-PDC
+fi
+LINENUM=`grep -n "#$RULESET" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"22"	"-"#"SSH-Access-PDC /etc/shorewall/rules
 #Restart shorewall
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null

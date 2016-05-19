@@ -353,9 +353,7 @@ then
 	then
 		#Check that this exact dns entry does not already exist
 		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM $NAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
-		#Make sure that the ip address or cname has not already been added.
-		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
-		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
+		if [ "$ENTRYCOUNT" = 0 ]
 		then
 			echo `date`: dnsview - adding $NAME $DNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		samba-tool dns add 127.0.0.1 $REALM $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

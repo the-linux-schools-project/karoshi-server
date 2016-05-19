@@ -1317,8 +1317,6 @@ then
 		if [ $INSTALL_TYPE = education ]
 		then
 			cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives/* /var/lib/samba/netlogon/windows_settings/drives/
-		else
-			cp -f -R /opt/karoshi/serversetup/pdc/logonscripts/drives_business/* /var/lib/samba/netlogon/windows_settings/drives/
 		fi
 	fi
 fi

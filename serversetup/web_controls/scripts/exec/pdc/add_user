@@ -183,6 +183,7 @@ TEXTDOMAIN=karoshi-server
 
 
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/server_network/security/password_settings
 
 ########################
 #Convert special characters back for password
@@ -313,11 +314,19 @@ fi
 CREATE_USER_STATUS=`echo $?`
 
 #Allow new user to join clients to the domain if they are a member of the itadmin or tech groups
-if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
+if [ "$PRIMARYGROUP" = itadmin ] || [ "$PRIMARYGROUP" = tech ]
 then
 	echo `date`: add_user - allowing "$NEWUSERNAME" to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	net rpc rights grant -U "$NEWUSERNAME"%"$NEWUSERPASSWORD" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 	SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+fi
+
+#Force users to change password on first logon if it has been set.
+[ -z "$CHANGE_PASS_FIRST_LOGIN" ] && CHANGE_PASS_FIRST_LOGIN=no
+if [ "$CHANGE_PASS_FIRST_LOGIN" = yes ]
+then
+	echo `date`: add_user - forcing "$NEWUSERNAME" to change password on first logon by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	net sam set pwdmustchangenow "$NEWUSERNAME" yes
 fi
 
 ##########################

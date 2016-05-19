@@ -150,6 +150,7 @@ then
 
 	#Get password complexity data
 	source /opt/karoshi/server_network/security/password_settings
+	[ -z "$CHANGE_PASS_FIRST_LOGIN" ] && CHANGE_PASS_FIRST_LOGIN=no
 	[ $STUDENT_CHARS_AND_NUMBERS = yes ] && SELECT11=selected
 	[ $STUDENT_CHARS_AND_NUMBERS = no ] && SELECT12=selected
 	[ $STUDENT_UPPER_AND_LOWER_CASE = yes ] && SELECT13=selected
@@ -158,6 +159,8 @@ then
 	[ $STAFF_CHARS_AND_NUMBERS = no ] && SELECT16=selected
 	[ $STAFF_UPPER_AND_LOWER_CASE = yes ] && SELECT17=selected
 	[ $STAFF_UPPER_AND_LOWER_CASE = no ] && SELECT18=selected
+	[ $CHANGE_PASS_FIRST_LOGIN = yes ] && SELECT19=selected
+	[ $CHANGE_PASS_FIRST_LOGIN = no ] && SELECT20=selected
 
 	#Show table for data choice
 	echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -170,8 +173,9 @@ then
 	<tr><td>'$"Lockout observation period"'</td><td><input style="width: 200px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time duration that the login attempts are monitored over."'</span></a></td></tr>
 	<tr><td>'$"Password change time"'</td><td><input style="width: 200px;" tabindex= "2" name="_SHADOWMAX_" maxlength="3" size="3" type="text" value="'$SHADOWMAX'"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>'
-
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>
+	<tr><td>'$"Minium password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_STAFFMINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$STAFF_MINPASSLENGTH'"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a password."'</span></a></td></tr>'
 	if [ $INSTALL_TYPE = education ]
 	then
 		echo '<tr><td>'$"Student Minium password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_STUDENTMINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$STUDENT_MINPASSLENGTH'"></td>
@@ -191,10 +195,7 @@ then
 </td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain upper and lower case characters."'</span></a></td></tr>'
 	fi
-	echo '<tr><td>'$"Minium password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_STAFFMINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$STAFF_MINPASSLENGTH'"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a password."'</span></a></td></tr>
-
-<tr><td>'$"Characters and numbers"'</td><td>
+	echo '<tr><td>'$"Characters and numbers"'</td><td>
 <select name="_STAFFCHARSANDNUMBERS_" style="width: 200px;">
 <option value="yes" '$SELECT15'>'$"yes"'</option>
 <option value="no" '$SELECT16'>'$"no"'</option>
@@ -225,7 +226,14 @@ then
         <option value="userstyleS9" '$SELECT9'>'$"Style" 9': '$"Enrollment number as username."'</option>
 	 <option value="userstyleS10" '$SELECT10'>'$"Style" 10': '$"Enter a username"'</option>
 	</select></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default username style."'</span></a></td></tr></tbody></table>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default username style."'</span></a></td></tr>
+	<tr><td>'$"Change password on first login"'</td><td>
+	<select name="_CHANGEPASSFIRSTLOGIN_" style="width: 200px;">
+	<option value="yes" '$SELECT19'>'$"yes"'</option>
+	<option value="no" '$SELECT20'>'$"no"'</option>
+	</select></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This forces a user to change their password the first time they log in."'</span></a></td></tr>
+</tbody></table>'
 fi
 if [ $ACTION = SETDATA ]
 then
@@ -234,11 +242,6 @@ then
 	LOCKOUTOBS=`echo "$DATA" | cut -s -d: -f7`
 	SHADOWMAX=`echo "$DATA" | cut -s -d: -f8`
 	USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
-	STUDENTMINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f10`
-	STUDENTCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f11`
-	STUDENTUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f12`
-	STAFFMINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f13`
-	STAFFCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f14`
 
 	if [ -z "$LOCKOUTDURATION" ]
 	then
@@ -274,6 +277,7 @@ then
 	STAFFMINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f13`
 	STAFFCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f14`
 	STAFFUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f15`
+	CHANGEPASSFIRSTLOGIN=`echo "$DATA" | cut -s -d: -f16`
 
 	[ -z "$STUDENTMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=5
 	[ -z "$STUDENTCHARSANDNUMBERS" ] && STUDENTCHARSANDNUMBERS=no
@@ -282,6 +286,7 @@ then
 	[ -z "$STAFFMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=7
 	[ -z "$STAFFCHARSANDNUMBERS" ] && STAFFCHARSANDNUMBERS=no
 	[ -z "$STAFFUPPERANDLOWERCASE" ] && STAFFUPPERANDLOWERCASE=no
+	[ -z "$CHANGEPASSFIRSTLOGIN" ] && CHANGEPASSFIRSTLOGIN=no
 
 
 	echo `date`: default_user_settings - sambaLockoutDuration: $LOCKOUTDURATION sambaLockoutThreshold: $LOCKOUTTHRESHOLD sambaLockoutObservationWindow: $LOCKOUTOBS shadowmax: $SHADOWMAX usernamestyle: $USERNAMESTYLE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -312,7 +317,7 @@ then
 	echo STUDENT_CHARS_AND_NUMBERS="$STUDENTCHARSANDNUMBERS" >> /opt/karoshi/server_network/security/password_settings
 	echo STUDENT_UPPER_AND_LOWER_CASE="$STUDENTUPPERANDLOWERCASE" >> /opt/karoshi/server_network/security/password_settings
 	echo STUDENT_MINPASSLENGTH="$STUDENTMINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
-
+	echo CHANGE_PASS_FIRST_LOGIN="$CHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
 
 	exit $MODSTATUS
 fi
