@@ -294,7 +294,7 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
 
-if [ $ACTION = reallyedit ] || [ $ACTION = delete ] || [ $ACTION = reallyadd ]
+if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = reallyadd ]
 then
 	show_dns
 fi

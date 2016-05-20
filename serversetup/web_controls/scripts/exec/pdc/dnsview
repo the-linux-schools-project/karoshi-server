@@ -151,10 +151,11 @@ if [ $ACTION = view ]
 then
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
+		PROCESS=no
 
 		#List of entries that we dont want to be able to edit
 		DONTDISPLAY="_msdcs,_sites,_tcp,_udp,DomainDnsZones,ForestDnsZones"
-		DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --password $LDAPPASS`
+		DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --password $LDAPPASS | sed 's/ * //g' | sed 's/:/,/g' | sed 's/=/,/g' | sed 's/(/,/g' | sed 's/)/,/g'`
 
 		#Create top of table
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
@@ -167,43 +168,42 @@ then
 		[ $MONITORSERVER = yes ] && echo '<th style="width: '$WIDTH4'px;"><b>'$"Monitor"'</b></th>'
 		echo '</tr></thead><tbody>'
 
-		#Get dns entry names
-		for NAME in `echo -e "$DNSINFO" | grep Name= | cut -d= -f2 | cut -d, -f1`
-		do
-			if [ `echo $DONTDISPLAY | grep -c $NAME` = 0 ]
-			then
-				#Get data for name
-				DATA=`echo -e "$DNSINFO" | awk '/Name='$NAME'/ { getline;print}'`
-				DNSTYPE=`echo $DATA | cut -d: -f1`
-				DNSENTRY=`echo $DATA | cut -d: -f2 | cut -d" " -f2 | sed "s/\.$//g"`
+	for DNSDATA in $DNSINFO
+	do
+		COL1=$(echo $DNSDATA | cut -d, -f1)
+		COL2=$(echo $DNSDATA | cut -d, -f2 | sed 's/\.$//g' )
+		[ -z "$COL2" ] && COL2=notset
+		if [ `echo $DONTDISPLAY | grep -c "$COL2"` = 0 ]
+		then
 
-				if [ $MOBILE = no ]
-				then
-					NAME2=$NAME
-					DNSENTRY2=$DNSENTRY
-				else
-					NAME2=${NAME:0:9}
-					DNSENTRY2=${DNSENTRY:0:20}
-				fi
-				#Add line to table for certain types only
-				if [ "$DNSTYPE" = A ] || [ "$DNSTYPE" = CNAME ]
-				then
-					echo "<tr><td style=\"vertical-align: top;\">$NAME2</td>"
-					[ $MOBILE = no ] && echo "<td style=\"vertical-align: top;\">$DNSTYPE</td>"
-					echo '<td style="vertical-align: top;">'$DNSENTRY2'</td>
+			if [ $COL1 = Name ]
+			then
+				PROCESS=yes
+				NAME=$COL2
+			fi
+			if [ $PROCESS = yes ]
+			then
+				if [ $COL1 = A ] || [ $COL1 = CNAME ]
+				then 
+					#echo $NAME - $COL2"<br>"
+
+
+					echo "<tr><td style=\"vertical-align: top;\">$NAME</td>"
+					[ $MOBILE = no ] && echo "<td style=\"vertical-align: top;\">$COL1</td>"
+					echo '<td style="vertical-align: top;">'$COL2'</td>
 					<td>
 					<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-						<button class="info" name="_Edit_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_edit_NAME_'$NAME'_DNSENTRY_'$DNSENTRY'_DNSTYPE_'$DNSTYPE'_">
+						<button class="info" name="_Edit_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_edit_NAME_'$NAME'_DNSENTRY_'$COL2'_DNSTYPE_'$COL1'_">
 						<img src="'$ICON1'" alt="'$"Edit"'">
-						<span>'$"Edit"'<br>'$NAME'<br>'$DNSENTRY'</span>
+						<span>'$"Edit"'<br>'$NAME'<br>'$COL2'</span>
 						</button>
 					</form>
 					</td>
 					<td>
 					<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-						<button class="info" name="_Delete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_delete_NAME_'$NAME'_DNSENTRY_'$DNSENTRY'_DNSTYPE_'$DNSTYPE'_">
+						<button class="info" name="_Delete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_delete_NAME_'$NAME'_DNSENTRY_'$COL2'_DNSTYPE_'$COL1'_">
 						<img src="'$ICON2'" alt="'$"Delete"'">
-						<span>'$"Delete"'<br>'$NAME'<br>'$DNSENTRY'</span>
+						<span>'$"Delete"'<br>'$NAME'<br>'$COL2'</span>
 						</button>
 					</form>
 					</td>'
@@ -212,20 +212,25 @@ then
 					then
 						echo '<td>
 						<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
-							<button class="info" name="_Monitor_" value="_NAME_'$DNSDATA2'_TCPIP_'$DNSENTRY'_">
+							<button class="info" name="_Monitor_" value="_NAME_'$NAME'_TCPIP_'$COL2'_">
 							<img src="'$ICON3'" alt="'$"Delete"'">
-							<span>'$"Monitor"'<br>'$NAME'<br>'$DNSENTRY'</span>
+							<span>'$"Monitor"'<br>'$NAME'<br>'$COL2'</span>
 							</button>
 						</form>
 						</td>'
 					fi
 					echo '</tr>'
+
+
+
+
+
 				fi
 			fi
-		done
+		fi
+	done
 
-		#End table
-		echo "</tbody></table>"
+
 
 	else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -289,7 +294,7 @@ fi
 #########################
 #Delete entry
 #########################
-if [ $ACTION = delete ]
+if [ $ACTION = reallydelete ]
 then
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
@@ -305,6 +310,27 @@ then
 		samba-tool dns delete 127.0.0.1 $REALM '$NAME' '$DNSTYPE' '$DNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 		'
 	fi
+fi
+
+if [ $ACTION = delete ]
+then
+	#Confirm that we want to delete the dns entry.
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+	<tbody>
+	<tr><td style="width: 180px;">'$"Name"'</td><td>'$NAME'</td></tr>
+	<tr><td>DNS Entry</td><td>'$DNSENTRY'</td></tr>
+	<tr><td style="width: 180px;">DNS Type</td><td>'$DNSTYPE'</td></tr>
+	</tbody></table><br>'$"Are you sure that you want to delete this record?"'<br><br>
+	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+		<button class="button" name="_dodelete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_reallydelete_NAME_'$NAME'_DNSENTRY_'$DNSENTRY'_DNSTYPE_'$DNSTYPE'_">
+		'$"Delete"'
+		</button>
+		<button class="button" name="_cancel_" value="_ACTION_view_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_">
+		'$"Cancel"'
+		</button>
+	</form>
+
+'
 fi
 
 #########################
