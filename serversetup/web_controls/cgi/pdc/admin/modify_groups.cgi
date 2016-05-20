@@ -98,94 +98,94 @@ END_POINT=15
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = OPTIONCHOICEcheck ]
-then
-let COUNTER=$COUNTER+1
-OPTIONCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = OPTIONCHOICEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		OPTIONCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PASSWORD1
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PASSWORD2
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	then
+		let COUNTER=$COUNTER+1
+		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign GROUP
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign MODCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MODCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-MODCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MODCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MODCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign FORMCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign EXCEPTIONLIST
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-then
-let COUNTER=$COUNTER+1
-EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -201,111 +201,115 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that optionchoice is not blank
-if [ $OPTIONCHOICE'null' = null ]
+if [ -z "$OPTIONCHOICE" ]
 then
-MESSAGE=$"The option choice must not be blank."
-show_status
+	MESSAGE=$"The option choice must not be blank."
+	show_status
 fi
 #Check to see that the group is not blank
-if [ $GROUP'null' = null ]
+if [ -z "$GROUP" ]
 then
-MESSAGE=$"The group must not be blank."
-show_status
+	MESSAGE=$"The group must not be blank."
+	show_status
 fi
 
 #Check to see that the group exists
 getent group $GROUP 1>/dev/null
 if [ $? != 0 ]
 then
-MESSAGE=$"This group does not exist."
-show_status
+	MESSAGE=$"This group does not exist."
+	show_status
 fi
 
 #Check to see that the option choice is correct
-if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ]
+if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ] && [ $OPTIONCHOICE != changepassnextlogon ]
 then
-MESSAGE=$"Incorrect option chosen."
-show_status
+	MESSAGE=$"Incorrect option chosen."
+	show_status
 fi
 
 #Check to see that MODCODE is not blank
-if [ $MODCODE'null' = null ]
+if [ -z "$MODCODE" ]
 then
-MESSAGE=$"The modify code must not be blank."
-show_status
+	MESSAGE=$"The modify code must not be blank."
+	show_status
 fi
 #Check to see that FORMCODE is not blank
-if [ $FORMCODE'null' = null ]
+if [ -z "$FORMCODE" ]
 then
-MESSAGE=$"The form code must not be blank."
-show_status
+	MESSAGE=$"The form code must not be blank."
+	show_status
 fi
 #Make sure that FORMCODE and MODCODE matches
 if [ $FORMCODE != $MODCODE ]
 then
-MESSAGE=$"Incorrect modify code."
-show_status
+	MESSAGE=$"Incorrect modify code."
+	show_status
 fi
 
 #Check to see that passwords have been entered and are correct
 if [ $OPTIONCHOICE = changepasswords ]
 then
-if [ $PASSWORD1'null' = null ] || [ $PASSWORD2'null' = null ]
-then
-MESSAGE=$"The passwords must not be blank."
-show_status
-fi
-if [ $PASSWORD1 != $PASSWORD2 ]
-then
-MESSAGE=$"The passwords do not match."
-show_status
-fi
+	if [ -z "$PASSWORD1" ] || [ -z "$PASSWORD2" ]
+	then
+		MESSAGE=$"The passwords must not be blank."
+		show_status
+	fi
+	if [ $PASSWORD1 != $PASSWORD2 ]
+	then
+		MESSAGE=$"The passwords do not match."
+		show_status
+	fi
 fi
 
 if [ $OPTIONCHOICE = enable ]
 then
-MESSAGE=`echo $"Enable all users in group" $GROUP`
+	MESSAGE=`echo $"Enable all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = disable ]
 then
-MESSAGE=`echo $"Disable all users in group" $GROUP`
+	MESSAGE=`echo $"Disable all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = changepasswords ]
 then
-MESSAGE=`echo $"Change passwords for all users in group" $GROUP`
+	MESSAGE=`echo $"Change passwords for all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = resetpasswords ]
 then
-MESSAGE=`echo $"Reset passwords all users in group" $GROUP`
+	MESSAGE=`echo $"Reset passwords all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = deleteaccounts ]
 then
-MESSAGE=`echo $"Delete all users in group" $GROUP`
+	MESSAGE=`echo $"Delete all users in group" $GROUP`
 fi
 if [ $OPTIONCHOICE = deleteaccounts2 ]
 then
-MESSAGE=`echo $"Archive and delete all users in group" $GROUP`
+	MESSAGE=`echo $"Archive and delete all users in group" $GROUP`
+fi
+if [ $OPTIONCHOICE = changepassnextlogon ]
+then
+	MESSAGE=`echo $"Change password on next logon" $GROUP`
 fi
 
 #Generate navigation bar

@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
 then
-echo `date`: modify_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $modify_groups_cgi'check' ]
 then
-echo `date`: modify_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,15 +47,15 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: modify_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: modify_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -70,41 +70,41 @@ EXCEPTIONLIST=`echo "$DATA" | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: modify_groups - Not called by modify_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - Not called by modify_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: modify_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: modify_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $OPTIONCHOICE'null' = null ]
+if [ -z "$OPTIONCHOICE" ]
 then
-echo `date`: modify_groups - Blank optionchoice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: modify_groups - Blank optionchoice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
-if [ $PRIMARYGROUP'null' = null ]
+if [ -z "$PRIMARYGROUP" ]
 then
-echo `date`: modify_groups - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $OPTIONCHOICE = changepasswords ]
-then
-if [ $NEWPASSWORD'null' = null ]
-then
-echo `date`: modify_groups - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	then
+	if [ -z "$NEWPASSWORD" ]
+	then
+		echo `date`: modify_groups - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: modify_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: modify_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ############################
@@ -153,30 +153,28 @@ echo "    <script type = \"text/javascript\" >
 #########################
 if [ $OPTIONCHOICE = enable ] || [ $OPTIONCHOICE = disable ]
 then
-
-if [ $OPTIONCHOICE = enable ]
-then
-ACTION=enable
-ACTIONLANG=Enabling
-fi
-if [ $OPTIONCHOICE = disable ]
-then
-ACTION=disable
-ACTIONLANG=Disabling
-fi
-COUNTER=0
-while [ $COUNTER -lt ${#USERLIST[@]} ]
-do
-USERNAME=`echo ${USERLIST[$COUNTER]}`
-if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
-then
-=`echo $RANDOM`
-echo $ACTIONLANG $USERNAME '<br>'
-#Enable account
-samba-tool user $ACTION $USERNAME
-fi
-let COUNTER=$COUNTER+1
-done
+	if [ $OPTIONCHOICE = enable ]
+	then
+		ACTION=enable
+		ACTIONLANG=Enabling
+	fi
+	if [ $OPTIONCHOICE = disable ]
+	then
+		ACTION=disable
+		ACTIONLANG=Disabling
+	fi
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			echo $ACTIONLANG $USERNAME '<br>'
+			#Enable account
+			samba-tool user $ACTION $USERNAME
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 #########################
@@ -184,20 +182,20 @@ fi
 #########################
 if [ $OPTIONCHOICE = resetpasswords ]
 then
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reset_password.cgi | cut -d' ' -f1`
-COUNTER=0
-while [ $COUNTER -lt ${#USERLIST[@]} ]
-do
-USERNAME=`echo ${USERLIST[$COUNTER]}`
-if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
-then
-PASSWORD1=$RANDOM
-echo Reseting password "for" $USERNAME to $PASSWORD1'<br>'
-#reset password
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | /opt/karoshi/web_controls/exec/reset_password
-fi
-let COUNTER=$COUNTER+1
-done
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reset_password.cgi | cut -d' ' -f1`
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			PASSWORD1=$RANDOM
+			echo Reseting password "for" $USERNAME to $PASSWORD1'<br>'
+			#reset password
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | /opt/karoshi/web_controls/exec/reset_password
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 #########################
@@ -211,17 +209,38 @@ fi
 
 if [ $OPTIONCHOICE = deleteaccounts ]
 then
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
-COUNTER=0
-while [ $COUNTER -lt ${#USERLIST[@]} ]
-do
-USERNAME=`echo ${USERLIST[$COUNTER]}`
-if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			echo Deleting $USERNAME '<br>'
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
+#########################
+#Change password on next logon
+#########################
+if [ $OPTIONCHOICE = changepassnextlogon ]
 then
-echo Deleting $USERNAME '<br>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			echo ''$"Change password on next logon for"' '$USERNAME'<br>'
+			echo `date`: modify_groups - forcing "$USERNAME" to change password on first logon by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			net sam set pwdmustchangenow "$USERNAME" yes
+
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
-let COUNTER=$COUNTER+1
-done
-fi
+
 exit
