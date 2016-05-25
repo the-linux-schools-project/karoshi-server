@@ -645,6 +645,21 @@ sleep 1
 #Wait for port 389 on localhost to be available
 check_ldap_port
 
+#Set the Administrator account to ignore password age time
+samba-tool user setexpiry Administrator --noexpiry
+
+source /opt/karoshi/server_network/domain_information/domain_name
+#Get samba 4 database password
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+#Set useraccountcontrol so that the password will never age for the Administrator account
+echo -e "dn: CN=Administrator,CN=Users,$LDAPBASE
+changetype: modify
+add: useraccountcontrol
+useraccountcontrol: 66048
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
+
+
 if [ "$INSTALL_TYPE" != restore ]
 then
 	#Add reverse dns entry
