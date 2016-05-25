@@ -113,7 +113,7 @@ echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 </form>
 </td>
 </tr></tbody></table></div><div id="infobox">
-<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td></tr></thead><tbody>'
 
 
 function show_servers {
@@ -177,45 +177,45 @@ then
 	</form>'
 fi
 
-echo '</td><td style="vertical-align: top;">'
+#echo '</td><td style="vertical-align: top;">'
 
 
-#Check backup server status if one has been assigned
-if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver ]
-then
-	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
-	BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
-	SERVERBACKUPICON=/images/warnings/server_fail.png
-	SERVERBACKUPSSHSTATUS=`echo $"Backup Server" - $BSERVERSHORT. $"SSH failure for this backup server."`
+##Check backup server status if one has been assigned
+#if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver ]
+#then
+#	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
+#	BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
+#	SERVERBACKUPICON=/images/warnings/server_fail.png
+#	SERVERBACKUPSSHSTATUS=`echo $"Backup Server" - $BSERVERSHORT. $"SSH failure for this backup server."`
 
-	if [ $SERVER != `hostname-fqdn` ]
-	then
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '$BACKUPSERVER' ls 1>/dev/null
-	SSHBACKUPSTATUS=`echo $?`
-	exit $SSHBACKUPSTATUS
-	'
-	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $BACKUPSERVER ls 1>/dev/null
-	fi
+#	if [ $SERVER != `hostname-fqdn` ]
+#	then
+#		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
+#	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '$BACKUPSERVER' ls 1>/dev/null
+#	SSHBACKUPSTATUS=`echo $?`
+#	exit $SSHBACKUPSTATUS
+#	'
+#	else
+#		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $BACKUPSERVER ls 1>/dev/null
+#	fi
 
-	SSHBACKUPSTATUS=`echo $?`
-	if [ $SSHBACKUPSTATUS = 0 ]
-	then
-		SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '$BSERVERSHORT'.<br><br>'$"SSH is working for this backup server."''
-		SERVERBACKUPICON=/images/warnings/server_ok.png
-	fi
-fi
+#	SSHBACKUPSTATUS=`echo $?`
+#	if [ $SSHBACKUPSTATUS = 0 ]
+#	then
+#		SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '$BSERVERSHORT'.<br><br>'$"SSH is working for this backup server."''
+#		SERVERBACKUPICON=/images/warnings/server_ok.png
+#	fi
+#fi
 
-if [ $SSHSTATUS = 0 ]
-then
-	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
-	<button class="info infoleft" name="_AssignBackup_" value="_SERVERNAME_'$SERVER'_">
-	<img src="'$SERVERBACKUPICON'" alt="'$SERVERBACKUPSSHSTATUS'">
-	<span>'$SERVERBACKUPSSHSTATUS'</span>
-	</button>
-	</form>'
-fi
+#if [ $SSHSTATUS = 0 ]
+#then
+#	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
+#	<button class="info infoleft" name="_AssignBackup_" value="_SERVERNAME_'$SERVER'_">
+#	<img src="'$SERVERBACKUPICON'" alt="'$SERVERBACKUPSSHSTATUS'">
+#	<span>'$SERVERBACKUPSSHSTATUS'</span>
+#	</button>
+#	</form>'
+#fi
 echo '</td></tr>'
 }
 

@@ -152,7 +152,7 @@ echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dovecot dhcp dns glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
+SERVICE_ARRAY=( apache apache_karoshi clamd cron cups dansguardian dovecot dhcp dns glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix postfwd portmap proftpd radius rpcbind samba squid nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}
