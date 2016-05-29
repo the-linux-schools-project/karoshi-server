@@ -258,6 +258,27 @@ cp -f /opt/karoshi/serversetup/modules/squid/scripts/archive_internet_logs /opt/
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist /opt/karoshi/"useful scripts"/
 cp -f /opt/karoshi/serversetup/modules/squid/scripts/internet_log_compress /opt/karoshi/"useful scripts"/
 
+#Backup and exising auto configuration file
+if [ -f /var/www/html/wpad.dat ]
+then
+	mv /var/www/html/wpad.dat /var/www/html/wpad.backup."$LOG_DATE".$$.dat
+fi
+
+#Configure auto configuration
+echo 'function FindProxyForURL(url, host) {
+
+// Do not use proxy for local traffic.
+	if (shExpMatch(url,"*.'$REALM'*"))                  
+		return "DIRECT";
+
+// All other traffic uses below proxy.'$REALM'.
+	return "PROXY proxy.'$REALM':3128";
+	
+}' > /var/www/html/wpad.dat
+
+chmod 0750 /var/www/html/wpad.dat
+chown root.www-data /var/www/html/wpad.dat
+
 #############################
 #Generate filter lists
 #############################

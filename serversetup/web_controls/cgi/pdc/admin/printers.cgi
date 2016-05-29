@@ -195,8 +195,11 @@ else
 </td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
 <input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'"></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
+<input name="VIEWASSIGNED" type="submit" class="button" value="'$"View Assigned Printers"'"></form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'"></form></td>'
+<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'"></form></td>
+'
 
 
 	if [ ! -z "$PRINTER" ]

@@ -156,9 +156,11 @@ sleep 1
 ROOTUSER=Administrator
 [ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && ROOTUSER=root
 
+
+echo "<ul><li>Setting printer admin rights</li></ul>"
 for (( c=1; c<=10; c++ ))
 do
-	echo "<ul><li>Setting printer admin rights</li></ul>"
+	#Keep trying until samba responds after its restart
 	net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS" 1>/dev/null
 	[ $? = 0 ] && break
 	sleep 1

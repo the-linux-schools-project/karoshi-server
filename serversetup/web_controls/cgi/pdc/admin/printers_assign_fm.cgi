@@ -47,6 +47,16 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Assign Printers to Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -107,14 +117,11 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
-else
-	DIV_ID=menubox
 fi
 
-echo '<form action="/cgi-bin/admin/printers_assign.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/admin/printers_assign.cgi" method="post"><div id="actionbox3"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -123,7 +130,30 @@ then
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign Printers to Locations"'</b></a></td></tr></tbody></table>'
 else
-	echo '<div class="sectiontitle">'$"Assign Printers to Locations"'</div><br>'
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="vertical-align: top;"><b>'$"Assign Printers to Locations"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers.cgi" name="SHOWPRINTERS" value="_">
+'$"Show Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers_delete.cgi" name="DELETEPRINTER" value="_">
+'$"Delete Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="VIEWASSIGNED" value="_">
+'$"View Assigned Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/locations.cgi" name="ADDLOCATION" value="_">
+'$"Add Location"'
+</button>
+</td>
+</tr></tbody></table><br></div><div id="infobox">'
 fi
 
 
@@ -145,29 +175,68 @@ else
 	LOCATION_COUNT=0
 fi
 
-echo '<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 180px;">Printer</td><td>'$PRINTERNAME'</td></tr>
-</tbody></table><table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 180px; vertical-align: top;">'$"Location"'</td><td>'
-echo '<select multiple="multiple" size="5" name="_LOCATION_">'
+MAXCOLS=2
+MAXHEADERS=1
+if [ "$LOCATION_COUNT" -gt 10 ]
+then
+	MAXCOLS=4
+	MAXHEADERS=2
+fi
+
+if [ "$LOCATION_COUNT" -gt 20 ]
+then
+	MAXCOLS=6
+	MAXHEADERS=3
+fi
+
+if [ "$LOCATION_COUNT" -gt 30 ]
+then
+	MAXCOLS=8
+	MAXHEADERS=4
+fi
+
+echo '<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: 180px;">Printer</td><td style="width: 100px;">'$PRINTERNAME'</td></tr>
+</tbody></table><br><table class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 180px; vertical-align: top;"><b>'$"Location"'</b></th><th style="width: 100px; vertical-align: top;"><b>'$"Assign"'</b></th>'
+
+
+for (( i=1; i<$MAXHEADERS; i++ ))
+do
+	echo '<th style="width: 140px; vertical-align: top;"><b>'$"Location"'</b></th><th style="width: 90px; vertical-align: top;"><b>'$"Assign"'</b></th>'
+done
+
+	
+
+
+echo '</tr></thead><tbody>'
+
 COUNTER=1
-while [ $COUNTER -le $LOCATION_COUNT ]
+COLCOUNT=0
+
+while [ $COUNTER -lt $LOCATION_COUNT ]
 do
 	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 
-	if [ `grep ^$LOCATION /var/lib/samba/netlogon/printers.txt | grep -c $PRINTERNAME` -gt 0 ]
+	if [ "$COLCOUNT" = 0 ]
 	then
-		echo '<option selected="selected">'$LOCATION'</option>'
+ 		 echo "<tr>"
+	fi
+
+	if [ `grep ^$LOCATION"," /var/lib/samba/netlogon/printers.txt | grep -c -w $PRINTERNAME` -gt 0 ]
+	then
+		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="_LOCATION_" value="'$LOCATION'" checked></td>'
 	else
-		echo '<option>'$LOCATION'</option>'
+		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="_LOCATION_" value="'$LOCATION'"></td>'
 	fi
 	let COUNTER=$COUNTER+1
+	let COLCOUNT=$COLCOUNT+2
+
+	if [ "$COLCOUNT" = "$MAXCOLS" ]
+	then
+		echo "</tr>"
+		COLCOUNT=0
+	fi
 done
-echo '<option value="">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option></select>'
-echo '</td></tr></tbody></table><br>'
+echo '</tbody></table><br><br>'
 
-if [ $MOBILE = no ]
-then
-	echo '</div><div id="submitbox">'
-fi
-
-echo '<input value="'$"Submit"'" class="button" type="submit"></form></div></body></html>'
+echo '<input value="'$"Submit"'" class="button" type="submit"></div></div></form></div></body></html>'
 exit

@@ -12,7 +12,9 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 for PROXYENTRY in `dig proxy.$REALM +short`
 do
 	echo `date`: create_proxy_dns_entries - deleting proxy.$REALM "$PROXYENTRY" from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns delete 127.0.0.1 $REALM proxy A $DNSENTRY "$PROXYENTRY" --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: create_proxy_dns_entries - deleting wpad.$REALM "$PROXYENTRY" from the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns delete 127.0.0.1 $REALM wpad A $DNSENTRY "$PROXYENTRY" --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 done
 
 #Add in entries for all proxy servers.
@@ -20,7 +22,9 @@ for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
 do
 	PROXYSERVERIP=`net lookup "$PROXYSERVER"`
 	samba-tool dns add 127.0.0.1 $REALM proxy A $PROXYSERVERIP --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM wpad A $PROXYSERVERIP --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 done
+
 exit
 
 

@@ -48,6 +48,15 @@ echo '
   <title>'$"View Assigned Printers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
@@ -65,8 +74,27 @@ exit
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
-echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><div id="actionbox3"><div id="titlebox"><b>'$"View Assigned Printers"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the printers that have been assigned to locations."'</span></a><br><br>
-</div><div id="infobox">
+echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="vertical-align: top;"><b>'$"View Assigned Printers"'</b></td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the printers that have been assigned to locations."'</span></a></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers.cgi" name="SHOWPRINTERS" value="_">
+'$"Show Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/printers_delete.cgi" name="DELETEPRINTER" value="_">
+'$"Delete Printers"'
+</button>
+</td>
+<td style="vertical-align: top;">
+<button class="button" formaction="/cgi-bin/admin/locations.cgi" name="ADDLOCATION" value="_">
+'$"Add Location"'
+</button>
+</td>
+</tr></tbody></table><br></div><div id="infobox">
 '
 
 #Check to see that locations.txt exists
@@ -81,7 +109,7 @@ let COUNTER=$COUNTER+1
 NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
 
 #Create top of table
-echo '<table class="standard" style="text-align: left;"><tbody><tr><td style="width: 200px;"><b>'$"Location"'</b></td><td style="width: 150px;"><b>'$"Assigned Printers"'</b></td><td></td><td></td></tr>'
+echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: 200px;"><b>'$"Location"'</b></th><th style="width: 150px;"><b>'$"Assigned Printers"'</b></th><th style="width: 80px;">'$"Default"'</th><th style="width: 80px;">'$"Remove"'</th></tr></thead><tbody>'
 LASTLOCATION=notset
 #Show locations and printers
 while [ $COUNTER -le $NOOFLINES ]
@@ -99,9 +127,9 @@ do
 		while [ $ARRAYCOUNTER -lt $ARRAYCOUNT ]
 		do
 			#Show location 
-			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td><td></td><td></td><td></td></tr>'
-			echo '<tr><td>'
-			[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
+			#[ $LASTLOCATION != ${DATARRAY[0]} ] && echo '<tr><td style="vertical-align: top; height: 15px;"><br></td><td></td><td></td><td></td></tr>'
+			echo '<tr><td>'${DATARRAY[0]}''
+			#[ $LASTLOCATION != ${DATARRAY[0]} ] && echo ${DATARRAY[0]}
 			LASTLOCATION=${DATARRAY[0]}
 			echo '</td><td>'${DATARRAY[$ARRAYCOUNTER]}'</td>'
 			#Show printer actions
@@ -124,7 +152,7 @@ do
 			#Delete option
 			echo '<td>
 			<button class="info" name="_SetDefault_" value="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_">
-			<img src="/images/help/printer_remove.png" alt="'$"Remove Printer"'">
+			<img src="/images/submenus/printer/remove_printer.png" alt="'$"Remove Printer"'">
 			<span>'$"Remove Printer"'</span>
 			</button>
 			</td></tr>'
@@ -138,3 +166,4 @@ done
 #End table
 echo '</tbody></table></div></div></form></div></body></html>'
 exit
+
