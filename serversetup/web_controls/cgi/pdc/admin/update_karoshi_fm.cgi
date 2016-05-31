@@ -137,11 +137,13 @@ fi
 if [ $ACTION = ALL ]
 then
 	UPDATELIST=updatelist_all.html
+	[ "$MOBILE" = yes ] && UPDATELIST=updatelist_all_mobile.html
 	ICON=/images/submenus/system/updates.png
 	ACTION=UPDATES
 	MESSAGE=$"Available updates"
 else
 	UPDATELIST=updatelist.html
+	[ "$MOBILE" = yes ] && UPDATELIST=updatelist_mobile.html
 	ICON=/images/submenus/system/updates_all.png
 	ACTION=ALL
 	MESSAGE=$"Installed Updates"
@@ -179,13 +181,8 @@ echo '<form action="/cgi-bin/admin/update_karoshi.cgi" name="selectservers" meth
 
 if [ -f /opt/karoshi/updates/$UPDATELIST ]
 then
-	if [ $MOBILE = yes ]
-	then
-		cat /opt/karoshi/updates/$UPDATELIST | sed 's/class="standard"/class="mobilestandard"/g'
-	else
-		cat /opt/karoshi/updates/$UPDATELIST
-	fi
-	else
+	cat /opt/karoshi/updates/$UPDATELIST
+else
 	echo '<br>'$"No updates are available."'<br>'
 fi
 

@@ -2,11 +2,6 @@
 LOG_DATE=`date +%F`
 #Make log folder
 [ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
-if [ ! -d /opt/karoshi/backup_servers ]
-then
-	mkdir -p /opt/karoshi/backup_servers
-	chmod 0755 /opt/karoshi/backup_servers
-fi
 
 if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
 then
