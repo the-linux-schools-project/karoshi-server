@@ -270,6 +270,9 @@ hostname $KAROSHISERVER
 sed -i "s/serverselection/standardsetup/g" /opt/karoshi/karoshi_user/karoshi_setup
 ln -s /opt/karoshi/serversetup/$SERVERTYPE/scripts/standardsetup /opt/karoshi/serversetup/standardsetup
 
+#Set lightdm to show servername
+sed -i "s%indicators=~language;~session;~power%indicators=~host;~spacer;~language;~session;~power%g" /etc/lightdm/lightdm-gtk-greeter.conf
+
 #Reboot to sort out name change problem
 sleep 1
 shutdown -r now
