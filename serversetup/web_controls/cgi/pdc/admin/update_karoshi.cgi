@@ -147,9 +147,6 @@ else
 	DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
-
-
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
@@ -160,7 +157,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-	echo '<div id="titlebox">'
+	echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
 

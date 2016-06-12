@@ -523,7 +523,7 @@ then
 		exit
 	fi
 
-	echo '<ul><li>'$SERVER' - '$"Restoring"' '$VOLUME'</li>'
+	echo '<ul><li>'$SERVER' - '$"Restoring"' '$VOLUME'</li></ul>'
 	#Get list of servers in the gluster volume
 	SERVERLIST=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/`
 	#Open shorewall ports and make sure that glusterfs is running

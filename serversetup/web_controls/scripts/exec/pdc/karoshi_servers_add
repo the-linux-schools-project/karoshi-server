@@ -143,10 +143,6 @@ then
 	TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 	[ $TIMEOUTSTATUS != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
 
-	#Check that StrictHostkeychecking is set to no
-	HOSTKEYSTATUS=`grep -c '#''   'StrictHostKeyChecking' 'ask /etc/ssh/ssh_config`
-	[ $HOSTKEYSTATUS != 0 ] && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
-
 	rm -f -R $HOME/.ssh/id_ecdsa
 	#rm -f -R $HOME/.ssh/id_dsa
 	ssh-keygen -t ecdsa -b 521 -N '' -f $HOME/.ssh/id_ecdsa > /dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -156,6 +152,10 @@ fi
 ############################
 #Setup ssh connections
 ############################
+
+#Check that StrictHostkeychecking is set to no
+HOSTKEYSTATUS=`grep -c '#''   'StrictHostKeyChecking' 'ask /etc/ssh/ssh_config`
+[ $HOSTKEYSTATUS != 0 ] && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
 
 #Delete known hosts to avoid man in the middle warnings on re-installed servers.
 [ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
