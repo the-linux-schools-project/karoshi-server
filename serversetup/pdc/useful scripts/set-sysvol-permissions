@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ -d /mnt-gluster/dc-data/sysvol ]
+then
+	SYSVOLPATH=/mnt-gluster/dc-data/sysvol
+else
+	SYSVOLPATH=/var/lib/samba/sysvol
+fi
+
+PID=$(echo "$$" | tr -cd 0-9)
+
+#Create pidfile
+echo "$PID" > /var/run/set-sysvol-permissions.pid
+
+#Set correct permisions for sysvol
+setfacl -Rb "$SYSVOLPATH"
+chown root.itadmin -R "$SYSVOLPATH"
+chmod 0664 -R "$SYSVOLPATH"
+chmod u+X,g+X,o+X -R "$SYSVOLPATH"
+
+#Start inotifywait on sysvol
+inotifywait -mrq -e CREATE --format %w%f "$SYSVOLPATH" | while read FILE
+do
+	#Set permissions on any changed files
+	if [ $(echo "$FILE" | grep -c "$SYSVOLPATH") -gt 0 ]
+	then
+		#Log changes to syslog
+		logger "set-sysvol-permissions: $FILE"
+		#Remove all existing acls 
+		setfacl -Rb "$FILE"
+		#Set permissions to read only for everyone and read/write for itadmin
+		chown root.itadmin -R "$FILE"
+		chmod 0664 -R "$FILE"
+		chmod u+X,g+X,o+X -R "$FILE"
+	fi
+done

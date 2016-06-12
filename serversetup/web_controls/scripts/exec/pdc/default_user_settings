@@ -151,6 +151,7 @@ then
 	#Get password complexity data
 	source /opt/karoshi/server_network/security/password_settings
 	[ -z "$CHANGE_PASS_FIRST_LOGIN" ] && CHANGE_PASS_FIRST_LOGIN=no
+	[ -z "$PASSWORD_EXPIRY" ] && PASSWORD_EXPIRY=yes
 	[ $STUDENT_CHARS_AND_NUMBERS = yes ] && SELECT11=selected
 	[ $STUDENT_CHARS_AND_NUMBERS = no ] && SELECT12=selected
 	[ $STUDENT_UPPER_AND_LOWER_CASE = yes ] && SELECT13=selected
@@ -161,6 +162,8 @@ then
 	[ $STAFF_UPPER_AND_LOWER_CASE = no ] && SELECT18=selected
 	[ $CHANGE_PASS_FIRST_LOGIN = yes ] && SELECT19=selected
 	[ $CHANGE_PASS_FIRST_LOGIN = no ] && SELECT20=selected
+	[ $PASSWORD_EXPIRY = yes ] && SELECT21=selected
+	[ $PASSWORD_EXPIRY = no ] && SELECT22=selected
 
 	#Show table for data choice
 	echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -233,6 +236,12 @@ then
 	<option value="no" '$SELECT20'>'$"no"'</option>
 	</select></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This forces a user to change their password the first time they log in."'</span></a></td></tr>
+	<tr><td>'$"Password Expiry"'</td><td>
+	<select name="_PASSWORDEXPIRY_" style="width: 200px;">
+	<option value="yes" '$SELECT21'>'$"yes"'</option>
+	<option value="no" '$SELECT22'>'$"no"'</option>
+	</select></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enable or disable password expiry."'</span></a></td></tr>
 </tbody></table>'
 fi
 if [ $ACTION = SETDATA ]
@@ -278,6 +287,8 @@ then
 	STAFFCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f14`
 	STAFFUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f15`
 	CHANGEPASSFIRSTLOGIN=`echo "$DATA" | cut -s -d: -f16`
+	PASSWORDEXPIRY=`echo "$DATA" | cut -s -d: -f17`
+
 
 	[ -z "$STUDENTMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=5
 	[ -z "$STUDENTCHARSANDNUMBERS" ] && STUDENTCHARSANDNUMBERS=no
@@ -318,6 +329,7 @@ then
 	echo STUDENT_UPPER_AND_LOWER_CASE="$STUDENTUPPERANDLOWERCASE" >> /opt/karoshi/server_network/security/password_settings
 	echo STUDENT_MINPASSLENGTH="$STUDENTMINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
 	echo CHANGE_PASS_FIRST_LOGIN="$CHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
+	echo PASSWORD_EXPIRY="$PASSWORDEXPIRY" >> /opt/karoshi/server_network/security/password_settings
 
 	exit $MODSTATUS
 fi

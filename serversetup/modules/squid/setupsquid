@@ -338,12 +338,12 @@ sleep 1
 #Open shorewall ports for proxy access
 ###########################
 
-MODCHECK=`grep -c -w  /etc/shorewall/rules`
+MODCHECK=`grep -c -w Squid-Proxy /etc/shorewall/rules`
 RESTART_SHOREWALL=no
 if [ $MODCHECK = 0 ]
 then
 	RESTART_SHOREWALL=yes
-	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 3128,3142 udp 3128,8000'</li></ul>'
+	echo '<ul><li>'$"The following extra ports are being allowed" - tcp 3128,8000'</li></ul>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3128,8000'	'-'#'Squid-Proxy /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules

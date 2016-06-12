@@ -1,0 +1,1 @@
+id=client_30sec ; client_address!=127.0.0.1 ; action=rate(client_address/100/30/REJECT: $$client_address: too many messages.)

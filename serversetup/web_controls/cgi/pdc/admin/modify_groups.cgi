@@ -243,7 +243,7 @@ then
 fi
 
 #Check to see that the option choice is correct
-if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ] && [ $OPTIONCHOICE != changepassnextlogon ]
+if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ] && [ $OPTIONCHOICE != changepassnextlogon ] && [ $OPTIONCHOICE != passwordsneverexpire ] && [ $OPTIONCHOICE != passwordsexpire ]
 then
 	MESSAGE=$"Incorrect option chosen."
 	show_status
@@ -312,6 +312,15 @@ then
 	MESSAGE=`echo $"Change password on next logon" $GROUP`
 fi
 
+if [ $OPTIONCHOICE = passwordsneverexpire ]
+then
+	MESSAGE=`echo $"Passwords never expire" $GROUP`
+fi
+if [ $OPTIONCHOICE = passwordsexpire ]
+then
+	MESSAGE=`echo $"Passwords expire" $GROUP`
+fi
+
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo "<div id="actionbox">"
@@ -326,10 +335,10 @@ fi
 
 if [ $OPTIONCHOICE != resetpasswords ]
 then
-MESSAGE=`echo $"Action completed for" $GROUP.`
-show_status
+	MESSAGE=`echo $"Action completed for" $GROUP.`
+	show_status
 else
-echo '<br><br>'$"Action completed for" $GROUP'<br>'
-echo "</div>"
+	echo '<br><br>'$"Action completed for" $GROUP'<br>'
+	echo "</div>"
 fi
 exit

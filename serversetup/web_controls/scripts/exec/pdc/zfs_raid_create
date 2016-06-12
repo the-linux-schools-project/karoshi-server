@@ -127,6 +127,7 @@ source /opt/karoshi/serversetup/variables/distro
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+
 	#Check to see if zfs is installed
 	UPDATEREPOS=yes
 	RELOADPAGE=no
@@ -146,6 +147,9 @@ then
 		apt-get install -y ubuntu-zfs
 		echo '</pre>'
 	fi
+
+	#Make sure that the zfs module is loaded
+	modprobe zfs
 
 	#Check to see if smartmontools are installed
 	which smartctl 1>/dev/null
@@ -335,6 +339,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		apt-get install -y ubuntu-zfs
 		echo "</pre>"
 	fi
+
+	#Make sure that the zfs module is loaded
+	modprobe zfs
 
 	#Check to see if smartmontools are installed
 	which smartctl 1>/dev/null

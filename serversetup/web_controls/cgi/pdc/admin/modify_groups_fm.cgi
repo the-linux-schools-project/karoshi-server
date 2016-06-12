@@ -76,6 +76,8 @@ echo '</td><td>
 <option value="deleteaccounts2">'$"Archive and delete accounts"'</option>
 <option value="resetpasswords">'$"Reset passwords"'</option>
 <option value="changepassnextlogon">'$"Change password on next login"'</option>
+<option value="passwordsneverexpire">'$"Passwords never expire"'</option>
+<option value="passwordsexpire">'$"Passwords expire"'</option>
 </select></td></tr>
 <tr><td style="width: 180px;">
 '$"Exceptions"'

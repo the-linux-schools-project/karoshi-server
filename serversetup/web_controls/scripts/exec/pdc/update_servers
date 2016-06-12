@@ -242,11 +242,11 @@ then
 		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/all/scripts/"
-		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-		scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
-		scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERNAME:"/opt/karoshi/serversetup/all/samba4/"
+		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		#scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERNAME:"/opt/karoshi/serversetup/all/samba4/"
 	fi
 fi
 
@@ -255,10 +255,10 @@ then
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/scripts/"
-	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
-	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/samba4/"
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"

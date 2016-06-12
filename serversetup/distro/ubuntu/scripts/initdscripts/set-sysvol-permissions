@@ -1,0 +1,52 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          set-sysvol-permissions 
+# Required-Start:    $network $local_fs $remote_fs mount-gluster-volumes
+# Required-Stop:     $network $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts set-sysvol-permissions
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/set-sysvol-permissions
+PIDFILE=/var/run/set-sysvol-permissions.pid
+DAEMON_OPTS=""
+DAEMON_USER=root
+
+. /lib/lsb/init-functions
+
+case $1 in
+	start)
+		#Check that we are not already running
+		if [ -f $PIDFILE ]
+		then
+			log_daemon_msg "set-sysvol-permissions is already running"
+			return 0
+		fi
+			log_daemon_msg "Starting set-sysvol-permissions"
+	  		start-stop-daemon --start --background  --pidfile $PIDFILE --user $DAEMON_USER --startas $DAEMON
+			status=$?
+			#Create pid file
+			#echo $! > $PIDFILE
+			log_end_msg $status
+  		;;
+	stop)
+		log_daemon_msg "Stopping set-sysvol-permissions"
+  		start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+		log_end_msg $?
+		#Stop all inotifywait processess
+		for PID in $(ps ax | grep "inotifywait" | grep /sysvol | grep -v grep | sed 's%^ %%g' | cut -d" " -f1)
+		do
+			kill -9 "$PID"
+		done		
+
+		#Make sure all processes are stoppped
+		for PID in $(ps ax | grep "/usr/sbin/set-sysvol-permissions" | grep -v grep | sed 's%^ %%g' | cut -d" " -f1)
+		do
+			kill -9 "$PID"
+		done
+		rm -f $PIDFILE	
+  		;;
+esac

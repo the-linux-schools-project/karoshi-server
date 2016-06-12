@@ -1469,6 +1469,29 @@ then
 			let COUNTER=$COUNTER+1
 		done
 	fi
+
+	function set_gid_ad_account {
+	echo -e "dn: CN=$Account,CN=Users,$LDAPBASE
+changetype: modify
+add: objectclass
+objectclass: posixaccount
+-
+add: gidnumber
+gidnumber: $GIDnumber
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>/dev/null
+}
+
+
+	for GIDInfo in "Domain Admins",512 "Domain Users",513 "Domain Guests",514  "Schema Admins",518 "Enterprise Admins",519 "Group Policy Creator Owners",520
+	do
+		Account=$(echo $GIDInfo | cut -d, -f1)
+		GIDnumber=$(echo $GIDInfo | cut -d, -f2)
+
+
+		echo "<ul><li>Setting $Account gid to $GIDnumber</li></ul>"
+		set_gid_ad_account
+	done
+
 fi
 #Create a default location
 echo default > /var/lib/samba/netlogon/locations.txt
@@ -2092,5 +2115,21 @@ then
 	samba-tool fsmo seize --role=all
 fi
 
+#Set permissions on sysvol
+
+if [ -d /mnt-gluster/dc-data/sysvol ]
+then
+	SYSVOLPATH=/mnt-gluster/dc-data/sysvol
+else
+	SYSVOLPATH=/var/lib/samba/sysvol
+fi
+setfacl -Rb "$SYSVOLPATH"
+chown root.itadmin -R "$SYSVOLPATH"
+chmod 0664 -R "$SYSVOLPATH"
+chmod u+X,g+X,o+X -R "$SYSVOLPATH"
+
+#Setup inotify script for sysvol permissions
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/set-sysvol-permissions
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_start
 
 exit

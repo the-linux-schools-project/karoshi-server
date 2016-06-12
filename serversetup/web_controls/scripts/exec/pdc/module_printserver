@@ -142,7 +142,7 @@ fi
 KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/logonform.kix | cut -d: -f1`
 #Use short names for windows
 SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
-[ ! -z "$KIXLINENUMBER" ] && sed -i $KIXLINENUMBER'c''$printserver'=$SERVERNAME2 /var/lib/samba/netlogon/logonform.kix
+[ ! -z "$KIXLINENUMBER" ] && sed -i $KIXLINENUMBER'c''$printserver'=\"$SERVERNAME2\" /var/lib/samba/netlogon/logonform.kix
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME

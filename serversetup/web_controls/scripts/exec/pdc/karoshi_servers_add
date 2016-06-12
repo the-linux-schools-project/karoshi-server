@@ -390,13 +390,13 @@ then
 fi
 
 #Copy in boot controls
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sysvsupport $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/reserveports $SERVER:/opt/karoshi/serversetup/all
-scp -o PasswordAuthentication=no "/opt/karoshi/serversetup/all/useful scripts/refreshcronjobs" root@$SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/"
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sysvsupport $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/reserveports $SERVER:/opt/karoshi/serversetup/all
+#scp -o PasswordAuthentication=no "/opt/karoshi/serversetup/all/useful scripts/refreshcronjobs" root@$SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/"
 
 #Copy in cacert.pem
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $TCPIPNUMBER:/etc/ssl/root-ca/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -559,6 +559,8 @@ then
 				fi
 			done
 		fi
+	#Stop set-sysvol-permissions
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_stop
 	#Configure dfs
 	for SHAREPATH in netlogon sysvol applications
 	do
@@ -573,7 +575,10 @@ then
 		[ -L /var/lib/samba/dfs/$SHAREPATH ] && rm -f /var/lib/samba/dfs/$SHAREPATH
 		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/$SHAREPATH
 	done
-
+	#Edit init.d script to wait for gluster
+	sed -i 's%$network $local_fs $remote_fs%$network $local_fs $remote_fs mount-gluster-volumes%g' /etc/init.d/set-sysvol/permissions
+	#Start set-sysvol-permissions
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_start
 	fi
 fi
 

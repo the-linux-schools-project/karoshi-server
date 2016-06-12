@@ -156,7 +156,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 <td style="vertical-align: top; width: 80px;">
 '
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ $SERVERNAME = `hostname-fqdn` ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 then
 	echo '<form action="/cgi-bin/admin/dhcp_fm.cgi" method="post">
 	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
@@ -171,7 +171,7 @@ else
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"DHCP Server"'">
-	<span>'$"This will provide a DHCP server for your network."'<br><br>'$"This module can only be applied to the main server."'</span>
+	<span>'$"This will provide a DHCP server for your network."'<br><br>'$"This module can only be applied to the main server or an Additional Domain Controller."'</span>
 	</button>
 	</form>
 	</td>

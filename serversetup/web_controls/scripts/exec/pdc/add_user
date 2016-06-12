@@ -311,6 +311,16 @@ employeeNumber: $ENROLLMENTNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
+#Set password to never expire
+if [ "$PASSWORD_EXPIRY" = no ]
+then
+	echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: modify
+replace: useraccountcontrol
+useraccountcontrol: 66048
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+
 CREATE_USER_STATUS=`echo $?`
 
 #Allow new user to join clients to the domain if they are a member of the itadmin or tech groups

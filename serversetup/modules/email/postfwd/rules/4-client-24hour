@@ -1,0 +1,1 @@
+id=client_24hr ; client_address!=127.0.0.1 ; action=rate(client_address/7200/86400/REJECT: $$client_address: too many messages.)

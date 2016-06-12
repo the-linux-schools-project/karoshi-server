@@ -243,4 +243,59 @@ then
 	done
 fi
 
+#########################
+#Set passwords to never expire
+#########################
+if [ "$OPTIONCHOICE" = passwordsneverexpire ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			echo ''$"Password never expires for"' '$USERNAME'<br>'
+			echo `date`: modify_groups - "setting password to never expire for $USERNAME  by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+			echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: modify
+replace: useraccountcontrol
+useraccountcontrol: 66048
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1> /dev/null
+
+
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
+if [ "$OPTIONCHOICE" = passwordsexpire ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+	COUNTER=0
+	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	do
+		USERNAME=`echo ${USERLIST[$COUNTER]}`
+		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		then
+			echo ''$"Password expires for"' '$USERNAME'<br>'
+			echo `date`: modify_groups - "setting password expire for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+			echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: modify
+replace: useraccountcontrol
+useraccountcontrol: 512
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1> /dev/null
+
+
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
 exit
