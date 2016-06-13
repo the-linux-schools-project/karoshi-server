@@ -26,6 +26,7 @@ do
 	then
 		#Log changes to syslog
 		logger "set-sysvol-permissions: $FILE"
+		sleep 3
 		#Remove all existing acls 
 		setfacl -Rb "$FILE"
 		#Set permissions to read only for everyone and read/write for itadmin

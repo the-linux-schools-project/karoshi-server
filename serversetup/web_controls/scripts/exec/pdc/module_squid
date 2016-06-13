@@ -114,6 +114,10 @@ then
 	fi
 fi
 
+#Enable SSL for apache
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+[ `echo $?` != 0 ] && exit 101 
+
 #Check to see if we can allow more than one proxy server if the main server can shuffle dns entries.
 PROXY_LOADBALANCE=no
 [ `grep -c "dns round robin = yes" /etc/samba/smb.conf` -gt 0 ] && PROXY_LOADBALANCE=yes
