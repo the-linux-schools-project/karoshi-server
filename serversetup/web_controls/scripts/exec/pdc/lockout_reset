@@ -29,44 +29,44 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
 then
-echo `date`: lockout_reset - No Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - No Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $lockout_reset_cgi'check' ]
 then
-echo `date`: lockout_reset - Incorrect Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Incorrect Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
 then
-echo `date`: lockout_reset - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $lockout_reset_cgi'check' ]
 then
-echo `date`: lockout_reset - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
 then
-echo `date`: lockout_reset - No Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - No Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
 MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/tech/lockout_reset.cgi | cut -d' ' -f1`
-[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+[ -z "$MD5SUM3" ] && MD5SUM3=not_set
 if [ $MD5SUM3'check' != $lockout_reset_cgi'check' ]
 then
-echo `date`: lockout_reset - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -75,10 +75,10 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: lockout_reset - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -89,45 +89,31 @@ USERNAME=`echo "$DATA" | cut -s -d: -f4`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
 then
-echo `date`: lockout_reset - Not called by lockout_reset.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Not called by lockout_reset.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: lockout_reset - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: lockout_reset - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: lockout_reset - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: lockout_reset - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: lockout_reset - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 
 echo `date`: lockout_reset - Resetting $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#smbldap-usermod -L $USERNAME
-#smbldap-usermod -U $USERNAME
-
-
-
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE`
-DNENTRY=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$USERNAME | grep ^dn:`
+source /opt/karoshi/server_network/domain_information/domain_name
 
-echo $DNENTRY > /opt/karoshi/.tempdata/lockoutreset.$$
-echo changetype: modify >> /opt/karoshi/.tempdata/lockoutreset.$$
-echo replace: sambaBadPasswordCount >> /opt/karoshi/.tempdata/lockoutreset.$$
-echo sambaBadPasswordCount: 0 >> /opt/karoshi/.tempdata/lockoutreset.$$
-echo - >> /opt/karoshi/.tempdata/lockoutreset.$$
-#Modify ldap
-ldapmodify -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" -f /opt/karoshi/.tempdata/lockoutreset.$$ 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-MODSTATUS=`echo $?`
-rm -f /opt/karoshi/.tempdata/lockoutreset.$$
-smbpasswd -e $USERNAME
-exit $MODSTATUS
+USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+echo -e "$USERDN\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit

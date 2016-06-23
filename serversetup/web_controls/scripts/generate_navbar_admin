@@ -134,6 +134,7 @@ then
 echo '			<li><a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change Password"'</a></li>
 			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a></li>
 			<li><a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a></li>
+			<li><a href="/cgi-bin/admin/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>
 			<li><a href="/cgi-bin/admin/groups.cgi">'$"Group Management"'</a></li>
 			<li><a href="/cgi-bin/admin/default_user_settings_fm.cgi">'$"Default User Settings"'</a></li>
 			<li><a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
@@ -343,7 +344,7 @@ echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$"Client Locations"'</a></l
 
 if [ $ADDUSERCTRL = yes ]
 then
-echo '					<li><a href="/cgi-bin/admin/windows_client_allow_roaming_profile_fm.cgi">'$"Allow roaming profile"'</a></li>'
+echo '					<li><a href="/cgi-bin/admin/windows_client_roaming_profiles.cgi">'$"Roaming profiles"'</a></li>'
 fi
 echo '				</ul>
 			</li>'

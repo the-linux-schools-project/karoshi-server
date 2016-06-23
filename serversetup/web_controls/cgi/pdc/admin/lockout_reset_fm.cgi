@@ -23,6 +23,11 @@
 
 #
 #Website: http://www.karoshi.org.uk
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ############################
 #Language
 ############################
@@ -36,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,30 +54,65 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
-<script src="/all/stuHover.js" type="text/javascript"></script>
-</head>
+<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+if [ "$MOBILE" = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
+		***********************************************/
+	</script>
+	<script>
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
+
+
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+if [ $MOBILE = no ]
+then
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+else
+	TABLECLASS=mobilestandard
+fi
+echo '<form action="/cgi-bin/admin/lockout_reset.cgi" method="post">'
 
-echo '<form action="/cgi-bin/admin/lockout_reset.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Reset User Lockout"'</div><br><div id="suggestions"></div>
-  <table class="standard" style="text-align: left;" >
-    <tbody>
-      <tr>
-        <td style="width: 180px;">
-'$"Username"'</td>
-        <td><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a>
-
-      </td></tr>
-    </tbody>
-  </table>
-</div>
-<div id="submitbox">
-<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
-</form>
-</div></body>
-</html>
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"Reset User Lockout"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">
 '
+else
+	echo '<div id="actionbox"><div class="sectiontitle">'$"Reset User Lockout"'</div><br>'
+fi
+
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$"Username"'</td>
+ <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a>
+</td></tr>
+</tbody></table><br><br>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="submitbox">'
+
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div></form></div></body></html>'
 exit

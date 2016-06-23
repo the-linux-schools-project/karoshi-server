@@ -78,6 +78,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall /etc
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/slapd /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/spamassassin /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid /etc/init.d/
+[ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squid3 /etc/init.d
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ssh /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/tftpd-hpa /etc/init.d/

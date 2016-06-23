@@ -402,7 +402,7 @@ fi
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $TCPIPNUMBER:/etc/ssl/root-ca/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Copy uptime daemon to server
-scp -r /opt/karoshi/serversetup/scripts/uptime $TCPIPNUMBER:/opt/karoshi/serversetup/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#scp -r /opt/karoshi/serversetup/scripts/uptime $TCPIPNUMBER:/opt/karoshi/serversetup/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Copy in update server scripts
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

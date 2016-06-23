@@ -109,6 +109,7 @@ if [ $ADDUSERCTRL = yes ]
 then
 echo '        <a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a>
         <a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a>
+	<a href="/cgi-bin/admin/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a>
 	<a href="/cgi-bin/admin/change_username_fm.cgi">'$"Change Username"'</a>
 	<a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a>
 '
@@ -163,6 +164,7 @@ echo '	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a
 echo '	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a>
 	<a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$"Linux Client Software Controls"'</a>
 	<a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$"Linux Client Software Packages"'</a>
+	<a href="/cgi-bin/admin/windows_client_roaming_profiles.cgi">'$"Windows Roaming profiles"'</a>
       </div>
 
  <div class="collapsed">

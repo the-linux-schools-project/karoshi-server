@@ -1,0 +1,251 @@
+#!/bin/bash
+#Copyright (C) 2007  Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_roaming_profiles_cgi
+then
+	echo `date`: windows_client_roaming_profiles - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_roaming_profiles_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $windows_client_roaming_profiles_cgi'check' ]
+then
+	echo `date`: windows_client_roaming_profiles - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: windows_client_roaming_profiles - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+if [ -z "$DATA" ]
+then
+	echo `date`: windows_client_roaming_profiles - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+USERNAME=`echo "$DATA" | cut -s -d: -f4`
+PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
+EXCEPTIONLIST=`echo "$DATA" | cut -s -d: -f6`
+ACTION=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
+
+if [ $MOBILE = no ]
+then
+	WIDTH1=180
+	WIDTH2=180
+	WIDTH3=80
+	BUTTONCLASS=info
+	ICON_ROAMING=/images/submenus/client/roaming_profile.png
+	ICON_MANDATORY=/images/submenus/client/mandatory_profile.png
+else
+	WIDTH1=100
+	WIDTH2=140
+	WIDTH3=75
+	BUTTONCLASS="info infoleft"
+	ICON_ROAMING=/images/submenus/client/roaming_profilem.png
+	ICON_MANDATORY=/images/submenus/client/mandatory_profilem.png
+fi
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: windows_client_roaming_profiles - Not called by windows_client_roaming_profiles.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: windows_client_roaming_profiles - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: windows_client_roaming_profiles - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+function convert_to_roaming {
+
+echo `date`: windows_client_roaming_profiles - roaming profile enabled "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<ul><li>'$USERNAME' - '$"converting to a roaming profile"'</li></ul>'
+#make the parent directory for the roaming profiles
+[ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP ] && mkdir -p /home/applications/profiles/roaming_profiles/$PRIMARYGROUP
+
+#Create new profile folders for the user
+#Windows XP
+cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+
+#Windows 7
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 ]
+then
+	cp -R /home/applications/profiles/default_roaming_profile.V2 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
+fi
+
+#Windows 8
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 ]
+then
+	cp -R /home/applications/profiles/default_roaming_profile.V3 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
+fi
+
+#Windows 8.1
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 ]
+then
+	cp -R /home/applications/profiles/default_roaming_profile.V4 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
+fi
+
+#Windows 10
+if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 ]
+then
+	cp -R /home/applications/profiles/default_roaming_profile.V5 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
+	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
+fi
+
+#Set new profile path for the user
+echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+changetype: modify
+replace: profilePath
+profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'$PRIMARYGROUP'\\'$USERNAME'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+}
+
+function convert_to_mandatory {
+echo `date`: windows_client_roaming_profiles - mandatory profile enabled "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo '<ul><li>'$USERNAME' - '$"converting to a mandatory profile"'</li></ul>'
+#Leave any existing roaming profiles in place just in case you want to change your mind and just change the profile path in ldap
+
+#Set new profile path for the user
+echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+changetype: modify
+replace: profilePath
+profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\'$PRIMARYGROUP'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+}
+
+function show_profile_status {
+#Lookup profile path in ldap and check if it is mandatory or roaming
+if [ $(ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep profilePath: | grep -c roaming_profile) = 0 ]
+then
+	PROFILESTATUS=$"mandatory"
+	ICON=$ICON_MANDATORY
+	PROFILE_ACTION=roaming
+else
+	PROFILESTATUS=$"roaming"
+	ICON=$ICON_ROAMING
+	PROFILE_ACTION=mandatory
+fi
+echo '<tr><td>'$USERNAME'</td><td>'$PROFILESTATUS'</td><td>
+	<button class="'$BUTTONCLASS'" name="_ChangeStatus_" value="_ACTION_'$PROFILE_ACTION'_USERNAME_'$USERNAME'_FORMCODE_111_MODCODE_111_">
+	<img src="'$ICON'" alt="'$"Profile Status"'">
+	<span>'$USERNAME'<br>'$PROFILESTATUS'</span>
+	</button>
+</td></tr>'
+}
+
+if [ "$ACTION" = roaming ] || [ "$ACTION" = mandatory ] || [ "$ACTION" = status ]
+then
+	if [ "$ACTION" = roaming ]
+	then
+		CONVERT_FUNCTION=convert_to_roaming
+	elif [ "$ACTION" = mandatory ]
+	then
+		CONVERT_FUNCTION=convert_to_mandatory
+	else
+		CONVERT_FUNCTION=show_profile_status
+		#Create table
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+		<tr><th style="width: '$WIDTH1'px;">'$"Username"'</th><th style="width: '$WIDTH2'px;">'$"Profile Status"'</th><th style="width: '$WIDTH3'px;"></th></tr></thead><tbody>'
+	fi
+	#Get samba 4 database password
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+
+	source /opt/karoshi/server_network/domain_information/domain_name
+
+	if [ ! -z "$PRIMARYGROUP" ]
+	then
+		source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
+		#Get a list of all the users in the group
+		for USERNAME in $(getent passwd | grep "$HOMEPATH"/ | cut -d: -f1)
+		do
+			if [ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]
+			then
+				$CONVERT_FUNCTION
+			fi
+		done
+	else
+		PRIMARYGROUP=$(id -g -n $USERNAME)
+		source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+		$CONVERT_FUNCTION
+	fi
+	#Reload the page
+	if [ "$ACTION" = roaming ] || [ "$ACTION" = mandatory ]
+	then
+		sleep 1
+		#Show status
+		if [ ! -z "$PRIMARYGROUP" ]
+		then
+			echo '<input name="_GROUP_" value="'$PRIMARYGROUP'" type="hidden">'
+		else
+			echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
+		fi
+		echo '<input name="_ACTION_" value="status" type="hidden"><script>document.profileform.submit();</script>'
+	else
+	#End the table for status view
+	echo '</tbody></table>'
+	fi
+fi
+
+exit
+

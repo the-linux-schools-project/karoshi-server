@@ -236,12 +236,10 @@ then
 			do
 				ALIAS=`echo $VIRTUAL_ADDRESS | cut -d: -f1 | cut -d"@" -f1`
 				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
-				echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>$VIRTUAL_DOMAIN</td><td>
-
-
-				<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_\">
+				echo "<tr><td>$USERNAME</td><td>$ALIAS</td><td>$VIRTUAL_DOMAIN</td><td>
+				<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_"\">
 				<img src=\"'$ICON1'\" alt=\"'$"Delete"'\">
-				<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+				<span>'$"Delete"' $ALIAS - $USERNAME</span>
 				</button>
 				</td></tr>"
 			done

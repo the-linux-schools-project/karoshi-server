@@ -201,7 +201,7 @@ SHOW_PASSWORD=no
 #Create a random password if password1 has not been set.
 if [ -z "$PASSWORD1" ]
 then
-	PASSWORD1="$RANDOM"
+	PASSWORD1=$(shuf -i 1000-9999 -n 1)
 	SHOW_PASSWORD=yes
 fi
 
