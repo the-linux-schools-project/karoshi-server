@@ -177,40 +177,51 @@ HOMEDIRECTORY2=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed '
 GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAKICKOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaKickoffTime: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPWDCANCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g'`
 DISPLAYNAME=`echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g'`
 MAILLOCALADDRESS=`echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g'`
 MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPWDMUSTCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdMustChange: | cut -d: -f2 | sed 's/^ //g'`
 SHADOWLASTCHANGE=`echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | sed 's/^ //g'`
 SHADOWMAX=`echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPASSWORDHISTORY=`echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAACCTFLAGS=`echo -e "$LDAPDATA" | grep ^sambaAcctFlags: | cut -d: -f2 | sed 's/^ //g'`
 SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPWDLASTSET=`perl -e 'print scalar(localtime('$SAMBAPWDLASTSET')), "\n"'`
-SHADOWLASTCHANGE=`perl -e 'print scalar(localtime('$SHADOWLASTCHANGE')), "\n"'`
-SAMBAPWDMUSTCHANGE=`perl -e 'print scalar(localtime('$SAMBAPWDMUSTCHANGE')), "\n"'`
-SAMBAKICKOFFTIME=`perl -e 'print scalar(localtime('$SAMBAKICKOFFTIME')), "\n"'`
+BADPASSWORDTIME=`echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g'`
+BADPASSWORDCOUNT=`echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g'`
+LOCKOUTTIME=`echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g'`
+
+[ -z "$BADPASSWORDTIME" ] && BADPASSWORDTIME=0
+[ -z "$BADPASSWORDCOUNT" ] && BADPASSWORDCOUNT=0
+
+#Convert times
+if [ -z "$LOCKOUTTIME" ] || [ "$LOCKOUTTIME" = 0 ]
+then
+	LOCKOUTTIME2=0
+else
+	LOCKOUTTIME2=$(date -d "1970-01-01 `echo $((($LOCKOUTTIME/10000000)-11644473600))` sec GMT")
+fi
+SAMBAPWDLASTSET2=$(date -d "1970-01-01 `echo $((($SAMBAPWDLASTSET/10000000)-11644473600))` sec GMT")
 
 #Show user information
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post">
 <input type="hidden" name="_USERNAME_" value="'$USERNAME'">
-<table class="standard" style="text-align: left; height: 40px;" ><tbody>
-<tr><td style="width: 200px;"><b>'$"Basic Information"'</b></td><td></td><td></td></tr>
-<tr><td>'$"Username"'</td><td>'$USERNAME'<br></td><td></td></tr>
+<table class="tablesorter" style="text-align: left; height: 40px;" ><tbody>
+<tr><td style="max-width: 200px;" colspan="3"><b>'$"Basic Information"'</b></td></tr>
+<tr><td>'$"Username"'</td><td style="max-width: 200px;" colspan="2">'$USERNAME'<br></td></tr>
 <tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$SERVER'</td></tr>
 <tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY'</td></tr>
 <tr><td>'$"Windows Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY2'</td></tr>
-<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td><td></td></tr>
-<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td><td></td></tr>
-<tr><td>UID number</td><td>'$UIDNUMBER'</td><td></td></tr>
-<tr><td>GID number</td><td>'$GIDNUMBER'</td><td></td></tr>
-<tr><td>'$"Common Name"'</td><td>'$CN'</td><td></td></tr>
+<tr><td>'$"Primary Group"'</td><td colspan="2">'$PRIMARYGROUP'</td></tr>
+<tr><td>UID number</td><td colspan="2">'$UIDNUMBER'</td></tr>
+<tr><td>GID number</td><td colspan="2">'$GIDNUMBER'</td></tr>
+<tr><td>'$"Bad Password Time"'</td><td colspan="2">'$BADPASSWORDTIME'</td></tr>
+<tr><td>'$"Bad Password Count"'</td><td colspan="2">'$BADPASSWORDCOUNT'</td></tr>
+<tr><td>'$"Lockout Time"'</td><td colspan="2">'$LOCKOUTTIME2'</td></tr>
+<tr><td>'$"Password last changed"'</td><td colspan="2">'$SAMBAPWDLASTSET2'</td></tr>
+<tr><td>'$"Common Name"'</td><td colspan="2">'$CN'</td></tr>
 <tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'$SN'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
-<td colspan="1" rowspan="7" style="vertical-align: top;">'
+<td style="max-width: 200px;" colspan="1" rowspan="5">'
 #Show user image
 
 #Show user image
@@ -227,8 +238,6 @@ echo '</tr>
 <tr><td>Employee / student number</td><td><input tabindex= "4" value="'$EMPLOYEENUMBER'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'$DISPLAYNAME'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"E-Mail address"'</td><td><input tabindex= "7" value="'$MAIL'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"Samba account flags"'</td><td>'$SAMBAACCTFLAGS'</td></tr>
-<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET'</td></tr>
 </tbody></table>
 '
 echo '<br><br><input value="Submit" type="submit" class="button"> <input value="Reset" type="reset" class="button"></form>'
@@ -252,7 +261,7 @@ echo '<table class="standard" style="text-align: left; height: 40px;" border="0"
 <tr><td>'$"Display Name"'</td><td>'$DISPLAYNAME'</td><td></td></tr>
 <tr><td>'$"E-Mail address"'</td><td>'$MAIL'</td><td></td></tr>
 <tr><td>'$"Samba account flags"'</td><td>'$SAMBAACCTFLAGS'</td><td></td></tr>
-<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET'</td><td></td></tr>
+<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET2'</td><td></td></tr>
 </tbody></table>
 '
 echo '</td><td>'

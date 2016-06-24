@@ -93,6 +93,7 @@ echo '
         <span>'$"Users and Groups"'</span>
         <a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a>
         <a href="/cgi-bin/tech/change_password_fm.cgi">'$"Change Password"'</a>
+	<a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a>
       </div>
       <div class="collapsed">
         <span>'$"Client"'</span>

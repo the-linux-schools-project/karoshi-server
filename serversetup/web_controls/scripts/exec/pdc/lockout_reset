@@ -109,11 +109,40 @@ then
 	exit
 fi
 
-echo `date`: lockout_reset - Resetting $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE`
 source /opt/karoshi/server_network/domain_information/domain_name
 
+#Get the base dn of the user
 USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+
+#Reset the lockout on any domain controllers - this is just in case we have slow replication.
+function adc_lockout_reset {
+for DOMAIN_CONTROLLER in $(ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers)
+do
+	echo `date`: "lockout_reset - Resetting $USERNAME on $DOMAIN_CONTROLLER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DOMAIN_CONTROLLER '
+	echo -e "'$USERDN'\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w '$LDAPPASS' -D "cn=Administrator,cn=Users,'$LDAPBASE'" 1>/dev/null
+	'
+done
+}
+
+#Reset the lockout on Internal zone domain controllers
+if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
+then
+	ZONE=internal
+	adc_lockout_reset
+fi
+
+#Reset the lockout on dmz domain controllers
+if [ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers ]
+then
+	ZONE=dmz
+	adc_lockout_reset
+fi
+
+#Reset the lockout on the pdc
+echo `date`: "lockout_reset - Resetting $USERNAME on" $(hostname-fqdn) "by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 echo -e "$USERDN\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
