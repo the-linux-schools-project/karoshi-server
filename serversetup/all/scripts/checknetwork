@@ -113,6 +113,15 @@ function getnetworksettings {
 [ -z "$GATEWAYCUSTOM" ] && GATEWAYCUSTOM=$(netstat -nr | awk '$1 == "0.0.0.0"{print$2}')
 [ -z "$NETMASKCUSTOM" ] && NETMASKCUSTOM=$(ifconfig | awk '/Mask:/{ print $4;} ' | sed -n 1,1p | tr -cd 0-9.)
 
+if [ -z "$NAMECUSTOM" ]
+then
+	#Try and get some existing network data if this is a restore
+	if [ -f /opt/karoshi/server_network/network_information/pdc ]
+	then
+		source /opt/karoshi/server_network/network_information/pdc
+	fi
+fi
+
 if [ $SCARDCOUNT -gt 1 ]
 then
 	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4' --button="gtk-ok"`

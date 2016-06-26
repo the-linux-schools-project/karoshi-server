@@ -32,7 +32,17 @@ fi
 }
 
 function do_setup {
-	echo "1"
+	if [ "$INSTALL_TYPE" = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
+	then
+		echo "1"
+		echo '# '$"Restoring essential data"''
+		$BASEINSTALLPATH/restore_data 1>>$KAROSHILOG 2>>$KAROSHILOG
+		[ ! -f /opt/karoshi/server_network/install_type_pre_restore ] && mv /opt/karoshi/server_network/install_type /opt/karoshi/server_network/install_type_pre_restore
+		echo "$INSTALL_TYPE" > /opt/karoshi/server_network/install_type
+		echo "2"
+	else
+		echo "1"
+	fi
 	echo '# '$"Checking Network"''
 	$BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG

@@ -123,7 +123,24 @@ TEXTDOMAIN=karoshi-server
 TABLECLASS=standard
 [ "$MOBILE" = yes ] && TABLECLASS=mobilestandard
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network"
+#Backup samba4 ready to add to the archive
+/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/samba_backup
+SAMBA_BACKUP_FOLDER=$(date +%Y-%m-%d)
+SAMBA_ARCHIVE_DATE=$(date +%d%m%y)
+#Copy samba backup folder to today
+cp -f -R /var/lib/samba/samba_backup/$SAMBA_BACKUP_FOLDER/ /var/lib/samba/samba_backup/pdc_backup
+#Rename the archives
+mv /var/lib/samba/samba_backup/pdc_backup/samba4_private.$SAMBA_ARCHIVE_DATE.tar.bz2 /var/lib/samba/samba_backup/pdc_backup/samba4_private.tar.bz2
+mv /var/lib/samba/samba_backup/pdc_backup/sysvol.$SAMBA_ARCHIVE_DATE.tar.bz2 /var/lib/samba/samba_backup/pdc_backup/sysvol.tar.bz2
+
+#Create some network information for the main server
+[ ! -d /opt/karoshi/server_network/network_information ] && mkdir /opt/karoshi/server_network/network_information
+
+THISIP=`net lookup $(hostname-fqdn)`
+echo NAMECUSTOM=$HOSTNAME > /opt/karoshi/server_network/network_information/pdc
+echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
+
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"
@@ -147,7 +164,7 @@ then
 	[ -f $BACKUP_PATH/restore ] && rm -f $BACKUP_PATH/karoshi_backup-$LOG_DATE.tar.gz
 
 	#Create encrypted tar archive for the backup
-	tar czvhf $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz $BACKUPFOLDERS 1>/dev/null
+	tar czvf $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz $BACKUPFOLDERS 1>/dev/null
 	chmod 0600 $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
 else
 	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '	
@@ -167,7 +184,7 @@ else
 	[ -f '$BACKUP_PATH'/restore ] && rm -f '$BACKUP_PATH'/karoshi_backup-'$LOG_DATE'.tar.gz
 
 	#Create encrypted tar archive for the backup
-	tar czvhf '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz '$BACKUPFOLDERS' 1>/dev/null
+	tar czvf '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz '$BACKUPFOLDERS' 1>/dev/null
 	chmod 0600 '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz
 	'
 fi
@@ -204,6 +221,9 @@ chmod 0750 /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/karoshi-backup-$SER
 echo '<SCRIPT language="Javascript">
 window.location = "/admin/backup_'$REMOTE_USER'/karoshi-backup-'$SERVERNAME_SHORT-$LOG_DATE'.tar.gz";
 </script>'
+
+#Delete /var/lib/samba/samba_backup/pdc_backup - its only created for the backup archive.
+rm -f -R /var/lib/samba/samba_backup/pdc_backup
 
 #Delete the archive
 sleep 60
