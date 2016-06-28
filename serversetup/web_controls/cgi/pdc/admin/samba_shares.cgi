@@ -556,12 +556,15 @@ then
 	done
 
 	#Check that the network drive letter has not already been allocated to a share.
-	if [ ! -z "$DRIVELETTER" ]
+	if [ "$ACTION" = reallyadd ]
 	then
-		if [ `grep -r 'DRIVELETTER="'$DRIVELETTER'"' /opt/karoshi/server_network/network_shares | wc -l` -gt 0 ]
+		if [ ! -z "$DRIVELETTER" ]
 		then
-			MESSAGE=$"This drive letter is already in use."
-			show_status
+			if [ `grep -r 'DRIVELETTER="'$DRIVELETTER'"' /opt/karoshi/server_network/network_shares | wc -l` -gt 0 ]
+			then
+				MESSAGE=$"This drive letter is already in use."
+				show_status
+			fi
 		fi
 	fi
 fi
@@ -584,6 +587,7 @@ then
 	ACTION2=view
 	BUTTONTXT=$"View Network Shares"
 	TITLETXT=$"Add Network Share"
+	[ "$ACTION" = edit ] && TITLETXT=$"Edit Network Share"
 	[ "$ACTION" = delete ] && TITLETXT=$"Delete Network Share"
 fi
 

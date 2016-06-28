@@ -162,15 +162,18 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-WIDTH1=120
-WIDTH2=160
-WIDTH3=100
+WIDTH1=180
+WIDTH2=120
+WIDTH3=160
 WIDTH4=100
 WIDTH5=100
-WIDTH6=30
+WIDTH6=100
 WIDTH7=100
-WIDTH8=180
+WIDTH8=30
 WIDTH9=100
+WIDTH10=180
+WIDTH11=30
+
 ICON1=/images/submenus/file/edit.png
 ICON2=/images/submenus/file/delete.png
 
@@ -426,6 +429,7 @@ then
 		#Add in dfs link
 		#Use short names for windows
 		SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
+		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
 		ln -s msdfs:$SERVERNAME2\\$SHARENAME /var/lib/samba/dfs/$SHARENAME
 	else
 		#Get a list of servers in the gluster volume.
@@ -442,7 +446,7 @@ then
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVERNAME" "$SHAREPATH" "$GLUSTERVOL" copydata 1>/dev/null
 		done
 		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
-		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/homes/"$SHARENAME"
+		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
 		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$SHARENAME"
 	fi
 
@@ -505,26 +509,26 @@ echo '<br><table class="standard" style="text-align: left;" ><tbody>'
 
 if [ "$ACTION" = edit ]
 then
-	echo '<tr><td style="width: '$WIDTH5'px;">'$"Server"'</td><td>'$SERVERNAME'</td></tr>'
+	echo '<tr><td style="width: '$WIDTH6'px;">'$"Server"'</td><td>'$SERVERNAME'</td></tr>'
 fi
 
-echo '<tr><td style="width: '$WIDTH5'px;">'$"Share Name"'</td><td>'
+echo '<tr><td style="width: '$WIDTH6'px;">'$"Share Name"'</td><td>'
 
 #Only allow share name to be entered if creating a new share.
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "2" name="____SHARENAME____" value="'$SHARENAME'" style="width: 200px;" size="20" type="text"></td><td style="width: '$WIDTH6'px;">
+	echo '<input tabindex= "1" name="____SHARENAME____" value="'$SHARENAME'" style="width: 200px;" size="20" type="text"></td><td style="width: '$WIDTH8'px;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name for the network share."'</span></a>'
 else
 	echo '<input type="hidden" name="____SHARENAME____" value="'$SHARENAME'">'"$SHARENAME"	
 fi
 echo '</td></tr>
-<tr><td>'$"Comment"'</td><td><input tabindex= "1" name="____COMMENT____" value="'$COMMENT'" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
+<tr><td>'$"Comment"'</td><td><input tabindex= "2" name="____COMMENT____" value="'$COMMENT'" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
 <tr><td>'$"Folder Path"'</td><td>'
 
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "2"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 200px;" size="20" type="text"></td><td>
+	echo '<input tabindex= "3"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the path that you want the share to use."'</span></a>'
 else
 	echo '<input type="hidden" name="____SHAREPATH____" value="'$SHAREPATH'">'"$SHAREPATH"	
@@ -547,13 +551,13 @@ echo '</select>
 
 	if [ ! -z "$GROUP1" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g' | sed 's/<option><\/option>/<option value="'$GROUP1'">'$GROUP1'<\/option><option label="dottedline" class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP1'">'$GROUP1'<\/option><option label="dottedline" class="select-dash" disabled="disabled">----------<\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g'
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a></td><td style="width: '$WIDTH7'px;">
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a></td><td style="width: '$WIDTH9'px;">
 <select style="width: 200px;" name="____GROUPPERMS1____">'
 
 if [ ! -z "$GROUPPERMS1" ]
@@ -585,7 +589,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP2" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g' | sed 's/<option><\/option>/<option value="'$GROUP2'">'$GROUP2'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP2'">'$GROUP2'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g'
 	fi
@@ -624,7 +628,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP3" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g' | sed 's/<option><\/option>/<option value="'$GROUP3'">'$GROUP3'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP3'">'$GROUP3'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g'
 	fi
@@ -664,7 +668,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP4" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g' | sed 's/<option><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g'
 	fi
@@ -761,6 +765,9 @@ then
 
 		#Delete include line in smb.conf
 		sed -i "/etc\/samba\/extra_network_shares\/$SERVERNAME\/$SHARENAME.conf/d" /etc/samba/smb.conf
+
+		#Delete the dfs link
+		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
 	
 		#Restart samba
 		source /opt/karoshi/serversetup/variables/distro
@@ -774,6 +781,9 @@ then
 
 		#Delete include line in smb.conf
 		sed -i "/etc\/samba\/extra_network_shares\/'$SERVERNAME'\/'$SHARENAME'.conf/d" /etc/samba/smb.conf
+
+		#Delete the dfs link
+		[ -L /var/lib/samba/dfs/"'$SHARENAME'" ] && rm -f /var/lib/samba/dfs/"'$SHARENAME'"
 	
 		#Restart samba
 		source /opt/karoshi/serversetup/variables/distro
@@ -792,13 +802,13 @@ fi
 
 if [ "$ACTION" = delete ]
 then
-	source /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$FOLDERNAME"
+	source /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
 	echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Server"'</td><td>'$SERVERNAME'</td></tr>
-	<tr><td style="width: '$WIDTH1'px;">'$"Network Share"'</td><td>'$SHARENAME'</td></tr>
-	<tr><td style="width: '$WIDTH1'px;">'$"Path"'</td><td>'$SHAREPATH'</td></tr>
-	</tbody></table><br><br>'$"This will delete the share definition but will not delete the folder."'<br><br>'$"Are you sure that you want to delete this share?"'<br><br><input name="____ACTION____reallydelete____" value="'$"Delete Share"'" class="button" type="submit"> <input name="____ACTION____reallydelete____" value="'$"Cancel"'" class="button" type="submit">
+	<table class="tablesorter" style="text-align: left;" ><tbody>
+	<tr><td style="width: '$WIDTH10'px;">'$"Server"'</td><td>'$SERVERNAME'</td></tr>
+	<tr><td style="width: '$WIDTH10'px;">'$"Network Share"'</td><td>'$SHARENAME'</td></tr>
+	<tr><td style="width: '$WIDTH10'px;">'$"Path"'</td><td>'$SHAREPATH'</td></tr>
+	</tbody></table><br><br>'$"This will delete the share definition but will not delete the folder."'<br><br>'$"Are you sure that you want to delete this share?"'<br><br><input name="____ACTION____reallydelete____" value="'$"Delete Share"'" class="button" type="submit"> <input name="____ACTION____view____" value="'$"Cancel"'" class="button" type="submit">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'____">
 	<input type="hidden" name="____SERVERTYPE____" value="'$SERVERTYPE'____">
 	<input type="hidden" name="____SERVERMASTER____" value="'$SERVERMASTER'____">
@@ -810,7 +820,7 @@ fi
 if [ "$ACTION" = view ]
 then
 	echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;">'$"Server"'</th><th style="width: '$WIDTH1'px;"><b>'$"Network Share"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Server Path"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Permissions"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Map Drive"'</b></th><th style="vertical-align:top; width: '$WIDTH5'px;"><b>'$"Drive Letter"'</b></th><th></th><th></th></tr></thead><tbody>
+<tr><th style="width: '$WIDTH1'px;">'$"Server"'</th><th style="width: '$WIDTH2'px;"><b>'$"Network Share"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Server Path"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Permissions"'</b></th><th style="width: '$WIDTH6'px;"><b>'$"Map Drive"'</b></th><th style="vertical-align:top; width: '$WIDTH7'px;"><b>'$"Drive Letter"'</b></th><th style="width: '$WIDTH11'px;"></th><th style="width: '$WIDTH11'px;"></th></tr></thead><tbody>
 '
 	for SERVERS in /opt/karoshi/server_network/network_shares/*
 	do

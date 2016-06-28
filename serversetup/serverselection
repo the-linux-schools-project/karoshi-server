@@ -77,7 +77,7 @@ CHOICE="$?"
 function main_server_choice {
 #Ask to install, restore, or join an existing domain
 yad --title $"Karoshi Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
---button=''$"Install"':3'  --button=''$"Restore from ADC"':4' --button=''$"Restore from backup archive"':11' --text '<span font_weight="bold" foreground="blue">'$"Install"':</span> '$"Install the main server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore from ADC"':</span> '$"Use this option if you already have an additional domain controller that is a Karoshi Server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore from archive backup"':</span> '$"Restore users and groups from an essential backup archive."'\n\n'
+--button=''$"Install"':3'  --button=''$"Restore from ADC"':4' --button=''$"Restore from backup archive"':11' --text '<span font_weight="bold" foreground="blue">'$"Install"':</span> '$"Install the main server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore from ADC"':</span> '$"Use this option if you already have an additional domain controller that is a Karoshi Server."'\n\n<span font_weight="bold" foreground="blue">'$"Restore from backup archive"':</span> '$"Restore users and groups from an essential backup archive."'\n\n'
 CHOICE=$?
 if [ "$CHOICE" = 3 ] || [ $CHOICE = 5 ]
 then

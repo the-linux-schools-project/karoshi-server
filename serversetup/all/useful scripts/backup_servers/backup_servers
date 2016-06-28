@@ -66,7 +66,7 @@ echo '$THIS_SERVER' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_infor
 echo '$BACKUPPATH' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
 ' 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
 #Do rsync backup
-rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --acls --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+rsync --timeout=30 --verbose --dirs --recursive --xattrs  --copy-dirlinks --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --acls --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
 echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
 echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $BACKUPNAME - $"completed"

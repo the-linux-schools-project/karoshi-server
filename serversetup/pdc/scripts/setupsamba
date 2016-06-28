@@ -2140,6 +2140,24 @@ chmod u+X,g+X,o+X -R "$SYSVOLPATH"
 #Restore original install type if this is a restore
 if [ -f /opt/karoshi/server_network/install_type_pre_restore ]
 then
+	#Modify role information
+	if [ -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ]
+	then
+		for INFOFILES in /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/*
+		do
+			INFOFILE=`basename $INFOFILES`
+			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
+			then
+				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE` = 0 ]
+				then
+					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE
+					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE
+				fi
+			fi
+		done
+	fi
+
+
 	rm -f /opt/karoshi/server_network/install_type
 	mv /opt/karoshi/server_network/install_type_pre_restore /opt/karoshi/server_network/install_type
 fi

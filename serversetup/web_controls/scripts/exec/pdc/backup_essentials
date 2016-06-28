@@ -140,7 +140,13 @@ THISIP=`net lookup $(hostname-fqdn)`
 echo NAMECUSTOM=$HOSTNAME > /opt/karoshi/server_network/network_information/pdc
 echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba/smb.conf /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup"
+#Make sure we have an extra shares folder for samba
+[ ! -d /etc/samba/extra_network_shares ] && mkdir -p /etc/samba/extra_network_shares
+
+#Make sure we have an asset register folder
+[ ! -d /opt/karoshi/asset_register ] && mkdir -p /opt/karoshi/asset_register
+
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"
