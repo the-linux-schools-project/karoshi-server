@@ -90,7 +90,10 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/set-sysvol-permissions /etc/init.d/
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/set-sysvol-permissions ]
+then
+	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/set-sysvol-permissions /etc/init.d/
+fi
 if [ ! -f /etc/init.d/glusterfs ]
 then
 	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
@@ -126,11 +129,15 @@ then
 	fi
 fi
 
-#Check if we have gluster
-if [ $(grep -c /mnt-gluster/dc-data) -gt 0 ]
+if [ -f /etc/init.d/set-sysvol-permissions ]
 then
-	#Get set-sysvol-permissions to wait for gluster
-	sed -i 's%$network $local_fs $remote_fs%$network $local_fs $remote_fs mount-gluster-volumes%g' /etc/init.d/set-sysvol/permissions
+	#Check if we have gluster
+	if [ $(grep -c /mnt-gluster/dc-data /etc/fstab) -gt 0 ]
+	then
+
+		#Get set-sysvol-permissions to wait for gluster
+		sed -i 's%$network $local_fs $remote_fs%$network $local_fs $remote_fs mount-gluster-volumes%g' /etc/init.d/set-sysvol-permissions
+	fi
 fi
 
 #Make sure no scripts have been added to /etc/init for upstart.

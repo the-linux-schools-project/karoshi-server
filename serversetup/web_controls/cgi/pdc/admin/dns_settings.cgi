@@ -50,7 +50,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>'$"File Manager"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"DNS Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
@@ -139,7 +139,7 @@ done
 function show_status {
 echo '<script>
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/file_manager.cgi";
+window.location = "/cgi-bin/admin/dns_settngs.cgi";
 </script></div></body></html>'
 exit
 }
@@ -199,7 +199,7 @@ then
 		<span>'$"DNS Settings"' '$SERVER2'</span>'
 	if [ $SERVERNAME != notset ]
 	then
-		echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Select Server"'</a>'
+		echo '<a href="/cgi-bin/admin/dns_settings.cgi">'$"Select Server"'</a>'
 	else
 		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 	fi
@@ -218,7 +218,7 @@ then
 	then
 		echo '
 	<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/file_manager.cgi" method="post">
+	<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
 	<button class="button" name="_">'$"Choose Server"'</button>
 	</form>
 	</td>

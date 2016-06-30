@@ -46,8 +46,8 @@ fi
 
 #backup folder
 function backup_folder {
-echo -e ''`date`': '$BACKUPNAME' - '$"started"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
-echo -e ''`date`': '$BACKUPNAME' - '$"started"'\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
+echo -e ''`date`': '$BACKUPNAME' - '$"started" >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e ''`date`': '$BACKUPNAME' - '$"started" >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $BACKUPNAME - $"started"
 YESTERDAY=`date -d "-1 day" +"%Y-%m-%d"`
 ssh -x -o PasswordAuthentication=no $BACKUP_SERVER '
@@ -65,10 +65,18 @@ date +%T >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
 echo '$THIS_SERVER' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
 echo '$BACKUPPATH' >> /home/backups/'$THIS_SERVER'/'"$BACKUPNAME"'/backup_information
 ' 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+
+#Check if the top level folder is a symlink and change path to symlink path if it is.
+
+if [ -L "$BACKUPPATH" ]
+then
+	BACKUPPATH=$(readlink "$BACKUPPATH")
+fi
+
 #Do rsync backup
-rsync --timeout=30 --verbose --dirs --recursive --xattrs  --copy-dirlinks --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --acls --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
-echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
-echo -e '\n'`date`': '$BACKUPNAME' - '$"completed"'\n\n\n' >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
+rsync --timeout=30 --verbose --dirs --recursive --xattrs  --links --compress --backup-dir=/home/backups/$THIS_SERVER/"$BACKUPNAME"/$YESTERDAY --delete --backup --times --perms --executability --acls --owner --group -o "$BACKUPPATH" $BACKUP_SERVER:/home/backups/$THIS_SERVER/"$BACKUPNAME"/current 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e `date`': '$BACKUPNAME' - '$"completed" >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+echo -e `date`': '$BACKUPNAME' - '$"completed" >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 echo `date`: $BACKUPNAME - $"completed"
 }
 

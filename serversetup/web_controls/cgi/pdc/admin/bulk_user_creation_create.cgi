@@ -171,6 +171,16 @@ then
 		CREATEUSER=no
 	fi
 fi
+
+if [ $PRI_GROUP = getgroupfromcsv ]
+then
+	if [ -z "$USERPGROUP" ]
+	then
+		echo $"Line": $COUNTER - $"Blank Primary Group""<br>"
+		CREATEUSER=no
+	fi
+fi
+
 }
 
 #########################
@@ -201,14 +211,15 @@ do
 	SURNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f2 | tr -cd 'A-Za-z0-9,'`
 	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3 | tr -cd 'A-Za-z0-9,-'`
 	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 | tr -cd 'A-Za-z0-9,-'`
-	PASSWORD=$(urlencode -m `sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5-`)
+	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 | tr -cd 'A-Za-z0-9,-'`
+	PASSWORD=$(urlencode -m `sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6-`)
 	datacheck
 	if [ $CREATEUSER = no ]
 	then
 		MESSAGE=`echo $"The CSV file you have chosen is not formatted correctly."`
 		show_status
 	fi
-	echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO","$USERNAME" >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
+	echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO","$USERNAME",$USERPGROUP >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
 	let COUNTER=$COUNTER+1
 done
 rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
@@ -288,6 +299,7 @@ do
 	PASSWORD=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3`
 	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 |  sed 's/ //g'`
 	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 |  sed 's/ //g'`
+	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 |  sed 's/ //g'`
 	DUPLICATECOUNTER=""
 	create_username
 	DUPLICATE_CHECK=yes
@@ -316,7 +328,14 @@ do
 		then
 			echo $"Creating" "$USERNAME" - "$FORENAME" "$SURNAME"'<br><br>'
 			[ -z "$PASSWORD" ] && PASSWORD="$RANDOM"
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$PRI_GROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE":bulkusercreation | sudo -H /opt/karoshi/web_controls/exec/add_user
+			if [ $PRI_GROUP = getgroupfromcsv ]
+			then
+				USERGROUP=$USERPGROUP
+			else
+				USERGROUP=$PRI_GROUP
+			fi
+
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE":bulkusercreation | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
 	fi
 	let COUNTER=$COUNTER+1

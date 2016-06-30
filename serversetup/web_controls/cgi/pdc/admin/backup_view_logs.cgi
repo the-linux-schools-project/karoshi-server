@@ -132,7 +132,7 @@ fi
 #Check to see that DATE is not blank
 if [ -z "$DATE" ]
 then
-	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
+	MESSAGE=$"The date cannot be blank."
 	show_status
 fi
 
@@ -196,3 +196,4 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$SERVERNAME:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/backup_view_logs
 echo "</div></div></div></body></html>"
 exit
+

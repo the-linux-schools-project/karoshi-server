@@ -66,8 +66,8 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 '$"Import enrolment numbers"'
 </button>
 </td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional,password - optional"'</span></a></td></tr></tbody></table><br>
-<b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional,password - optional"'<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,letme-in<br><br>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, Primary Group - optional, password - optional"'</span></a></td></tr></tbody></table><br>
+<b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, Primary Group - optional, password - optional"'<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,letme-in<br><br>
         <table class="standard">
         <tr>
             <td style="width: 180px;">'$"Upload CSV file"'

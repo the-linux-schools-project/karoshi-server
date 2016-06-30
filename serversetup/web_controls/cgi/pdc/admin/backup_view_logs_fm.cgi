@@ -106,11 +106,11 @@ echo "	<!-- calendar attaches to existing form element -->
 		'controlname': '_DATE_'
 	});
 
-	</script></td></tr></tbody</table><br>"
+	</script></td></tr></tbody></table><br>"
 
 #Show list of servers
 MOBILE=no
 /opt/karoshi/web_controls/show_servers $MOBILE backups $"Show logs"
 
-echo '</tbody></table></div></div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit

@@ -100,8 +100,6 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-echo '<div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>'
-
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
 
@@ -116,6 +114,8 @@ then
 		exit 101
 	fi
 fi
+
+echo '<div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>'
 
 #Enable SSL for apache
 echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert

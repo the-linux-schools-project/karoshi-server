@@ -100,9 +100,8 @@ echo '<table class="standard" style="text-align: left;" >
         <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
 	<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
 </select></td></tr>
-<tr><td>'$"Primary Group"'</td>
-</td><td>'
-/opt/karoshi/web_controls/group_dropdown_list
+<tr><td>'$"Primary Group"'</td><td>'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's%<option label="blank"></option>%<option label="blank"></option><option value="getgroupfromcsv">'$"Primary group from CSV"'</option>%g'
 echo '</td></tr></tbody></table>
 </div>
 <div id="submitbox">

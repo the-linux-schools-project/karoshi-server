@@ -146,7 +146,10 @@ echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
 #Make sure we have an asset register folder
 [ ! -d /opt/karoshi/asset_register ] && mkdir -p /opt/karoshi/asset_register
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup"
+#Make sure we have a user images folder
+[ ! -d /var/www/karoshi_html/images/user_images ] && mkdir -p /var/www/karoshi_html/images/user_images
+
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup /var/www/karoshi_html/images/user_images"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"

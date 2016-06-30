@@ -2137,9 +2137,9 @@ chmod u+X,g+X,o+X -R "$SYSVOLPATH"
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/set-sysvol-permissions
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_start
 
-#Restore original install type if this is a restore
-if [ -f /opt/karoshi/server_network/install_type_pre_restore ]
-then
+
+if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
+then 
 	#Modify role information
 	if [ -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ]
 	then
@@ -2156,8 +2156,11 @@ then
 			fi
 		done
 	fi
+fi
 
-
+#Restore original install type if this is a restore
+if [ -f /opt/karoshi/server_network/install_type_pre_restore ]
+then
 	rm -f /opt/karoshi/server_network/install_type
 	mv /opt/karoshi/server_network/install_type_pre_restore /opt/karoshi/server_network/install_type
 fi
