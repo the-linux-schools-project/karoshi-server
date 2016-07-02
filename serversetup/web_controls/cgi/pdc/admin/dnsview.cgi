@@ -280,13 +280,20 @@ then
 '
 else
 	echo '<table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td><td style="vertical-align: top;">
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME2'</div></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
 <button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_">
 '$ALTTITLE'
 </button>
 </form>
-</td></tr></tbody></table><br>'
+</td>
+<td>
+<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
+<button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
+</form>
+</td>
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td>
+</tr></tbody></table>'
 fi
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

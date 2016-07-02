@@ -7,6 +7,7 @@ ACTION=`echo $4 | tr -cd "A-Za-z"`
 CUSTOM=`echo $5 | tr -cd "A-Za-z."`
 SEPARATOR=`echo $6 | tr -cd "_"`
 GLUSTER=no
+SERVER_COUNT=0
 MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_controller/ | sed -n 1,1p )
 
 ############################
@@ -119,7 +120,7 @@ echo '</tbody></table>'
 
 
 function show_server {
-
+SERVER_COUNT=$(($SERVER_COUNT + 1))
 if [ "$SERVER" = allservers ]
 then
 	SERVERNAME2=$"All Servers"
@@ -191,12 +192,15 @@ echo '</tr>'
 }
 
 function show_all_option {
-FILLCOLOUR=yellow
-SERVERTYPE=network
-INFOPATH=/opt/karoshi/server_network/servers
-SERVER=allservers
-ZONE=$"All"
-show_server
+if [ "$SERVER_COUNT" -gt 1 ]
+then
+	FILLCOLOUR=yellow
+	SERVERTYPE=network
+	INFOPATH=/opt/karoshi/server_network/servers
+	SERVER=allservers
+	ZONE=$"All"
+	show_server
+fi
 }
 
 function show_internal_servers {

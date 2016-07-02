@@ -86,14 +86,14 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\._:&%\-+*'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+*'`
 #CONVERT STAR
 DATA=`echo "$DATA" | sed 's/*/%99/g'`
 #echo $DATA"<br>"
 #########################
 #Assign data to variables
 #########################
-END_POINT=45
+END_POINT=25
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -136,17 +136,79 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+END_POINT=45
+
+#Assign DNS1
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DNS1check ]
+	then
+		let COUNTER=$COUNTER+1
+		DNS1=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign DNS2
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DNS2check ]
+	then
+		let COUNTER=$COUNTER+1
+		DNS2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<script>
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/dns_settngs.cgi";
+window.location = "/cgi-bin/admin/dns_settings.cgi";
 </script></div></body></html>'
 exit
 }
 
+#Check data
 if [ -z "$ACTION" ]
 then
-	ACTION=notset
+	ACTION=view
+fi
+
+if [ "$ACTION" = reallyedit ]
+then
+	if [ -z "$SERVERNAME" ]
+	then
+		MESSAGE=$"The servername cannot be blank."
+		show_status
+	fi
+
+	if [ -z "$DNS1" ]
+	then
+		MESSAGE=$"You have not entered in a DNS entry."
+		show_status
+	fi
+	#Check that the tcpip number is valid.
+
+	#Check dots and max number.
+	if [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ] || [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]
+	then
+		MESSAGE=$"You have entered in an incorrect DNS entry."
+		show_status
+	fi
+	if [ ! -z "$DNS2" ]
+	then
+		if [ $(echo "$DNS2" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ] || [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]
+		then
+			MESSAGE=$"You have entered in an incorrect DNS entry."
+			show_status
+		fi
+	fi
 fi
 
 if [ -z "$SERVERNAME" ]
@@ -211,8 +273,7 @@ then
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"DNS Settings"' '$SERVER2'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"DNS Settings"'</span></a></td>'
+	<td style="vertical-align: top;"><div class="sectiontitle">'$"DNS Settings"' '$SERVER2'</div></td>'
 
 	if [ $SERVERNAME != notset ]
 	then
@@ -223,17 +284,70 @@ then
 	</form>
 	</td>
 	'
+	else
+		echo '<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/dnsview_fm.cgi" method="post">
+	<button class="button" name="_ViewDNSEntries_">'$"View DNS Entries"'</button>
+	</form>
+	</td>'
 	fi
-	echo '</tr></tbody></table></div><div id="infobox">'
+	echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"View and edit the DNS settings for your servers."'</span></a></td></tr></tbody></table></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/dns_settings.cgi" method="post">'
 
-#MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1`
-#echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/dns_settings
+if [ "$ACTION" = reallyedit ] || [ "$ACTION" = autogenerate ]
+then
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$DNS1:$DNS2:" | sudo -H /opt/karoshi/web_controls/exec/dns_set_forwarder	
+	ACTION=view
+fi
+
+if [ "$ACTION" = edit ]
+then
+	#Get DNS settings for the server
+	DNSLIST=( $(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders $SERVERNAME) )
+	DNSLISTCOUNT=${#DNSLIST[*]} 
+
+	FORMACTION=reallyedit
+	[ $DNSLISTCOUNT -gt 1 ] && FORMACTION=autogenerate
+
+	#Show form with the current dns servers on it
+
+
+	echo '<input type="hidden" name="_SERVERNAME_'$SERVERNAME'_">
+	<input type="hidden" name="_SERVERTYPE_'$SERVERTYPE'_">
+	<input type="hidden" name="_SERVERMASTER_" value="'$SERVERMASTER'">
+	<input type="hidden" name="_ACTION_" value="'$FORMACTION'">
+	<table class="tablesorter" style="text-align: left;" ><tbody>
+	<tr><td style="width: 220px;">'$"Servername"'</td><td style="width: 180px;">'$SERVERNAME'</td></tr>'
+
+	COUNTER=0
+	COUNTER1=1
+	while [ $COUNTER -lt $DNSLISTCOUNT ]
+	do
+		echo '<tr><td>'$"DNS Server"' 1</td><td>'
+		if [ "$FORMACTION" = reallyedit ]
+		then
+			echo '<input tabindex= "'$COUNTER1'" style="width: 120px;" name="_DNS'$COUNTER1'_" value="'${DNSLIST[$COUNTER]}'"  type="text">'
+		else
+			echo "${DNSLIST[$COUNTER]}"
+		fi
+	echo '</td></tr>'
+		let COUNTER=$COUNTER+1
+		let COUNTER1=$COUNTER1+1		
+	done
+	echo '</tbody></table>'
+	[ "$FORMACTION" = autogenerate ] && echo ''$"This server uses your Domain Controllers for DNS."' '$"Press submit to auto regenerate the DNS settings."''
+	echo '<br><br><input value="'$"Submit"'" class="button" type="submit">'
+	[ "$FORMACTION" = reallyedit ] && echo ' <input value="'$"Reset"'" class="button" type="reset">'
+fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set DNS Forwarder" "notset" "showdns"
+if [ "$ACTION" = view ]
+then
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set DNS Forwarder" "edit" "showdns"
+fi
 
 echo '</form>'
 [ $MOBILE = no ] && echo '</div>'

@@ -154,6 +154,7 @@ then
 	VIEWWIDTH1=35
 	VIEWWIDTH2=520
 	VIEWHEIGHT1=36
+	INFOCLASS1="info"
 else
 ROWCOUNT=3
 	WIDTH=70
@@ -183,6 +184,7 @@ ROWCOUNT=3
 	VIEWWIDTH1=50
 	VIEWWIDTH2=520
 	VIEWHEIGHT1=35
+	INFOCLASS1="info infoleft"
 fi
 
 LINECOLOUR1="#A0A0A0"
@@ -383,7 +385,7 @@ then
 			</td>
 			'
 			echo '<td>
-			<button class="info" name="_Properties_" value="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_">
+			<button class="'$INFOCLASS1'" name="_Properties_" value="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_">
 			<img src="'$ICON2'" alt="'$"Properties"'">
 			<span>'$"Properties"'<br>'$FILENAME'</span>
 			</button>
@@ -391,9 +393,9 @@ then
 
 			if [ $FILEACTION = ENTER ]
 			then
-				echo '<button class="info" name="_Enter_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON1'" alt="'$"Enter"'"><span>'$"Enter"'<br>'$FILENAME'<br></span></button>'
+				echo '<button class="'$INFOCLASS1'" name="_Enter_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON1'" alt="'$"Enter"'"><span>'$"Enter"'<br>'$FILENAME'<br></span></button>'
 			else
-				echo '<button class="info" name="_Edit_" value="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON10'" alt="'$"Edit"'"><span>'$"Edit"'<br>'$FILENAME'<br></span></button>'
+				echo '<button class="'$INFOCLASS1'" name="_Edit_" value="_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON10'" alt="'$"Edit"'"><span>'$"Edit"'<br>'$FILENAME'<br></span></button>'
 			fi
 			if [ $MOBILE = no ]
 			then
@@ -475,13 +477,13 @@ then
 		</button>
 		</td>"
 
-		echo "<td><button class=\"info\" name=\"_Properties_\" value=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON2'\" alt=\"'$"Properties"'\"><span>'$"Properties"'<br>$FILENAME</span></button></td><td>"
+		echo "<td><button class=\"'$INFOCLASS1'\" name=\"_Properties_\" value=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON2'\" alt=\"'$"Properties"'\"><span>'$"Properties"'<br>$FILENAME</span></button></td><td>"
 
 		if [ $FILEACTION = ENTER ]
 		then
-			echo "<button class=\"info\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"$ICON1\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
+			echo "<button class=\"'$INFOCLASS1'\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"$ICON1\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
 		else
-			echo "<button class=\"info\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
+			echo "<button class=\"'$INFOCLASS1'\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
 		fi
 
 
@@ -569,13 +571,13 @@ then
 		</button>
 		</td>"
 
-		echo "<td><button class=\"info\" name=\"_Properties_\" value=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON2'\" alt=\"'$"Properties"'\"><span>'$"Properties"'<br>$FILENAME</span></button></td><td>"
+		echo "<td><button class=\"'$INFOCLASS1'\" name=\"_Properties_\" value=\"_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON2'\" alt=\"'$"Properties"'\"><span>'$"Properties"'<br>$FILENAME</span></button></td><td>"
 
 		if [ $FILEACTION = ENTER ]
 		then
-			echo "<button class=\"info\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"$ICON1\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
+			echo "<button class=\"'$INFOCLASS1'\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"$ICON1\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
 		else
-			echo "<button class=\"info\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
+			echo "<button class=\"'$INFOCLASS1'\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
 		fi
 		[ $SHOWRESTORE = yes ] && echo "</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a>"
 

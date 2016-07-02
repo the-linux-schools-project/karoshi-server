@@ -106,13 +106,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="height:30px;"><div class="sectiontitle">'$"View DNS Entries"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a>
-</td><td>
+<td style="vertical-align: top;"><div class="sectiontitle">'$"View DNS Entries"'</div></td><td>
 <button class="button" formaction="dns_settings.cgi" name="_ViewDNSSettings_" value="_ViewDNSSettings_">
 '$"DNS Settings"'
 </button>
 </td>
-</tr></tbody></table><br></div><div id="infobox">'
+<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a>
+</td>
+</tr></tbody></table></div><div id="infobox">'
 fi
 
 #Show list of servers

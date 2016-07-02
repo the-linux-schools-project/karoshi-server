@@ -33,39 +33,37 @@ echo `date`: check_reboot - $SERVER: reboot required after an upgrade. >> /opt/k
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn add reboot_$SERVER /cgi-bin/admin/shutdown_fm.cgi ''$SERVER' - '$"Reboot required"'' 3
 }
 
+function delete_warning {
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete reboot_$SERVER
+}
+
 #Check servers for reboot
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-	SERVER=`basename $SERVERS`
+	REBOOT_REQUIRED=no
+	SERVER=$(basename "$SERVERS")
 	if [ $SERVER = `hostname-fqdn` ]
 	then
-		[ -f /var/run/reboot-required ] && add_warning
+		if [ -f /var/run/reboot-required ]
+		then
+			REBOOT_REQUIRED=yes
+		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 		[ -f /var/run/reboot-required ] && exit 105
 		'
-		[ `echo $?` = 105 ] && add_warning
+		if [ $? = 105 ]
+		then
+			REBOOT_REQUIRED=yes
+		fi
+	fi
+	if [ "$REBOOT_REQUIRED" = yes ]
+	then
+		add_warning
+	else
+		delete_warning
 	fi
 done
-
-#Check federated servers for reboot
-
-
-#Show list of federated servers
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-	then
-		for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-		do
-			FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-			[ -f /var/run/reboot-required ] && exit 105
-			'
-			[ `echo $?` = 105 ] && add_warning
-		done
-	fi
-fi
 
 #Check federated slave servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
@@ -84,7 +82,6 @@ then
 					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 					[ -f /var/run/reboot-required ] && exit 105
 					'
-					[ `echo $?` = 105 ] && add_warning
 				else
 					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_MASTER '
 					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVER' '\''
@@ -92,7 +89,12 @@ then
 					'\''
 					[ `echo $?` = 105 ] && exit 105
 					'
-					[ `echo $?` = 105 ] && add_warning
+				fi
+				if [ $? = 105 ]
+				then
+					add_warning
+				else
+					delete_warning
 				fi
 			done
 		done
