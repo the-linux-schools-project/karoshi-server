@@ -7,6 +7,7 @@ HTMLPATH2=/var/www/html/karoshi_network_status.html
 [ -f "$HTMLPATH1" ] && rm -f "$HTMLPATH1"
 
 function disable_proxy_dns_entry {
+#Take a proxy server out of the proxy.realm dns entry if it is offline
 if [ -f /opt/karoshi/server_network/proxyservers/"$SERVERNAME" ]
 then
 	[ ! -d /opt/karoshi/server_network/proxyservers_offline ] && mkdir -p /opt/karoshi/server_network/proxyservers_offline
@@ -17,6 +18,7 @@ fi
 }
 
 function enable_proxy_dns_entry {
+#Add a proxy server into the proxy.realm dns entry if it is online
 if [ -f /opt/karoshi/server_network/proxyservers_offline/"$SERVERNAME" ]
 then
 	mv -f /opt/karoshi/server_network/proxyservers_offline/"$SERVERNAME" /opt/karoshi/server_network/proxyservers
@@ -284,9 +286,51 @@ then
 		copy_htmldata
 	done
 else 
-	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
-	copy_htmldata
+	if [ -f /opt/karoshi/server_network/proxyserver ]
+	then
+		PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+		copy_htmldata
+	fi
 fi
 
+#Check that dnsmasq is not running on domain controllers
+SERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/` `[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/`"
 
+for SERVERNAME in $SERVERLIST
+do
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"status 1>/dev/null
+		SERVICESTATUS=$?
+		if [ $SERVICESTATUS != 1 ]
+		then
+			echo $SERVERNAME: dnsmasq is running.
+			echo Attempting to stop dnsmasq
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"stop
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dnsmasq
+			#Restart samba4
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"stop
+			sleep 1
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"start
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"status 1>/dev/null
+		SERVICESTATUS=$?
+		if [ $SERVICESTATUS != 1 ]
+		then
+			echo $SERVERNAME: dnsmasq is running.
+			echo Attempting to stop dnsmasq
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"stop
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dnsmasq
+			#Restart samba4
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"stop
+			sleep 1
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"start
+		fi
+		'
+	fi
+done
 exit
+

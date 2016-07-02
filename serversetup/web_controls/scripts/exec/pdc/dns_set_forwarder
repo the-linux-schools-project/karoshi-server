@@ -157,7 +157,7 @@ then
 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		#Change dns forwarder in smb.conf
-		sed -i "/dns forwarder =/c\\tdns forwarder = '$DNS1'" /etc/samba/smb.conf
+		sed -i "/dns forwarder =/c\\\tdns forwarder = '$DNS1'" /etc/samba/smb.conf
 		#Restart Samba4
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
