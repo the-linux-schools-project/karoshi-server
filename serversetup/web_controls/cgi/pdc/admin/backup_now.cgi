@@ -117,7 +117,10 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="infobox">'
+
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Check the events log for backup progress."'</span></a><br><br></div><div id="infobox">'
+
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1`
 #backup now
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_now

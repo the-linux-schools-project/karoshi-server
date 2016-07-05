@@ -71,14 +71,20 @@ for d in $DIRS;do
 		done
 		tar cjf ${WHERE}/samba4_${n}.${WHEN}.tar.bz2  $relativedirname --exclude=*.ldb >/dev/null 2>&1
 		if [ $? -ne 0 ]; then
-			echo "Error while archiving ${WHERE}/samba4_${n}.${WHEN}.tar.bz2"
+			echo "Error1 while archiving ${WHERE}/samba4_${n}.${WHEN}.tar.bz2"
 			exit 1
 		fi
 		find $relativedirname -name "*.ldb.bak" -exec rm {} \;
 	else
-		tar cjf ${WHERE}/${n}.${WHEN}.tar.bz2  $relativedirname >/dev/null 2>&1
+		if [ -L /var/lib/samba/${n} ]
+		then
+			tar cjf ${WHERE}/${n}.${WHEN}.tar.bz2  /mnt-gluster/dc-data/${n} >/dev/null 2>&1
+		else
+			tar cjf ${WHERE}/${n}.${WHEN}.tar.bz2  $relativedirname >/dev/null 2>&1
+		fi
+		
 		if [ $? -ne 0 ]; then
-			echo "Error while archiving ${WHERE}/${n}.${WHEN}.tar.bz2"
+			echo "Error2 while archiving ${WHERE}/${n}.${WHEN}.tar.bz2"
 			exit 1
 		fi
 	fi

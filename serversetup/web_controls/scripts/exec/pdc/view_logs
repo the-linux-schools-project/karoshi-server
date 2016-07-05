@@ -108,16 +108,18 @@ then
 	TAIL_LENGTH=200
 fi
 
-WIDTH1=180
+WIDTH1=80
 WIDTH2=80
+WIDTH3=180
 TABLECLASS=standard
 ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
-	WIDTH1=120
+	WIDTH1=70
 	WIDTH2=70
+	WIDTH1=120
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
 fi
@@ -144,7 +146,13 @@ then
 	<button class="button" name="_DeleteLog_" value="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
 	'$"Delete"'
 	</button>
-	</td>'
+	</td>
+	<td>
+	<button class="button" name="_RefreshLog_" value="_ACTION_viewevent_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
+	'$"Refresh"'
+	</button>
+	</td>
+'
 fi
 if [ "$ACTION" = viewlist ]
 then
@@ -164,8 +172,7 @@ then
 	</td>'
 fi
 
-echo '</tr></tbody></table>
-</form>'
+echo '</tr></tbody></table></form>'
 }
 
 if [ "$ACTION" = delete ]
@@ -174,15 +181,15 @@ then
 
 	if [ "$SERVERNAME" = `hostname-fqdn` ]
 	then
-		if [ -f /opt/karoshi/logs/errors/"$LOGFILE" ]
+		if [ -f /opt/karoshi/logs/events/"$LOGFILE" ]
 		then
-			rm -f /opt/karoshi/logs/errors/"$LOGFILE"
+			rm -f /opt/karoshi/logs/events/"$LOGFILE"
 		fi
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-		if [ -f /opt/karoshi/logs/errors/"'$LOGFILE'" ]
+		if [ -f /opt/karoshi/logs/events/"'$LOGFILE'" ]
 		then
-			rm -f /opt/karoshi/logs/errors/"'$LOGFILE'"
+			rm -f /opt/karoshi/logs/events/"'$LOGFILE'"
 		fi
 		'
 	fi
@@ -193,20 +200,22 @@ if [ "$ACTION" = viewevent ]
 then
 	echo `date`: view_logs - viewing "$LOGFILE" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 	show_options
+	echo "<br>"
 	if [ "$SERVERNAME" = `hostname-fqdn` ]
 	then
-		if [ -f /opt/karoshi/logs/errors/"$LOGFILE" ]
+		if [ -f /opt/karoshi/logs/events/"$LOGFILE" ]
 		then
-			cat /opt/karoshi/logs/errors/$LOGFILE | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
+			cat /opt/karoshi/logs/events/$LOGFILE | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
 		fi
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-		if [ -f /opt/karoshi/logs/errors/"'$LOGFILE'" ]
+		if [ -f /opt/karoshi/logs/events/"'$LOGFILE'" ]
 		then
-			cat /opt/karoshi/logs/errors/'$LOGFILE' | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
+			cat /opt/karoshi/logs/events/'$LOGFILE' | tr -cd "A-Za-z0-9\. _[]():/\n=-" | sed "s/kernel/<span STYLE=\"font-weight: bold; color: red\">kernel<\/span>/g" | sed "s/nslcd/<span STYLE=\"font-weight: bold; color: red\">nslcd<\/span>/g" | sed "s/$/<br>/g"
 		fi
 		'
 	fi
+	echo "<br>"
 	show_options
 fi
 
@@ -215,19 +224,19 @@ then
 	echo `date`: view_logs - deleting all stored logs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 	if [ "$SERVERNAME" = `hostname-fqdn` ]
 	then
-		if [ -d /opt/karoshi/logs/errors ]
+		if [ -d /opt/karoshi/logs/events ]
 		then
-			rm -f -R /opt/karoshi/logs/errors
-			mkdir /opt/karoshi/logs/errors
-			chmod 0700 /opt/karoshi/logs/errors
+			rm -f -R /opt/karoshi/logs/events
+			mkdir /opt/karoshi/logs/events
+			chmod 0700 /opt/karoshi/logs/events
 		fi
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-		if [ -d /opt/karoshi/logs/errors ]
+		if [ -d /opt/karoshi/logs/events ]
 		then
-			rm -f -R /opt/karoshi/logs/errors
-			mkdir /opt/karoshi/logs/errors
-			chmod 0700 /opt/karoshi/logs/errors
+			rm -f -R /opt/karoshi/logs/events
+			mkdir /opt/karoshi/logs/events
+			chmod 0700 /opt/karoshi/logs/events
 		fi
 		'
 	fi
@@ -249,29 +258,45 @@ then
 	#Get a list of event logs for the server
 	if [ "$SERVERNAME" = `hostname-fqdn` ]
 	then
-		LOGCOUNT=$(ls -1 /opt/karoshi/logs/errors | wc -l)
+		LOGCOUNT=$(ls -1 /opt/karoshi/logs/events | wc -l)
 	else
-		LOGCOUNT=`ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-		ls -1 /opt/karoshi/logs/errors | wc -l
-		'`
+		LOGCOUNT=$(ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		ls -1 /opt/karoshi/logs/events | wc -l
+		')
 	fi
 
 	#Show a list of logs
 	if [ "$LOGCOUNT" -gt 0 ]
 	then
 		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
-	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH3'px;">'$"Category"'</th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		if [ "$SERVERNAME" = `hostname-fqdn` ]
 		then
-			for EVENT in $(ls -1 /opt/karoshi/logs/errors/ | sort -r)
+			for EVENT in $(ls -1 /opt/karoshi/logs/events/ | sort -r)
 			do
-				#Get time and date of the event
-				DAY=$(echo $EVENT | cut -d"-" -f3)
-				MONTH=$(echo $EVENT | cut -d"-" -f2)
-				YEAR=$(echo $EVENT | cut -d"-" -f1)
-				TIME=$(echo $EVENT | cut -d"-" -f4)
+				#Get time, date and category of the event
+				CATEGORY=$(echo $EVENT | cut -d"-" -f1)
 
-				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td>
+				case "$CATEGORY" in
+					syslog)
+					    CATEGORY2=$"System Log"
+					    ;;
+					 
+					backup)
+					    CATEGORY2=$"Backup Log"
+					    ;;
+					 
+					restore)
+					     CATEGORY2=$"Restore Log"
+					    ;;
+				esac
+
+				DAY=$(echo $EVENT | cut -d"-" -f4)
+				MONTH=$(echo $EVENT | cut -d"-" -f3)
+				YEAR=$(echo $EVENT | cut -d"-" -f2)
+				TIME=$(echo $EVENT | cut -d"-" -f5)
+
+				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td><td>'$CATEGORY2'</td>
 				<td>
 				<button class="info" name="_ViewEventLog_" value="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_">
 				<img src="'$ICON1'" alt="'$"ViewEventLog"'">
@@ -286,15 +311,31 @@ then
 			done
 		else
 			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-			for EVENT in $(ls -1 /opt/karoshi/logs/errors/ | sort -r)
+			for EVENT in $(ls -1 /opt/karoshi/logs/events/ | sort -r)
 			do
-				#Get time and date of the event
-				DAY=$(echo $EVENT | cut -d"-" -f3)
-				MONTH=$(echo $EVENT | cut -d"-" -f2)
-				YEAR=$(echo $EVENT | cut -d"-" -f1)
-				TIME=$(echo $EVENT | cut -d"-" -f4)
+				#Get time, date and category of the event
+				CATEGORY=$(echo $EVENT | cut -d"-" -f1)
 
-				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td>
+				case "$CATEGORY" in
+					syslog)
+					    CATEGORY2=$"System Log"
+					    ;;
+					 
+					backup)
+					    CATEGORY2=$"Backup Log"
+					    ;;
+					 
+					restore)
+					     CATEGORY2=$"Restore Log"
+					    ;;
+				esac
+
+				DAY=$(echo $EVENT | cut -d"-" -f4)
+				MONTH=$(echo $EVENT | cut -d"-" -f3)
+				YEAR=$(echo $EVENT | cut -d"-" -f2)
+				TIME=$(echo $EVENT | cut -d"-" -f5)
+
+				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td><td>$CATEGORY2</td>
 				<td>
 				<button class=\"info\" name=\"_ViewEventLog_\" value=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\">
 				<img src=\"'$ICON1'\" alt=\"'$"ViewEventLog"'\">

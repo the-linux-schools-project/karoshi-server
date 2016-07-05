@@ -105,8 +105,9 @@ function backup_pdc {
 #Make sure a backup is not already running before starting
 if [ $(ps aux | grep rsync | grep -c $KAROSHI_SERVER) = 0 ]
 then
-	[ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
-	nohup bash -c "/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/backup_servers 1>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log&"
+	EVENTFILE=backup-$(date +%F-%H:%M:%S)
+	[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
+	nohup bash -c "/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/backup_servers 1>> /opt/karoshi/logs/events/$EVENTFILE 2>> /opt/karoshi/logs/events/$EVENTFILE&"
 fi
 }
 
@@ -114,6 +115,7 @@ function backup_other_servers {
 #Copy in configuration file
 ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
 [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/
+[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
 '
 
 echo "<br>"Copying backup configuration data to $KAROSHI_SERVER"<br>"
@@ -123,19 +125,15 @@ scp -r /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVE
 echo Copying backup backup script to $KAROSHI_SERVER"<br>"
 scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@$KAROSHI_SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
 
-
-
 ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
-if [ $(ps aux | grep rsync | grep -c '$KAROSHI_SERVER') = 0 ]
-then 
-	[ ! -d /opt/karoshi/logs/backup_servers/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/backup_servers/'$LOG_DATE'
-	nohup bash -c "/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/backup_servers 1>> /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log 2>> /opt/karoshi/logs/backup_servers/'$LOG_DATE'/backup_log&"
-fi
+EVENTFILE=backup-$(date +%F-%H:%M:%S)
+[ ! -d /opt/karoshi/logs/backup_servers/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/backup_servers/'$LOG_DATE'
+nohup bash -c "/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/backup_servers 1>> /opt/karoshi/logs/events/$EVENTFILE 2>> /opt/karoshi/logs/events/$EVENTFILE&"
 ' 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 }
 
-echo '<span style="font-weight: bold;">'$KAROSHI_SERVER': '$"Backing up now" - $"Check the backup logs files to see when the backup is completed."'</span>'
+echo ''$KAROSHI_SERVER': '$"Backing up now"' - '$"Check the events log to see when the backup is completed."'<br>'
 echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 if [ $KAROSHI_SERVER = `hostname-fqdn` ]
@@ -146,17 +144,11 @@ else
 	backup_other_servers
 fi
 
-sleep 3
-BACKUP_LOG_DATE=$(date +%d-%m-%Y)
-#Redirect to log page.
-echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/backup_view_logs.cgi\" target=\"_top\" name = \"frm\">
-	<input type=\"hidden\" name=\"_DATE_\" value=\"$BACKUP_LOG_DATE\">
-	<input type=\"hidden\" name=\"_SERVERNAME_$KAROSHI_SERVER"_"SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_\" value=\"null\">
-	</form>
-	<script>
-	document.frm.submit();
-	</script>"
-
-
+echo '<br><br><form name="myform" action="backup_now_fm.cgi" method="post">
+<button class="button" name="_ViewServers_" value="_">'$"Back"'</button>
+<button class="button" formtarget="_blank" formaction="view_logs.cgi" name="_EventLogs_" value="_SERVERNAME_'$KAROSHI_SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_viewlist_">
+'$"Event Logs"'
+</button>
+</form>'
 exit
 

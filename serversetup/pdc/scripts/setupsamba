@@ -2097,25 +2097,6 @@ then
 			fi
 		fi
 	done
-
-	#Flag existing roles on the main server as needed re-installing.
-	SERVERNAME=`hostname-fqdn`
-	if [ -d /opt/karoshi/server_network/servers/"$SERVERNAME" ]
-	then
-		for INFOFILES in /opt/karoshi/server_network/servers/"$SERVERNAME"/*
-		do
-			INFOFILE=`basename $INFOFILES`
-			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
-			then
-				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE` = 0 ]
-				then
-					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE
-					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/$INFOFILE
-				fi
-			fi
-		done
-	fi
-
 	#Seize ad roles back
 	samba-tool fsmo seize --role=all
 fi
@@ -2141,17 +2122,17 @@ chmod u+X,g+X,o+X -R "$SYSVOLPATH"
 if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
 then 
 	#Modify role information
-	if [ -d /opt/karoshi/server_network/servers/$SERVERNAME.$REALM ]
+	if [ -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ]
 	then
-		for INFOFILES in /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/*
+		for INFOFILES in /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/*
 		do
 			INFOFILE=`basename $INFOFILES`
 			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
 			then
-				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE` = 0 ]
+				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE` = 0 ]
 				then
-					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE
-					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$SERVERNAME.$REALM/$INFOFILE
+					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE
+					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE
 				fi
 			fi
 		done

@@ -60,8 +60,8 @@ $(document).ready(function()
     { 
         $("#myTable").tablesorter({
 	headers: {
-	2: { sorter: false},
-	3: { sorter: false}
+	3: { sorter: false},
+	4: { sorter: false}
     		}
 		});
     }
@@ -185,11 +185,26 @@ then
 	EVENT=""
 else
 	LOGFILE2=`echo "$LOGFILE" | sed 's/%3A/:/g'`
-	#Get time and date of the event
-	DAY=$(echo "$LOGFILE2" | cut -d"-" -f3)
-	MONTH=$(echo "$LOGFILE2" | cut -d"-" -f2)
-	YEAR=$(echo "$LOGFILE2" | cut -d"-" -f1)
-	TIME=$(echo "$LOGFILE2" | cut -d"-" -f4)
+	#Get time, date and category of the event
+	CATEGORY=$(echo $LOGFILE2= | cut -d"-" -f1)
+
+	case "$CATEGORY" in
+		syslog)
+		    CATEGORY2=$"System Log"
+		    ;;
+		 
+		backup)
+		    CATEGORY2=$"Backup Log"
+		    ;;
+		 
+		restore)
+		     CATEGORY2=$"Restore Log"
+		    ;;
+	esac
+	DAY=$(echo "$LOGFILE2" | cut -d"-" -f4)
+	MONTH=$(echo "$LOGFILE2" | cut -d"-" -f3)
+	YEAR=$(echo "$LOGFILE2" | cut -d"-" -f2)
+	TIME=$(echo "$LOGFILE2" | cut -d"-" -f5)
 	EVENT="$DAY-$MONTH-$YEAR $TIME"
 fi
 
@@ -221,7 +236,7 @@ then
 	<div id="'$DIV_ID'">
 	'
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"View Event Logs"' '$SERVERNAME2' '$EVENT'</div></div><div id="infobox">'
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"View Event Logs"' '$SERVERNAME2' '$CATEGORY' '$EVENT'</div></div><div id="infobox">'
 fi
 if [ $SERVERNAME = viewservers ]
 then

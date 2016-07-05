@@ -149,7 +149,25 @@ echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
 #Make sure we have a user images folder
 [ ! -d /var/www/karoshi_html/images/user_images ] && mkdir -p /var/www/karoshi_html/images/user_images
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl/apache /etc/ssl/webmanagement /etc/ssl/root-ca /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech /opt/karoshi/server_network /opt/karoshi/asset_register /var/lib/samba/dfs /var/lib/samba/netlogon /var/lib/samba/samba_backup/pdc_backup /var/www/karoshi_html/images/user_images"
+#Check for symlinks
+
+DFS=/var/lib/samba/dfs
+if [ -L "$DFS" ]
+then
+	DFS=$(readlink "$DFS") 
+fi
+NETLOGON=/var/lib/samba/netlogon
+if [ -L "$NETLOGON" ]
+then
+	NETLOGON=$(readlink "$NETLOGON") 
+fi
+SERVER_NETWORK=/opt/karoshi/server_network
+if [ -L "$SERVER_NETWORK" ]
+then
+	SERVER_NETWORK=$(readlink "$SERVER_NETWORK") 
+fi
+
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK /opt/karoshi/asset_register $DFS $NETLOGON /var/lib/samba/samba_backup/pdc_backup /var/www/karoshi_html/images/user_images"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"

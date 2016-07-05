@@ -1855,6 +1855,8 @@ fi
 function restore_item {
 #Confirm restore of item.
 convert_special_chars
+LOCATIONFOLDER2=`basename "$LOCATION"`
+LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER2$//g"`
 #Get backup details
 RESTOREPATH=`echo $LOCATION | cut -d/ -f7-`
 RESTOREPATH=`echo /$RESTOREPATH`
@@ -1888,24 +1890,24 @@ RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
 restore_check_info
 if [ $ENABLE_RESTORE = yes ]
 then
-echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbody>
-<tr><td style="width: 180px;">'$"Restore"'</td><td>'$LOCATIONFOLDER'</td></tr>
-<tr><td>'$"Restore path"'</td><td>'$RESTOREPATH'</td></tr>
-<tr><td>'$"Server to restore to"'</td><td>'$RESTORESERVER'</td></tr>
-</tbody></table>
-<br>'$"Are you sure that you want to restore this item?"'<br><br>
-<input type="image" src="/images/submenus/file/go.gif" name="_ACTION_REALLYRESTORE_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" value="">'
+	echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbody>
+	<tr><td style="width: 180px;">'$"Restore"'</td><td>'$LOCATIONFOLDER'</td></tr>
+	<tr><td>'$"Restore path"'</td><td>'$RESTOREPATH'</td></tr>
+	<tr><td>'$"Server to restore to"'</td><td>'$RESTORESERVER'</td></tr>
+	</tbody></table>
+	<br>'$"Are you sure that you want to restore this item?"'<br><br>
+	<button class="button" name="_DoRestore_" value="_ACTION_REALLYRESTORE_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">'$"Restore"'</button>'
 else
-echo '<br><br>'
+	echo '<br><br>'
 fi
-echo '<a href="javascript:history.go(-1)"> <img src="/images/submenus/file/back.gif" alt="back" border="0"></a>'
+echo '<button class="button" name="_GoBack_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_">'$"Back"'</button>'
 }
 
 function really_restore_item {
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 #Restore the item
 convert_special_chars
@@ -1921,15 +1923,15 @@ let DEPTHCOUNT=$DEPTHCOUNT-1
 
 if [ $DEPTHCOUNT -gt 0 ]
 then
-RESTOREPATH=`echo $RESTOREPATH | cut -d/ -f1-$DEPTHCOUNT`
+	RESTOREPATH=`echo $RESTOREPATH | cut -d/ -f1-$DEPTHCOUNT`
 else
-RESTOREPATH=""
+	RESTOREPATH=""
 fi
 LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
 RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
-[ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
+[ -z "$RESTORESERVER" ] && RESTORESERVER=notset
 BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
-[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
+[ -z "$BACKUPNAME" ] && BACKUPNAME=notset
 BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
 #Read info file
 BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
@@ -1958,33 +1960,35 @@ restore_check_info
 echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
 if [ $ENABLE_RESTORE = yes ]
 then
-#Sort out spaces for rsync
-LOCATION=`echo "$LOCATION" | sed 's/ /\\\ /g'`
-#RESTOREPATH=`echo "$RESTOREPATH" | sed 's/ /\\\ /g'`
+	#Sort out spaces for rsync
+	LOCATION=`echo "$LOCATION" | sed 's/ /\\\ /g'`
 
-#echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"'
+	if [ $RESTORESERVER = `hostname-fqdn` ]
+	then
+		echo Restoring "$LOCATION" to $HOSTNAME
+		EVENTFILE=restore-$(date +%F-%H:%M:%S)
+		#create restore path if it does not exist
+		[ ! -d $RESTOREPATH ] && mkdir -p $RESTOREPATH
+		[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
+		nohup bash -c "echo `date` Restoring $LOCATION to $RESTOREPATH ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@$SERVERNAME:$LOCATION $RESTOREPATH/ ; echo `date` Restore completed." 1>> /opt/karoshi/logs/events/$EVENTFILE 2>> /opt/karoshi/logs/events/$EVENTFILE&
 
-if [ $RESTORESERVER = `hostname-fqdn` ]
-then
-echo Restoring "$LOCATION" to $HOSTNAME
-#echo restorepath "$RESTOREPATH"
-#echo 'rsync --dirs --recursive --compress --times --progress --perms --executability --owner --group root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"'
-#create restore path if it does not exist
-[ ! -d $RESTOREPATH ] && mkdir -p $RESTOREPATH
-rsync --timeout=30 --dirs --recursive --compress --links --times --progress --perms --executability --owner --group --acls root@$SERVERNAME:"$LOCATION" "$RESTOREPATH"/
-
-else
-echo Restoring "$LOCATION" to $RESTORESERVER
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $RESTORESERVER '
-#create restore path if it does not exist
-[ ! -d '$RESTOREPATH' ] && mkdir -p '$RESTOREPATH'
-rsync --timeout=30 --dirs --recursive --compress --links --times --progress --perms --executability --owner --group --acls root@'$SERVERNAME':"'$LOCATION'" "'$RESTOREPATH'"/
+	else
+		echo Restoring "$LOCATION" to $RESTORESERVER
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $RESTORESERVER '
+		EVENTFILE=restore-$(date +%F-%H:%M:%S)
+		#create restore path if it does not exist
+		[ ! -d '$RESTOREPATH' ] && mkdir -p '$RESTOREPATH'
+		nohup bash -c "echo `date` Restoring '$LOCATION' to '$RESTOREPATH' ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@'$SERVERNAME':'$LOCATION' '$RESTOREPATH'/ ; echo `date` Restore completed." 1>>/opt/karoshi/logs/events/'$EVENTFILE' 2>>/opt/karoshi/logs/events/'$EVENTFILE'&
+	'
+	fi
+	echo '</pre>'
+fi
+echo '<br>'$"Restore in progress."' '$"Please check the event logs for further information."'<br><br>'
+echo '<button class="button" name="_Back_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_">'$"Back"'</button>
+<button class="button" formtarget="_blank" formaction="view_logs.cgi" name="_EventLogs_" value="_SERVERNAME_'$RESTORESERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_viewlist_">
+'$"Event Logs"'
+</button>
 '
-fi
-echo '</pre>'
-fi
-echo '<br>'$"Restore completed."'<br><br>'
-echo '<input type="image" src="/images/submenus/file/back.gif" name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" value="">'
 }
 
 

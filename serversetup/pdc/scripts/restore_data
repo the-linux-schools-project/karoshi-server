@@ -18,31 +18,72 @@ fi
 
 RESTOREPATH=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --file-selection  --title=''$"Setup"' '$"Samba"'' --width 800 --height 600 --wrap --text '<span font_weight="bold" foreground="red">Restore Configuration Data</span>\n\nThis will restore critical configuration data from a Karoshi configuration backup that you have saved onto a backup media.\n\n\n'  2>/dev/null`
 
-RESTORELIST="etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/extra_network_shares etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech opt/karoshi/server_network var/lib/samba/dfs var/lib/samba/netlogon var/lib/samba/samba_backup/pdc_backup opt/karoshi/asset_register var/www/karoshi_html/images/user_images"
+SERVER_NETWORK=opt/karoshi/server_network
+DFS=var/lib/samba/dfs
+NETLOGON=var/lib/samba/netlogon
+MOVE_GLUSTER=no
+
+#Check restore list for gluster
+if [ $(tar -ztvf "$RESTOREPATH" | grep -c "mnt-gluster/dc-data") -gt 0 ]
+then
+	SERVER_NETWORK=mnt-gluster/dc-data/server_network
+	DFS=mnt-gluster/dc-data/dfs
+	NETLOGON=mnt-gluster/dc-data/netlogon
+	MOVE_GLUSTER=yes		
+fi
+
+
+
+
+
+RESTORELIST="etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/extra_network_shares etc/samba/smb.conf etc/sogo etc/ssl/webmanagement etc/ssl/root-ca root/.ssh opt/karoshi/web_controls/web_access_admin opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK $DFS $NETLOGON var/lib/samba/samba_backup/pdc_backup opt/karoshi/asset_register var/www/karoshi_html/images/user_images"
 
 if [ ! -z "$RESTOREPATH" ]
 then
+
+	if [ $MOVE_GLUSTER = yes ]
+	then
+		#Create gluster folder to restore to 
+		[ ! -d /mnt-gluster/dc-data/ ] && mkdir -p /mnt-gluster/dc-data/
+	fi
+
 	#Attempt to restore the data from the archive
 	for RESTOREFILE in $RESTORELIST
 	do
 		tar -xvzf $RESTOREPATH -C / $RESTOREFILE
 		[ $? != 0 ] && yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --title=''$"Setup"' '$"Samba"'' --width 300 --height 100 --text '/'$RESTOREFILE' - '$"There was a problem restoring this data"'' --button=Ok
 	done
+
+	#Extract samba private and sysvol
+	cd /var/lib/samba/
+	tar -xvf /var/lib/samba/samba_backup/pdc_backup/samba4_private.tar.bz2
+	tar -xvf /var/lib/samba/samba_backup/pdc_backup/sysvol.tar.bz2
+
+	#Rename any .ldb.bak files to ldb
+	find /var/lib/samba/private/ -type f -name '*.ldb.bak' -print0 | while read -d $'\0' f ; do mv "$f" "${f%.bak}" ; done
+
+	#Move directoriees back from gluster volume folder and tidy up.
+	if [ $MOVE_GLUSTER = yes ]
+	then
+		mv -f /mnt-gluster/dc-data/dfs /var/lib/samba/
+		mv -f /mnt-gluster/dc-data/netlogon /var/lib/samba/
+		mv -f /var/lib/samba/mnt-gluster/dc-data/sysvol /var/lib/samba/
+		mv /opt/karoshi/server_network /opt/karoshi/server_network.$$
+		mv -f /mnt-gluster/dc-data/server_network /opt/karoshi/
+		cp -f /opt/karoshi/server_network.$$/* /opt/karoshi/server_network
+		rm -f -R /opt/karoshi/server_network.$$
+		rm -f -R /var/lib/samba/mnt-gluster
+		#rm -f -R /mnt-gluster/dc-data
+	fi
+
+
+	if [ "$INSTALL_TYPE" = adcrestore ]
+	then
+		#If smb.conf was restored move it so that we can join the domain correctly.
+		[ -f /etc/samba/smb.conf ] && mv /etc/samba/smb.conf /etc/samba/smb-karoshi-restore.conf
+	fi
 fi
 
-#Extract samba private and sysvol
-cd /var/lib/samba/
-tar -xvf /var/lib/samba/samba_backup/pdc_backup/samba4_private.tar.bz2
-tar -xvf /var/lib/samba/samba_backup/pdc_backup/sysvol.tar.bz2
-
-#Rename any .ldb.bak files to ldb
-find /var/lib/samba/private/ -type f -name '*.ldb.bak' -print0 | while read -d $'\0' f ; do mv "$f" "${f%.bak}" ; done
-
-if [ "$INSTALL_TYPE" = adcrestore ]
-then
-	#If smb.conf was restored move it so that we can join the domain correctly.
-	[ -f /etc/samba/smb.conf ] && mv /etc/samba/smb.conf /etc/samba/smb-karoshi-restore.conf
-fi
 
 #Remove web management config so that it gets setup corectly later.
 [ -d /etc/apache2/sites-karoshi-enabled ] && rm -f -R /etc/apache2/sites-karoshi-enabled
