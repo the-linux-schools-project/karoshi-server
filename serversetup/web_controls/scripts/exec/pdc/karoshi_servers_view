@@ -113,8 +113,7 @@ echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 </form>
 </td>
 </tr></tbody></table></div><div id="infobox">
-<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 250px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
-
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 210px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Version"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
 
 function show_servers {
 SERVERSSHSTATUS=$"SSH failure for this server."
@@ -127,19 +126,25 @@ SERVERIP=`net lookup $SERVER`
 
 if [ $SERVER != `hostname-fqdn` ]
 then
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER ls 1>/dev/null
-	SSHSTATUS=`echo $?`
+	VERSIONINFO=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
+	lsb_release -a 2>/dev/null
+	')
+	SSHSTATUS=$?
 else
+	VERSIONINFO=$(lsb_release -a 2>/dev/null)
 	SSHSTATUS=0
 fi
 
 if [ $SSHSTATUS = 0 ]
 then
 	SERVERSSHSTATUS=$"SSH is working for this server."
-		SERVERICON=/images/warnings/server_ok.png
+	SERVERICON=/images/warnings/server_ok.png
 fi
 
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+#Get the Karoshi version for the server
+KAROSHIVER=$(/opt/karoshi/web_controls/get_version "$VERSIONINFO")
+
+echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'$KAROSHIVER'</td><td style="vertical-align: top;">'
 [ -d /opt/karoshi/server_network/servers/$SERVER ] &&  cat /opt/karoshi/server_network/servers/$SERVER/*
 echo '</td><td style="vertical-align: top;">'
 if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]

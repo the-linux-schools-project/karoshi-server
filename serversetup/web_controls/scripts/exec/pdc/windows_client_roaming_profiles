@@ -155,7 +155,7 @@ fi
 echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
 replace: profilePath
-profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'$PRIMARYGROUP'\\'$USERNAME'
+profilePath: %LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'$PRIMARYGROUP'\\'$USERNAME'
 -' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 }
@@ -169,7 +169,7 @@ echo '<ul><li>'$USERNAME' - '$"converting to a mandatory profile"'</li></ul>'
 echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
 replace: profilePath
-profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\'$PRIMARYGROUP'
+profilePath: %LOGONSERVER%\\applications\\profiles\\'$PRIMARYGROUP'
 -' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 }

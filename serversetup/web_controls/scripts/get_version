@@ -1,0 +1,25 @@
+#!/bin/bash
+
+VERSIONINFO=$(echo "$1" | tr -cd 'A-Za-z0-9\._:\n-+-')
+
+if [ -z "$VERSIONINFO" ]
+then
+	echo 'Unknown'
+	exit
+fi
+if [ $(echo "$VERSIONINFO" | grep -c 12.04) -gt 0 ]
+then
+	echo 'Karoshi V9'
+	exit
+fi
+if [ $(echo "$VERSIONINFO" | grep -c 14.04) -gt 0 ]
+then
+	echo 'Karoshi V10'
+	exit
+fi
+if [ $(echo "$VERSIONINFO" | grep -c 16.04) -gt 0 ]
+then
+	echo 'Karoshi V11'
+	exit
+fi
+
