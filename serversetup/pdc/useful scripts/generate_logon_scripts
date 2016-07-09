@@ -326,7 +326,7 @@ then
 
 	function complete_json_file {
 	#Remove comma from after the final group.
-	sed -i 's/"'$PRI_GROUP'",/"'$PRI_GROUP'"/g' /home/owncloud/import_json/$SERVER.json
+	sed -i 's/"'$LASTPRI_GROUP'",/"'$LASTPRI_GROUP'"/g' /home/owncloud/import_json/$LASTSERVER.json
 	#Add in closing brackets.
 	echo '        ]
     }
@@ -335,6 +335,7 @@ then
 	}
 
 	LASTSERVER=notset
+	LASTPRI_GROUP=notset
 	for SERVERDATA in $(echo -e "$SERVERLIST" | sed 's/^ //g' | sort)
 	do
 		SERVER=$(echo $SERVERDATA | cut -d: -f1)
@@ -354,6 +355,7 @@ then
 		        echo  '		"'$PRI_GROUP'",' >> /home/owncloud/import_json/$SERVER.json
 		fi
 		LASTSERVER="$SERVER"
+		LASTPRI_GROUP="$PRI_GROUP"
 	done
 	#Complete the last json file
 	complete_json_file

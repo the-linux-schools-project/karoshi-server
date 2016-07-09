@@ -91,7 +91,7 @@ do
 					echo domain '$REALM' > /etc/resolv.conf
 					echo nameserver 127.0.0.1 >> /etc/resolv.conf
 					echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
-					service dnsmasq restart
+					service dnsmasq restart 1> /dev/null
 					#Make sure that dnsmasq is set to start on boot
 					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
 				fi

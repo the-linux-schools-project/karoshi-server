@@ -1957,31 +1957,30 @@ echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbo
 <br>'$"Restoring - Please wait..."'<br><br>'
 
 restore_check_info
-echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
+
 if [ $ENABLE_RESTORE = yes ]
 then
 	#Sort out spaces for rsync
-	LOCATION=`echo "$LOCATION" | sed 's/ /\\\ /g'`
+	LOCATION=$(echo "$LOCATION" | sed 's% %\\ %g')
 
 	if [ $RESTORESERVER = `hostname-fqdn` ]
 	then
 		echo Restoring "$LOCATION" to $HOSTNAME
 		EVENTFILE=restore-$(date +%F-%H:%M:%S)
 		#create restore path if it does not exist
-		[ ! -d $RESTOREPATH ] && mkdir -p $RESTOREPATH
+		[ ! -d "$RESTOREPATH" ] && mkdir -p "$RESTOREPATH"
 		[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
-		nohup bash -c "echo `date` Restoring $LOCATION to $RESTOREPATH ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@$SERVERNAME:$LOCATION $RESTOREPATH/ ; echo `date` Restore completed." 1>> /opt/karoshi/logs/events/$EVENTFILE 2>> /opt/karoshi/logs/events/$EVENTFILE&
+		nohup bash -c "echo `date` Restoring \"$LOCATION\" to \"$RESTOREPATH\" ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@$SERVERNAME:\"$LOCATION\" \"$RESTOREPATH\"/ ; echo `date` Restore completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
 
 	else
 		echo Restoring "$LOCATION" to $RESTORESERVER
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $RESTORESERVER '
 		EVENTFILE=restore-$(date +%F-%H:%M:%S)
 		#create restore path if it does not exist
-		[ ! -d '$RESTOREPATH' ] && mkdir -p '$RESTOREPATH'
-		nohup bash -c "echo `date` Restoring '$LOCATION' to '$RESTOREPATH' ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@'$SERVERNAME':'$LOCATION' '$RESTOREPATH'/ ; echo `date` Restore completed." 1>>/opt/karoshi/logs/events/'$EVENTFILE' 2>>/opt/karoshi/logs/events/'$EVENTFILE'&
+		[ ! -d "'$RESTOREPATH'" ] && mkdir -p "'$RESTOREPATH'"
+		nohup bash -c "echo `date` Restoring '$LOCATION' to '$RESTOREPATH' ; rsync --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@\"'$SERVERNAME'\":\"'$LOCATION'\" \"'$RESTOREPATH'\"/ ; echo `date` Restore completed." 1>>/opt/karoshi/logs/events/"$EVENTFILE" 2>>/opt/karoshi/logs/events/"$EVENTFILE"&
 	'
 	fi
-	echo '</pre>'
 fi
 echo '<br>'$"Restore in progress."' '$"Please check the event logs for further information."'<br><br>'
 echo '<button class="button" name="_Back_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_">'$"Back"'</button>
