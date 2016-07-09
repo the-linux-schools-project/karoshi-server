@@ -1,5 +1,5 @@
 #!/bin/bash
-#backup_assign
+#Restore_files
 #Copyright (C) 2010  Paul Sharrad
 
 #This file is part of Karoshi Server.
@@ -35,9 +35,9 @@ NOTIMEOUT=127.0.0.1
 TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,15 +45,25 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restore Files"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body onLoad="start()"><div id="pagecontainer">'
 
 
 function show_status {
-echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
-echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
-echo '</script>'
-echo "</div></body></html>"
+echo '<SCRIPT language="Javascript">
+alert("'$MESSAGE'")
+window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"
+</script>
+</div></body></html>'
 exit
 }
 
@@ -76,12 +86,13 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/file_manager.cgi" method="post">
-<div id="actionbox3"><div id="titlebox">'
+<div id="actionbox3"><div id="infobox">'
 
 #############################
 #Show list of servers to restore to
 #############################
-echo '<b>'$"Restore system files and folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a><br><br></div><div id="infobox">'
+echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Restore system files and folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a></td></tr></tbody></table><br>'
 
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
@@ -89,32 +100,37 @@ SERVERCOUNTER=0
 LINECOUNTER=1
 SERVERICON="/images/submenus/system/computer.png"
 SERVERICON2="/images/submenus/system/all_computers.png"
-echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
+echo '<table class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 360px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></th><th style="width: 120px; vertical-align: top; text-align: left;"><b>'$"View Folders"'</b></th>'
 if [ "$SERVERLISTCOUNT" -gt 1 ]
 then
-	echo '<td style="width: 378px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></td><td style="width: 70px; vertical-align: top; text-align: left;"><b>'$"Restore"'</b></td>'
+	echo '<th style="width: 360px; vertical-align: top; text-align: left;"><b>'$"Server"'</b></th><th style="width: 120px; vertical-align: top; text-align: left;"><b>'$"View Folders"'</b></th>'
 fi
-echo '</tr><tr>'
+echo '</tr></thead><tbody><tr>'
 
 while [ $SERVERCOUNTER -lt $SERVERLISTCOUNT ]
 do
 	KAROSHISERVER=${SERVERLISTARRAY[$SERVERCOUNTER]}
 
 	#Get backup path
-	BACKUPPATH=/home/backups/$KAROSHISERVER
+	BACKUPPATH=/home/backups/"$KAROSHISERVER"
 	#Get backup server
-	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHISERVER/backupserver`
+	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHISERVER"/backupserver`
 
-	echo '<td style="vertical-align: top; text-align: left;">'$KAROSHISERVER'</td><td style="vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$SERVERICON'" value=""><span>'$KAROSHISERVER'<br><br>'
+	echo '<td style="vertical-align: top; text-align: left;">'$KAROSHISERVER'</td><td style="vertical-align: top; text-align: left;">
 
+
+	<button class="info" name="_GotoServer_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_">
+	<img src="'$SERVERICON'" alt="'$"Show Backup Folders"'">
+	<span>'$KAROSHISERVER'<br><br>'
+	
 	cat /opt/karoshi/server_network/servers/$KAROSHISERVER/* | sed '/<a href/c'"&nbsp"
 
-	echo '</span></a></td>'
+	echo '</span></button></td>'
 
-	let SERVERCOUNTER=$SERVERCOUNTER+1
-	let LINECOUNTER=$LINECOUNTER+1
+	let SERVERCOUNTER="$SERVERCOUNTER"+1
+	let LINECOUNTER="$LINECOUNTER"+1
 
-	if [ $LINECOUNTER = 3 ]
+	if [ "$LINECOUNTER" = 3 ] && [ "$SERVERCOUNTER" -lt "$SERVERLISTCOUNT" ]
 	then	
 		echo '</tr><tr>'
 		LINECOUNTER=1
@@ -127,11 +143,15 @@ echo '</tr></tbody></table><br>'
 #Show list of primary groups to restore from.
 #############################
 
-echo '<b>'$"Restore User Files and Folders"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a><br><br><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width:250px;"><b>'$"Server"'</b></td><td style="width: 70px;"><b>'$"Restore"'</b></td><td style="width: 120px;"><b>'$"Primary Group"'</b></td><td style="width: 250px;"><b>'$"Server"'</b></td><td><b>'$"Restore"'</b></td></tr>
+echo '
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Restore User Files and Folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a></td></tr></tbody></table>
+<br><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 120px;"><b>'$"Primary Group"'</b></th><th style="width:230px;"><b>'$"Server"'</b></th><th style="width: 120px;"><b>'$"View Folders"'</b></th><th style="width: 120px;"><b>'$"Primary Group"'</b></th><th style="width: 230px;"><b>'$"Server"'</b></th><th style="width: 120px;"><b>'$"View Folders"'</b></th></tr></thead><tbody>
 '
 START_LINE=yes
 ICON1=/images/submenus/system/computer.png
+PRI_GROUP_COUNT=$(ls -1 /opt/karoshi/server_network/group_information/ | wc -l)
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
 	PRI_GROUP=`basename $PRI_GROUP`
@@ -147,16 +167,25 @@ do
 		BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
 		if [ $START_LINE = yes ]
 		then
-			echo '<tr><td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td>'
-			START_LINE=no
-			else
-			echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td><a class="info infoleft" href="javascript:void(0)"><input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_" type="image" class="images" src="'$ICON1'" value="_PRIGROUP_'$PRI_GROUP'_SERVERNAME_'$SERVER'_"><span>'$"Restore"'<br>'$SERVER' - '$PRI_GROUP'</span></a></td></tr>'
+			echo '<tr>'
+		fi
+
+		echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td>
+		<button class="info" name="_Goto_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_">
+		<img src="'$ICON1'" alt="'$"Rename"'">
+		<span>'$"View Folders"'<br>'$SERVER' - '$PRI_GROUP'</span>
+		</button>
+		</td>'
+		if [ $START_LINE = no ]
+		then
 			START_LINE=yes
-			fi
+			echo '</tr>'
+		else
+			START_LINE=no
+		fi
 	fi
 done
-echo '</tbody></table><br>'
-
-echo '</div></div></form></div></body></html>'
+echo '</tbody></table><br>
+</div></div></form></div></body></html>'
 exit
 

@@ -153,6 +153,7 @@ then
 	COLWIDTH=22
 	VIEWWIDTH1=35
 	VIEWWIDTH2=520
+	VIEWWIDTH3=80
 	VIEWHEIGHT1=36
 	INFOCLASS1="info"
 else
@@ -183,6 +184,7 @@ ROWCOUNT=3
 	COLWIDTH=32
 	VIEWWIDTH1=50
 	VIEWWIDTH2=520
+	VIEWWIDTH3=50
 	VIEWHEIGHT1=35
 	INFOCLASS1="info infoleft"
 fi
@@ -265,6 +267,16 @@ else
 	DISPLOCATION=$LOCATION
 fi
 
+SHOWRESTORE=no
+if [ $(echo "$LOCATION" | grep -c /home/backups) -gt 0 ]
+then
+	if [ $(echo "$LOCATION" | sed "s/\//\n/g" | wc -l) -gt 5 ]
+	then
+		SHOWRESTORE=yes
+		let COLSPAN="$COLSPAN"+1
+	fi
+fi
+
 DISPLOCATIONLENGTH=${#DISPLOCATION}
 MAXPATHLENTH=70
 if [ $MOBILE = yes ]
@@ -317,9 +329,15 @@ fi
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="height: 20px; width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th><th style="width: '$VIEWWIDTH1'px;"></th>'
 
-[ $MOBILE = no ] && echo '<th style="word-wrap:break-word; width: '$VIEWWIDTH2'px;"><b>'$DISPLOCATION'</b></th></tr></thead><tbody>'
+if [ $MOBILE = no ]
+then
+	echo '<th style="word-wrap:break-word; width: '$VIEWWIDTH2'px;"><b>'$DISPLOCATION'</b></th>'
+	[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;">'$"Restore"'</th>'
+else
+		[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;"></th>'
+fi
 
-echo '</tr>'
+echo '</tr></thead><tbody>'
 
 #[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
 
@@ -414,15 +432,6 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 if [ `ls -1 -a "'$LOCATION'"/ | wc -l` -gt 2 ]
 then
 	GLOBIGNORE=yes
-	SHOWRESTORE=no
-	if [ `echo '$LOCATION' | grep -c /home/backups` -gt 0 ]
-	then
-		if [ `echo '$LOCATION' | sed "s/\//\n/g" | wc -l` -gt 5 ]
-		then
-			SHOWRESTORE=yes
-		fi
-	fi
-
 	LINECOLOUR='$LINECOLOUR1'
 
 	for FILE in "'$LOCATION'"/*
@@ -493,7 +502,7 @@ then
 		else
 			echo "</td>"
 		fi
-		[ $SHOWRESTORE = yes ] && echo "<td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\" type="image" class=\"images\" src=\"'$ICON12'\" value=\"\"><span>Restore<br>$FILENAME</span></a></td>"
+		[ '$SHOWRESTORE' = yes ] && echo "<td><button class=\"'$INFOCLASS1'\" name=\"_DoRestore_\" value=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON12'\" alt=\"'$"Restore"'\"><span>'$"Restore"'<br>$FILENAME<br></span></button></td>"
 		echo "</tr>"
 		done
 fi
@@ -508,14 +517,6 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 if [ `ls -1 -a "'$LOCATION'"/ | wc -l` -gt 2 ]
 then
 	GLOBIGNORE=yes
-	SHOWRESTORE=no
-	if [ `echo '$LOCATION' | grep -c /home/backups` -gt 0 ]
-	then
-		if [ `echo '$LOCATION' | sed "s/\//\n/g" | wc -l` -gt 5 ]
-		then
-			SHOWRESTORE=yes
-		fi
-	fi
 
 	LINECOLOUR='$LINECOLOUR1'
 
