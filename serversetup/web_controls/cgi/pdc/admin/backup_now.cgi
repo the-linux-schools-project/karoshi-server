@@ -94,7 +94,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -118,7 +118,8 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Check the events log for backup progress."'</span></a><br><br></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Run_Network_Backup_Now"><img class="images" alt="" src="/images/help/info.png"><span>'$"Check the events log for backup progress."'</span></a>
+<br><br></div><div id="infobox">'
 
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1`

@@ -69,8 +69,10 @@ $(document).ready(function()
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
 echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-  <div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Configure Backup"'</div><br></div><div id="infobox">'
+  <div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Configure Backup"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to configure the backup for."'</span></a></td></tr></tbody></table></div><div id="infobox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'

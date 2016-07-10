@@ -92,7 +92,7 @@ echo '
 #Show list of servers to restore to
 #############################
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Restore system files and folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a></td></tr></tbody></table><br>'
+<tr><td><div class="sectiontitle">'$"Restore system files and folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Restore_Files"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to restore system files to."'</span></a></td></tr></tbody></table><br>'
 
 SERVERLISTARRAY=( `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/` )
 SERVERLISTCOUNT=${#SERVERLISTARRAY[@]}
@@ -145,7 +145,7 @@ echo '</tr></tbody></table><br>'
 
 echo '
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Restore User Files and Folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a></td></tr></tbody></table>
+<tr><td><div class="sectiontitle">'$"Restore User Files and Folders"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Restore_Files"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the primary group that you want to restore user files to."'</span></a></td></tr></tbody></table>
 <br><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: 120px;"><b>'$"Primary Group"'</b></th><th style="width:230px;"><b>'$"Server"'</b></th><th style="width: 120px;"><b>'$"View Folders"'</b></th><th style="width: 120px;"><b>'$"Primary Group"'</b></th><th style="width: 230px;"><b>'$"Server"'</b></th><th style="width: 120px;"><b>'$"View Folders"'</b></th></tr></thead><tbody>
 '

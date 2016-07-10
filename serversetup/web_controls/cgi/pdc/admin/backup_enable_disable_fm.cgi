@@ -60,7 +60,8 @@ $(document).ready(function()
 </head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div><br>'
+echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to enable or disable the backup server for."'</span></a></td></tr></tbody></table><br>'
 
 #Check if any backup servers have been enabled.
 if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
@@ -101,7 +102,12 @@ do
 		BACKUPSTATUS=$"Enable Backup"
 		BACKUP_ICON=/images/submenus/system/backup_disabled.png
 	fi
-	echo '<tr><td>'$KAROSHI_SERVER'</td><td>'$BACKUPSERVER'</td><td><a class="info" href="javascript:void(0)"><input name="_'$KAROSHI_SERVER'_" type="image" class="images" src="'$BACKUP_ICON'" value="_'$KAROSHI_SERVER'_"><span>'$BACKUPSTATUS'</span></a></td></tr>'
+	echo '<tr><td>'$KAROSHI_SERVER'</td><td>'$BACKUPSERVER'</td><td>
+	<button class="info" name="_'$KAROSHI_SERVER'_" value="_'$KAROSHI_SERVER'_">
+	<img src="'$BACKUP_ICON'" alt="'$BACKUPSTATUS'">
+	<span>'$BACKUPSTATUS'</span>
+	</button>
+	</td></tr>'
 
 done
 echo '</tbody></table><br></form>

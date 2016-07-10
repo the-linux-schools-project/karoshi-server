@@ -185,8 +185,16 @@ else
 fi
 echo '</form></td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/backup_view_logs_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
-</td></tr></tbody></table>
+<form action="/cgi-bin/admin/backup_view_logs_fm.cgi" method="post">
+<button class="button" name="_SelectServer_" value="_">
+'$"Select server"'
+</button>
+</form>
+</td>
+<td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Backup_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"These are the backup logs for your server."'</span></a>
+</td>
+</tr></tbody></table>
 
 
 </div><br><div id="infobox">'

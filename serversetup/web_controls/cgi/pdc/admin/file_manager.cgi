@@ -196,10 +196,29 @@ fi
 #########################
 #Check data
 #########################
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != notset ]
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ]  && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
+fi
+
+if [ "$ACTION" = REALLYSEARCHBACKUP ]
+then
+	END_POINT=32
+	COUNTER=2
+	#Assign SEARCH
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			SEARCH=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 if [ "$ACTION" = REALLYEDIT ]
@@ -591,7 +610,7 @@ fi
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$TEXTDATA:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 echo '</form>'
 [ $MOBILE = no ] && echo '</div>'

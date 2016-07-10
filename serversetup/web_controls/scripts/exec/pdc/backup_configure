@@ -226,8 +226,8 @@ then
 	BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
 	DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
 
-	echo '<table class="standard" style="text-align: left;" >
-    	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>
+	echo '<table class="tablesorter" style="text-align: left;" >
+    	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th><b>'$"Days Tracked"'</b></th></tr></thead><tbody>
 	<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
 	</tbody></table><br>
 	<table class="standard" style="text-align: left;" >
@@ -281,16 +281,26 @@ then
 	</tbody></table></form><br><br>'
 	
 	#Show all folders that are set to be backed up.
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
-    	<tbody><tr><td style="width: 200px;"><b>'$"Backup Name"'</b></td><td style="width: 220px;"><b>'$"Backup Folder"'</b></td><td><b>'$"Days Tracked"'</b></td></tr>'
+	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
+    	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th style="width: 80px;"><b>'$"Days"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g'`
 	do
 		BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
 		BACKUPNAME=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
 		DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
 		echo '<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td>
-		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____edit____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____" type="image" class="images" src="'$ICON1'" value=""><span>'$"Edit"'<br>'$BACKUPNAME'</span></a></td>
-		<td><a class="info" href="javascript:void(0)"><input name="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete Backup"'<br>'$BACKUPNAME'</span></a></td></tr>'
+		<td>
+			<button class="info" name="____DoEdit____" value="____ACTION____edit____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
+			<img src="'$ICON1'" alt="'$"Edit"'">
+			<span>'$"Edit"'<br>'$BACKUPNAME'</span>
+			</button>
+		</td>
+		<td>
+			<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
+			<img src="'$ICON2'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'$BACKUPNAME'</span>
+			</button>
+		</td></tr>'
 	done
 	echo '</tbody></table></form>'
 fi

@@ -30,16 +30,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_enable_disable_cgi
 then
-echo `date`: backup_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_enable_disable_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_enable_disable.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $backup_enable_disable_cgi'check' ]
 then
-echo `date`: backup_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: backup_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: backup_enable_disable - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -66,39 +66,39 @@ KAROSHI_SERVER=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-echo `date`: backup_enable_disable - Not called by backup_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - Not called by backup_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: backup_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: backup_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
-if [ $KAROSHI_SERVER'null' = null ]
+if [ -z "$KAROSHI_SERVER" ]
 then
-echo `date`: backup_enable_disable - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: backup_enable_disable - Blank action by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ `grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: backup_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: backup_enable_disable - access denied to "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	exit 101
 fi
 
 if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER ]
 then
-echo `date`: backup_enable_disable - enabling $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER
+	echo `date`: backup_enable_disable - enabling "$KAROSHI_SERVER" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	rm -f /opt/karoshi/server_network/backup_servers/stop_backup_"$KAROSHI_SERVER"
 else
-echo `date`: backup_enable_disable - disabling $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-touch /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER
+	echo `date`: backup_enable_disable - disabling "$KAROSHI_SERVER" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	touch /opt/karoshi/server_network/backup_servers/stop_backup_"$KAROSHI_SERVER"
 fi
 exit
 

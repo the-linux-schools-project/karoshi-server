@@ -36,7 +36,18 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -248,7 +259,11 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Configure Backup"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a href="/cgi-bin/admin/backup_configure_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a>
+<form action="/cgi-bin/admin/backup_configure_fm.cgi" method="post">
+<button class="button" name="ChooseServer_" value="_">
+'$"Select server"'
+</button>
+</form>
 </td>'
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
@@ -264,7 +279,7 @@ then
 	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
 	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Backups"'"></form></td>'
 fi
-echo '</tr></tbody></table>
+echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
 </div><br><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`

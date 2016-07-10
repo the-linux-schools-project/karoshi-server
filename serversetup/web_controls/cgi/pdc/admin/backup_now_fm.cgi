@@ -83,7 +83,8 @@ $(document).ready(function()
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/backup_now.cgi" name="selectservers" method="post">
-  <div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to backup."'</span></a><br><br></div><div id="infobox">'
+  <div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Run_Network_Backup_Now"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to backup."'</span></a>
+<br><br></div><div id="infobox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'

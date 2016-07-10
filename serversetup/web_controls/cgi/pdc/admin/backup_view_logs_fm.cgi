@@ -70,7 +70,9 @@ $(document).ready(function()
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/backup_view_logs.cgi" name="testform" method="post">
-  <div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"View Network Backup Logs"'</div><br></div><div id="infobox">'
+<div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"View Network Backup Logs"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Backup_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to view the backup logs for."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'

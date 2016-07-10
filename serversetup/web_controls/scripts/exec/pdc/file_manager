@@ -108,7 +108,7 @@ then
 	ACTION=notset
 fi
 
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != notset ]
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ]
 then
 	echo `date`: file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -268,9 +268,18 @@ else
 fi
 
 SHOWRESTORE=no
+SHOWRESTORESEARCH=no
 if [ $(echo "$LOCATION" | grep -c /home/backups) -gt 0 ]
 then
-	if [ $(echo "$LOCATION" | sed "s/\//\n/g" | wc -l) -gt 5 ]
+
+	SUBCOUNT=$(echo "$LOCATION" | sed "s/\//\n/g" | wc -l)
+
+	if [ "$SUBCOUNT" -gt 4 ]
+	then
+		SHOWRESTORESEARCH=yes
+	fi
+
+	if [ "$SUBCOUNT" -gt 5 ]
 	then
 		SHOWRESTORE=yes
 		let COLSPAN="$COLSPAN"+1
@@ -302,8 +311,16 @@ echo '<br>
 </button>
 <button class="button" name="_NewFile_" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 '$"New File"'
-</button>
-<br><br>'
+</button>'
+
+if [ "$SHOWRESTORESEARCH" = yes ]
+then
+	echo '<button class="button" name="_Top_" value="_ACTION_SEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+	'$"Search Backup"'
+	</button>'	
+fi
+
+echo '<br><br>'
 
 if [ $SHOWMOVE = yes ]
 then
@@ -1495,7 +1512,7 @@ fi
 }
 
 function really_edit_item {
-TEXTCONTENT=`echo "$DATA" | cut -s -d: -f16`
+TEXTCONTENT=`echo "$DATA" | cut -s -d: -f17`
 convert_special_chars
 #echo location is "$LOCATION"'<br>'
 convert_special_chars3
@@ -1992,6 +2009,59 @@ echo '<button class="button" name="_Back_" value="_SERVERTYPE_network_ACTION_ENT
 }
 
 
+function really_search_backup {
+convert_special_chars
+getlastlocation
+SEARCH=`echo "$DATA" | cut -s -d: -f16`
+BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
+
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;"><b>'$"Search Backup"'</b></td><td>'$SEARCH'</td></tr>
+<tr><td>'$"Backup Server"'</td><td>'$SERVERNAME'</td></tr>
+<tr><td>'$"Backup Archive"'</td><td>'$BACKUPARCHIVE'</td></tr>
+</tbody></table><br>'
+
+
+#Do the search and show the results
+SEARCHPATH=$(echo "$LOCATION" | cut -d"/" -f1-5)
+echo `date`: "file_manager - searching for $SEARCH at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+RAWSEARCHDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+find "'$SEARCHPATH'" -name "'$SEARCH'*" | sed "s% %_____SPACE_____%g"
+')
+
+echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 600px;">'$"Backup Path"'</th><th style="width: 80px;">'$"Restore"'</th></tr></thead><tbody>
+'
+for FILENAME in $(echo "$RAWSEARCHDATA")
+do
+	FILE2=$(echo "$FILENAME" | sed "s/_/Z%%%%%Z/g")
+	echo '<tr><td>'$FILENAME'</td><td><button class="'$INFOCLASS1'" name="_DoRestore_" value="_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON12'" alt="'$"Restore"'"><span>'$"Restore"'<br>'$FILENAME'<br></span></button></td></tr>'
+done
+echo '</tbody></table><br>
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">'
+}
+
+function search_backup {
+
+convert_special_chars
+getlastlocation
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
+echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
+#Show form for search
+
+echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;"><b>'$"Search Backup"'</b></td><td></td></tr>
+<tr><td>'$"Backup Server"'</td><td>'$SERVERNAME'</td></tr>
+<tr><td>'$"Backup Archive"'</td><td>'$BACKUPARCHIVE'</td></tr>
+<tr><td>'$"Search"'</td><td><input tabindex="1" style="width: 200px;" name="_SEARCH_"></td></tr>
+</tbody></table><br>
+'
+echo '<input name="_ACTION_REALLYSEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Search"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">'
+
+}
+
 [ $ACTION = ENTER ] && show_directory #converted to federated_mode
 [ $ACTION = DELETE ] && delete_item #converted to federated_mode
 [ $ACTION = REALLYDELETE ] && really_delete_item #converted to federated_mode
@@ -2011,4 +2081,7 @@ echo '<button class="button" name="_Back_" value="_SERVERTYPE_network_ACTION_ENT
 [ $ACTION = REALLYRESTORE ] && really_restore_item
 [ $ACTION = CREATEFILE ] && create_file
 [ $ACTION = REALLYCREATEFILE ] && really_create_file
+[ $ACTION = SEARCHBACKUP ] && search_backup
+[ $ACTION = REALLYSEARCHBACKUP ] && really_search_backup
+
 exit
