@@ -479,6 +479,11 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 
 		zpool import -f $POOLNAME
 
+		if [ -d "$MOUNTPOINT" ]
+		then
+			mv "$MOUNTPOINT" "$MOUNTPOINT"-pre-zfs.$$
+		fi
+		mkdir -p "$MOUNTPOINT"
 
 		#Set and Check for posix acl support
 		zfs set acltype=posixacl "$POOLNAME"
@@ -502,7 +507,15 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			mount /"$ZPOOLTOPPATH"/"$POOLNAME"/storage "$MOUNTPOINT"
 		else
 			zfs set mountpoint="$MOUNTPOINT" "$POOLNAME"
-			#zfs mount "$POOLNAME"
+			zfs mount "$POOLNAME"
+		fi
+
+		#Copy any existing data back onto the raid
+		if [ -d "$MOUNTPOINT"-pre-zfs.$$ ]
+		then
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --acls --executability --owner --group -o "$MOUNTPOINT"-pre-zfs.$$/ $MOUNTPOINT/
+			echo "</pre>"
 		fi
 
 		if [ "$SORTGLUSTER" = yes ]
@@ -823,6 +836,7 @@ do
 done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
+			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
 
 			#Set minidlna to wait for zfs-mount-all
@@ -878,6 +892,13 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			POSIXSUPPORT=no
 		fi
 
+		#Move existing folder and create a new empty folder
+		if [ -d "'$MOUNTPOINT'" ]
+		then
+			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.'$$'
+		fi
+		mkdir -p '$MOUNTPOINT'
+
 		if [ $POSIXSUPPORT = no ]
 		then
 		COUNTER=1
@@ -892,7 +913,15 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 		else
 			zfs set mountpoint="'$MOUNTPOINT'" "'$POOLNAME'"
-			#zfs mount "$POOLNAME"
+			zfs mount "'$POOLNAME'"
+		fi
+
+		#Copy any existing data back onto the raid
+		if [ -d '$MOUNTPOINT'-pre-zfs.'$$' ]
+		then
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --delete --backup --times --perms --acls --executability --owner --group -o '$MOUNTPOINT'-pre-zfs.'$$'/ '$MOUNTPOINT'/
+			echo "</pre>"
 		fi
 
 		if [ "$SORTGLUSTER" = yes ]
@@ -916,6 +945,7 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
+			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
 
 			#Set minidlna to wait for zfs-mount-all
