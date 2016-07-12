@@ -149,6 +149,7 @@ then
 	ICON14=/images/submenus/file/create.png
 	ICON15=/images/submenus/file/file.png
 	ICON16=/images/submenus/file/folder.png
+	ICON17=/images/submenus/file/search.png
 	COLSPAN=5
 	COLWIDTH=22
 	VIEWWIDTH1=35
@@ -180,6 +181,7 @@ ROWCOUNT=3
 	ICON14=/images/submenus/file/createm.png
 	ICON15=/images/submenus/file/filem.png
 	ICON16=/images/submenus/file/folderm.png
+	ICON17=/images/submenus/file/searchm.png
 	COLSPAN=5
 	COLWIDTH=32
 	VIEWWIDTH1=50
@@ -349,9 +351,9 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><
 if [ $MOBILE = no ]
 then
 	echo '<th style="word-wrap:break-word; width: '$VIEWWIDTH2'px;"><b>'$DISPLOCATION'</b></th>'
-	[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;">'$"Restore"'</th>'
+	[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;">'$"Search"'</th><th style="width: '$VIEWWIDTH3'px;">'$"Restore"'</th>'
 else
-		[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;"></th>'
+		[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;"></th><th style="width: '$VIEWWIDTH3'px;"></th>'
 fi
 
 echo '</tr></thead><tbody>'
@@ -519,7 +521,11 @@ then
 		else
 			echo "</td>"
 		fi
-		[ '$SHOWRESTORE' = yes ] && echo "<td><button class=\"'$INFOCLASS1'\" name=\"_DoRestore_\" value=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON12'\" alt=\"'$"Restore"'\"><span>'$"Restore"'<br>$FILENAME<br></span></button></td>"
+		if [ '$SHOWRESTORE' = yes ]
+		then
+			SEARCH=$(basename "$FILENAME" | sed "s/_/Z%%%%%Z/g")
+			echo "<td><button class=\"'$INFOCLASS1'\" name=\"_DoSearch_\" value=\"_ACTION_REALLYSEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION"_"$FILE2"_"SEARCH_$SEARCH"_"\"><img src=\"'$ICON17'\" alt=\"'$"Restore"'\"><span>'$"Search"'<br>$FILENAME<br></span></button></td><td><button class=\"'$INFOCLASS1'\" name=\"_DoRestore_\" value=\"_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON12'\" alt=\"'$"Restore"'\"><span>'$"Restore"'<br>$FILENAME<br></span></button></td>"
+		fi
 		echo "</tr>"
 		done
 fi
@@ -626,6 +632,10 @@ ITEMMOVE=`echo "$ITEMMOVE" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g'
 
 function convert_special_chars3 {
 TEXTCONTENT=`echo "$TEXTCONTENT" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g'`
+}
+
+function convert_special_chars4 {
+SEARCH=`echo "$SEARCH" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g' | sed "s/Z%%%%%Z/_/g"`
 }
 
 
@@ -1908,7 +1918,7 @@ RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
 restore_check_info
 if [ $ENABLE_RESTORE = yes ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbody>
+	echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Restore"'</td><td>'$LOCATIONFOLDER'</td></tr>
 	<tr><td>'$"Restore path"'</td><td>'$RESTOREPATH'</td></tr>
 	<tr><td>'$"Server to restore to"'</td><td>'$RESTORESERVER'</td></tr>
@@ -2013,7 +2023,11 @@ function really_search_backup {
 convert_special_chars
 getlastlocation
 SEARCH=`echo "$DATA" | cut -s -d: -f16`
+convert_special_chars4
+
 BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
+BACKUPARCHIVEPATH=$(echo "$LOCATION" | cut -d"/" -f1-5)
+SUBFOLDERS=$(echo "$LOCATION" | cut -d"/" -f7-8)
 
 echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Search Backup"'</b></td><td>'$SEARCH'</td></tr>
@@ -2021,25 +2035,31 @@ echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td>'$"Backup Archive"'</td><td>'$BACKUPARCHIVE'</td></tr>
 </tbody></table><br>'
 
-
 #Do the search and show the results
-SEARCHPATH=$(echo "$LOCATION" | cut -d"/" -f1-5)
 echo `date`: "file_manager - searching for $SEARCH at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 RAWSEARCHDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-find "'$SEARCHPATH'" -name "'$SEARCH'*" | sed "s% %_____SPACE_____%g"
+for BACKUPARCHIVE in $(ls -1 "'$BACKUPARCHIVEPATH'")
+do
+	if [ -d "'$BACKUPARCHIVEPATH'"/"$BACKUPARCHIVE"/'"$SUBFOLDERS"' ]
+	then
+		find "'$BACKUPARCHIVEPATH'"/"$BACKUPARCHIVE"/'"$SUBFOLDERS"' -name "'$SEARCH'*" | sed "s% %_____SPACE_____%g"		
+	fi
+done
 ')
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 600px;">'$"Backup Path"'</th><th style="width: 80px;">'$"Restore"'</th></tr></thead><tbody>
+<tr><th style="width: 700px;">'$"Backup Path"'</th><th style="width: 80px;">'$"Restore"'</th></tr></thead><tbody>
 '
 for FILENAME in $(echo "$RAWSEARCHDATA")
 do
+	FILENAME=$(echo "$FILENAME" | sed "s%_____SPACE_____% %g")
 	FILE2=$(echo "$FILENAME" | sed "s/_/Z%%%%%Z/g")
-	echo '<tr><td>'$FILENAME'</td><td><button class="'$INFOCLASS1'" name="_DoRestore_" value="_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON12'" alt="'$"Restore"'"><span>'$"Restore"'<br>'$FILENAME'<br></span></button></td></tr>'
+	DISPFILENAME=$(echo "$FILENAME" | cut -d"/" -f6-)
+	echo '<tr><td>'$DISPFILENAME'</td><td><button class="'$INFOCLASS1'" name="_DoRestore_" value="_ACTION_RESTORE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON12'" alt="'$"Restore"'"><span>'$"Restore"'<br>'$DISPFILENAME'<br></span></button></td></tr>'
 done
 echo '</tbody></table><br>
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">'
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Back"'">'
 }
 
 function search_backup {
@@ -2051,7 +2071,7 @@ BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
 echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 #Show form for search
 
-echo '<table class="standard" style="text-align: left;" ><tbody>
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Search Backup"'</b></td><td></td></tr>
 <tr><td>'$"Backup Server"'</td><td>'$SERVERNAME'</td></tr>
 <tr><td>'$"Backup Archive"'</td><td>'$BACKUPARCHIVE'</td></tr>
