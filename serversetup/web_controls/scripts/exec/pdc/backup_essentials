@@ -147,7 +147,7 @@ echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
 [ ! -d /opt/karoshi/asset_register ] && mkdir -p /opt/karoshi/asset_register
 
 #Make sure we have a user images folder
-[ ! -d /var/www/karoshi_html/images/user_images ] && mkdir -p /var/www/karoshi_html/images/user_images
+[ ! -d /var/www/html_karoshi/images/user_images ] && mkdir -p /var/www/html_karoshi/images/user_images
 
 #Check for symlinks
 
@@ -167,7 +167,7 @@ then
 	SERVER_NETWORK=$(readlink "$SERVER_NETWORK") 
 fi
 
-BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK /opt/karoshi/asset_register $DFS $NETLOGON /var/lib/samba/samba_backup/pdc_backup /var/www/karoshi_html/images/user_images"
+BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK /opt/karoshi/asset_register $DFS $NETLOGON /var/lib/samba/samba_backup/pdc_backup /var/www/html_karoshi/images/user_images"
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"

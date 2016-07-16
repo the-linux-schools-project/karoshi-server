@@ -2127,7 +2127,7 @@ then
 		for INFOFILES in /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/*
 		do
 			INFOFILE=`basename $INFOFILES`
-			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 2users-groups ]
+			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 1domainmember ] && [ $INFOFILE != 2users-groups ]
 			then
 				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE` = 0 ]
 				then

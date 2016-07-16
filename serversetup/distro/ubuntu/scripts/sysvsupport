@@ -61,6 +61,7 @@
 [ -L /etc/init.d/openvpn ] && rm -f /etc/init.d/nfs-kernel-server
 [ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
 [ -L /etc/init.d/icecast2 ] && rm -f /etc/init.d/icecast2
+[ -L /etc/init.d/avahi-daemon ] && rm -f /etc/init.d/avahi-daemon
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
@@ -111,6 +112,7 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nfs-kernel-ser
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/nginx /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/zfs-mount-all /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mount-gluster-volumes /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon /etc/init.d/
 
 #Check if we have zfs
 if [ $(ls -1 /etc/rc2.d/ | grep -c "zfs-mount-all") -gt 0 ]

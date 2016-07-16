@@ -117,6 +117,14 @@ if [ $SERVERNAME != `hostname-fqdn` ]
 then
 	#Copy in module
 	scp -p -r /opt/karoshi/serversetup/modules/printserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+
+	#Copy in avahi daemon controls
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ 1> /dev/null
 fi
 
 #Create keytab for cups

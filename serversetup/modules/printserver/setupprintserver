@@ -186,8 +186,8 @@ done
 #Make sure that lpstat can see usernames
 if [ `grep -c "JobPrivateAccess all" /etc/cups/cupsd.conf` = 0 ]
 then
-sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
-sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
+	sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
+	sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
 fi
 
 #############################

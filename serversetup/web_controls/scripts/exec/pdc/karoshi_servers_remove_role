@@ -1162,8 +1162,6 @@ then
 	#Remove server from gluster
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVERNAME all removeserver "$REMOTE_USER" "$REMOTE_ADDR"
 
-	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster berylium.elements.com all removeserver "me" "12345"
-
 	#Check to see if this is a domain controller
 	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 	then

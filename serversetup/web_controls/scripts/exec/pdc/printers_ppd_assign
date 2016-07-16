@@ -154,6 +154,10 @@ then
 	#Change colour option
 	sed -i "s/DefaultColorModel: Gray/DefaultColorModel: '$COLOUROPTION'/g" /etc/cups/ppd/'$PRINTERNAME'.ppd
 	[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
+	#Generate avahi config
+	rm -f /etc/avahi/services/AirPrint-*
+	cd /etc/avahi/services
+	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
 	' 2>&1
 scp root@$PRINTERSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
 else
@@ -175,6 +179,9 @@ else
 	#Change colour option
 	sed -i "s/DefaultColorModel: Gray/DefaultColorModel: $COLOUROPTION/g" /etc/cups/ppd/$PRINTERNAME.ppd
 	cp -f /etc/cups/ppd/$PRINTERNAME.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
-
-	fi
+	#Generate avahi config
+	rm -f /etc/avahi/services/AirPrint-*
+	cd /etc/avahi/services
+	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+fi
 exit

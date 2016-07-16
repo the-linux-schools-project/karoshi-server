@@ -60,7 +60,8 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed
 #########################
 #Assign data to variables
 #########################
-END_POINT=47
+END_POINT=$(echo $DATA | sed 's/_/\n/g' | wc -l)
+let ENDPOINT=$ENDPOINT+1
 
 #Assign ACTION
 COUNTER=2
@@ -80,7 +81,6 @@ done
 
 if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ]
 then
-	END_POINT=26
 	#Assign SHARENAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -141,7 +141,6 @@ fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ]
 then
-	END_POINT=47
 	#Assign COMMENT
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -237,6 +236,34 @@ then
 		let COUNTER=$COUNTER+1
 	done
 
+	#Assign GROUP5
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP5check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP5=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP6
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP6check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP6=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
 	#Assign GROUPPERMS1
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -288,6 +315,34 @@ then
 		then
 			let COUNTER=$COUNTER+1
 			GROUPPERMS4=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS5
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS5check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS5=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS6
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS6check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS6=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -358,6 +413,34 @@ then
 		then
 			let COUNTER=$COUNTER+1
 			MAPDRIVE4=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE5
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE5check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE5=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE6
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE6check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE6=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -630,7 +713,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class=
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUP5:$GROUP6:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$GROUPPERMS5:$GROUPPERMS6:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVE5:$MAPDRIVE6:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
 EXIT_STATUS=$?
 
 if [ $EXIT_STATUS = 102 ]
