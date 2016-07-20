@@ -207,6 +207,8 @@ then
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
 	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 
 	' 2>&1
 	scp root@$PRINTSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
@@ -230,6 +232,8 @@ else
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
 	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 fi
 
 rm -f -R /var/www/karoshi/ppd_files/

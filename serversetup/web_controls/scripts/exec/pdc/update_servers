@@ -285,35 +285,50 @@ fi
 if [ $SERVERNAME = allservers ]
 then
 	#Auto schedule network servers
-	if [ $SERVERTYPE = network ]
+	if [ "$SERVERTYPE" = network ]
 	then
+		function get_network_servers {
 		for SERVERS in /opt/karoshi/server_network/servers/*
 		do
 			SERVERNAME=`basename $SERVERS`
-			if [ "$MOBILE" = yes  ]
+			if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ]
 			then
-				SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+				DOMAIN_CONTROLLER=yes
 			else
-				SERVERNAME_SHORT="$SERVERNAME"
+				DOMAIN_CONTROLLER=no
 			fi
-			if [ $DAY != never ]
+			if [ "$DOMAIN_CONTROLLER" = "$DOMAIN_CONTROLLER_STATUS" ]
 			then
-				echo '<ul><li>'Scheduling $SERVERNAME_SHORT:  Time $HOURS:$MINUTES'</li></ul>'
-			else
-				echo '<ul><li>'$SERVERNAME_SHORT:  Disabling update'</li></ul>'
-			fi
-			recordtime
-			scheduleupdate
-			copyscripts
+				if [ "$MOBILE" = yes  ]
+				then
+					SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+				else
+					SERVERNAME_SHORT="$SERVERNAME"
+				fi
+				if [ $DAY != never ]
+				then
+					echo '<ul><li>'Scheduling $SERVERNAME_SHORT:  Time "$HOURS":"$MINUTES"'</li></ul>'
+				else
+					echo '<ul><li>'$SERVERNAME_SHORT:  Disabling update'</li></ul>'
+				fi
+				recordtime
+				scheduleupdate
+				copyscripts
 
-			let MINUTES=$MINUTES+10
-			if [ $MINUTES -ge 60 ]
-			then
-				MINUTES=00
-				let HOURS=$HOURS+1
-				[ $HOURS -ge 24 ] && HOURS=00
+				let MINUTES=$MINUTES+10
+				if [ $MINUTES -ge 60 ]
+				then
+					MINUTES=00
+					let HOURS=$HOURS+1
+					[ $HOURS -ge 24 ] && HOURS=00
+				fi
 			fi
 		done
+		}
+		DOMAIN_CONTROLLER_STATUS=no
+		get_network_servers
+		DOMAIN_CONTROLLER_STATUS=yes
+		get_network_servers
 	fi
 
 	if [ $SERVERTYPE = federated ]

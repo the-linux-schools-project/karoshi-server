@@ -178,7 +178,12 @@ then
 			then
 				#Get revokation date
 				REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
-				echo "<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server\"><img class=\"images\" alt=\"\" src=\"'$ICON2'\"><span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'$REVODATE'</span></a>"
+				echo "
+<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_view_\">
+			<img src=\"'$ICON2'\" alt=\"'$"Revoked"'\">
+			<span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'$REVODATE'</span>
+			</button>
+			</td><td>"
 			else
 				echo "<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_revoke_USERNAME_"$USERNAME"_\">
 			<img src=\"'$ICON1'\" alt=\"'$"Revoke"'\">
@@ -192,7 +197,7 @@ then
 			</button>
 			"
 			fi
-
+			echo "</td></tr>"
 		done
 		echo "</tbody></table>"
 	fi

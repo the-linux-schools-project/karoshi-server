@@ -121,6 +121,7 @@ then
 	#Copy in avahi daemon controls
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_reload root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
