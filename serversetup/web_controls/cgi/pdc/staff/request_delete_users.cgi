@@ -36,7 +36,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$"Request Delete Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Request Delete Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

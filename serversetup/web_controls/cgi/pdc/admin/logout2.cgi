@@ -39,7 +39,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Karoshi Web Management - Logout"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 </head>
 <body>
 </div></body>

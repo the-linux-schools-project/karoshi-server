@@ -27,6 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -49,7 +50,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"ZFS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"ZFS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
 then

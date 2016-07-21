@@ -37,6 +37,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language

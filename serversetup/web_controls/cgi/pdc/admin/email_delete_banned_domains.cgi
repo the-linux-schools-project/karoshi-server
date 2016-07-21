@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete Baned E-Mail Domains"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=email_view_banned_domains_fm.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete Baned E-Mail Domains"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta http-equiv="REFRESH" content="0;url=email_view_banned_domains_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

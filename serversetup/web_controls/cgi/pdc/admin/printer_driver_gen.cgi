@@ -27,6 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -53,7 +54,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Windows Printer Drivers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 
   
   <script>

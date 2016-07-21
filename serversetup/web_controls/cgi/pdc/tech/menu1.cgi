@@ -39,7 +39,7 @@ echo '
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type">
   <title>'$"Web Management"'</title>
-<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
+<link href="/css/'$STYLESHEET'?d='$VERSION'" rel="stylesheet" type="text/css">
 </head>
 <body>
 <table class="menu" style="text-align: left; height: 91px;" >

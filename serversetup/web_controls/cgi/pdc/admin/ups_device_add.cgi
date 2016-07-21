@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a device"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/ups_status.cgi"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a device"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/ups_status.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

@@ -27,6 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -130,7 +131,7 @@ done
 
 echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Internet Usage Trends"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <link rel="stylesheet" href="/all/calendar2/calendar.css">

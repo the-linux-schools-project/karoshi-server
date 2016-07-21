@@ -36,7 +36,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Request Delete Users"'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>

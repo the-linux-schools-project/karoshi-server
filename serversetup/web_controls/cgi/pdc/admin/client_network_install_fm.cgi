@@ -50,7 +50,7 @@ echo '
 <html>
 <head>
   <title>'$TITLE2'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)

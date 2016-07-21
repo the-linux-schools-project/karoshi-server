@@ -30,6 +30,7 @@ STYLESHEET=defaultstyle.css
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Show page
@@ -41,7 +42,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change a Student's Password"'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">

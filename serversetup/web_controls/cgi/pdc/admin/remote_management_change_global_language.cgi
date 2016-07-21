@@ -46,7 +46,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change Global Language"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body><div id="pagecontainer">'
 #Generate navigation bar
@@ -66,6 +66,7 @@ echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi
 #Generate dropdown list of langauges
 echo '<select name="___LANGCHOICE___" style="width: 185px; height: '$HEIGHT'px;"><option label="blank"></option>'
 source /opt/karoshi/serversetup/variables/langlist
+source /opt/karoshi/web_controls/version
 
 for LANGDATA in $LANGLIST
 do

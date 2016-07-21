@@ -36,7 +36,7 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$"Request New Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Request New Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

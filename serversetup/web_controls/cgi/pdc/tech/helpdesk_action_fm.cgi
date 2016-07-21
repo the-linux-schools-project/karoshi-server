@@ -24,6 +24,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 
 ##########################
@@ -43,7 +44,7 @@ echo '<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Technical Support"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><title>'$"Technical Support"'</title><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -162,6 +163,7 @@ fi
 
 #Get data
 source /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
+source /opt/karoshi/web_controls/version
 
 #Show job data
 

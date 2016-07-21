@@ -30,6 +30,7 @@ STYLESHEET=defaultstyle.css
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Show page
@@ -44,7 +45,7 @@ echo '
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
   <title>'$"Web Management"'</title>
-<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css">
+<link href="/css/'$STYLESHEET'?d='$VERSION'" rel="stylesheet" type="text/css">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script type="text/javascript" src="/all/js/jquery.js"></script>
 <script type="text/javascript" src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>

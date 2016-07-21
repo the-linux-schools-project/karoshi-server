@@ -50,7 +50,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Configure Backup"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->'
 

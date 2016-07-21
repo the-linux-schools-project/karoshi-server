@@ -36,7 +36,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html>
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head>
 <body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/tech/change_password_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/password.png">'$CHANGEPASSMSG'</a><br>

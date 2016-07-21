@@ -44,7 +44,7 @@ echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"OCS"'</title>'
 [ $OCSENABLED = yes ] && echo '<meta http-equiv="REFRESH" content="0;url=/admin/ocs/">'
 
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 
 if [ $OCSENABLED = no ]
 then

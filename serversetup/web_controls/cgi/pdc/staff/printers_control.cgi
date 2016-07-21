@@ -56,7 +56,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 echo "Content-type: text/html"
 echo ""
 echo '<html><head><title>'$TITLE'</title><meta http-equiv='"'REFRESH'"' content='"'0; URL=printers.cgi'"'></head>'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 echo '</head>'
 echo '<body><div id="pagecontainer">'
 #########################

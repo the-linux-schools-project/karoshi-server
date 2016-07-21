@@ -35,7 +35,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html>
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='$VERSION'" rel="stylesheet" type="text/css"></head>
 <body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/tech/web_management_upload_files_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/web/upload.png">'$UPLOADFILES'</a><br>
 <a href="/cgi-bin/tech/web_management_view_files_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/web/view_delete_files.png">'$VIEWDELETEFILES'</a><br>

@@ -33,6 +33,7 @@
 #Section Control
 ##########################
 source /opt/karoshi/server_network/web_controls/menusettings
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -55,7 +56,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css" />
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************

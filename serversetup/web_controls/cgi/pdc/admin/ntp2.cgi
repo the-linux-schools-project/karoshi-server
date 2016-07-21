@@ -165,7 +165,7 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$"Configure NTP"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Configure NTP"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Check https access
 #########################

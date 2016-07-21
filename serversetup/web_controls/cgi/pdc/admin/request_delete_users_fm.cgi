@@ -46,7 +46,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Requested Deleted Users"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 </head>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <body onLoad="start()"><div id="pagecontainer">'

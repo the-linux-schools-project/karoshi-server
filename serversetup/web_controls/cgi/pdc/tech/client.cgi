@@ -36,7 +36,7 @@ echo ""
 echo '
 
 <!DOCTYPE html>
-<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
+<html><head><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link href="/css/'$STYLESHEET'?d='$VERSION'" rel="stylesheet" type="text/css"></head>
 <body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/tech/domain_information.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/client/domain_information.png">'$DOMAININFO'</a><br>
 <a href="/cgi-bin/tech/asset_register_add.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/client/locations.png">'$ASSETREGISTER'</a><br>

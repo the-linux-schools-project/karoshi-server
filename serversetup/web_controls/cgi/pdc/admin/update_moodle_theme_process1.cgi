@@ -56,7 +56,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <TITLE>'$"Upload a Moodle Theme"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 </HEAD>
 <BODY>
 '

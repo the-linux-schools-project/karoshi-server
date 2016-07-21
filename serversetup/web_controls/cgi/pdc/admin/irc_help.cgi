@@ -28,6 +28,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -39,6 +40,7 @@ NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/web_controls/version
 REALM2=`echo $REALM | cut -d. -f1`
 REALM2=${REALM2:0:8}
 
@@ -50,7 +52,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"IRC Help"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'

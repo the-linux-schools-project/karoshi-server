@@ -34,6 +34,7 @@ NOTIMEOUT=127.0.0.1
 TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/web_controls/group_dropdown_def
+source /opt/karoshi/web_controls/version
 #Check if timout should be disabled
 if [ `echo $REMOTE___ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
@@ -52,7 +53,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Label Groups"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'

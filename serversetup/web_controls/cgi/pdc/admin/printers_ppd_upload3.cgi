@@ -46,7 +46,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><title>'$"Upload PPD file"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body>'
+echo '<!DOCTYPE html><html><head><title>'$"Upload PPD file"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body>'
 #########################
 #Get data input
 #########################
@@ -63,6 +63,7 @@ then
 	show_status
 fi
 source /var/www/karoshi/uploadppd
+source /opt/karoshi/web_controls/version
 rm -f /var/www/karoshi/uploadppd
 
 function show_status {

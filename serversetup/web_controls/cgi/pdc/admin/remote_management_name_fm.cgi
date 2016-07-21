@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management Name"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management Name"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
@@ -60,6 +60,7 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 SERVERICON="/images/submenus/system/computer.png"
 
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/web_controls/version
 
 echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox">
 <table class="standard" style="text-align: left;" ><tbody>
@@ -76,6 +77,7 @@ echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><di
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info
+source /opt/karoshi/web_controls/version
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><br><table class="standard" style="text-align: left;" ><tbody>

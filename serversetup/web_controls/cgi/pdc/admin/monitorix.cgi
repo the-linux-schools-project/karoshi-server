@@ -34,6 +34,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ########################
 #Language
@@ -48,7 +49,7 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Monitorix System Monitor"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Monitorix System Monitor"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -153,6 +154,7 @@ fi
 ACCESSPORT=50001
 [ `echo $HTTP_REFERER | grep -c ":50002"` -gt 0 ] && ACCESSPORT=50002
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/web_controls/version
 echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>

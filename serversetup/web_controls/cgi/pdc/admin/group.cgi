@@ -38,7 +38,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Karoshi Web Application</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head>
 <body><div id="pagecontainer"><table class="leftmenu" style="text-align: left; width: 222px; height: 426px;"><tbody><tr><td style="vertical-align: top;">
 <a href="/cgi-bin/admin/change_primary_group_fm.cgi" target="_top"><img style="border: 0px solid ; width: 17px; height: 17px;" alt="" src="/images/submenus/user/change_primary_group.png">'$CHANGEPRIGRPMSG'</a><br>
 <a href="/cgi-bin/admin/groups_change_fm.cgi" target="_top"><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/submenus/user/change_seconday_group.png">'$CHANGESECGRPMSG'</a><br>

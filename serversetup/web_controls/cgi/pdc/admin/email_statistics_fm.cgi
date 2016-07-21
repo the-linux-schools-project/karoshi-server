@@ -27,6 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -56,7 +57,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View E-Mail Statistics"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/calendar2/calendar_eu.js"></script>
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>

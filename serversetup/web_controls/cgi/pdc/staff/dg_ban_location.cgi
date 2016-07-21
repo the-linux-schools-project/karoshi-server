@@ -37,7 +37,7 @@ SLEEPTIME=5
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$"Ban Room"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

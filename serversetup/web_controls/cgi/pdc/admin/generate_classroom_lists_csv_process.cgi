@@ -43,7 +43,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Generate Classroom Lists - CSV"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Generate Classroom Lists - CSV"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/generate_classroom_lists_csv_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

@@ -41,7 +41,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><div class="sectiontitle">'$"Bulk User Creation"'</div><br>'
@@ -282,6 +282,7 @@ USERNAME=`echo $USERNAME | tr '[A-Z]' '[a-z]'`
 #Create CSVfile with information
 
 source /opt/karoshi/server_network/group_information/$PRI_GROUP
+source /opt/karoshi/web_controls/version
 CSVFILE=karoshi_web_user_create.csv
 CSVFILE_LINES=`cat /var/www/karoshi/bulk_user_creation/"$CSVFILE" | wc -l`
 COUNTER=1

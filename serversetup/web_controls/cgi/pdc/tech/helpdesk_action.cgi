@@ -35,7 +35,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo "<html><head><title>$"Help Desk"</title>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body><div id="pagecontainer">'
+echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta http-equiv="REFRESH" content="0;url=helpdesk_view_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

@@ -41,7 +41,7 @@ echo '<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><title>'$"Help Desk"'</title></head><body onLoad="start()"><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><title>'$"Help Desk"'</title></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -104,6 +104,7 @@ fi
 
 #Get data
 source /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
+source /opt/karoshi/web_controls/version
 
 #Show job data
 echo '<form action="/cgi-bin/admin/helpdesk_action.cgi" method="post"><div id="actionbox"><b>'$"Help Desk"' - '$"Action Request"'</b><br><br>

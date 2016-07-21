@@ -37,7 +37,7 @@ echo '
 <!DOCTYPE html>
 <html><head>
 <title>Karoshi Remote Access</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link href="/css/'$STYLESHEET'?d='`date +%F`'" rel="stylesheet" type="text/css"></head>
+<link href="/css/'$STYLESHEET'?d='$VERSION'" rel="stylesheet" type="text/css"></head>
 <body leftmargin="0" topmargin="0" rightmargin="0" class="Body">
 <table class="leftmenu" style="text-align: left; width: 222px; height: 426px;" border="0" cellpadding="6" cellspacing="0">
 <tbody><tr><td style="vertical-align: top;">

@@ -48,7 +48,7 @@ echo '
 <html>
 <head>
   <title>'$"Allowed Mime Types"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -56,6 +56,7 @@ echo '
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -86,6 +87,7 @@ fi
 #Check to see current state of mime types
 
 source /opt/karoshi/server_network/dansguardian/mime_types
+source /opt/karoshi/web_controls/version
 
 
 echo '

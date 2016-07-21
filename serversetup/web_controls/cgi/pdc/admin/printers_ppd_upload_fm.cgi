@@ -46,7 +46,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <TITLE>'$"Upload PPD file"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -68,6 +68,7 @@ MESSAGE=$"No Printer details found."
 show_status
 fi
 source /var/www/karoshi/uploadppd
+source /opt/karoshi/web_controls/version
 
 echo '<div id="actionbox">
 <B>'$"Upload PPD file"'</B> <a target="_blank" href="http://openprinting.org/printer_list.cgi"><img src="/images/help/info.png" border="0"></a>

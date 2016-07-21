@@ -56,7 +56,7 @@ $(document).ready(function()
     } 
 );
 </script>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head>"
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head>"
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access

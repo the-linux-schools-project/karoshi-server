@@ -24,6 +24,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -46,7 +47,7 @@ echo '
 <!DOCTYPE html>
 <html><head>
   <title>'$"Student Internet Logs"'</title><META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>

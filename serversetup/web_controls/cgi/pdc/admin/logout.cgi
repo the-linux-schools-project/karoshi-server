@@ -45,7 +45,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Karoshi Web Management - Logout"'</title><meta http-equiv="REFRESH" target="_top" content="4; URL='/cgi-bin/menu.cgi'">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 </head>
 <body>
 <iframe src="/cgi-bin/logout/'$REMOTE_USER'/logout2.cgi" name="submenu" frameborder="0" width="100%" height="100%" scrolling="no" marginwidth="0" marginheight="0">

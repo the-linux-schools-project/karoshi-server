@@ -25,6 +25,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
@@ -38,7 +39,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change My Password"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -79,6 +80,7 @@ echo '<form action="/cgi-bin/all/change_my_password.cgi" method="post">'
 
 #Get password strength settings
 source /opt/karoshi/server_network/security/password_settings
+source /opt/karoshi/web_controls/version
 
 if [ $STAFF_UPPER_AND_LOWER_CASE = yes ]
 then

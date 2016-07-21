@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Profile - Select"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/windows_client_profile_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Profile - Select"'</title><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/windows_client_profile_upload_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################

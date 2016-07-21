@@ -46,7 +46,7 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Technical Support"' - '$"Requests"'</title><META HTTP-EQUIV="refresh" CONTENT="300">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body><div id="pagecontainer">'

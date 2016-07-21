@@ -40,7 +40,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"><script src="/all/stuHover.js"></script><script src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search E-Mail logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js"></script><script src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">

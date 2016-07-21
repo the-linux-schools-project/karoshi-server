@@ -44,7 +44,7 @@ echo '
 <html>
 <head>
   <title>'$"Search Karoshi Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 </head>
 <body>
 <div id="menubox">

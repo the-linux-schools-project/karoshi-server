@@ -40,7 +40,7 @@ STYLESHEET=defaultstyle.css
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change My Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change My Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -143,6 +143,7 @@ USERPRIGROUP=`id -g -n $USERNAME`
 
 #Get password strength settings
 source /opt/karoshi/server_network/security/password_settings
+source /opt/karoshi/web_controls/version
 if [ $USERPRIGROUP = staff ] || [ $USERPRIGROUP = staff2 ] || [ $USERPRIGROUP = staff3 ] || [ $USERPRIGROUP = staff4 ] || [ $USERPRIGROUP = officestaff ] || [ $USERPRIGROUP = itadmin ] || [ $USERPRIGROUP = tech ]
 then
 	CHARS_AND_NUMBERS=$STAFF_CHARS_AND_NUMBERS

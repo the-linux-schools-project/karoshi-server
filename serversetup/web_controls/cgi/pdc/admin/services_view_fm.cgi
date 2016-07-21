@@ -27,6 +27,7 @@
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
 
 ############################
 #Language
@@ -52,7 +53,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Service Status"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='`date +%F`'">
+  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
   <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -173,6 +174,7 @@ fi
 if [ -f /opt/karoshi/server_network/info ]
 then
 source /opt/karoshi/server_network/info
+source /opt/karoshi/web_controls/version
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
@@ -201,6 +203,7 @@ FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
 if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
 then
 source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
+source /opt/karoshi/web_controls/version
 LOCATION_NAME="- $LOCATION_NAME"
 fi
 echo '<b>'$"Federated Servers"' '$LOCATION_NAME'</b><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
