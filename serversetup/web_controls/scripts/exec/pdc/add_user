@@ -442,6 +442,18 @@ then
 		#Add in openchange data
 		#openchange_newuser --create '$NEWUSERNAME'
 
+		#Add staff user to the protected distribution list
+		if [ "$SUBUNIT" = personnel ]
+		then
+			if [ $(grep -c "'$NEWUSERNAME'@" /etc/postfix/distribution_list_users) = 0 ]
+			then
+				echo "'$NEWUSERNAME'@'$REALM' OK" >> /etc/postfix/distribution_list_users
+				cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
+				rm /etc/postfix/distribution_list_users
+				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
+				postmap hash:/etc/postfix/distribution_list_users
+			fi
+		fi
 		'
 		SSHSTATUS=`echo $?`
 		if [ $SSHSTATUS != 0 ]
@@ -459,6 +471,19 @@ then
 		chmod u+X -R /home/users/email/$NEWUSERNAME
 		#Add in openchange data
 		#openchange_newuser --create $NEWUSERNAME
+
+		#Add staff user to the protected distribution list
+		if [ "$SUBUNIT" = personnel ]
+		then
+			if [ $(grep -c "$NEWUSERNAME@" /etc/postfix/distribution_list_users) = 0 ]
+			then
+				echo "$NEWUSERNAME@$REALM OK" >> /etc/postfix/distribution_list_users
+				cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
+				rm /etc/postfix/distribution_list_users
+				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
+				postmap hash:/etc/postfix/distribution_list_users
+			fi
+		fi
 	fi
 
 	#Set E-Mail access level if it has been set for the group.
