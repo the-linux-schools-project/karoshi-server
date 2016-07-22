@@ -198,7 +198,7 @@ echo '</td></tr>
       <tr>
         <td style="vertical-align: top;">
 '$"Confirm New Password"'</td>
-        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td>
+        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td><td></td>
       </tr>
 <tr>
      <td style="vertical-align: top; height: 120px;">
