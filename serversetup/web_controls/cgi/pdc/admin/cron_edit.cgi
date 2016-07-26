@@ -68,16 +68,19 @@ fi
 echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ $ACTION != delete ]
 then
-	DIV_ID=actionbox
-	#Generate navigation bar
-	/opt/karoshi/web_controls/generate_navbar_admin
-else
-	DIV_ID=menubox
-fi
+	if [ $MOBILE = no ]
+	then
+		DIV_ID=actionbox
+		#Generate navigation bar
+		/opt/karoshi/web_controls/generate_navbar_admin
+	else
+		DIV_ID=menubox
+	fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+	[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+fi
 #########################
 #Get data input
 #########################
@@ -193,7 +196,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -240,6 +243,6 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$A
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-show_jobs
+	show_jobs
 fi
 exit

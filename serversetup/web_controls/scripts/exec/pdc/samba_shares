@@ -320,7 +320,7 @@ then
 			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
 			if [ "$GROUPNAME" = all ]
 			then
-				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
+				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "'$SHAREPATH'"
 			else
 				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
 			fi
@@ -429,6 +429,15 @@ then
 	echo SERVERMASTER='"'"$SERVERMASTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
 	echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
 	echo MASK=$MASK >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+
+	#Add the folder to the backup configuration
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
+	then
+		if [ $(grep -c "$SHAREPATH,$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders) = 0 ]
+		then
+			echo "$SHAREPATH,$SHARENAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+		fi
+	fi
 	}
 
 	if [ "$GLUSTER" = no ]
@@ -558,7 +567,7 @@ do
 done
 echo '</select>
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will map the drive with the drive letter you have chosen. This only affects Windows clients."'</span></a></td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will map the drive with the drive letter you have chosen. This only affects Windows clients." $"Leave this bank to auto assign a drive letter."'</span></a></td>
 </tr>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle"><select style="width: 200px;" name="____DISPLAYALLUSERS____"><option value="ignore">'$"All Users"'</option></select>
 	</td><td style="vertical-align:middle">
@@ -604,7 +613,7 @@ echo '<option value="0">'$"Do not map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a></td><td style="width: '$WIDTH9'px;">
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td style="width: '$WIDTH9'px;">
 <select style="width: 200px;" name="____GROUPPERMS1____">'
 
 if [ ! -z "$GROUPPERMS1" ]
@@ -642,7 +651,7 @@ echo '<option value="1">'$"Map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a></td><td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td>
 <select style="width: 200px;" name="____GROUPPERMS2____">'
 
 if [ ! -z "$GROUPPERMS2" ]
@@ -681,7 +690,7 @@ echo '<option value="1">'$"Map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
 	</td><td>
 <select style="width: 200px;" name="____GROUPPERMS3____">'
 
@@ -721,7 +730,7 @@ echo '<option value="1">'$"Map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
 	</td><td>
 <select style="width: 200px;" name="____GROUPPERMS4____">'
 
@@ -760,7 +769,7 @@ echo '<option value="1">'$"Map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
 	</td><td>
 <select style="width: 200px;" name="____GROUPPERMS5____">'
 
@@ -799,7 +808,7 @@ echo '<option value="1">'$"Map drive"'</option>
 	fi
 
 	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the group that you want to allow access to the folder."'</span></a>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
 	</td><td>
 <select style="width: 200px;" name="____GROUPPERMS6____">'
 
@@ -887,6 +896,15 @@ then
 		'
 	fi
 
+	#Remove folder from backup configuration
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
+	then
+		if [ $(grep -c "$SHAREPATH","$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) -gt 0 ]
+		then
+			sed -i "/,$SHARENAME,/d" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+		fi
+	fi
+
 	#Regenerate pam mount to map drives
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
@@ -902,7 +920,7 @@ then
 	<tr><td style="width: '$WIDTH10'px;">'$"Server"'</td><td>'$SERVERNAME'</td></tr>
 	<tr><td style="width: '$WIDTH10'px;">'$"Network Share"'</td><td>'$SHARENAME'</td></tr>
 	<tr><td style="width: '$WIDTH10'px;">'$"Path"'</td><td>'$SHAREPATH'</td></tr>
-	</tbody></table><br><br>'$"This will delete the share definition but will not delete the folder."'<br><br>'$"Are you sure that you want to delete this share?"'<br><br><input name="____ACTION____reallydelete____" value="'$"Delete Share"'" class="button" type="submit"> <input name="____ACTION____view____" value="'$"Cancel"'" class="button" type="submit">
+	</tbody></table><br>'$"This will delete the share definition but will not delete the folder."'<br><br>'$"Are you sure that you want to delete this share?"'<br><br><input name="____ACTION____reallydelete____" value="'$"Delete Share"'" class="button" type="submit"> <input name="____ACTION____view____" value="'$"Cancel"'" class="button" type="submit">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'____">
 	<input type="hidden" name="____SERVERTYPE____" value="'$SERVERTYPE'____">
 	<input type="hidden" name="____SERVERMASTER____" value="'$SERVERMASTER'____">

@@ -455,5 +455,23 @@ do
 	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$USERNAME
 done
 
+#Add home folder path to the backup config for the new server
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backup_folders ]
+then
+	if [ $(grep -c "$HOMEPATH,$PRIGROUP" /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backup_folders) = 0 ]
+	then
+		echo "$HOMEPATH,$PRIGROUP",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$NEWSERVER/backup_folders
+	fi
+fi
+
+#Remove home folder path to the backup config for the current server
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$CURRENTSERVER/backup_folders ]
+then
+	if [ $(grep -c "$HOMEPATH","$PRIGROUP" /opt/karoshi/server_network/backup_servers/backup_settings/"$CURRENTSERVER"/backup_folders) -gt 0 ]
+	then
+		sed -i "/,$PRIGROUP,/d" /opt/karoshi/server_network/backup_servers/backup_settings/"$CURRENTSERVER"/backup_folders
+	fi
+fi
+
 exit
 

@@ -61,8 +61,8 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVER=`echo "$DATA" | cut -s -d: -f4`
-BACKUPSERVER=`echo "$DATA" | cut -s -d: -f5`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+BACKUPSERVERNAME=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
@@ -82,12 +82,12 @@ then
 	echo `date`: backup_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ -z "$SERVER" ]
+if [ -z "$SERVERNAME" ]
 then
 	echo `date`: backup_assign - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit
 fi
-if [ -z "$BACKUPSERVER" ]
+if [ -z "$BACKUPSERVERNAME" ]
 then
 	echo `date`: backup_assign - Blank backup server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit
@@ -99,10 +99,10 @@ then
 	exit 101
 fi
 
-if [ "$BACKUPSERVER" = removebackupoption ]
+if [ "$BACKUPSERVERNAME" = removebackupoption ]
 then
-	echo `date`: backup_assign - removing backup option "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER
+	echo `date`: backup_assign - removing backup option "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	[ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ] && rm -f -R /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME
 	exit
 fi
 
@@ -115,142 +115,112 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 
-echo `date`: backup_assign - assigning $SERVER to $BACKUPSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: backup_assign - assigning $SERVERNAME to $BACKUPSERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Enable ssh from the server to the backup server
 
-if [ $SERVER != `hostname-fqdn` ]
+if [ $SERVERNAME != `hostname-fqdn` ]
 then
-ssh -x -o PasswordAuthentication=no $SERVER '
-[ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
-########################
-#Check to see if keys do not exist
-########################
-if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
-then
-#Check that timeout has been set
-TIMEOUTSTATUS=`grep -c "#""   "ConnectTimeout" "0 /etc/ssh/ssh_config`
-if [ $TIMEOUTSTATUS != 0 ]
-then
-sed -i "s/#   ConnectTimeout 0/ConnectTimeout 4/g" /etc/ssh/ssh_config
-fi
-rm -f $HOME/.ssh/id_ecdsa
-ssh-keygen -t ecdsa -b 521 -N "" -f $HOME/.ssh/id_ecdsa > /dev/null
-#ssh-keygen -t dsa -N "" -f $HOME/.ssh/id_dsa > /dev/null
-fi
-cat /root/.ssh/id_ecdsa.pub > /root/.ssh/authorized_keys'$SERVER'
-#cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys'$SERVER'
-[ ! -d /root/.ssh_servers ] && mkdir /root/.ssh_servers
-chmod 0700 /root/.ssh_servers
-cp -f /root/.ssh/authorized_keys'$SERVER' /root/.ssh_servers/
-chmod 0600 /root/.ssh_servers/authorized_keys'$SERVER'
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
+	########################
+	#Check to see if keys do not exist
+	########################
+	if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
+	then
+		#Check that timeout has been set
+		TIMEOUTSTATUS=`grep -c "#""   "ConnectTimeout" "0 /etc/ssh/ssh_config`
+		if [ $TIMEOUTSTATUS != 0 ]
+		then
+			sed -i "s/#   ConnectTimeout 0/ConnectTimeout 4/g" /etc/ssh/ssh_config
+		fi
+		rm -f $HOME/.ssh/id_ecdsa
+		ssh-keygen -t ecdsa -b 521 -N "" -f $HOME/.ssh/id_ecdsa > /dev/null
+		#ssh-keygen -t dsa -N "" -f $HOME/.ssh/id_dsa > /dev/null
+	fi
+	cat /root/.ssh/id_ecdsa.pub > /root/.ssh/authorized_keys'$SERVERNAME'
+	#cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys'$SERVERNAME'
+	[ ! -d /root/.ssh_servers ] && mkdir /root/.ssh_servers
+	chmod 0700 /root/.ssh_servers
+	cp -f /root/.ssh/authorized_keys'$SERVERNAME' /root/.ssh_servers/
+	chmod 0600 /root/.ssh_servers/authorized_keys'$SERVERNAME'
+	'
 
-'
+	#Get server ip
+	KAROSHISERVERNAMETCPIP=`net lookup $SERVERNAME`
+	scp -o PasswordAuthentication=no -r $SERVERNAME:/root/.ssh_servers/authorized_keys$SERVERNAME /root/.ssh_servers
+	scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVERNAME $BACKUPSERVERNAME:/root/.ssh
+	ssh -x -o PasswordAuthentication=no $BACKUPSERVERNAME '
+	sed "/root@'$SERVERNAME'/d" /root/.ssh/authorized_keys2 > /root/.ssh/authorized_keys2.$$
+	rm -f /root/.ssh/authorized_keys2
+	mv /root/.ssh/authorized_keys2.$$ /root/.ssh/authorized_keys2
+	[ -f /root/.ssh/authorized_keys'$SERVERNAME' ] && cat /root/.ssh/authorized_keys'$SERVERNAME' >> /root/.ssh/authorized_keys2
+	#Make sure that the server is allowed in shorewall
+	if [ `grep -c -w '$KAROSHISERVERNAMETCPIP' /etc/shorewall/rules` = 0 ]
+	then
+		#Append server ip to the line
+		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
+		sed -i $LINENUM"c"\ACCEPT"	"net:'$KAROSHISERVERNAMETCPIP'"	"fw"	"tcp"	"22"	"-#'$SERVERNAME'_ssh_rule /etc/shorewall/rules
+		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	fi
 
-#Get server ip
-KAROSHISERVERTCPIP=`net lookup $SERVER`
-scp -o PasswordAuthentication=no -r $SERVER:/root/.ssh_servers/authorized_keys$SERVER /root/.ssh_servers
-scp -o PasswordAuthentication=no -r /root/.ssh_servers/authorized_keys$SERVER $BACKUPSERVER:/root/.ssh
-ssh -x -o PasswordAuthentication=no $BACKUPSERVER '
-sed "/root@'$SERVER'/d" /root/.ssh/authorized_keys2 > /root/.ssh/authorized_keys2.$$
-rm -f /root/.ssh/authorized_keys2
-mv /root/.ssh/authorized_keys2.$$ /root/.ssh/authorized_keys2
-[ -f /root/.ssh/authorized_keys'$SERVER' ] && cat /root/.ssh/authorized_keys'$SERVER' >> /root/.ssh/authorized_keys2
-#Make sure that the server is allowed in shorewall
-if [ `grep -c -w '$KAROSHISERVERTCPIP' /etc/shorewall/rules` = 0 ]
-then
-#Append server ip to the line
-LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net:'$KAROSHISERVERTCPIP'"	"fw"	"tcp"	"22"	"-#'$SERVER'_ssh_rule /etc/shorewall/rules
-echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	# Make sure the server is listed in hosts.allow
+	HOSTSALLOWDATA=`grep sshd /etc/hosts.allow`
+	if [ `echo $HOSTSALLOWDATA"null" | grep -c '$KAROSHISERVERNAMETCPIP'` = 0 ]
+	then
+		#Delete current sshd line
+		sed -i "/sshd:/d" /etc/hosts.allow
+		echo $HOSTSALLOWDATA , '$KAROSHISERVERNAMETCPIP' >> /etc/hosts.allow
+	fi
+	'
 fi
 
-# Make sure the server is listed in hosts.allow
-HOSTSALLOWDATA=`grep sshd /etc/hosts.allow`
-if [ `echo $HOSTSALLOWDATA"null" | grep -c '$KAROSHISERVERTCPIP'` = 0 ]
+#Get install type
+INSTALL_TYPE=education
+if [ -f /opt/karoshi/server_network/install_type ]
 then
-#Delete current sshd line
-sed -i "/sshd:/d" /etc/hosts.allow
-echo $HOSTSALLOWDATA , '$KAROSHISERVERTCPIP' >> /etc/hosts.allow
-fi
-'
+	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
 fi
 
 #Write backup config
-[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER ]
-echo $BACKUPSERVER > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver
+[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ]
+echo $BACKUPSERVERNAME > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backupserver
 
 #Write default backup paths
-if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders ]
+if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
 then
-	echo /etc,etc,21 > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /opt/karoshi,karoshi,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/itadminstaff,itadminstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/staff,staff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/officestaff,officestaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/nonteachingstaff,nonteachingstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/studentstaff,studentstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/exams,exams,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/techstaff,techstaff,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/guests,guests,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/subjects,subjects,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/applications,applications,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/staffshare,staffshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/officeshare,officeshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/itadminshare,itadminshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2006,yr2006,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2007,yr2007,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2008,yr2008,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2009,yr2009,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2010,yr2010,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2011,yr2011,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2012,yr2012,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2013,yr2013,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2014,yr2014,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2015,yr2015,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2016,yr2016,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2017,yr2017,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2018,yr2018,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2019,yr2019,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2020,yr2020,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2021,yr2021,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2022,yr2022,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2023,yr2023,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2024,yr2024,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2025,yr2025,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2026,yr2026,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2027,yr2027,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2028,yr2028,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2029,yr2029,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2030,yr2030,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2031,yr2031,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2032,yr2032,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2033,yr2033,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2034,yr2034,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2035,yr2035,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2036,yr2036,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2037,yr2037,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2038,yr2038,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2039,yr2039,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2040,yr2040,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2041,yr2041,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2042,yr2042,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2043,yr2043,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2044,yr2044,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2045,yr2045,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2046,yr2046,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2047,yr2047,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2048,yr2048,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/students/yr2049,yr2049,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /var/lib/samba/,samba,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
-	echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backup_folders
+	echo /etc,etc,21 > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /opt/karoshi,karoshi,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /home/applications,applications,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /home/staffshare,staffshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /home/officeshare,officeshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /home/itadminshare,itadminshare,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+
+	if [ "$INSTALL_TYPE" = education ]
+	then
+		echo /home/subjects,subjects,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+		echo /home/users/exams,exams,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	fi
+	echo /var/lib/samba/,samba,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+
+	#Add in home area paths from primary group information
+	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
+	do
+		source /opt/karoshi/server_network/group_information/"$PRIGROUP"
+		if [ $SERVERNAME = $SERVER ]
+		then
+			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+		fi
+	done
+
 fi
 exit
 
