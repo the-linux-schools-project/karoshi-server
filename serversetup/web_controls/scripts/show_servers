@@ -209,10 +209,24 @@ INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
 ZONE=$"Internal"
-for SERVERS in /opt/karoshi/server_network/zones/internal/servers/*
+
+SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/servers)
+ADCLIST=""
+[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
+for SERVER in $SERVERLIST
 do
-	SERVER=`basename $SERVERS`
-	[ $SERVER != $MAINSERVER ] && show_server
+	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+	then
+		show_server
+	fi
+done
+
+for SERVER in $SERVERLIST
+do
+	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+	then
+		show_server
+	fi
 done
 }
 
@@ -397,14 +411,24 @@ SERVERMASTER=notset
 ZONE=$"DMZ"
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
-	then
-		for SERVERS in /opt/karoshi/server_network/zones/dmz/servers/*
-		do
-			SERVER=`basename $SERVERS`
-			[ $SERVER != $MAINSERVER ] && show_server
-		done
-	fi
+	SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/servers)
+	ADCLIST=""
+	[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/)
+	for SERVER in $SERVERLIST
+	do
+		if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+		then
+			show_server
+		fi
+	done
+
+	for SERVER in $SERVERLIST
+	do
+		if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+		then
+			show_server
+		fi
+	done
 fi
 }
 

@@ -237,10 +237,23 @@ then
 	if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
 	then
 		FILLCOLOUR=green
-		for SERVER in /opt/karoshi/server_network/zones/internal/servers/*
+		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/servers)
+		ADCLIST=""
+		[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
+		for SERVER in $SERVERLIST
 		do
-			SERVER=`basename $SERVER`
-			[ $SERVER != $MAINSERVER ] && show_servers
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			then
+				show_servers
+			fi
+		done
+
+		for SERVER in $SERVERLIST
+		do
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			then
+				show_servers
+			fi
 		done
 	fi
 fi
@@ -252,10 +265,23 @@ then
 	then
 		FILLCOLOUR=orange
 		ZONE=$"DMZ"
-		for SERVER in /opt/karoshi/server_network/zones/dmz/servers/*
+		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/servers)
+		ADCLIST=""
+		[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/)
+		for SERVER in $SERVERLIST
 		do
-			SERVER=`basename $SERVER`
-			[ $SERVER != $MAINSERVER ] && show_servers
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			then
+				show_servers
+			fi
+		done
+
+		for SERVER in $SERVERLIST
+		do
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			then
+				show_servers
+			fi
 		done
 	fi
 fi
@@ -272,6 +298,26 @@ then
 			SERVER=`basename $SERVER`
 			[ $SERVER != $MAINSERVER ] && show_servers
 		done
+
+		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/external/servers)
+		ADCLIST=""
+		[ -d /opt/karoshi/server_network/zones/external/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/external/additional_domain_controllers/)
+		for SERVER in $SERVERLIST
+		do
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			then
+				show_servers
+			fi
+		done
+
+		for SERVER in $SERVERLIST
+		do
+			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			then
+				show_servers
+			fi
+		done
+
 	fi
 fi
 
