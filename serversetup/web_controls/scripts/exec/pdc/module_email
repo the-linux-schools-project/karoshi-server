@@ -408,6 +408,25 @@ else
 	'
 fi
 
+#Add home folder path to the backup config for the E-Mail server
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
+then
+	if [ $(grep -c "/home/users/email,email" /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders) = 0 ]
+	then
+		echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	fi
+
+	#Add in home area paths from primary group information
+	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
+	do
+		source /opt/karoshi/server_network/group_information/"$PRIGROUP"
+		if [ $(grep -c "$HOMEPATH,$PRIGROUP" /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders) = 0 ]
+		then
+			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+		fi
+	done
+fi
+
 #Add groups to restricted_accounts and deny_sending
 /opt/karoshi/serversetup/modules/email/scripts/group_email_access
 

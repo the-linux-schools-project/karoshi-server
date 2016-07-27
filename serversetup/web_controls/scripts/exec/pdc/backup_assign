@@ -193,6 +193,13 @@ echo $BACKUPSERVERNAME > /opt/karoshi/server_network/backup_servers/backup_setti
 #Write default backup paths
 if [ ! -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
 then
+	#Check if we have an email server
+	if [ -f /opt/karoshi/server_network/emailserver ]
+	then
+		EMAILSERVER=$(cat /opt/karoshi/server_network/emailserver)
+	else
+		EMAILSERVER=notset
+	fi
 	echo /etc,etc,21 > /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /opt/karoshi,karoshi,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /home/applications,applications,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
@@ -205,8 +212,13 @@ then
 		echo /home/subjects,subjects,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 		echo /home/users/exams,exams,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	fi
+
 	echo /var/lib/samba/,samba,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
-	echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+
+	if [ "$SERVERNAME" = "$EMAILSERVER" ]
+	then
+		echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+	fi
 	echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
@@ -215,12 +227,11 @@ then
 	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
 	do
 		source /opt/karoshi/server_network/group_information/"$PRIGROUP"
-		if [ $SERVERNAME = $SERVER ]
+		if [ "$SERVERNAME" = "$SERVER" ] || [ "$SERVERNAME" = "$EMAILSERVER" ]
 		then
 			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 		fi
 	done
-
 fi
 exit
 
