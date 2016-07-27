@@ -152,12 +152,16 @@ then
 	fi
 
 	#Make sure glusterfs is running
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then
 		echo '<ul><li>'$HOSTNAME'.'$REALM' - '$"starting glusterfs"'</li></ul>'
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/reserveports_start 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/reserveports_stop 1>/dev/null
 	fi
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
@@ -178,12 +182,16 @@ else
 	fi
 
 	#Make sure glusterfs is running
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then
 		echo "<ul><li>'$SERVER' - '$"starting glusterfs"'</li></ul>"
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/reserveports_start 1>/dev/null
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/reserveports_stop 1>/dev/null
 	fi
 '
 fi

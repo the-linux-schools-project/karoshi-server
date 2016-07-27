@@ -1,20 +1,28 @@
 #!/bin/bash
+### BEGIN INIT INFO
+# Provides:          releaseports
+# Required-Start:    $local_fs $remote_fs $network $syslog $glusterfs
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start reserveports
+### END INIT INFO
 
-service=$1
+service=$(echo "$1" | tr -cd 'a-z')
 if [ -z "$service" ]
 then
-	echo "No service entered."
-	exit 1
+	service=all
 fi
 
-if [ ! -f /etc/reserveports/$service ]
+if [ ! -f /etc/reserveports/"$service" ] && [ "$service" != all ]
 then
 	echo "No service definition."
 	exit 2
 fi
 
+function openports {
 #Kill nc listener
-for portdata in `cat /etc/reserveports/$service`
+for portdata in $(cat /etc/reserveports/"$service")
 do
 	port=`echo "$portdata" | cut -d, -f1`
 	options=`echo "$portdata" | cut -d, -f2`
@@ -24,4 +32,13 @@ do
 		kill $process
 	done
 done
+}
+
+if [ "$service" = all ]
+then
+	#Assume that we are not using netcat for anything else important.
+	killall nc	
+else
+	openports
+fi
 
