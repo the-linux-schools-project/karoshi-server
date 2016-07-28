@@ -251,7 +251,7 @@ then
 fi
 
 	#Join the domain
-	net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS'
+	net ads join -S '$KRBSERVER' -U Administrator%'$LDAPPASS' 1>/dev/null
 	JOINDOMAINSTATUS=`echo $?`
 	if [ $JOINDOMAINSTATUS != 0 ]
 	then
