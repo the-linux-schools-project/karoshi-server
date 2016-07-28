@@ -965,11 +965,6 @@ then
 		NEWGROUP=officestaff
 		NEWGROUPDISP="Office Staff"
 		add_samba4_group
-
-		echo -e ''$"Adding group"' bursar'
-		NEWGROUP=bursar
-		NEWGROUPDISP="Bursars"
-		add_samba4_group
 	else
 		echo -e ''$"Adding group"' parents'
 		NEWGROUP=parents
@@ -1040,11 +1035,6 @@ then
 		echo -e ''$"Adding group"' exams'
 		NEWGROUP=exams
 		NEWGROUPDISP="Exam Users"
-		add_samba4_group
-
-		echo -e ''$"Adding group"' smt'
-		NEWGROUP=smt
-		NEWGROUPDISP="Senior Management"
 		add_samba4_group
 
 		echo -e ''$"Adding group"' governors'
@@ -1209,7 +1199,6 @@ then
 	then
 		[ -d /home/staffshare/temp ] || mkdir /home/staffshare/temp
 		[ -d /home/staffshare/"useful documents" ] || mkdir /home/staffshare/"useful documents"
-		[ -d /home/staffshare/smt ] || mkdir /home/staffshare/smt
 		[ -d /home/staffshare/"work experience" ] || mkdir /home/staffshare/"work experience"
 		[ -d /home/staffshare/art ] || mkdir /home/staffshare/art
 		[ -d /home/staffshare/"business studies" ] || mkdir /home/staffshare/"business studies"
@@ -1249,12 +1238,9 @@ then
 	echo $"Creating" officeshare
 	[ -d /home/officeshare ] || mkdir /home/officeshare
 	[ -d /home/officeshare/temp ] || mkdir /home/officeshare/temp
-	[ -d /home/officeshare/bursar ] || mkdir /home/officeshare/bursar
-
 	chmod 2660 -R /home/officeshare
 	chmod u+X,g+X -R /home/officeshare
 	chown -R root.officestaff /home/officeshare
-	chown root.bursar -R /home/officeshare/bursar
 fi
 #Itadminshare area
 echo `date`: "Creating itadminshare area" >> /opt/karoshi/serversetup/install_log
@@ -1800,8 +1786,6 @@ if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
 	setfacl -Rm u::rwx,g::r-x,o::r-x,g:staff:rwx,d:u::rwx,d:g::r-x,d:o::r-x,d:g:staff:rwx /home/subjects
 	setfacl -m g:staff:r-x,u::r-x /home/subjects
-	setfacl -bR /home/staffshare/smt
-	setfacl -Rm u::rwx,g::---,o::---,g:smt:rwx,d:u::rwx,d:g::---,d:o::---,d:g:smt:rwx /home/staffshare/smt
 	setfacl -R -m g:staff:r-x,d:g:staff:r-x /home/users/students
 fi
 }

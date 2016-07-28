@@ -585,7 +585,7 @@ then
 		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information_secondary` )
 	fi
 
-	if [ $TYPE = dynamic ] || [ $TYPE = all ]
+	if [ $TYPE = dynamic ]
 	then
 		GROUPTYPE=$"Dynamic"
 		GTYPE=dynamic
@@ -594,7 +594,7 @@ then
 
 	if [ $TYPE = all ]
 	then
-		GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )	
+		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information` `ls -1 /opt/karoshi/server_network/group_information_secondary` `ls -1 /opt/karoshi/server_network/group_information_dynamic` )	
 	fi
 
 	#Get the number of groups in the array
@@ -703,8 +703,8 @@ fi
 
 if [ $ACTION = delete ]
 then
-	echo '<input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">
-	<b>'$"Group name": $GROUPNAME'</b><br><br>'$"Are you sure that you want to delete this group?"'<br><br><input value="'$"Submit"'" class="button" type="submit">'
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">
+	<b>'$"Group name": $GROUPNAME'</b><br><br>'$"Are you sure that you want to delete this group?"'<br><br><input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 
 if [ $ACTION = extragroups ]
