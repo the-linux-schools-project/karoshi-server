@@ -96,7 +96,7 @@ then
 	done
 	#mysqladmin -h localhost -u root password ''$MYSQLPASS''
 	echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
-	echo UPDATE user SET Password=PASSWORD\(\'$ROOTMYSQLPASS\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+	echo UPDATE user SET authentication_string=PASSWORD\(\'$ROOTMYSQLPASS\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
 	echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
 	mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
 	rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
