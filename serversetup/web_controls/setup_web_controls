@@ -640,9 +640,10 @@ fi
 if [ ! -d /opt/karoshi/server_network/helpdesk ]
 then
 	mkdir /opt/karoshi/server_network/helpdesk
-	chmod 0750 /opt/karoshi/server_network/helpdesk
-	chown apache_karoshi.apache_karoshi /opt/karoshi/server_network/helpdesk
 fi
+chmod 0640 -R /opt/karoshi/server_network/helpdesk
+chmod u+X,g+X -R /opt/karoshi/server_network/helpdesk
+chown apache_karoshi.apache_karoshi -R /opt/karoshi/server_network/helpdesk
 
 ######################
 #Schedule web log rotation
@@ -798,6 +799,15 @@ echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$HOSTNAME.$REALM
 
 [ -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role ] && rm -f /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/no_role
 
+#Acceptable use
+if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations ]
+then
+	mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations
+fi
+chmod 0640 -R /opt/karoshi/server_network/acceptable_use_authorisations
+chmod u+X,g+X -R /opt/karoshi/server_network/acceptable_use_authorisations
+chown root.apache_karoshi -R /opt/karoshi/server_network/acceptable_use_authorisations
+
 ############################
 #Configure Menus
 ############################
@@ -821,12 +831,6 @@ then
 	#Disable acceptable use for home installs
 	if [ $INSTALL_TYPE = home ]
 	then
-		if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations ]
-		then
-			mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations
-			chmod 0750 /opt/karoshi/server_network/acceptable_use_authorisations
-			chown root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations
-		fi
 		touch /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 	fi
 fi

@@ -52,7 +52,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Show User Information"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Edit User Information"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
@@ -85,7 +85,7 @@ echo '<form action="/cgi-bin/admin/show_user_info.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
 
-echo '<div class="sectiontitle">'$"Show User Information"'</div>
+echo '<div class="sectiontitle">'$"Edit User Information"'</div>
   <br>
   <table class="standard" style="text-align: left; height: 40px;" >
     <tbody>

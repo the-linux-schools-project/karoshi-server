@@ -43,7 +43,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record Incident"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record User Incident"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -201,7 +201,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Record Incident"'</div><br>'
+echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Record User Incident"'</div><br>'
 echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" >'
 echo '<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
