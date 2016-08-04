@@ -67,7 +67,8 @@ echo '<form action="/cgi-bin/admin/remote_management_restrict.cgi" method="post"
         <td><input maxlength="30" name="_TCPCOMMENT_" size="15"></td></tr>
 	<tr><td>'$"Admin Level"'</td>
 	<td><select name="_PRIMARYADMIN_">
-        <option>1 2</option>
+        <option>1</option>
+        <option>2</option>
         <option>3</option>
         </select>
         </td>
