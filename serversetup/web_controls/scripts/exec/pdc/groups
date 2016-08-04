@@ -129,8 +129,10 @@ then
 	WIDTH3=300
 	WIDTH4=100
 	ICON1=/images/submenus/system/delete.png
-	ICON2=/images/submenus/system/edit.png
+	ICON2=/images/submenus/user/edit_user_info.png
 	ICON3=/images/submenus/user/users.png
+	ICON4=/images/submenus/user/user_enabled.png
+	ICON5=/images/submenus/user/user_disabled.png
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=120
@@ -138,8 +140,10 @@ else
 	WIDTH3=200
 	WIDTH4=90
 	ICON1=/images/submenus/system/deletem.png
-	ICON2=/images/submenus/system/editm.png
+	ICON2=/images/submenus/user/usersm.png
 	ICON3=/images/submenus/user/users.png
+	ICON4=/images/submenus/user/user_enabledm.png
+	ICON5=/images/submenus/user/user_disabledm.png
 fi
 
 
@@ -182,6 +186,20 @@ then
 	exit
 fi
 
+if [ "$ACTION" = disableuser ]
+then
+	echo `date`: groups - "disabling "$USERNAME" by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool user disable "$USERNAME" 1>/dev/null
+	exit
+fi
+
+if [ "$ACTION" = enableuser ]
+then
+	echo `date`: groups - "enabling "$USERNAME" by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool user enable "$USERNAME" 1>/dev/null
+	exit
+fi
+
 if [ "$ACTION" = showusers ]
 then
 	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -195,29 +213,58 @@ then
 	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
 	then
 		SERVERNAME=`hostname-fqdn`
+		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		#Show all users in the group.
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Edit User"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>'
+	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th>'
+		echo '<th style="width: '$WIDTH2'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
 			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
 			FIRSTNAME=`echo "$FULLNAME" | cut -d" " -f1`
 			LASTNAME=`echo "$FULLNAME" | cut -d" " -f2`
-			echo '<tr><td>'$GROUPMEMBER'</td><td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>
+
+			#Get ldap data
+			LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$GROUPMEMBER | sed "s/[\]/BACKSLASH/g"`
+			USERACCOUNTCONTROL=$(echo -e "$LDAPDATA" | grep ^userAccountControl: | cut -d: -f2 | tr -cd "0-9")
+			if [ $USERACCOUNTCONTROL = 514 ]
+			then
+				STATUSICON="$ICON5"
+				STATUSTEXT=$"Enable User Account"
+				STATUSACTION=enableuser
+			else
+				STATUSICON="$ICON4"
+				STATUSTEXT=$"Disable User Account"
+				STATUSACTION=disableuser
+			fi
+
+			echo '<tr><td>'$GROUPMEMBER'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$FIRSTNAME'</td><td>'$LASTNAME'</td>'
+			echo '<td>
 			<form name="myform" action="/cgi-bin/admin/show_user_info.cgi" method="post">
 			<button class="info" name="_ShowUserInfo_" value="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_">
-			<img src="/images/submenus/user/edit_user_info.png" alt="'$"Show users in this group."'">
+			<img src="'$ICON2'" alt="'$"Show users in this group."'">
 			<span>'$"Edit"' '$GROUPMEMBER'</span>
 			</button>
 			</form>
 			</td><td>
-			<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-			<button class="info" name="____RemoveUser____" value="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
-			<img src="'$ICON1'" alt="'$"remove this user from the group."'">
-			<span>'$GROUPMEMBER' - '$"remove this user from the group."'</span>
-			</button>
-			</form>
-			</td></tr>'
+				<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+					<button class="info infoleft" name="____RemoveUser____" value="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
+					<img src="'$ICON1'" alt="'$"remove this user from the group."'">
+					<span>'$GROUPMEMBER' - '$"remove this user from the group."'</span>
+					</button>
+				</form>
+			</td>
+			<td>
+				<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+					<button class="info infoleft" name="____DisableUser____" value="____ACTION____'$STATUSACTION'____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
+					<img src="'$STATUSICON'" alt="'$STATUSTEXT'">
+					<span>'$GROUPMEMBER' - '$STATUSTEXT'</span>
+					</button>
+				</form>
+			</td>
+			</tr>'
 		done
 		echo '</tbody></table>'
 	fi

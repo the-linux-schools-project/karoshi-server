@@ -150,7 +150,7 @@ done
 [ -z "$ACTION" ] && ACTION=view
 
 #Assign USERNAME
-if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ]
+if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ] || [ "$ACTION" = disableuser ] || [ "$ACTION" = enableuser ]
 then
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -270,7 +270,7 @@ TITLE=$"Group Management"
 ACTIONTYPE=add
 ACTIONMSG="$NEWGROUPMSG"
 
-if [ "$ACTION" != add ] && [ $ACTION != delete ] && [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != extragroups ] && [ $ACTION != editextrargroups ] && [ $ACTION != showusers ] && [ $ACTION != removeuser ] && [ $ACTION != adduser ]
+if [ "$ACTION" != add ] && [ $ACTION != delete ] && [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != extragroups ] && [ $ACTION != editextrargroups ] && [ $ACTION != showusers ] && [ $ACTION != removeuser ] && [ $ACTION != adduser ] && [ $ACTION != disableuser ] && [ $ACTION != enableuser ]
 then
 	MESSAGE=$"An incorrect action has been entered."
 	show_status
@@ -304,7 +304,7 @@ then
 	fi
 fi
 
-if [ $ACTION = removeuser ] || [ $ACTION = adduser ]
+if [ $ACTION = removeuser ] || [ $ACTION = adduser ] || [ $ACTION = disableuser ] || [ $ACTION = enableuser ]
 then
 	if [ -z "$USERNAME" ]
 	then
@@ -358,9 +358,13 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMES
 }
 
 #Delete a user from a group
-if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ]
+if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ] || [ "$ACTION" = disableuser ] || [ "$ACTION" = enableuser ]
 then
 	do_action
+	if [ "$ACTION" = disableuser ] || [ "$ACTION" = enableuser ] || [ "$ACTION" = adduser ]
+	then
+		USERNAME=""
+	fi
 	ACTION=showusers
 fi
 
