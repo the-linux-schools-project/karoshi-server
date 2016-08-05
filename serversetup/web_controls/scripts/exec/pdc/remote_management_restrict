@@ -24,25 +24,25 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict_cgi
 then
-echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict2_cgi
 then
-echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict3_cgi
 then
-echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_restrict - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict_cgi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict2_cgi
@@ -50,13 +50,13 @@ source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_res
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict.cgi | cut -d' ' -f1`
 MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict2.cgi | cut -d' ' -f1`
 MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict3.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-[ $MD5SUM3'null' = null ] && MD5SUM3=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
+[ -z "$MD5SUM3" ] && MD5SUM3=not_set
 if [ $MD5SUM'check' != $remote_management_restrict_cgi'check' ] || [ $MD5SUM2'check' != $remote_management_restrict2_cgi'check' ] || [ $MD5SUM3'check' != $remote_management_restrict3_cgi'check' ]
 then
-echo `date`: remote_management_restrict - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_restrict - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -64,8 +64,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: remote_management_restrict - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_restrict - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f2`
@@ -79,47 +79,47 @@ ADMINLEVEL=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f7`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
 then
-echo `date`: remote_management_restrict - Not called by remote_management_restrict.cgi or remote_management_restrict2.cgi or remote_management_restrict3.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - Not called by remote_management_restrict.cgi or remote_management_restrict2.cgi or remote_management_restrict3.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: remote_management_restrict - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: remote_management_restrict - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: remote_management_restrict - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
 
 if [ $ACTION != add ] && [ $ACTION != remove ] && [ $ACTION != view ] && [ $ACTION != edit ]
 then
-echo `date`: remote_management_restrict - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
 if [ $ACTION = add ] || [ $ACTION = remove ] || [ $ACTION = edit ]
 then
-if [ $TCPADDRESS'null' = null ]
-then
-echo `date`: remote_management_restrict - Blank tcpip address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
-fi
-if [ $ADMINLEVEL'null' = null ] && [ $ACTION != remove ]
-then
-echo `date`: remote_management_restrict - Blank admin level by $REMOTE_USER with action $ACTION from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
-fi
+	if [ -z "$TCPADDRESS" ]
+	then
+		echo `date`: remote_management_restrict - Blank tcpip address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 100
+	fi
+	if [ -z "$ADMINLEVEL" ] && [ $ACTION != remove ]
+	then
+		echo `date`: remote_management_restrict - Blank admin level by $REMOTE_USER with action $ACTION from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 100
+	fi
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: remote_management_restrict - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 100
+	echo `date`: remote_management_restrict - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 100
 fi
 
 ############################
@@ -136,21 +136,21 @@ TEXTDOMAIN=karoshi-server
 #Check to see if primary admin
 ADMIN_DATA=`grep ^$REMOTE_USER: /opt/karoshi/web_controls/remote_management_users`
 PRIADMINSTATUS=`echo $ADMIN_DATA | cut -d: -f5`
-if [ $PRIADMINSTATUS'null' = null ]
+if [ -z "$PRIADMINSTATUS" ]
 then
-PRIADMINSTATUS=no
+	PRIADMINSTATUS=no
 fi
 
 if [ ! -f /opt/karoshi/web_controls/web_admin_restrictions ]
 then
-touch /opt/karoshi/web_controls/web_admin_restrictions
-chmod 0600 /opt/karoshi/web_controls/web_admin_restrictions
+	touch /opt/karoshi/web_controls/web_admin_restrictions
+	chmod 0600 /opt/karoshi/web_controls/web_admin_restrictions
 fi
 
 if [ ! -f /opt/karoshi/web_controls/web_tech_restrictions ]
 then
-touch /opt/karoshi/web_controls/web_tech_restrictions
-chmod 0600 /opt/karoshi/web_controls/web_tech_restrictions
+	touch /opt/karoshi/web_controls/web_tech_restrictions
+	chmod 0600 /opt/karoshi/web_controls/web_tech_restrictions
 fi
 
 function rebuild_htaccess {
@@ -163,214 +163,245 @@ RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
 COUNTER=1
 if [ $RESTRICT_COUNT -gt 0 ]
 then
-echo Order deny,allow  >> /var/www/html/karoshi/admin/.htaccess
-echo Deny from all >> /var/www/html/karoshi/admin/.htaccess
-echo Order deny,allow  >> /var/www/cgi-bin_karoshi/admin/.htaccess
-echo Deny from all >> /var/www/cgi-bin_karoshi/admin/.htaccess
-while [ $COUNTER -le $RESTRICT_COUNT ]
-do
-TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
-echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/admin/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/admin/.htaccess
-let COUNTER=$COUNTER+1
-done
+	echo Order deny,allow  >> /var/www/html/karoshi/admin/.htaccess
+	echo Deny from all >> /var/www/html/karoshi/admin/.htaccess
+	echo Order deny,allow  >> /var/www/cgi-bin_karoshi/admin/.htaccess
+	echo Deny from all >> /var/www/cgi-bin_karoshi/admin/.htaccess
+	while [ $COUNTER -le $RESTRICT_COUNT ]
+	do
+		TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
+		echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/.htaccess
+		echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/admin/.htaccess
+		echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/admin/.htaccess
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 RESTRICT_COUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
 COUNTER=1
 if [ $RESTRICT_COUNT -gt 0 ]
 then
-echo Order deny,allow  >> /var/www/html/karoshi/tech/.htaccess
-echo Deny from all >> /var/www/html/karoshi/tech/.htaccess
-echo Order deny,allow  >> /var/www/cgi-bin_karoshi/tech/.htaccess
-echo Deny from all >> /var/www/cgi-bin_karoshi/tech/.htaccess
-while [ $COUNTER -le $RESTRICT_COUNT ]
-do
-TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
-echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/tech/.htaccess
-echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/tech/.htaccess
-let COUNTER=$COUNTER+1
-done
+	echo Order deny,allow  >> /var/www/html/karoshi/tech/.htaccess
+	echo Deny from all >> /var/www/html/karoshi/tech/.htaccess
+	echo Order deny,allow  >> /var/www/cgi-bin_karoshi/tech/.htaccess
+	echo Deny from all >> /var/www/cgi-bin_karoshi/tech/.htaccess
+	while [ $COUNTER -le $RESTRICT_COUNT ]
+	do
+		TCPIPENTRY=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
+		echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/.htaccess
+		echo Allow from $TCPIPENTRY >> /var/www/html/karoshi/tech/.htaccess
+		echo Allow from $TCPIPENTRY >> /var/www/cgi-bin_karoshi/tech/.htaccess
+		let COUNTER=$COUNTER+1
+	done
 fi
 }
 #Add tcpip entries
-if [ $ACTION = add ] && [ $PRIADMINSTATUS = yes ]
+if [ "$ACTION" = add ] && [ "$PRIADMINSTATUS" = yes ]
 then
-if [ $ADMINLEVEL = "1+2" ]
-then
-if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions` = 0 ]
-then
-echo $TCPADDRESS:"$TCPCOMMENT" >> /opt/karoshi/web_controls/web_admin_restrictions
-if [ `grep -c -w ^$REMOTE_ADDR /opt/karoshi/web_controls/web_admin_restrictions` = 0 ]
-then
-#Make sure that not locked out
-echo $REMOTE_ADDR:$"Added to prevent this computer from being locked out." >> /opt/karoshi/web_controls/web_admin_restrictions
-fi
-fi
-fi
-if [ $ADMINLEVEL = "3" ]
-then
-if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions` = 0 ]
-then
-echo $TCPADDRESS:"$TCPCOMMENT" >> /opt/karoshi/web_controls/web_tech_restrictions
-fi
-fi
-rebuild_htaccess
-exit 104
+	if [ $ADMINLEVEL = "1" ] || [ $ADMINLEVEL = "2" ]
+	then
+		if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions` = 0 ]
+		then
+			echo $TCPADDRESS:"$TCPCOMMENT" >> /opt/karoshi/web_controls/web_admin_restrictions
+			if [ `grep -c -w ^$REMOTE_ADDR /opt/karoshi/web_controls/web_admin_restrictions` = 0 ]
+			then
+				#Make sure that not locked out
+				echo $REMOTE_ADDR:$"Added to prevent this computer from being locked out." >> /opt/karoshi/web_controls/web_admin_restrictions
+			fi
+		fi
+	fi
+	if [ "$ADMINLEVEL" = "3" ]
+	then
+		if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions` = 0 ]
+		then
+			echo $TCPADDRESS:"$TCPCOMMENT" >> /opt/karoshi/web_controls/web_tech_restrictions
+		fi
+	fi
+	rebuild_htaccess
+	exit 104
 fi
 #Remove tcpip entries admin
 if [ $ACTION = remove ] && [ $PRIADMINSTATUS = yes ] && [ $ADMINLEVEL = "1+2" ]
 then
-if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions` != 0 ]
-then
-#remove tcpip entry
-if [ `cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l` -gt 1 ]
-then
-if [ $TCPADDRESS = $REMOTE_ADDR ]
-then
-exit 102
-fi
-fi
-LINENUM=`grep -n ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions  | cut -d: -f1`
-if [ $LINENUM'null' != null ]
-then
-sed -i $LINENUM'd' /opt/karoshi/web_controls/web_admin_restrictions
-fi
-fi
-rebuild_htaccess
+	if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions` != 0 ]
+	then
+		#remove tcpip entry
+		if [ `cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l` -gt 1 ]
+		then
+			if [ $TCPADDRESS = $REMOTE_ADDR ]
+			then
+				exit 102
+			fi
+		fi
+		LINENUM=`grep -n ^$TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions  | cut -d: -f1`
+		if [ ! -z "$LINENUM" ]
+		then
+			sed -i $LINENUM'd' /opt/karoshi/web_controls/web_admin_restrictions
+		fi
+	fi
+	rebuild_htaccess
 fi
 
 #Remove level 3 tcpip entries
-if [ $ACTION = remove ] && [ $PRIADMINSTATUS = yes ] && [ $ADMINLEVEL = 3 ]
+if [ "$ACTION" = remove ] && [ "$PRIADMINSTATUS" = yes ] && [ "$ADMINLEVEL" = 3 ]
 then
-if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions` != 0 ]
-then
-#remove tcpip entry
-LINENUM=`grep -n ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions  | cut -d: -f1`
-echo status $LINENUM >tmp/test
-if [ $LINENUM'null' != null ]
-then
-sed -i $LINENUM'd' /opt/karoshi/web_controls/web_tech_restrictions
-fi
-fi
-rebuild_htaccess
+	if [ `grep -c -w ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions` != 0 ]
+	then
+		#remove tcpip entry
+		LINENUM=`grep -n ^$TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions  | cut -d: -f1`
+		echo status $LINENUM >tmp/test
+		if [ ! -z "$LINENUM" ]
+		then
+			sed -i $LINENUM'd' /opt/karoshi/web_controls/web_tech_restrictions
+		fi
+	fi
+	rebuild_htaccess
 fi
 
 #edit tcpip entries
-if [ $ACTION = edit ]
+if [ "$ACTION" = edit ]
 then
-if [ $ADMINLEVEL = "1+2" ]
-then
-TCPIPLINE=`grep -n $TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
-COMMENT=`sed -n $TCPIPLINE,$TCPIPLINE'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f2` 
+	if [ "$ADMINLEVEL" = "1" ] || [ "$ADMINLEVEL" = "2" ]
+	then
+		TCPIPLINE=`grep -n $TCPADDRESS /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f1`
+		COMMENT=`sed -n $TCPIPLINE,$TCPIPLINE'p' /opt/karoshi/web_controls/web_admin_restrictions | cut -d: -f2` 
+	fi
+	if [ "$ADMINLEVEL" = 3 ]
+	then
+		TCPIPLINE=`grep -n "$TCPADDRESS" /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
+		COMMENT=`sed -n $TCPIPLINE,$TCPIPLINE'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f2`
+	fi
+	echo '<b>'$"Edit Remote Administration Access"'</b><br><br>'
+	echo '<form action="/cgi-bin/admin/remote_management_restrict3.cgi" method="post">'
+	echo '<input name="_CURRENTTCPIP_" value="'$TCPADDRESS'" type="hidden">'
+	echo '<input name="_ADMINLEVEL_" value="'$ADMINLEVEL'" type="hidden">'
+	echo '<table class="standard" style="text-align: left;" ><tbody>'
+	echo '<tr><td style="width: 180px;">'$"TCPIP address"'</td><td><input maxlength="15" name="_TCPADDRESS_" value="'$TCPADDRESS'" size="15"></td></tr>'
+	echo '<tr><td>'$"Comment"'</td><td><input maxlength="30" name="_TCPCOMMENT_" value="'$COMMENT'" size="30"></td></tr></tbody></table><br><br>'
+	echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
+	exit
 fi
-if [ $ADMINLEVEL = 3 ]
-then
-TCPIPLINE=`grep -n $TCPADDRESS /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f1`
-COMMENT=`sed -n $TCPIPLINE,$TCPIPLINE'p' /opt/karoshi/web_controls/web_tech_restrictions | cut -d: -f2`
-fi
-echo '<b>'$"Edit Remote Administration Access"'</b><br><br>'
-echo '<form action="/cgi-bin/admin/remote_management_restrict3.cgi" method="post">'
-echo '<input name="_CURRENTTCPIP_" value="'$TCPADDRESS'" type="hidden">'
-echo '<input name="_ADMINLEVEL_" value="'$ADMINLEVEL'" type="hidden">'
-echo '<table class="standard" style="text-align: left;" ><tbody>'
-echo '<tr><td style="width: 180px;">'$"TCPIP address"'</td><td><input maxlength="15" name="_TCPADDRESS_" value="'$TCPADDRESS'" size="15"></td></tr>'
-echo '<tr><td>'$"Comment"'</td><td><input maxlength="30" name="_TCPCOMMENT_" value="'$COMMENT'" size="30"></td></tr></tbody></table><br><br>'
-echo '<input value="Submit" type="submit"> <input value="Reset" type="reset"></form>'
-exit
-fi
+
 #View tcpip entries
 if [ $ACTION = view ]
 then
-if [ `cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l` = 0 ]
-then
-RESTRICT_STATUS=off
-else
-RESTRICT_STATUS=on
-fi
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<form action="/cgi-bin/admin/remote_management_restrict2.cgi" method="post">'
-fi
-echo '<table class="headings" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
-echo '<tbody><tr><td>'
-echo '<span style="font-weight: bold;">'$"Viewing the allowed TCPIP list for levels 1 and 2."'</span></td>'
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$"Add Entry"'</span></a></td>'
-fi
-echo '</tr></tbody></table><br>'
-if [ $RESTRICT_STATUS = off ]
-then
-echo $"There are no tcpip restrictions in place."'<br><br>'
-else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
-echo '<tbody><tr><td style="width: 180px;"><b>TCPIP</b><td><b>Comment</b></td></tr>'
-#Web admin restrictions
-TCPIPCOUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
-COUNTER=1
-while [ $COUNTER -le $TCPIPCOUNT ]
-do
-TCPIPDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions`
-TCPIPENTRY=`echo $TCPIPDATA | cut -d: -f1`
-TCPCOMMENT=`echo $TCPIPDATA | cut -d: -f2`
-echo '<tr><td style="width: 180px;">'$TCPIPENTRY'</td>'
-echo '<td style="width: 350px;">'$TCPCOMMENT'</td>'
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_level1'$TCPIPENTRY'editip_" type="image" class="images" src="/images/submenus/file/edit.png" value=""><span>Edit</span></a></td>'
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_level1'$TCPIPENTRY'deleteip_" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>Delete</span></a></td>'
-echo '</tr>'
-fi
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table><br><br>'
-fi
-#Web tech restrictions
-echo '<table class="headings" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
-echo '<tbody><tr><td>'
-echo '<span style="font-weight: bold;">'$"Viewing the allowed TCPIP list for level 3."'</span></td>'
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_addip_" type="image" class="images" src="/images/submenus/file/details.png" value=""><span>'$"Add Entry"'</span></a></td>'
-fi
-echo '</tr></tbody></table><br>'
-if [ `cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l` = 0 ]
-then
-RESTRICT_STATUS=off
-else
-RESTRICT_STATUS=on
-fi
-if [ $RESTRICT_STATUS = off ]
-then
-echo $"There are no tcpip restrictions in place."'<br><br>'
-else
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="0">'
-echo '<tbody><tr><td style="width: 180px;"><b>TCPIP</b><td><b>Comment</b></td></tr>'
-TCPIPCOUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
-COUNTER=1
-while [ $COUNTER -le $TCPIPCOUNT ]
-do
-TCPIPDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions`
-TCPIPENTRY=`echo $TCPIPDATA | cut -d: -f1`
-TCPCOMMENT=`echo $TCPIPDATA | cut -d: -f2`
-echo '<tr><td style="width: 180px;">'$TCPIPENTRY'</td>'
-echo '<td style="width: 350px;">'$TCPCOMMENT'</td>'
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_level3'$TCPIPENTRY'editip_" type="image" class="images" src="/images/submenus/file/edit.png" value=""><span>Edit</span></a></td>'
-echo '<td><a class="info" href="javascript:void(0)"><input name="_USERACTION_level3'$TCPIPENTRY'deleteip_" type="image" class="images" src="/images/submenus/file/delete.png" value=""><span>Delete</span></a></td>'
-echo '</tr>'
-fi
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table>'
-fi
-if [ $PRIADMINSTATUS = yes ]
-then
-echo '</form>'
-fi
+	if [ `cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l` = 0 ]
+	then
+		RESTRICT_STATUS=off
+	else
+		RESTRICT_STATUS=on
+	fi
+	if [ "$PRIADMINSTATUS" = yes ]
+	then
+		echo '<form action="/cgi-bin/admin/remote_management_restrict2.cgi" method="post">'
+	fi
+	echo '<table class="headings" style="text-align: left;">'
+	echo '<tbody><tr><td style="width: 250px;">'
+	echo '<span style="font-weight: bold;">'$"Allowed TCPIP list for levels 1 and 2"'</span></td>'
+	if [ $PRIADMINSTATUS = yes ]
+	then
+		echo '<td>
+			<button class="button" name="_AddIPaddress_" value="_USERACTION_addip_">
+			'$"Add Entry"'
+			</button>
+			</td>'
+	fi
+	echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Restrict_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Web Management access restrictions"'</span></a></td></tr></tbody></table><br>'
+	if [ $RESTRICT_STATUS = off ]
+	then
+		echo $"There are no tcpip restrictions in place."'<br><br>'
+	else
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;">'
+		echo '<thead><tr><th style="width: 180px;"><b>TCPIP</b></th><th style="width: 250px;"><b>'$"Comment"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		#Web admin restrictions
+		TCPIPCOUNT=`cat /opt/karoshi/web_controls/web_admin_restrictions | wc -l`
+		COUNTER=1
+		while [ $COUNTER -le $TCPIPCOUNT ]
+		do
+			TCPIPDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_admin_restrictions`
+			TCPIPENTRY=`echo $TCPIPDATA | cut -d: -f1`
+			TCPCOMMENT=`echo $TCPIPDATA | cut -d: -f2`
+			echo '<tr><td style="width: 180px;">'$TCPIPENTRY'</td>'
+			echo '<td style="width: 350px;">'$TCPCOMMENT'</td>'
+			if [ $PRIADMINSTATUS = yes ]
+			then
+				echo '<td>
+						<button class="info" name="_Editipaddress_" value="_USERACTION_level1'$TCPIPENTRY'editip_">
+						<img src="/images/submenus/file/edit.png" alt="'$"Edit"'">
+						<span>'$"Edit"'</span>
+						</button>
+					</td>'
+				echo '<td>
+						<button class="info" name="_Deleteipaddress_" value="_USERACTION_level1'$TCPIPENTRY'deleteip_">
+						<img src="/images/submenus/file/delete.png" alt="'$"Delete"'">
+						<span>'$"Delete"'</span>
+						</button>
+					</td>'
+				echo '</tr>'
+			fi
+			let COUNTER=$COUNTER+1
+		done
+		echo '</tbody></table><br><br>'
+	fi
+	#Web tech restrictions
+	echo '<table class="headings" style="text-align: left;">'
+	echo '<tbody><tr><td style="width: 250px;">'
+	echo '<span style="font-weight: bold;">'$"Allowed TCPIP list for level 3."'</span></td>'
+	if [ $PRIADMINSTATUS = yes ]
+	then
+		echo '<td>
+			<button class="button" name="_AddIPaddress_" value="_USERACTION_addip_">
+			'$"Add Entry"'
+			</button>
+			</td>'
+	fi
+	echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Restrict_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"Web Management access restrictions"'</span></a></td></tr></tbody></table><br>'
+	if [ `cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l` = 0 ]
+	then
+		RESTRICT_STATUS=off
+	else
+		RESTRICT_STATUS=on
+	fi
+	if [ $RESTRICT_STATUS = off ]
+	then
+		echo $"There are no tcpip restrictions in place."'<br><br>'
+	else
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;">'
+		echo '<thead><tr><th style="width: 180px;"><b>TCPIP</b></th><th style="width: 250px;"><b>'$"Comment"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		TCPIPCOUNT=`cat /opt/karoshi/web_controls/web_tech_restrictions | wc -l`
+		COUNTER=1
+		while [ $COUNTER -le $TCPIPCOUNT ]
+		do
+			TCPIPDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/web_tech_restrictions`
+			TCPIPENTRY=`echo $TCPIPDATA | cut -d: -f1`
+			TCPCOMMENT=`echo $TCPIPDATA | cut -d: -f2`
+			echo '<tr><td style="width: 180px;">'$TCPIPENTRY'</td>'
+			echo '<td style="width: 350px;">'$TCPCOMMENT'</td>'
+			if [ $PRIADMINSTATUS = yes ]
+			then
+				echo '<td>
+
+
+						<button class="info" name="_Editipaddress_" value="_USERACTION_level3'$TCPIPENTRY'editip_">
+						<img src="/images/submenus/file/edit.png" alt="'$"Edit"'">
+						<span>'$"Edit"'</span>
+						</button>
+					</td>'
+				echo '<td>
+						<button class="info" name="_Deleteipaddress_" value="_USERACTION_level3'$TCPIPENTRY'deleteip_">
+						<img src="/images/submenus/file/delete.png" alt="'$"Delete"'">
+						<span>'$"Delete"'</span>
+						</button>
+					</td>'
+				echo '</tr>'
+			fi
+			let COUNTER=$COUNTER+1
+		done
+		echo '</tbody></table>'
+	fi
+	if [ "$PRIADMINSTATUS" = yes ]
+	then
+		echo '</form>'
+	fi
 fi
 exit

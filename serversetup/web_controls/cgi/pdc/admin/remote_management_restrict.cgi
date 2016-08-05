@@ -41,7 +41,26 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restrict access to Karoshi Remote Management"'<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Restrict access to Karoshi Remote Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+       $("#myTable").tablesorter({
+	headers: {
+	0: { sorter: "ipAddress" }
+    		}
+		});
+       $("#myTable2").tablesorter({
+	headers: {
+	0: { sorter: "ipAddress" }
+    		}
+		});
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -55,65 +74,65 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAENTRY'check'` = ACTIONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign TCPADDRESS
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = ADDTCPADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-ADDTCPADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAENTRY'check'` = ADDTCPADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ADDTCPADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign TCPCOMMENT
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = TCPCOMMENTcheck ]
-then
-let COUNTER=$COUNTER+1
-TCPCOMMENT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAENTRY'check'` = TCPCOMMENTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		TCPCOMMENT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Assign PRIMARYADMIN
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = PRIMARYADMINcheck ]
-then
-let COUNTER=$COUNTER+1
-PRIMARYADMIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAENTRY'check'` = PRIMARYADMINcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRIMARYADMIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAENTRY'check'` = DELTCPADDRESScheck ]
-then
-let COUNTER=$COUNTER+1
-DELTCPADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAENTRY'check'` = DELTCPADDRESScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DELTCPADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function view_tcpip {
@@ -137,65 +156,65 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that ACTION is not blank
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-ACTION=view
+	ACTION=view
 fi
 
 #Check to see that action is correct
 if [ $ACTION != add ] && [ $ACTION != remove ] && [ $ACTION != view ]
 then
-MESSAGE=$"Incorrect action."
-show_status
+	MESSAGE=$"Incorrect action."
+	show_status
 fi
 #Check to see that TCPADDRESS is not blank
 if [ $ACTION = add ]
 then
-TCPADDRESS=$ADDTCPADDRESS
+	TCPADDRESS=$ADDTCPADDRESS
 fi
 if [ $ACTION = remove ]
 then
-TCPADDRESS=$DELTCPADDRESS
-if [ $TCPADDRESS = $REMOTE_ADDR ]
-then
-MESSAGE=$"You cannot remove your own TCPIP address."
-show_status
-fi
+	TCPADDRESS=$DELTCPADDRESS
+	if [ $TCPADDRESS = $REMOTE_ADDR ]
+	then
+		MESSAGE=$"You cannot remove your own TCPIP address."
+		show_status
+	fi
 fi
 if [ $ACTION = add ] || [ $ACTION = remove ]
 then
-#Check to see that PRIMARYADMIN is not blank
-if [ $PRIMARYADMIN'null' = null ]
-then
-MESSAGE=$"The admin level must not be blank."
-show_status
-fi
-if [ $TCPADDRESS'null' = null ]
-then
-MESSAGE=$"The TCPIP address must not be blank."
-show_status
-fi
+	#Check to see that PRIMARYADMIN is not blank
+	if [ -z "$PRIMARYADMIN" ]
+	then
+		MESSAGE=$"The admin level must not be blank."
+		show_status
+	fi
+	if [ -z "$TCPADDRESS" ]
+	then
+		MESSAGE=$"The TCPIP address must not be blank."
+		show_status
+	fi
 fi
 
 #Generate navigation bar
@@ -207,27 +226,27 @@ EXEC_STATUS=`echo $?`
 echo "</div>"
 if [ $EXEC_STATUS = 100 ]
 then
-MESSAGE=$"There was an error processing this request. Please view the Karoshi remote management logs."
-show_status
+	MESSAGE=$"There was an error processing this request. Please view the Karoshi remote management logs."
+	show_status
 fi
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=$"The TCPIP address was already added."
-show_status
+	MESSAGE=$"The TCPIP address was already added."
+	show_status
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$"The TCPIP address was not in the list."
-show_status
+	MESSAGE=$"The TCPIP address was not in the list."
+	show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$"The list is empty. All TCPIP addresses are allowed."
-show_status
+	MESSAGE=$"The list is empty. All TCPIP addresses are allowed."
+	show_status
 fi
 if [ $EXEC_STATUS = 104 ]
 then
-view_tcpip
+	view_tcpip
 fi
 echo "</div></body></html>"
 exit
