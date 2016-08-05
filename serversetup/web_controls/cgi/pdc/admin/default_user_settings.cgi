@@ -232,6 +232,20 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign HOMEDRIVE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = HOMEDRIVEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		HOMEDRIVE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Make sure that only numbers are entered
 LOCKOUTDURATION=`echo $LOCKOUTDURATION | tr -cd '0-9\n'`
 LOCKOUTTHRESHOLD=`echo $LOCKOUTTHRESHOLD | tr -cd '0-9\n'`
@@ -307,9 +321,22 @@ then
 	show_status
 fi
 
+#Make sure that HOMEDRIVE is not already in use
+if [ -z "$HOMEDRIVE" ]
+then
+	MESSAGE=$"The homedrive cannot be blank."
+	show_status
+fi
+
+if [ `grep -r 'DRIVELETTER="'$HOMEDRIVE'"' /opt/karoshi/server_network/network_shares | wc -l` -gt 0 ]
+then
+	MESSAGE=''$"Home Drive"': '$HOMEDRIVE' - '$"This drive letter is already in use."''
+	show_status
+fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
 #Modify settings
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:$STUDENTMINPASSWORDLENGTH:$STUDENTCHARSANDNUMBERS:$STUDENTUPPERANDLOWERCASE:$STAFFMINPASSWORDLENGTH:$STAFFCHARSANDNUMBERS:$STAFFUPPERANDLOWERCASE:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:$STUDENTMINPASSWORDLENGTH:$STUDENTCHARSANDNUMBERS:$STUDENTUPPERANDLOWERCASE:$STAFFMINPASSWORDLENGTH:$STAFFCHARSANDNUMBERS:$STAFFUPPERANDLOWERCASE:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

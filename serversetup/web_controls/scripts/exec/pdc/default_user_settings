@@ -165,6 +165,9 @@ then
 	[ $PASSWORD_EXPIRY = yes ] && SELECT21=selected
 	[ $PASSWORD_EXPIRY = no ] && SELECT22=selected
 
+	#Get homedrive
+	HOMEDRIVE=$(grep ^'$homedrive=' /var/lib/samba/netlogon/logonform.kix | cut -d"=" -f2 | tr -cd "a-z" | tr "a-z" "A-Z")
+
 	#Show table for data choice
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 200px;">'$"Lockout duration"'</td>
@@ -242,6 +245,22 @@ then
 	<option value="no" '$SELECT22'>'$"no"'</option>
 	</select></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enable or disable password expiry."'</span></a></td></tr>
+	<tr><td>'$"Home Drive"'</td><td>
+	<select name="_HOMEDRIVE_" style="width: 200px;">'
+		for DRIVELETTER in D E F G H I J K L M N O P Q R S T U V W X Y Z
+		do
+			if [ "$DRIVELETTER" = "$HOMEDRIVE" ]
+			then
+				SELECTED=selected
+			else
+				SELECTED=""
+			fi
+			echo '<option value="'$DRIVELETTER'" '$SELECTED'>'$DRIVELETTER'</option>'
+		done
+	echo '</select></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The drive letter used for home areas for windows clients joined to the domain."'</span></a></td></tr>
+
+
 </tbody></table>'
 fi
 if [ $ACTION = SETDATA ]
@@ -288,7 +307,8 @@ then
 	STAFFUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f15`
 	CHANGEPASSFIRSTLOGIN=`echo "$DATA" | cut -s -d: -f16`
 	PASSWORDEXPIRY=`echo "$DATA" | cut -s -d: -f17`
-
+	HOMEDRIVE=`echo "$DATA" | cut -s -d: -f18 | tr "A-Z" "a-z" | tr -cd "a-z"`
+	HOMEDRIVE=`echo ${HOMEDRIVE:0:1}`
 
 	[ -z "$STUDENTMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=5
 	[ -z "$STUDENTCHARSANDNUMBERS" ] && STUDENTCHARSANDNUMBERS=no
@@ -298,6 +318,8 @@ then
 	[ -z "$STAFFCHARSANDNUMBERS" ] && STAFFCHARSANDNUMBERS=no
 	[ -z "$STAFFUPPERANDLOWERCASE" ] && STAFFUPPERANDLOWERCASE=no
 	[ -z "$CHANGEPASSFIRSTLOGIN" ] && CHANGEPASSFIRSTLOGIN=no
+
+	[ -z "$HOMEDRIVE" ] && HOMEDRIVE=g
 
 
 	echo `date`: default_user_settings - sambaLockoutDuration: $LOCKOUTDURATION sambaLockoutThreshold: $LOCKOUTTHRESHOLD sambaLockoutObservationWindow: $LOCKOUTOBS shadowmax: $SHADOWMAX usernamestyle: $USERNAMESTYLE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -331,6 +353,8 @@ then
 	echo CHANGE_PASS_FIRST_LOGIN="$CHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
 	echo PASSWORD_EXPIRY="$PASSWORDEXPIRY" >> /opt/karoshi/server_network/security/password_settings
 
+	#Set homedrive
+	sed -i '/^$homedrive=/c\$homedrive="'$HOMEDRIVE':"' /var/lib/samba/netlogon/logonform.kix
 	exit $MODSTATUS
 fi
 exit
