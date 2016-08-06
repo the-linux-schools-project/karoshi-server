@@ -104,7 +104,10 @@ then
 	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME: | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 else
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1>/dev/null
+
+	#Copy in domain_name information
+	scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:/opt/karoshi/server_network/domain_information/ 1>/dev/null
 
 	#Copy in any existing monitors
 	if [ -d /opt/karoshi/server_network/mon/monitors ]

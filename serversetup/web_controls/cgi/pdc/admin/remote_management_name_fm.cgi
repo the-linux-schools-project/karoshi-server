@@ -76,16 +76,12 @@ echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><di
 
 if [ -f /opt/karoshi/server_network/info ]
 then
-source /opt/karoshi/server_network/info
-source /opt/karoshi/web_controls/version
-LOCATION_NAME="- $LOCATION_NAME"
+	source /opt/karoshi/server_network/info
+	source /opt/karoshi/web_controls/version
+	LOCATION_NAME="- $LOCATION_NAME"
 fi
-echo '<b>'$"My Servers"' '$LOCATION_NAME'</b><br><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top; text-align: left;">
-<button class="button" name="_SetName_" value="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_">
-'$HOSTNAME'
-</button>
-</td></tr></tbody></table><br>'
+
+/opt/karoshi/web_controls/show_servers no pdc $"Submit"
 
 #Show list of federated servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]

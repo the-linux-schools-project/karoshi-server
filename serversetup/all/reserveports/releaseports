@@ -8,7 +8,7 @@
 # Short-Description: Start releaseports
 ### END INIT INFO
 
-service=$(echo "$1" | tr -cd 'a-z')
+service=$(echo "$1" | tr -cd 'a-z0-9')
 if [ -z "$service" ]
 then
 	service=all
