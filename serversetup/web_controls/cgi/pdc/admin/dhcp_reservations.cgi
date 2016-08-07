@@ -208,7 +208,6 @@ then
 		#Check to see that the tcpip number has not already been added
 		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 		then
-			#Check tcpip
 			if [ `grep -c "$TCPIPADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
 			then
 				ACTION=view
@@ -245,7 +244,6 @@ then
 		#Check to see that the mac address has not already been added
 		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 		then
-			#Check tcpip
 			if [ `grep -c "$MACADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
 			then
 				ACTION=view
@@ -303,6 +301,11 @@ else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
 	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
+	<td style="vertical-align: top;">
+	<button class="button" formaction="dhcp_import_reservations_fm.cgi" name="_DHCPImportReseravations_" value="_">
+	'$"Import DHCP Reservations"'
+	</button>
+	</td>
 	<td style="vertical-align: top;">'
 
 	if [ $ACTION = view ]

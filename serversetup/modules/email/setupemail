@@ -618,7 +618,7 @@ MODCHECK=`grep -c -w \#E-Mail-Services /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
 	RESTART_SHOREWALL=yes
-	echo ''$"The following extra ports are being allowed" - tcp 25,110,143,993,995 udp 110,143,993,995'<br><br>'
+	echo ''$"The following extra ports are being allowed" - tcp 25,110,143,587,993,995 udp 110,143,993,995'<br><br>'
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'25,110,143,993,995'	'-'#'E-Mail-Services-tcp /etc/shorewall/rules
 	echo ACCEPT'	'net'	'fw'	'udp'	'25,110,143,993,995'	'-'#'E-Mail-Services-udp >> /etc/shorewall/rules

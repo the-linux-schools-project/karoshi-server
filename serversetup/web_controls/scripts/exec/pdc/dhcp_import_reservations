@@ -1,0 +1,132 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_import_reservations_process_cgi
+then
+	echo `date`: dhcp_import_reservations - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_import_reservations_process_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_import_reservations_process.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $dhcp_import_reservations_process_cgi'check' ]
+then
+	echo `date`: dhcp_import_reservations - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: dhcp_import_reservations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+if [ -z "$DATA" ]
+then
+	echo `date`: dhcp_import_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+CSVMD5=`echo "$DATA" | cut -s -d: -f4`
+PROCESS_ID=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: dhcp_import_reservations - Not called by dhcp_import_reservations.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: dhcp_import_reservations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: dhcp_import_reservations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$CSVMD5" ]
+then
+	echo `date`: dhcp_import_reservations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$PROCESS_ID" ]
+then
+	echo `date`: "dhcp_import_reservations - Blank process id" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+then
+	echo `date`: dhcp_import_reservations - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ ! -f /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID ]
+then
+	echo `date`: dhcp_import_reservations - No CSV file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+CSVMD52=`md5sum /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID | cut -d' ' -f1`
+if [ "$CSVMD5" != "$CSVMD52" ]
+then
+	echo `date`: dhcp_import_reservations - Incorrect MD5sum "for" the CSV file by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+echo `date`: dhcp_import_reservations - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+
+#Process CSV file
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`
+CSVFILE_LINES=`cat /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID | wc -l`
+COUNTER=1
+while [ $COUNTER -le $CSVFILE_LINES ]
+do
+	CLIENTNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID | cut -s -d, -f1 | tr -cd 'A-Za-z0-9-:.'`
+	MAC=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID | cut -s -d, -f2 | tr -cd 'A-Za-z0-9-:.' | sed 's/:/%3A/g'`
+	TCPIP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$PROCESS_ID | cut -s -d, -f3 | tr -cd 'A-Za-z0-9-.'`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:import:$CLIENTNAME:$MAC:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_reservations
+	let COUNTER=$COUNTER+1
+done
+#Activate changes
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:activateimport:NA:NA:NA:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_reservations
+
+
+
+

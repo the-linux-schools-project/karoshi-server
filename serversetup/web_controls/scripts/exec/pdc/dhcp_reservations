@@ -95,7 +95,7 @@ then
 	echo `date`: dhcp_reservations - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = import ]
 then
 	if [ -z "$MACADDRESS" ]
 	then
@@ -131,7 +131,7 @@ fi
 cat /opt/karoshi/server_network/dhcp/reservation_list > /etc/dhcp/dhcpd_reservations.conf
 
 #Restart DHCP
-echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li>'
+echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li></ul>'
 echo `date`: cdhcp_reservations - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -164,8 +164,22 @@ then
 	#Add dhcp reservation and restart dhcp
 	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
-	echo -e "MACADDRESS=$MACADDRESS
-	TCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+	updatedhcpconf
+fi
+
+if [ $ACTION = import ]
+then
+	#Add dhcp reservation
+	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
+	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+fi
+
+if [ $ACTION = activateimport ]
+then
+	#Add dhcp reservation and restart dhcp
+	echo `date`: dhcp_reservations - activating import by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	updatedhcpconf
 fi
 
