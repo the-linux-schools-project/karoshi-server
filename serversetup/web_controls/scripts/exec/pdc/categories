@@ -1,0 +1,144 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/categories_cgi
+then
+	echo `date`: categories - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101	
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/categories_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/categories.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $categories_cgi'check' ]
+then
+	echo `date`: categories - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: categories - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ -z "$DATA" ]
+then
+	echo `date`: categories - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+CATEGORY=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g'`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+then
+	echo `date`: categories - Not called by categories.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: categories - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: categories - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: categories - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+
+if [ -z "$CATEGORY" ]
+then
+	echo `date`: categories - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+
+if [ "$ACTION" = add ]
+then
+	echo `date`: "categories - adding $CATEGORY by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+	source /opt/karoshi/server_network/domain_information/domain_name
+
+	#Add subcontainer in ldap
+		
+	THISYEAR=$(date +%Y)
+	DAY=$(date +%d)
+	MONTH=$(date +%m)
+
+	hour=$(date +%H)
+	minutes=$(date +%M)
+	seconds=$(date +%S)
+	CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
+	LDAPPATH="OU=$CATEGORY,OU=People,$LDAPBASE"
+
+echo -e "version: 1
+
+# Entry 1: $LDAPPATH
+dn: $LDAPPATH
+ou: $CATEGORY
+description: $CATEGORY
+distinguishedname: $LDAPPATH
+instancetype: 4
+name: $CATEGORY
+objectcategory: CN=Organizational-Unit,CN=Schema,CN=Configuration,$LDAPBASE
+objectclass: top
+objectclass: organizationalUnit
+usnchanged: 3372
+usncreated: 3371
+whenchanged: $CREATETIME
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+
+	#Add flag file
+	echo CATEGORYNAME="$CATEGORY" > /opt/karoshi/server_network/categories/"$CATEGORY"
+fi
+
+if [ "$ACTION" = delete ]
+then
+	echo `date`: "categories - deleting $CATEGORY by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Delete the flag file
+	[ -f /opt/karoshi/server_network/categories/"$CATEGORY" ] && rm -f /opt/karoshi/server_network/categories/"$CATEGORY"
+fi
+
+exit 
+

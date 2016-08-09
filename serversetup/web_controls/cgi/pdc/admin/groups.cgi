@@ -438,6 +438,13 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 if [ $ACTION = view ] 
 then
 	echo '<td style="vertical-align: top;">
+	<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
+	<button class="button" name="Categories" value="">
+	'$"Categories"'
+	</button>
+	</form>
+	</td>
+	<td style="vertical-align: top;">
 	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
 	<button class="button" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
 	'$"New primary group"'
@@ -550,20 +557,13 @@ then
 	#Show categories
 	echo '<tr><td>'$"Category"'</td><td><select name="____CATEGORY____" style="width: '$WIDTH3'px;">
 	<option value="" label="blank"></option>'
-
-	if [ "$INSTALL_TYPE" = home ]
-	then
-		echo '	<option value="family">'$"Family"'</option>'
-	fi
-	if [ "$INSTALL_TYPE" = business ] || [ "$INSTALL_TYPE" = education ]
-	then
-		echo '	<option value="personnel">'$"Personnel"'</option>'
-	fi
-	if [ "$INSTALL_TYPE" = education ]
-	then
-		echo '	<option value="students">'$"Student"'</option>'
-	fi
+	for CATEGORY in $(ls -1 /opt/karoshi/server_network/categories/ )
+	do
+		source /opt/karoshi/server_network/categories/"$CATEGORY"
+		echo '	<option value="'$CATEGORY'">'$CATEGORYNAME'</option>'
+	done
 	echo '<option value="other">'$"Other"'</option>
+	</select>
 	</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the category that you want this group to be placed in."'</span></a></td></tr>
 	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
