@@ -40,7 +40,7 @@ my $peer_state_time="cant determine";
 my $failover = 0;
  
 foreach $line (@lines){
-        if ($line=~/failover peer .*? state {/){
+        if ($line=~/failover peer .*? state \{/){
                 $readit = 1;
                 $failover = 1;
         }
