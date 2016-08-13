@@ -60,8 +60,8 @@ $(document).ready(function()
     { 
         $("#myTable").tablesorter({
 	headers: {
-	2: { sorter: "ipAddress" },
 	1: { sorter: "MAC" },
+	2: { sorter: "ipAddress" },
 	3: { sorter: false},
 	4: { sorter: false}
     		}

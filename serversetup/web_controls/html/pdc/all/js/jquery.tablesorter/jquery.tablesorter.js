@@ -909,17 +909,19 @@
         }, type: "numeric"
     });
 
-    ts.addParser({
+   ts.addParser({
         id: "ipAddress",
         is: function (s) {
-            return /^\d{2,3}[\.]\d{2,3}[\.]\d{2,3}[\.]\d{2,3}$/.test(s);
+            return /^\d{1,3}[\.]\d{1,3}[\.]\d{1,3}[\.]\d{1,3}$/.test(s);
         }, format: function (s) {
             var a = s.split("."),
-                r = "",
-                l = a.length;
-            for (var i = 0; i < l; i++) {
+                  r = "",
+                  l = a.length;
+            for (var i = 0; i < 4; i++) {
                 var item = a[i];
-                if (item.length == 2) {
+                if (item.length == 1) {
+                    r += "00" + item;
+                } else if (item.length == 2) {
                     r += "0" + item;
                 } else {
                     r += item;
@@ -927,7 +929,7 @@
             }
             return $.tablesorter.formatFloat(r);
         }, type: "numeric"
-    });
+    }); 
 
     ts.addParser({
         id: "url",
