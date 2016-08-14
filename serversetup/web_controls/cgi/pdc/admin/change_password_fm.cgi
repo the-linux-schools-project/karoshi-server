@@ -87,7 +87,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=7
+END_POINT=9
 #Assign USERNAME
 
 COUNTER=2
@@ -128,6 +128,27 @@ do
 	fi
 	let COUNTER=$COUNTER+1
 done
+#Assign NEXTLOGON
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+if [ -z "$NEXTLOGON" ]
+then
+	NEXTLOGON=no
+fi
+
+CHECKED=""
+[ "$NEXTLOGON" = yes ] && CHECKED="checked"
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -167,7 +188,9 @@ echo '<div id="mobileactionbox">
 '$"New Password"'<br>
 <input tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
+<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br>
+'$"Change at next logon"'<br>
+<input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'><br><br>
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
 '
 else
@@ -183,7 +206,7 @@ echo '<table class="standard" style="text-align: left;" >
 </td>'
 
 #Show user photo
-echo '<td colspan="1" rowspan="4" style="vertical-align: top;">'
+echo '<td colspan="1" rowspan="5" style="vertical-align: top;">'
 echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>'
 
 echo '</td></tr>
@@ -200,9 +223,9 @@ echo '</td></tr>
 '$"Confirm New Password"'</td>
         <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td><td></td>
       </tr>
+	<tr><td style="vertical-align: top;">'$"Change at next logon"'</td><td><input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 <tr>
-     <td style="vertical-align: top; height: 120px;">
-</td>
+     <td style="vertical-align: top; height: 120px;"></td><td></td><td></td>
       </tr>
     </tbody>
   </table>'

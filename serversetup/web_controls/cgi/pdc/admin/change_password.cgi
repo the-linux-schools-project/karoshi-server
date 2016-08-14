@@ -95,6 +95,19 @@ do
 	fi
 	let COUNTER=$COUNTER+1
 done
+#Assign NEXTLOGON
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
 
 #Assign _VIEWIMAGE_
 COUNTER=2
@@ -226,7 +239,7 @@ fi
 #fi
 
 #Change password
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | sudo -H /opt/karoshi/web_controls/exec/change_password
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/change_password
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then
