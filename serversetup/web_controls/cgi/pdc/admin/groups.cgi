@@ -333,6 +333,7 @@ then
 	WIDTH4=70
 	WIDTH5=80
 	WIDTH6=192
+	WIDTH7=120
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
@@ -347,6 +348,7 @@ else
 	WIDTH4=60
 	WIDTH5=50
 	WIDTH6=142
+	WIDTH7=120
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/usersm.png
@@ -623,8 +625,12 @@ then
 	<noscript><input type="submit" value="Submit"></noscript>
 	</td>'
 
-[ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
-echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+	if [ $MOBILE = no ]
+	then
+		echo '<th style="width: '$WIDTH7'px; vertical-align:top;">'$"Category"'</th><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
+	fi
+
+	echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 	source /opt/karoshi/web_controls/group_dropdown_def
 	
@@ -660,15 +666,15 @@ echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></t
 			#Show primary, secondary, dynamic, or all groups
 			MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
 			echo '<tr><td>'$GROUPNAMESHORT' '$LABEL'</td><td>'
+			SUBUNIT=""
 			[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
-		
+			[ $GTYPE = primary ] && source /opt/karoshi/server_network/group_information/"$GROUPNAME"
 			echo ''$GROUPTYPE'</td>'
 			if [ $MOBILE = no ]
 			then
-				echo '<td>'
+				echo '<td>'$SUBUNIT'</td><td>'
 				if [ $GTYPE = primary ]
 				then
-					source /opt/karoshi/server_network/group_information/"$GROUPNAME"
 					echo '
 
 
@@ -723,8 +729,8 @@ then
 	GROUPCOUNT=${#GROUPLIST[@]}  
 	COUNTER=0
 
-	echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table class="'$TABLECLASS'" style="text-align: left;" >
-	<tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"Group name"'</b></td><td><b>Select</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></td></tr>'
+	echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table id="myTable" class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Group name"'</b></th><th><b>Select</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></th></tr></thead><tbody>'
 
 	while [ $COUNTER -lt $GROUPCOUNT ]
 	do
@@ -735,8 +741,7 @@ then
 			echo '<tr><td>'$GROUPNAMECHOICE'</td><td>'
 			CHECKED=""
 			[ `echo $SECONDARYGROUP | grep -c -w $GROUPNAMECHOICE` -gt 0 ] && CHECKED=checked
-			echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'>'
-			echo '</td></tr>'
+			echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'></td></tr>'
 		fi
 		let COUNTER=$COUNTER+1
 	done
