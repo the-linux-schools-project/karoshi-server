@@ -59,7 +59,7 @@ foreach $line (@lines){
         }
 }
 
-print "<table class='standard' style='text-align: left;'><tbody>\n";
+print "<table class='tablesorter' style='text-align: left;'><tbody>\n";
 
 if ($failover){
         $my_state_time = localize($my_state_time);

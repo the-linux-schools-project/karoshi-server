@@ -169,7 +169,7 @@ exit
 
 #Check data
 
-if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
+if [ $ACTION = reallyadd ] || [ $ACTION = reallyedit ] || [ $ACTION = delete ]
 then
 	#Check that clienthostname is not blank
 	if [ -z "$CLIENTHOSTNAME" ]
@@ -180,7 +180,7 @@ then
 	fi
 fi
 
-if [ $ACTION = reallyadd ]
+if [ $ACTION = reallyadd ] || [ $ACTION = reallyedit ]
 then
 	#Check that tcpip is not blank
 	if [ -z "$TCPIPADDRESS" ]
@@ -206,14 +206,11 @@ then
 			show_warnings
 		fi
 		#Check to see that the tcpip number has not already been added
-		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
+		if [ $(grep -r -H -w "$TCPIPADDRESS" /opt/karoshi/server_network/dhcp/reservations/ | grep -v -w "$CLIENTHOSTNAME" | grep -c -w "$TCPIPADDRESS") -gt 0 ]
 		then
-			if [ `grep -c "$TCPIPADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
-			then
 				ACTION=view
 				MESSAGE=$"This TCPIP address is already in use."
 				show_warnings
-			fi
 		fi
 	fi
 	#Check that mac address is not blank
@@ -242,16 +239,13 @@ then
 			fi
 		done
 		#Check to see that the mac address has not already been added
-		if [ -f /etc/dhcp/dhcpd_reservations.conf ]
+		if [ $(grep -r -H -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations/ | grep -v -w "$CLIENTHOSTNAME" | grep -c -w "$MACADDRESS") -gt 0 ]
 		then
-			if [ `grep -c "$MACADDRESS;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
-			then
 				ACTION=view
 				MESSAGE=$"This mac address is already in use."
 				show_warnings
-			fi
 		fi
-	fi		
+	fi
 fi
 
 #Generate navigation bar
@@ -261,7 +255,8 @@ then
 	WIDTH1=180
 	WIDTH2=110
 	WIDTH3=110
-	WIDTH4=200
+	WIDTH4=70	
+	WIDTH5=200
 	ICON1=/images/submenus/system/edit.png
 	ICON2=/images/submenus/system/delete.png
 	TABLECLASS=standard
@@ -273,15 +268,16 @@ else
 	WIDTH1=80
 	WIDTH2=100
 	WIDTH3=80
-	WIDTH4=150
+	WIDTH4=70
+	WIDTH5=150
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
 	TABLECLASS=mobilestandard
 fi
 
-echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post">'
-
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+
+echo '<form name="reservervationbuttons" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post">'
 
 if [ $MOBILE = yes ]
 then
@@ -322,7 +318,17 @@ else
 	<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
 	'$"Configure DHCP"'
 	</button>
-	</td></tr></tbody></table></div><div id="infobox">
+	</td>'
+	if [ -d /opt/karoshi/server_network/dhcp/reservations_delete ]
+	then
+		echo '<td style="vertical-align: top;">
+			<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
+			'$"Delete DHCP reservations"'
+			</button>
+			</td>
+			'
+	fi
+	echo '</tr></tbody></table></form></div><div id="infobox">
 	'
 fi
 
@@ -332,53 +338,85 @@ SHOWENTRIES=no
 if [ -d /opt/karoshi/server_network/dhcp/reservations ]
 then 
 	if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
-		then
+	then
 		SHOWENTRIES=yes
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th><th></th><th></th></tr></thead><tbody>'
+		#Check if we have any entries to delete
+		CHECKDELETED=no
+		[ -d /opt/karoshi/server_network/dhcp/reservations_delete ] && CHECKDELETED=yes
+		echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH3'px;"><b>'$"TCPIP address"'</b></th><th style="width:'$WIDTH4'px;">'$"Edit"'</th><th style="width:'$WIDTH4'px;">'
+		if [ ! -d /opt/karoshi/server_network/dhcp/reservations_delete/ ]
+		then
+			echo '<button class="button" name="_DeleteAll_" value="_ACTION_deleteall_CLIENTHOSTNAME_deleteall_">
+			'$"Select all"'
+			</button>'
+		else
+			echo '<button class="button" name="_DeleteAll_" value="_ACTION_clearall_CLIENTHOSTNAME_clearall_">
+			'$"Clear all"'
+			</button>'
+		fi
+		echo '</th></tr></thead><tbody>'
 
 		for CLIENTHOSTNAMES in /opt/karoshi/server_network/dhcp/reservations/*
-			do
+		do
 			CLIENTHOSTNAME=`basename $CLIENTHOSTNAMES`
+			ALTDELETEMSG=$"Delete reservation"
+			DELETEACTION=delete
+			DELETESTYLE=""
+			if [ -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME" ]
+			then
+				ALTDELETEMSG=$"Cancel delete reservation"
+				DELETEACTION=canceldelete
+				DELETESTYLE='style="color: #FFF; background-color:#CA0D26"'
+			fi
 			#Get details
 			source $CLIENTHOSTNAMES
-			echo '<tr><td>'$CLIENTHOSTNAME'</td><td>'$MACADDRESS'</td><td>'$TCPIPADDRESS'</td><td>
-			<button class="info" name="_Edit_" value="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_">
+			echo '<tr><td id="'$CLIENTHOSTNAME'" '$DELETESTYLE'>'$CLIENTHOSTNAME'</td><td '$DELETESTYLE'>'$MACADDRESS'</td><td '$DELETESTYLE'>'$TCPIPADDRESS'</td><td '$DELETESTYLE'>'
+			if [ -z "$DELETESTYLE" ]
+			then
+				echo '<button class="info" name="_Edit_" value="_ACTION_edit_'$CLIENTHOSTNAME'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_MACADDRESS_'$MACADDRESS'_TCPIPADDRESS_'$TCPIPADDRESS'_">
 			<img src="'$ICON1'" alt="'$"Edit reservation"'">
 			<span>'$"Edit reservation"'</span>
-			</button>
-			</td><td>
-			<button class="info" name="_Delete_" value="_ACTION_delete_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_">
-			<img src="'$ICON2'" alt="'$"Delete reservation"'">
-			<span>'$"Delete reservation"'</span>
+			</button>'
+			fi
+			echo '</td><td '$DELETESTYLE'>
+			<button class="info" name="_Delete_" value="_ACTION_'$DELETEACTION'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_">
+			<img src="'$ICON2'" alt="'$ALTDELETEMSG'">
+			<span>'$ALTDELETEMSG'</span>
 			</button>
 			</td></tr>'
-			done
-		echo '</tbody></table><br>'
+		done
+		echo '</tbody></table></form><br>'
 	fi
 fi
 
 if [ $SHOWENTRIES = no ]
 then
-echo $"There are no current dhcp reservations.""<br>"
+	echo $"There are no current dhcp reservations.""<br>"
 fi
 }
 
 function add_reservation {
+if [ $ACTION = add ]
+then
+	FORMACTION=reallyadd
+else
+	FORMACTION=reallyedit
+fi
 
-echo '<input type="hidden" name="_ACTION_reallyadd_" value="English"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+echo '<form name="addreservervation" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><input type="hidden" name="_ACTION_'$FORMACTION'_" value="English"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Host name"'</td>
-<td><input tabindex= "1" style="width: '$WIDTH4'px;" name="_CLIENTHOSTNAME_" value="'$CLIENTHOSTNAME'" 
+<td><input tabindex= "1" style="width: '$WIDTH5'px;" name="_CLIENTHOSTNAME_" value="'$CLIENTHOSTNAME'" 
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"Mac Address"'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_MACADDRESS_" value="'$MACADDRESS'"
+<tr><td>'$"Mac Address"'</td><td><input tabindex= "2" style="width: '$WIDTH5'px;" name="_MACADDRESS_" value="'$MACADDRESS'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mac address of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"TCPIP address"'</td><td><input tabindex= "2" style="width: '$WIDTH4'px;" name="_TCPIPADDRESS_"  value="'$TCPIPADDRESS'"
+<tr><td>'$"TCPIP address"'</td><td><input tabindex= "2" style="width: '$WIDTH5'px;" name="_TCPIPADDRESS_"  value="'$TCPIPADDRESS'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address that you want the client computer or device to have."'</span></a></td></tr> 
 </tbody></table><br>'
 
 echo '<br>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 }
 
 [ $ACTION = view ] && view_reservations
@@ -386,17 +424,22 @@ echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"
 [ $ACTION = edit ] && add_reservation
 
 
-if [ $ACTION = reallyedit ] || [ $ACTION = delete ] || [ $ACTION = reallyadd ]
-	then
+if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelete ] || [ $ACTION = deleteall ] || [ $ACTION = clearall ]|| [ $ACTION = reallyadd ]
+then
 	MACADDRESS=`echo $MACADDRESS | sed 's/:/%3A/g'`
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$CLIENTHOSTNAME:$MACADDRESS:$TCPIPADDRESS:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_reservations
 	#view_reservations
+	FORMID=reservations
+	if [ "$ACTION" = delete ] || [ $ACTION = canceldelete ]
+	then
+		FORMID="$CLIENTHOSTNAME"
+	fi
 	#Reload page
-	echo '<script>
-	document.getElementById("reservervations").submit();
-	</script>'
+	echo '<form id="'$FORMID'" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi#'$FORMID'" method="post"><script>
+	document.getElementById("'$FORMID'").submit();
+	</script></form>'
 
 fi
-echo '</div></div></form></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

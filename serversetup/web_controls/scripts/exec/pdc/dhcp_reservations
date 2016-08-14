@@ -90,12 +90,15 @@ then
 	echo `date`: dhcp_reservations - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ -z "$CLIENTHOSTNAME" ]
+if [ $ACTION != reallydelete ]
 then
-	echo `date`: dhcp_reservations - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit 101
+	if [ -z "$CLIENTHOSTNAME" ]
+	then
+		echo `date`: dhcp_reservations - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 fi
-if [ "$ACTION" = reallyadd ] || [ "$ACTION" = import ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = import ]
 then
 	if [ -z "$MACADDRESS" ]
 	then
@@ -159,7 +162,7 @@ fi
 
 }
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
 	#Add dhcp reservation and restart dhcp
 	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -168,29 +171,79 @@ then
 	updatedhcpconf
 fi
 
-if [ $ACTION = import ]
+if [ "$ACTION" = import ]
 then
 	#Add dhcp reservation
 	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
-	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME"
 fi
 
-if [ $ACTION = activateimport ]
+if [ "$ACTION" = activateimport ]
 then
 	#Add dhcp reservation and restart dhcp
 	echo `date`: dhcp_reservations - activating import by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	updatedhcpconf
 fi
 
-if [ $ACTION = delete ]
+if [ "$ACTION" = delete ]
 then
-	if [ -f /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME ]
+	if [ -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" ]
 	then
-		rm -f /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
-		updatedhcpconf
+		echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
+		cp -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
 	fi
 fi
+
+if [ "$ACTION" = deleteall ]
+then
+	[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
+	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/reservations/)
+	do
+		echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		cp -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
+	done
+fi
+
+if [ "$ACTION" = clearall ]
+then
+	echo `date`: dhcp_reservations - clearing all reservations by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete
+fi
+
+if [ "$ACTION" = canceldelete ]
+then
+	echo `date`: dhcp_reservations - canceling deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME" ]
+	then
+		rm -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
+	fi
+	#Delete folder if it is empty so that delete reservations button no longer shows
+	if [ $(ls -1 /opt/karoshi/server_network/dhcp/reservations_delete | wc -l) = 0 ]
+	then
+		rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete
+	fi
+fi
+
+if [ "$ACTION" = reallydelete ]
+then
+	[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
+	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/reservations_delete/)
+	do
+		echo `date`: dhcp_reservations - really deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		rm -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
+		rm -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME"
+	done
+	rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete
+	updatedhcpconf
+fi
+
+if [ "$ACTION" = activatechanges ]
+then
+	updatedhcpconf
+fi
+
 exit
 
 
