@@ -60,7 +60,7 @@ do
 	if [ `echo $DATAHEADER'check'` = LOCKOUTDURATIONcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		LOCKOUTDURATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		LOCKOUTDURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -73,7 +73,7 @@ do
 	if [ `echo $DATAHEADER'check'` = LOCKOUTTHRESHOLDcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		LOCKOUTTHRESHOLD=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		LOCKOUTTHRESHOLD=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -86,21 +86,21 @@ do
 	if [ `echo $DATAHEADER'check'` = LOCKOUTOBScheck ]
 	then
 		let COUNTER=$COUNTER+1
-		LOCKOUTOBS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		LOCKOUTOBS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
 	done
 
-#Assign SHADOWMAX
+#Assign MAXIMUMPASSWORDAGE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SHADOWMAXcheck ]
+	if [ `echo $DATAHEADER'check'` = MAXIMUMPASSWORDAGEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SHADOWMAX=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		MAXIMUMPASSWORDAGE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -120,89 +120,48 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-#Assign STUDENTMINPASSWORDLENGTH
+#Assign PASSWORDCOMPLEXITY
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STUDENTMINPASSWORDLENGTHcheck ]
+	if [ `echo $DATAHEADER'check'` = PASSWORDCOMPLEXITYcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		STUDENTMINPASSWORDLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PASSWORDCOMPLEXITY=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
 
-#Assign STUDENTCHARSANDNUMBERS
+#Assign MINPASSWORDLENGTH
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STUDENTCHARSANDNUMBERScheck ]
+	if [ `echo $DATAHEADER'check'` = MINPASSWORDLENGTHcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		STUDENTCHARSANDNUMBERS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		MINPASSWORDLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
 
-#Assign STUDENTUPPERANDLOWERCASE
+#Assign PASSWORDHISTORYLENGTH
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STUDENTUPPERANDLOWERCASEcheck ]
+	if [ `echo $DATAHEADER'check'` = PASSWORDHISTORYLENGTHcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		STUDENTUPPERANDLOWERCASE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PASSWORDHISTORYLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
 
-#Assign STAFFMINPASSWORDLENGTH
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STAFFMINPASSWORDLENGTHcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		STAFFMINPASSWORDLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign STAFFCHARSANDNUMBERS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STAFFCHARSANDNUMBERScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		STAFFCHARSANDNUMBERS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign STAFFUPPERANDLOWERCASE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STAFFUPPERANDLOWERCASEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		STAFFUPPERANDLOWERCASE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
 
 #Assign CHANGEPASSFIRSTLOGIN
 COUNTER=2
@@ -250,7 +209,7 @@ done
 LOCKOUTDURATION=`echo $LOCKOUTDURATION | tr -cd '0-9\n'`
 LOCKOUTTHRESHOLD=`echo $LOCKOUTTHRESHOLD | tr -cd '0-9\n'`
 LOCKOUTOBS=`echo $LOCKOUTOBS | tr -cd '0-9\n'`
-SHADOWMAX=`echo $SHADOWMAX | tr -cd '0-9\n'`
+MAXIMUMPASSWORDAGE=`echo $MAXIMUMPASSWORDAGE | tr -cd '0-9\n'`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -274,7 +233,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -288,6 +247,7 @@ fi
 #########################
 #Check data
 #########################
+
 #Check to see that LOCKOUTDURATION is not blank
 if [ -z "$LOCKOUTDURATION" ]
 then
@@ -307,11 +267,68 @@ then
 	show_status
 fi
 
-#Check to see that SHADOWMAX is not blank
-if [ -z "$SHADOWMAX" ]
+#Check to see that PASSWORDHISTORYLENGTH is not blank
+if [ -z "$PASSWORDHISTORYLENGTH" ]
 then
-	MESSAGE=$"The shadowmax parameter cannot be blank."
+	PASSWORDHISTORYLENGTH=24
+fi
+
+#Check that PASSWORDHISTORYLENGTH is between 0 and 24
+if [ "$PASSWORDHISTORYLENGTH" -gt 24 ] || [ "$PASSWORDHISTORYLENGTH" -lt 0 ]
+then
+	MESSAGE=$"The password history length must be between 0 and 24."
 	show_status
+fi
+
+#Check to see that PASSWORDCOMPLEXITYis not blank
+if [ -z "$PASSWORDCOMPLEXITY" ]
+then
+	PASSWORDCOMPLEXITY=off
+fi
+
+#Make sure that password complexity is either on or off
+if [ "$PASSWORDCOMPLEXITY" != on ] && [ "$PASSWORDCOMPLEXITY" != off ]
+then
+	MESSAGE=$"The password complexity must be either on or off."
+	show_status
+fi
+
+#Check to see that PASSWORDEXPIRY is not blank
+if [ -z "$PASSWORDEXPIRY" ]
+then
+	PASSWORDEXPIRY=yes
+fi
+
+#Make sure that PASSWORDEXPIRY is either yes or no
+if [ "$PASSWORDEXPIRY" != yes ] && [ "$PASSWORDEXPIRY" != no ]
+then
+	MESSAGE=$"The password expiry must be either yes or no."
+	show_status
+fi
+
+#Check to see that CHANGEPASSFIRSTLOGIN is not blank
+if [ -z "$CHANGEPASSFIRSTLOGIN" ]
+then
+	CHANGEPASSFIRSTLOGIN=no
+fi
+
+#Check to see that MINPASSWORDLENGTH is not blank
+if [ -z "$MINPASSWORDLENGTH" ]
+then
+	MINPASSWORDLENGTH=5
+fi
+
+#Check that MINPASSWORDLENGTH is between 0 and 14
+if [ "$MINPASSWORDLENGTH" -gt 14 ] || [ "$PASSWORDHISTORYLENGTH" -lt 0 ]
+then
+	MESSAGE=$"The minimum password length must be between 0 and 14."
+	show_status
+fi
+
+#Check to see that MAXIMUMPASSWORDAGE is not blank
+if [ -z "$MAXIMUMPASSWORDAGE" ]
+then
+	MAXIMUMPASSWORDAGE=999
 fi
 
 #Check to see that USERNAMESTYLE is not blank
@@ -336,7 +353,7 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
 #Modify settings
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$SHADOWMAX:$USERNAMESTYLE:$STUDENTMINPASSWORDLENGTH:$STUDENTCHARSANDNUMBERS:$STUDENTUPPERANDLOWERCASE:$STAFFMINPASSWORDLENGTH:$STAFFCHARSANDNUMBERS:$STAFFUPPERANDLOWERCASE:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$MAXIMUMPASSWORDAGE:$USERNAMESTYLE:$MINPASSWORDLENGTH:$PASSWORDCOMPLEXITY:$PASSWORDHISTORYLENGTH:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

@@ -107,117 +107,80 @@ DOMAINNAME=`cat /etc/samba/smb.conf | sed 's/ //g' | sed 's/\t//g' | grep ^workg
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-#Get install type
-INSTALL_TYPE=education
-if [ -f /opt/karoshi/server_network/install_type ]
-then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
-fi
-
 
 #Get default username style
 if [ -f /opt/karoshi/server_network/default_username_style ]
 then
 	source /opt/karoshi/server_network/default_username_style
-	[ $DEFAULTSTYLE = 1 ] && SELECT11='selected="selected"'
-	[ $DEFAULTSTYLE = 2 ] && SELECT12='selected="selected"'
-	[ $DEFAULTSTYLE = 3 ] && SELECT13='selected="selected"'
-	[ $DEFAULTSTYLE = 4 ] && SELECT14='selected="selected"'
-	[ $DEFAULTSTYLE = 5 ] && SELECT15='selected="selected"'
-	[ $DEFAULTSTYLE = 6 ] && SELECT16='selected="selected"'
-	[ $DEFAULTSTYLE = 7 ] && SELECT17='selected="selected"'
-	[ $DEFAULTSTYLE = 8 ] && SELECT18='selected="selected"'
-	[ $DEFAULTSTYLE = 9 ] && SELECT19='selected="selected"'
-	[ $DEFAULTSTYLE = 10 ] && SELECT20='selected="selected"'
+	[ $DEFAULTSTYLE = 1 ] && SELECT1='selected="selected"'
+	[ $DEFAULTSTYLE = 2 ] && SELECT2='selected="selected"'
+	[ $DEFAULTSTYLE = 3 ] && SELECT3='selected="selected"'
+	[ $DEFAULTSTYLE = 4 ] && SELECT4='selected="selected"'
+	[ $DEFAULTSTYLE = 5 ] && SELECT5='selected="selected"'
+	[ $DEFAULTSTYLE = 6 ] && SELECT6='selected="selected"'
+	[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
+	[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
+	[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
+	[ $DEFAULTSTYLE = 10 ] && SELECT10='selected="selected"'
 else
 	SELECT1='selected="selected"'
 fi
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 if [ $ACTION = GETDATA ]
 then
 	#Get lockout settings - only works with samba4.2 or higher.
 	LOCKOUTDATA=$(samba-tool domain passwordsettings show)
+	PASSWORD_HISTORY_LENGTH=$(echo -e "$LOCKOUTDATA" | grep -w "Password history length" | tr -cd 0-9)
 	LOCKOUTTHRESHOLD=$(echo -e "$LOCKOUTDATA" | grep -w "lockout threshold" | tr -cd 0-9)
 	LOCKOUTDURATION=$(echo -e "$LOCKOUTDATA" | grep -w "lockout duration" | tr -cd 0-9)
 	LOCKOUTOBS=$(echo -e "$LOCKOUTDATA" | grep -w "lockout after" | tr -cd 0-9)
-	SHADOWMAX=$(echo -e "$LOCKOUTDATA" | grep -w "Maximum password age" | tr -cd 0-9)	
+	MAXIMUMPASSWORDAGE=$(echo -e "$LOCKOUTDATA" | grep -w "Maximum password age" | tr -cd 0-9)
+	MINPASSWORDLENGTH=$(echo -e "$LOCKOUTDATA" | grep -w "Minimum password length" | tr -cd 0-9)
+	PASSWORDCOMPLEXITY=$(echo -e "$LOCKOUTDATA" | grep -w "Password complexity" | tr -cd 0-9)
 
+	[ -z "$PASSWORDHISTORYLENGTH" ] && PASSWORDHISTORYLENGTH=24
 	[ -z "$LOCKOUTTHRESHOLD" ] && LOCKOUTTHRESHOLD=0
 	[ -z "$LOCKOUTDURATION" ] && LOCKOUTDURATION=30
 	[ -z "$LOCKOUTOBS" ] && LOCKOUTOBS=3
-	[ -z "$SHADOWMAX" ] && SHADOWMAX=999
+	[ -z "$MAXIMUMPASSWORDAGE" ] && MAXIMUMPASSWORDAGE=999
 
 	#Get password complexity data
 	source /opt/karoshi/server_network/security/password_settings
-	[ -z "$CHANGE_PASS_FIRST_LOGIN" ] && CHANGE_PASS_FIRST_LOGIN=no
-	[ -z "$PASSWORD_EXPIRY" ] && PASSWORD_EXPIRY=yes
-	[ $STUDENT_CHARS_AND_NUMBERS = yes ] && SELECT11=selected
-	[ $STUDENT_CHARS_AND_NUMBERS = no ] && SELECT12=selected
-	[ $STUDENT_UPPER_AND_LOWER_CASE = yes ] && SELECT13=selected
-	[ $STUDENT_UPPER_AND_LOWER_CASE = no ] && SELECT14=selected
-	[ $STAFF_CHARS_AND_NUMBERS = yes ] && SELECT15=selected
-	[ $STAFF_CHARS_AND_NUMBERS = no ] && SELECT16=selected
-	[ $STAFF_UPPER_AND_LOWER_CASE = yes ] && SELECT17=selected
-	[ $STAFF_UPPER_AND_LOWER_CASE = no ] && SELECT18=selected
-	[ $CHANGE_PASS_FIRST_LOGIN = yes ] && SELECT19=selected
-	[ $CHANGE_PASS_FIRST_LOGIN = no ] && SELECT20=selected
-	[ $PASSWORD_EXPIRY = yes ] && SELECT21=selected
-	[ $PASSWORD_EXPIRY = no ] && SELECT22=selected
+	[ -z "$CHANGEPASSFIRSTLOGIN" ] && CHANGE_PASS_FIRST_LOGIN=no
+	[ -z "$PASSWORDEXPIRY" ] && PASSWORD_EXPIRY=yes
+	[ $PASSWORDCOMPLEXITY = on ] && SELECT15=selected
+	[ $PASSWORDCOMPLEXITY = off ] && SELECT16=selected
+	[ $CHANGEPASSFIRSTLOGIN = yes ] && SELECT19=selected
+	[ $CHANGEPASSFIRSTLOGIN = no ] && SELECT20=selected
+	[ $PASSWORDEXPIRY = yes ] && SELECT21=selected
+	[ $PASSWORDEXPIRY = no ] && SELECT22=selected
 
 	#Get homedrive
 	HOMEDRIVE=$(grep ^'$homedrive=' /var/lib/samba/netlogon/logonform.kix | cut -d"=" -f2 | tr -cd "a-z" | tr "a-z" "A-Z")
 
 	#Show table for data choice
 	echo '<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 200px;">'$"Lockout duration"'</td>
+	<tr><td style="width: 200px;">'$"Account lockout duration"'</td>
         <td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in minutes that you want a user to be locked out."'</span></a>
 	</td></tr>
-	<tr><td>'$"Lockout threshold"'</td><td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
+	<tr><td>'$"Account lockout threshold"'</td><td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Number of login attempts to trigger the lockout."'</span></a></td></tr>
-	<tr><td>'$"Lockout observation period"'</td><td><input style="width: 200px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
+	<tr><td>'$"Reset account lockout after"'</td><td><input style="width: 200px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time duration that the login attempts are monitored over."'</span></a></td></tr>
-	<tr><td>'$"Password change time"'</td><td><input style="width: 200px;" tabindex= "2" name="_SHADOWMAX_" maxlength="3" size="3" type="text" value="'$SHADOWMAX'"></td>
+	<tr><td>'$"Password history length"'</td><td><input style="width: 200px;" tabindex= "2" name="_PASSWORDHISTORYLENGTH_" maxlength="3" size="3" type="text" value="'$PASSWORDHISTORYLENGTH'"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of old passwords that are stored and not allowed to be re-used. This must be between 0 and 24."'</span></a></td></tr>
+	<tr><td>'$"Minimum password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_MINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$MINPASSWORDLENGTH'"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a password. This must be between 0 and 14."'</span></a></td></tr>
+	<tr><td>'$"Maximum password age"'</td><td><input style="width: 200px;" tabindex= "2" name="_MAXIMUMPASSWORDAGE_" maxlength="3" size="3" type="text" value="'$MAXIMUMPASSWORDAGE'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>
-	<tr><td>'$"Minium password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_STAFFMINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$STAFF_MINPASSLENGTH'"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a password."'</span></a></td></tr>'
-	if [ $INSTALL_TYPE = education ]
-	then
-		echo '<tr><td>'$"Student Minium password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_STUDENTMINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$STUDENT_MINPASSLENGTH'"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a student password."'</span></a></td></tr>
-<tr><td>'$"Student characters and numbers"'</td><td>
-<select name="_STUDENTCHARSANDNUMBERS_" style="width: 200px;">
-<option value="yes" '$SELECT11'>'$"yes"'</option>
-<option value="no" '$SELECT12'>'$"no"'</option>
-</select>
-</td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain characters and numbers."'</span></a></td></tr>
-<tr><td>'$"Student upper and lower case"'</td><td>
-<select name="_STUDENTUPPERANDLOWERCASE_" style="width: 200px;">
-<option value="yes" '$SELECT13'>'$"yes"'</option>
-<option value="no" '$SELECT14'>'$"no"'</option>
-</select>
-</td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain upper and lower case characters."'</span></a></td></tr>'
-	fi
-	echo '<tr><td>'$"Characters and numbers"'</td><td>
-<select name="_STAFFCHARSANDNUMBERS_" style="width: 200px;">
-<option value="yes" '$SELECT15'>'$"yes"'</option>
-<option value="no" '$SELECT16'>'$"no"'</option>
-</select>
-</td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain characters and numbers."'</span></a></td></tr>
-
-<tr><td>'$"Upper and lower case"'</td><td>
-<select name="_STAFFUPPERANDLOWERCASE_" style="width: 200px;">
-<option value="yes" '$SELECT17'>'$"yes"'</option>
-<option value="no" '$SELECT18'>'$"no"'</option>
-</select>
-</td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain upper and lower case characters."'</span></a></td></tr>
-
-
+	<tr><td>'$"Password Complexity"'</td><td>
+	<select name="_PASSWORDCOMPLEXITY_" style="width: 200px;">
+	<option value="on" '$SELECT15'>'$"on"'</option>
+	<option value="off" '$SELECT16'>'$"off"'</option>
+	</select>
+	</td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain upper and lower case haracters and numbers."'</span></a></td></tr>
 	<tr><td>'$"Username style"'</td>
 	<td>
         <select name="_USERNAMESTYLE_" style="width: 200px;" onClick="rewriteselect();">
@@ -265,11 +228,18 @@ then
 fi
 if [ $ACTION = SETDATA ]
 then
-	LOCKOUTDURATION=`echo "$DATA" | cut -s -d: -f5`
-	LOCKOUTTHRESHOLD=`echo "$DATA" | cut -s -d: -f6`
-	LOCKOUTOBS=`echo "$DATA" | cut -s -d: -f7`
-	SHADOWMAX=`echo "$DATA" | cut -s -d: -f8`
+	LOCKOUTDURATION=`echo "$DATA" | cut -s -d: -f5 | tr -cd '0-9'`
+	LOCKOUTTHRESHOLD=`echo "$DATA" | cut -s -d: -f6 | tr -cd '0-9'`
+	LOCKOUTOBS=`echo "$DATA" | cut -s -d: -f7 | tr -cd '0-9'`
+	MAXIMUMPASSWORDAGE=`echo "$DATA" | cut -s -d: -f8 | tr -cd '0-9'`
 	USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
+	MINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f10 | tr -cd '0-9'`
+	PASSWORDCOMPLEXITY=`echo "$DATA" | cut -s -d: -f11`
+	PASSWORDHISTORYLENGTH=`echo "$DATA" | cut -s -d: -f12 | tr -cd '0-9'`
+	CHANGEPASSFIRSTLOGIN=`echo "$DATA" | cut -s -d: -f13`
+	PASSWORDEXPIRY=`echo "$DATA" | cut -s -d: -f14`
+	HOMEDRIVE=`echo "$DATA" | cut -s -d: -f15 | tr "A-Z" "a-z" | tr -cd "a-z"`
+	HOMEDRIVE=`echo ${HOMEDRIVE:0:1}`
 
 	if [ -z "$LOCKOUTDURATION" ]
 	then
@@ -287,9 +257,9 @@ then
 		exit 101
 	fi
 
-	if [ -z "$SHADOWMAX" ]
+	if [ -z "$MAXIMUMPASSWORDAGE" ]
 	then
-		echo `date`: default_user_settings - Blank shadowmax by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: default_user_settings - Blank MAXIMUMPASSWORDAGE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		exit 101
 	fi
 
@@ -299,36 +269,53 @@ then
 		exit 101
 	fi
 
-	STUDENTMINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f10`
-	STUDENTCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f11`
-	STUDENTUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f12`
-	STAFFMINPASSWORDLENGTH=`echo "$DATA" | cut -s -d: -f13`
-	STAFFCHARSANDNUMBERS=`echo "$DATA" | cut -s -d: -f14`
-	STAFFUPPERANDLOWERCASE=`echo "$DATA" | cut -s -d: -f15`
-	CHANGEPASSFIRSTLOGIN=`echo "$DATA" | cut -s -d: -f16`
-	PASSWORDEXPIRY=`echo "$DATA" | cut -s -d: -f17`
-	HOMEDRIVE=`echo "$DATA" | cut -s -d: -f18 | tr "A-Z" "a-z" | tr -cd "a-z"`
-	HOMEDRIVE=`echo ${HOMEDRIVE:0:1}`
+	if [ -z "$MINPASSWORDLENGTH" ]
+	then
+		echo `date`: default_user_settings - Blank MINPASSWORDLENGTH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-	[ -z "$STUDENTMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=5
-	[ -z "$STUDENTCHARSANDNUMBERS" ] && STUDENTCHARSANDNUMBERS=no
-	[ -z "$STUDENTUPPERANDLOWERCASE" ] && STUDENTUPPERANDLOWERCASE=no
+	if [ -z "$PASSWORDCOMPLEXITY" ]
+	then
+		echo `date`: default_user_settings - Blank PASSWORDCOMPLEXITY by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-	[ -z "$STAFFMINPASSWORDLENGTH" ] && STUDENTMINPASSWORDLENGTH=7
-	[ -z "$STAFFCHARSANDNUMBERS" ] && STAFFCHARSANDNUMBERS=no
-	[ -z "$STAFFUPPERANDLOWERCASE" ] && STAFFUPPERANDLOWERCASE=no
-	[ -z "$CHANGEPASSFIRSTLOGIN" ] && CHANGEPASSFIRSTLOGIN=no
+	if [ -z "$PASSWORDHISTORYLENGTH" ]
+	then
+		echo `date`: default_user_settings - Blank PASSWORDHISTORYLENGTH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-	[ -z "$HOMEDRIVE" ] && HOMEDRIVE=g
+	if [ -z "$CHANGEPASSFIRSTLOGIN" ]
+	then
+		echo `date`: default_user_settings - Blank CHANGEPASSFIRSTLOGIN by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
+	if [ -z "$PASSWORDEXPIRY" ]
+	then
+		echo `date`: default_user_settings - Blank PASSWORDEXPIRY by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
 
-	echo `date`: default_user_settings - sambaLockoutDuration: $LOCKOUTDURATION sambaLockoutThreshold: $LOCKOUTTHRESHOLD sambaLockoutObservationWindow: $LOCKOUTOBS shadowmax: $SHADOWMAX usernamestyle: $USERNAMESTYLE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ -z "$HOMEDRIVE" ]
+	then
+		echo `date`: default_user_settings - Blank HOMEDRIVE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit 101
+	fi
+
+	echo `date`: default_user_settings - $LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$MAXIMUMPASSWORDAGE:$USERNAMESTYLE:$MINPASSWORDLENGTH:$PASSWORDCOMPLEXITY:$PASSWORDHISTORYLENGTH:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE: by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
 	#Modify settings in samba4
 
+	samba-tool domain passwordsettings set --complexity="$PASSWORDCOMPLEXITY" 1>/dev/null
 	samba-tool domain passwordsettings set --account-lockout-duration="$LOCKOUTDURATION" 1>/dev/null
 	samba-tool domain passwordsettings set --account-lockout-threshold="$LOCKOUTTHRESHOLD" 1>/dev/null
 	samba-tool domain passwordsettings set --reset-account-lockout-after="$LOCKOUTOBS" 1>/dev/null
-	samba-tool domain passwordsettings set --max-pwd-age="$SHADOWMAX" 1>/dev/null
+	samba-tool domain passwordsettings set --max-pwd-age="$MAXIMUMPASSWORDAGE" 1>/dev/null
+	samba-tool domain passwordsettings set --history-length="$PASSWORDHISTORYLENGTH" 1>/dev/null
+	samba-tool domain passwordsettings set --min-pwd-length="$MINPASSWORDLENGTH" 1>/dev/null
 
 	#Set username style
 	[ $USERNAMESTYLE = userstyleS1 ] && USERNAMESTYLE=1
@@ -344,14 +331,16 @@ then
 	echo DEFAULTSTYLE="$USERNAMESTYLE" > /opt/karoshi/server_network/default_username_style
 
 	#Set password complexity settings
-	echo STAFF_CHARS_AND_NUMBERS="$STAFFCHARSANDNUMBERS" > /opt/karoshi/server_network/security/password_settings
-	echo STAFF_UPPER_AND_LOWER_CASE="$STAFFUPPERANDLOWERCASE" >> /opt/karoshi/server_network/security/password_settings
-	echo STAFF_MINPASSLENGTH="$STAFFMINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
-	echo STUDENT_CHARS_AND_NUMBERS="$STUDENTCHARSANDNUMBERS" >> /opt/karoshi/server_network/security/password_settings
-	echo STUDENT_UPPER_AND_LOWER_CASE="$STUDENTUPPERANDLOWERCASE" >> /opt/karoshi/server_network/security/password_settings
-	echo STUDENT_MINPASSLENGTH="$STUDENTMINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
-	echo CHANGE_PASS_FIRST_LOGIN="$CHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
-	echo PASSWORD_EXPIRY="$PASSWORDEXPIRY" >> /opt/karoshi/server_network/security/password_settings
+	echo PASSWORDCOMPLEXITY="$PASSWORDCOMPLEXITY" > /opt/karoshi/server_network/security/password_settings
+	echo PASSWORDHISTORYLENGTH="$PASSWORDHISTORYLENGTH" >> /opt/karoshi/server_network/security/password_settings
+	echo MINPASSLENGTH="$MINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
+	echo CHANGEPASSFIRSTLOGIN="$CHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
+	echo PASSWORDEXPIRY="$PASSWORDEXPIRY" >> /opt/karoshi/server_network/security/password_settings
+	echo LOCKOUTDURATION="$LOCKOUTDURATION" >> /opt/karoshi/server_network/security/password_settings
+	echo LOCKOUTOBS="$LOCKOUTOBS" >> /opt/karoshi/server_network/security/password_settings
+	echo MINPASSWORDLENGTH="$MINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
+	echo MAXIMUMPASSWORDAGE="$MAXIMUMPASSWORDAGE" >> /opt/karoshi/server_network/security/password_settings
+	echo CHANGEPASSFIRSTLOGIN="$PCHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
 
 	#Set homedrive
 	sed -i '/^$homedrive=/c\$homedrive="'$HOMEDRIVE':"' /var/lib/samba/netlogon/logonform.kix
