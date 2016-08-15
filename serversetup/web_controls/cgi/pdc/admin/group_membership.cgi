@@ -169,7 +169,7 @@ else
 	<tr>
 	<td style="vertical-align: top;"><b>'$"Group Membership"' - '$USERNAME'</b></td>
 	<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/ggroup_membership_fm.cgi" method="post">
+	<form action="/cgi-bin/admin/group_membership_fm.cgi" method="post">
 	<button class="button" name="ChooseUser" value="_">
 	'$"Choose User"'
 	</button>
