@@ -436,11 +436,24 @@ then
 		#Delete windows drives
 		[ -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
 
-		#remove group from restriction list if an email server has been setup.
+		#Remove group from restriction list if an email server has been setup.
 		if [ -f /opt/karoshi/server_network/emailserver ]
 		then
+			source /opt/karoshi/server_network/domain_information/domain_name
+			EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 			MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:1:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+			#Remove the group from the protected distribution lists
+			if [ "$EMAILSERVER" = `hostname-fqdn` ]
+			then
+				sed -i "/^$GROUPNAME@$REALM\t/d" /etc/postfix/protected_distribution_lists
+				postmap hash:/etc/postfix/protected_distribution_lists
+			else
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+				sed -i "/^'$GROUPNAME'@'$REALM'\t/d" /etc/postfix/protected_distribution_lists
+				postmap hash:/etc/postfix/protected_distribution_lists
+				'
+			fi
 		fi
 
 		#Recreate pam mount for the linux clients

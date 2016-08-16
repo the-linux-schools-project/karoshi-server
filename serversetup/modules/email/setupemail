@@ -536,14 +536,14 @@ echo "$REALM	OK" > /etc/postfix/restricted_domains
 #Populate protected_distribution_lists
 for group in $(ls -1 /opt/karoshi/server_network/group_information)
 do
-	echo $group"	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
+	echo "$group@$REALM	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
 done
 
 if [ -d /opt/karoshi/server_network/group_information_dynamic ]
 then
 	for group in $(ls -1 /opt/karoshi/server_network/group_information_dynamic)
 	do
-		echo $group"	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
+		echo "$group@$REALM	"allowed_distribution_users >> /etc/postfix/protected_distribution_lists
 	done
 fi
 

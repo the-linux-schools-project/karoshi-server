@@ -89,7 +89,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%'`
 #Assign data to variables
 #########################
 #echo $DATA"<br>"
-END_POINT=12
+END_POINT=16
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]

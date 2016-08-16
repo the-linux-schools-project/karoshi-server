@@ -115,41 +115,21 @@ chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIM
 chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
 chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
 
-#Windows 7
-if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 ]
-then
-	cp -R /home/applications/profiles/default_roaming_profile.V2 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
-	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2 1>/dev/null
-	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
-	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V2
-fi
-
-#Windows 8
-if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 ]
-then
-	cp -R /home/applications/profiles/default_roaming_profile.V3 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
-	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3 1>/dev/null
-	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
-	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V3
-fi
-
-#Windows 8.1
-if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 ]
-then
-	cp -R /home/applications/profiles/default_roaming_profile.V4 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
-	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4 1>/dev/null
-	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
-	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V4
-fi
-
-#Windows 10
-if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 ]
-then
-	cp -R /home/applications/profiles/default_roaming_profile.V5 /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
-	chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5 1>/dev/null
-	chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
-	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.V5
-fi
+#All other windows versions
+for DEFAULT_ROAMING_PROFILE in $(ls -1 /home/applications/profiles | grep ^default_roaming_profile.)
+do
+	PROFILE_VERSION=$(echo $DEFAULT_ROAMING_PROFILE | cut -d"." -f2)
+	if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION ]
+	then
+		if [ -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ]
+		then
+			cp -R /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
+			chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION 1>/dev/null
+			chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
+			chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
+		fi
+	fi
+done
 
 #Set new profile path for the user
 echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'

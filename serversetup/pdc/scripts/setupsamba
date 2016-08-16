@@ -1581,10 +1581,13 @@ then
 fi
 
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
-[ ! -d /home/applications/profiles/default_roaming_profile.V2 ] && mkdir /home/applications/profiles/default_roaming_profile.V2
-[ ! -d /home/applications/profiles/default_roaming_profile.V3 ] && mkdir /home/applications/profiles/default_roaming_profile.V3
-[ ! -d /home/applications/profiles/default_roaming_profile.V4 ] && mkdir /home/applications/profiles/default_roaming_profile.V4
-[ ! -d /home/applications/profiles/default_roaming_profile.V5 ] && mkdir /home/applications/profiles/default_roaming_profile.V5
+for PROFILE_VERSION in V2 V3 V4 V5 V6
+do
+	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
+	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
+	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
+	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
+done
 
 echo $"Setting profile permissions"
 chown -R root.itadmin /home/applications/profiles
@@ -2039,6 +2042,26 @@ then
 			echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 		fi
 	done
+
+	#Add in categories folder
+	if [ ! -d /opt/karoshi/server_network/categories ]
+	then
+		mkdir /opt/karoshi/server_network/categories
+		if [ "$INSTALL_TYPE" = business ] || [ "$INSTALL_TYPE" = education ]
+		then
+			echo CATEGORYNAME='$"'$"Personnel"'"' > /opt/karoshi/server_network/categories/personnel
+		fi
+		if [ "$INSTALL_TYPE" = home ]
+		then
+			echo CATEGORYNAME='$"'$"Family"'"' > /opt/karoshi/server_network/categories/family
+		fi
+		if [ "$INSTALL_TYPE" = education ]
+		then
+			echo CATEGORYNAME='$"'$"Students"'"' > /opt/karoshi/server_network/categories/students
+		fi
+		touch /opt/karoshi/server_network/categories/other
+		echo CATEGORYNAME='$"'$"Other"'"' > /opt/karoshi/server_network/categories/other
+	fi
 
 	#Add in flag file for dfs
 	touch /var/lib/samba/netlogon/domain_information/dfs_enabled
