@@ -54,7 +54,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADR
 #########################
 #Assign data to variables
 #########################
-END_POINT=21
+END_POINT=23
 #Assign FIRSTNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -175,8 +175,22 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign NEXTLOGON
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 STARTCGI=add_user_fm.cgi
-[ $REQUESTFILE'null' != null ] && STARTCGI=request_new_users_fm.cgi
+[ ! -z "$REQUESTFILE" ] && STARTCGI=request_new_users_fm.cgi
 
 function show_status {
 echo '<script>
@@ -202,6 +216,7 @@ then
 else
 	DIV_ID=menubox
 fi
+
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -438,7 +453,7 @@ then
 else
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
 	#Add user
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::" | sudo -H /opt/karoshi/web_controls/exec/add_user
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $"Forename": "${FIRSTNAME^}"'\\n'$"Surname": "${SURNAME^}"'\\n'$"Username": $USERNAME'\\n'$"Created with primary group" $GROUP.`
 	if [ $EXEC_STATUS = 101 ]

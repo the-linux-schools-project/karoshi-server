@@ -212,14 +212,15 @@ do
 	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3 | tr -cd 'A-Za-z0-9,-'`
 	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 | tr -cd 'A-Za-z0-9,-'`
 	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 | tr -cd 'A-Za-z0-9,-'`
-	PASSWORD=$(urlencode -m `sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6-`)
+	NEXTLOGON=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 | tr -cd 'A-Za-z0-9,-'`
+	PASSWORD=$(urlencode -m `sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7-`)
 	datacheck
 	if [ $CREATEUSER = no ]
 	then
 		MESSAGE=`echo $"The CSV file you have chosen is not formatted correctly."`
 		show_status
 	fi
-	echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO","$USERNAME",$USERPGROUP >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
+	echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO","$USERNAME",$USERPGROUP,$NEXTLOGON >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
 	let COUNTER=$COUNTER+1
 done
 rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
@@ -301,6 +302,7 @@ do
 	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 |  sed 's/ //g'`
 	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 |  sed 's/ //g'`
 	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 |  sed 's/ //g'`
+	NEXTLOGON=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 |  sed 's/ //g'`
 	DUPLICATECOUNTER=""
 	create_username
 	DUPLICATE_CHECK=yes
@@ -336,7 +338,7 @@ do
 				USERGROUP=$PRI_GROUP
 			fi
 
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE":bulkusercreation | sudo -H /opt/karoshi/web_controls/exec/add_user
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE":bulkusercreation:$NEXTLOGON: | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
 	fi
 	let COUNTER=$COUNTER+1

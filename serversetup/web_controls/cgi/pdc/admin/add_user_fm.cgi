@@ -27,6 +27,17 @@
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
+source /opt/karoshi/server_network/security/password_settings
+#Force users to change password on first logon if it has been set.
+[ -z "$CHANGEPASSFIRSTLOGIN" ] && CHANGEPASSFIRSTLOGIN=no
+if [ "$CHANGEPASSFIRSTLOGIN" = yes ]
+then
+	NEXTLOGON1=selected
+	NEXTLOGON2=""
+else
+	NEXTLOGON2=selected
+	NEXTLOGON1=""
+fi
 
 ############################
 #Language
@@ -267,16 +278,22 @@ then
 	echo ''$"Forename"'<br>
 	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
-	'$"Password"'<br>
-	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
-	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
+	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
 	if [ $INSTALL_TYPE != home ]
 	then
 		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="_ENROLLMENTNUMBER_" style="width: 200px; height: 30px;" size="20" type="text"><br>'
+		<input tabindex= "3" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
 	fi
+	echo ''$"Password"'<br>
+	<input tabindex= "4" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	'$"Confirm Password"'<br>
+	<input tabindex= "5" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	'$"Change at next logon"'<br>
+	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
+	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
+	<option value="n" '$NEXTLOGON2'>'$"No"'</option>
+	</select><br>'
+	
 	echo ''$"Primary group"'<br>'
 	if [ -z "$FILE" ]
 	then
@@ -299,7 +316,7 @@ then
 		<option value="userstyleS10" '$SELECT10'>'$"Enter a username"'</option>
 		</select><br>
 		<span id="extraoptions1"></span><br>
-		<span id="extraoptions2"></span><br><br>'
+		<span id="extraoptions2"></span><br>'
 else
 
 	echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -308,11 +325,7 @@ else
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
         <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
-;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>'
 
 	if [ $INSTALL_TYPE != home ]
 	then
@@ -321,21 +334,31 @@ else
 		echo '	<tr style="display:none;">'
 	fi
 	echo '<td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
+        <td><input tabindex= "3" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
+
+	echo '<tr><td>'$"Password"'</td><td><input tabindex= "4" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "5" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
+	<tr><td>'$"Change at next logon"'</td><td>
+	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px;">
+	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
+	<option value="n" '$NEXTLOGON2'>'$"No"'</option>
+	</select>
+	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="6" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="6" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
 	fi
-
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>
         <td>'$"Username style"'</td>
         <td>
-        <select  tabindex= "7" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
+        <select  tabindex= "8" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
         <option value="userstyleS1" '$SELECT1'>'$"auser09"'</option>'
         [ $INSTALL_TYPE = education ] && echo '<option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>'
         echo '<option value="userstyleS3" '$SELECT3'>'$"usera09"'</option>

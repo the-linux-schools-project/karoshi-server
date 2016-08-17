@@ -176,8 +176,8 @@ then
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>
 	<tr><td>'$"Password Complexity"'</td><td>
 	<select name="_PASSWORDCOMPLEXITY_" style="width: 200px;">
-	<option value="on" '$SELECT15'>'$"on"'</option>
-	<option value="off" '$SELECT16'>'$"off"'</option>
+	<option value="on" '$SELECT15'>'$"On"'</option>
+	<option value="off" '$SELECT16'>'$"Off"'</option>
 	</select>
 	</td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"If a password has to contain upper and lower case haracters and numbers."'</span></a></td></tr>
@@ -198,14 +198,14 @@ then
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default username style."'</span></a></td></tr>
 	<tr><td>'$"Change password on first login"'</td><td>
 	<select name="_CHANGEPASSFIRSTLOGIN_" style="width: 200px;">
-	<option value="yes" '$SELECT19'>'$"yes"'</option>
-	<option value="no" '$SELECT20'>'$"no"'</option>
+	<option value="yes" '$SELECT19'>'$"Yes"'</option>
+	<option value="no" '$SELECT20'>'$"No"'</option>
 	</select></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This forces a user to change their password the first time they log in."'</span></a></td></tr>
 	<tr><td>'$"Password Expiry"'</td><td>
 	<select name="_PASSWORDEXPIRY_" style="width: 200px;">
-	<option value="yes" '$SELECT21'>'$"yes"'</option>
-	<option value="no" '$SELECT22'>'$"no"'</option>
+	<option value="yes" '$SELECT21'>'$"Yes"'</option>
+	<option value="no" '$SELECT22'>'$"No"'</option>
 	</select></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enable or disable password expiry."'</span></a></td></tr>
 	<tr><td>'$"Home Drive"'</td><td>
@@ -340,7 +340,6 @@ then
 	echo LOCKOUTOBS="$LOCKOUTOBS" >> /opt/karoshi/server_network/security/password_settings
 	echo MINPASSWORDLENGTH="$MINPASSWORDLENGTH" >> /opt/karoshi/server_network/security/password_settings
 	echo MAXIMUMPASSWORDAGE="$MAXIMUMPASSWORDAGE" >> /opt/karoshi/server_network/security/password_settings
-	echo CHANGEPASSFIRSTLOGIN="$PCHANGEPASSFIRSTLOGIN" >> /opt/karoshi/server_network/security/password_settings
 
 	#Set homedrive
 	sed -i '/^$homedrive=/c\$homedrive="'$HOMEDRIVE':"' /var/lib/samba/netlogon/logonform.kix
