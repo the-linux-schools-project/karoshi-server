@@ -173,7 +173,8 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: '$WIDTH1'px;"></th><th style="width: '$WIDTH2'px;"><b>'$"Command"'</b></th><th style="width: '$WIDTH1'px;"></th><th style="width: '$WIDTH1'px;"></th></tr></thead><tbody>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: '$WIDTH1'px;">'$"Time"'</th><th style="width: '$WIDTH2'px;"><b>'$"Command"'</b></th><th style="width: '$WIDTH1'px;">'$"Edit"'</th><th style="width: '$WIDTH1'px;">'$"
+Delete"'</th></tr></thead><tbody>'
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -225,7 +226,7 @@ then
 
 	if [ $CRONCOUNT -gt 0 ]
 	then
-		echo "<table id="myTable" class=\"tablesorter\" style=\"text-align: left;\"><thead><tr><th style=\"width: 40px;\"></th><th style=\"width: 2500px;\"><b>'$"Command"'</b></th><th style=\"width: 40px;\"></th><th style=\"width: 40px;\"></th></tr></thead><tbody>"
+		echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead><tr><th style=\"width: '$WIDTH1'px;\">'$"Time"'</th><th style=\"width: '$WIDTH2'px;\"><b>'$"Command"'</b></th><th style=\"width: '$WIDTH1'px;\">'$"Edit"'</th><th style=\"width: '$WIDTH1'px;\">'$"Delete"'</th></tr></thead><tbody>"
 		for CRON_JOBS in /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/*.cron
 		do
 			CRON_NAME=`basename $CRON_JOBS | sed "s/.cron$//g"`
@@ -246,7 +247,7 @@ then
 			'$"Command"'<br>$COMMAND<br><br>
 			</span></a>
 			</td><td>$CRON_NAME</td><td>
-			<button class=\"info\" name=\"___EditJob___\" value=\"___ACTION___EDIT___JOBNAME___'$CRON_NAME'___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___\">
+			<button class=\"info\" name=\"___EditJob___\" value=\"___ACTION___EDIT___JOBNAME___"$CRON_NAME"___SERVERTYPE___network___SERVERNAME___'$SERVERNAME'___\">
 			<img src=\"'$EDITICON'\" alt=\"'$"Edit"'\">
 			<span>'$"Edit the scheduled job."'</span>
 			</button>

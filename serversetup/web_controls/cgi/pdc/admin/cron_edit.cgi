@@ -67,20 +67,7 @@ fi
 
 echo '</head><body><div id="pagecontainer">'
 
-#Generate navigation bar
-if [ $ACTION != delete ]
-then
-	if [ $MOBILE = no ]
-	then
-		DIV_ID=actionbox
-		#Generate navigation bar
-		/opt/karoshi/web_controls/generate_navbar_admin
-	else
-		DIV_ID=menubox
-	fi
 
-	[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
-fi
 #########################
 #Get data input
 #########################
@@ -223,7 +210,7 @@ then
 	show_status
 fi
 #Check that SERVERTYPE is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
 	MESSAGE=$"The servertype cannot be blank."
 	show_status
@@ -235,6 +222,20 @@ then
 	show_status
 fi
 
+#Generate navigation bar
+if [ $ACTION != delete ]
+then
+	if [ $MOBILE = no ]
+	then
+		DIV_ID=actionbox
+		#Generate navigation bar
+		/opt/karoshi/web_controls/generate_navbar_admin
+	else
+		DIV_ID=menubox
+	fi
+
+	[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+fi
 
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1`
