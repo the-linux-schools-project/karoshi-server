@@ -181,6 +181,68 @@ then
 	fi
 fi
 
+
+
+source /opt/karoshi/server_network/security/password_settings
+#Create a new password if it is blank
+if [ -z "$PASSWORD" ]
+then
+	if [ $PASSWORDCOMPLEXITY = on ]
+	then
+		PASSWORD=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
+		PASSWORD=$(urlencode -m "$PASSWORD")
+	else
+		PASSWORD=$(shuf -i 10000000000000-99999999999999 -n 1 | head -c"$MINPASSWORDLENGTH")
+	fi
+else
+	#Check password length
+	RAWPASSWORD=$(urlencode -d "$PASSWORD")
+	PASSLENGTH=${#RAWPASSWORD}
+
+	#Check to see that password has the required number of characters
+	if [ "$PASSLENGTH" -lt "$MINPASSLENGTH" ]
+	then
+		echo $"Line": $COUNTER - $"Required password length""<br>"
+		CREATEUSER=no
+	fi
+
+	#Check for upper and lower case characters and numbers
+	if [ "$PASSWORDCOMPLEXITY" = on ]
+	then
+		CASECHECK=ok
+		CHARCHECK=ok
+
+		#Check that the password has a combination of characters and numbers
+		if [ `echo "$RAWPASSWORD"'1' | tr -cd '0-9\n'` = 1 ]
+		then
+			CHARCHECK=fail
+		fi
+		if [ `echo "$RAWPASSWORD"'A' | tr -cd 'A-Za-z\n'` = A ]
+		then
+			CHARCHECK=fail
+		fi
+
+		if [ `echo "$RAWPASSWORD"'A' | tr -cd 'A-Z\n'` = A ]
+		then
+			CASECHECK=fail
+			CASECHECK2=$"Failed"
+		fi
+		if [ `echo "$RAWPASSWORD"'a' | tr -cd 'a-z\n'` = a ]
+		then
+			CASECHECK=fail
+		fi
+
+		if [ "$CASECHECK" = fail ] || [ "$CHARCHECK" = fail ]
+		then
+			echo $"Line": $COUNTER - $"A combination of upper and lower case characters and numbers is required.""<br>"
+			CREATEUSER=no
+		fi
+	fi
+fi
+
+
+
+
 }
 
 #########################
@@ -254,6 +316,7 @@ then
 elif [ $USER_STYLE = userstyleS8 ]
 then
 	SURNAMECOUNT=${#SURNAME}
+	[ -z "$DUPLICATECOUNTER" ] && DUPLICATECOUNTER=1
 	if [ $DUPLICATECOUNTER -le $SURNAMECOUNT ]
 	then
 		COUNTER2=""
@@ -265,7 +328,7 @@ then
 	fi
 elif [ $USER_STYLE = userstyleS9 ]
 then
-	if [ $DUPLICATECOUNTER = 1 ]
+	if [ -z "$DUPLICATECOUNTER" ]
 	then
 		USERNAME=$ENROLMENT_NO
 	else
@@ -330,7 +393,6 @@ do
 		if [ $CREATEUSER = yes ]
 		then
 			echo $"Creating" "$USERNAME" - "$FORENAME" "$SURNAME"'<br><br>'
-			[ -z "$PASSWORD" ] && PASSWORD="$RANDOM"
 			if [ $PRI_GROUP = getgroupfromcsv ]
 			then
 				USERGROUP=$USERPGROUP

@@ -110,7 +110,7 @@ then
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=200
-	HEIGHT=25
+	HEIGHT=20
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -119,7 +119,7 @@ else
 	TABLECLASS=mobilestandard
 	WIDTH1=130
 	WIDTH2=150
-	HEIGHT=30
+	HEIGHT=25
 fi
 
 echo '<form action="/cgi-bin/admin/change_username.cgi" method="post">'

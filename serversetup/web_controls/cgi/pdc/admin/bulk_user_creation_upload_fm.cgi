@@ -52,6 +52,10 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+#Check password settings
+source /opt/karoshi/server_network/security/password_settings
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" ><tbody>
@@ -67,7 +71,9 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 </button>
 </td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, change password on first logon - optional (y/n), password - optional"'</span></a></td></tr></tbody></table><br>
-<b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, change password on first logon - optional (y/n), password - optional"'<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>
+<b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, change password on first logon - optional (y/n), password - optional"''
+[ "$PASSWORDCOMPLEXITY" = on ] && echo '. '$"Upper and lower case characters and numbers are required."''
+echo '<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>
         <table class="standard">
         <tr>
             <td style="width: 180px;">'$"Upload CSV file"'

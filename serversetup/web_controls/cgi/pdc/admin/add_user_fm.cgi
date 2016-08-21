@@ -339,7 +339,9 @@ else
 
 	echo '<tr><td>'$"Password"'</td><td><input tabindex= "4" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
-;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~</span></a></td></tr>
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
+	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
+	echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a></td></tr>
       <tr><td>'$"Confirm Password"'</td><td><input tabindex= "5" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
 	<tr><td>'$"Change at next logon"'</td><td>
 	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px;">

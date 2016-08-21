@@ -160,6 +160,9 @@ else
 	DIV_ID=actionbox2
 fi
 
+#Check password settings
+source /opt/karoshi/server_network/security/password_settings
+
 echo '<form action="/cgi-bin/admin/change_password.cgi" method="post">'
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
@@ -215,7 +218,10 @@ echo '</td></tr>
 '$"New Password"'</td>
         <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"Leave the password fields blank if you want a random password."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
-;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~<br><br>'
+
+[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
+echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a>
 </td>
       </tr>
       <tr>

@@ -97,7 +97,7 @@ echo '<table class="standard" style="text-align: left;" >
         <option value="userstyleS6" '$SELECT6'>'$"Style"' 6: '$"09studenta"'</option>
         <option value="userstyleS7" '$SELECT7'>'$"Style"' 7: '$"09arnolds"'</option>
         <option value="userstyleS8" '$SELECT8'>'$"Style"' 8: '$"arnolds"'</option>
-        <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username."'</option>
+        <option value="userstyleS9" '$SELECT9'>'$"Style"' 9: '$"Enrollment number as username"'</option>
 	<option value="userstyleS10" '$SELECT10'>'$"Style"' 10: '$"Enter a username"'</option>
 </select></td></tr>
 <tr><td>'$"Primary Group"'</td><td>'

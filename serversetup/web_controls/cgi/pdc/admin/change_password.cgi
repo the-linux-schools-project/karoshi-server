@@ -208,17 +208,24 @@ then
 	fi
 fi
 
-
+#Check password settings
+source /opt/karoshi/server_network/security/password_settings
 
 SHOW_PASSWORD=no
-#Create a random password if password1 has not been set.
+
+#Create a random password if password1 has not been set to the minium password length set in default user settings
 if [ -z "$PASSWORD1" ]
 then
-	PASSWORD1=$(shuf -i 1000-9999 -n 1)
+	if [ $PASSWORDCOMPLEXITY = on ]
+	then
+		PASSWORD1=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
+	else
+		PASSWORD1=$(shuf -i 10000000000000-99999999999999 -n 1 | head -c"$MINPASSWORDLENGTH")
+	fi
 	SHOW_PASSWORD=yes
 fi
 
-#Check to see that password fields match if they are not blank.
+#Check to see that password fields match if they are not blank
 if [ ! -z "$PASSWORD1" ] && [ ! -z "$PASSWORD2" ]
 then
 	#Check that password has been entered correctly
@@ -229,14 +236,50 @@ then
 	fi
 fi
 
+#Convert special characters back for new password to check password strength
+NEW_PASSWORD=`echo "$PASSWORD1" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
+
+PASSLENGTH=${#NEW_PASSWORD}
+
+#Check to see that password has the required number of characters
+if [ "$PASSLENGTH" -lt "$MINPASSLENGTH" ]
+then
+	MESSAGE=''$"Your password length"': '$PASSLENGTH'\n'$"Required password length"': '$MINPASSLENGTH''
+	show_status
+fi
 
 
-#Check that there are no spaces in the password
-#if [ `echo $PASSWORD1 | grep -c +` != 0 ]
-#then
-#MESSAGE=$"The password was not reset for"
-#show_status
-#fi
+if [ "$PASSWORDCOMPLEXITY" = on ]
+then
+	CASECHECK=ok
+	CHARCHECK=ok
+
+	#Check that the password has a combination of characters and numbers
+	if [ `echo "$PASSWORD1"'1' | tr -cd '0-9\n'` = 1 ]
+	then
+		CHARCHECK=fail
+	fi
+	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Za-z\n'` = A ]
+	then
+		CHARCHECK=fail
+	fi
+
+	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Z\n'` = A ]
+	then
+		CASECHECK=fail
+		CASECHECK2=$"Failed"
+	fi
+	if [ `echo "$PASSWORD1"'a' | tr -cd 'a-z\n'` = a ]
+	then
+		CASECHECK=fail
+	fi
+
+	if [ "$CASECHECK" = fail ] || [ "$CHARCHECK" = fail ]
+	then
+		MESSAGE=$"A combination of upper and lower case characters and numbers is required."
+		show_status
+	fi
+fi
 
 #Change password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/change_password
