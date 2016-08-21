@@ -273,4 +273,10 @@ else
 	ln -s msdfs:$SERVER2\\$NEW_USERNAME /var/lib/samba/dfs/homes/$NEW_USERNAME
 fi
 
+#Rename in acceptable use
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$CURRENT_USERNAME" ]
+then
+	mv  -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$CURRENT_USERNAME" /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$NEW_USERNAME"
+fi
+
 exit $CHANGE_PASS_STATUS
