@@ -183,7 +183,7 @@ then
 			fi
 			if [ $PROCESS = yes ]
 			then
-				if [ $COL1 = A ] || [ $COL1 = CNAME ]
+				if [ $COL1 = A ] || [ $COL1 = CNAME ] && [ $NAME != notset ]
 				then 
 					#echo $NAME - $COL2"<br>"
 
@@ -229,9 +229,8 @@ then
 			fi
 		fi
 	done
-
-
-
+	#End table
+	echo "</tbody></table>"
 	else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	MONITORSERVER=no
