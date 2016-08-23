@@ -72,7 +72,7 @@ if [ "$ACTION" = on ]
 then
 	if [ "$UBUNTUVER" = 16.04 ]
 	then
-		update-rc.d "$SERVICE" defaults 2>/dev/null
+		update-rc.d "$SERVICE" defaults
 	else
 		for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
 		do

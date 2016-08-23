@@ -138,6 +138,12 @@ function openshorewall {
 if [ $SERVER = `hostname-fqdn` ]
 then
 	source /opt/karoshi/serversetup/variables/distro
+
+	#Set reserveports and gluster to start on boot 
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+
 	if [ `grep -c "Gluster-tcp" /etc/shorewall/rules` = 0 ]
 	then
 		echo '<ul><li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>'
@@ -152,9 +158,6 @@ then
 	fi
 
 	#Make sure glusterfs is running
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then
@@ -166,6 +169,11 @@ then
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	source /opt/karoshi/serversetup/variables/distro
+
+	#Set reserveports and gluster to start on boot 
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 
 	#Open ports on firewall
 	if [ `grep -c "Gluster-tcp" /etc/shorewall/rules` = 0 ]
@@ -182,9 +190,6 @@ else
 	fi
 
 	#Make sure glusterfs is running
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/reserveports
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/releaseports
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
 	if [ $? != 0 ]
 	then

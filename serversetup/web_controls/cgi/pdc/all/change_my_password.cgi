@@ -171,53 +171,50 @@ CHARCHECK2=$"Ok"
 NEW_PASSWORD=`echo "$PASSWORD2" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
 
 
-PASSLENGTH=${#NEW_PASSWORD}
+
+
+#Check password settings
+source /opt/karoshi/server_network/security/password_settings
 
 #Check to see that password has the required number of characters
-if [ $PASSLENGTH -lt $MINPASSLENGTH ]
+PASSLENGTH=${#NEW_PASSWORD}
+
+if [ "$PASSLENGTH" -lt "$MINPASSLENGTH" ]
 then
-	LENGTHCHECK=fail
-	LENGTHCHECK2=$"Failed"
-fi
-
-#Check that the password has a combination of characters and numbers
-if [ $CHARS_AND_NUMBERS = yes ]
-then
-	if [ `echo "$NEW_PASSWORD"'1' | tr -cd '0-9\n'` = 1 ]
-	then
-		CHARCHECK=fail
-		CHARCHECK2=$"Failed"
-	fi
-	if [ `echo "$NEW_PASSWORD"'A' | tr -cd 'A-Za-z\n'` = A ]
-	then
-		CHARCHECK=fail
-		CHARCHECK2=$"Failed"
-	fi
-fi
-
-#Check that a combination of upper case and lower case has been used
-if [ $UPPER_AND_LOWER_CASE = yes ]
-then
-	if [ `echo "$NEW_PASSWORD"'A' | tr -cd 'A-Z\n'` = A ]
-	then
-		CASECHECK=fail
-		CASECHECK2=$"Failed"
-	fi
-	if [ `echo "$NEW_PASSWORD"'a' | tr -cd 'a-z\n'` = a ]
-	then
-		CASECHECK=fail
-		CASECHECK2=$"Failed"
-	fi
-fi
-
-if [ $LENGTHCHECK = fail ] || [ $CASECHECK = fail ] || [ $CHARCHECK = fail ]
-then
-	MESSAGE=''$"Your password length"': '$PASSLENGTH'\n'$"Required password length"': '$MINPASSLENGTH' - '$LENGTHCHECK2''
-
-	[ $CHARS_AND_NUMBERS = yes ] && MESSAGE=''$MESSAGE'\n'$"Characters and numbers required."' - '$CHARCHECK2''
-	[ $UPPER_AND_LOWER_CASE = yes ] && MESSAGE=''$MESSAGE'\n'$"Upper and lower case characters required."' - '$CASECHECK2''
-
+	MESSAGE=''$"Your password length"': '$PASSLENGTH'\n'$"Required password length"': '$MINPASSLENGTH''
 	show_status
+fi
+
+if [ "$PASSWORDCOMPLEXITY" = on ]
+then
+	CASECHECK=ok
+	CHARCHECK=ok
+
+	#Check that the password has a combination of characters and numbers
+	if [ `echo "$PASSWORD2"'1' | tr -cd '0-9\n'` = 1 ]
+	then
+		CHARCHECK=fail
+	fi
+	if [ `echo "$PASSWORD2"'A' | tr -cd 'A-Za-z\n'` = A ]
+	then
+		CHARCHECK=fail
+	fi
+
+	if [ `echo "$PASSWORD2"'A' | tr -cd 'A-Z\n'` = A ]
+	then
+		CASECHECK=fail
+		CASECHECK2=$"Failed"
+	fi
+	if [ `echo "$PASSWORD2"'a' | tr -cd 'a-z\n'` = a ]
+	then
+		CASECHECK=fail
+	fi
+
+	if [ "$CASECHECK" = fail ] || [ "$CHARCHECK" = fail ]
+	then
+		MESSAGE=$"A combination of upper and lower case characters and numbers is required."
+		show_status
+	fi
 fi
 
 #Check to see that the user is not in acceptable use category

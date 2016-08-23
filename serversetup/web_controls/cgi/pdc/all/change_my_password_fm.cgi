@@ -82,33 +82,6 @@ echo '<form action="/cgi-bin/all/change_my_password.cgi" method="post">'
 source /opt/karoshi/server_network/security/password_settings
 source /opt/karoshi/web_controls/version
 
-if [ $STAFF_UPPER_AND_LOWER_CASE = yes ]
-then
-STAFFCASECHECKMSG=$"Upper and lower case characters required."
-else
-STAFFCASECHECKMSG=$"Upper and lower case characters not required."
-fi
-
-if [ $STUDENT_UPPER_AND_LOWER_CASE = yes ]
-then
-STUDENTCASECHECKMSG=$"Upper and lower case characters required."
-else
-STUDENTCASECHECKMSG=$"Upper and lower case characters not required."
-fi
-
-if [ $STAFF_CHARS_AND_NUMBERS = yes ]
-then
-STAFFCHARCHECKMSG=$"Characters and numbers required."
-else
-STAFFCHARCHECKMSG=$"Characters and numbers not required."
-fi
-
-if [ $STUDENT_CHARS_AND_NUMBERS = yes ]
-then
-STUDENTCHARCHECKMSG=$"Characters and numbers required."
-else
-STUDENTCHARCHECKMSG=$"Characters and numbers not required."
-fi
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -153,7 +126,9 @@ echo '<table class="standard" style="text-align: left; width: 399px; height: 76p
       <tr>
         <td>
 '$"New Password"'</td>
-        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br><b>'$"Student Password Requirements"'</b><br><br>'$"Required password length"': '$STUDENT_MINPASSLENGTH'<br>'$STUDENTCASECHECKMSG'<br>'$STUDENTCHARCHECKMSG'<br><br><b>'$"Staff Password Requirements"'</b><br><br>'$"Required password length"': '$STAFF_MINPASSLENGTH'<br>'$STAFFCASECHECKMSG'<br>'$STAFFCHARCHECKMSG'<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+        <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br>'
+[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
+echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td>
       </tr>
        <tr>
