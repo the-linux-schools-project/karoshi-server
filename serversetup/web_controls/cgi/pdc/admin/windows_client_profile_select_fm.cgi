@@ -113,13 +113,13 @@ fi
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Uploaded file"'</td><td>'$FILENAME'</td></tr>
 <tr><td>'$"Windows Version"'</td><td>
-<select name="___WINDOWSVER___" style="width: 200px;">
-<option value="windowsxp">Windows XP</option>
-<option value="windows7">Windows 7</option>
-<option value="windows8.0">Windows 8.0</option>
-<option value="windows8.1">Windows 8.1</option>
-<option value="windows10">Windows 10</option>
-</select>
+<select name="___WINDOWSVER___" style="width: 200px;">'
+for WINDOWSVERSION in $(ls -1 /opt/karoshi/server_network/clients/windows_client_versions | sort -V)
+do
+	source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVERSION"
+	echo '<option value="'$WINDOWS_VERSION'">'$WINDOWS_NAME'</option>'
+done
+echo '</select>
 </td></tr>
 </tbody></table>
 '
@@ -151,8 +151,7 @@ done
 
 echo '</tbody></table><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$"Select all"'">
-</div>
-</form>
+</form></div>
 </div></body>
 </html>
 '

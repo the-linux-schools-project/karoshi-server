@@ -153,6 +153,7 @@ then
 	sed -i "s/DefaultImageableArea: Letter/DefaultImageableArea: '$PAGESIZE'/g" /etc/cups/ppd/'$PRINTERNAME'.ppd
 	#Change colour option
 	sed -i "s/DefaultColorModel: Gray/DefaultColorModel: '$COLOUROPTION'/g" /etc/cups/ppd/'$PRINTERNAME'.ppd
+	chmod 0644 /etc/cups/ppd/'$PRINTERNAME'.ppd
 	[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 	#Generate avahi config
 	rm -f /etc/avahi/services/AirPrint-*
@@ -180,6 +181,7 @@ else
 	sed -i "s/DefaultImageableArea: Letter/DefaultImageableArea: $PAGESIZE/g" /etc/cups/ppd/$PRINTERNAME.ppd
 	#Change colour option
 	sed -i "s/DefaultColorModel: Gray/DefaultColorModel: $COLOUROPTION/g" /etc/cups/ppd/$PRINTERNAME.ppd
+	chmod 0644 /etc/cups/ppd/$PRINTERNAME.ppd
 	cp -f /etc/cups/ppd/$PRINTERNAME.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
 	#Generate avahi config
 	rm -f /etc/avahi/services/AirPrint-*

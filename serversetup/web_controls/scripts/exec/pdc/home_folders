@@ -231,10 +231,10 @@ while  [ $COUNTER -lt $USERLISTCOUNT ]
 do
 	USERNAME=${USERLIST[$COUNTER]}
 	echo -e 'dn: CN='$USERNAME',OU='$PRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
-	changetype: modify
-	replace: homeDirectory
-	homeDirectory: \\\\'$SERVER'\\'$USERNAME'
-	-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+changetype: modify
+replace: homeDirectory
+homeDirectory: \\\\'$SERVER'\\'$USERNAME'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	let COUNTER=$COUNTER+1
 done
 

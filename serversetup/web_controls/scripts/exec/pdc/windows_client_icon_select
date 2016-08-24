@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_icon_select_cgi
 then
-echo `date`: windows_client_icon_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_icon_select_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_icon_select.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $windows_client_icon_select_cgi'check' ]
 then
-echo `date`: windows_client_icon_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: windows_client_icon_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -61,36 +61,36 @@ PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g'
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: windows_client_icon_select - Not called by windows_client_icon_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - Not called by windows_client_icon_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: windows_client_icon_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: windows_client_icon_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: windows_client_icon_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
-echo `date`: windows_client_icon_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$WINDOWSVER" ]
 then
-echo `date`: windows_client_icon_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #######################
@@ -106,19 +106,19 @@ rm -f -R /var/www/karoshi/win_icon_upload/
 FILECOUNT=0
 if [ -d /opt/karoshi/.tempdata/win_icon_upload.$$ ]
 then
-FILECOUNT=`ls -1 /opt/karoshi/.tempdata/win_icon_upload.$$/ | wc -l`
+	FILECOUNT=`ls -1 /opt/karoshi/.tempdata/win_icon_upload.$$/ | wc -l`
 fi
 
 if [ $FILECOUNT -gt 4 ]
 then
-echo `date`: windows_client_icon_select - incorrect upload count $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_icon_select - incorrect upload count $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $FILECOUNT -lt 1 ]
 then
-echo `date`: windows_client_icon_select - No files by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-exit
+	echo `date`: windows_client_icon_select - No files by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+	exit
 fi
 
 ############################
@@ -129,12 +129,8 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
-
 #Check windows version
-PROFILEVER=""
-[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
-[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
-[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
+source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
 
 #######################
 #Copy icons to chosen groups
@@ -143,19 +139,19 @@ GROUPCOUNT=`echo ${#PRIGROUP[@]}`
 COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
-CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
-#Log event
-echo `date`: windows_client_icon_select - copying icons to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $"Copying icons to" : $CURRENTGROUP$PROFILEVER'<br><br>'
-[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
-cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$CURRENTGROUP$PROFILEVER/Desktop/ 2>/dev/null
-chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-let COUNTER=$COUNTER+1
+	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+	#Log event
+	echo `date`: windows_client_icon_select - copying icons to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo $"Copying icons to" : $CURRENTGROUP$PROFILE_VERSION'<br><br>'
+	[ -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
+	chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	let COUNTER=$COUNTER+1
 done
 #Remove temp folder
 rm -f -R /opt/karoshi/.tempdata/win_icon_upload.$$

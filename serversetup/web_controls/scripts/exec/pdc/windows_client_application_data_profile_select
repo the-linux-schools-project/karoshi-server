@@ -62,55 +62,55 @@ PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g'
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: windows_client_application_data_profile_select - Not called by windows_client_application_data_profile_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - Not called by windows_client_application_data_profile_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-echo `date`: windows_client_application_data_profile_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: windows_client_application_data_profile_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: windows_client_application_data_profile_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$FILENAME" ]
 then
-echo `date`: windows_client_application_data_profile_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$WINDOWSVER" ]
 then
-echo `date`: windows_client_application_data_profile_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Check that filename is a tar.gz or zip
 if [ `echo $FILENAME | grep -c '\<zip\>'` != 1 ] &&  [ `echo $FILENAME | grep -c '\<tar\.gz\>'` != 1 ]
 then
-echo `date`: windows_client_application_data_profile_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check that application folder with this filename exists
 if [ ! -f /var/www/karoshi/win_application_data_upload/$FILENAME ]
 then
-echo `date`: windows_client_application_data_profile_select - The application data folder does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - The application data folder does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ $PRIGROUP'null' = null ]
 then
-echo `date`: windows_client_application_data_profile_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #######################
 #Move file
@@ -134,25 +134,25 @@ FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
 echo '<b>'$"Archive Check"'</b><br><br>'
 if [ `echo $FILENAME | grep -c '\<zip\>'` = 1 ]
 then
-ARCHIVE_TYPE=zip
+	ARCHIVE_TYPE=zip
 else
-ARCHIVE_TYPE=tar.gz
+	ARCHIVE_TYPE=tar.gz
 fi
 if [ $ARCHIVE_TYPE = zip ]
 then
-unzip -tq /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-ARCHIVE_STATUS=`echo $?`
+	unzip -tq /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
+	ARCHIVE_STATUS=`echo $?`
 else
-tar -tzf /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-ARCHIVE_STATUS=`echo $?`
+	tar -tzf /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
+	ARCHIVE_STATUS=`echo $?`
 fi
 if [ $ARCHIVE_STATUS != 0 ]
 then
-echo $FILENAME2 : $"The archive is not valid."'<br><br>'
-echo `date`: windows_client_application_data_profile_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo $FILENAME2 : $"The archive is not valid."'<br><br>'
+	echo `date`: windows_client_application_data_profile_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 else
-echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
+	echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
 fi
 #######################
 #Extract profile
@@ -160,26 +160,23 @@ fi
 mkdir -p /opt/karoshi/.tempdata/win_application_data_new.$$
 if [ $ARCHIVE_TYPE = zip ]
 then
-#Extract zip
-unzip -d /opt/karoshi/.tempdata/win_application_data_new.$$ /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null
+	#Extract zip
+	unzip -d /opt/karoshi/.tempdata/win_application_data_new.$$ /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null
 else
-#Extract tar
-tar -C /opt/karoshi/.tempdata/win_application_data_new.$$ -xzf /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null
+	#Extract tar
+	tar -C /opt/karoshi/.tempdata/win_application_data_new.$$ -xzf /opt/karoshi/.tempdata/win_application_data_upload.$$/$FILENAME 1>/dev/null
 fi
 rm -f -R /opt/karoshi/.tempdata/win_application_data_upload.$$
 
 #Check that there is at least directory extracted
 if [ `ls -1 /opt/karoshi/.tempdata/win_application_data_new.$$ | wc -l` = 0 ]
 then
-echo `date`: windows_client_application_data_profile_select - The archive has no directories by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_application_data_profile_select - The archive has no directories by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Check windows version
-PROFILEVER=""
-[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
-[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
-[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
+source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
 
 #######################
 #Copy application data folder to chosen profile groups
@@ -188,22 +185,22 @@ GROUPCOUNT=`echo ${#PRIGROUP[@]}`
 COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
-CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
-[ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
-for FOLDERS in `find /opt/karoshi/.tempdata/win_application_data_new.$$/ -maxdepth 1 -type d | sed 1d | sort`
-do
-FOLDER=`basename "$FOLDERS"`
-#Log event
-echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $FOLDER: $"Copying to" $CURRENTGROUP$PROFILEVER'<br><br>'
-[ ! -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data" ] && mkdir -p "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data"
-[ -d "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/$FOLDER"
-cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
-chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
-chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
-chmod a+X -R "/home/applications/profiles/$CURRENTGROUP$PROFILEVER/Application Data/"
-done
-let COUNTER=$COUNTER+1
+	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+	[ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
+	for FOLDERS in `find /opt/karoshi/.tempdata/win_application_data_new.$$/ -maxdepth 1 -type d | sed 1d | sort`
+	do
+		FOLDER=`basename "$FOLDERS"`
+		#Log event
+		echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $FOLDER: $"Copying to" $CURRENTGROUP$PROFILE_VERSION'<br><br>'
+		[ ! -d "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data" ] && mkdir -p "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data"
+		[ -d "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/$FOLDER"
+		cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
+		chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
+		chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
+		chmod a+X -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
+	done
+	let COUNTER=$COUNTER+1
 done
 #Remove temp folder
 rm -f -R /opt/karoshi/.tempdata/win_application_data_new.$$

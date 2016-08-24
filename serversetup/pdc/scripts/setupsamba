@@ -1606,6 +1606,23 @@ chown -R root.itadmin /home/applications/"profile management"
 chmod 0660 -R /home/applications/"profile management"
 chmod u+X,g+X -R /home/applications/"profile management"
 
+#Create information files for each windows version
+if [ ! -d /opt/karoshi/server_network/clients/windows_client_versions ]
+then
+	mkdir -p /opt/karoshi/server_network/clients/windows_client_versions
+fi
+chown root.apache_karoshi -R /opt/karoshi/server_network/clients/windows_client_versions
+chmod 0640 -R /opt/karoshi/server_network/clients/windows_client_versions
+chmod u+X,g+X -R /opt/karoshi/server_network/clients/windows_client_versions
+
+echo -e 'WINDOWS_VERSION=windowsxp\nPROFILE_VERSION=""\nWINDOWS_NAME="Windows XP"' >  /opt/karoshi/server_network/clients/windows_client_versions/windowsxp
+echo -e 'WINDOWS_VERSION=windows7\nPROFILE_VERSION=V2\nWINDOWS_NAME="Windows 7"' >  /opt/karoshi/server_network/clients/windows_client_versions/windows7
+echo -e 'WINDOWS_VERSION=windows8.0\nPROFILE_VERSION=V3\nWINDOWS_NAME="Windows 8"' >  /opt/karoshi/server_network/clients/windows_client_versions/windows8
+echo -e 'WINDOWS_VERSION=windows8.1\nPROFILE_VERSION=V4\nWINDOWS_NAME="Windows 8.1"' >  /opt/karoshi/server_network/clients/windows_client_versions/windows8.1
+echo -e 'WINDOWS_VERSION=windows10\nPROFILE_VERSION=V5\nWINDOWS_NAME="Windows 10"' >  /opt/karoshi/server_network/clients/windows_client_versions/windows10
+echo -e 'WINDOWS_VERSION=windows10.1\nPROFILE_VERSION=V6\nWINDOWS_NAME="Windows 10 Anniversary Edition"' >  /opt/karoshi/server_network/clients/windows_client_versions/windows10.1
+
+
 [ -d /var/lib/samba/printers ] || mkdir /var/lib/samba/printers
 chown -R root.itadmin /var/lib/samba/printers
 chmod 0775 -R /var/lib/samba/printers

@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 THISYEAR=`date +%Y`
 let GROUPSTART=$THISYEAR-8
@@ -84,38 +84,39 @@ echo '<div id="actionbox">
 FILECOUNT=0
 if [ -d /var/www/karoshi/win_application_data_upload/ ]
 then
-FILECOUNT=`ls -1 /var/www/karoshi/win_application_data_upload/ | wc -l`
-FILEDATA=`ls -1 /var/www/karoshi/win_application_data_upload/ | sed -n 1,1p`
-FILENAME=`echo "$FILEDATA" | grep '\<zip\>'`
-[ `echo $FILENAME'null' | sed 's/ //g'` = null ] && FILENAME=`echo "$FILEDATA" | grep '\<tar\.gz\>'`
+	FILECOUNT=`ls -1 /var/www/karoshi/win_application_data_upload/ | wc -l`
+	FILEDATA=`ls -1 /var/www/karoshi/win_application_data_upload/ | sed -n 1,1p`
+	FILENAME=`echo "$FILEDATA" | grep '\<zip\>'`
+	[ `echo $FILENAME'null' | sed 's/ //g'` = null ] && FILENAME=`echo "$FILEDATA" | grep '\<tar\.gz\>'`
 fi
 
 if [ $FILECOUNT != 1 ]
 then
-echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
-exit
+	echo ''$"An incorrect number of files have been uploaded."'</div></div></body></html>'
+	exit
 fi
 
 if [ `echo $FILENAME'null' | sed 's/ //g'` = null ]
 then
-echo ''$"You have not uploaded a zip or tar.gz archive."'</div></div></body></html>'
-exit
+	echo ''$"You have not uploaded a zip or tar.gz archive."'</div></div></body></html>'
+	exit
 else
-FILENAME=`ls -1 /var/www/karoshi/win_application_data_upload/ | sed -n 1,1p`
-#Correct spaces
-FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
-[ -f /var/www/karoshi/win_application_data_upload/$FILENAME2 ] || mv /var/www/karoshi/win_application_data_upload/"$FILENAME" /var/www/karoshi/win_application_data_upload/$FILENAME2
+	FILENAME=`ls -1 /var/www/karoshi/win_application_data_upload/ | sed -n 1,1p`
+	#Correct spaces
+	FILENAME2=`echo $FILENAME | sed 's/ /SPACECORRECT/g'`
+	[ -f /var/www/karoshi/win_application_data_upload/$FILENAME2 ] || mv /var/www/karoshi/win_application_data_upload/"$FILENAME" /var/www/karoshi/win_application_data_upload/$FILENAME2
 fi
 #Show list of profiles to choose from
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Uploaded file"'</td><td>'$FILENAME'</td></tr>
 <tr><td>'$"Windows Version"'</td><td>
-<select name="___WINDOWSVER___" style="width: 200px;">
-<option value="windowsxp">Windows XP</option>
-<option value="windows7">Windows 7</option>
-<option value="windows8.0">Windows 8.0</option>
-<option value="windows8.1">Windows 8.1</option>
-</select>
+<select name="___WINDOWSVER___" style="width: 200px;">'
+for WINDOWSVERSION in $(ls -1 /opt/karoshi/server_network/clients/windows_client_versions | sort -V)
+do
+	source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVERSION"
+	echo '<option value="'$WINDOWS_VERSION'">'$WINDOWS_NAME'</option>'
+done
+echo '</select>
 </td></tr>
 </tbody></table><br>'$"Select the profile groups that you want to copy this application data folder to."''
 
@@ -132,22 +133,22 @@ echo '
 COUNTER=1
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-GROUPNAME=`basename $GROUPNAMES`
-if [ $GROUPNAME != optional_groups ]
-then
-if [ $COUNTER = 1 ]
-then
-echo '<tr>'
-fi
-echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
-if [ $COUNTER = 4 ]
-then
-echo '</tr>'
-COUNTER=1
-else
-let COUNTER=$COUNTER+1
-fi
-fi
+	GROUPNAME=`basename $GROUPNAMES`
+	if [ $GROUPNAME != optional_groups ]
+	then
+		if [ $COUNTER = 1 ]
+		then
+			echo '<tr>'
+		fi
+		echo '<td><input name="___PRIGROUP___" value="'$GROUPNAME'" type="checkbox"></td><td>'$GROUPNAME'</td>'
+		if [ $COUNTER = 4 ]
+		then
+			echo '</tr>'
+			COUNTER=1
+		else
+			let COUNTER=$COUNTER+1
+		fi
+	fi
 done
 
 echo '</tbody></table><br>

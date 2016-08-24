@@ -30,16 +30,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_startmenu_select_cgi
 then
-echo `date`: windows_client_startmenu_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_startmenu_select_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_startmenu_select.cgi | cut -d' ' -f1`
 [ $MD5SUM'null' = null ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $windows_client_startmenu_select_cgi'check' ]
-then
-echo `date`: windows_client_startmenu_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	then
+	echo `date`: windows_client_startmenu_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -48,8 +48,8 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: windows_client_startmenu_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
@@ -62,43 +62,43 @@ PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g'
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: windows_client_startmenu_select - Not called by windows_client_startmenu_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - Not called by windows_client_startmenu_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: windows_client_startmenu_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: windows_client_startmenu_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: windows_client_startmenu_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$FILENAME" ]
 then
-echo `date`: windows_client_startmenu_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$WINDOWSVER" ]
 then
-echo `date`: windows_client_startmenu_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #Check that filename is a tar.gz or zip
 if [ `echo $FILENAME | grep -c '\<zip\>'` != 1 ] &&  [ `echo $FILENAME | grep -c '\<tar\.gz\>'` != 1 ]
 then
-echo `date`: windows_client_startmenu_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check that profile with this filename exists
 if [ ! -f /var/www/karoshi/win_startmenu_upload/$FILENAME ]
@@ -107,10 +107,10 @@ echo `date`: windows_client_startmenu_select - The profile does not exist by $RE
 exit 101
 fi
 
-if [ $PRIGROUP'null' = null ]
+if [ -z "$PRIGROUP" ]
 then
-echo `date`: windows_client_startmenu_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: windows_client_startmenu_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #######################
 #Move file
@@ -132,26 +132,26 @@ TEXTDOMAIN=karoshi-server
 echo '<b>'$"Archive Check"'</b><br><br>'
 if [ `echo $FILENAME | grep -c '\<zip\>'` = 1 ]
 then
-ARCHIVE_TYPE=zip
+	ARCHIVE_TYPE=zip
 else
-ARCHIVE_TYPE=tar.gz
+	ARCHIVE_TYPE=tar.gz
 fi
 if [ $ARCHIVE_TYPE = zip ]
 then
-unzip -tq /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-ARCHIVE_STATUS=`echo $?`
+	unzip -tq /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
+	ARCHIVE_STATUS=`echo $?`
 else
-tar -tzf /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-ARCHIVE_STATUS=`echo $?`
+	tar -tzf /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
+	ARCHIVE_STATUS=`echo $?`
 fi
 if [ $ARCHIVE_STATUS != 0 ]
 then
-echo $FILENAME : $"The archive is not valid."'<br><br>'
-echo `date`: windows_client_startmenu_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo $FILENAME : $"The archive is not valid."'<br><br>'
+	echo `date`: windows_client_startmenu_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 else
-FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
-echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
+	FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
+	echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
 fi
 #######################
 #Extract startmenu
@@ -159,47 +159,32 @@ fi
 mkdir /opt/karoshi/.tempdata/win_startmenu_new.$$
 if [ $ARCHIVE_TYPE = zip ]
 then
-#Extract zip
-unzip -d /opt/karoshi/.tempdata/win_startmenu_new.$$ /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null
+	#Extract zip
+	unzip -d /opt/karoshi/.tempdata/win_startmenu_new.$$ /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null
 else
-#Extract tar
-tar -C /opt/karoshi/.tempdata/win_startmenu_new.$$ -xzf /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null
+	#Extract tar
+	tar -C /opt/karoshi/.tempdata/win_startmenu_new.$$ -xzf /opt/karoshi/.tempdata/win_startmenu_upload.$$/$FILENAME 1>/dev/null
 fi
 #Check that there is only one directory extracted
 if [ `ls -1 /opt/karoshi/.tempdata/win_startmenu_new.$$ | wc -l` = 1 ]
 then
-TOPDIRNAME=`ls -1 /opt/karoshi/.tempdata/win_startmenu_new.$$ | sed -n 1,1p`
+	TOPDIRNAME=`ls -1 /opt/karoshi/.tempdata/win_startmenu_new.$$ | sed -n 1,1p`
 else
-echo `date`: windows_client_startmenu_select - The archive has more than one top directory by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/win_startmenu_upload.$$
-exit 101
+	echo `date`: windows_client_startmenu_select - The archive has more than one top directory by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	rm -f -R /opt/karoshi/.tempdata/win_startmenu_upload.$$
+	exit 101
 fi
 #Check that top directory is Start Menu
 if [ `echo $TOPDIRNAME | sed 's/ //g'` != StartMenu ]
 then
-echo `date`: windows_client_startmenu_select - The top directory is not Start Menu by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/win_startmenu_upload.$$
-exit 101
+	echo `date`: windows_client_startmenu_select - The top directory is not Start Menu by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	rm -f -R /opt/karoshi/.tempdata/win_startmenu_upload.$$
+	exit 101
 fi
 
-#Get windows version
-PROFILEVER=""
-STARTMENUPATH=""
-if [ $WINDOWSVER = windows7 ]
-then
-PROFILEVER=".V2"
-STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
-fi
-if [ $WINDOWSVER = windows8.0 ]
-then
-PROFILEVER=".V3"
-STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
-fi
-if [ $WINDOWSVER = windows8.1 ]
-then
-PROFILEVER=".V4"
-STARTMENUPATH="AppData/Roaming/Microsoft/Windows/"
-fi
+#Check windows version
+source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
+
 #######################
 #Copy startmenu to chosen groups
 #######################
@@ -207,20 +192,20 @@ GROUPCOUNT=`echo ${#PRIGROUP[@]}`
 COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
-CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
-if [ $CURRENTGROUP'null' != null ]
-then
-#Log event
-echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILEVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $"Copying start menu to" : $CURRENTGROUP$PROFILEVER'<br><br>'
-[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH
-[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH"Start Menu"
-cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILEVER/$STARTMENUPATH/$STARTMENUPATH"Start Menu"
-chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-fi
-let COUNTER=$COUNTER+1
+	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+	if [ ! -z "$CURRENTGROUP" ]
+	then
+		#Log event
+		echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILE_VERSION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $"Copying start menu to" : $CURRENTGROUP$PROFILE_VERSION'<br><br>'
+		[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH
+		[ -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH"Start Menu"
+		cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH/$STARTMENUPATH"Start Menu"
+		chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+		chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+		chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	fi
+	let COUNTER=$COUNTER+1
 done
 #Remove temp folder
 rm -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$

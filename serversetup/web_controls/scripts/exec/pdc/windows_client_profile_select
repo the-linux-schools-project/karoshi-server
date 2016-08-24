@@ -177,11 +177,7 @@ else
 fi
 
 #Check windows version
-PROFILEVER=""
-[ $WINDOWSVER = windows7 ] && PROFILEVER=".V2"
-[ $WINDOWSVER = windows8.0 ] && PROFILEVER=".V3"
-[ $WINDOWSVER = windows8.1 ] && PROFILEVER=".V4"
-[ $WINDOWSVER = windows10 ] && PROFILEVER=".V5"
+source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
 
 #######################
 #Copy profile to chosen groups
@@ -203,13 +199,13 @@ CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 
 	#Log event
 	echo `date`: windows_client_profile_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo $"Copying profile to" : $CURRENTGROUP$PROFILEVER'<br><br>'
-	[ -L /home/applications/profiles/$CURRENTGROUP$PROFILEVER ] && rm -f /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-	[ -d /home/applications/profiles/$CURRENTGROUP$PROFILEVER ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-	cp -f -R /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-	chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-	chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
-	chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILEVER
+	echo $"Copying profile to" : $CURRENTGROUP$PROFILE_VERSION'<br><br>'
+	[ -L /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION ] && rm -f /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	[ -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	cp -f -R /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
 	let COUNTER=$COUNTER+1
 done
 #Remove temp folder
