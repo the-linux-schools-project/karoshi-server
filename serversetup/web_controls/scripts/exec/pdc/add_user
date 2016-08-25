@@ -100,6 +100,7 @@ ENROLLMENTNUMBER=`echo "$DATA" | cut -s -d: -f10`
 REQUESTFILE=`echo "$DATA" | cut -s -d: -f11`
 BULKUSERCREATION=`echo "$DATA" | cut -s -d: -f12`
 NEXTLOGON=`echo "$DATA" | cut -s -d: -f13`
+USERSGROUPS=`echo "$DATA" | cut -s -d: -f14-`
 ########################
 #Check data
 ########################
@@ -255,6 +256,17 @@ fi
 
 #Add user to primary group
 samba-tool group addmembers "$PRIMARYGROUP" "$NEWUSERNAME"  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+#Add user to any additional groups
+if [ ! -z "$USERSGROUPS" ]
+then
+	for USERSGROUP in $(echo "$USERSGROUPS" | sed 's/:/ /g')
+	do
+		echo `date`: "add_user - adding $NEWUSERNAME to $USERSGROUP" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		samba-tool group addmembers "$USERSGROUP" "$NEWUSERNAME"  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	done
+fi
+
 
 #Add user to supplementary groups
 if [ ! -z "$SECONDARYGROUP" ]
@@ -842,3 +854,4 @@ then
 fi
 
 exit $CREATE_USER_STATUS
+
