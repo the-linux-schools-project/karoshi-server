@@ -125,9 +125,9 @@ rm -f /var/lib/samba/netlogon/locations.tmp
 #Check that locations.txt is not empty
 if [ `cat /var/lib/samba/netlogon/locations.txt | wc -l` -gt 1 ]
 then
-	KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' | sed 's/,/","/g' ; echo NoGroup`
+	KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ','  | sed 's/,,/,/g' | sed 's/,/","/g' ; echo Notset`
 else
-	KIXLOCATIONLIST=No_Locations_Set,NoGroup
+	KIXLOCATIONLIST=No_Locations_Set,Notset
 fi
 ###########################
 #Modify wsetup.kix
