@@ -559,8 +559,6 @@ then
 				fi
 			done
 		fi
-	#Stop set-sysvol-permissions
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_stop
 	#Configure dfs
 	for SHAREPATH in netlogon sysvol applications
 	do
@@ -577,8 +575,6 @@ then
 	done
 	#Edit init.d script to wait for gluster
 	sed -i 's%$network $local_fs $remote_fs%$network $local_fs $remote_fs mount-gluster-volumes%g' /etc/init.d/set-sysvol/permissions
-	#Start set-sysvol-permissions
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_start
 	fi
 fi
 

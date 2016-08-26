@@ -2138,11 +2138,6 @@ chown root.itadmin -R "$SYSVOLPATH"
 chmod 0664 -R "$SYSVOLPATH"
 chmod u+X,g+X,o+X -R "$SYSVOLPATH"
 
-#Setup inotify script for sysvol permissions
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/set-sysvol-permissions
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/set-sysvol-permissions_start
-
-
 if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
 then 
 	#Modify role information

@@ -72,6 +72,10 @@ then
 fi
 
 function mount_volume {
+
+MOUNTOPTIONS=defaults,acl,_netdev
+[ "$VOLUME" = dc-data ] && MOUNTOPTIONS=defaults,acl,selinux,_netdev
+
 if [ "$SERVER" = `hostname-fqdn` ]
 then
 
@@ -82,7 +86,7 @@ then
 	if [ `grep -c ^#glusterfs-$VOLUME /etc/fstab` = 0 ]
 	then
 		echo "#glusterfs-$VOLUME" >> /etc/fstab
-		echo "$SERVER:/$VOLUME $MOUNTBASE/$VOLUME glusterfs defaults,acl,_netdev 0 0" >> /etc/fstab
+		echo "$SERVER:/$VOLUME $MOUNTBASE/$VOLUME glusterfs "$MOUNTOPTIONS" 0 0" >> /etc/fstab
 	fi
 
 	#Mount volume
@@ -111,7 +115,7 @@ else
 	if [ `grep -c ^#glusterfs-'$VOLUME' /etc/fstab` = 0 ]
 	then
 		echo "#glusterfs-'$VOLUME'" >> /etc/fstab
-		echo "'$SERVER':/'$VOLUME' '$MOUNTBASE'/'$VOLUME' glusterfs defaults,acl,_netdev 0 0" >> /etc/fstab
+		echo "'$SERVER':/'$VOLUME' '$MOUNTBASE'/'$VOLUME' glusterfs '$MOUNTOPTIONS' 0 0" >> /etc/fstab
 	fi
 
 	#Mount volume

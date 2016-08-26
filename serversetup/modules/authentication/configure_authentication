@@ -89,6 +89,10 @@ then
 	[ $AUTHTYPE = rodc ] && JOINTYPE=RODC
 	SERVERROLE="active directory domain controller"
 	RULESET=Samba4-DC
+
+	[ -f /var/lib/samba/private/idmap.ldb.bak ] && rm -f /var/lib/samba/private/idmap.ldb.bak
+	tdbbackup -s .bak /var/lib/samba/private/idmap.ldb
+	scp /var/lib/samba/private/idmap.ldb.bak root@"$SERVERNAME":/var/lib/samba/private/idmap.ldb
 fi
 
 #Get samba 4 database password
