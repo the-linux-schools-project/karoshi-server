@@ -349,6 +349,16 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 			MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:4:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 		fi
+
+		#Add the folder to the backup configuration
+		if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders ]
+		then
+			if [ $(grep -c "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME" /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders) = 0 ]
+			then
+				echo "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders
+			fi
+		fi
+
 		#Recreate logon scripts
 		/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
