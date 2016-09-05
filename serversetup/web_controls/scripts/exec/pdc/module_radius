@@ -114,6 +114,11 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:radius:radius:$SERVERNAME:fr
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+
+	#Make sure permisisons are correct on winbind
+	usermod -a -G winbindd_priv freerad
+	chown root:winbindd_priv /var/lib/samba/winbindd_privileged
+
 	#Make sure all software is installed
 	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
 
@@ -175,6 +180,10 @@ else
 	chown freerad /etc/ssl/radius/radius.key
 	chown freerad /etc/ssl/radius/radius.pem
 	chown freerad /etc/ssl/radius/radius.req
+
+	#Make sure permisisons are correct on winbind
+	usermod -a -G winbindd_priv freerad
+	chown root:winbindd_priv /var/lib/samba/winbindd_privileged
 
 	if [ '$COPYCLIENTS' = no ]
 	then	

@@ -30,8 +30,11 @@ Function ConfigureThunderbird()
 	Call "$lserver\netlogon\windows_settings\thunderbird\thunderbird.kix"
 EndFunction'  >> /var/lib/samba/netlogon/logonform.kix
 
-	#Find ConnectDrives() and insert link to ConfigureThunderbird() below
-	sed -i '/^ConnectDrives()/a ConfigureThunderbird()' /var/lib/samba/netlogon/logonform.kix	
+	#Find ConnectDrives() and insert link to ConfigureThunderbird() below - disable thunderbird integration by default
+	sed -i '/^ConnectDrives()/a ;ConfigureThunderbird()' /var/lib/samba/netlogon/logonform.kix
+
+
+		
 fi
 
 

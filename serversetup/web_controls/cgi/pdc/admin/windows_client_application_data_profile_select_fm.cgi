@@ -152,7 +152,7 @@ do
 done
 
 echo '</tbody></table><br>
-  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'_PRIGROUP_\'', true);" value="'$"Select all"'">
+  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectgroups\'', '\'___PRIGROUP___\'', true);" value="'$"Select all"'">
 </div>
 </form>
 </div></body>

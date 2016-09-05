@@ -894,6 +894,12 @@ creategpos
 
 if [ $INSTALL_TYPE = education ] || [ "$INSTALL_TYPE" = joindomain_education ]
 then
+	NAME="trustees"
+	DESC="trustees"
+	LDAPPATH="OU=trustees,OU=People,$LDAPBASE"
+	add_organisational_unit
+	creategpos
+
 	NAME="exams"
 	DESC="Exam users"
 	LDAPPATH="OU=exams,OU=other,OU=People,$LDAPBASE"

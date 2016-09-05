@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,19 +49,19 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<BODY>'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_background_upload.cgi" METHOD="POST"><div id="actionbox">
 <B>'$"Windows Background - Upload"'</B> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will replace the standard backgrounds with one of your choice. The backgrounds are applied by kixtart when the user logs into the client computer."'</span></a>
 <P>
 '$"Please select the background that you want to upload."':
 <P>
-        <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_background_upload.cgi" METHOD="POST">
+        
         <TABLE class="standard">
         <TR>
-            <TD style="width: 200px;" ALIGN=left>
+            <TD style="width: 200px;">
                 '$"Background"'
             </TD>
             <TD>
@@ -73,7 +73,7 @@ echo '<div id="actionbox">
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-</form></BODY>
+</form></div></BODY>
 </HTML>
 '
 exit

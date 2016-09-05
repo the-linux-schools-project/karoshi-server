@@ -193,17 +193,25 @@ COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
 	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+
+	if [ -z "$PROFILE_VERSION" ]
+	then
+		PROFILENAME=$CURRENTGROUP
+	else
+		PROFILENAME=$CURRENTGROUP.$PROFILE_VERSION
+	fi
+
 	if [ ! -z "$CURRENTGROUP" ]
 	then
 		#Log event
-		echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $CURRENTGROUP$PROFILE_VERSION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		echo $"Copying start menu to" : $CURRENTGROUP$PROFILE_VERSION'<br><br>'
-		[ ! -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH
-		[ -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/"Start Menu" ] && rm -f -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH"Start Menu"
-		cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/$STARTMENUPATH/$STARTMENUPATH"Start Menu"
-		chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
-		chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
-		chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+		echo `date`: windows_client_startmenu_select - copying $FILENAME2 to $PROFILENAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $"Copying start menu to" : $PROFILENAME'<br><br>'
+		[ ! -d /home/applications/profiles/$PROFILENAME/$STARTMENUPATH ] && mkdir -p /home/applications/profiles/$PROFILENAME/$STARTMENUPATH
+		[ -d /home/applications/profiles/$PROFILENAME/"Start Menu" ] && rm -f -R /home/applications/profiles/$PROFILENAME/$STARTMENUPATH"Start Menu"
+		cp -f -R /opt/karoshi/.tempdata/win_startmenu_new.$$/"$TOPDIRNAME" /home/applications/profiles/$PROFILENAME/$STARTMENUPATH/$STARTMENUPATH"Start Menu"
+		chown -R root.itadmin /home/applications/profiles/$PROFILENAME
+		chmod 0664 -R /home/applications/profiles/$PROFILENAME
+		chmod a+X -R /home/applications/profiles/$PROFILENAME
 	fi
 	let COUNTER=$COUNTER+1
 done

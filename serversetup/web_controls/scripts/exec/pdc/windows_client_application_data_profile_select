@@ -187,18 +187,25 @@ while [ $COUNTER -lt $GROUPCOUNT ]
 do
 	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
 	[ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
+	
+	if [ -z "$PROFILE_VERSION" ]
+	then
+		PROFILENAME=$CURRENTGROUP
+	else
+		PROFILENAME=$CURRENTGROUP.$PROFILE_VERSION
+	fi
 	for FOLDERS in `find /opt/karoshi/.tempdata/win_application_data_new.$$/ -maxdepth 1 -type d | sed 1d | sort`
 	do
 		FOLDER=`basename "$FOLDERS"`
 		#Log event
 		echo `date`: windows_client_application_data_profile_select - copying "$FOLDER" to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		echo $FOLDER: $"Copying to" $CURRENTGROUP$PROFILE_VERSION'<br><br>'
-		[ ! -d "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data" ] && mkdir -p "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data"
-		[ -d "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/$FOLDER"
-		cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
-		chown -R root.itadmin "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
-		chmod 0664 -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
-		chmod a+X -R "/home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Application Data/"
+		echo $FOLDER: $"Copying to" $PROFILENAME'<br><br>'
+		[ ! -d "/home/applications/profiles/$PROFILENAME/Application Data" ] && mkdir -p "/home/applications/profiles/$PROFILENAME/Application Data"
+		[ -d "/home/applications/profiles/$PROFILENAME/Application Data/$FOLDER" ] && rm -f -R "/home/applications/profiles/$PROFILENAME/Application Data/$FOLDER"
+		cp -f -R /opt/karoshi/.tempdata/win_application_data_new.$$/"$FOLDER" "/home/applications/profiles/$PROFILENAME/Application Data/"
+		chown -R root.itadmin "/home/applications/profiles/$PROFILENAME/Application Data/"
+		chmod 0664 -R "/home/applications/profiles/$PROFILENAME/Application Data/"
+		chmod a+X -R "/home/applications/profiles/$PROFILENAME/Application Data/"
 	done
 	let COUNTER=$COUNTER+1
 done

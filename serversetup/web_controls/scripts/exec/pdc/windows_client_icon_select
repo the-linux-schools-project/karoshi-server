@@ -140,17 +140,25 @@ COUNTER=0
 while [ $COUNTER -lt $GROUPCOUNT ]
 do
 	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+
+	if [ -z "$PROFILE_VERSION" ]
+	then
+		PROFILENAME=$CURRENTGROUP
+	else
+		PROFILENAME=$CURRENTGROUP.$PROFILE_VERSION
+	fi
+
 	#Log event
-	echo `date`: windows_client_icon_select - copying icons to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo $"Copying icons to" : $CURRENTGROUP$PROFILE_VERSION'<br><br>'
-	[ -d /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop ] || mkdir -p /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop
-	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
-	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
-	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
-	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION/Desktop/ 2>/dev/null
-	chown -R root.itadmin /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
-	chmod 0664 -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
-	chmod a+X -R /home/applications/profiles/$CURRENTGROUP$PROFILE_VERSION
+	echo `date`: windows_client_icon_select - copying icons to $PROFILENAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo $"Copying icons to" : $PROFILENAME'<br><br>'
+	[ -d /home/applications/profiles/$PROFILENAME/Desktop ] || mkdir -p /home/applications/profiles/$PROFILENAME/Desktop
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.lnk /home/applications/profiles/$PROFILENAME/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.LNK /home/applications/profiles/$PROFILENAME/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.url /home/applications/profiles/$PROFILENAME/Desktop/ 2>/dev/null
+	cp -f /opt/karoshi/.tempdata/win_icon_upload.$$/*.URL /home/applications/profiles/$PROFILENAME/Desktop/ 2>/dev/null
+	chown -R root.itadmin /home/applications/profiles/$PROFILENAME
+	chmod 0664 -R /home/applications/profiles/$PROFILENAME
+	chmod a+X -R /home/applications/profiles/$PROFILENAME
 	let COUNTER=$COUNTER+1
 done
 #Remove temp folder
