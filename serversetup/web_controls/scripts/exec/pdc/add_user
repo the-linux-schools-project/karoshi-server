@@ -756,9 +756,12 @@ fi
 #Add user to moodle
 if [ -f /opt/karoshi/server_network/moodleserver ]
 then
+ 	source /etc/default/locale
 	MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
 	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 	CITY=`cat /etc/timezone | cut -d/ -f2`
+
+	echo `date`: add_user - adding $NEWUSERNAME to moodle on $MOODLESERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 	if [ $MOODLESERVER = $(hostname-fqdn) ]
 	then

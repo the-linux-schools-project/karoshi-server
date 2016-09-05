@@ -118,13 +118,15 @@ if [ "$MOBILE" = no ]
 then
 	USERNAMEMSG=$"Username"
 	TABLECLASS=standard
-	WIDTH1=355
+	WIDTH1=375
 	WIDTH2=70
 	WIDTH3=200
 	WIDTH4=192
 	WIDTH5=200
+	WIDTH6=250
 	HEIGHT=25
 	HEIGHT2=18
+	HEIGHT3=25
 	ICON1="/images/submenus/email/email_delete.png"
 	ICON2="/images/submenus/email/alias_add.png"
 	ICON3="/images/submenus/email/alias_view.png"
@@ -137,8 +139,10 @@ else
 	WIDTH3=140
 	WIDTH4=114
 	WIDTH5=120
+	WIDTH6=120
 	HEIGHT=30
 	HEIGHT2=30
+	HEIGHT3=30
 	ICON1="/images/submenus/email/email_deletem.png"
 	ICON2="/images/submenus/email/alias_addm.png"
 	ICON3="/images/submenus/email/alias_viewm.png"
@@ -235,13 +239,13 @@ if [ "$ACTION" = viewusers ]
 then
 	#Show the user a choice of username or group to select.
 	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_protected_distribution_lists.cgi" method="post"><input type="hidden" name="_ACTION_" value="adduser"> <table class="tablesorter" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH3'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
+	<tr><td style="width: '$WIDTH3'px;">'$"Username"' / '$"Group"'</td><td style="width: '$WIDTH6'px;"><div id="suggestions"></div>
 	<input type="text" name="_GROUP_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH4'px; height: '$HEIGHT2'px;" value="" size="10">'
 
 	[ $MOBILE = no ] && echo '<a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Protected_Distribution_Lists"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a>'
 
 	echo '</td></tr>
-<tr><td></td><td><select name="_GROUPLIST_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="1" onchange="document.combobox._GROUP_.value = document.combobox._GROUPLIST_.options[document.combobox._GROUPLIST_.selectedIndex].value;document.combobox._GROUPLIST_.value=&#39;&#39;">'
+<tr><td></td><td><select name="_GROUPLIST_" style="width: '$WIDTH5'px; height: '$HEIGHT3'px;" size="1" onchange="document.combobox._GROUP_.value = document.combobox._GROUPLIST_.options[document.combobox._GROUPLIST_.selectedIndex].value;document.combobox._GROUPLIST_.value=&#39;&#39;">'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
 
