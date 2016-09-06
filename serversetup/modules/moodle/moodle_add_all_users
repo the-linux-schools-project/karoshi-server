@@ -5,6 +5,12 @@ MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
 
 #Add all users to a new moodle installation using moosh
 
+#Fallback incase LANG variable is not set 
+if [ -z "$LANG" ]
+then
+	source /etc/default/locale
+fi
+
 COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 CITY=`cat /etc/timezone | cut -d/ -f2`
 
