@@ -32,6 +32,7 @@ if [ "$INSTALLAVAHI" = yes ]
 then
 	echo '<ul><li>'$"Installing Avahi Daemon"'</ul></li>'
 	apt-get install -y avahi-daemon
+	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon /etc/init.d/
 fi
 
 if [ "$INSTALLPYTHONCUPS" = yes ]
