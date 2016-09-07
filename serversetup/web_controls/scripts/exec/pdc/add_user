@@ -8,7 +8,6 @@
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
 #
-#Karoshi Server is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU Affero General Public License for more details.
@@ -756,7 +755,11 @@ fi
 #Add user to moodle
 if [ -f /opt/karoshi/server_network/moodleserver ]
 then
- 	source /etc/default/locale
+	#Fallback incase LANG variable is not set 
+	if [ -z "$LANG" ]
+	then
+ 		source /etc/default/locale
+	fi
 	MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
 	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 	CITY=`cat /etc/timezone | cut -d/ -f2`

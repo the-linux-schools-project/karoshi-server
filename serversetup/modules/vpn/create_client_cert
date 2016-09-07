@@ -48,6 +48,13 @@ echo "`date`: client_create_cert - creating openvpn client certificates for $CLI
 
 #Set certificate variables
 source /opt/karoshi/server_network/domain_information/domain_name
+
+#Fallback incase LANG variable is not set 
+if [ -z "$LANG" ]
+then
+	source /etc/default/locale
+fi
+
 COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
 STATE=`cat /etc/timezone | cut -d/ -f1`
 CITY=`cat /etc/timezone | cut -d/ -f2`

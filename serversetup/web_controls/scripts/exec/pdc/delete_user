@@ -283,8 +283,6 @@ fi
 if [ -f /opt/karoshi/server_network/moodleserver ]
 then
 	MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
-	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-	CITY=`cat /etc/timezone | cut -d/ -f2`
 
 	echo `date`: delete_user - deleting $DELETEUSER from Moodle on $MOODLESERVER by $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	if [ $MOODLESERVER = $(hostname-fqdn) ]
