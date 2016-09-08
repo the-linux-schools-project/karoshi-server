@@ -117,6 +117,8 @@ GITLABSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && GITLABSTATUS=$"Installed"
 OWNCLOUDSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && OWNCLOUDSTATUS=$"Installed"
+RICHDOCUMENTSSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/richdocuments ] && RICHDOCUMENTSSTATUS=$"Installed"
 RADIUSSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && RADIUSSTATUS=$"Installed"
 DISTROSERVERSTATUS=""
@@ -211,7 +213,7 @@ then
 	<span>'$"This will setup a server to provide network print queues."'</span>
 	</button>
 	</form>
-	</td>	
+	</td>
 	'
 else
 	echo '
@@ -545,6 +547,25 @@ else
 	<button class="info" name="_AddXerteServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"Xerte Server"'">
 	<span>'$"This will setup the Xerte E-Learning development environment for your users."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	</button>
+	</form>
+	</td>'
+fi
+
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ]
+then
+	echo '<td style="vertical-align: top; height: 40px;">'$"richdocuments"'</td><td style="vertical-align: top;">'$RICHDOCUMENTSSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_richdocuments_fm.cgi" method="post">
+	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"richdocuments"'">
+	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'</span>
+	</button>
+	</form></td>'
+else
+	echo '<td style="vertical-align: top; height: 40px;">'$"richdocuments"'</td><td></td><td style="vertical-align: top; height: 40px;">
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"richdocuments"'">
+	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'<br><br>'$"This module requires the Owncloud module to be installed."'</span>
 	</button>
 	</form>
 	</td>'

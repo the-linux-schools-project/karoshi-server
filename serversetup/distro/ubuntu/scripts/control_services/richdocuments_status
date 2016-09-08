@@ -1,0 +1,3 @@
+#!/bin/bash
+[ $(ps -e | grep -w -c loolwsd) -gt 0 ] && exit 0
+exit 1
