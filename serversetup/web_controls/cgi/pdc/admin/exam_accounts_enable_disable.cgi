@@ -50,7 +50,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$"Enable - Disable all exam accounts"'</b>'
+echo '<div id="actionbox3"><div id="titlebox"><b>'$"Enable - Disable all exam accounts"'</b><br><br></div><div id="infobox">'
 #########################
 #Assign data to variables
 #########################
@@ -59,28 +59,28 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXAMSTATUScheck ]
-then
-let COUNTER=$COUNTER+1
-EXAMSTATUS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXAMSTATUScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXAMSTATUS=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign EXCEPTIONLIST
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-then
-let COUNTER=$COUNTER+1
-EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -88,7 +88,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
@@ -96,22 +96,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
@@ -120,24 +120,24 @@ fi
 #Check to see that examstatus is either enable or disable
 if [ $EXAMSTATUS'user' != enableuser ] && [ $EXAMSTATUS'user' != disableuser ]
 then
-MESSAGE=$"Incorrect option."
-show_status
+	MESSAGE=$"Incorrect option."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.cgi | cut -d' ' -f1`
 #Enable or disable all exam accounts
 sudo -H /opt/karoshi/web_controls/exec/exam_accounts_enable_disable $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EXAMSTATUS:$EXCEPTIONLIST:
-EXEC_STATUS=`echo $?`
+EXEC_STATUS=$?
 if [ $EXEC_STATUS = 0 ]
 then
-if [ $EXAMSTATUS = enable ]
-then
-MESSAGE=`echo $"Exam accounts": $"enabled"`
+	if [ $EXAMSTATUS = enable ]
+	then
+		MESSAGE=`echo $"Exam accounts": $"enabled"`
+	else
+		MESSAGE=`echo $"Exam accounts": $"disabled"`
+	fi
 else
-MESSAGE=`echo $"Exam accounts": $"disabled"`
-fi
-else
-MESSAGE=`echo $"Exam accounts": $"Status not changed."`
+	MESSAGE=`echo $"Exam accounts": $"Status not changed."`
 fi
 show_status
 exit
