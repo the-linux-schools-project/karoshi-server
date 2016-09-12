@@ -1,0 +1,405 @@
+#!/bin/bash
+#setuprichdocuments
+#Copyright (C) 2016 Matthew Jowett
+#
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 0 ]; then
+	echo $(date)": setuprichdocuments - incorrect number of arguments<br>"
+	exit 101
+fi
+
+read -t 3 DATA
+DATA=$(echo $DATA | tr -cd 'A-Za-z0-9\._:\-/')
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ADMINPASS=$(echo "$DATA" | cut -s -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+
+if [ -z "$REMOTE_USER" ]; then
+	echo $(date)": setuprichdocuments - Blank remote user<br>"
+	exit 101
+fi
+
+if [ -z "$REMOTE_ADDR" ]; then
+	echo $(date)": setuprichdocuments - Blank remote tcpip address<br>"
+	exit 101
+fi
+
+if [ -z "$SERVERNAME" ]; then
+	echo $(date)": setuprichdocuments - Blank servername<br>"
+	exit 101
+fi
+
+if [ -z "$ADMINPASS" ]; then
+	echo $(date)": setuprichdocuments - Blank admin password<br>"
+	exit 101
+fi
+
+source /opt/karoshi/serversetup/variables/distro
+
+#############################
+# Ensure that apache and fail2ban are running at boot
+#############################
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/fail2ban
+
+#####################################
+#Ensure that the LibreOffice Online ports are open in shorewall
+#####################################
+
+MODCHECK=$(grep -c -w 9980 /etc/shorewall/rules)
+MOD_SHOREWALL=no
+
+if [ "$MODCHECK" == 0 ]; then
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "${LINENUM}s/.*/ACCEPT	net	fw	tcp	9980	-#Libreoffice-Online-loolwsd/" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	echo '<ul><li>'$"The following extra ports are being allowed: TCP 9980"'</li></ul>'
+	MOD_SHOREWALL=yes
+fi
+
+######################
+#Restart shorewall
+######################
+if [ "$MOD_SHOREWALL" == yes ]; then
+	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#####################################
+#Begin richdocuments and LibreOffice Online installation.
+#####################################
+
+# Uncomment/Add source main restricted repository if required.
+
+source /etc/lsb-release
+# DISTRIB_CODENAME
+[ "$DISTRIB_CODENAME" == "" ] && echo '<ul><li>\$DISTRIB_CODENAME is blank, exiting.</li></ul>' && sleep 5 && exit 101
+
+# Check if already exists.
+
+if [[ $line =~ ^(deb-src ).*( $DISTRIB_CODENAME main restricted)$ ]]; then
+  # Repository already enabled.
+  echo '<ul><li>Repository already enabled: '"$DISTRIB_CODENAME"' main restricted (source).</li></ul>'
+else
+  # Not found.
+  count=0
+  found=0
+  while read line; do
+    ((count++))
+    if [[ $line =~ ^(#deb-src ).*( $DISTRIB_CODENAME main restricted)$ ]]; then
+      echo '<ul><li>Uncommenting repository: '"$DISTRIB_CODENAME"' main restricted (source).</li></ul>'
+      # sed -i "${count}s/.*/${line:1}/" sources.list - Does not work
+      sed -i.bak "${count}d" /etc/apt/sources.list
+      echo "${line:1}" >> /etc/apt/sources.list
+      found=1
+    fi
+  done < /etc/apt/sources.list
+  if ((found == 0)); then
+    echo '<ul><li>Repository was not found commented, adding to sources.</li></ul>'
+    echo "deb-src mirror://mirrors.ubuntu.com/mirrors.txt $DISTRIB_CODENAME main restricted #richdocuments" >> /etc/apt/sources.list
+    echo '<ul><li>Repository added: '"$DISTRIB_CODENAME"' main restricted (source).</li></ul>'
+  fi
+fi
+
+echo '<ul><li>Updating package lists (apt-get).</li></ul>'
+apt-get update
+
+echo '<ul><li>Downloading dependancies for building LibreOffice Core (apt-get).</li></ul>'
+apt-get -y build-dep libreoffice
+
+echo '<ul><li>Downloading dependancies for LibreOffice Online and richdocuments (apt-get).</li></ul>'
+apt-get -y install wget php-apcu openssl g++ libssl-dev libkrb5-dev libpng12-dev libcap-dev
+apt-get -y install libcppunit-dev libcppunit-doc pkg-config npm nodejs libtool m4 automake
+
+echo '<ul><li>Updating npm.</li></ul>'
+npm install -g npm
+
+echo '<ul><li>Installing jake through npm.</li></ul>'
+npm install -g jake
+
+mkdir -p /opt/libreoffice_online/poco
+cd /opt/libreoffice_online
+
+echo '<ul><li>Getting richdocuments source (git) Release: 1.1.4.</li></ul>'
+if [ ! -d "/opt/libreoffice_online/richdocuments/.git/" ]; then
+  git clone https://github.com/owncloud/richdocuments.git
+  [ $? != 0 ] && echo '<ul><li>Error cloning richdocuments (git).</li></ul>' && sleep 5 && exit 101
+else
+  echo "Existing git repository found for richdocuments, updating instead."
+  cd /opt/libreoffice_online/richdocuments
+  git reset --hard
+  git pull
+  [ $? != 0 ] && echo '<ul><li>Error updating richdocuments (git pull).</li></ul>' && sleep 5 && exit 101
+fi
+
+echo '<ul><li>Moving repositiory commit: 361667d248bee58d2cc414cc4e28357e63a5de31</li></ul>'
+git checkout 361667d248bee58d2cc414cc4e28357e63a5de31
+
+cd /opt/libreoffice_online
+
+echo '<ul><li>Getting LibreOffice online source (git). Release: 1.7.2</li></ul>'
+if [ ! -d "/opt/libreoffice_online/online/.git/" ]; then
+  git clone https://github.com/LibreOffice/online.git
+  [ $? != 0 ] && echo '<ul><li>Error cloning LibreOffice Online (git).</li></ul>' && sleep 5 && exit 101
+else
+  echo '<ul><li>Existing git repository found for Libreoffice Online, updating instead.</li></ul>'
+  cd /opt/libreoffice_online/online
+  git reset --hard
+  git pull
+  [ $? != 0 ] && echo '<ul><li>Error updating Libreoffice (git pull).</li></ul>' && sleep 5 && exit 101
+fi
+
+echo '<ul><li>Moving repositiory to commit: e0cd11848a0af7b5d87095a93d7139dc915895a3</li></ul>'
+git checkout e0cd11848a0af7b5d87095a93d7139dc915895a3
+
+cd /opt/libreoffice_online
+
+if [ -d "/opt/poco/" ]; then
+	echo '<ul><li>Existing Poco libraries found, moving them.</li></ul>'
+	mv "/opt/poco" "/opt/pocobak$(date)"
+fi
+echo '<ul><li>Downloading Poco C++ Libraries source (wget) Release: 1.7.4.</li></ul>'
+[ -f "poco-1.7.4-all.tar.gz" ] && rm -f poco-1.7.4-all.tar.gz
+wget http://pocoproject.org/releases/poco-1.7.4/poco-1.7.4-all.tar.gz
+[ $? != 0 ] && echo '<ul><li>Error downloading Poco C++ Libraries (wget).</li></ul>' && sleep 5 && exit 101
+
+if [ $(md5sum poco-1.7.4-all.tar.gz | cut -d ' ' -f 1) == "4c9833b99877cd371fcac66e7b98566e" ]; then
+  echo '<ul><li>Poco C++ Libraries download verified.</li></ul>'
+  echo '<ul><li>Extracting Poco C++ Libraries tarball.</li></ul>'
+  tar -xv -C poco -f poco-1.7.4-all.tar.gz
+  cd /opt/libreoffice_online/poco/poco-1.7.4-all
+  echo '<ul><li>Configuring Poco C++ Libraries in preparation for build.</li></ul>'
+  ./configure --prefix=/opt/poco
+  echo '<ul><li>Building and installing Poco C++ Libraries from source.</li></ul>'
+  make install
+else
+  echo '<ul><li>Poco C++ Libraries failed to verify.</li></ul>'
+  exit
+fi
+
+cd /opt/libreoffice_online
+
+echo '<ul><li>Getting LibreOffice core source (git, master branch only) Release: 5.2.1.2.</li></ul>'
+if [ ! -d "/opt/libreoffice_online/core/.git/" ]; then
+	git clone -b master --single-branch https://github.com/LibreOffice/core.git
+	[ $? != 0 ] && echo '<ul><li>Error cloning Libreoffice Core (git).</li></ul>' && sleep 5 && exit 101
+else
+  echo '<ul><li>Existing git repository found for Libreoffice core, updating instead.</li></ul>'
+  cd /opt/libreoffice_online/online
+  git reset --hard
+  git pull
+  [ $? != 0 ] && echo '<ul><li>Error updating Libreoffice (git pull).</li></ul>' && sleep 5 && exit 101
+fi
+
+echo '<ul><li>Moving repositiory to commit: 170105956f843047d4c79657584f0c01aa7814c7</li></ul>'
+git checkout 170105956f843047d4c79657584f0c01aa7814c7
+
+cd /opt/libreoffice_online/core
+git reset --hard
+
+echo '<ul><li>Preparing Libreoffice core for building.</li></ul>'
+./autogen.sh
+
+echo '<ul><li>Building Libreoffice core, this may take a while.</li></ul>'
+make -i
+
+cd /opt/libreoffice_online/online/loolwsd
+
+MASTER="/opt/libreoffice_online/core"
+SYSTEMPLATE="$(pwd)/systemplate"
+ROOTFORJAILS="$(pwd)/jails"
+
+echo '<ul><li>Creating source file for future variable references.</li></ul>'
+echo "
+MASTER=\"/opt/libreoffice_online/core\"
+SYSTEMPLATE=\"$(pwd)/systemplate\"
+ROOTFORJAILS=\"$(pwd)/jails\"
+" >> /opt/libreoffice_online/variables
+
+echo '<ul><li>Preparing Libreoffice online loolwsd for building.</li></ul>'
+./autogen.sh
+
+echo '<ul><li>Configuring Libreoffice online loolwsd before building.</li></ul>'
+./configure --enable-silent-rules --with-lokit-path=${MASTER}/include --with-lo-path=${MASTER}/instdir --enable-debug --with-poco-includes=/opt/poco/include --with-poco-libs=/opt/poco/lib
+
+echo '<ul><li>Building Libreoffice online loolwsd, this may take a while.</li></ul>'
+make
+
+cd /opt/libreoffice_online/online/loleaflet
+
+echo '<ul><li>Creating symbolic link between nodejs and /usr/bin/node .</li></ul>'
+ln -s /usr/bin/nodejs /usr/bin/node
+
+echo '<ul><li>Building LibreOffice online loleaflet, this may take a while.</li></ul>'
+make
+
+echo '<ul><li>Creating system user libreoffice-online.</li></ul>'
+useradd -r -s /bin/sh libreoffice-online
+
+mkdir -p /usr/local/var/cache/loolwsd
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+echo '<ul><li>Copying SSL certificates into place for LibreOffice Online.</li></ul>'
+mkdir /opt/libreoffice_online/ssl
+cp /etc/ssl/apache/${REALM}.pem /opt/libreoffice_online/ssl/${REALM}.pem
+cp /etc/ssl/apache/${REALM}.key /opt/libreoffice_online/ssl/${REALM}.key.pem
+cp /etc/ssl/root-ca/cacert.pem /opt/libreoffice_online/ssl/cacert.pem
+
+echo '<ul><li>Replacing default loolwsd configuration with Karoshi configuration.</li></ul>'
+rm -f /opt/libreoffice_online/online/loolwsd/loolwsd.xml
+echo "
+<config>
+
+    <!-- Note: 'default' attributes are used to document a setting's default value as well as to use as fallback. -->
+    <!-- Note: When adding a new entry, a default must be set in WSD in case the entry is missing upon deployment. -->
+
+    <tile_cache_path desc=\"Path to a directory where to keep the tile cache.\" type=\"path\" relative=\"false\" default=\"@LOOLWSD_CACHEDIR@\"></tile_cache_path>
+    <sys_template_path desc=\"Path to a template tree with shared libraries etc to be used as source for chroot jails for child processes.\" type=\"path\" relative=\"true\" default=\"systemplate\"></sys_template_path>
+    <lo_template_path desc=\"Path to a LibreOffice installation tree to be copied (linked) into the jails for child processes. Should be on the same file system as systemplate.\" type=\"path\" relative=\"false\" default=\"/opt/collaboraoffice5.1\"></lo_template_path>
+    <child_root_path desc=\"Path to the directory under which the chroot jails for the child processes will be created. Should be on the same file system as systemplate and lotemplate. Must be an empty directory.\" type=\"path\" relative=\"true\" default=\"jails\"></child_root_path>
+
+    <server_name desc=\"Hostname:port of the server running loolwsd. If empty, it's derived from the request.\" type=\"string\" default=\"\"></server_name>
+    <file_server_root_path desc=\"Path to the directory that should be considered root for the file server. This should be the directory containing loleaflet.\" type=\"path\" relative=\"true\" default=\"../loleaflet/../\"></file_server_root_path>
+
+    <num_prespawn_children desc=\"Number of child processes to keep started in advance and waiting for new clients.\" type=\"uint\" default=\"1\">1</num_prespawn_children>
+    <per_document desc=\"Document-specific settings, including LO Core settings.\">
+        <max_concurrency desc=\"The maximum number of threads to use while processing a document.\" type=\"uint\" default=\"4\">4</max_concurrency>
+    </per_document>
+
+    <loleaflet_html desc=\"Allows UI customization by replacing the single endpoint of loleaflet.html\" type=\"string\" default=\"loleaflet.html\">loleaflet.html</loleaflet_html>
+
+    <logging>
+        <color type=\"bool\">true</color>
+        <level type=\"string\" desc=\"Can be 0-8, or none (turns off logging), fatal, critical, error, warning, notice, information, debug, trace\" default=\"trace\">trace</level>
+    </logging>
+
+    <trace desc=\"Dump commands and notifications for replay\" enable=\"true\">
+        <path desc=\"Output file path\" compress=\"true\">/tmp/looltrace.gz</path>
+        <filter>
+            <message desc=\"Regex pattern of messages to exclude\">tile.*</message>
+        </filter>
+        <outgoing>
+            <record desc=\"Whether or not to record outgoing messages\" default=\"false\">false</record>
+        </outgoing>
+    </trace>
+
+    <ssl desc=\"SSL settings\">
+        <enable type=\"bool\" default=\"true\">true</enable>
+        <cert_file_path desc=\"Path to the cert file\" relative=\"false\">/opt/libreoffice_online/ssl/${REALM}.pem</cert_file_path>
+        <key_file_path desc=\"Path to the key file\" relative=\"false\">/opt/libreoffice_online/ssl/${REALM}.key.pem</key_file_path>
+        <ca_file_path desc=\"Path to the ca file\" relative=\"false\">/opt/libreoffice_online/ssl/cacert.pem</ca_file_path>
+    </ssl>
+
+    <storage desc=\"Backend storage\">
+        <filesystem allow=\"false\" />
+        <wopi desc=\"Allow/deny wopi storage. Mutually exclusive with webdav.\" allow=\"true\">
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">localhost</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">172\.1[6789]\.[0-9]{1,3}\.[0-9]{1,3}</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">172\.2[0-9]\.[0-9]{1,3}\.[0-9]{1,3}</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">172\.3[01]\.[0-9]{1,3}\.[0-9]{1,3}</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"true\">192\.168\.[0-9]{1,3}\.[0-9]{1,3}</host>
+            <host desc=\"Regex pattern of hostname to allow or deny.\" allow=\"false\">192\.168\.1\.1</host>
+            <max_file_size desc=\"Maximum document size in bytes to load. 0 for unlimited.\" type=\"uint\">0</max_file_size>
+        </wopi>
+        <webdav desc=\"Allow/deny webdav storage. Mutually exclusive with wopi.\" allow=\"false\">
+            <host desc=\"Hostname to allow\" allow=\"false\">localhost</host>
+        </webdav>
+    </storage>
+
+    <admin_console desc=\"Web admin console settings.\">
+        <username desc=\"The username of the admin console. Must be set.\">admin</username>
+        <password desc=\"The password of the admin console. Must be set.\">${ADMINPASS}</password>
+    </admin_console>
+
+</config>
+" >> /opt/libreoffice_online/online/loolwsd/loolwsd.xml
+
+echo '<ul><li>Changing permissions of folders and files, this may take a while.</li></ul>'
+chown -R libreoffice-online /opt/libreoffice_online
+chown -R libreoffice-online /usr/local/var/cache/loolwsd
+
+echo '<ul><li>Setting LibreOffice Online WebSocket Server to run at boot.</li></ul>'
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/richdocuments
+
+echo '<ul><li>Starting LibreOffice Online WebSocket Server.</li></ul>'
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/richdocuments_start 1>/dev/null
+
+echo '<ul><li>Building a tarball of richdocuments.</li></ul>'
+cd /opt/libreoffice_online/richdocuments
+make dist
+
+echo '<ul><li>Reading richdocuments version.</li></ul>'
+richversion="$(sed -n "s:.*<version>\(.*\)</version>.*:\1:p" /opt/libreoffice_online/richdocuments/appinfo/info.xml)"
+echo '<ul><li>Version: '"$richversion"'</li></ul>'
+
+echo '<ul><li>Extracting tarball into Owncloud apps.</li></ul>'
+tar -xzf "owncloud-collabora-online-${richversion}.tar.gz" -C /var/www/html/owncloud/apps/
+
+echo '<ul><li>Renaming directory to richdocuments.</li></ul>'
+mv "/var/www/html/owncloud/apps/owncloud-collabora-online-${richversion}" /var/www/html/owncloud/apps/richdocuments
+
+echo '<ul><li>Configuring Owncloud.</li></ul>'
+# Delete last line.
+sed -i '$ d' /var/www/html/owncloud/config/config.php
+# Append line to file.
+echo "  'memcache.local' => '\OC\Memcache\APCu'," >> /var/www/html/owncloud/config/config.php
+# Replace deleted line (closing off configuration).
+echo ");" >> /var/www/html/owncloud/config/config.php
+sudo -u www-data php /var/www/html/owncloud/occ config:system:set --value='\OC\Memcache\APCu' memcache.local
+sudo -u www-data php /var/www/html/owncloud/occ app:enable richdocuments
+sudo -u www-data php /var/www/html/owncloud/occ config:app:set --value="https://${REALM}:9980" richdocuments wopi_url
+
+echo '<ul><li>Cleaning up.</li></ul>'
+rm -f /opt/libreoffice_online/poco-1.7.4-all.tar.gz
+rm -rf /opt/libreoffice_online/poco/
+rm -rf /opt/libreoffice_online/richdocuments/
+
+echo '<ul><li>Restarting apache2.</li></ul>'
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
+
+#################################
+#Make sure that apache is running
+#################################
+APACHESTATUS=$(ps -e | grep -c -w $APACHEVER)
+if [ "$APACHESTATUS" == 0 ]; then
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
+fi
+
+#################################
+#Make sure that Libreoffice-Online-loolwsd is running
+#################################
+RICHDOCUMENTSSTATUS=$(ps -e | grep -w -c loolwsd)
+
+if [ "$RICHDOCUMENTSSTATUS" == 0 ]; then
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/richdocuments_start 1>/dev/null
+fi
+
+#############################
+#Ensure that Libreoffice-Online-loolwsd is running at boot
+#############################
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/richdocuments
+
+exit

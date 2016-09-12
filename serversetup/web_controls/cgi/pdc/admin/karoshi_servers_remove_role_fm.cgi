@@ -172,6 +172,12 @@ case "$ROLE_FILE" in
 	CONSEQUENCES=$"Unflags this server as a gitlab server. Deletes all gitlab files, repositories and user data."
 	MODULES=yes
 	;;
+	richdocuments)
+	ROLE_NAME=$"richdocuments"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Removes the richdocuments plugin for Owncloud and removes the LibreOffice Online Server."
+	MODULES=yes
+	;;
 	ocsserver)
 	ROLE_NAME=$"OCS Inventory"
 	ROLE_NAME_STATUS=set

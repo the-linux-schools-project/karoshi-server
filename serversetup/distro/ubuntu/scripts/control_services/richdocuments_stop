@@ -1,0 +1,8 @@
+#!/bin/bash
+[ ! -f "/var/run/richdocuments.pid" ] || ! kill -0 $(cat "/var/run/richdocuments.pid") && exit 0
+
+PIDNUM=$(cat "/var/run/richdocuments.pid")
+kill -15 "$PIDNUM"
+rm -f "/var/run/richdocuments.pid"
+
+exit 0

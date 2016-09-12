@@ -438,8 +438,39 @@ then
 
 	if [ $TYPE = primary ]
 	then
-		#Delete group information
-		[ -f /opt/karoshi/server_network/group_information/$GROUPNAME ] && rm -f /opt/karoshi/server_network/group_information/$GROUPNAME
+		
+		if [ -f /opt/karoshi/server_network/group_information/$GROUPNAME ]
+		then
+			source /opt/karoshi/server_network/group_information/$GROUPNAME
+
+			#Delete parent folder for home areas in /home/users
+			echo `date`: groups - deleting "$HOMEPATH" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			if [ $SERVER = $(hostname-fqdn) ]
+			then
+				if [ -d "$HOMEPATH" ]
+				then
+					rm -f -R "$HOMEPATH"
+				fi
+			else
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+				if [ -d "'$HOMEPATH'" ]
+				then
+					rm -f -R "'$HOMEPATH'"
+				fi
+				'	
+			fi
+
+			#Delete ldap container
+			source /opt/karoshi/server_network/domain_information/domain_name
+			LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+			echo -e "dn: OU=$GROUPNAME,OU=$SUBUNIT,OU=People,$LDAPBASE
+changetype: delete
+" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+
+			#Delete group information
+			rm -f /opt/karoshi/server_network/group_information/$GROUPNAME
+		fi
+
 		#Delete windows profile
 		[ -d /home/applications/profiles/$GROUPNAME ] && rm -f -R /home/applications/profiles/$GROUPNAME
 		[ -L /home/applications/profiles/$GROUPNAME.V2 ] && rm -f -R /home/applications/profiles/$GROUPNAME.V2
@@ -465,6 +496,8 @@ then
 				'
 			fi
 		fi
+
+	#Delete group folder in /home/users/
 
 		#Recreate pam mount for the linux clients
 		/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts

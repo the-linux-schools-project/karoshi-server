@@ -1,0 +1,7 @@
+#!/bin/bash
+[ -f "/etc/init.d/richdocuments" ] && rm -f "/etc/init.d/richdocuments"
+[ -f "/var/run/richdocuments.pid" ] && rm -f "/var/run/richdocuments.pid"
+[ ! -f "/var/log/richdocuments.log" ] && touch "/var/log/richdouments.log"
+chown libreoffice-online "/var/log/richdocuments.log"
+
+su -c '/opt/libreoffice_online/online/loolwsd/loolwsd --o:sys_template_path=/opt/libreoffice_online/online/loolwsd/systemplate --o:lo_template_path=/opt/libreoffice_online/core/instdir --o:child_root_path=/opt/libreoffice_online/online/loolwsd/jails > /var/log/richdocuments.log 2>&1 & echo "$!"' libreoffice-online > "/var/run/richdocuments.pid"

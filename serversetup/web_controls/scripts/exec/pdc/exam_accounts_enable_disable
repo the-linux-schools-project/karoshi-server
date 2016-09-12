@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Get variables
@@ -32,8 +32,8 @@ LOG_DATE=`date +%F`
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: exam_accounts_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f2`
@@ -46,16 +46,16 @@ EXCEPTIONLIST=`echo $* | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f5`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
 then
-echo `date`: exam_accounts_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $exam_accounts_enable_disable_cgi'check' ]
 then
-echo `date`: exam_accounts_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -63,28 +63,28 @@ fi
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: exam_accounts_enable_disable - Not called by exam_accounts_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - Not called by exam_accounts_enable_disable.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: exam_accounts_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: exam_accounts_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $EXAMSTATUS'user' != enableuser ] && [ $EXAMSTATUS'user' != disableuser ]
 then
-echo `date`: exam_accounts_enable_disable - incorrect option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - incorrect option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: exam_accounts_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: exam_accounts_enable_disable - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 #######################
@@ -92,24 +92,24 @@ fi
 #######################
 if [ $EXAMSTATUS = enable ]
 then
-ACTION=enable
-ACTIONLANG=enabling
+	ACTION=enable
+	ACTIONLANG=enabling
 else
-ACTION=disable
-ACTIONLANG=disabling
+	ACTION=disable
+	ACTIONLANG=disabling
 fi
 echo `date`: exam_accounts_enable_disable - $ACTIONLANG all exam accounts from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 EXAMACCOUNTS=`ls -1 /home/users/exams/ | wc -l`
 COUNTER=1
 while [ $COUNTER -le $EXAMACCOUNTS ]
 do
-if [ `echo $EXCEPTIONLIST | grep -c -w exam$COUNTER` = 0 ]
-then 
-echo $ACTIONLANG exam$COUNTER '<br>'
-samba-tool user $ACTION exam$COUNTER 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo "<br><br>"
-fi
-let COUNTER=COUNTER+1
+	if [ `echo $EXCEPTIONLIST | grep -c -w exam$COUNTER` = 0 ]
+	then 
+		echo $ACTIONLANG exam$COUNTER '<br>'
+		samba-tool user $ACTION exam$COUNTER 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "<br><br>"
+	fi
+	let COUNTER=COUNTER+1
 done
 SUCCESS_STATUS=`echo $?`
 exit $SUCCESS_STATUS
