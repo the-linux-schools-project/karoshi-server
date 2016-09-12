@@ -484,6 +484,17 @@ then
 		</button>
 		</form>
 		</td>'
+
+
+		if [ $TYPE = dynamic ]
+		then
+			echo '<td style="vertical-align: top;"><form name="DynamicGroups" action="/cgi-bin/admin/groups.cgi" method="post">
+			<button class="button" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
+			'$"Delete all dynamic groups"'
+			</button>
+			</form>
+			</td>'
+		fi
 	fi
 else
 	echo '<td style="vertical-align: top;">
@@ -714,7 +725,15 @@ fi
 if [ $ACTION = delete ]
 then
 	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">
-	<b>'$"Group name": $GROUPNAME'</b><br><br>'$"Are you sure that you want to delete this group?"'<br><br><input value="'$"Submit"'" class="button" type="submit"></form>'
+	<b>'$"Group name": $GROUPNAME'</b><br><br>'
+
+	if [ "$TYPE" = dynamic ] && [ "$GROUPNAME" = all ]
+	then
+		echo $"Are you sure that you want to delete all dynamic groups?"	
+	else
+		echo $"Are you sure that you want to delete this group?"
+	fi
+	echo '<br><br><input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 
 if [ $ACTION = extragroups ]
