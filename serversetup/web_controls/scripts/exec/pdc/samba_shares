@@ -607,7 +607,7 @@ echo '<option value="0">'$"Do not map drive"'</option>
 
 	if [ ! -z "$GROUP1" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP1'">'$GROUP1'<\/option><option label="dottedline" class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP1'">'$GROUP1'<\/option><option label="dottedline" class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g'
 	fi
@@ -645,7 +645,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP2" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP2'">'$GROUP2'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP2'">'$GROUP2'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g'
 	fi
@@ -684,7 +684,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP3" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP3'">'$GROUP3'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP3'">'$GROUP3'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g'
 	fi
@@ -724,7 +724,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP4" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g'
 	fi
@@ -763,7 +763,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP5" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP5____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP5____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP5____/g'
 	fi
@@ -802,7 +802,7 @@ echo '<option value="1">'$"Map drive"'</option>
 <tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 	if [ ! -z "$GROUP6" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP6____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP6'">'$GROUP6'<\/option><option class="select-dash" disabled="disabled">----------<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP6____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP6'">'$GROUP6'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP6____/g'
 	fi
