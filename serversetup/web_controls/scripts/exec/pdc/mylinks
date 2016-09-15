@@ -127,18 +127,38 @@ then
 	sed -i '/'$LINKFILE'/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
 fi
 
+if [ "$ACTION" = up ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+	#Get linenumber
+	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
+	#Get the linedata
+	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
+	#Delete the existing line
+	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	#Insert the line back in one line up
+	let LINENUMBER=$LINENUMBER-1
+	sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+fi
+
 if [ "$ACTION" = down ]
 then
 	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
 	#Get linenumber
 	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
-	let LINEDATA=$LINEDATA+2
 	#Get the linedata
 	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
 	#Delete the existing line
 	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
 	#Insert the line back in one line down
-	sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	let LINENUMBER=$LINENUMBER+1
+	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | wc -l)
+	if [ $LINENUMBER -gt $LINKCOUNT ]
+	then
+		echo "$LINEDATA" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	else
+		sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	fi
 fi
 exit
 

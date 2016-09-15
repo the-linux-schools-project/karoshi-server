@@ -195,8 +195,8 @@ then
 	WIDTH1=200
 	WIDTH2=210
 	WIDTH3=130
-	WIDTH4=310
-	WIDTH5=70
+	WIDTH4=375
+	WIDTH5=80
 	ICON1=/images/submenus/file/moveup.png
 	ICON2=/images/submenus/file/movedown.png
 	ICON3=/images/submenus/file/delete.png
@@ -251,7 +251,7 @@ if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
 then
 	COUNTER=1
 	echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '$WIDTH4'px;">'$"Current Links"'</th><th style="width: '$WIDTH5'px;"></th><th style="width: '$WIDTH5'px;"></th><th style="width: '$WIDTH5'px;"></th></tr></thead><tbody>'
+	<thead><tr><th style="width: '$WIDTH4'px;">'$"Current Links"'</th><th style="width: '$WIDTH5'px;text-align:center">'$"Move"'</th><th style="width: '$WIDTH5'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
 	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | wc -l)
 	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
 	do
@@ -265,7 +265,6 @@ then
 			<span>'$"Move Up"'<br>'$LINKTITLE'</span>
 			</button>'
 		fi
-		echo '</td><td style="text-align:center">'
 		if [ $COUNTER != $LINKCOUNT ]
 		then
 			echo '<button class="info" name="____Up____" value="____ACTION____down____HYPERLINK____'$HYPERLINK'____">
