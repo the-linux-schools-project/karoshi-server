@@ -98,9 +98,47 @@ fi
 
 if [ "$ACTION" = add ]
 then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+
 	echo "`date`: mylinks - adding $HYPERLINK for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo $HYPERLINK | sed 's/%2F/\//g' >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+
+	#Get title for the hyperlink
+	HYPERLINKTITLE=$(/opt/karoshi/web_controls/generate_navbar_admin | grep '<li><a href="'$HYPERLINK'' | sed 's/\t//g' | cut -d">" -f3 | sed 's%</a%%g')
+
+	if [ -z "$HYPERLINKTITLE" ]
+	then
+		HYPERLINKTITLE=$(basename "$HYPERLINK")
+	fi
+
+	[ ! -d /opt/karoshi/web_controls/user_prefs ] && mkdir -p /opt/karoshi/web_controls/user_prefs
+
+	touch /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	if [ $(grep -c "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links) = 0 ]
+	then 
+		echo "$HYPERLINK,$HYPERLINKTITLE" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	fi
 fi
 
+if [ "$ACTION" = delete ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+	LINKFILE=$(basename $HYPERLINK)
+	echo "`date`: mylinks - deleting $HYPERLINK for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sed -i '/'$LINKFILE'/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+fi
+
+if [ "$ACTION" = down ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+	#Get linenumber
+	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
+	let LINEDATA=$LINEDATA+2
+	#Get the linedata
+	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
+	#Delete the existing line
+	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	#Insert the line back in one line down
+	sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+fi
 exit
 
