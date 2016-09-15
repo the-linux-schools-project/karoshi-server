@@ -1,0 +1,132 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+
+function update_list {
+#Update the patch list
+/opt/karoshi/web_controls/exec/update_karoshi_get_list
+}
+
+
+#Check if patches need applying
+
+update_list
+cp /opt/karoshi/updates/updatelist /opt/karoshi/updates/updatelist.$$
+LINECOUNT=$(cat /opt/karoshi/updates/updatelist.$$ | wc -l)
+COUNTER=1
+
+source /opt/karoshi/serversetup/variables/version
+source /opt/karoshi/serversetup/variables/updatesource
+
+
+#Create updates folder
+if [ ! -d /opt/karoshi/updates/ ]
+then
+	mkdir -p /opt/karoshi/updates/
+	chmod 0700 /opt/karoshi/updates/
+fi
+
+while [ "$COUNTER" -le "$LINECOUNT" ]
+do
+	LINEDATA=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist.$$)
+	PATCHNAME=$(echo "$LINEDATA" | cut -f1)
+	MD5SUM=$(echo "$LINEDATA" | cut -f2)
+
+	#Apply the patch if it has not already been applied
+
+	if [ ! -f /opt/karoshi/logs/karoshi_updates/"$PATCHNAME" ]
+	then
+		echo "Applying $PATCHNAME"
+		
+		#Delete patch if it already exists
+		[ -f /opt/karoshi/updates/$PATCHNAME.sh ] && rm -f /opt/karoshi/updates/$PATCHNAME.sh
+		[ -f /opt/karoshi/updates/$PATCHNAME.txt ] && rm -f /opt/karoshi/updates/$PATCHNAME.txt
+		cd /opt/karoshi/updates/
+		echo '<b>'$"Downloading update"'</b>'
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh 2>&1
+		wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh.sig 2>&1
+		wget --no-cache --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.txt 2>&1
+		echo '</pre>'
+		cd /
+
+		#Check that files have downloaded
+		if [ ! -f /opt/karoshi/updates/$PATCHNAME.txt ] || [ ! -f /opt/karoshi/updates/$PATCHNAME.sh ]
+		then
+			echo $"The patch file did not have a .sh file extension."'<br>'
+			exit
+		fi
+
+		#Check md5 sum
+		MD5SUMTXT=`sed -n 1,1p /opt/karoshi/updates/$PATCHNAME.txt | tr -cd 'A-Za-z0-9\._:\-'`
+		MD5SUMFILE=`md5sum /opt/karoshi/updates/$PATCHNAME.sh | cut -d' ' -f1`
+		[ -z "$MD5SUMTXT" ] && MD5SUMTXT=txtsumnotset
+		if [ "$MD5SUMTXT" != "$MD5SUM" ] || [ "$MD5SUMFILE" != "$MD5SUM" ]
+		then
+			echo $"Incorrect MD5 checksum for this patch."'<br>'
+			exit
+		fi
+
+		#Check key sign
+		if [ ! -f /opt/karoshi/updates/"$PATCHNAME.sh.sig" ]
+		then
+			echo $"There is no signature file for this patch."'<br>'
+			exit
+		fi
+
+		gpg /opt/karoshi/updates/"$PATCHNAME.sh.sig"
+		GPGSTATUS=$?
+		if [ "$GPGSTATUS" != 0 ]
+		then
+			echo $"The patch file did not verify correctly."'<br>'
+			exit
+		fi
+
+		#Apply the patch
+		echo `date`: update_karoshi - Applying $PATCHNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo '<b>'$"Applying update" - $PATCHNAME'</b><br>'
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		chmod 0700 /opt/karoshi/updates/$PATCHNAME.sh
+		echo "Run patch" | /opt/karoshi/updates/$PATCHNAME.sh
+
+		if [ $? = 0 ]
+		then
+			[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
+			echo '<tr><td>'$PATCHNAME'<\td><td>'$KAROSHISERVER'<\td><td>'`date`'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/$PATCHNAME
+		fi
+
+		echo '</pre>'
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Delete warning message
+/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete karoshi_updates
+
+rm -f /opt/karoshi/updates/updatelist.$$
+
+##Update html list
+update_list

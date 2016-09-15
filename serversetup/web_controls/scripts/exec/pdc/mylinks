@@ -1,0 +1,144 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+[ -z "$LOG_DATE" ] && exit
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/mylinks_cgi
+then
+	echo `date`: mylinks - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101	
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/mylinks_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mylinks.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $mylinks_cgi'check' ]
+then
+	echo `date`: mylinks - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: mylinks - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+if [ -z "$DATA" ]
+then
+	echo `date`: mylinks - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+HYPERLINK=`echo "$DATA" | cut -s -d: -f5`
+
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: mylinks - Not called by mylinks.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: mylinks - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: mylinks - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`: mylinks - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+
+if [ -z "$HYPERLINK" ]
+then
+	echo `date`: mylinks - Blank hyperlink by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+
+
+if [ "$ACTION" = add ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+
+	echo "`date`: mylinks - adding $HYPERLINK for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	#Get title for the hyperlink
+	HYPERLINKTITLE=$(/opt/karoshi/web_controls/generate_navbar_admin | grep '<li><a href="'$HYPERLINK'' | sed 's/\t//g' | cut -d">" -f3 | sed 's%</a%%g')
+
+	if [ -z "$HYPERLINKTITLE" ]
+	then
+		HYPERLINKTITLE=$(basename "$HYPERLINK")
+	fi
+
+	[ ! -d /opt/karoshi/web_controls/user_prefs ] && mkdir -p /opt/karoshi/web_controls/user_prefs
+
+	touch /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	if [ $(grep -c "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links) = 0 ]
+	then 
+		echo "$HYPERLINK,$HYPERLINKTITLE" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	fi
+fi
+
+if [ "$ACTION" = delete ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+	LINKFILE=$(basename $HYPERLINK)
+	echo "`date`: mylinks - deleting $HYPERLINK for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	sed -i '/'$LINKFILE'/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+fi
+
+if [ "$ACTION" = down ]
+then
+	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
+	#Get linenumber
+	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
+	let LINEDATA=$LINEDATA+2
+	#Get the linedata
+	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
+	#Delete the existing line
+	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	#Insert the line back in one line down
+	sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+fi
+exit
+

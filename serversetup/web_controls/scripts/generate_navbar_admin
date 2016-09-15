@@ -114,6 +114,21 @@ then
 	echo '<li class="top"><a href="/cgi-bin/admin/alerts.cgi" class="top_link"><span class="warnings">'$"Warning Messages"'</span></a></li>'
 fi
 
+#Show any custom links
+if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
+then
+	echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span class="down">'$"Quick Links"'</span></a><ul class="sub">'
+	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
+	do
+		LINK=$(echo $LINKDATA | cut -d, -f1)
+		LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
+		echo '<li><a href="'$LINK'">'$LINKTITLE'</a></li>'
+	done
+	echo '</ul></li>'
+else
+	echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span>'$"Quick Links"'</span></a>'
+fi
+
 if [ $HELPDESKCTRL = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>

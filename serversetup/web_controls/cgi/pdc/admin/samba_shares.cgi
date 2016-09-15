@@ -644,11 +644,43 @@ then
 	then
 		if [ ! -z "$DRIVELETTER" ]
 		then
-			if [ `grep -r 'DRIVELETTER="'$DRIVELETTER'"' /opt/karoshi/server_network/network_shares | wc -l` -gt 0 ]
+
+			function check_drive_letter {
+			if [ "$GROUP" = all ]
 			then
-				MESSAGE=$"This drive letter is already in use."
-				show_status
+				SHARELIST=$(grep -l -r 'SERVER=' /opt/karoshi/server_network/network_shares/)
+			else
+				SHARELIST=$(grep -l -w -r "$GROUP" /opt/karoshi/server_network/network_shares/)
 			fi
+
+			for SHARE in $SHARELIST
+			do
+				EXISTINGSHARE=$(basename "$SHARE")
+				if [ $(grep 'DRIVELETTER="'$DRIVELETTER'"' $SHARE | wc -l) -gt 0 ]
+				then
+					MESSAGE=''$"This drive letter is already in use for"' '$EXISTINGSHARE''
+					show_status
+				fi
+			done
+			}
+
+			GROUP="$GROUP1"
+			check_drive_letter
+
+			GROUP="$GROUP2"
+			check_drive_letter
+
+			GROUP="$GROUP3"
+			check_drive_letter
+
+			GROUP="$GROUP4"
+			check_drive_letter
+
+			GROUP="$GROUP5"
+			check_drive_letter
+
+			GROUP="$GROUP6"
+			check_drive_letter
 		fi
 	fi
 fi

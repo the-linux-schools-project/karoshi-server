@@ -256,10 +256,14 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/change_student_password.cgi | cut -d' ' -f1`
 #Change student password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:" | sudo -H /opt/karoshi/web_controls/exec/change_student_password
-EXEC_STATUS=`echo $?`
+EXEC_STATUS="$?"
 if [ $EXEC_STATUS = 0 ]
 then
 	MESSAGE=`echo $"Password changed for" $USERNAME.`
+
+	#Reset user lockout just in case
+	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 else
 	MESSAGE=`echo $"The password was not changed for" $USERNAME.`
 fi

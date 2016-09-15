@@ -148,7 +148,7 @@ do
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
 	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ]
 	then
-		DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo
+		DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
 		EMAILSERVER=yes
 	fi
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
