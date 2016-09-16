@@ -64,6 +64,7 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 HYPERLINK=`echo "$DATA" | cut -s -d: -f5`
+QUICKLINKSTYLE=`echo "$DATA" | cut -s -d: -f6`
 
 ########################
 #Check data
@@ -89,10 +90,22 @@ then
 	exit
 fi
 
-if [ -z "$HYPERLINK" ]
+if [ "$ACTION" = quicklinkstyle ]
 then
-	echo `date`: mylinks - Blank hyperlink by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit
+	if [ -z "$QUICKLINKSTYLE" ]
+	then
+		echo `date`: mylinks - Blank quicklinkstyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit
+	fi
+fi
+
+if [ "$ACTION" = add ] || [ $ACTION = delete ] || [ "$ACTION" = UP ] || [ "$ACTION" = down ]
+then
+	if [ -z "$HYPERLINK" ]
+	then
+		echo `date`: mylinks - Blank hyperlink by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		exit
+	fi
 fi
 
 
@@ -117,6 +130,14 @@ then
 	then 
 		echo "$HYPERLINK,$HYPERLINKTITLE" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
 	fi
+fi
+
+if [ "$ACTION" = quicklinkstyle ]
+then
+	echo "`date`: mylinks - setting quicklinkstyle to $QUICKLINKSTYLE for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	touch /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+	sed -i '/QUICKLINKSTYLE=/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+	echo 'QUICKLINKSTYLE="'$QUICKLINKSTYLE'"' >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 fi
 
 if [ "$ACTION" = delete ]

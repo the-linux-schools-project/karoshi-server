@@ -117,22 +117,41 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-#Assign HYPERLINK
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = HYPERLINKcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		HYPERLINK=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
 [ -z "$ACTION" ] && ACTION=view
 
+if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ]
+then
+	#Assign HYPERLINK
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = HYPERLINKcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			HYPERLINK=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
+
+if [ "$ACTION" = quicklinkstyle ]
+then
+	#Assign QUICKLINKSTYLE
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = QUICKLINKSTYLEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			QUICKLINKSTYLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
 
 #########################
 #Check https access
@@ -164,13 +183,13 @@ fi
 #Check to see that GROUPNAME is not blank
 TITLE=$"Quick Links"
 
-if [ "$ACTION" != add ] && [ "$ACTION" != delete ] && [ "$ACTION" != view ] && [ "$ACTION" != up ] && [ "$ACTION" != down ]
+if [ "$ACTION" != add ] && [ "$ACTION" != delete ] && [ "$ACTION" != view ] && [ "$ACTION" != up ] && [ "$ACTION" != down ] && [ "$ACTION" != quicklinkstyle ]
 then
 	MESSAGE=$"An incorrect action has been entered."
 	show_status
 fi
 
-if [ "$ACTION" = add ] || [ $ACTION = delete ]
+if [ "$ACTION" = add ] || [ $ACTION = delete ] || [ "$ACTION" = UP ] || [ "$ACTION" = down ]
 then
 	#Check to see that HYPERLINK is not blank
 	if [ -z "$HYPERLINK" ]
@@ -180,10 +199,10 @@ then
 	fi
 fi
 
-if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ]
+if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ] || [ "$ACTION" = quicklinkstyle ]
 then
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mylinks.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HYPERLINK:" | sudo -H /opt/karoshi/web_controls/exec/mylinks
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HYPERLINK:$QUICKLINKSTYLE:" | sudo -H /opt/karoshi/web_controls/exec/mylinks
 	#Reload page
 fi
 
@@ -231,15 +250,35 @@ fi
 
 echo '<div class="sectiontitle">'$"Quick Links"'</div>'
 
+[ -z "$QUICKLINKSTYLE" && QUICKLINKSTYLE=sub ]
+if [ $QUICKLINKSTYLE = inline ]
+then
+	SELECTED1=selected
+	SELECTED2=""
+else
+	SELECTED1=""
+	SELECTED2=selected
+fi
+
+#Show box to set link type
+echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable1" class="tablesorter" style="text-align: left;"><tbody>
+<tr><td style="width: '$WIDTH1'px;">'$"Link Style"'</td>
+<td style="width: '$WIDTH2'px; text-align:center">
+<select name="____ACTION____quicklinkstyle____QUICKLINKSTYLE" style="width: 200px;">
+<option value="____inline____" '$SELECTED1'>'$"Inline"'</option>
+<option value="____sub____" '$SELECTED2'>'$"Sub"'</option>
+</select>
+</td><td style="width: '$WIDTH3'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
+</tbody></table></form>
+'
+
 #Show box to add link
-echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post">
-<table id="myTable" class="tablesorter" style="text-align: left;"><tbody>
+echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Add link"'</td>
 <td style="width: '$WIDTH2'px; text-align:center">'
 #Show a drop down of all available links
 echo '<select name="____ACTION____add________HYPERLINK____" style="width: 200px;">'
 /opt/karoshi/web_controls/generate_navbar_admin | grep -v ^singletext | grep -v '<li class="top"' |  grep -v '<li class="mid"' | grep 'a href=' | sed 's/\t//g' | sed 's/<li>//g' | sed 's%</li>%%g' | sed 's$<a href=$<option value=$g' | sed 's$</a>$</option>$g' | sed 's$;$$g' | sed 's%target="_blank"%%g' | sort --unique
-
 echo '</select></td><td style="width: '$WIDTH3'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
 </tbody></table></form>
 '
