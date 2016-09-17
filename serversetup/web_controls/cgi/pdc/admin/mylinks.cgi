@@ -93,7 +93,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | s
 function show_status {
 echo '<SCRIPT language="Javascript">
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/groups.cgi"
+window.location = "/cgi-bin/admin/mylinks.cgi"
 </script>
 </div></div></form></body></html>'
 exit
@@ -102,7 +102,9 @@ exit
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
+END_POINT=15
+MAX_SUB_LINKS=20
+MAX_INLINE_LINKS=5
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -134,10 +136,7 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
-fi
 
-if [ "$ACTION" = quicklinkstyle ]
-then
 	#Assign QUICKLINKSTYLE
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -183,7 +182,7 @@ fi
 #Check to see that GROUPNAME is not blank
 TITLE=$"Quick Links"
 
-if [ "$ACTION" != add ] && [ "$ACTION" != delete ] && [ "$ACTION" != view ] && [ "$ACTION" != up ] && [ "$ACTION" != down ] && [ "$ACTION" != quicklinkstyle ]
+if [ "$ACTION" != add ] && [ "$ACTION" != delete ] && [ "$ACTION" != view ] && [ "$ACTION" != up ] && [ "$ACTION" != down ]
 then
 	MESSAGE=$"An incorrect action has been entered."
 	show_status
@@ -199,7 +198,27 @@ then
 	fi
 fi
 
-if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ] || [ "$ACTION" = quicklinkstyle ]
+if [ "$ACTION" = add ]
+then
+	if [ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" ]
+	then
+		#Check how many links we already have
+		if [ $QUICKLINKSTYLE = sub ]
+		then
+			MAX_LINKS=$MAX_SUB_LINKS
+		else
+			MAX_LINKS=$MAX_INLINE_LINKS
+		fi
+		LINK_COUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
+		if [ $LINK_COUNT -ge $MAX_LINKS ]
+		then
+			MESSAGE=$"The maximum links for this section has been reached."
+			show_status	
+		fi
+	fi
+fi
+
+if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ]
 then
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mylinks.cgi | cut -d' ' -f1`
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HYPERLINK:$QUICKLINKSTYLE:" | sudo -H /opt/karoshi/web_controls/exec/mylinks
@@ -247,33 +266,17 @@ then
 	echo '<div id="'$DIV_ID'"><div id="titlebox">'
 fi
 
-
 echo '<div class="sectiontitle">'$"Quick Links"'</div>'
-
-[ -z "$QUICKLINKSTYLE" && QUICKLINKSTYLE=sub ]
-if [ $QUICKLINKSTYLE = inline ]
-then
-	SELECTED1=selected
-	SELECTED2=""
-else
-	SELECTED1=""
-	SELECTED2=selected
-fi
-
-#Show box to set link type
-echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable1" class="tablesorter" style="text-align: left;"><tbody>
-<tr><td style="width: '$WIDTH1'px;">'$"Link Style"'</td>
-<td style="width: '$WIDTH2'px; text-align:center">
-<select name="____ACTION____quicklinkstyle____QUICKLINKSTYLE" style="width: 200px;">
-<option value="____inline____" '$SELECTED1'>'$"Inline"'</option>
-<option value="____sub____" '$SELECTED2'>'$"Sub"'</option>
-</select>
-</td><td style="width: '$WIDTH3'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
-</tbody></table></form>
-'
 
 #Show box to add link
 echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><tbody>
+<tr><td style="width: '$WIDTH1'px;">'$"Link Style"'</td>
+<td style="width: '$WIDTH2'px; text-align:center">
+<select name="____QUICKLINKSTYLE" style="width: 200px;">
+<option value="____sub____">'$"Sub"'</option>
+<option value="____inline____">'$"Inline"'</option>
+</select>
+</td><td></td></tr>
 <tr><td style="width: '$WIDTH1'px;">'$"Add link"'</td>
 <td style="width: '$WIDTH2'px; text-align:center">'
 #Show a drop down of all available links
@@ -285,14 +288,23 @@ echo '</select></td><td style="width: '$WIDTH3'px; text-align:center"><input val
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-#Show current links
-if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
+function show_current_links {
+#Show current sub links
+if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE ]
 then
+	if [ $QUICKLINKSTYLE = sub ]
+	then
+		MAX_LINKS=$MAX_SUB_LINKS
+	else
+		MAX_LINKS=$MAX_INLINE_LINKS
+	fi
+	LINK_COUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
+
 	COUNTER=1
-	echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '$WIDTH4'px;">'$"Current Links"'</th><th style="width: '$WIDTH5'px;text-align:center">'$"Move"'</th><th style="width: '$WIDTH5'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
-	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | wc -l)
-	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
+	echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"> <input type="hidden" name="____Quicklinks____" value="____QUICKLINKSTYLE____'$QUICKLINKSTYLE'____"><table class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: '$WIDTH4'px;">'$QUICKLNKTITLE' '$LINK_COUNT'/'$MAX_LINKS'</th><th style="width: '$WIDTH5'px;text-align:center">'$"Move"'</th><th style="width: '$WIDTH5'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
+	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | wc -l)
+	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | sed 's% %SPACE%g')
 	do
 		HYPERLINK=$(echo $LINKDATA | cut -d, -f1)
 		LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
@@ -306,7 +318,7 @@ then
 		fi
 		if [ $COUNTER != $LINKCOUNT ]
 		then
-			echo '<button class="info" name="____Up____" value="____ACTION____down____HYPERLINK____'$HYPERLINK'____">
+			echo '<button class="info" name="____Down____" value="____ACTION____down____HYPERLINK____'$HYPERLINK'____">
 			<img src="'$ICON2'" alt="'$"Down"'">
 			<span>'$"Move Down"'<br>'$LINKTITLE'</span>
 			</button>'
@@ -320,8 +332,16 @@ then
 		</td></tr>'
 		let COUNTER=$COUNTER+1
 	done
-	echo '</tbody></table></form>'
+	echo '</tbody></table></form><br>'
 fi
+}
+QUICKLNKTITLE=$"My Sub Links"
+QUICKLINKSTYLE=sub
+show_current_links
+
+QUICKLNKTITLE=$"My Inline Links"
+QUICKLINKSTYLE=inline
+show_current_links
 
 echo '</div></div></div></body></html>'
 

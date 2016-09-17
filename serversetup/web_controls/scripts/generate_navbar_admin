@@ -117,25 +117,45 @@ fi
 #Show any custom links
 if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
 then
-	[ -z "$QUICKLINKSTYLE" && QUICKLINKSTYLE=sub ]
-	if [ $QUICKLINKSTYLE = sub ]
-	then
-		echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span class="down">'$"Quick Links"'</span></a><ul class="sub">'
-		for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
-		do
-			LINK=$(echo $LINKDATA | cut -d, -f1)
-			LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
+	FIRSTLINK=yes
+	SUBENTRIES=no
+	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
+	do
+		LINK=$(echo $LINKDATA | cut -d, -f1)
+		LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
+		QUICKLINKSTYLE=$(echo $LINKDATA | cut -d, -f3)
+
+		if [ "$FIRSTLINK" = yes ]
+		then
+			FIRSTLINK=no
+			#Check to see if there are any sub entries
+			if [ $QUICKLINKSTYLE = sub ]
+			then
+				SUBENTRIES=yes
+				echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span class="down">'$"Quick Links"'</span></a><ul class="sub">'
+			else
+				echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span>'$"Quick Links"'</span></a></li>'
+			fi
+		fi
+
+
+		if [ $QUICKLINKSTYLE = sub ]
+		then
 			echo '<li><a href="'$LINK'">'$LINKTITLE'</a></li>'
-		done
-		echo '</ul></li>'
-	else
-		echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span>'$"Quick Links"'</span></a></li>'
-		for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
-		do
-			LINK=$(echo $LINKDATA | cut -d, -f1)
-			LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
+		else
+			if [ $SUBENTRIES = yes ]
+			then
+				SUBENTRIES=no
+				echo '</ul></li>'
+			fi
 			echo '<li class="top"><a href="'$LINK'" class="top_link"><span>'$LINKTITLE'</span></a></li>'
-		done
+		fi
+
+
+	done
+	if [ $SUBENTRIES = yes ]
+	then
+		echo '</ul></li>'
 	fi
 else
 	echo '<li class="top"><a href="/cgi-bin/admin/mylinks.cgi" class="top_link"><span>'$"Quick Links"'</span></a></li>'

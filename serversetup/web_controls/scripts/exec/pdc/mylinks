@@ -108,6 +108,12 @@ then
 	fi
 fi
 
+function create_list {
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links" ] && rm -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links"
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.sub" ] && cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.sub" > "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links"
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.inline" ] && cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.inline" >> "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links"
+}
+
 
 if [ "$ACTION" = add ]
 then
@@ -125,61 +131,62 @@ then
 
 	[ ! -d /opt/karoshi/web_controls/user_prefs ] && mkdir -p /opt/karoshi/web_controls/user_prefs
 
-	touch /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
-	if [ $(grep -c "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links) = 0 ]
+	touch "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
+	if [ $(grep -c "$HYPERLINK" "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE") = 0 ]
 	then 
-		echo "$HYPERLINK,$HYPERLINKTITLE" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+		echo "$HYPERLINK,$HYPERLINKTITLE,$QUICKLINKSTYLE" >> "/opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE"
 	fi
+	create_list
 fi
 
-if [ "$ACTION" = quicklinkstyle ]
-then
-	echo "`date`: mylinks - setting quicklinkstyle to $QUICKLINKSTYLE for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	touch /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
-	sed -i '/QUICKLINKSTYLE=/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
-	echo 'QUICKLINKSTYLE="'$QUICKLINKSTYLE'"' >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
-fi
 
 if [ "$ACTION" = delete ]
 then
 	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
 	LINKFILE=$(basename $HYPERLINK)
 	echo "`date`: mylinks - deleting $HYPERLINK for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	sed -i '/'$LINKFILE'/d' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	sed -i '/'$LINKFILE'/d' "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
+
+	#Delete the file if it is empty
+	[ $(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l) = 0 ] && rm -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
+
+	create_list
 fi
 
 if [ "$ACTION" = up ]
 then
 	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
 	#Get linenumber
-	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
+	LINENUMBER=$(grep -n "$HYPERLINK" "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | cut -d: -f1)
 	#Get the linedata
-	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
+	LINEDATA=$(grep "$HYPERLINK" "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE")
 	#Delete the existing line
-	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	sed -i ''$LINENUMBER'd' "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
 	#Insert the line back in one line up
 	let LINENUMBER=$LINENUMBER-1
-	sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	sed -i ''$LINENUMBER'i'"$LINEDATA"'' "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
+	create_list
 fi
 
 if [ "$ACTION" = down ]
 then
 	HYPERLINK=$(echo "$HYPERLINK" | sed 's/%2F/\//g')
 	#Get linenumber
-	LINENUMBER=$(grep -n "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | cut -d: -f1)
+	LINENUMBER=$(grep -n "$HYPERLINK" "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | cut -d: -f1)
 	#Get the linedata
-	LINEDATA=$(grep "$HYPERLINK" /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
+	LINEDATA=$(grep "$HYPERLINK" "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE")
 	#Delete the existing line
-	sed -i ''$LINENUMBER'd' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+	sed -i ''$LINENUMBER'd' "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
 	#Insert the line back in one line down
 	let LINENUMBER=$LINENUMBER+1
-	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | wc -l)
+	LINKCOUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
 	if [ $LINENUMBER -gt $LINKCOUNT ]
 	then
-		echo "$LINEDATA" >> /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+		echo "$LINEDATA" >> "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
 	else
-		sed -i ''$LINENUMBER'i'"$LINEDATA"'' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links
+		sed -i ''$LINENUMBER'i'"$LINEDATA"'' "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE"
 	fi
+	create_list
 fi
 exit
 
