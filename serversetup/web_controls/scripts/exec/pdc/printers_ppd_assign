@@ -158,7 +158,7 @@ then
 	#Generate avahi config
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
-	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] &&/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
 	source /opt/karoshi/serversetup/variables/distro
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 	' 2>&1
@@ -186,7 +186,7 @@ else
 	#Generate avahi config
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
-	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] && /opt/karoshi/serversetup/modules/printserver/airprint-generate.py
 	source /opt/karoshi/serversetup/variables/distro
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 fi

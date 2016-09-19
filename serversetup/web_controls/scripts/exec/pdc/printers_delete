@@ -131,7 +131,7 @@ then
 	#Generate avahi config
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
-	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] && /opt/karoshi/serversetup/modules/printserver/airprint-generate.py
 	source /opt/karoshi/serversetup/variables/distro
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 	[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$PRINTERNAME' ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/'$PRINTERNAME'
@@ -140,7 +140,7 @@ else
 	lpadmin -x $PRINTERNAME 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	rm -f /etc/avahi/services/AirPrint-*
 	cd /etc/avahi/services
-	/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] && /opt/karoshi/serversetup/modules/printserver/airprint-generate.py
 	source /opt/karoshi/serversetup/variables/distro
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 	[ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTERNAME ] && rm -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTERNAME
