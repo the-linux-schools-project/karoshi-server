@@ -640,10 +640,10 @@ fi
 if [ ! -d /opt/karoshi/server_network/helpdesk ]
 then
 	mkdir /opt/karoshi/server_network/helpdesk
+	chmod 0640 -R /opt/karoshi/server_network/helpdesk
+	chmod u+X,g+X -R /opt/karoshi/server_network/helpdesk
+	chown apache_karoshi.apache_karoshi -R /opt/karoshi/server_network/helpdesk
 fi
-chmod 0640 -R /opt/karoshi/server_network/helpdesk
-chmod u+X,g+X -R /opt/karoshi/server_network/helpdesk
-chown apache_karoshi.apache_karoshi -R /opt/karoshi/server_network/helpdesk
 
 ######################
 #Schedule web log rotation
