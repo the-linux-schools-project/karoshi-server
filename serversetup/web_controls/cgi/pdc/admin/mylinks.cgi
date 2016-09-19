@@ -105,6 +105,7 @@ exit
 END_POINT=15
 MAX_SUB_LINKS=20
 MAX_INLINE_LINKS=5
+MAX_QUICK_LINKS=200
 #Assign ACTION
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -206,8 +207,11 @@ then
 		if [ $QUICKLINKSTYLE = sub ]
 		then
 			MAX_LINKS=$MAX_SUB_LINKS
-		else
+		elif [ $QUICKLINKSTYLE = inline ]
+		then
 			MAX_LINKS=$MAX_INLINE_LINKS
+		else
+			MAX_LINKS=$MAX_QUICK_LINKS
 		fi
 		LINK_COUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
 		if [ $LINK_COUNT -ge $MAX_LINKS ]
@@ -273,8 +277,9 @@ echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><tab
 <tr><td style="width: '$WIDTH1'px;">'$"Link Style"'</td>
 <td style="width: '$WIDTH2'px; text-align:center">
 <select name="____QUICKLINKSTYLE" style="width: 200px;">
-<option value="____sub____">'$"Sub"'</option>
-<option value="____inline____">'$"Inline"'</option>
+<option value="____quick____">'$"Quick Link"'</option>
+<option value="____sub____">'$"Navigation Sub Link"'</option>
+<option value="____inline____">'$"Navigation Main Link"'</option>
 </select>
 </td><td></td></tr>
 <tr><td style="width: '$WIDTH1'px;">'$"Add link"'</td>
@@ -295,20 +300,23 @@ then
 	if [ $QUICKLINKSTYLE = sub ]
 	then
 		MAX_LINKS=$MAX_SUB_LINKS
-	else
+	elif [ $QUICKLINKSTYLE = inline ]
+	then
 		MAX_LINKS=$MAX_INLINE_LINKS
+	else
+		MAX_LINKS=$MAX_QUICK_LINKS
 	fi
 	LINK_COUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
 
 	COUNTER=1
-	echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"> <input type="hidden" name="____Quicklinks____" value="____QUICKLINKSTYLE____'$QUICKLINKSTYLE'____"><table class="tablesorter" style="text-align: left;" >
+	echo '<a name="'$QUICKLINKSTYLE'"></a><form name="myform" action="/cgi-bin/admin/mylinks.cgi#'$QUICKLINKSTYLE'" method="post"> <input type="hidden" name="____Quicklinks____" value="____QUICKLINKSTYLE____'$QUICKLINKSTYLE'____"><table class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: '$WIDTH4'px;">'$QUICKLNKTITLE' '$LINK_COUNT'/'$MAX_LINKS'</th><th style="width: '$WIDTH5'px;text-align:center">'$"Move"'</th><th style="width: '$WIDTH5'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
 	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | wc -l)
 	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | sed 's% %SPACE%g')
 	do
 		HYPERLINK=$(echo $LINKDATA | cut -d, -f1)
 		LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
-		echo '<tr><td>'$LINKTITLE'</td><td style="text-align:center">'
+		echo '<tr><td><a href="'$HYPERLINK'">'$LINKTITLE'</a></td><td style="text-align:center">'
 		if [ $COUNTER != 1 ]
 		then
 			echo '<button class="info" name="____Up____" value="____ACTION____up____HYPERLINK____'$HYPERLINK'____">
@@ -332,15 +340,20 @@ then
 		</td></tr>'
 		let COUNTER=$COUNTER+1
 	done
-	echo '</tbody></table></form><br>'
+	echo '</tbody></table></form>'
 fi
 }
-QUICKLNKTITLE=$"My Sub Links"
-QUICKLINKSTYLE=sub
+
+QUICKLNKTITLE=$"My Navigation Quick Links"
+QUICKLINKSTYLE=quick
 show_current_links
 
-QUICKLNKTITLE=$"My Inline Links"
+QUICKLNKTITLE=$"My Navigation Main Links"
 QUICKLINKSTYLE=inline
+show_current_links
+
+QUICKLNKTITLE=$"My Navigation Sub Links"
+QUICKLINKSTYLE=sub
 show_current_links
 
 echo '</div></div></div></body></html>'
