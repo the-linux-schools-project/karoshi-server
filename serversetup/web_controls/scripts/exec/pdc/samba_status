@@ -74,6 +74,22 @@ WIDTH4=130
 WIDTH5=180
 WIDTH6=120
 WIDTH7=80
+WIDTH8=100
+WIDTH9=90
+WIDTH10=100
+WIDTH11=70
+WIDTH12=70
+WIDTH13=100
+WIDTH14=80
+WIDTH15=80
+WIDTH16=80
+WIDTH17=70
+WIDTH18=110
+WIDTH19=60
+WIDTH20=150
+WIDTH21=200
+WIDTH22=200
+WIDTH23=200
 
 ########################
 #Check data
@@ -136,18 +152,52 @@ echo `date`: samba_status $OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADD
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
 TEXTDOMAIN=karoshi-server
 
+if [ "$OPTION" = connectedusers ]
+then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"Link Style"'</th><th style="width: '$WIDTH2'px;">'$"Username"'</th><th style="width: '$WIDTH3'px;">'$"Group"'</th><th style="width: '$WIDTH4'px;">'$"Connection"'</th><th style="width: '$WIDTH5'px;">'$"Information"'</th><th style="width: '$WIDTH6'px;">'$"Protocol Version"'</th><th style="width: '$WIDTH7'px;">'$"Additional"'</th></tr></thead><tbody>
+	<tr><th style="width: '$WIDTH1'px;">'$"Process ID"'</th><th style="width: '$WIDTH2'px;">'$"Username"'</th><th style="width: '$WIDTH3'px;">'$"Group"'</th><th style="width: '$WIDTH4'px;">'$"Connection"'</th><th style="width: '$WIDTH5'px;">'$"Information"'</th><th style="width: '$WIDTH6'px;">'$"Protocol Version"'</th><th style="width: '$WIDTH7'px;">'$"Additional"'</th></tr></thead><tbody>
 	'
 
 	if [ $SERVERNAME = $(hostname-fqdn) ]
 	then
 		smbstatus -b | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
-
 	else
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
 		smbstatus -b | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 		'
+	echo '</tbody></table>'
+	fi
+fi
+
+if [ "$OPTION" = connectedshares ]
+then
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
+	<tr><th style="width: '$WIDTH8'px;">'$"Service"'</th><th style="width: '$WIDTH9'px;">'$"Process ID"'</th><th style="width: '$WIDTH10'px;">'$"Machine"'</th><th style="width: '$WIDTH11'px;">'$"Day"'</th><th style="width: '$WIDTH12'px;">'$"Month"'</th><th style="width: '$WIDTH13'px;">'$"Day of Month"'</th><th style="width: '$WIDTH14'px;">'$"Time"'</th><th style="width: '$WIDTH15'px;">'$"Year"'</th></tr></thead><tbody>'
+
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		smbstatus --shares | sed 1,3d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
+	else	
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+		smbstatus --shares | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
+		'
+	echo '</tbody></table>'
+	fi
+fi
+
+if [ "$OPTION" = openfiles ]
+then
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
+	<tr><th style="width: '$WIDTH16'px;">'$"Process ID"'</th><th style="width: '$WIDTH17'px;">'$"UID"'</th><th style="width: '$WIDTH18'px;">'$"Deny Mode"'</th><th style="width: '$WIDTH19'px;">'$"R/W"'</th><th style="width: '$WIDTH20'px;">'$"Oplock"'</th><th style="width: '$WIDTH21'px;">'$"Sharepath"'</th><th style="width: '$WIDTH22'px;">'$"Name"'</th><th style="width: '$WIDTH23'px;">'$"Time"'</th></tr></thead><tbody>'
+
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		smbstatus -L | grep -v NONE | sed 1,3d | sed "s% \+ %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
+	else
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+		smbstatus -L | grep -v NONE | sed 1,3d | sed "s% \+ %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
+		'
+	fi
 	echo '</tbody></table>'
 fi
 

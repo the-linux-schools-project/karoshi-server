@@ -52,7 +52,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Samba Status"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Client Connections"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
   <script>
 <!--
@@ -135,11 +135,13 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Samba Status"'</span>
+	<span>'$"Client Connections"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Samba Status"'</div><br></div><div id="infobox">'
+	echo '	<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td style="height:30px;"><div class="sectiontitle">'$"Client Connections"' '$SERVER2'</div></td>
+	</tr></tbody></table></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" >
@@ -149,8 +151,8 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
         <td style="vertical-align: top; text-align: left;">
 	<select name="_OPTION_" style="width: 200px;">
 	<option value="connectedusers">'$"Connected Users"'</option>
-	<option value="openfiles">'$"Open Files"'</option>
 	<option value="connectedshares">'$"Connected Shares"'</option>
+	<option value="openfiles">'$"Open Files"'</option>
 	</select>
         <td></td>
       </tr>

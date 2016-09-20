@@ -43,7 +43,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Samba Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Connections"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -207,17 +207,27 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Shutdown-Reboot Server"'</span>
+	<span>'$"Client Connections"'</span>
 <a href="/cgi-bin/admin/samba_status_fm.cgi">'$SERVERNAME'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div class="sectiontitle">'$"Samba Status"'</div><br></div><div id="infobox">'
+	echo '
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td style="height:30px;"><div class="sectiontitle">'$"Client Connections"' '$SERVER2'</div></td>
+	<td>
+	<form action="/cgi-bin/admin/samba_status_fm.cgi" method="post">
+	<button class="button" name="_">'$"Choose Server"'</button>
+	</form>
+	</td>
+	</tr></tbody></table></div>
+
+
+	<div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_status.cgi | cut -d' ' -f1`
 #Shutdown server
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_status
 
-echo "</div>"
-echo "</div></body></html>"
+echo "</div></div></div></body></html>"
 exit

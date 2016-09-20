@@ -364,6 +364,7 @@ echo '		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/domain_information.cgi" id="Client" class="top_link"><span class="down">'$"Client"'</span></a>
 		<ul class="sub">
+			<li><a href="/cgi-bin/admin/samba_status_fm.cgi">'$"Client Connections"'</a></li>
 			<li><a href="/cgi-bin/admin/domain_information.cgi">'$"Domain Information"'</a></li>'
 #OCS Inventory
 if [ $OCSCTRL = yes ]
