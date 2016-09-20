@@ -114,11 +114,7 @@ then
 	echo `date`: samba_status - No option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ $samba_status_OPTION != samba_status ] && [ $samba_status_OPTION != reboot ]
-then
-	echo `date`: samba_status - Incorrect samba_status option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+
 if [ -z "$SERVERNAME" ]
 then
 	echo `date`: samba_status - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

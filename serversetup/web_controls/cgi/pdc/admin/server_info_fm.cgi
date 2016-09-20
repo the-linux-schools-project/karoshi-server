@@ -157,11 +157,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
         <td><input name="_INFO_" value="kernel" type="radio"></td>
 <td><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show the running kernel for the selected servers."'</span></a></td>
       </tr>
-      <tr>
-        <td>'$"Samba Status"'</td>
-        <td><input name="_INFO_" value="samba" type="radio"></td>
-<td><a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="'$HELPICON'"><span>'$"Show the samba status for the selected servers."'</span></a></td>
-      </tr></tbody></table><br><br>'
+      </tbody></table><br><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
