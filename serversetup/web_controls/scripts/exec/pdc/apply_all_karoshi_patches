@@ -27,7 +27,7 @@ LOG_DATE=`date +%F`
 
 function update_list {
 #Update the patch list
-/opt/karoshi/web_controls/exec/update_karoshi_get_list
+/opt/karoshi/web_controls/exec/update_karoshi_get_list 1>/dev/null
 }
 
 
@@ -59,7 +59,7 @@ do
 
 	if [ ! -f /opt/karoshi/logs/karoshi_updates/"$PATCHNAME" ]
 	then
-		echo "Applying $PATCHNAME"
+		echo "<b>Applying $PATCHNAME</b><br><br>"
 		
 		#Delete patch if it already exists
 		[ -f /opt/karoshi/updates/$PATCHNAME.sh ] && rm -f /opt/karoshi/updates/$PATCHNAME.sh
