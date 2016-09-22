@@ -987,6 +987,7 @@ then
 			[ ! -d /opt/karoshi/asset_register/deleted/$LOCATION/ ] && mkdir -p /opt/karoshi/asset_register/deleted/$LOCATION/
 			source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
 			#Delete entry from netlogon
+			MAC1=$(echo "$MAC1" | sed 's/://g')
 			[ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
 			#Move entry to deleted folder
 			mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/

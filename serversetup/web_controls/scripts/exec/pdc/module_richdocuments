@@ -158,10 +158,10 @@ source /opt/karoshi/server_network/domain_information/domain_name
 # add_role_information
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 
-echo ''$"richdocuments"'<br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/richdocuments
+echo ''$"richdocuments"'<br>' > /opt/karoshi/server_network/servers/$SERVERNAME/richdocuments
 
-echo ''$"LibreOffice Online WebSocket Daemon (loolwsd)"'<br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/loolwsd
-echo '<a href="https://'$ALIAS.$REALM'" target="_blank">https://'$ALIAS.$REALM'</a><br>' > /opt/karoshi/server_network/servers/$SERVERNAME/loolwsd
+echo ''$"LibreOffice Online WebSocket Daemon (loolwsd)"'<br>' > /opt/karoshi/server_network/servers/$SERVERNAME/loolwsd
+echo '<a href="https://'$ALIAS.$REALM'" target="_blank">https://'$ALIAS.$REALM'</a><br>'>> /opt/karoshi/server_network/servers/$SERVERNAME/loolwsd
 
 ###########################
 #Show completed message

@@ -8,14 +8,13 @@ source /opt/karoshi/serversetup/variables/updatesource
 ########################
 #Create html list
 ########################
-echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 250px;"><b>'$"MD5Sum"'</b></td><td style="width: 240px;"></td></tr>'  | tee /opt/karoshi/updates/updatelist.html > /opt/karoshi/updates/updatelist_all.html
+echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 250px;"><b>'$"MD5Sum"'</b></td><td style="width: 250px;"></td></tr>'  | tee /opt/karoshi/updates/updatelist.html > /opt/karoshi/updates/updatelist_all.html
 
 echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 40px;"></td></tr>' | tee /opt/karoshi/updates/updatelist_mobile.html > /opt/karoshi/updates/updatelist_all_mobile.html
 
 COUNTER=1
 COUNTER2=0
 COUNTER3=0
-PATCHCOUNT=0
 APPLYFLAG=no
 #Check to see if updates have been applied
 [ ! -f /opt/karoshi/updates/updatelist ] && exit
@@ -39,8 +38,7 @@ do
 
 		if [ "$APPLYFLAG" = no ]
 		then
-			let PATCHCOUNT=$PATCHCOUNT+1
-			if [ $PATCHCOUNT -lt 1 ]
+			if [ "$COUNTER" -ge "$UPDATELIST_LENGTH" ]
 			then
 				APPLYALLPATCHBTN=""
 			fi

@@ -371,9 +371,11 @@ else
 	</td>'
 fi
 
+echo '</tr><tr>'
+
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
 then
-	echo '</tr><tr><td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top;">'$OWNCLOUDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post">
+	echo '<td style="vertical-align: top; height: 40px;">'$"Owncloud Server"'</td><td style="vertical-align: top;">'$OWNCLOUDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post">
 	<button class="info" name="_AddOwnCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON'" alt="'$"Owncloud Server"'">
 	<span>'$"This will provide a cloud file storage system for web access to files."'</span>
@@ -390,6 +392,27 @@ else
 	</td>'
 fi
 
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ]
+then
+	echo '<td style="vertical-align: top; height: 40px;">'$"Richdocuments for Owncloud"'</td><td style="vertical-align: top;">'$RICHDOCUMENTSSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_richdocuments_fm.cgi" method="post">
+	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"richdocuments"'">
+	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'</span>
+	</button>
+	</form></td>'
+else
+	echo '<td style="vertical-align: top; height: 40px;">'$"Richdocuments for Owncloud"'</td><td></td><td style="vertical-align: top; height: 40px;">
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"richdocuments"'">
+	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'<br><br>'$"This module requires the Owncloud module to be installed."'</span>
+	</button>
+	</form>
+	</td>'
+fi
+
+echo '</tr><tr>'
+
 echo '<td style="vertical-align: top; height: 40px;">'$"Radius Server"'</td><td style="vertical-align: top;">'$RADIUSSTATUS'</td><td style="vertical-align: top; height: 40px;">'
 
 if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
@@ -399,7 +422,7 @@ then
 	<img src="'$ICON'" alt="'$"Radius Server"'">
 	<span>'$"This will setup a radius server which can be used for your wireless access points."'</span>
 	</button>
-	</form>'
+	</form></td>'
 else
 	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
@@ -407,11 +430,10 @@ else
 	<img src="'$ICON2'" alt="'$"Radius Server"'">
 	<span>'$"This will setup a radius server which can be used for your wireless access points."'<br><br>'$"This module can only be applied to a domain controller."'</span>
 	</button>
-	</form>'
+	</form></td>'
 fi
-echo '</td></tr>'
 
-echo '<tr><td style="vertical-align: top; height: 40px;">'$"Distribution Server"'</td><td style="vertical-align: top;">'$DISTROSERVERSTATUS'</td>
+echo '<td style="vertical-align: top; height: 40px;">'$"Distribution Server"'</td><td style="vertical-align: top;">'$DISTROSERVERSTATUS'</td>
 <td style="vertical-align: top; height: 40px;">'
 
 if [ -f /opt/karoshi/server_network/dhcpserver ]
@@ -429,11 +451,11 @@ else
 	<img src="'$ICON2'" alt="'$"Distribution Server"'">
 	<span>'$"This will setup a distribution server for centralised linux client installations."'<br><br>'$"This module needs the DHCP module functioning to allow the clients to be able to network boot."'</span>
 	</button>
-	</form>
+	</form></td>
 	'
 fi
 
-echo '</td>'
+echo '</tr><tr>'
 
 echo '<td style="vertical-align: top; height: 40px;">'$"Monitor Server"'</td><td style="vertical-align: top;">'$MONITORSERVERSTATUS'</td>
 <td style="vertical-align: top; height: 40px;">
@@ -457,8 +479,6 @@ else
 '
 fi
 
-echo '</tr><tr>'
-
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<td style="vertical-align: top; height: 40px;">'$"Joomla"'</td><td style="vertical-align: top;">'$JOOMLASTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_joomla_fm.cgi" method="post">
@@ -479,6 +499,8 @@ else
 	</td>'
 fi
 
+echo '</tr><tr>'
+
 echo '<td style="vertical-align: top; height: 40px;">'$"Internet Radio Server"'</td><td style="vertical-align: top;">'$RADIOSTATUS'</td>
 <td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
 	<button class="info" name="_AddRadioServer_" value="_SERVERNAME_'$SERVERNAME'_">
@@ -487,9 +509,6 @@ echo '<td style="vertical-align: top; height: 40px;">'$"Internet Radio Server"'<
 	</button>
 	</form>
 	</td>'
-
-echo '</tr><tr>'
-
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
@@ -512,6 +531,8 @@ else
 	</td>'
 fi
 
+echo '</tr><tr>'
+
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<td style="vertical-align: top; height: 40px;">'$"Kanboard"'</td><td style="vertical-align: top;">'$KANBOARDSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post">
@@ -530,8 +551,6 @@ else
 	</form>
 	</td>'
 fi
-
-echo '</tr><tr>'
 
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
@@ -552,26 +571,8 @@ else
 	</td>'
 fi
 
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ]
-then
-	echo '<td style="vertical-align: top; height: 40px;">'$"richdocuments"'</td><td style="vertical-align: top;">'$RICHDOCUMENTSSTATUS'</td><td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_richdocuments_fm.cgi" method="post">
-	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"richdocuments"'">
-	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'</span>
-	</button>
-	</form></td>'
-else
-	echo '<td style="vertical-align: top; height: 40px;">'$"richdocuments"'</td><td></td><td style="vertical-align: top; height: 40px;">
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"richdocuments"'">
-	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'<br><br>'$"This module requires the Owncloud module to be installed."'</span>
-	</button>
-	</form>
-	</td>'
-fi
-
-echo '<td></td><td></td><td></td></tr>'
+echo '</tr>'
+#echo '<td></td><td></td><td></td></tr>'
 
 #if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 #then
