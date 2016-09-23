@@ -238,7 +238,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache avahi clamd cups cron e2guardian freshclam dhcp dns dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd"
+ALLSERVICES="apache avahi clamd cups cron e2guardian freshclam dhcp dns dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd xserver"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {
@@ -294,6 +294,7 @@ then
 	vsftpd=$"FTP server"
 	glusterfs=$"Distributed FS Server"
 	dnsmasq=$"Dnsmasq service"
+	xserver=$"X Server"
 
 
 	############################
@@ -370,6 +371,7 @@ else
 		vsftpd="'$"FTP server"'"
 		glusterfs="'$"Distributed FS Server"'"
 		dnsmasq="'$"Dnsmasq service"'"
+		xserver="'$"X Server"'"
 
 		source /opt/karoshi/serversetup/variables/distro
 		function check_status {

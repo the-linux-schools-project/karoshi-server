@@ -1,0 +1,3 @@
+#!/bin/bash
+#Start xserver on boot
+[ -f  /etc/init/lightdm.override ] && rm -f /etc/init/lightdm.override

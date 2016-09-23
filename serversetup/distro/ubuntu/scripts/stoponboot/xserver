@@ -1,0 +1,3 @@
+#!/bin/bash
+#Stop lightdm on boot
+echo  "manual" > /etc/init/lightdm.override
