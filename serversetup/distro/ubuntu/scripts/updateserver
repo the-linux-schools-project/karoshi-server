@@ -123,6 +123,12 @@ then
 	fi
 fi
 
+#Delete dnsmasq conf from insserv
+if [ -f /etc/insserv.conf.d/dnsmasq ]
+then
+	rm -f /etc/insserv.conf.d/dnsmasq
+fi
+
 #Make sure we are using sysv scripts before we check which services should still be running after the update.
 /opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
 
@@ -146,7 +152,7 @@ then
 	fi
 fi
 STATUS_ARRAY[$COUNTER]=$STATUS
-echo -e "$SERVICENAME $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo -e "Service: $SERVICENAME - Status befoe update: $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 }
 
 #######################
@@ -253,7 +259,12 @@ SERVICESTATUS=$?
 #Make sure services are stopped if they were not running before the update.
 if [ $STATUS = off ]
 then
-	[ $SERVICESTATUS = 0 ] && /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+	if [ $SERVICESTATUS = 0 ]
+	then
+		echo -e "$HOSTNAME: `date` - $SERVICENAME has been started by apt - stopping $SERVICENAME.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME"_"stop
+	fi
+	echo -e "$HOSTNAME: `date` - Stopping $SERVICENAME from running on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$SERVICENAME
 fi
 #Make sure services are started if they were running before the update.
