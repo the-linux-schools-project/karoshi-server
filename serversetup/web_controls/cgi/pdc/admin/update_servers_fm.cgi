@@ -172,7 +172,12 @@ else
 	echo '
 <table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td></tr></tbody></table><br>'
+<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td>
+<td>
+	
+	<button class="button" formaction="update_servers_view_logs_fm.cgi" name="_">'$"View Update Logs"'</button>
+</td>
+</tr></tbody></table><br>'
 fi
 
 #Preselect day

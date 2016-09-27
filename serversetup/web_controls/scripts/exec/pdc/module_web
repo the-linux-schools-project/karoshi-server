@@ -307,7 +307,7 @@ if [ $ADD_FTP_RULE = yes ]
 then
 	echo "<ul><li>"'$"Opening ports 20 and 21"'"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"ftp_rule /etc/shorewall/rules
+	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"20,21"	"-"#"ftp_rule /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 fi
 

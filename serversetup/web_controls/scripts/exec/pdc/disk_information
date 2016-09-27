@@ -127,13 +127,13 @@ then
 	WIDTH1=100
 	WIDTH2=40
 	WIDTH3=100
-	TABLECLASS=mobilestandard
+	TABLECLASS=tablesorter
 else
 	MULTI=5
 	WIDTH1=180
 	WIDTH2=86
 	WIDTH3=180
-	TABLECLASS=standard
+	TABLECLASS=tablesorter
 fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 

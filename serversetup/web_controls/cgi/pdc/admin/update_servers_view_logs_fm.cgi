@@ -109,59 +109,62 @@ YEAR=`echo $DATE_INFO | cut -d- -f1`
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-WIDTH=180
-WIDTH2=200
-HEIGHT=20
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	WIDTH=180
+	WIDTH2=200
+	HEIGHT=20
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox
-WIDTH=160
-WIDTH2=200
-HEIGHT=30
-TABLECLASS=mobilestandard
+	DIV_ID=mobileactionbox
+	WIDTH=160
+	WIDTH2=200
+	HEIGHT=30
+	TABLECLASS=mobilestandard
 fi
 echo '<form name="testform" action="/cgi-bin/admin/update_servers_view_logs.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"View Server Update Logs"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="'$DIV_ID'">
-'
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"View Server Update Logs"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="'$DIV_ID'">
+	'
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"View Server Update Logs"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the update logs for."'</span></a></td>
-</tr></table>' 
+	echo '<div id="'$DIV_ID'"><div id="titlebox">
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr>
+	<td style="vertical-align: top;"><div class="sectiontitle">'$"View Server Update Logs"'</div></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the update logs for."'</span></a></td>
+	<td>
+		<button class="button" formaction="update_servers_fm.cgi" name="_">'$"Update Servers"'</button>
+	</td>
+	</tr></table>' 
 fi
 
 
