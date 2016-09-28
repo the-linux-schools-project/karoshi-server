@@ -36,7 +36,8 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Offsite Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Offsite Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -52,7 +53,7 @@ $(document).ready(function()
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
-echo '                window.location = "/cgi-bin/admin/backup_configure_fm.cgi";'
+echo '                window.location = "/cgi-bin/admin/backup_configure_offsite_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -99,65 +100,101 @@ done
 
 [ -z "$ACTION" ] && ACTION=view
 
-if [ "$ACTION" = delete ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallydelete ]
+if [ "$ACTION" = reallyadd ]
 then
-	#Assign BACKUPNAME
+	#Assign BACKUPUSERNAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
 	do
 		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPNAMEcheck ]
+		if [ `echo $DATAHEADER'check'` = BACKUPUSERNAMEcheck ]
 		then
 			let COUNTER=$COUNTER+1
-			BACKUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			BACKUPUSERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 			break
 		fi
 		let COUNTER=$COUNTER+1
 	done
 
-	if [ "$ACTION" = reallyedit ]
-	then
-		#Assign BACKUPFOLDER
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = BACKUPFOLDERcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				BACKUPFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
-
-		#Assign DURATION
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = DURATIONcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				DURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
-	fi
-fi
-
-if [ "$ACTION" = assignbackupserver ]
-then
-	#Assign BACKUPSERVER
+	#Assign BACKUPSERVERNAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
 	do
 		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPSERVERcheck ]
+		if [ `echo $DATAHEADER'check'` = BACKUPSERVERNAMEcheck ]
 		then
 			let COUNTER=$COUNTER+1
-			BACKUPSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			BACKUPSERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign BACKUPTYPE
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPTYPEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign BACKUPPASSWORD
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPPASSWORDcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPPASSWORD=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign ENCRYPTIONKEY
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = ENCRYPTIONKEYcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			ENCRYPTIONKEY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign HOURS
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = HOURScheck ]
+		then
+			let COUNTER=$COUNTER+1
+			HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MINUTES
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
+		then
+			let COUNTER=$COUNTER+1
+			MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -213,35 +250,41 @@ then
 	show_status
 fi
 
-if [ "$ACTION" = delete ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallydelete ]
+if [ "$ACTION" = reallyadd ]
 then
 	
-	if [ -z "$BACKUPNAME" ]
+	if [ -z "$BACKUPUSERNAME" ]
 	then
-		MESSAGE=$"Blank backup name."
+		MESSAGE=$"You have not entered a backup name."
 		show_status
 	fi
-	if [ "$ACTION" = reallyedit ]
-	then
-		if [ -z "$BACKUPFOLDER" ]
-		then
-			MESSAGE=$"Blank backup folder."
-			show_status
-		fi
 
-		if [ -z "$DURATION" ]
-		then
-			MESSAGE=$"Blank duration."
-			show_status
-		fi
+	if [ -z "$BACKUPSERVERNAME" ]
+	then
+		MESSAGE=$"You have not entered a backup server name."
+		show_status
 	fi
+
+	if [ -z "$BACKUPTYPE" ]
+	then
+		MESSAGE=$"You have not chosen a backup type."
+		show_status
+	fi
+
+	if [ -z "$ENCRYPTIONKEY" ]
+	then
+		MESSAGE=$"You have not entered an encryption key."
+		show_status
+	fi
+
+
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Configure Offsite Backup"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/backup_configure_fm.cgi" method="post">
+<form action="/cgi-bin/admin/backup_configure_offsite_fm.cgi" method="post">
 <button class="button" name="ChooseServer_" value="_">
 '$"Select server"'
 </button>
@@ -250,22 +293,20 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
 then
-	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup Folder"'"></form></td>
-	<td><form action="/cgi-bin/admin/backup_assign_fm.cgi" name="testform" method="post">
-	<input name="_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Change Backup Server"'"></form></td>'
+	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>'
 fi
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ]
 then
-	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Backups"'"></form></td>'
+	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Offsite Backups"'"></form></td>'
 fi
 echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
 </div><br><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$BACKUPSERVER:$BACKUPSTATUS:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit

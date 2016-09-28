@@ -85,7 +85,7 @@ exit
 
 #Show list of servers
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE backups $"Configure" view notset "____"
+/opt/karoshi/web_controls/show_servers $MOBILE all $"Configure" view notset "____"
 
 echo '</div></div></form></div></body></html>'
 exit

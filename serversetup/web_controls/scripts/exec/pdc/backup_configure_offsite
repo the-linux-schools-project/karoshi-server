@@ -29,17 +29,17 @@ LOG_DATE=`date +%F`
 ########################
 #Check md5checksum
 ########################
-if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_cgi
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_offsite_cgi
 then
-	echo `date`: backup_configure - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-source /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`
+source /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_offsite_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $backup_configure_cgi'check' ]
+if [ $MD5SUM'check' != $backup_configure_offsite_cgi'check' ]
 then
-	echo `date`: backup_configure - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 ########################
@@ -48,52 +48,54 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-	echo `date`: backup_configure - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
 if [ -z "$DATA" ]
 then
-	echo `date`: backup_configure - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-ACTION=`echo "$DATA" | cut -s -d: -f5`
-BACKUPNAME=`echo "$DATA" | cut -s -d: -f6`
-BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f7 | sed 's/%2F/\//g'`
-DURATION=`echo "$DATA" | cut -s -d: -f8 | tr -cd '0-9'`
-BACKUPSERVER=`echo "$DATA" | cut -s -d: -f9`
-BACKUPSTATUS=`echo "$DATA" | cut -s -d: -f10`
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
+BACKUPSERVERNAME=`echo "$DATA" | cut -s -d: -f6`
+BACKUPUSERNAME=`echo "$DATA" | cut -s -d: -f7`
+BACKUPTYPE=`echo "$DATA" | cut -s -d: -f8`
+BACKUPPASSWORD=`echo "$DATA" | cut -s -d: -f9`
+ENCRYPTIONKEY=`echo "$DATA" | cut -s -d: -f10`
+HOURS=`echo "$DATA" | cut -s -d: -f11`
+MINUTES=`echo "$DATA" | cut -s -d: -f12`
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-	echo `date`: backup_configure - Not called by backup_configure.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Not called by backup_configure_offsite.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: backup_configure - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: backup_configure - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: backup_configure - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: backup_configure - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
@@ -101,32 +103,15 @@ if [ "$ACTION" = delete ]
 then
 	if [ -z "$BACKUPNAME" ]
 	then
-		echo `date`: backup_configure - Blank backupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: backup_configure_offsite - Blank backupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		exit 101
 	fi
 fi
 
-if [ "$ACTION" = assignbackupserver ]
-then
-	if [ -z "$BACKUPSERVER" ]
-	then
-		echo `date`: backup_configure - Blank backupserver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		exit 101
-	fi	
-fi
-
-if [ "$ACTION" = setbackupstatus ]
-then
-	if [ -z "$BACKUPSTATUS" ]
-	then
-		echo `date`: backup_configure - Blank backupstatus by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		exit 101
-	fi	
-fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	echo `date`: backup_configure - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: backup_configure_offsite - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
@@ -144,17 +129,210 @@ ICON2=/images/submenus/file/delete.png
 #Set backup status
 if [ "$ACTION" = setbackupstatus ]
 then
-	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME" ]
+	if [ -f /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME" ]
 	then
-		echo `date`": backup_configure - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-		rm -f /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME"
+		echo `date`": backup_configure_offsite - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		rm -f /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME"
 	else
-		echo `date`": backup_configure - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-		touch /opt/karoshi/server_network/backup_servers/stop_backup_"$SERVERNAME"
+		echo `date`": backup_configure_offsite - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		touch /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME"
 	
 	fi
 	ACTION=view
 fi
+
+if [ ! -d "/opt/karoshi/server_network/backup_servers_offsite" ]
+then
+	mkdir -p "/opt/karoshi/server_network/backup_servers_offsite/"
+	chmod 0700 "/opt/karoshi/server_network/backup_servers_offsite/"
+fi
+
+#Check to see if there is an offsite backup configured for this server
+if [ ! -d "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME" ]
+then
+	mkdir -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME"
+	chmod 0700 "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME"
+	ACTION=add
+fi
+
+if [ "$ACTION" = reallyadd ]
+then
+	echo `date`": backup_configure_offsite - adding $BACKUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+
+	if [ ! -d "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME" ]
+	then
+		mkdir -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME"
+		chmod 0700 "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME"
+	fi
+
+	#Create config.cfg
+	touch "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	chmod 0700 "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "BACKUPUSERNAME=$BACKUPUSERNAME" > "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "BACKUPSERVERNAME=$BACKUPSERVERNAME" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "BACKUPTYPE=$BACKUPTYPE" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "BACKUPPASSWORD=$BACKUPPASSWORD" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "ENCRYPTIONKEY=$ENCRYPTIONKEY" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "HOURS=$HOURS" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "MINUTES=$MINUTES" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+
+	#Create backup.cfg
+	if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg" ]
+	then
+		#Check if we have an email server
+		if [ -f /opt/karoshi/server_network/emailserver ]
+		then
+			EMAILSERVER=$(cat /opt/karoshi/server_network/emailserver)
+		else
+			EMAILSERVER=notset
+		fi
+		echo /etc,21 > "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		if [ $SERVERNAME = $(hostname-fqdn) ]
+		then
+			echo /opt/karoshi,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/applications,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/staffshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/officeshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/itadminshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		fi
+
+		if [ "$INSTALL_TYPE" = education ] && [ $SERVERNAME = $(hostname-fqdn) ]
+		then
+			echo /home/subjects,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/users/exams,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		fi
+
+		if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
+		then
+			echo /var/lib/samba/,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		fi
+
+		if [ "$SERVERNAME" = "$EMAILSERVER" ]
+		then
+			echo /home/users/email,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		fi
+		echo /var/www/html,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+
+		if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ]
+		then
+			echo /var/www/moodle-data,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		fi
+		echo /var/lib/mysql,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+
+		#Add in home area paths from primary group information
+		for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
+		do
+			source /opt/karoshi/server_network/group_information/"$PRIGROUP"
+			if [ "$SERVERNAME" = "$SERVER" ] || [ "$SERVERNAME" = "$EMAILSERVER" ]
+			then
+				echo "$HOMEPATH,21" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			fi
+		done
+	fi
+
+	#Copy the configuration files to the server and schedule the offsite backup
+	if [ $SERVERNAME != $(hostname-fqdn) ]
+	then
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		if [ ! -d /opt/karoshi/server_network/backup_servers_offsite ]
+		then
+			mkdir -p /opt/karoshi/server_network/backup_servers_offsite
+			chmod 0700 /opt/karoshi/server_network/backup_servers_offsite
+		fi
+		'
+		scp -p -r /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite 1> /dev/null
+	else
+		echo schedule offsite backup
+	fi
+
+	ACTION=view
+fi
+
+if [ $(ls -1  "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME" | wc -l) = 0 ]
+then
+	ACTION=add
+fi
+
+if [ "$ACTION" = add ]
+then
+	#Show options to add an offsite backup
+
+	ENCRYPTIONKEY=$(echo $RANDOM | sha256sum | base64 | head -c 35 ; echo)
+
+	echo '<b>'$"Add Offsite Backup"'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	<input type="hidden" name="____ACTION____" value="reallyadd">
+	<table class="standard" style="text-align: left;" >
+    	<tbody>
+	<tr><td style="width: 180px;">'$"Backup Server"'</td><td><input tabindex= "1" value="'$BACKUPSERVERNAME'" name="____BACKUPSERVERNAME____" style="width: 200px;" size="20" type="text"></td></tr>
+	<tr><td>'$"Username to connect as"'</td><td><input tabindex= "2" value="'$BACKUPUSERNAME'" name="____BACKUPUSERNAME____" style="width: 200px;" size="20" type="text"></td></tr>
+	<tr><td>'$"Password"'</td><td><input tabindex= "3" value="'$BACKUPPASSWORD'" name="____BACKUPPASSWORD____" style="width: 200px;" size="20" type="password"></td></tr>
+	<tr><td>'$"Encryption Key"'</td><td><input tabindex= "4" value="'$ENCRYPTIONKEY'" name="____ENCRYPTIONKEY____" style="width: 200px;" size="20" type="text"></td></tr>
+	<tr><td>'$"Backup Type"'</td><td>
+	<select name="____BACKUPTYPE____" style="width: 200px;">
+	<option value="ftp">FTP</option>
+	<option value="sftp">SFTP</option>
+	<option value="scp">SSH / SCP</option>
+	</select>
+	</td></tr>
+	<tr><td>'$"Backup Time"'</td><td>
+	<select name="____HOURS____" style="width: 100px;">'
+	COUNTER=24
+	while [ $COUNTER -ge 0 ]
+	do
+		HOURS=$COUNTER
+		[ $COUNTER -lt 10 ] && HOURS=0$COUNTER
+		echo '<option>'$HOURS'</option>'
+		let COUNTER=$COUNTER-1
+	done
+	echo  '</select>
+	<select name="____MINUTES____" style="width: 100px;">
+	<option>00</option>'
+	COUNTER=59
+	while [ $COUNTER -ge 1 ]
+	do
+		MINUTES=$COUNTER
+		[ $COUNTER -lt 10 ] && MINUTES=0$COUNTER
+		echo '<option>'$MINUTES'</option>'
+		let COUNTER=$COUNTER-1
+	done
+	echo '</select>
+	</tbody></table><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>
+	'
+	exit
+fi
+
+if [ "$ACTION" = view ]
+then
+	for BACKUPSERVERFOLDER in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/)
+	do
+		source /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPSERVERFOLDER/connect.cfg
+
+		#Get backup status
+		BACKUPSTATUS=$"Enabled"
+		BACKUPSTATUS2=disable
+		if [ -f /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPSERVERFOLDER/stop_backup ]
+		then
+			BACKUPSTATUS=$"Disabled"
+			BACKUPSTATUS2=enable
+		fi
+
+		#Show offsite backup details for scheduled servers
+
+		echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
+		<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td>
+	'$BACKUPSERVERNAME'</td></tr>
+		<tr><td><b>'$"Backup Type"'</b></td><td>
+	'$BACKUPTYPE'</td></tr>
+		<tr><td><b>'$"Backup Time"'</b></td><td>'$HOURS':'$MINUTES'</td></tr>
+		<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td></tr>
+		</tbody></table></form><br><br>'
+
+	done
+fi
+
+exit
+
 
 if [ "$ACTION" = reallyedit ]
 then
@@ -186,7 +364,7 @@ then
 		DURATION=`echo "$BACKUPDATA" | cut -d, -f3`
 	fi
 
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
+	echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">'
 	if [ "$ACTION" = edit ]
 	then
@@ -224,10 +402,10 @@ then
 	</tbody></table><br>
 	<table class="standard" style="text-align: left;" >
 	<tr><td>
-	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
+	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
 	<input value="'$"Delete"'" class="button" type="submit"></form></td><td>
-	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
+	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
 fi
 
 if [ "$ACTION" = reallydelete ]
@@ -265,7 +443,7 @@ then
 	[ "$BACKUPTIME_MINS" = 0 ] && BACKUPTIME_MINS="00"	
 
 	#Show backup server and backup status
-	echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
+	echo '<form action="/cgi-bin/admin/backup_configure_offsite_offsite.cgi" name="testform" method="post"><table class="standard" style="text-align: left;" >
 	<tr><td style="width: 200px; vertical-align:top"><b>'$"Backup Server"'</b></td><td>
 '$BACKUPSERVER'</td></tr>
 	<tr><td><b>'$"Backup Time"'</b></td><td>'$BACKUPTIME_HOURS':'$BACKUPTIME_MINS'</td></tr>
@@ -273,7 +451,7 @@ then
 	</tbody></table></form><br><br>'
 	
 	#Show all folders that are set to be backed up.
-	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
+	echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
     	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th style="width: 80px;"><b>'$"Days"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g'`
 	do
