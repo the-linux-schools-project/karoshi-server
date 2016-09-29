@@ -58,6 +58,9 @@ then
 	echo `date`: backup_configure_offsite - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+
+#echo $DATA"<br>"
+
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -70,6 +73,8 @@ BACKUPPASSWORD=`echo "$DATA" | cut -s -d: -f9`
 ENCRYPTIONKEY=`echo "$DATA" | cut -s -d: -f10`
 HOURS=`echo "$DATA" | cut -s -d: -f11`
 MINUTES=`echo "$DATA" | cut -s -d: -f12`
+BACKUPNAME=`echo "$DATA" | cut -s -d: -f13`
+BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f14`
 ########################
 #Check data
 ########################
@@ -129,13 +134,13 @@ ICON2=/images/submenus/file/delete.png
 #Set backup status
 if [ "$ACTION" = setbackupstatus ]
 then
-	if [ -f /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME" ]
+	if [ -f /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/stop_backup ]
 	then
 		echo `date`": backup_configure_offsite - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-		rm -f /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME"
+		rm -f /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/stop_backup
 	else
 		echo `date`": backup_configure_offsite - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-		touch /opt/karoshi/server_network/backup_servers_offsite/stop_backup_"$SERVERNAME"
+		touch /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/stop_backup
 	
 	fi
 	ACTION=view
@@ -302,16 +307,52 @@ then
 	exit
 fi
 
+if [ "$ACTION" = delete ]
+then
+	#Get data for this backup
+	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's/%2F/\//g')
+	DURATION=`grep "$BACKUPFOLDER," /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
+
+	echo '<table class="tablesorter" style="text-align: left;" >
+    	<thead><tr><th style="width: 200px;"><b>'$"Backup Folder"'</b></th><th><b>'$"Days Tracked"'</b></th></tr></thead><tbody>
+	<tr><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
+	</tbody></table><br>
+	<table class="standard" style="text-align: left;" >
+	<tr><td>
+	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete">
+	<input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
+	<input type="hidden" name="____BACKUPFOLDER____" value="'$BACKUPFOLDER'">
+	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	
+	<input value="'$"Delete"'" class="button" type="submit"></form></td><td>
+	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
+fi
+
+if [ "$ACTION" = reallydelete ]
+then
+	echo `date`: "backup_configure_offsite - deleting $BACKUPFOLDER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's/%2F/\\\//g')
+	
+	#Delete the matching line from backup_folders
+	sed -i '/'$BACKUPFOLDER',/d' /opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME"/$BACKUPNAME/backup.cfg
+	ACTION=view
+	#Copy backup.cfg to the server
+	if [ $SERVERNAME != $(hostname-fqdn) ]
+	then
+		scp -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg" root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME/$BACKUPNAME"/ 1> /dev/null	
+	fi
+fi
+
 if [ "$ACTION" = view ]
 then
-	for BACKUPSERVERFOLDER in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/)
+	for BACKUPNAME in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/)
 	do
-		source /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPSERVERFOLDER/connect.cfg
+		source /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/connect.cfg
 
 		#Get backup status
 		BACKUPSTATUS=$"Enabled"
 		BACKUPSTATUS2=disable
-		if [ -f /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPSERVERFOLDER/stop_backup ]
+		if [ -f /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/stop_backup ]
 		then
 			BACKUPSTATUS=$"Disabled"
 			BACKUPSTATUS2=enable
@@ -325,13 +366,51 @@ then
 		<tr><td><b>'$"Backup Type"'</b></td><td>
 	'$BACKUPTYPE'</td></tr>
 		<tr><td><b>'$"Backup Time"'</b></td><td>'$HOURS':'$MINUTES'</td></tr>
-		<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td></tr>
+		<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____BACKUPUSERNAME____'$BACKUPUSERNAME'____BACKUPSERVERNAME____'$BACKUPSERVERNAME'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td></tr>
 		</tbody></table></form><br><br>'
 
+
+		#Show all folders that are set to be backed up.
+		echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
+	    	<thead><tr><th style="width: 300px;"><b>'$"Backup Folder"'</b></th><th style="width: 80px;"><b>'$"Days"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg | sed 's/ /REPLACESPACE/g'`
+		do
+			BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
+			DURATION=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
+			echo '<tr><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td>
+			<td>
+				<button class="info" name="____DoEdit____" value="____ACTION____edit____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
+				<img src="'$ICON1'" alt="'$"Edit"'">
+				<span>'$"Edit"'<br>'$BACKUPNAME'</span>
+				</button>
+			</td>
+			<td>
+				<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'________BACKUPNAME____'$BACKUPNAME'____">
+				<img src="'$ICON2'" alt="'$"Delete"'">
+				<span>'$"Delete"'<br>'$BACKUPNAME'</span>
+				</button>
+			</td></tr>'
+		done
+		echo '</tbody></table></form>'
 	done
 fi
 
 exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if [ "$ACTION" = reallyedit ]
@@ -389,31 +468,7 @@ then
 	</form>'
 fi
 
-if [ "$ACTION" = delete ]
-then
-	#Get data for this backup
-	BACKUPDATA=`grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders`
-	BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
-	DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
 
-	echo '<table class="tablesorter" style="text-align: left;" >
-    	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th><b>'$"Days Tracked"'</b></th></tr></thead><tbody>
-	<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
-	</tbody></table><br>
-	<table class="standard" style="text-align: left;" >
-	<tr><td>
-	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
-	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
-	<input value="'$"Delete"'" class="button" type="submit"></form></td><td>
-	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
-fi
-
-if [ "$ACTION" = reallydelete ]
-then
-	#Delete the matching line from backup_folders
-	sed -i '/,'$BACKUPNAME',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
-	ACTION=view
-fi
 
 if [ "$ACTION" = view ]
 then

@@ -100,7 +100,38 @@ done
 
 [ -z "$ACTION" ] && ACTION=view
 
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ]
+then
+	#Assign BACKUPNAME
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPNAMEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign BACKUPFOLDER
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = BACKUPFOLDERcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			BACKUPFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi 
+
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = setbackupstatus ]
 then
 	#Assign BACKUPUSERNAME
 	COUNTER=2
@@ -115,7 +146,6 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
-
 	#Assign BACKUPSERVERNAME
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -129,7 +159,10 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
+fi
 
+if [ "$ACTION" = reallyadd ]
+then
 	#Assign BACKUPTYPE
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -307,6 +340,6 @@ echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karo
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit
