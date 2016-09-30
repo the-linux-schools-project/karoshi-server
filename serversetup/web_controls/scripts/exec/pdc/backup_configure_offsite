@@ -258,6 +258,40 @@ then
 	ACTION=add
 fi
 
+if [ "$ACTION" = reallyaddbackupfolder ]
+then
+	BACKUPFOLDER=$(echo $BACKUPFOLDER | sed 's/%2F/\//g')
+
+	echo `date`: "backup_configure_offsite -adding $BACKUPFOLDER to $BACKUPNAME for $SERVERNAME by  $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $(grep -c ^$BACKUPFOLDER /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg) = 0 ]
+	then
+		echo "$BACKUPFOLDER,21" >> /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg
+
+		#Copy backup.cfg to the server
+		scp -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg" root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME/$BACKUPNAME"/ 1> /dev/null	
+	fi
+	ACTION=view
+fi
+
+if [ "$ACTION" = addbackupfolder ]
+then
+	echo '<b>'$"Add Backup Folder"'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	<input type="hidden" name="____ACTION____" value="reallyaddbackupfolder">
+	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	<table class="standard" style="text-align: left;" >
+    	<tbody>
+	<tr><td style="width: 180px;">'$"Backup Folder"'</td><td><input tabindex= "1" value="'$BACKUPFOLDER'" name="____BACKUPFOLDER____" style="width: 200px;" size="20" type="text"></td></tr><tr><td>'$"Backup Server"'</td><td><select name="____BACKUPNAME____" style="width: 200px;">'
+	#Show list of configured backup servers to add to
+	for BACKUPSERVER in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME)
+	do
+		echo '<option>'$BACKUPSERVER'</option>'
+	done
+	
+	echo '</select></td></tr></tbody></table><br>
+	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>
+	'
+fi 
+
 if [ "$ACTION" = add ]
 then
 	#Show options to add an offsite backup
@@ -385,7 +419,7 @@ then
 				</button>
 			</td>
 			<td>
-				<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'________BACKUPNAME____'$BACKUPNAME'____">
+				<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____BACKUPNAME____'$BACKUPNAME'____">
 				<img src="'$ICON2'" alt="'$"Delete"'">
 				<span>'$"Delete"'<br>'$BACKUPNAME'</span>
 				</button>

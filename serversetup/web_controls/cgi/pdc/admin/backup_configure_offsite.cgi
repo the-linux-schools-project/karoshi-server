@@ -100,7 +100,7 @@ done
 
 [ -z "$ACTION" ] && ACTION=view
 
-if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ]
+if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ]
 then
 	#Assign BACKUPNAME
 	COUNTER=2
@@ -327,7 +327,10 @@ echo '<div id="actionbox3"><div id="titlebox">
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
 then
 	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>'
+	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>
+	<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	<input name="____ACTION____addbackupfolder____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup Folder"'"></form></td>
+	'
 fi
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ]
