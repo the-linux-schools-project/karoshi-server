@@ -100,7 +100,7 @@ done
 
 [ -z "$ACTION" ] && ACTION=view
 
-if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ]
+if [ "$ACTION" = deletebackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ] || [ "$ACTION" = editbackupfolder ]
 then
 	#Assign BACKUPNAME
 	COUNTER=2
@@ -129,6 +129,21 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
+
+	#Assign DURATION
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = DURATIONcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			DURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g' | tr -cd '0-9'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
 fi 
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = setbackupstatus ]
@@ -283,14 +298,29 @@ then
 	show_status
 fi
 
-if [ "$ACTION" = reallyadd ]
+if [ "$ACTION" = reallyaddbackupfolder ]
 then
-	
-	if [ -z "$BACKUPUSERNAME" ]
+	if [ -z "$BACKUPFOLDER" ]
 	then
-		MESSAGE=$"You have not entered a backup name."
+		MESSAGE=$"You have not entered a backup folder."
 		show_status
 	fi
+
+	if [ -z "$DURATION" ]
+	then
+		MESSAGE=$"You have not entered a duration."
+		show_status
+	fi
+
+	if [ -z "$BACKUPNAME" ]
+	then
+		MESSAGE=$"You have not chosen a backup name."
+		show_status
+	fi
+fi
+
+if [ "$ACTION" = reallyadd ]
+then
 
 	if [ -z "$BACKUPSERVERNAME" ]
 	then
@@ -310,7 +340,11 @@ then
 		show_status
 	fi
 
-
+	if [ -z "$BACKUPUSERNAME" ]
+	then
+		MESSAGE=$"You have not entered a backup user name."
+		show_status
+	fi
 fi
 
 #Generate navigation bar
@@ -343,6 +377,6 @@ echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karo
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit

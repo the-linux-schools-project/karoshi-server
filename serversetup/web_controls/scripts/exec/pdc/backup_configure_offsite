@@ -75,6 +75,7 @@ HOURS=`echo "$DATA" | cut -s -d: -f11`
 MINUTES=`echo "$DATA" | cut -s -d: -f12`
 BACKUPNAME=`echo "$DATA" | cut -s -d: -f13`
 BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f14`
+DURATION=`echo "$DATA" | cut -s -d: -f15`
 ########################
 #Check data
 ########################
@@ -261,33 +262,53 @@ fi
 if [ "$ACTION" = reallyaddbackupfolder ]
 then
 	BACKUPFOLDER=$(echo $BACKUPFOLDER | sed 's/%2F/\//g')
+	sed -i '/'$BACKUPFOLDER',/d' /opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME"/$BACKUPNAME/backup.cfg
+	echo `date`: "backup_configure_offsite -adding $BACKUPFOLDER for $DURATION days to $BACKUPNAME for $SERVERNAME by  $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$BACKUPFOLDER,$DURATION" >> /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg
 
-	echo `date`: "backup_configure_offsite -adding $BACKUPFOLDER to $BACKUPNAME for $SERVERNAME by  $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	if [ $(grep -c ^$BACKUPFOLDER /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg) = 0 ]
-	then
-		echo "$BACKUPFOLDER,21" >> /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg
-
-		#Copy backup.cfg to the server
-		scp -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg" root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME/$BACKUPNAME"/ 1> /dev/null	
-	fi
+	#Copy backup.cfg to the server
+	scp -p "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg" root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME/$BACKUPNAME"/ 1> /dev/null	
 	ACTION=view
 fi
 
-if [ "$ACTION" = addbackupfolder ]
+if [ "$ACTION" = addbackupfolder ] || [ "$ACTION" = editbackupfolder ]
 then
-	echo '<b>'$"Add Backup Folder"'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	SECTIONTITLE=$"Add Backup Folder"
+	[ "$ACTION" = editbackupfolder ] && SECTIONTITLE=$"Edit Backup Folder"
+	if [ ! -z "$BACKUPFOLDER" ]
+	then
+		BACKUPFOLDER=$(echo $BACKUPFOLDER | sed 's/%2F/\//g')
+	fi
+
+	echo '<b>'$SECTIONTITLE'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
 	<input type="hidden" name="____ACTION____" value="reallyaddbackupfolder">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
 	<table class="standard" style="text-align: left;" >
     	<tbody>
-	<tr><td style="width: 180px;">'$"Backup Folder"'</td><td><input tabindex= "1" value="'$BACKUPFOLDER'" name="____BACKUPFOLDER____" style="width: 200px;" size="20" type="text"></td></tr><tr><td>'$"Backup Server"'</td><td><select name="____BACKUPNAME____" style="width: 200px;">'
-	#Show list of configured backup servers to add to
-	for BACKUPSERVER in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME)
-	do
-		echo '<option>'$BACKUPSERVER'</option>'
-	done
-	
-	echo '</select></td></tr></tbody></table><br>
+	<tr><td style="width: 180px;">'$"Backup Folder"'</td><td>'
+	if [ "$ACTION" = addbackupfolder ]
+	then
+		echo '<input tabindex= "1" value="'$BACKUPFOLDER'" name="____BACKUPFOLDER____" style="width: 200px;" size="20" type="text">'
+	else
+		echo ''$BACKUPFOLDER'<input type="hidden" name="____BACKUPFOLDER____" value="'$BACKUPFOLDER'">'
+	fi
+	echo '</td></tr>
+	<tr><td>'$"Duration"'</td><td><input tabindex= "2" value="'$DURATION'" name="____DURATION____" style="width: 200px;" size="20" type="text"></td></tr>
+	<tr><td>'$"Backup Server"'</td><td>'
+	if [ "$ACTION" = addbackupfolder ]
+	then
+		echo '<select name="____BACKUPNAME____" style="width: 200px;">'
+		#Show list of configured backup servers to add to
+		for BACKUPSERVER in $(ls -1 /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME)
+		do
+			echo '<option>'$BACKUPSERVER'</option>'
+		done
+		echo '</select>'
+	else
+		echo ''$BACKUPNAME'<input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">'
+	fi
+	echo '</td></tr>
+	</tbody></table><br>
 	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>
 	'
 fi 
@@ -341,7 +362,7 @@ then
 	exit
 fi
 
-if [ "$ACTION" = delete ]
+if [ "$ACTION" = deletebackupfolder ]
 then
 	#Get data for this backup
 	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's/%2F/\//g')
@@ -353,7 +374,7 @@ then
 	</tbody></table><br>
 	<table class="standard" style="text-align: left;" >
 	<tr><td>
-	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete">
+	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydeletebackupfolder">
 	<input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
 	<input type="hidden" name="____BACKUPFOLDER____" value="'$BACKUPFOLDER'">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
@@ -362,7 +383,7 @@ then
 	<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
 fi
 
-if [ "$ACTION" = reallydelete ]
+if [ "$ACTION" = reallydeletebackupfolder ]
 then
 	echo `date`: "backup_configure_offsite - deleting $BACKUPFOLDER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's/%2F/\\\//g')
@@ -413,13 +434,13 @@ then
 			DURATION=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
 			echo '<tr><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td>
 			<td>
-				<button class="info" name="____DoEdit____" value="____ACTION____edit____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
+				<button class="info" name="____DoEdit____" value="____ACTION____editbackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____DURATION____'$DURATION'____">
 				<img src="'$ICON1'" alt="'$"Edit"'">
 				<span>'$"Edit"'<br>'$BACKUPNAME'</span>
 				</button>
 			</td>
 			<td>
-				<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____BACKUPNAME____'$BACKUPNAME'____">
+				<button class="info" name="____DoDelete____" value="____ACTION____deletebackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____BACKUPNAME____'$BACKUPNAME'____">
 				<img src="'$ICON2'" alt="'$"Delete"'">
 				<span>'$"Delete"'<br>'$BACKUPNAME'</span>
 				</button>
