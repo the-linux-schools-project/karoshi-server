@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html>
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Offsite Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Off-Site Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -100,7 +100,7 @@ done
 
 [ -z "$ACTION" ] && ACTION=view
 
-if [ "$ACTION" = deletebackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ] || [ "$ACTION" = editbackupfolder ]
+if [ "$ACTION" = deletebackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ] || [ "$ACTION" = editbackupfolder ] || [ "$ACTION" = delete ] || [ "$ACTION" = edit ]
 then
 	#Assign BACKUPNAME
 	COUNTER=2
@@ -146,7 +146,7 @@ then
 
 fi 
 
-if [ "$ACTION" = reallyadd ] || [ "$ACTION" = setbackupstatus ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ] || [ "$ACTION" = setbackupstatus ]
 then
 	#Assign BACKUPUSERNAME
 	COUNTER=2
@@ -350,7 +350,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Configure Offsite Backup"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Configure Off-Site Backup"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/backup_configure_offsite_fm.cgi" method="post">
 <button class="button" name="ChooseServer_" value="_">
 '$"Select server"'
@@ -358,13 +358,10 @@ echo '<div id="actionbox3"><div id="titlebox">
 </form>
 </td>'
 
-if [ "$ACTION" = view ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ]
+if [ "$ACTION" = view ] || [ "$ACTION" = editbackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ] || [ "$ACTION" = deletebackupfolder ]
 then
 	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>
-	<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-	<input name="____ACTION____addbackupfolder____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Backup Folder"'"></form></td>
-	'
+	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>'
 fi
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ]
@@ -372,7 +369,7 @@ then
 	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
 	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Offsite Backups"'"></form></td>'
 fi
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
+echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
 </div><br><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
