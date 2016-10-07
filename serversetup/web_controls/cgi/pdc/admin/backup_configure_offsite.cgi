@@ -64,7 +64,6 @@ exit
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
-
 #########################
 #Assign data to variables
 #########################
@@ -247,6 +246,21 @@ then
 		fi
 		let COUNTER=$COUNTER+1
 	done
+
+	#Assign STORAGEPATH
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = STORAGEPATHcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			STORAGEPATH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
 fi
 
 if [ "$ACTION" = setbackupstatus ]
@@ -345,6 +359,12 @@ then
 		MESSAGE=$"You have not entered a backup user name."
 		show_status
 	fi
+
+	if [ -z "$STORAGEPATH" ]
+	then
+		MESSAGE=$"You have not entered a storage path."
+		show_status
+	fi
 fi
 
 #Generate navigation bar
@@ -374,6 +394,6 @@ echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karo
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit

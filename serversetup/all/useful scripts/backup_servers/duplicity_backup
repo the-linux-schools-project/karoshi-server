@@ -1,0 +1,78 @@
+#!/bin/bash
+
+#Get backup data
+#Config path
+BACKUPUSERNAME=$1
+BACKUPSERVER=$2
+
+if [ -z "$BACKUPUSERNAME" ]
+then
+	echo "No backup username entered."
+	exit
+fi
+
+if [ -z "$BACKUPSERVER" ]
+then
+	echo "No backup servername entered."
+	exit
+fi
+
+if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/connect.cfg" ]
+then
+	echo "Missing connection file."
+	exit
+fi
+
+if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg" ]
+then
+	echo "Missing backup file."
+	exit
+fi
+
+#Get connection data
+source "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/connect.cfg"
+
+#Check connection data
+if [ -z "$BACKUPUSERNAME" ]
+then
+	echo "The backup username has not been set."
+	exit
+fi
+
+if [ -z "$BACKUPTYPE" ]
+then
+	echo "The backup type has not been set."
+	exit
+fi
+
+if [ -z "$ENCRYPTIONKEY" ]
+then
+	echo "The encryption key has not been set."
+	exit
+fi
+
+
+function run_backup {
+export PASSPHRASE="$PASSPHRASE"
+
+#scp
+if [ "$BACKUPTYPE" = scp ]
+then
+	#Duplicity needs to have keychain installed and configured if you want to use ssh keys with scp.
+	duplicity "$BACKUPFOLDER" scp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/
+fi
+}
+
+for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")
+do
+	BACKUPFOLDER=$(echo $BACKUPDATA | cut -d, -f1)
+	BACKUPDURATION=$(echo $BACKUPDATA | cut -d, -f2)
+	echo $BACKUPFOLDER - $BACKUPDURATION
+	#Run the backup
+	run_backup
+done
+
+
+
+
+

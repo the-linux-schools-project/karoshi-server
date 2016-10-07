@@ -76,6 +76,7 @@ MINUTES=`echo "$DATA" | cut -s -d: -f12`
 BACKUPNAME=`echo "$DATA" | cut -s -d: -f13`
 BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f14`
 DURATION=`echo "$DATA" | cut -s -d: -f15`
+STORAGEPATH=`echo "$DATA" | cut -s -d: -f16`
 ########################
 #Check data
 ########################
@@ -153,6 +154,7 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
+	STORAGEPATH=$(echo "$STORAGEPATH" | sed 's/%2F/\\\//g')
 	echo `date`": backup_configure_offsite - adding $BACKUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 
 	if [ ! -d "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME" ]
@@ -167,6 +169,7 @@ then
 	echo "BACKUPUSERNAME=$BACKUPUSERNAME" > "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "BACKUPSERVERNAME=$BACKUPSERVERNAME" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "BACKUPTYPE=$BACKUPTYPE" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "STORAGEPATH=$STORAGEPATH" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "BACKUPPASSWORD=$BACKUPPASSWORD" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "ENCRYPTIONKEY=$ENCRYPTIONKEY" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "HOURS=$HOURS" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
@@ -339,6 +342,7 @@ then
 	if [ "$ACTION" = add ]
 	then
 		ENCRYPTIONKEY=$(echo $RANDOM | sha256sum | base64 | head -c 35 ; echo)
+		STORAGEPATH=/home/offsite-backups/
 	else
 		source "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/connect.cfg"
 	fi
@@ -350,11 +354,13 @@ then
     	<tbody>
 	<tr><td style="width: 180px;">'$"Backup Server"'</td><td><input tabindex= "1" value="'$BACKUPSERVERNAME'" name="____BACKUPSERVERNAME____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the fully qualified name of the backup server."'</span></a></td></tr>
 	<tr><td>'$"Username to connect as"'</td><td><input tabindex= "2" value="'$BACKUPUSERNAME'" name="____BACKUPUSERNAME____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username to use to connect to the backup server."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" value="'$BACKUPPASSWORD'" name="____BACKUPPASSWORD____" style="width: 200px;" size="20" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password to use for connecting to the backup server. Leave this blank if you are using an ssh key to connect."'</span></a></td></tr>
-	<tr><td>'$"Encryption Key"'</td><td><input tabindex= "4" value="'$ENCRYPTIONKEY'" name="____ENCRYPTIONKEY____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the encryption key that is used for encrypting your backups. You should keep this key safe to ensure that you can restore from the backup."'</span></a></td></tr>
+	<tr><td>'$"Storage Path"'</td><td><input tabindex= "3" value="'$STORAGEPATH'" name="____STORAGEPATH____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the storage path to where your backups will be stored."'</span></a></td></tr>
+	<tr><td>'$"Password"'</td><td><input tabindex= "4" value="'$BACKUPPASSWORD'" name="____BACKUPPASSWORD____" style="width: 200px;" size="20" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password to use for connecting to the backup server. Leave this blank if you are using an ssh key to connect."'</span></a></td></tr>
+	<tr><td>'$"Encryption Key"'</td><td><input tabindex= "5" value="'$ENCRYPTIONKEY'" name="____ENCRYPTIONKEY____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the encryption key that is used for encrypting your backups. You should keep this key safe to ensure that you can restore from the backup."'</span></a></td></tr>
 	<tr><td>'$"Backup Type"'</td><td>
 	<select name="____BACKUPTYPE____" style="width: 200px;">
 	<option value="ftp">FTP</option>
+	<option value="rsync">Rsync</option>	
 	<option value="sftp">SFTP</option>
 	<option value="scp">SSH / SCP</option>
 	<option value="AmazonS3">Amazon S3</option>
@@ -483,6 +489,8 @@ then
 		<td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____BACKUPUSERNAME____'$BACKUPUSERNAME'____BACKUPSERVERNAME____'$BACKUPSERVERNAME'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td><td><input name="____ACTION____addbackupfolder____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Folder"'"></td></tr>
 		<tr><td style="height: 30px;"><b>'$"Backup Type"'</b></td><td>
 	'$BACKUPTYPE'</td><td></td><td></td></tr>
+		<tr><td style="height: 30px;"><b>'$"Storage Path"'</b></td><td>
+	'$STORAGEPATH'</td><td></td><td></td></tr>
 		<tr><td style="height: 30px;"><b>'$"Backup Time"'</b></td><td>'$HOURS':'$MINUTES'</td><td></td><td></td></tr>
 
 		</tbody></table></form><br>'
