@@ -63,8 +63,8 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
@@ -132,12 +132,11 @@ echo '  <table class="standard" style="text-align: left;" >
       <tr>
         <td style="width: 180px;">'$"Printer"'</td><td>'
 COUNTER=0
-echo '<select name="_PRINTERNAME_" style="width: 200px;"><option label="blank" value=""></option>'
+echo '<select name="____PRINTERNAME____" style="width: 200px;"><option label="blank" value=""></option>'
 while [ $COUNTER -lt $PRINTERCOUNT ]
 do
 	#Get printer name
 	PRINTERNAME=${PRINTERLIST[$COUNTER]}
-	PRINTERNAME=`echo $PRINTERNAME | sed 's/_/123456789/g'`
 	echo '<option value="'$PRINTERNAME'">'$PRINTERNAME'</option>'
 	let COUNTER=$COUNTER+1
 done

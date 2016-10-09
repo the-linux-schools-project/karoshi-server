@@ -53,7 +53,7 @@ $(document).ready(function()
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -99,7 +99,7 @@ echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="tex
 
 echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table class="standard" style="text-align: left;" >'
 echo '<tbody>'
-echo '<tr><td style="width: 180px;">'$"New location"'</td><td><input name="_NEWLOCATION_" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
+echo '<tr><td style="width: 180px;">'$"New location"'</td><td><input name="____NEWLOCATION____" size="15" type="text"> </td><td><input value="Submit" type="submit" class="button"></td></tr>'
 echo '</tbody></table></form><br></div><div id="infobox">'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
@@ -118,7 +118,7 @@ while [ $COUNTER -lt $LOCATION_COUNT ]
 do
 	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
 	echo '<tr><td style="width: 180px;">'$LOCATION'</td><td>
-	<button class="info" name="DoDelete_" value="_DELETE_'$LOCATION'_">
+	<button class="info" name="DoDelete" value="____DELETE____'$LOCATION'____">
 	<img src="/images/submenus/client/delete_location.png" alt="'$"Delete"' '$LOCATION'">
 	<span>'$"Delete"' '$LOCATION'</span>
 	</button>

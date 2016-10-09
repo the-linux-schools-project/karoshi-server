@@ -134,7 +134,7 @@ fi
 if [ $PRINTER_ACTION = setppd ]
 then
 	echo '<form name="setppd" action="/cgi-bin/admin/printers_ppd_assign1.cgi" method="post">
-	<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
+	<input type="hidden" name="____PRINTERNAME____" value="'$PRINTERNAME'">
 	</form>
 	<script>
 	document.setppd.submit();
@@ -145,7 +145,7 @@ fi
 if [ $PRINTER_ACTION = setlocation ]
 then
 	echo '<form name="setppd" action="/cgi-bin/admin/printers_assign_fm.cgi" method="post">
-	<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
+	<input type="hidden" name="____PRINTERNAME____" value="'$PRINTERNAME'">
 	</form>
 	<script>
 	document.setppd.submit();

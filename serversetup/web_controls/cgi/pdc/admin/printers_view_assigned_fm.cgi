@@ -138,7 +138,7 @@ do
 			then
 				echo '<td style="text-align: center;">
 
-			<button class="info" name="_SetDefault_" value="_PRINTACTION_default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_">
+			<button class="info" name="____SetDefault____" value="____PRINTACTION____default:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'____">
 			<img src="/images/help/printer_make_default.png" alt="'$"Set Default"'">
 			<span>'$"Set Default"'</span>
 			</button>
@@ -151,7 +151,7 @@ do
 
 			#Delete option
 			echo '<td>
-			<button class="info" name="_SetDefault_" value="_PRINTACTION_delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'_">
+			<button class="info" name="____SetDefault____" value="____PRINTACTION____delete:'${DATARRAY[0]}':'${DATARRAY[$ARRAYCOUNTER]}'____">
 			<img src="/images/submenus/printer/remove_printer.png" alt="'$"Remove Printer"'">
 			<span>'$"Remove Printer"'</span>
 			</button>

@@ -124,7 +124,7 @@ then
 		if [ $MOBILE = yes ]
 		then
 			echo '<tr><td>'$PRINTER'</td><td>'$PRINT_JOB_OWNER'</td><td>'$DATE_TIME'</td><td><form action="printers_control.cgi" method="post">
-			<button class="info" name="_DeleteJob_" value="_jobid_'$PRINT_ID'_">
+			<button class="info" name="____DeleteJob____" value="____jobid____'$PRINT_ID'____">
 			<img src="'$ICON8'" alt="'$"Delete Job"'">
 			<span>'$"Delete Job"'</span>
 			</button>
@@ -132,7 +132,7 @@ then
 		else
 			echo '<tr><td>'$PRINTER'</td><td>'$QUEUE_COUNTER2'</td><td>'$PRINT_JOB_OWNER'</td><td>'$JOB_SIZE'</td><td>'$DATE_TIME'</td><td>'$DATE_DAY1 $DATE_DAY2 $DATE_MONTH'</td><td><form action="printers_control.cgi" method="post">
 
-			<button class="info" name="_DeleteJob_" value="_jobid_'$PRINT_ID'_">
+			<button class="info" name="____DeleteJob____" value="____jobid____'$PRINT_ID'____">
 			<img src="'$ICON8'" alt="'$"Delete Job"'">
 			<span>'$"Delete Job"'</span>
 			</button>
@@ -224,7 +224,7 @@ then
 		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 		then
 			echo '<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="_'$PRINTER_NAME'_setppd_" value="_'$PRINTER_NAME'_setppd_">
+			<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setppd____" value="____'$PRINTER_NAME'____setppd____">
 			<img src="'$PRINTER_ICON'" alt="'$"Set PPD"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span>
 			</button>
@@ -243,7 +243,7 @@ then
 		then
 			echo '<td><form action="printers_control.cgi" method="post">
 
-			<button class="'$INFOCLASS'" name="_'$PRINTER_NAME'_setlocation_" value="_'$PRINTER_NAME'_setlocation_">
+			<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setlocation____" value="____'$PRINTER_NAME'____setlocation____">
 			<img src="'$PRINTER_LOCATION_ICON'" alt="'$"Set Location"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span>
 			</button>
@@ -253,7 +253,7 @@ then
 		then
 			echo '
 			<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="EnablePrinter" value="_'$PRINTER_NAME'_enable_">
+			<button class="'$INFOCLASS'" name="EnablePrinter" value="____'$PRINTER_NAME'____enable____">
 			<img src="'$ICON6'" alt="'$"Enable Printer"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Enable Printer Queue"'</span>
 			</button>
@@ -262,13 +262,13 @@ then
 		else
 			echo '
 			<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="DisablePrinter" value="_'$PRINTER_NAME'_disable_">
+			<button class="'$INFOCLASS'" name="DisablePrinter" value="____'$PRINTER_NAME'____disable____">
 			<img src="'$ICON5'" alt="'$"Disable Printer"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Disable Printer Queue"'</span>
 			</button>
 			</form></td>
 			<td style="width: '$WIDTH2'px;"><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="TestPrinter" value="_'$PRINTER_NAME'_test_">
+			<button class="'$INFOCLASS'" name="TestPrinter" value="____'$PRINTER_NAME'____test____">
 			<img src="'$ICON7'" alt="'$"Test Printer"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Test Printer Queue"'</span>
 			</button>
@@ -281,12 +281,12 @@ then
 		if [ $QUEUE_COUNT -gt 0 ]
 		then
 			echo '<td><form action="printers.cgi" method="post">
-			<button class="'$INFOCLASS'" name="_ViewJobs_" value="_PRINTER_'$PRINTER_NAME'_">
+			<button class="'$INFOCLASS'" name="ViewJobs" value="____PRINTER____'$PRINTER_NAME'____">
 			<img src="'$ICON11'" alt="'$"View Jobs"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"View Jobs"'</span>
 			</button>
 			</form></td><td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="ClearQueue" value="_'$PRINTER_NAME'_clearqueue_">
+			<button class="'$INFOCLASS'" name="ClearQueue" value="____'$PRINTER_NAME'____clearqueue____">
 			<img src="'$ICON9'" alt="'$"Clear Queue"'">
 			<span>'$"Printer"': '$PRINTER_NAME'<br><br>Clear Printer Queue</span>
 			</button>

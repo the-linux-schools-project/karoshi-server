@@ -93,16 +93,16 @@ echo '<table class="standard" style="text-align: left;" >
       <tr>
         <td style="width: 180px;">
 '$"Printer Name"'</td>
-        <td><input tabindex= "1" name="_PRINTERNAME_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td>
+        <td><input tabindex= "1" name="____PRINTERNAME____" maxlength="15" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want for this printer."'</span></a>
 </td>
       </tr>
- <tr><td>'$"Printer Address"'</td><td><input tabindex= "2" name="_PRINTERADDRESS_" maxlength="15" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the printer."'</span></a>
+ <tr><td>'$"Printer Address"'</td><td><input tabindex= "2" name="____PRINTERADDRESS____" maxlength="15" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the printer."'</span></a>
 </td></tr>
-<tr><td>'$"Queue - LPD only"'</td><td><input tabindex= "3" name="_PRINTERQUEUE_" style="width: 200px;" size="20" type="text"></td><td>
+<tr><td>'$"Queue - LPD only"'</td><td><input tabindex= "3" name="____PRINTERQUEUE____" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network queue."'</span></a>
 </td></tr>
-<tr><td>'$"Description"'</td><td><input tabindex= "4" name="_PRINTERDESC_" style="width: 200px;" size="20" type="text"></td><td>
+<tr><td>'$"Description"'</td><td><input tabindex= "4" name="____PRINTERDESC____" style="width: 200px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a description of the printer hardware."'</span></a>
 </td></tr>
 <tr><td>'$"Location"'</td><td>'
@@ -117,7 +117,7 @@ else
 	LOCATION_COUNT=0
 fi
 #Show current rooms
-echo '<select tabindex= "5" name="_LOCATION_" style="width: 200px;">'
+echo '<select tabindex= "5" name="____LOCATION____" style="width: 200px;">'
 echo '<option label="defaultlocation" value="'$NO_LOCATION'">'$NO_LOCATION'</option>'
 COUNTER=1
 while [ $COUNTER -lt $LOCATION_COUNT ]
@@ -132,13 +132,13 @@ echo '</select></td><td>
       <tr>
         <td>'$"Network Type"'</td>
         <td>
-        <select tabindex= "6" name="_PRINTERTYPE_" style="width: 200px;">
+        <select tabindex= "6" name="____PRINTERTYPE____" style="width: 200px;">
         <option>'$"Network Printer TCP"'</option>
         <option>'$"Network Printer IPP"'</option>
         <option>'$"Remote LPD queue"'</option>
         </select></td></tr>
 <tr><td>'$"Port"'</td><td>
-        <select tabindex= "7" name="_PRINTERPORT_" style="width: 200px;">
+        <select tabindex= "7" name="____PRINTERPORT____" style="width: 200px;">
         <option>9100</option>
         <option>9101</option>
         <option>9102</option>

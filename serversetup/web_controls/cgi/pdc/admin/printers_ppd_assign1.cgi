@@ -49,7 +49,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 
 #########################
 #Assign data to variables
@@ -64,7 +64,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -141,7 +141,7 @@ else
 fi
 
 echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."'</span></a></tr></tbody></table>
-<br><input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
+<br><input type="hidden" name="____PRINTERNAME____" value="'$PRINTERNAME'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
 #Show Printername
 echo '<tr><td style="width: 180px;">'$"Printer"'</td><td>'$PRINTERNAME'</td></tr>'
 
@@ -154,23 +154,22 @@ LETTERSELECTED=""
 #Show list of page sizes
 echo '
 <tr><td>'$"Default Page Size"'</td><td>
-<select style="width: 200px;" name="_PAGESIZE_">
+<select style="width: 200px;" name="____PAGESIZE____">
 <option value="A2">A2</option>
 <option value="A3">A3</option>
 <option value="Letter" '$LETTERSELECTED'>Letter</option>
 <option value="A4" '$A4SELECTED'>A4</option>
 <option value="A5" >A5</option>
 <option value="A6">A6</option>
-<option value="">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </option>
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page size for this printer."'</span></a></td></tr>
 <tr><td>'$"Print in Colour?"'</td><td>
-<select style="width: 200px;" name="_COLOUR_">
+<select style="width: 200px;" name="____COLOUR____">
 <option value="yes">'$"yes"'</option>
 <option value="no">'$"No"'</option>
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This setting will only affect printers that can print in colour."'</span></a></td></tr>'
 
 #Show printer manufacturer list to choose from
-echo '<tr><td>'$"Printer Make"'</td><td><select style="width: 200px;" name="_PRINTERPPD_">'
+echo '<tr><td>'$"Printer Make"'</td><td><select style="width: 200px;" name="____PRINTERPPD____">'
 echo '<option value=""></option>'
 echo '<option value="uploadppd">'$"Upload PPD File"'</option>'
 #Get list of printer drivers

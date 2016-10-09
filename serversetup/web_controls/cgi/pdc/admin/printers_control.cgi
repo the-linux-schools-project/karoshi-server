@@ -41,7 +41,7 @@ exit
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><meta http-equiv="REFRESH" content="0; URL=printers.cgi"></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body><div id="pagecontainer">'
@@ -89,7 +89,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -
 PRINTER_ACTION=none
 #Get printer name
 PRINTDATA=`echo ${PRINTER_COMMAND_DATA[$COUNTER]}`
-PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2 | sed 's/123456789/_/g'`
+PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2  | sed 's/12345UNDERSCORE12345/_/g'`
 #Check to see what action needs to be carried out
 if [ `echo $PRINTDATA | grep -c _enable_` = 1 ]
 then
@@ -122,9 +122,9 @@ then
 fi
 if [ `echo $PRINTDATA | grep -c _jobid_` = 1 ]
 then
-	END_POINT=6
+	END_POINT=12
 	#Assign jobid
-	JOBCOUNTER=5
+	JOBCOUNTER=2
 	while [ $JOBCOUNTER -le $END_POINT ]
 	do
 		DATAHEADER=`echo $DATA | cut -s -d'_' -f$JOBCOUNTER`
@@ -137,7 +137,7 @@ then
 		fi
 		let JOBCOUNTER=$JOBCOUNTER+1
 	done
-	if [ $JOBID'null' != null ]
+	if [ ! -z "$JOBID" ]
 	then
 		PRINTMSG=`echo ''$"Deleting print job"' '$JOBID'.'`
 	fi

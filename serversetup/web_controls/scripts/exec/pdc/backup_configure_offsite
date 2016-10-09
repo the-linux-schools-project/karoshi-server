@@ -185,46 +185,46 @@ then
 		else
 			EMAILSERVER=notset
 		fi
-		echo /etc,21 > "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		echo /etc,1m,1y > "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		if [ $SERVERNAME = $(hostname-fqdn) ]
 		then
-			echo /opt/karoshi,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
-			echo /home/applications,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
-			echo /home/staffshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
-			echo /home/officeshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
-			echo /home/itadminshare,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /opt/karoshi,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/applications,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/staffshare,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/officeshare,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/itadminshare,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		fi
 
 		if [ "$INSTALL_TYPE" = education ] && [ $SERVERNAME = $(hostname-fqdn) ]
 		then
-			echo /home/subjects,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
-			echo /home/users/exams,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/subjects,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/users/exams,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		fi
 
 		if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 		then
-			echo /var/lib/samba/,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /var/lib/samba/,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		fi
 
 		if [ "$SERVERNAME" = "$EMAILSERVER" ]
 		then
-			echo /home/users/email,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /home/users/email,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		fi
-		echo /var/www/html,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		echo /var/www/html,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 
 		if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ]
 		then
-			echo /var/www/moodle-data,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+			echo /var/www/moodle-data,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 		fi
-		echo /var/lib/mysql,21 >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+		echo /var/lib/mysql,1m,1y >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 
 		#Add in home area paths from primary group information
-		for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
+		for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/ | grep -v profilemanagement)
 		do
 			source /opt/karoshi/server_network/group_information/"$PRIGROUP"
 			if [ "$SERVERNAME" = "$SERVER" ] || [ "$SERVERNAME" = "$EMAILSERVER" ]
 			then
-				echo "$HOMEPATH,21" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
+				echo "$HOMEPATH,1m,1y" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg"
 			fi
 		done
 	fi
@@ -238,10 +238,24 @@ then
 			mkdir -p /opt/karoshi/server_network/backup_servers_offsite
 			chmod 0700 /opt/karoshi/server_network/backup_servers_offsite
 		fi
+		if [ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ]
+		then
+			mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
+			chmod 0700 /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
+		fi
+		echo "'$MINUTES'" "'$HOURS'" "*" "*" "*" \""/opt/karoshi/serversetup/all/useful scripts/backup_servers/duplicity_backup"\" > "/opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/duplicity-'$BACKUPUSERNAME'.'$BACKUPSERVERNAME'.cron"
+		/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 		'
 		scp -p -r /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME root@$SERVERNAME:/opt/karoshi/server_network/backup_servers_offsite 1> /dev/null
+		scp -p "/opt/karoshi/serversetup/all/useful scripts/backup_servers/duplicity_backup" root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
 	else
-		echo schedule offsite backup
+		if [ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ]
+		then
+			mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
+			chmod 0700 /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
+		fi
+		echo "$MINUTES" "$HOURS" "*" "*" "*" \""/opt/karoshi/serversetup/all/useful scripts/backup_servers/duplicity_backup"\" > "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/duplicity-$BACKUPUSERNAME.$BACKUPSERVERNAME.cron"
+		/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 	fi
 
 	ACTION=view
@@ -257,7 +271,7 @@ then
 	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's/%2F/\\\//g')
 	sed -i '/'$BACKUPFOLDER',/d' /opt/karoshi/server_network/backup_servers_offsite/"$SERVERNAME"/$BACKUPNAME/backup.cfg
 	BACKUPFOLDER=$(echo "$BACKUPFOLDER" | sed 's%\\%%g') 
-	echo `date`: "backup_configure_offsite -adding $BACKUPFOLDER for $DURATION days to $BACKUPNAME for $SERVERNAME by  $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: "backup_configure_offsite -adding $BACKUPFOLDER for $DURATION months to $BACKUPNAME for $SERVERNAME by  $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	echo "$BACKUPFOLDER,$DURATION" >> /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg
 
 	#Sort the list
@@ -498,20 +512,22 @@ then
 
 		#Show all folders that are set to be backed up.
 		echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
-	    	<thead><tr><th style="width: 300px;"><b>'$"Backup Folder"'</b></th><th style="width: 80px;"><b>'$"Days"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+	    	<thead><tr><th style="width: 300px;"><b>'$"Backup Folder"'</b></th><th style="width: 170px;"><b>'$"Full Backup"'</b></th><th style="width: 170px;"><b>'$"Delete old backups after"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/backup.cfg | sed 's/ /REPLACESPACE/g'`
 		do
 			BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
-			DURATION=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
-			echo '<tr><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td>
+			FULLBACKUP=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
+			DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
+			echo '<tr><td>'$BACKUPFOLDER'</td><td>'$FULLBACKUP'</td>
+			<td>'$DURATION'</td>
 			<td>
-				<button class="info" name="____DoEdit____" value="____ACTION____editbackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____DURATION____'$DURATION'____">
+				<button class="info" name="____DoEdit____" value="____ACTION____editbackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____FULLBACKUP____'$FULLBACKUP'____DURATION____'$DURATION'____">
 				<img src="'$ICON1'" alt="'$"Edit"'">
 				<span>'$"Edit"'<br>'$BACKUPNAME'</span>
 				</button>
 			</td>
 			<td>
-				<button class="info" name="____DoDelete____" value="____ACTION____deletebackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____BACKUPNAME____'$BACKUPNAME'____">
+				<button class="info" name="____DoDelete____" value="____ACTION____deletebackupfolder____SERVERNAME____'$SERVERNAME'____BACKUPFOLDER____'$BACKUPFOLDER'____FULLBACKUP____'$FULLBACKUP'____BACKUPNAME____'$BACKUPNAME'____">
 				<img src="'$ICON2'" alt="'$"Delete"'">
 				<span>'$"Delete"'<br>'$BACKUPNAME'</span>
 				</button>

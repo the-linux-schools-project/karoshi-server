@@ -51,16 +51,33 @@ then
 	exit
 fi
 
+#Make sure we have duplicity installed
+which duplicity 1>/dev/null
+if [ $? != 0 ]
+then
+	apt-get update
+	apt-get install duplicity python-paramiko
+fi
 
 function run_backup {
-export PASSPHRASE="$PASSPHRASE"
+export PASSPHRASE="$ENCRYPTIONKEY"
+
+#ftp
+if [ "$BACKUPTYPE" = ftp ]
+then
+	export FTP_PASSWORD="$BACKUPPASSWORD"
+	duplicity "$BACKUPFOLDER" ftp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+fi
+
 
 #scp
 if [ "$BACKUPTYPE" = scp ]
 then
 	#Duplicity needs to have keychain installed and configured if you want to use ssh keys with scp.
-	duplicity "$BACKUPFOLDER" scp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/
+	duplicity "$BACKUPFOLDER" scp://"$BACKUPUSERNAME":"$BACKUPPASSWORD"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
 fi
+
+unset PASSPHRASE
 }
 
 for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")

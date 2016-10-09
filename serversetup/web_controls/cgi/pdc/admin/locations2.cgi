@@ -46,7 +46,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -59,7 +59,7 @@ do
 	if [ `echo $DATAHEADER'check'` = DELETEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		DELETE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		DELETE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -72,7 +72,7 @@ do
 	if [ `echo $DATAHEADER'check'` = NEWLOCATIONcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		NEWLOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		NEWLOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1

@@ -46,7 +46,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 #DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -55,14 +55,14 @@ END_POINT=6
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/123456789/_/g'`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 
@@ -88,22 +88,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #########################
@@ -122,8 +122,8 @@ sudo -H /opt/karoshi/web_controls/exec/printers_delete $REMOTE_USER:$REMOTE_ADDR
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem deleting this queue. Please consult the Karoshi web administration logs."`
-show_status
+	MESSAGE=`echo $"There was a problem deleting this queue. Please consult the Karoshi web administration logs."`
+	show_status
 fi
 view_printers
 

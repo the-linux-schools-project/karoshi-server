@@ -48,13 +48,13 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
 DATA=`echo $DATA | sed 's/_PRINTERNAME_//g' | sed 's/_LOCATION_/,/g'`
-PRINTER=`echo $DATA | cut -d, -f1`
-LOCATIONS=( `echo $DATA | cut -d, -f2- | sed 's/,/ /g'` )
+PRINTER=`echo $DATA | cut -d, -f1 | sed 's/12345UNDERSCORE12345/_/g'`
+LOCATIONS=( `echo $DATA | cut -d, -f2- | sed 's/,/ /g' | sed 's/12345UNDERSCORE12345/_/g'` )
 
 function show_status {
 echo '<SCRIPT language="Javascript">'

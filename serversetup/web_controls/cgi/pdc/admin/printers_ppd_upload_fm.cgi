@@ -64,8 +64,8 @@ exit
 #Get printer details
 if [ ! -f /var/www/karoshi/uploadppd ]
 then
-MESSAGE=$"No Printer details found."
-show_status
+	MESSAGE=$"No Printer details found."
+	show_status
 fi
 source /var/www/karoshi/uploadppd
 source /opt/karoshi/web_controls/version

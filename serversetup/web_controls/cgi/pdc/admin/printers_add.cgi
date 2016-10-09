@@ -52,7 +52,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 #DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -65,7 +65,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_-'`
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER |  tr -cd 'A-Za-z0-9_-' | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -79,7 +79,7 @@ do
 	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -107,7 +107,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERQUEUEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERQUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTERQUEUE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -120,7 +120,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERTYPEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -133,7 +133,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERDESCcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERDESC=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTERDESC=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1

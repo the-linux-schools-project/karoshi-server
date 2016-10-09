@@ -45,7 +45,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\_\%-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\_\%-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -58,7 +58,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTACTIONcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTACTION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -153,7 +153,6 @@ then
 fi
 
 #Check to see that PRINTER queue exits
-echo printer is $PRINTER"<br>"
 if [ `grep -c ",$PRINTER," /var/lib/samba/netlogon/printers.txt` = 0 ]
 then
 	MESSAGE=$"The printer queue does not exist."

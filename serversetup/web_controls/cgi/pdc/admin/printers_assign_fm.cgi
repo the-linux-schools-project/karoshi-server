@@ -84,7 +84,7 @@ exit
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 #DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -97,7 +97,7 @@ do
 	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -196,7 +196,7 @@ then
 	MAXHEADERS=4
 fi
 
-echo '<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'"><table class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: 180px;">Printer</td><td style="width: 100px;">'$PRINTERNAME'</td></tr>
+echo '<input type="hidden" name="____PRINTERNAME____" value="'$PRINTERNAME'"><table class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: 180px;">Printer</td><td style="width: 100px;">'$PRINTERNAME'</td></tr>
 </tbody></table><br><table class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 180px; vertical-align: top;"><b>'$"Location"'</b></th><th style="width: 100px; vertical-align: top;"><b>'$"Assign"'</b></th>'
 
 
@@ -224,9 +224,9 @@ do
 
 	if [ `grep ^$LOCATION"," /var/lib/samba/netlogon/printers.txt | grep -c -w $PRINTERNAME` -gt 0 ]
 	then
-		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="_LOCATION_" value="'$LOCATION'" checked></td>'
+		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="____LOCATION____" value="'$LOCATION'" checked></td>'
 	else
-		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="_LOCATION_" value="'$LOCATION'"></td>'
+		echo '<td>'$LOCATION'</td><td><input type="checkbox" name="____LOCATION____" value="'$LOCATION'"></td>'
 	fi
 	let COUNTER=$COUNTER+1
 	let COLCOUNT=$COLCOUNT+2
