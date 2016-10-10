@@ -4,28 +4,44 @@
 #Config path
 BACKUPUSERNAME=$1
 BACKUPSERVER=$2
+LOG_DATE=$(date +%F)
+
+#Make log folder
+[ ! -d "/opt/karoshi/logs/backup_servers_offsite/$LOG_DATE" ] && mkdir -p "/opt/karoshi/logs/backup_servers_offsite/$LOG_DATE"
 
 if [ -z "$BACKUPUSERNAME" ]
 then
 	echo "No backup username entered."
+	echo `date`: backup_servers - $(hostname-fqdn) "No backup username entered."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
 if [ -z "$BACKUPSERVER" ]
 then
 	echo "No backup servername entered."
+	echo `date`: backup_servers - $(hostname-fqdn) "No backup servername entered."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
 if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/connect.cfg" ]
 then
 	echo "Missing connection file."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "Missing connection file."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
 if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg" ]
 then
 	echo "Missing backup file."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "Missing backup file."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
+	exit
+fi
+
+#Bail out if the backup is disabled
+if [ -f "/opt/karoshi/server_network/backup_servers_offsite/pluto.karoshi.testing.com/$BACKUPUSERNAME.$BACKUPSERVER/stop_backup" ]
+then
+	echo "This backup has been disabled."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "This backup has been disabled." >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
@@ -36,18 +52,21 @@ source "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACK
 if [ -z "$BACKUPUSERNAME" ]
 then
 	echo "The backup username has not been set."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "The backup username has not been set."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
 if [ -z "$BACKUPTYPE" ]
 then
 	echo "The backup type has not been set."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "The backup type has not been set." >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
 if [ -z "$ENCRYPTIONKEY" ]
 then
 	echo "The encryption key has not been set."
+	echo `date`: backup_servers - $(hostname-fqdn) - $BACKUPUSERNAME.$BACKUPSERVER "The encryption key has not been set."  >> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
 	exit
 fi
 
@@ -62,19 +81,51 @@ fi
 function run_backup {
 export PASSPHRASE="$ENCRYPTIONKEY"
 
+#Amazon S3
+
+if [ "$BACKUPTYPE" = AmazonS3 ]
+then
+	#Tested - no
+
+	# Amazon access credentials
+	export AWS_ACCESS_KEY_ID=<Key-ID>
+	export AWS_SECRET_ACCESS_KEY=<secret key>
+	AMAZON_S3=s3+http://<Bucket-Name>
+
+	#Delete old backups
+	duplicity remove-older-than "$FULLBACKUP" --force --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style --s3-european-buckets $AMAZON_S3
+
+	#Run the backup
+	duplicity --full-if-older-than "$FULLBACKUP" --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style --s3-european-buckets "$FULLBACKUP" $AMAZON_S3
+fi
+
 #ftp
 if [ "$BACKUPTYPE" = ftp ]
 then
-	export FTP_PASSWORD="$BACKUPPASSWORD"
-	duplicity "$BACKUPFOLDER" ftp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
-fi
+	#Tested - no
 
+	export FTP_PASSWORD="$BACKUPPASSWORD"
+
+	#Delete old backups
+	duplicity remove-older-than "$FULLBACKUP" --force ftp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+
+	#Run the backup
+	duplicity --full-if-older-than "$FULLBACKUP" "$BACKUPFOLDER" ftp://"$BACKUPUSERNAME"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+
+	unset FTP_PASSWORD
+fi
 
 #scp
 if [ "$BACKUPTYPE" = scp ]
 then
+	#Tested - yes
+
+	#Delete old backups
+	duplicity remove-older-than "$FULLBACKUP" --force scp://"$BACKUPUSERNAME":"$BACKUPPASSWORD"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+
+	#Run the backup
 	#Duplicity needs to have keychain installed and configured if you want to use ssh keys with scp.
-	duplicity "$BACKUPFOLDER" scp://"$BACKUPUSERNAME":"$BACKUPPASSWORD"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+	duplicity --full-if-older-than "$FULLBACKUP" "$BACKUPFOLDER" scp://"$BACKUPUSERNAME":"$BACKUPPASSWORD"@"$BACKUPSERVER"//"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
 fi
 
 unset PASSPHRASE
@@ -83,7 +134,8 @@ unset PASSPHRASE
 for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")
 do
 	BACKUPFOLDER=$(echo $BACKUPDATA | cut -d, -f1)
-	BACKUPDURATION=$(echo $BACKUPDATA | cut -d, -f2)
+	FULLBACKUP=$(echo $BACKUPDATA | cut -d, -f2)
+	DURATION=$(echo $BACKUPDATA | cut -d, -f3)
 	echo $BACKUPFOLDER - $BACKUPDURATION
 	#Run the backup
 	run_backup
