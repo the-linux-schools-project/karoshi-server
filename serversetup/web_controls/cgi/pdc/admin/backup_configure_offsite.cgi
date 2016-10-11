@@ -48,6 +48,69 @@ $(document).ready(function()
     } 
 );
 </script>
+<script>
+function rewriteselect() {
+document.myform.____BACKUPTYPE____.options.selectedIndex.length=0;
+var el = document.getElementById("extraoptions1");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions2");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions3");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions4");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions5");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions6");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions7");
+el.innerHTML = "";
+
+var el = document.getElementById("extraoptions8");
+el.innerHTML = "";
+
+var selectedstyle = document.myform.____BACKUPTYPE____.value;
+
+if (selectedstyle == "AmazonS3") {
+	var el = document.getElementById("extraoptions1");
+el.innerHTML = "AWS Access Key ID";
+	var el = document.getElementById("extraoptions2");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSACCESSKEYID'\" name=\"____AWSACCESSKEYID____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+	var el = document.getElementById("extraoptions3");
+el.innerHTML = "AWS Secret Access Key";
+	var el = document.getElementById("extraoptions4");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSSECRETACCESSKEY'\" name=\"____AWSSECRETACCESSKEY____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
+	var el = document.getElementById("extraoptions5");
+el.innerHTML = "Bucket Name";
+	var el = document.getElementById("extraoptions6");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSBUCKETNAME'\" name=\"____AWSBUCKETNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+	var el = document.getElementById("extraoptions7");
+el.innerHTML = "Bucket Location";
+	var el = document.getElementById("extraoptions8");
+el.innerHTML = "<select name=\"____AWSBUCKETLOCATION____\" style=\"width: 200px\;\"><option value=\"europe\">Europe</option><option value=\"america\">America</option></select>";
+}
+if (selectedstyle == "scp") {
+	var el = document.getElementById("extraoptions1");
+el.innerHTML = "Backup Server";
+	var el = document.getElementById("extraoptions2");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPSERVERNAME'\" name=\"____BACKUPSERVERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+	var el = document.getElementById("extraoptions3");
+el.innerHTML = "Username to connect as";
+	var el = document.getElementById("extraoptions4");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPUSERNAME'\" name=\"____BACKUPUSERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+	var el = document.getElementById("extraoptions5");
+el.innerHTML = "Password";
+	var el = document.getElementById("extraoptions6");
+el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPPASSWORD'\" name=\"____BACKUPPASSWORD____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
+}
+}
+</script>
 </head><body><div id="pagecontainer">'
 
 function show_status {
@@ -58,6 +121,7 @@ echo '</script>'
 echo "</div></body></html>"
 exit
 }
+
 
 #########################
 #Get data input
@@ -304,6 +368,67 @@ then
 		let COUNTER=$COUNTER+1
 	done
 
+	if [ "$BACKUPTYPE" = AmazonS3 ]
+	then
+		END_POINT=36
+		#Assign AWSACCESSKEYID
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = AWSACCESSKEYIDcheck ]
+			then
+				let COUNTER=$COUNTER+1
+				AWSACCESSKEYID=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+				break
+			fi
+			let COUNTER=$COUNTER+1
+		done
+
+		#Assign AWSSECRETACCESSKEY
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = AWSSECRETACCESSKEYcheck ]
+			then
+				let COUNTER=$COUNTER+1
+				AWSSECRETACCESSKEY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+				break
+			fi
+			let COUNTER=$COUNTER+1
+		done
+
+		#Assign AWSBUCKETNAME
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = AWSBUCKETNAMEcheck ]
+			then
+				let COUNTER=$COUNTER+1
+				AWSBUCKETNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+				break
+			fi
+			let COUNTER=$COUNTER+1
+		done
+
+		#Assign AWSBUCKETLOCATION
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = AWSBUCKETLOCATIONcheck ]
+			then
+				let COUNTER=$COUNTER+1
+				AWSBUCKETLOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+				break
+			fi
+			let COUNTER=$COUNTER+1
+		done
+	fi
+
+
 fi
 
 if [ "$ACTION" = setbackupstatus ]
@@ -378,28 +503,59 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
-
-	if [ -z "$BACKUPSERVERNAME" ]
-	then
-		MESSAGE=$"You have not entered a backup server name."
-		show_status
-	fi
-
 	if [ -z "$BACKUPTYPE" ]
 	then
 		MESSAGE=$"You have not chosen a backup type."
 		show_status
 	fi
 
+	if [ "$BACKUPTYPE" = scp ]
+	then
+		if [ -z "$BACKUPSERVERNAME" ]
+		then
+			MESSAGE=$"You have not entered a backup server name."
+			show_status
+		fi
+
+		if [ -z "$BACKUPUSERNAME" ]
+		then
+			MESSAGE=$"You have not entered a backup user name."
+			show_status
+		fi
+	fi
+
+	if [ "$BACKUPTYPE" = AmazonS3 ]
+	then
+		if [ -z "$AWSACCESSKEYID" ]
+		then
+			MESSAGE=$"You have not entered your AWS secret key ID."
+			show_status
+		fi
+
+		if [ -z "$AWSSECRETACCESSKEY" ]
+		then
+			MESSAGE=$"You have not entered your AWS secret access key."
+			show_status
+		fi
+
+		if [ -z "$AWSBUCKETNAME" ]
+		then
+			MESSAGE=$"You have not entered your AWS bucket name."
+			show_status
+		fi
+
+		if [ -z "$AWSBUCKETLOCATION" ]
+		then
+			MESSAGE=$"You have not entered your AWS bucket location."
+			show_status
+		fi
+	fi
+
+
+
 	if [ -z "$ENCRYPTIONKEY" ]
 	then
 		MESSAGE=$"You have not entered an encryption key."
-		show_status
-	fi
-
-	if [ -z "$BACKUPUSERNAME" ]
-	then
-		MESSAGE=$"You have not entered a backup user name."
 		show_status
 	fi
 
@@ -437,6 +593,6 @@ echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karo
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:$FULLBACKUP:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:$FULLBACKUP:$AWSACCESSKEYID:$AWSSECRETACCESSKEY:$AWSBUCKETNAME:$AWSBUCKETLOCATION:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit

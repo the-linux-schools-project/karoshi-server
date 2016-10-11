@@ -88,19 +88,26 @@ then
 	#Tested - no
 
 	# Amazon access credentials
-	export AWS_ACCESS_KEY_ID=<Key-ID>
-	export AWS_SECRET_ACCESS_KEY=<secret key>
-	AMAZON_S3=s3+http://<Bucket-Name>
+	export AWS_ACCESS_KEY_ID=$AWSACCESSKEYID
+	export AWS_SECRET_ACCESS_KEY="$AWSSECRETACCESSKEY"
+	AMAZON_S3=s3+http://"$AWSBUCKETNAME"
+
+	if [ "$AWSBUCKETLOCATION" = europe ]
+	then
+		BUCKETLOCATION="--s3-european-buckets"
+	else
+		BUCKETLOCATION=""
+	fi
 
 	#Delete old backups
-	duplicity remove-older-than "$FULLBACKUP" --force --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style --s3-european-buckets $AMAZON_S3
+	duplicity remove-older-than "$FULLBACKUP" --force --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$AMAZON_S3""$BACKUPFOLDER"/
 
 	#Run the backup
-	duplicity --full-if-older-than "$FULLBACKUP" --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style --s3-european-buckets "$FULLBACKUP" $AMAZON_S3
+	duplicity --full-if-older-than "$FULLBACKUP" --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$FULLBACKUP" $AMAZON_S3"$BACKUPFOLDER"/
 fi
 
 #ftp
-if [ "$BACKUPTYPE" = ftp ]
+if [ "$BACKUPTYPE" = ftp ] || [ "$BACKUPTYPE" = sftp ]
 then
 	#Tested - no
 

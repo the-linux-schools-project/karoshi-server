@@ -78,6 +78,39 @@ BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f14`
 DURATION=`echo "$DATA" | cut -s -d: -f15`
 STORAGEPATH=`echo "$DATA" | cut -s -d: -f16`
 FULLBACKUP=`echo "$DATA" | cut -s -d: -f17`
+AWSACCESSKEYID=`echo "$DATA" | cut -s -d: -f18`
+AWSSECRETACCESSKEY=`echo "$DATA" | cut -s -d: -f19`
+AWSBUCKETNAME=`echo "$DATA" | cut -s -d: -f20`
+AWSBUCKETLOCATION=`echo "$DATA" | cut -s -d: -f21`
+
+[ -z "$BACKUPPASSWORD" ] && BACKUPPASSWORD=na
+
+
+if [ -z "$BACKUPSERVERNAME" ]
+then
+	if [ ! -z "$AWSBUCKETNAME" ]
+	then
+		BACKUPSERVERNAME="$AWSBUCKETNAME"
+	else
+		BACKUPSERVERNAME=na
+	fi
+fi
+
+if [ -z "$BACKUPUSERNAME" ]
+then
+	if [ ! -z "$AWSACCESSKEYID" ]
+	then
+		BACKUPUSERNAME="$AWSACCESSKEYID"
+	else
+		BACKUPUSERNAME=na
+	fi
+fi
+
+[ -z "$AWSACCESSKEYID" ] && AWSACCESSKEYID=na
+[ -z "$AWSSECRETACCESSKEY" ] && AWSSECRETACCESSKEY=na
+[ -z "$AWSBUCKETNAME" ] && AWSBUCKETNAME=na
+[ -z "$AWSBUCKETLOCATION" ] && AWSBUCKETLOCATION=na
+
 ########################
 #Check data
 ########################
@@ -167,6 +200,10 @@ then
 	echo "ENCRYPTIONKEY=$ENCRYPTIONKEY" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "HOURS=$HOURS" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "MINUTES=$MINUTES" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "AWSACCESSKEYID=$AWSACCESSKEYID" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "AWSSECRETACCESSKEY=$AWSSECRETACCESSKEY" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "AWSBUCKETNAME=$AWSBUCKETNAME" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
+	echo "AWSBUCKETLOCATION=$AWSBUCKETLOCATION" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 
 	#Create backup.cfg
 	if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg" ]
@@ -247,7 +284,7 @@ then
 			mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
 			chmod 0700 /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
 		fi
-		echo "$MINUTES" "$HOURS" "*" "*" "1-7" \""/opt/karoshi/serversetup/all/useful scripts/backup_servers/duplicity_backup"\" > "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/duplicity-$BACKUPUSERNAME.$BACKUPSERVERNAME.cron"
+		echo "$MINUTES" "$HOURS" "*" "*" "1-7" \""/opt/karoshi/serversetup/all/useful scripts/backup_servers/duplicity_backup"\" \""$BACKUPUSERNAME"\" \""$BACKUPSERVERNAME"\"> "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/duplicity-$BACKUPUSERNAME.$BACKUPSERVERNAME.cron"
 		/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 	fi
 
@@ -409,15 +446,16 @@ then
 		source "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPNAME/connect.cfg"
 	fi
 
-	echo '<b>'$"Add Offsite Backup"'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+	echo '<b>'$"Add Offsite Backup"'</b><br><br><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="myform" method="post">
 	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
 	<input type="hidden" name="____ACTION____" value="reallyadd">
 	<table class="standard" style="text-align: left;" >
     	<tbody>
-	<tr><td style="width: 180px;">'$"Backup Server"'</td><td><input tabindex= "1" value="'$BACKUPSERVERNAME'" name="____BACKUPSERVERNAME____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the fully qualified name of the backup server."'</span></a></td></tr>
-	<tr><td>'$"Username to connect as"'</td><td><input tabindex= "2" value="'$BACKUPUSERNAME'" name="____BACKUPUSERNAME____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username to use to connect to the backup server."'</span></a></td></tr>
+	<tr><td style="width: 180px;"><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
+	<tr><td><span id="extraoptions3"></span></td><td><span id="extraoptions4"></span></td><td></td></tr>
+	<tr><td><span id="extraoptions5"></span></td><td><span id="extraoptions6"></span></td><td></td></tr>
+	<tr><td><span id="extraoptions7"></span></td><td><span id="extraoptions8"></span></td><td></td></tr>
 	<tr><td>'$"Storage Path"'</td><td><input tabindex= "3" value="'$STORAGEPATH'" name="____STORAGEPATH____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the storage path to where your backups will be stored."'<br><br>'$"This folder must exist and have full access for the user connecting to it."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "4" value="'$BACKUPPASSWORD'" name="____BACKUPPASSWORD____" style="width: 200px;" size="20" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the password to use for connecting to the backup server. Leave this blank if you are using an ssh key to connect."'</span></a></td></tr>
 	<tr><td>'$"Encryption Key"'</td><td><input tabindex= "5" value="'$ENCRYPTIONKEY'" name="____ENCRYPTIONKEY____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the encryption key that is used for encrypting your backups. You should keep this key safe to ensure that you can restore from the backup."'</span></a></td></tr>'
 	if [ "$ACTION" = add ]
 	then
@@ -442,7 +480,7 @@ then
 		<input type="hidden" name="____DURATION____" value="1y">'
 	fi
 	echo '<tr><td>'$"Backup Type"'</td><td>
-	<select name="____BACKUPTYPE____" style="width: 200px;">'
+	<select name="____BACKUPTYPE____" style="width: 200px;" onClick="rewriteselect();">'
 	if [ "$ACTION" = edit ]
 	then
 		BACKUPTYPELANG="$BACKUPTYPE"
@@ -453,21 +491,18 @@ then
 		[ "$BACKUPTYPE" = "WebDAV" ] && BACKUPTYPELANG="WebDAV"
 		[ "$BACKUPTYPE" = "scp" ] && BACKUPTYPELANG="SSH / SCP"
 		echo '<option selected value="'$BACKUPTYPE'">'$BACKUPTYPELANG'</option><option disabled>----------------</option>'
+	else
+		echo '<option value="" label="blank"></option>'
 	fi
 	echo '<option value="ftp">FTP</option>
-	<option value="rsync">Rsync</option>	
-	<option value="sftp">SFTP</option>'
-	if [ "$ACTION" = add ]
-	then
-		echo '<option selected value="scp">SSH / SCP</option>'
-	else
-		echo '<option value="scp">SSH / SCP</option>'
-	fi
-	echo '<option value="AmazonS3">Amazon S3</option>
-	<option value="BackblazeB2">Backblaze B2</option>
-	<option value="DropBox">DropBox</option>
-	<option value="GoogleDrive">Google Drive</option>
-	<option value="WebDAV">WebDAV</option>
+	<option disabled value="rsync">Rsync</option>	
+	<option value="sftp">SFTP</option>
+	<option value="scp">SSH / SCP</option>
+	<option value="AmazonS3">Amazon S3</option>
+	<option disabled value="BackblazeB2">Backblaze B2</option>
+	<option disabled value="DropBox">DropBox</option>
+	<option disabled value="GoogleDrive">Google Drive</option>
+	<option disabled value="WebDAV">WebDAV</option>
 	</select>
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the backup type."'</span></a></td></tr>
 	<tr><td>'$"Backup Time"'</td><td>
