@@ -104,6 +104,9 @@ then
 
 	#Run the backup
 	duplicity --full-if-older-than "$FULLBACKUP" --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$FULLBACKUP" $AMAZON_S3"$BACKUPFOLDER"/
+
+	unset AWS_ACCESS_KEY_ID
+	unset AWS_SECRET_ACCESS_KEY
 fi
 
 #ftp
