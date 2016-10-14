@@ -78,7 +78,7 @@ then
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
 	fi
 
-	echo '<ul><li>'$"The following extra ports are being allowed" - udp 1194'</li>'
+	echo '<ul><li>'$"The following extra ports are being allowed" - udp 1194'</li></ul>'
 
 	LINENUM=`wc -l /etc/shorewall/rules | cut -d" " -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'OpenVPN-RoadWarrior /etc/shorewall/rules
