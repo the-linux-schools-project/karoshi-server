@@ -285,7 +285,8 @@ then
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>
 		<select name="_PARITY_" style="width: 200px;">
-		<option value="0">'$"Mirror"'</option>
+		<option value="stripe">'$"Stripe"'</option>
+		<option value="mirror" selected="selected">'$"Mirror"'</option>
 		<option value="1">'$"Single Redundancy"'</option>
 		<option value="2">'$"Double Redundancy"'</option>
 		<option value="3">'$"Triple Redundancy"'</option>
@@ -477,7 +478,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>
 		<select name=\"_PARITY_\" style=\"width: 200px;\">
-		<option value=\"0\">'$"Mirror"'</option>
+
+		<option value=\"stripe\">'$"Stripe"'</option>
+		<option value=\"mirror\" selected=\"selected\">'$"Mirror"'</option>
 		<option value=\"1\">'$"Single Redundancy"'</option>
 		<option value=\"2\">'$"Double Redundancy"'</option>
 		<option value=\"3\">'$"Triple Redundancy"'</option>

@@ -239,7 +239,13 @@ then
 		DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
 		#Create the zfs raid
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-		if [ $PARITY = 0 ]
+
+		
+
+		if [ $PARITY = stripe ]
+		then
+			echo '<ul><li>'$"Creating ZFS stripe"'</li></ul>'
+		elif [ $PARITY = mirror ]
 		then
 			echo '<ul><li>'$"Creating ZFS mirror"'</li></ul>'
 		else		
@@ -253,7 +259,10 @@ then
 			exit 101
 		fi
 
-		if [ $PARITY = 0 ]
+		if [ $PARITY = stripe ]
+		then
+			zpool create -o ashift=12 -f $POOLNAME $DRIVELIST
+		elif [ $PARITY = mirror ]
 		then
 			#Create a zfs mirror
 			if [ ! -z "$SPAREDRIVELIST" ]
@@ -639,7 +648,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		#Create the zfs raid
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
-		if [ '$PARITY' = 0 ]
+		if [ '$PARITY' = stripe ]
+		then
+			echo "<ul><li>'$"Creating ZFS stripe"'</li></ul>"
+		elif [ '$PARITY' = mirror ]
 		then
 			echo "<ul><li>'$"Creating ZFS mirror"'</li></ul>"
 		else		
@@ -654,8 +666,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			exit 101
 		fi
 
-
-		if [ '$PARITY' = 0 ]
+		if [ '$PARITY' = stripe ]
+		then
+			zpool create -o ashift=12 -f '$POOLNAME' $DRIVELIST
+		elif [ '$PARITY' = mirror ]
 		then
 			#Create a zfs mirror
 			if [ ! -z "'$SPAREDRIVELIST'" ]
