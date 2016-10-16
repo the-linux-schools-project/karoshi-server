@@ -165,6 +165,7 @@ STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
 
+source /opt/karoshi/serversetup/variables/distro
 
 POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
 

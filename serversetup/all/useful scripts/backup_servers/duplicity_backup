@@ -4,7 +4,13 @@
 #Config path
 BACKUPUSERNAME=$1
 BACKUPSERVER=$2
+RECORD_LOGS=$3
 LOG_DATE=$(date +%F)
+
+if [ -z "$RECORD_LOGS" ]
+then
+	RECORD_LOGS=yes
+fi
 
 #Make log folder
 [ ! -d "/opt/karoshi/logs/backup_servers_offsite/$LOG_DATE" ] && mkdir -p "/opt/karoshi/logs/backup_servers_offsite/$LOG_DATE"
@@ -75,14 +81,20 @@ which duplicity 1>/dev/null
 if [ $? != 0 ]
 then
 	apt-get update
-	apt-get install duplicity python-paramiko
+	apt-get install -y duplicity python-paramiko
 fi
 
 function run_backup {
 export PASSPHRASE="$ENCRYPTIONKEY"
 
-#Amazon S3
+echo -e "Starting backup - `date`
+Backup Type  - $BACKUPTYPE
+Backup Server - $BACKUPSERVERNAME
+Backup Folder - $BACKUPFOLDER
+Storage Path - $STORAGEPATH\n
+"
 
+#Amazon S3
 if [ "$BACKUPTYPE" = AmazonS3 ]
 then
 	#Tested - no
@@ -100,7 +112,7 @@ then
 	fi
 
 	#Delete old backups
-	duplicity remove-older-than "$FULLBACKUP" --force --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$AMAZON_S3""$BACKUPFOLDER"/
+	duplicity remove-older-than "$FULLBACKUP" --force --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$AMAZON_S3""$BACKUPFOLDER"/ 
 
 	#Run the backup
 	duplicity --full-if-older-than "$FULLBACKUP" --encrypt-key "$ENCRYPTIONKEY" --s3-use-new-style "$BUCKETLOCATION" "$FULLBACKUP" $AMAZON_S3"$BACKUPFOLDER"/
@@ -139,19 +151,21 @@ then
 fi
 
 unset PASSPHRASE
+echo -e "Completed backup - `date`"
 }
 
 for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")
 do
 	BACKUPFOLDER=$(echo $BACKUPDATA | cut -d, -f1)
 	FULLBACKUP=$(echo $BACKUPDATA | cut -d, -f2)
-	DURATION=$(echo $BACKUPDATA | cut -d, -f3)
+	BACKUPDURATION=$(echo $BACKUPDATA | cut -d, -f3)
 	echo $BACKUPFOLDER - $BACKUPDURATION
 	#Run the backup
-	run_backup
+	if [ "$RECORD_LOGS" = yes ]
+	then
+		run_backup 1>> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log 2>> /opt/karoshi/logs/backup_servers_offsite/$LOG_DATE/backup_log
+	else
+		run_backup
+	fi
 done
-
-
-
-
 
