@@ -277,20 +277,28 @@ do
 		MOUNTPOINT=`zfs get mountpoint $POOLNAME | sed -n 2,2p | sed "s/ * / /g" | cut -d" " -f3`
 	fi
 	ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
+	SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+	AVAILABLE=`echo -e $ZPOOLINFO | cut -d" " -f4`
 	ZPOOLSTATUS=`zpool status $POOLNAME`
-	RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 
 	RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 	SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
-	RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
-	if [ -z $RAID_TYPE ]
+
+	if [ $(zpool status $POOLNAME | grep -c raidz) -gt 0 ]
 	then
-		RAID_TYPE=mirror
+		RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+	elif [ $(zpool status $POOLNAME | grep -c mirror) -gt 0 ]
+	then
+		RAID_TYPE=`zpool status $POOLNAME | grep mirror | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+	else
+		RAID_TYPE=stripe
 	fi
+
 	echo '<b>'$"Raid Information"'</b><br><br>
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="min-width: '$WIDTH1'px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
 	<tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
-	<tr><td>'$"Raid Size"'</td><td>'$RAID_SIZE'</td></tr>
+	<tr><td>'$"Raid Size"'</td><td>'$SIZE'</td></tr>
+	<tr><td>'$"Available space"'</td><td>'$AVAILABLE'</td></tr>
 	<tr><td>'$"Raid State"'</td><td>'$RAID_STATE'</td></tr>
 	<tr><td>'$"Mount Point"'</td><td>'$MOUNTPOINT'</td></tr>
 	<tr><td valign="top">'$"Scan Information"'</td><td>'$SCANINFORMATION'</td></tr>'
@@ -478,20 +486,29 @@ else
 fi
 
 ZPOOLINFO=`zpool list $POOLNAME | sed -n 2,2p | sed "s/ * / /g"`
+SIZE=`echo -e $ZPOOLINFO | cut -d" " -f2`
+AVAILABLE=`echo -e $ZPOOLINFO | cut -d" " -f4`
 ZPOOLSTATUS=`zpool status $POOLNAME`
 RAID_SIZE=`df -h | grep $MOUNTPOINT | sed "s/ * / /g" | cut -d" " -f2` 
 RAID_STATE=`echo -e $ZPOOLINFO | cut -d" " -f7`
 SCANINFORMATION=`echo -e "$ZPOOLSTATUS" | grep scan: | cut -d: -f2`
-RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
-if [ -z $RAID_TYPE ]
+
+if [ $(zpool status $POOLNAME | grep -c raidz) -gt 0 ]
 then
-	RAID_TYPE=mirror
+	RAID_TYPE=`zpool status $POOLNAME | grep raidz | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+elif [ $(zpool status $POOLNAME | grep -c mirror) -gt 0 ]
+then
+	RAID_TYPE=`zpool status $POOLNAME | grep mirror | tr -cd "A-Za-z0-9- " | sed "s/^ * //g" | cut -d" " -f1`
+else
+	RAID_TYPE=stripe
 fi
+
 echo "<b>'$"Raid Information"'</b><br><br>
 <table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"min-width: '$WIDTH1'px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
 <tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
-<tr><td>'$"Raid Size"'</td><td>$RAID_SIZE</td></tr>
+<tr><td>'$"Raid Size"'</td><td>$SIZE</td></tr>
+<tr><td>'$"Available space"'</td><td>$AVAILABLE</td></tr>
 <tr><td>'$"Raid State"'</td><td>$RAID_STATE</td></tr>
 <tr><td>'$"Mount Point"'</td><td>$MOUNTPOINT</td></tr>
 <tr><td valign="top">'$"Scan Information"'</td><td>$SCANINFORMATION</td></tr>"
