@@ -440,7 +440,7 @@ then
                 for DYNAMIC_GROUP in $(ls -1 /opt/karoshi/server_network/group_information_dynamic)
                 do
                         echo `date`: groups - deleting "$DYNAMIC_GROUP" "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-                        samba-tool delete "$DYNAMIC_GROUP" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+                        samba-tool group delete "$DYNAMIC_GROUP" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
                         rm -f /opt/karoshi/server_network/group_information_dynamic/"$DYNAMIC_GROUP" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
                 done
         else

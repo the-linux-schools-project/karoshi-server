@@ -161,17 +161,12 @@ CHARCHECK=ok
 LENGTHCHECK2=$"Ok"
 CASECHECK2=$"Ok"
 CHARCHECK2=$"Ok"
-[ $UPPER_AND_LOWER_CASE = no ] && CASECHECK2=$"N.A."
-[ $CHARS_AND_NUMBERS = no ] && CHARCHECK2=$"N.A."
 
 ########################
 #Convert special characters back for new password to check password strength
 ########################
 
 NEW_PASSWORD=`echo "$PASSWORD2" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
-
-
-
 
 #Check password settings
 source /opt/karoshi/server_network/security/password_settings
