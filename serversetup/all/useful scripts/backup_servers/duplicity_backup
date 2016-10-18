@@ -94,6 +94,21 @@ Backup Folder - $BACKUPFOLDER
 Storage Path - $STORAGEPATH\n
 "
 
+if [ "$BACKUPTYPE" = local ]
+then
+	#Check that the backup folder exists
+	if [ ! -d "$STORAGEPATH" ]
+	then
+		echo $"The storage path does not exist - is the storage divice mounted?"
+		exit
+	fi
+	#Delete old backups
+	duplicity remove-older-than "$FULLBACKUP" --force file://"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+
+	#Run the backup
+	duplicity --full-if-older-than "$FULLBACKUP" "$BACKUPFOLDER" file://"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
+fi
+
 #Amazon S3
 if [ "$BACKUPTYPE" = AmazonS3 ]
 then

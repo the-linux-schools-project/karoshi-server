@@ -85,6 +85,11 @@ AWSBUCKETLOCATION=`echo "$DATA" | cut -s -d: -f21`
 
 [ -z "$BACKUPPASSWORD" ] && BACKUPPASSWORD=na
 
+if [ "$BACKUPTYPE" = local ]
+then
+	BACKUPSERVERNAME=$(hostname-fqdn)
+	BACKUPUSERNAME=root
+fi
 
 if [ -z "$BACKUPSERVERNAME" ]
 then
@@ -432,7 +437,22 @@ then
 			then
 				rm -f -R "/opt/karoshi/server_network/backup_servers_offsite/"'$SERVERNAME'"/'$BACKUPNAME'/"
 			fi
+
+
+			#Delete the cron job
+			if [ -f "/opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/duplicity-'$BACKUPNAME'.cron" ]
+			then
+				rm -f "/opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/duplicity-'$BACKUPNAME'.cron"
+				/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
+			fi
 			'
+		else
+			#Delete the cron job
+			if [ -f "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/duplicity-$BACKUPNAME.cron" ]
+			then
+				rm -f "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/duplicity-$BACKUPNAME.cron"
+				/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
+			fi
 		fi
 	fi
 	ACTION=add
@@ -499,7 +519,8 @@ then
 		echo '<option value="" label="blank"></option>'
 	fi
 	echo '<option value="ftp">FTP</option>
-	<option disabled value="rsync">Rsync</option>	
+	<option disabled value="rsync">Rsync</option>
+	<option value="local">Local File Path</option>
 	<option value="sftp">SFTP</option>
 	<option value="scp">SSH / SCP</option>
 	<option value="AmazonS3">Amazon S3</option>
