@@ -82,6 +82,7 @@ AWSACCESSKEYID=`echo "$DATA" | cut -s -d: -f18`
 AWSSECRETACCESSKEY=`echo "$DATA" | cut -s -d: -f19`
 AWSBUCKETNAME=`echo "$DATA" | cut -s -d: -f20`
 AWSBUCKETLOCATION=`echo "$DATA" | cut -s -d: -f21`
+LABEL=`echo "$DATA" | cut -s -d: -f22`
 
 [ -z "$BACKUPPASSWORD" ] && BACKUPPASSWORD=na
 
@@ -115,6 +116,7 @@ fi
 [ -z "$AWSSECRETACCESSKEY" ] && AWSSECRETACCESSKEY=na
 [ -z "$AWSBUCKETNAME" ] && AWSBUCKETNAME=na
 [ -z "$AWSBUCKETLOCATION" ] && AWSBUCKETLOCATION=na
+[ -z "$LABEL" ] && LABEL=na
 
 ########################
 #Check data
@@ -213,7 +215,7 @@ then
 	echo "AWSSECRETACCESSKEY=$AWSSECRETACCESSKEY" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "AWSBUCKETNAME=$AWSBUCKETNAME" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	echo "AWSBUCKETLOCATION=$AWSBUCKETLOCATION" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
-
+	echo "LABEL=$LABEL" >> "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/connect.cfg"
 	#Create backup.cfg
 	if [ ! -f "/opt/karoshi/server_network/backup_servers_offsite/$SERVERNAME/$BACKUPUSERNAME.$BACKUPSERVERNAME/backup.cfg" ]
 	then
@@ -652,8 +654,15 @@ then
 		</td>
 		<td><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____BACKUPUSERNAME____'$BACKUPUSERNAME'____BACKUPSERVERNAME____'$BACKUPSERVERNAME'____" type="submit" class="button" value="'$BACKUPSTATUS'"></td><td><input name="____ACTION____addbackupfolder____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Folder"'"></td></tr>
 		<tr><td style="height: 30px;"><b>'$"Backup Type"'</b></td><td>
-	'$BACKUPTYPE'</td><td></td><td></td></tr>
-		<tr><td style="height: 30px;"><b>'$"Storage Path"'</b></td><td>
+	'$BACKUPTYPE'</td><td></td><td></td></tr>'
+
+		if [ "$BACKUPTYPE" = local ]
+		then
+			echo '<tr><td style="height: 30px;"><b>'$"Partition Label"'</b></td><td>
+	'$LABEL'</td><td></td><td></td></tr>'
+		fi
+
+		echo '<tr><td style="height: 30px;"><b>'$"Storage Path"'</b></td><td>
 	'$STORAGEPATH'</td><td></td><td></td></tr>
 		<tr><td style="height: 30px;"><b>'$"Backup Time"'</b></td><td>'$HOURS':'$MINUTES'</td><td></td><td></td></tr>
 

@@ -96,12 +96,6 @@ Storage Path - $STORAGEPATH\n
 
 if [ "$BACKUPTYPE" = local ]
 then
-	#Check that the backup folder exists
-	if [ ! -d "$STORAGEPATH" ]
-	then
-		echo $"The storage path does not exist - is the storage divice mounted?"
-		exit
-	fi
 	#Delete old backups
 	duplicity remove-older-than "$FULLBACKUP" --force file://"$STORAGEPATH"/`hostname-fqdn`/"$BACKUPFOLDER"/
 
@@ -169,6 +163,22 @@ unset PASSPHRASE
 echo -e "Completed backup - `date`"
 }
 
+#Mount local backup drive
+if [ "$BACKUPTYPE" = local ]
+then
+	#Unmount the drive
+	umount -L "$LABEL"
+
+	#Mount the drive
+	[ ! -d /mnt/"$LABEL"/ ] && mkdir -p /mnt/"$LABEL"/
+	mount -L "$LABEL" /mnt/"$LABEL"/
+	if [ $? != 0 ]
+	then
+		echo "$LABEL" $"The backup disk could not be mounted."
+		exit
+	fi
+fi
+
 for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")
 do
 	BACKUPFOLDER=$(echo $BACKUPDATA | cut -d, -f1)
@@ -183,4 +193,16 @@ do
 		run_backup
 	fi
 done
+
+#Unmount local backup drive
+if [ "$BACKUPTYPE" = local ]
+then
+	#Unmount the backup drive
+	umount -L "$LABEl"
+	if [ $? != 0 ]
+	then
+		echo "$LABEL" $"The backup disk could not be unmounted."
+		exit
+	fi
+fi
 

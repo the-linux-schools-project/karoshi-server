@@ -109,6 +109,12 @@ el.innerHTML = "Password";
 	var el = document.getElementById("extraoptions6");
 el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPPASSWORD'\" name=\"____BACKUPPASSWORD____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
 }
+if (selectedstyle == "local") {
+	var el = document.getElementById("extraoptions1");
+el.innerHTML = "Partition Label";
+	var el = document.getElementById("extraoptions2");
+el.innerHTML = "<input tabindex= \"6\" value=\"offsite-backup\" name=\"____LABEL____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+}
 }
 </script>
 </head><body><div id="pagecontainer">'
@@ -368,6 +374,23 @@ then
 		let COUNTER=$COUNTER+1
 	done
 
+	if [ "$BACKUPTYPE" = local ]
+	then
+		#Assign LABEL
+		COUNTER=2
+		while [ $COUNTER -le $END_POINT ]
+		do
+			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			if [ `echo $DATAHEADER'check'` = LABELcheck ]
+			then
+				let COUNTER=$COUNTER+1
+				LABEL=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+				break
+			fi
+			let COUNTER=$COUNTER+1
+		done
+	fi
+
 	if [ "$BACKUPTYPE" = AmazonS3 ]
 	then
 		END_POINT=36
@@ -593,6 +616,6 @@ echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karo
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:$FULLBACKUP:$AWSACCESSKEYID:$AWSSECRETACCESSKEY:$AWSBUCKETNAME:$AWSBUCKETLOCATION:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:$FULLBACKUP:$AWSACCESSKEYID:$AWSSECRETACCESSKEY:$AWSBUCKETNAME:$AWSBUCKETLOCATION:$LABEL:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
 exit
