@@ -115,28 +115,13 @@ fi
 ########################
 echo `date`: change_primary_group - Changing the primary group "for" $USERNAME to $NEWPRIGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-function get_subunit {
-#############################
-#Determine sub organisation group for the user
-#############################
-SUBUNIT=students
-if [ $PRIMARYGROUP = staff ] || [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = officestaff ] || [ $PRIMARYGROUP = tech ] || [ $PRIMARYGROUP = nonteachingstaff ] || [ $PRIMARYGROUP = staff ] || [ $PRIMARYGROUP = studentstaff ]
-then
-	SUBUNIT=personnel
-fi
-if [ $PRIMARYGROUP = guests ]
-then
-	SUBUNIT=other
-fi
-}
-
 #Get data on user
 CURRENTPATH=`getent passwd | grep ^$USERNAME | cut -d: -f6`
 CURRENTPRIGROUP=`id -g -n $USERNAME`
 PRIMARYGROUP=$CURRENTPRIGROUP
-get_subunit
-CURRENTSUBUNIT=$SUBUNIT
+
 source /opt/karoshi/server_network/group_information/$CURRENTPRIGROUP
+CURRENTSUBUNIT=$SUBUNIT
 SERVER=`echo $SERVER | cut -d, -f1`
 CURRENT_SERVER=$SERVER
 if [ -z "$CURRENT_SERVER" ]
@@ -148,7 +133,6 @@ fi
 PRIMARYGROUP=$NEWPRIGROUP
 source /opt/karoshi/server_network/group_information/$NEWPRIGROUP
 SERVER=`echo $SERVER | cut -d, -f1`
-get_subunit
 NEWSUBUNIT=$SUBUNIT
 NEW_SERVER=$SERVER
 if [ -z "$NEW_SERVER" ]
@@ -186,7 +170,7 @@ gidNumber: '$PRIGROUPID'
 -
 replace: scriptPath
 scriptPath: logon.bat '$NEWPRIGROUP'
--' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 2>&1
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #Move ldap entry
 
@@ -195,7 +179,7 @@ changetype: modrdn
 newrdn: CN='$USERNAME'
 deleteoldrdn: 1
 newsuperior: OU='$NEWPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 2>&1
+' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
 #Check that home area should still be on the same server
