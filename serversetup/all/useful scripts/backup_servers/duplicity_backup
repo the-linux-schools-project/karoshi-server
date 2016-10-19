@@ -167,7 +167,10 @@ echo -e "Completed backup - `date`"
 if [ "$BACKUPTYPE" = local ]
 then
 	#Unmount the drive
-	umount -L "$LABEL"
+	if [ $(mount | grep -c -w /mnt/"$LABEL") -gt 0 ]
+	then
+		umount /mnt/"$LABEL"/
+	fi
 
 	#Mount the drive
 	[ ! -d /mnt/"$LABEL"/ ] && mkdir -p /mnt/"$LABEL"/
@@ -177,6 +180,8 @@ then
 		echo "$LABEL" $"The backup disk could not be mounted."
 		exit
 	fi
+
+	STORAGEPATH=$(echo /mnt/"$LABEL"/"$STORAGEPATH" | sed 's%//%/%g')
 fi
 
 for BACKUPDATA in $(cat "/opt/karoshi/server_network/backup_servers_offsite/`hostname-fqdn`/$BACKUPUSERNAME.$BACKUPSERVER/backup.cfg")
@@ -198,7 +203,7 @@ done
 if [ "$BACKUPTYPE" = local ]
 then
 	#Unmount the backup drive
-	umount -L "$LABEl"
+	umount /mnt/"$LABEL"/
 	if [ $? != 0 ]
 	then
 		echo "$LABEL" $"The backup disk could not be unmounted."
