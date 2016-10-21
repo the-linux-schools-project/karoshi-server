@@ -207,7 +207,7 @@ echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">"
 echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">"
 echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
 
-echo '<table class="standard" style="text-align: left;" ><tbody>'
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>'
 
 while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
@@ -294,7 +294,7 @@ do
 	fi
 
 	echo '<b>'$"Raid Information"'</b><br><br>
-	<table class="standard" style="text-align: left;" ><tbody>
+	<table class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="min-width: '$WIDTH1'px;">'$"Raid Name"'</td><td>'$POOLNAME'</td></tr>
 	<tr><td>'$"Raid Type"'</td><td>'$RAID_TYPE'</td></tr>
 	<tr><td>'$"Raid Size"'</td><td>'$SIZE'</td></tr>
@@ -415,7 +415,7 @@ echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">"
 echo "<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">"
 echo "<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
 
-echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
+echo "<table class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>"
 
 while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 do
@@ -504,7 +504,7 @@ else
 fi
 
 echo "<b>'$"Raid Information"'</b><br><br>
-<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+<table class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
 <tr><td style=\"min-width: '$WIDTH1'px;\">'$"Raid Name"'</td><td>$POOLNAME</td></tr>
 <tr><td>'$"Raid Type"'</td><td>$RAID_TYPE</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$SIZE</td></tr>
