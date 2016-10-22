@@ -127,12 +127,14 @@ then
 	WIDTH1=100
 	WIDTH2=40
 	WIDTH3=100
+	WIDTH4=250
 	TABLECLASS=tablesorter
 else
 	MULTI=5
 	WIDTH1=180
 	WIDTH2=86
 	WIDTH3=180
+	WIDTH4=500
 	TABLECLASS=tablesorter
 fi
 echo `date`: disk_information - checking $INFO "for" $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -250,7 +252,7 @@ then
 	fi
 
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td>'$MODELFAMILY'</td></tr>
+	<tr><td style="width: '$WIDTH3'px;">'$"Model Family"'</td><td style="width: '$WIDTH4'px;">'$MODELFAMILY'</td></tr>
 	<tr><td>'$"Device Model"'</td><td>'$DEVICEMODEL'</td></tr>
 	<tr><td>'$"Serial Number"'</td><td>'$SERIALNO'</td></tr>
 	<tr><td>'$"Firmware Version"'</td><td>'$FIRMWARE'</td></tr>
@@ -451,10 +453,10 @@ then
 	fi
 
 	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>"
+	<tr><td style=\"width: '$WIDTH3'px;\">'$"Model Family"'</td><td style=\"width: '$WIDTH4'px;\">$MODELFAMILY</td></tr>
+	<tr><td>'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
+	<tr><td>'$"Serial Number"'</td><td>$SERIALNO</td></tr>
+	<tr><td>'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>"
 
 	if [[ $DISK_AGE_WARN = 2 ]]
 	then
@@ -466,9 +468,9 @@ then
 		echo "<tr><td>'$"Disk Age"'</td><td>$DISK_AGE $DISK_AGE_UNIT</td></tr>"
 	fi
 
-	echo "<tr><td style=\"width: 180px;\">'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
-	<tr><td style=\"width: 180px;\">'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
+	echo "<tr><td>'$"Capacity"'</td><td>$CAPACITY $DRIVESCALE</td></tr>
+	<tr><td>'$"Smart Enabled"'</td><td>$SMARTENABLED</td></tr>
+	<tr><td>'$"Smart Status"'</td><td>$SMARTSTATUS</td></tr>"
 
 	if [ ! -z "$PENDINGSECTORS" ]
 	then
@@ -487,7 +489,7 @@ then
 	then
 	echo "<tr><td style=\"color:orange\">'$"Disk temperature"'</td><td style=\"color:orange\">$DISKTEMP <sup>o</sup>C</td></tr>"
 	else
-	echo "<tr><td style=\"width: 180px;\">'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
+	echo "<tr><td>'$"Disk temperature"'</td><td>$DISKTEMP <sup>o</sup>C</td></tr>"
 	fi
 
 	echo "</tbody></table><br>"
