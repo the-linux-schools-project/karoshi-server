@@ -49,6 +49,9 @@ then
 	chmod 0700 /opt/karoshi/updates/
 fi
 
+MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
+[ $MOBILE = no ] && echo '</div><div id="infobox">'
+
 while [ "$COUNTER" -le "$LINECOUNT" ]
 do
 	LINEDATA=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist.$$)

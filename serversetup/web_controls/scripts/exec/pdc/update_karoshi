@@ -138,8 +138,8 @@ echo '<tr><td>'$PATCHNAME'<\td><td>'$KAROSHISERVER'<\td><td>'`date`'</td></tr>' 
 function download_patch {
 if [ ! -d /opt/karoshi/updates/ ]
 then
-mkdir -p /opt/karoshi/updates/
-chmod 0700 /opt/karoshi/updates/
+	mkdir -p /opt/karoshi/updates/
+	chmod 0700 /opt/karoshi/updates/
 fi
 #Delete patch if it already exists
 [ -f /opt/karoshi/updates/$PATCHNAME.sh ] && rm -f /opt/karoshi/updates/$PATCHNAME.sh

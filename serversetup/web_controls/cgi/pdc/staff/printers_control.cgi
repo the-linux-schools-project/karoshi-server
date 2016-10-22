@@ -52,7 +52,7 @@ exit
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 echo "Content-type: text/html"
 echo ""
 echo '<html><head><title>'$TITLE'</title><meta http-equiv='"'REFRESH'"' content='"'0; URL=printers.cgi'"'></head>'
@@ -84,7 +84,7 @@ COUNTER=0
 
 PRINTER_ACTION=none
 #Get printer name
-PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2 | sed 's/123456789/_/g'`
+PRINTERNAME=`echo $PRINTDATA | cut -d_ -f2  | sed 's/12345UNDERSCORE12345/_/g'`
 #Check to see what action needs to be carried out
 if [ `echo $PRINTDATA | grep -c _enable_` = 1 ]
 then

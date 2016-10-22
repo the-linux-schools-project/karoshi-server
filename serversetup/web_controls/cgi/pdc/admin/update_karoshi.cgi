@@ -163,7 +163,7 @@ fi
 
 if [ "$PATCHNAME" = applyallpatches ]
 then
-	sudo -H /opt/karoshi/web_controls/exec/apply_all_karoshi_patches
+	sudo -H /opt/karoshi/web_controls/exec/apply_all_karoshi_patches $MOBILE:
 else
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1`
 	sudo -H /opt/karoshi/web_controls/exec/update_karoshi $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PATCHNAME:$MOBILE:
