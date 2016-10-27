@@ -80,7 +80,16 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Change Primary Group"'</div>
+echo '<form action="/cgi-bin/admin/change_primary_group.cgi" method="post"><div id="actionbox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr>
+<td><div class="sectiontitle">'$"Change Primary Group"'</div></td>
+<td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="____GroupManagement____">
+	'$"Group Management"'
+	</button>
+</td>
+</tr></table>
   <br>
   <table class="standard" style="text-align: left;" >
     <tbody>

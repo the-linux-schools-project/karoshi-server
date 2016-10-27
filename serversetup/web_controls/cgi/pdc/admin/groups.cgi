@@ -432,9 +432,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	<tr>'
 	if [ $MOBILE = no ]
 	then
-		echo '<td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' '$GROUPNAME'</div></td>'
+		echo '<td><div class="sectiontitle">'$TITLE' '$GROUPNAME'</div></td>'
 	else
-		echo '<td style="vertical-align: top;"><div class="sectiontitle">'$GROUPNAME'</div></td>'
+		echo '<td><div class="sectiontitle">'$GROUPNAME'</div></td>'
 	fi
 
 if [ $ACTION = view ] 
@@ -500,7 +500,7 @@ else
 	echo '<td style="vertical-align: top;">
 	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
 	<button class="button" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
-	'$"View groups"'
+	'$"Group Management"'
 	</button>
 	</form>	
 	</td>'

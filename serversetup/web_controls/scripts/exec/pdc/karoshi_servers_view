@@ -104,7 +104,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"My Servers"' '$SHORTNAME'</div></td>
+<td><div class="sectiontitle">'$"My Servers"' '$SHORTNAME'</div></td>
 <td style="vertical-align: top;">
 <form action="karoshi_servers_add_fm.cgi" method="post">
 <button class="button" name="_AddServer_" value="_">

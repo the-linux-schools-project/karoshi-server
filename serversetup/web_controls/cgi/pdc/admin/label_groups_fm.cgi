@@ -62,10 +62,10 @@ echo '
 echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$"Label Groups"'</b></td>
+<td><div class="sectiontitle">'$"Label Groups"'</div></td>
 <td style="vertical-align: top;">
 <button class="button" formaction="/cgi-bin/admin/groups.cgi" name="ViewGroups" value="_">
-'$"View Groups"'
+'$"Group Management"'
 </button>
 </td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Labelling_groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will let you add labels to your groups. The labels are shown to help you choose the correct group when adding new users to the system."'</span></a></td></tr></tbody></table>
@@ -73,14 +73,14 @@ echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="acti
 
 #groups
 COUNTER=1
-echo '<table class="standard" style="text-align: left;" ><tbody><tr>'
+echo '<table class="tablesorter" style="text-align: left;" ><thead><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th><tr></thead><tbody>'
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 	GROUPNAME=`basename $GROUPNAMES`
 	GROUPNAME2=`echo $GROUPNAME | sed 's/-/HYPHEN/g'`
 	UPPERGROUPNAME=${GROUPNAME2^^}
 	LABEL=${!UPPERGROUPNAME}
-	echo '<td style="width: 200px;">'$GROUPNAME'</td><td style="width: 100px;"><input maxlength="20" size="20" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 60px;"></td>'
+	echo '<td>'$GROUPNAME'</td><td><input maxlength="20" size="20" name="____'$UPPERGROUPNAME':" value="'$LABEL'"></td><td style="width: 60px;"></td>'
 
 	if [ $COUNTER = 2 ]
 	then

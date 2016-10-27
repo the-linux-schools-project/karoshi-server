@@ -86,41 +86,47 @@ $(document).ready(function()
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/ups_slave_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Add a slave UPS"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
+<td><div class="sectiontitle">'$"Add a slave UPS"'</div></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="ups_status.cgi" name="_UPSStatus" value="_">
+'$"UPS Status"'
+</button>
+</td>
+<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 
 
 #Check to see if there are any master ups available
 
 if [ ! -d /opt/karoshi/server_network/ups/master ]
 then
-MESSAGE=$"There are no master UPS devices available."
-show_status
+	MESSAGE=$"There are no master UPS devices available."
+	show_status
 fi
 
 if [ `ls -1 /opt/karoshi/server_network/ups/master/ | wc -l` = 0 ]
 then
-MESSAGE=$"There are no master UPS devices available."
-show_status
+	MESSAGE=$"There are no master UPS devices available."
+	show_status
 fi
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -131,18 +137,18 @@ echo '<select name="_UPSSERVER_" style="width: 200px;"><option> </option>'
 
 for UPSSERVERS in /opt/karoshi/server_network/ups/master/*
 do
-UPSSERVER=`basename $UPSSERVERS`
-if [ -d /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ ]
-then
-if [ `ls -1 /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ | wc -l` != 0 ]
-then
-for UPSMODELS in /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/*
-do
-UPSMODEL=`basename $UPSMODELS`
-echo '<option value="'$UPSSERVER','$UPSMODEL'">'$UPSSERVER': '$UPSMODEL'</option>'
-done
-fi
-fi
+	UPSSERVER=`basename $UPSSERVERS`
+	if [ -d /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ ]
+	then
+		if [ `ls -1 /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ | wc -l` != 0 ]
+		then
+			for UPSMODELS in /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/*
+			do
+				UPSMODEL=`basename $UPSMODELS`
+				echo '<option value="'$UPSSERVER','$UPSMODEL'">'$UPSSERVER': '$UPSMODEL'</option>'
+			done
+		fi
+	fi
 done
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a master UPS device from the list."'</span></a></td></tr>
 </tbody></table><br><br>'

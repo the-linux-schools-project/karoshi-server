@@ -131,13 +131,13 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"categories"'</div></td>
+<tr><td><div class="sectiontitle">'$"Categories"'</div></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/groups.cgi" name="groups" method="post">
 <button class="button" name="Groups">
-'$"Groups"'
+'$"Group Management"'
 </button>
 </form></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Categories"><img class="images" alt="" src="/images/help/info.png"><span>'$"Categories are sub containers in OU=People in the ldap structure."'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Categories"><img class="images" alt="" src="/images/help/info.png"><span>'$"Categories are sub containers in OU=People in the ldap structure."'</span></a></td>
 </tr></tbody></table><br>
 '
 

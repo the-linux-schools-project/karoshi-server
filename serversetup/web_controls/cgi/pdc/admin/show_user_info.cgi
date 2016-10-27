@@ -199,7 +199,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$"User Information"'</b></td>
+<td><div class="sectiontitle">'$"User Information"'</div></td>
 <td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
 	<button class="button" name="_ChangeUsername_" value="_USERNAME_'$USERNAME'_">

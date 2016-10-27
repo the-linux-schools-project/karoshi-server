@@ -56,8 +56,8 @@ echo '
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$"Copy Files - upload"'</b></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$"View Groups"'"></a></td>
+<td><div class="sectiontitle">'$"Copy Files - upload"'</div></td>
+<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$"Group Management"'"></a></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy files into all of the user home areas for the group that you choose."'</span></a></td></tr></tbody></table><br>
 
 

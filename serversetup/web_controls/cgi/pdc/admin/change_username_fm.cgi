@@ -134,7 +134,17 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"Change a Username"'</div><br>'
+echo '<div id="'$DIV_ID'">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr>
+<td><div class="sectiontitle">'$"Change a Username"'</div></td>
+<td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="____GroupManagement____">
+	'$"Group Management"'
+	</button>
+</td>
+</tr></table>
+<br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" >

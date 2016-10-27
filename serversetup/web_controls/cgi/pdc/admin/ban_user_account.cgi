@@ -219,7 +219,7 @@ echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">
 <div id="actionbox">'
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Ban User Account"'</div></td>
+<tr><td><div class="sectiontitle">'$"Ban User Account"'</div></td>
 <td style="vertical-align: top;">
 <button class="button" formaction="/cgi-bin/admin/banned_users_view_fm.cgi" name="ViewBannedUsers" value="_">
 '$"View Banned Users"'

@@ -47,8 +47,8 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
@@ -125,9 +125,11 @@ if [ $MOBILE = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=200
-	WIDTH2=90
-	WIDTH3=300
+	WIDTH2=70
+	WIDTH3=80
 	WIDTH4=100
+	WIDTH5=140
+	WIDTH6=140
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/user/edit_user_info.png
 	ICON3=/images/submenus/user/users.png
@@ -136,9 +138,11 @@ then
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=120
-	WIDTH2=70
-	WIDTH3=200
-	WIDTH4=90
+	WIDTH2=50
+	WIDTH3=80
+	WIDTH4=100
+	WIDTH5=140
+	WIDTH6=140
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/user/usersm.png
 	ICON3=/images/submenus/user/users.png
@@ -203,6 +207,8 @@ fi
 if [ "$ACTION" = showusers ]
 then
 	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	source /opt/karoshi/server_network/domain_information/domain_name
+	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 	#Show box to add users to the group.
 	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
@@ -215,19 +221,54 @@ then
 		SERVERNAME=`hostname-fqdn`
 		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		#Show all users in the group.
-		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	      	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th>'
-		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH4'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Last Name"'</b></th>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>'
+	      	[ "$MOBILE" = no ] && echo '<tr><th style="width: '$WIDTH2'px;"><b>'$"UID"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"GID"'</b></th>'
+		echo '<th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Password changed"'</b></th><th style="width: '$WIDTH6'px;"><b>'$"Account Expires"'</b></th>'
 		echo '<th style="width: '$WIDTH2'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
-			FULLNAME=`getent passwd "$GROUPMEMBER" | cut -d: -f5 | sed 's/,//g'`
-			FIRSTNAME=`echo "$FULLNAME" | cut -d" " -f1`
-			LASTNAME=`echo "$FULLNAME" | cut -d" " -f2`
 
-			#Get ldap data
+			#Get user data
+			PRIGROUP=$(id -g -n "$GROUPMEMBER")
+			SUPPGROUPS=$(id -G -n "$GROUPMEMBER" | sed 's/ /<br>/g')
 			LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$GROUPMEMBER | sed "s/[\]/BACKSLASH/g"`
+
+
+			CN=`echo -e "$LDAPDATA" | grep ^cn: | cut -d: -f2 | sed 's/^ //g'`
+			LASTNAME=`echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g'`
+			FIRSTNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
+			LDAPUSERNAME=`echo -e "$LDAPDATA" | grep ^uid: | cut -d: -f2 | sed 's/^ //g'`
+			UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
+			GIDNUMBER=`echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g'`
+			EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
+			HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g'`
+			HOMEDIRECTORY2=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\\/g'`
+			GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
+			SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
+			SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
+			SAMBAPWDCANCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g'`
+			DISPLAYNAME=`echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g'`
+			MAILLOCALADDRESS=`echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g'`
+			EMAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
+			SHADOWLASTCHANGE=`echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | sed 's/^ //g'`
+			SHADOWMAX=`echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g'`
+			SAMBAPASSWORDHISTORY=`echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g'`
+			SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
+			BADPASSWORDTIME=`echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g'`
+			BADPASSWORDCOUNT=`echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g'`
+			LOCKOUTTIME=`echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g'`
 			USERACCOUNTCONTROL=$(echo -e "$LDAPDATA" | grep ^userAccountControl: | cut -d: -f2 | tr -cd "0-9")
+
+			AD_PWDLASTSET=$(echo -e "$LDAPDATA" | grep ^pwdLastSet: | cut -d: -f2 | tr -cd "0-9")
+			AD_PWDLASTSET_EPOCH=`echo $((($AD_PWDLASTSET/10000000)-11644473600))`
+			AD_PWDLASTSET_DATE=$(date +"%d %b %Y" -d @"$AD_PWDLASTSET_EPOCH")
+
+
+			AD_EXPIRES=$(echo -e "$LDAPDATA" | grep ^accountExpires: | cut -d: -f2 | tr -cd "0-9")
+			AD_EXPIRES_EPOCH=`echo $((($AD_EXPIRES/10000000)-11644473600))`
+			AD_EXPIRES_DATE=$(date +"%d %b %Y" -d @"$AD_EXPIRES_EPOCH")
+
 			if [ $USERACCOUNTCONTROL = 514 ]
 			then
 				STATUSICON="$ICON5"
@@ -239,8 +280,10 @@ then
 				STATUSACTION=disableuser
 			fi
 
-			echo '<tr><td>'$GROUPMEMBER'</td>'
-			[ "$MOBILE" = no ] && echo '<td>'$FIRSTNAME'</td><td>'$LASTNAME'</td>'
+			echo '<tr>'
+			[ "$MOBILE" = no ] && echo '<td>'$UIDNUMBER'</td><td>'$GIDNUMBER'</td>'
+			echo '<td>'$GROUPMEMBER'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>'$SUPPGROUPS'</td><td>'$AD_PWDLASTSET_DATE'</td><td>'$AD_EXPIRES_DATE'</td>'
 			echo '<td>
 			<form name="myform" action="/cgi-bin/admin/show_user_info.cgi" method="post">
 			<button class="info" name="_ShowUserInfo_" value="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_">

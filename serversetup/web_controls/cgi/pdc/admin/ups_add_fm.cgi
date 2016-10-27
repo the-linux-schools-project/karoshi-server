@@ -76,28 +76,35 @@ $(document).ready(function()
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Add a UPS"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a>
-</td></tr></tbody></table><br></div><div id="infobox">'
+<td><div class="sectiontitle">'$"Add a UPS"'</div></td>
+<td style="vertical-align: top;">
+<button class="button" formaction="ups_status.cgi" name="_UPSStatus" value="_">
+'$"UPS Status"'
+</button>
+</td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a>
+</td>
+</tr></tbody></table><br></div><div id="infobox">'
 
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -110,12 +117,12 @@ UPSDATA_LENGTH=`cat /opt/karoshi/server_network/ups/ups-model-information.csv | 
 COUNTER=1
 while [ $COUNTER -le $UPSDATA_LENGTH ]
 do
-UPSDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/server_network/ups/ups-model-information.csv`
-UPSMAKE=`echo $UPSDATA | cut -d, -f1,2 | sed 's/,/: /g'`
-UPSMODEL=`echo $UPSDATA | cut -d, -f2`
-UPSDRIVER=`echo $UPSDATA | cut -d, -f3`
-echo '<option value="'$UPSMODEL,$UPSDRIVER'">'$UPSMAKE'</option>'
-let COUNTER=$COUNTER+1
+	UPSDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/server_network/ups/ups-model-information.csv`
+	UPSMAKE=`echo $UPSDATA | cut -d, -f1,2 | sed 's/,/: /g'`
+	UPSMODEL=`echo $UPSDATA | cut -d, -f2`
+	UPSDRIVER=`echo $UPSDATA | cut -d, -f3`
+	echo '<option value="'$UPSMODEL,$UPSDRIVER'">'$UPSMAKE'</option>'
+	let COUNTER=$COUNTER+1
 done
 
 echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a UPS device from the list."'</span></a></td></tr>

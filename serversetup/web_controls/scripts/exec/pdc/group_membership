@@ -105,12 +105,13 @@ else
 	ICON2=/images/submenus/user/group_no_m.png
 fi
 
-TABLECLASS=standard
-WIDTH=180
+
+WIDTH1=180
+WIDTH2=70
 if [ $MOBILE = yes ]
 then
-	TABLECLASS=mobilestandard
-	WIDTH=140
+	WIDTH1=140
+	WIDTH2=70
 fi
 
 function check_group_membership {
@@ -142,8 +143,8 @@ TEXTDOMAIN=karoshi-server
 #Get existing group information
 CURRENTGROUPS=`id -G -n $USERNAME`
 echo '<form action="/cgi-bin/admin/group_membership2.cgi" method="post">'
-echo  '<table class="'$TABLECLASS'" style="text-align: left;" >
-<tbody><tr><td style="width: '$WIDTH'px;"><b>'$"Group"'</b></td><td><b>'$"Group ID"'</b></td><td><b>'$"Status"'</b></td></tr>'
+echo  '<table class="tablesorter" style="text-align: left;" >
+<thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Group"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Group ID"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 
 

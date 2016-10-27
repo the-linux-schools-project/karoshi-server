@@ -90,10 +90,10 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Client Locations"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></td>
+<tr><td><div class="sectiontitle">'$"Client Locations"'</div></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
 <input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'"></form></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></td>
 </tr></tbody></table><br>
 '
 

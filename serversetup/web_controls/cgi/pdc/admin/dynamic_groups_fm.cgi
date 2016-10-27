@@ -54,7 +54,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_upload.cgi" METHOD="POST"><div id="actionbox">
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Dynamic Groups"'</b></td>
+<tr><td><div class="sectiontitle">'$"Dynamic Groups"'</div></td>
 <td style="vertical-align: top;">
 
 <button class="button" formaction="/cgi-bin/admin/groups.cgi" name="GroupManagement" value="_">

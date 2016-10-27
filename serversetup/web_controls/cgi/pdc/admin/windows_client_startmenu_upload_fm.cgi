@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -59,20 +59,20 @@ echo '<div id="actionbox">
 <P>
 '$"Please select the compressed start menu that you want to upload in .zip or .tar.gz format."':
 <P>
-        <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/windows_client_startmenu_upload.cgi" METHOD="POST">
-        <TABLE class="standard">
-        <TR>
-            <TD style="width: 200px;" ALIGN=LEFT>
+        <form enctype="multipart/form-data" action="/cgi-bin/admin/windows_client_startmenu_upload.cgi" method="post">
+        <table class="standard">
+        <tr>
+            <td style="width: 200px;">
                 '$"Compressed start menu"':
-            </TD>
-            <TD> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to upload a zip or tar.gz file of your chosen start menu."'<br><br>'$"The top folder of the created archive should be Start Menu."'</span></a></TD>
-        </TR>
-        </TABLE>
+            </td>
+            <td> <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to upload a zip or tar.gz file of your chosen start menu."'<br><br>'$"The top folder of the created archive should be Start Menu."'</span></a></td>
+        </tr>
+        </table>
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-</form></BODY>
-</HTML>
+</form></body>
+</html>
 '
 exit

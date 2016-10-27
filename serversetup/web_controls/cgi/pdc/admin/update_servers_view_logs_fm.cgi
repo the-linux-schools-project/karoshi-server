@@ -159,11 +159,11 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"View Server Update Logs"'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the update logs for."'</span></a></td>
+	<td><div class="sectiontitle">'$"View Server Update Logs"'</div></td>
 	<td>
 		<button class="button" formaction="update_servers_fm.cgi" name="_">'$"Update Servers"'</button>
 	</td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Viewing_Update_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the update logs for."'</span></a></td>
 	</tr></table>' 
 fi
 

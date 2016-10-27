@@ -47,7 +47,17 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Membership"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Membership"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+'
 
 if [ $MOBILE = yes ]
 then
@@ -167,11 +177,18 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><b>'$"Group Membership"' - '$USERNAME'</b></td>
+	<td><b>'$"Group Membership"' - '$USERNAME'</b></td>
 	<td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/group_membership_fm.cgi" method="post">
 	<button class="button" name="ChooseUser" value="_">
 	'$"Choose User"'
+	</button>
+	</form
+	</td>
+	<td style="vertical-align: top;">
+	<form action="/cgi-bin/admin/groups.cgi" method="post">
+	<button class="button" name="GroupMangement" value="_">
+	'$"Group Management"'
 	</button>
 	</form
 	</td>

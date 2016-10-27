@@ -76,8 +76,7 @@ fi
 echo '<div id="actionbox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"UPS Status"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td>
+<td><div class="sectiontitle">'$"UPS Status"'</div></td>
 <td style="vertical-align: top;">
 <form action="ups_add_fm.cgi" method="post">
 <button class="button" name="_AddUPS" value="_">
@@ -99,6 +98,7 @@ echo '<div id="actionbox">
 </button>
 </form>
 </td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td>
 </tr></table>
 <br>'
 
