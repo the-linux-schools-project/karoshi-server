@@ -522,6 +522,9 @@ touch /var/log/mail.warn
 
 #show_server_info
 cp -f /opt/karoshi/serversetup/all/"useful scripts"/show_server_info /usr/sbin/
+
+#Apparmor
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/apparmor/usr.sbin.clamd /etc/apparmor.d/
 }
 
 function install_e2guardian {

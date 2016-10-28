@@ -83,7 +83,7 @@ if [ "$CHOICE" = 3 ] || [ $CHOICE = 5 ]
 then
 	#If choice is install, ask if this is server installation is for education or business use.
 	yad --title $"Karoshi Server Setup" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 180 \
-   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Home"':3' --text $"Choose the server install version.""\n\n<span font_weight='bold' foreground='blue'>"$"Education""</span>: "$"Installs with student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Business""</span>: "$"Installs without student year groups.""\n\n<span font_weight='bold' foreground='blue'>"$"Home""</span>: "$"Installs with multimedia options."
+   	--button=''$"Education"':1'  --button=''$"Business"':2' --button=''$"Home"':3' --text $"Choose the server install version."
 	CHOICETYPE="$?"
 	[ $CHOICETYPE = 252 ] && CHOICE=252
 	if [ $CHOICE = 5 ]

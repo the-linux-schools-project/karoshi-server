@@ -1481,9 +1481,6 @@ gidnumber: $GIDnumber
 	do
 		Account=$(echo $GIDInfo | cut -d, -f1)
 		GIDnumber=$(echo $GIDInfo | cut -d, -f2)
-
-
-		echo "<ul><li>Setting $Account gid to $GIDnumber</li></ul>"
 		set_gid_ad_account
 	done
 

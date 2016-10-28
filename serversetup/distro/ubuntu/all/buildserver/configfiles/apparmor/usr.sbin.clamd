@@ -1,0 +1,61 @@
+# vim:syntax=apparmor
+# Author: Jamie Strandboge <jamie@ubuntu.com>
+# Last Modified: Sun Aug  3 09:39:03 2008
+
+#include <tunables/global>
+
+/usr/sbin/clamd {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  # LP: #433764:
+  capability dac_override,
+
+  # needed, when using systemd
+  capability setgid,
+  capability setuid,
+
+  @{PROC}/filesystems r,
+  @{PROC}/[0-9]*/status r,
+
+  /etc/clamav/clamd.conf r,
+
+  /usr/sbin/clamd mr,
+
+  /tmp/ rw,
+  /tmp/** krw,
+
+  /var/lib/clamav/ r,
+  /var/lib/clamav/** krw,
+  /var/log/clamav/* krw,
+  /var/spool/MailScanner/** rw,
+  /var/spool/MailScanner/incomming/* rw,
+ 
+  /{,var/}run/clamav/clamd.ctl w,
+  /{,var/}run/clamav/clamd.pid w,
+
+  /var/spool/clamsmtp/* r,
+
+  /var/spool/qpsmtpd/* r,
+
+  /var/spool/p3scan/children/** r,
+
+  /var/spool/havp/** r,
+
+  # For amavisd-new integration
+  /var/lib/amavis/tmp/** r,
+  
+  # For mimedefang integration
+  /var/spool/MIMEDefang/mdefang-*/Work/ r,
+  /var/spool/MIMEDefang/mdefang-*/Work/** r,
+
+  # For use with exim
+  /var/spool/exim4/** r,
+
+  # Allow home dir to be scanned
+  @{HOME}/ r,
+  @{HOME}/** r,
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.sbin.clamd>
+}

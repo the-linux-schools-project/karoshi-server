@@ -165,7 +165,7 @@ fi
 
 if [ `grep -c ^"#default_client_limit = 1000" /etc/dovecot/conf.d/10-master.conf` -gt 0 ]
 then
-	sed -i "s/^#default_client_limit = 1000/default_client_limit = 3003/g" /etc/dovecot/conf.d/10-master.conf
+	sed -i "s/^#default_client_limit = 1000/default_client_limit = 4000/g" /etc/dovecot/conf.d/10-master.conf
 fi
 
 if [ `grep -c ^mail_location /etc/dovecot/dovecot.conf` = 0 ]
