@@ -375,6 +375,7 @@ cp -f /opt/karoshi/serversetup/modules/email/scripts/mailboxcheck /opt/karoshi/"
 #######################
 #Create a cron job to run mailbox size checks
 #######################
+[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 echo 0 1,9,17 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/mailboxcheck > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/mailboxcheck.cron
 #Create a cron job to run postfix stats
 echo 55 23 '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/postfixstats > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/postfixstats.cron
@@ -635,6 +636,20 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+fi
+
+#Sort out apparmor
+if [ -f /etc/apparmor.d/usr.sbin.clamd ]
+then
+	if [ $(grep -c Mailscanner /etc/apparmor.d/usr.sbin.clamd) = 0 ]
+	then
+		echo '<ul><li>'$EMAILSERVER' - modifying apparmor to allow mailscanner access for clamd</li></ul>'
+		sed -i '/\/var\/log\/clamav\/\* krw,/a \
+\/var\/spool\/MailScanner\/** rw, \
+\/var\/spool\/MailScanner\/incomming\/* rw,
+' /etc/apparmor.d/usr.sbin.clamd
+	service apparmor restart 1>/dev/null
+	fi
 fi
 
 ######################
