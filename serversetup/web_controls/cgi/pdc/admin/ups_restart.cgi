@@ -46,20 +46,20 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=3
+END_POINT=7
 
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {

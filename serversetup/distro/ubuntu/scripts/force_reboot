@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#Stop all services
+for SERVICENAME in $(ls -1 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ | grep _stop)
+do
+	#Stop the service
+	if [ "$SERVICENAME" != samba_stop ] && [ "$SERVICENAME" != glusterfs_stop ]
+	then
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$SERVICENAME &
+	fi
+	
+done
+
+sleep 5
+#Stop samba4
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_stop &
+
+sleep 5
+#Unmount all gluster
+for GLUSTERMOUNT in $(mount | grep gluster | cut -d" " -f1)
+do
+	umount "$GLUSTERMOUNT" &
+done
+sleep 5
+
+#Stop gluster
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/glusterfs_stop
+
+#Unmount all zfs
+for ZFSMOUNT in $(mount | grep zfs | cut -d" " -f1)
+do
+	umount "$ZFSMOUNT" &
+done
+sleep 5
+
+#Umount everything else that is not in use
+umount -a
+sleep 5
+#Reboot
+reboot -f
+
+

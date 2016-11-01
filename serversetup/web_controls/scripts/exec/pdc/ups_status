@@ -197,18 +197,18 @@ fi
 
 #Show data
 
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
+echo '<tr><td style="vertical-align: top;">'$SERVER_SHORT'</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER_SHORT' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
 <form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 	<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_">
 	<img src="'$DELETEICON'" alt="'$"Delete" $UPSMODEL'">
-	<span>'$SERVER' - '$"Delete" $UPSMODEL'</span>
+	<span>'$SERVER_SHORT' - '$"Delete" $UPSMODEL'</span>
 	</button>
 </form>
 </td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/ups_restart.cgi" method="post">
 	<button class="info" name="_RestartUPS_" value="_SERVER_'$SERVER'_">
 	<img src="'$RESTARTICON'" alt="'$SERVER' -'$"Restart UPS deamon"'">
-	<span>'$SERVER' -'$"Restart UPS deamon"'</span>
+	<span>'$SERVER_SHORT' -'$"Restart UPS deamon"'</span>
 	</button>
 </form></td></tr>'
 }
@@ -219,6 +219,7 @@ echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-ali
 for SERVERS in /opt/karoshi/server_network/ups/master/*
 do
 	SERVER=`basename $SERVERS`
+	SERVER_SHORT=$(echo "$SERVER" | cut -d"." -f1)
 	#Get UPSMODELS
 	for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
 	do
