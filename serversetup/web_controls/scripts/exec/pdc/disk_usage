@@ -124,12 +124,7 @@ if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	if [ -f /opt/karoshi/server_network/disk_usage/$SERVERNAME/"$CHOICE".html ]
 	then
-		if [ $MOBILE = no ]
-		then
-			cat /opt/karoshi/server_network/disk_usage/$SERVERNAME/"$CHOICE".html
-		else
-			cat /opt/karoshi/server_network/disk_usage/$SERVERNAME/"$CHOICE".html | sed "s/class=\"standard\"/class=\"mobilestandard\"/g"
-		fi
+		cat /opt/karoshi/server_network/disk_usage/$SERVERNAME/"$CHOICE".html
 	else
 		echo $"No disk data has been generated."
 	fi
@@ -140,12 +135,7 @@ then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	if [ -f /opt/karoshi/server_network/disk_usage/'$SERVERNAME'/"'$CHOICE'".html ]
 	then
-		if [ '$MOBILE' = no ]
-		then
-			cat /opt/karoshi/server_network/disk_usage/'$SERVERNAME'/"'$CHOICE'".html
-		else
-			cat /opt/karoshi/server_network/disk_usage/'$SERVERNAME'/"'$CHOICE'".html | sed "s/class=\"standard\"/class=\"mobilestandard\"/g"
-		fi
+		cat /opt/karoshi/server_network/disk_usage/'$SERVERNAME'/"'$CHOICE'".html
 	else
 		echo '$"No disk data has been generated."'
 	fi

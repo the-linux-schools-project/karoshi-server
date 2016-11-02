@@ -59,7 +59,7 @@ if [ -d "$DISKPATH" ]
 then
 	if [ `ls -1 "$DISKPATH" | wc -l` -gt 0 ]
 	then
-		echo '<div class="BarTable"><table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="2"><tr><td style="vertical-align: top; width: 40px;"></td><td style="vertical-align: top; width: 220px;"><b>Folder</b></td><td style="vertical-align: top; width: 100px;"><b>Size</b></td><td style="vertical-align: top; width: 300px;"></td></tr>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
+		echo '<div class="BarTable"><table  id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="vertical-align: top; width: 40px;"></th><th style="vertical-align: top; width: 220px;"><b>Folder</b></th><th style="vertical-align: top; width: 100px;"><b>Size</b></th><th style="vertical-align: top; width: 300px;"></th></tr></thead><tbody>' >> /opt/karoshi/server_network/disk_usage/`hostname-fqdn`/"$DISKPATH".html
 
 		#echo Processing $DISKPATH
 

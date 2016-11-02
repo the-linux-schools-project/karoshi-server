@@ -202,3 +202,7 @@ if [ -f /opt/karoshi/web_controls/warnings/messages/disk_usage_"$KAROSHI_SERVER"
 then
 	rm -f /opt/karoshi/web_controls/warnings/messages/disk_usage_"$KAROSHI_SERVER"
 fi
+if [ -f /opt/karoshi/web_controls/warnings/raw_messages/disk_usage_"$KAROSHI_SERVER" ]
+then
+	rm -f /opt/karoshi/web_controls/warnings/raw_messages/disk_usage_"$KAROSHI_SERVER"
+fi
