@@ -51,42 +51,42 @@ END_POINT=9
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = UPSSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-UPSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = UPSSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		UPSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign DEVICENAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DEVICENAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-DEVICENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = DEVICENAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		DEVICENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -108,32 +108,32 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that UPSSERVER is not blank
-if [ $UPSSERVER'null' = null ]
+if [ -z "$UPSSERVER" ]
 then
-MESSAGE=$"The UPS driver cannot be blank."
-show_status
+	MESSAGE=$"The UPS driver cannot be blank."
+	show_status
 fi
 
 #Check to see that DEVICENAME is not blank
-if [ $DEVICENAME'null' = null ]
+if [ -z "$DEVICENAME" ]
 then
-MESSAGE=$"The device name cannot be blank."
-show_status
+	MESSAGE=$"The device name cannot be blank."
+	show_status
 fi
 
 #Generate navigation bar
@@ -146,13 +146,13 @@ EXEC_STATUS=`echo $?`
 MESSAGE=`echo $SERVER - $"The UPS has been added."`
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
-show_status
+	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	show_status
 fi
 
 if [ $EXEC_STATUS = 105 ]
 then
-MESSAGE=$"The UPS could not be contacted on that port."
-show_status
+	MESSAGE=$"The UPS could not be contacted on that port."
+	show_status
 fi
 exit
