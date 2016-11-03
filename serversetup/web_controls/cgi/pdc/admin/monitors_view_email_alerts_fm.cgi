@@ -112,7 +112,7 @@ then
 fi
 
 
-if [ $SHOWENABLEDLAERTS = yes ] && [ $SHOWDISABLEDLAERTS = yes ]
+if [ $SHOWENABLEDLAERTS = yes ] || [ $SHOWDISABLEDLAERTS = yes ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
     <thead>
@@ -210,7 +210,7 @@ then
 
 fi
 
-if [ $SHOWENABLEDLAERTS = yes ] && [ $SHOWDISABLEDLAERTS = yes ]
+if [ $SHOWENABLEDLAERTS = yes ] || [ $SHOWDISABLEDLAERTS = yes ]
 then
 	echo ' </tbody></table>'
 fi
