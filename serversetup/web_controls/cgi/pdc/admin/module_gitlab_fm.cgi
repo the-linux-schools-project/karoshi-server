@@ -96,7 +96,7 @@ fi
 echo '<form  id="form1" name="combobox" action="/cgi-bin/admin/module_gitlab.cgi" method="post"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Gitlab"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gitlab_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will setup a Gitlab Server (CE 8.5.1 Omnibus)."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gitlab_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will setup a Gitlab Server (CE 13.3 Omnibus)."'</span></a>
 </td></tr></tbody></table><br>
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
