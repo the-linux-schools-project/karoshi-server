@@ -12,7 +12,6 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU Affero General Public License for more details.
-#
 #You should have received a copy of the GNU Affero General Public License
 #along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -171,9 +170,9 @@ then
 	if [ $RELOADPAGE = yes ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-		<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
-		<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
-		<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
+		<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"$SERVERNAME\">
+		<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"$SERVERTYPE\">
+		<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"$SERVERMASTER\">
 		</form>
 		<script>
 		document.frm.submit();
@@ -182,7 +181,7 @@ then
 		exit
 	fi
 
-	echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
+	echo "<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
 
 	#Check to see that a raid has not already been created on this server
 	if [ $CREATETYPE != reuse ]
@@ -201,8 +200,7 @@ then
 	then
 
 		#Get zpool import information
-		IMPORTINFO=`zpool import | sed "s/^ * //g"`
-		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		IMPORTINFO=`zpool import -d /dev/disk/by-id | sed '/^$/d' | sed "s%^ * %<tr><td>%g" | sed "s%^\t%<tr><td>%g" | sed "s%      *%</td><td>%g" | sed "s%    *%%g" | sed "s%$%</td></tr>%g" | sed "s%:%</td><td>%g" | sed "s%<td>  %<td>%g" | sed "s%   *%</td><td>%g"`
 		#Count how many raids are available to restore		
 		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
 
@@ -215,31 +213,31 @@ then
 			echo ''$"Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."'<br><br>'
 		fi
 
-		echo '<b>'$"Raid information"'</b><br><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<b>'$"Raid information"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>'
 		echo -e "$IMPORTINFO"
-		echo '</pre><br>'
+		echo '</tbody></table><br>'
 
-		for MOUNTPOINT in `echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		for MOUNTPOINT in `zpool import | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		do
 			echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create2.cgi\" target=\"_top\" name = \"frm\">"
-			echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">"
+			echo "<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"$SERVERNAME\"><input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"$SERVERTYPE\"><input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"$SERVERMASTER\">"
 
 			POOL=`echo zfs$MOUNTPOINT | sed "s/\//-/g"`
 			echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;"><b>'$POOL'</b></td></tr>
-<tr><td style="width: 180px;">'$"Reuse Drives for a new array"'</td><td><input type="radio" name="_CREATETYPE_" value="reuse"></td></tr>
-<tr><td>'$"Restore ZFS Array"'</td><td><input type="radio" name="_CREATETYPE_" value="restore"></td></tr>
-<tr><td>'$"Mount point"'</td><td><input tabindex= "1" value="'$MOUNTPOINT'" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
+<tr><td style="width: 180px;"><b>'$POOL'</b></td><td></td><td></td></tr>
+<tr><td>'$"Reuse Drives for a new array"'</td><td><input type="radio" name="____CREATETYPE____" value="reuse"></td><td></td></tr>
+<tr><td>'$"Restore ZFS Array"'</td><td><input type="radio" name="____CREATETYPE____" value="restore"></td><td></td></tr>
+<tr><td>'$"Mount point"'</td><td><input tabindex= "1" value="'$MOUNTPOINT'" name="____MOUNTPOINT____" size="20" style="width: 200px;" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
 </tbody></table><br>
 <input class="button" value='$"Submit"' type="submit"><br><br>'
 		done
 		else
 
-		echo '<input type="hidden" name="_CREATETYPE_" value="create">'
+		echo '<input type="hidden" name="____CREATETYPE____" value="create">'
 
 		#Get list of all drives
-		ALL_DRIVES=( /dev/sd? )
+		ALL_DRIVES=( `ls -1 /dev/disk/by-id/ | grep -v CD-ROM | grep -v "wwn\-" | grep -v "\-part"` )
 		ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 		#Get list of all unmounted drives and display properties
@@ -250,11 +248,12 @@ then
 		while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 		do
 			DRIVE=${ALL_DRIVES[$COUNTER]}
-			DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-			if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status 2>/dev/null | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+			DRIVE_SHORT=$(readlink -f "/dev/disk/by-id/$DRIVE" | sed "s/\/dev\///g")
+			
+			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(mount | grep -c "$DRIVE_SHORT") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
 			then
 				#Get drive information
-				SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+				SMARTINFO=`smartctl -i /dev/$DRIVE_SHORT | tr -cd "A-Za-z0-9:=,/\n "`
 				CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
 				#Convert capacity to gigabytes
 				CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
@@ -268,7 +267,7 @@ then
 
 				DRIVE_STATUS=ok
 				DISKICON=hdd.png
-				SMART_INFO=`smartctl -Hc $DRIVE`
+				SMART_INFO=`smartctl -Hc /dev/$DRIVE_SHORT`
 				if [ $? = 24 ]
 				then
 					#Drive failing
@@ -280,11 +279,11 @@ then
 				then
 					echo '
 					<table class="standard" style="text-align: left;" ><tbody>
-		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="_MOUNTPOINT_" size="20" style="width: 200px;" type="text"></td><td>
+		<tr><td style="width: 180px;"><b>'$"Mount point"'</b></td><td><input tabindex= "1" value="/home" name="____MOUNTPOINT____" size="20" style="width: 200px;" type="text"></td><td>
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>
-		<select name="_PARITY_" style="width: 200px;">
+		<select name="____PARITY____" style="width: 200px;">
 		<option value="stripe">'$"Stripe"'</option>
 		<option value="mirror" selected="selected">'$"Mirror"'</option>
 		<option value="1">'$"Single Redundancy"'</option>
@@ -292,8 +291,8 @@ then
 		<option value="3">'$"Triple Redundancy"'</option>
 		</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the redundancy type that you want."'<br><br>'$"Mirror allows for the failure of one drive without losing any data and only needs two drives."'<br><br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
 		</tr></tbody></table>
-		<br><br><table class="standard" style="text-align: left;" >
-		<tbody><tr><td style="width: 180px;"><b>'$"Disk"'</b></td><td style="width: 90px;"><b>'$"Size"'</b></td><td style="width: 70px;"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
+		<br><br><table class="tablesorter" style="text-align: left;" >
+		<tbody><tr><td style="width: 350px;"><b>'$"Disk"'</b></td><td style="width: 90px;"><b>'$"Size"'</b></td><td style="width: 70px;"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b>
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
 					</td></tr>'
 					SHOW_MENU=no
@@ -303,7 +302,7 @@ then
 				#Show drive information
 				if [ $DRIVE_STATUS = ok ]
 				then
-					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>'$SMART_INFO'</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
+					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>'$SMART_INFO'</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"____DRIVE____$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"____DRIVE____$DRIVE\" value=\"spare\"></td></tr>"
 				fi
 			fi
 			let COUNTER=$COUNTER+1
@@ -364,9 +363,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	if [ $RELOADPAGE = yes ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-		<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
-		<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
-		<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
+		<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\">
+		<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\">
+		<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">
 		</form>
 		<script>
 		document.frm.submit();
@@ -375,7 +374,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		exit
 	fi
 
-	echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
+	echo "<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">"
 
 	#Check to see that a raid has not already been created on this server
 	if [ '$CREATETYPE' != reuse ]
@@ -394,7 +393,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	then
 
 		#Get zpool import information
-		IMPORTINFO=`zpool import | sed "s/^ * //g"`
+		IMPORTINFO=`zpool import -d /dev/disk/by-id | sed "/^$/d" | sed "s%^ * %<tr><td>%g" | sed "s%^\t%<tr><td>%g" | sed "s%      *%</td><td>%g" | sed "s%    *%%g" | sed "s%$%</td></tr>%g" | sed "s%:%</td><td>%g" | sed "s%<td>  %<td>%g" | sed "s%   *%</td><td>%g"`
 		MOUNTPOINT=`echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		#Count how many raids are available to restore		
 		RCOUNT=`echo -e "$IMPORTINFO" | grep -c pool:`
@@ -408,31 +407,31 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			echo "'$"Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."'<br><br>"
 		fi
 
-		echo "<b>'$"Raid information"'</b><br><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		echo "<b>'$"Raid information"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>"
 		echo -e "$IMPORTINFO"
-		echo "</pre><br>"
+		echo "</tbody></table><br>"
 
 		for MOUNTPOINT in `echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		do
 			echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create2.cgi\" target=\"_top\" name = \"frm\">"
-			echo "<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">"
+			echo "<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">"
 
 			POOL=`echo zfs$MOUNTPOINT | sed "s/\//-/g"`
 			echo "<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-<tr><td style=\"width: 180px;\"><b>$POOL</b></td></tr>
-<tr><td style=\"width: 180px;\">'$"Reuse Drives for a new array"'</td><td><input type=\"radio\" name=\"_CREATETYPE_\" value=\"reuse\"></td></tr>
-<tr><td>'$"Restore ZFS Array"'</td><td><input type=\"radio\" name="_CREATETYPE_" value="restore"></td></tr>
-<tr><td>'$"Mount point"'</td><td><input tabindex= \"1\" value=\"$MOUNTPOINT\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+<tr><td style=\"width: 180px;\"><b>$POOL</b></td><td></td><td></td></tr>
+<tr><td>'$"Reuse Drives for a new array"'</td><td><input type=\"radio\" name=\"____CREATETYPE____\" value=\"reuse\"></td><td></td></tr>
+<tr><td>'$"Restore ZFS Array"'</td><td><input type=\"radio\" name="____CREATETYPE____" value="restore"></td><td></td></tr>
+<tr><td>'$"Mount point"'</td><td><input tabindex= \"1\" value=\"$MOUNTPOINT\" name=\"____MOUNTPOINT____\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
 <a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a></td></tr>
 </tbody></table><br>
 <input class=\"button\" value='$"Submit"' type=\"submit\"><br><br>"
 		done
 		else
 
-		echo "<input type="hidden" name="_CREATETYPE_" value="create">"
+		echo "<input type="hidden" name="____CREATETYPE____" value="create">"
 
 		#Get list of all drives
-		ALL_DRIVES=( /dev/sd? )
+		ALL_DRIVES=( `ls -1 /dev/disk/by-id/ | grep -v CD-ROM | grep -v "wwn\-" | grep -v "\-part"` )
 		ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 		#Get list of all unmounted drives and display properties
@@ -443,11 +442,11 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		while [ $COUNTER -lt $ALL_DRIVES_COUNT ]
 		do
 			DRIVE=${ALL_DRIVES[$COUNTER]}
-			DRIVE_SHORT=`echo $DRIVE | sed "s/\/dev\///g"` 
-			if [ `mount | grep -c $DRIVE` = 0 ] && [ `zpool status 2>/dev/null | grep -c $DRIVE_SHORT` = 0 ] && [ `cat /proc/mdstat | grep -c $DRIVE_SHORT` = 0 ]
+			DRIVE_SHORT=$(readlink -f "/dev/disk/by-id/$DRIVE" | sed "s/\/dev\///g")
+			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(mount | grep -c "$DRIVE_SHORT") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
 			then
 				#Get drive information
-				SMARTINFO=`smartctl -i $DRIVE | tr -cd "A-Za-z0-9:=,/\n "`
+				SMARTINFO=`smartctl -i /dev/$DRIVE_SHORT | tr -cd "A-Za-z0-9:=,/\n "`
 				CAPACITYBYTES=`echo -e "$SMARTINFO" | grep ^User | sed "s/ * / /g" | cut -d" " -f3 | tr -cd "0-9"`
 				#Convert capacity to gigabytes
 				CAPACITY=`echo "scale=0; $CAPACITYBYTES/1024/1024/1024" | bc`
@@ -473,11 +472,11 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				then
 					echo "
 					<table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-		<tr><td style=\"width: 180px;\"><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"_MOUNTPOINT_\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
+		<tr><td style=\"width: 180px;\"><b>'$"Mount point"'</b></td><td><input tabindex= \"1\" value=\"/home\" name=\"____MOUNTPOINT____\" size=\"20\" style=\"width: 200px;\" type=\"text\"></td><td>
 		<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class="images" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the mount point that you want the raid array to be mounted on. Allowed mount points are /home /var or subfolders of /media, /mnt, /var, and /home"'</span></a>
 		</td></tr>
 		<tr><td><b>'$"Raid Type"'</b></td><td>
-		<select name=\"_PARITY_\" style=\"width: 200px;\">
+		<select name=\"____PARITY____\" style=\"width: 200px;\">
 
 		<option value=\"stripe\">'$"Stripe"'</option>
 		<option value=\"mirror\" selected=\"selected\">'$"Mirror"'</option>
@@ -486,8 +485,8 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		<option value=\"3\">'$"Triple Redundancy"'</option>
 		</select></td><td><a class="info" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Choose the redundancy type that you want."'<br><br>'$"Single redundancy allows for the failure of one active drive without losing any data."'<br><br>'$"Double redundancy allows for the failure of two active drive without losing any data."'</span></a></td>
 		</tr></tbody></table>
-		<br><br><table class=\"standard\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-		<tbody><tr><td style=\"width: 180px;\"><b>'$"Disk"'</b></td><td style=\"width: 90px;\"><b>'$"Size"'</b></td><td style=\"width: 70px;\"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b></td><td>
+		<br><br><table class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
+		<tbody><tr><td style=\"width: 350px;\"><b>'$"Disk"'</b></td><td style=\"width: 90px;\"><b>'$"Size"'</b></td><td style=\"width: 70px;\"><b>'$"Use"'</b></td><td><b>'$"Hot Spare"'</b>
 		<a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=ZFS_Raid\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Select the drives that you want to be added to the raid array."'<br><br>'$"Drives will only be shown if they are currently not mounted and are not already being used in a raid."'</span></a>
 					</td></tr>"
 					SHOW_MENU=no
@@ -497,7 +496,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 				#Show drive information
 				if [ $DRIVE_STATUS = ok ]
 				then
-					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$SMART_INFO</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"_DRIVE_$DRIVE\" value=\"spare\"></td></tr>"
+					echo "<tr><td><a class=\"info\" href=\"javascript:void(0)\"><img class=\"images\" alt=\"\" src=\"/images/submenus/system/$DISKICON\"><span>$SMART_INFO</span></a>$DRIVE</td><td>"$CAPACITY $DRIVESCALE"</td><td><input type=\"radio\" name=\"____DRIVE____$DRIVE\" value=\"use\"></td><td><input type=\"radio\" name=\"____DRIVE____$DRIVE\" value=\"spare\"></td></tr>"
 				fi
 			fi
 			let COUNTER=$COUNTER+1

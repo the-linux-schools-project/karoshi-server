@@ -487,7 +487,7 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			sort_gluster
 		fi
 
-		zpool import -f $POOLNAME
+		zpool import -d /dev/disk/by-id "$POOLNAME"
 
 		if [ -d "$MOUNTPOINT" ]
 		then
@@ -574,10 +574,10 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 	if [ $CREATETYPE = reuse ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"$SERVERNAME\">
-<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"$SERVERTYPE\">
-<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"$SERVERMASTER\">
-<input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
+<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"$SERVERNAME\">
+<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"$SERVERTYPE\">
+<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"$SERVERMASTER\">
+<input type=\"hidden\" name=\"____CREATETYPE____\" value=\"reuse\">
 </form><script>document.frm.submit();</script><form>"
 	fi
 fi
@@ -896,7 +896,7 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			sort_gluster
 		fi
 
-		zpool import -f '$POOLNAME'
+		zpool import -d /dev/disk/by-id '$POOLNAME'
 
 		#Set and Check for posix acl support
 		zfs set acltype=posixacl "'$POOLNAME'"
@@ -984,10 +984,10 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 	if [ '$CREATETYPE' = reuse ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"_SERVERNAME_\" value=\"'$SERVERNAME'\">
-<input type=\"hidden\" name=\"_SERVERTYPE_\" value=\"'$SERVERTYPE'\">
-<input type=\"hidden\" name=\"_SERVERMASTER_\" value=\"'$SERVERMASTER'\">
-<input type=\"hidden\" name=\"_CREATETYPE_\" value=\"reuse\">
+<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\">
+<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\">
+<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">
+<input type=\"hidden\" name=\"____CREATETYPE____\" value=\"reuse\">
 </form><script>document.frm.submit();</script><form>"
 	fi
 

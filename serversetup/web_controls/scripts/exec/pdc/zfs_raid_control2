@@ -126,7 +126,7 @@ then
 	exit 101
 fi
 
-echo `date`: zfs_raid_control2 - server $SERVER action $ACTION drive $DRIVE drive2 $DRIVE2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "zfs_raid_control2 - server $SERVER pool $POOL action $ACTION drive $DRIVE drive2 $DRIVE2 by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 ##########################
 #Language
@@ -146,19 +146,19 @@ then
 #Add disk as spare
 if [ $ACTION = addspare ]
 then
-	zpool add $POOL spare -f $DRIVE
+	zpool add -f "$POOL" spare "/dev/disk/by-id/$DRIVE"
 fi
 
 #Remove a spare drive
 if [ $ACTION = removespare ]
 then
-	zpool remove $POOL $DRIVE
+	zpool remove "$POOL" "/dev/disk/by-id/$DRIVE"
 fi
 
 #Replace a disk
 if [ $ACTION = replace ]
 then
-	zpool replace -f $POOL $DRIVE2 $DRIVE
+	zpool replace -f "$POOL" "/dev/disk/by-id/$DRIVE2" "/dev/disk/by-id/$DRIVE"
 fi
 
 
@@ -170,19 +170,19 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 if [ '$ACTION' = addspare ]
 then
-	zpool add '$POOL' spare -f '$DRIVE'
+	zpool add -f '$POOL' spare /dev/disk/by-id/'$DRIVE'
 fi
 
 #Remove a spare drive
 if [ '$ACTION' = removespare ]
 then
-	zpool remove '$POOL' '$DRIVE'
+	zpool remove '$POOL' /dev/disk/by-id/'$DRIVE'
 fi
 
 #Replace a disk
 if [ '$ACTION' = replace ]
 then
-	zpool replace -f '$POOL' '$DRIVE2' '$DRIVE'
+	zpool replace -f '$POOL' /dev/disk/by-id/'$DRIVE2' '$DRIVE'
 fi
 
 '
@@ -196,19 +196,19 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 
 if [ '$ACTION' = addspare ]
 then
-	zpool add '$POOL' spare '$DRIVE'
+	zpool add '$POOL' spare /dev/disk/by-id/'$DRIVE'
 fi
 
 #Remove a spare drive
 if [ '$ACTION' = removespare ]
 then
-	zpool remove '$POOL' '$DRIVE'
+	zpool remove '$POOL' /dev/disk/by-id/'$DRIVE'
 fi
 
 #Replace a disk
 if [ '$ACTION' = replace ]
 then
-	zpool replace '$POOL' '$DRIVE2' '$DRIVE'
+	zpool replace '$POOL' /dev/disk/by-id/'$DRIVE2' '$DRIVE'
 fi
 
 '\''

@@ -56,7 +56,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
 
 #########################
 #Assign data to variables
@@ -73,7 +73,7 @@ do
 	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -87,7 +87,7 @@ do
 	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -101,7 +101,7 @@ do
 	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -115,7 +115,7 @@ do
 	if [ `echo $DATAHEADER'check'` = CREATETYPEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		CREATETYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		CREATETYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -198,11 +198,17 @@ else
 	echo '<div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><div class="sectiontitle">'$"Create ZFS Raid"' - '$SERVERNAME'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
 <td style="vertical-align: top;">
-<a href="/cgi-bin/admin/zfs_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$"Create ZFS Raid"'"></a>
-</td><td style="vertical-align: top;"><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"ZFS Status"'"></a></td>
-</tr></tbody></table><br></div><div id="infobox">
+<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
+<td style="vertical-align: top;">
+<form action="/cgi-bin/admin/zfs_raid_create_fm.cgi" method="post">
+<button class="button" name="_">'$"Create ZFS Raid"'</button>
+</form>
+</td><td style="vertical-align: top;">
+<form action="zfs_raid_control_fm.cgi" method="post">
+<button class="button" name="_">'$"ZFS Status"'</button>
+</form>
+</td></tr></tbody></table><br></div><div id="infobox">
 <br>'
 
 fi

@@ -145,7 +145,7 @@ else
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"ZFS status"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"ZFS status" none none ____
 
 [ $MOBILE = no ] && echo '</div>'
 

@@ -126,7 +126,7 @@ echo '
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Create zfs raid"
+/opt/karoshi/web_controls/show_servers $MOBILE servers $"Create zfs raid" none none ____
 
 [ $MOBILE = no ] && echo '</div>'
 
