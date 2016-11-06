@@ -360,10 +360,17 @@ then
 	#Check if kexec is installed
 	#if [ -e /etc/init.d/kexec ]
 	#then
-	#Load kernel into memory before rebooting
-	#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
+		#Load kernel into memory before rebooting
+		#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
 	#fi
-	shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+
+	#If the server hangs on reboot use the force reboot script to make sure we get a reboot.
+	if [ -f /opt/karoshi/force_reboot ]
+	then
+		/opt/karoshi/serversetup/distro/ubuntu/scripts/force_reboot
+	else
+		shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+	fi
 	exit
 fi
 

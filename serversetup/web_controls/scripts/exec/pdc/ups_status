@@ -109,7 +109,7 @@ RESTARTICON=/images/submenus/system/ups_restart.png
 #Create table header
 ########################
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 160px;"><b>'$"Server"'</b></th><th style="width: 160px;"><b>'$"UPS Model"'</b></th><th style="width: 60px;"><b>Status</b></th><th style="width: 60px;"><b>'$"Charge"'</b></th><th style="width: 60px;"><b>Volts</b></th><th style="width: 60px;"><b>'$"Load"'</b></th><th style="width: 60px;"><b>'$"Temp"'</b></th><th style="width: 60px;"><b>'$"Run time"'</b></th><th></th><th></th></tr></thead><tbody>
+<tr><th style="width: 350px;"><b>'$"Server"'</b></th><th style="width: 160px;"><b>'$"UPS Model"'</b></th><th style="width: 60px;"><b>Status</b></th><th style="width: 60px;"><b>'$"Charge"'</b></th><th style="width: 60px;"><b>Volts</b></th><th style="width: 60px;"><b>'$"Load"'</b></th><th style="width: 60px;"><b>'$"Temp"'</b></th><th style="width: 60px;"><b>'$"Run time"'</b></th><th></th><th></th></tr></thead><tbody>
 '
 
 function process_ups_data {
@@ -196,19 +196,33 @@ else
 fi
 
 #Show data
-
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
+echo '<tr><td style="vertical-align: top;"><div style="float:left;width:35%;">'$SERVER_SHORT'</div>
+<div style="float:right;width:65%;">
+<form action="ups_slave_add_fm.cgi" method="post" style=" display:inline!important;">
+<input type="hidden" name="_UPSSERVER_" value="'$SERVER'">
+<button class="button" name="_AddSlaveUPS" value="_">
+'$"Add a slave UPS"'
+</button>
+</form>
+<form action="ups_device_add_fm.cgi" method="post" style=" display:inline!important;">
+<input type="hidden" name="_UPSSERVER_" value="'$SERVER'">
+<button class="button" name="_AddDevice" value="_" style=" display:inline!important;">
+'$"Add a device"'
+</button>
+</form>
+</div>
+</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER_SHORT' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
 <form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 	<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_">
 	<img src="'$DELETEICON'" alt="'$"Delete" $UPSMODEL'">
-	<span>'$SERVER' - '$"Delete" $UPSMODEL'</span>
+	<span>'$SERVER_SHORT' - '$"Delete" $UPSMODEL'</span>
 	</button>
 </form>
 </td><td style="vertical-align: top;">
 <form action="/cgi-bin/admin/ups_restart.cgi" method="post">
 	<button class="info" name="_RestartUPS_" value="_SERVER_'$SERVER'_">
 	<img src="'$RESTARTICON'" alt="'$SERVER' -'$"Restart UPS deamon"'">
-	<span>'$SERVER' -'$"Restart UPS deamon"'</span>
+	<span>'$SERVER_SHORT' -'$"Restart UPS deamon"'</span>
 	</button>
 </form></td></tr>'
 }
@@ -219,6 +233,7 @@ echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-ali
 for SERVERS in /opt/karoshi/server_network/ups/master/*
 do
 	SERVER=`basename $SERVERS`
+	SERVER_SHORT=$(echo "$SERVER" | cut -d"." -f1)
 	#Get UPSMODELS
 	for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
 	do

@@ -61,7 +61,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\.%_:\-' | sed 's/%40/@/g'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
+END_POINT=15
 #Assign NAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -136,25 +136,25 @@ then
 	<tr>
         <td style="width: 180px;">
 '$"Contact Name"'</td>
-        <td><input tabindex= "1" name="_NAME_" value="'$NAME'" size="35" type="text"></td><td>
+        <td><input tabindex= "1" name="_NAME_" value="'$NAME'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a short name for this E-Mail alert."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"Send E-Mail to"'</td>
-        <td><input tabindex= "1" name="_EMAILTO_" value="'$EMAILTO'" size="35" type="text"></td><td>
+        <td><input tabindex= "1" name="_EMAILTO_" value="'$EMAILTO'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address you want the alert sent to."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail from"'</td>
-        <td><input tabindex= "2" name="_EMAILFROM_" value="'$EMAILFROM'" size="35" type="text"></td><td>
+        <td><input tabindex= "2" name="_EMAILFROM_" value="'$EMAILFROM'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address of the sender."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail Server"'</td>
-        <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="35" type="text"></td><td>
+        <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the address of the mail server that you want to send the email to."'</span></a>
       </td></tr>
     </tbody>

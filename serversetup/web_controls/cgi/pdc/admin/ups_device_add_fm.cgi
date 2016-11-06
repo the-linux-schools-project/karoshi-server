@@ -47,6 +47,21 @@ fi
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
+END_POINT=9
+#Assign UPSSERVER
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = UPSSERVERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		UPSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 #Get current date and time
 DAY=`date +%d`
 MONTH=`date +%m`
@@ -124,29 +139,36 @@ then
 fi
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Master UPS"'</td>
-        <td>'
-#Generate list of UPC data
-echo '<select name="_UPSSERVER_" style="width: 200px;"><option> </option>'
+<tr><td style="width: 180px;">'$"Master UPS"'</td><td>'
 
-for UPSSERVERS in /opt/karoshi/server_network/ups/master/*
-do
-	UPSSERVER=`basename $UPSSERVERS`
-	if [ -d /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ ]
-	then
-		if [ `ls -1 /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ | wc -l` != 0 ]
+if [ -z "$UPSSERVER" ]
+then
+	#Generate list of UPC data
+	echo '<select name="_UPSSERVER_" style="width: 200px;"><option> </option>'
+
+	for UPSSERVERS in /opt/karoshi/server_network/ups/master/*
+	do
+		=`basename $UPSSERVERS`
+		if [ -d /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ ]
 		then
-			for UPSMODELS in /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/*
-			do
-				UPSMODEL=`basename $UPSMODELS`
-				echo '<option value="'$UPSSERVER','$UPSMODEL'">'$UPSSERVER': '$UPSMODEL'</option>'
-			done
+			if [ `ls -1 /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/ | wc -l` != 0 ]
+			then
+				for UPSMODELS in /opt/karoshi/server_network/ups/master/$UPSSERVER/drivers/*
+				do
+					UPSMODEL=`basename $UPSMODELS`
+					echo '<option value="'$UPSSERVER','$UPSMODEL'">'$UPSSERVER': '$UPSMODEL'</option>'
+				done
+			fi
 		fi
-	fi
-done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a master UPS device from the list."'</span></a></td></tr>
-<tr><td>'$"Device"'</td><td>
-<input tabindex= "2" name="_DEVICENAME_" style="width: 200px;" size="20" type="text">
+	done
+	echo '</select>'
+else
+	echo '<input type="hidden" name="_UPSSERVER_" value="'$UPSSERVER'">'$UPSSERVER''
+fi
+echo '</td>'
+[ -z "$UPSSERVER" ] && echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a master UPS device from the list."'</span></a></td>'
+echo '</tr>
+<tr><td>'$"Device"'</td><td><input tabindex= "2" name="_DEVICENAME_" style="width: 200px;" size="20" type="text"></td></tr>
 </tbody></table><br><br>
 </div><div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">

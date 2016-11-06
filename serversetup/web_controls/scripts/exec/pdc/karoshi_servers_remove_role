@@ -1196,10 +1196,11 @@ then
 	#Change group information
 	for GROUPFILES in /opt/karoshi/server_network/group_information/*
 	do
-	GROUPFILE=`basename $GROUPFILES`
-	sed -i 's/'$SERVERNAME'/'$HOSTNAME.$REALM'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
+		GROUPFILE=`basename $GROUPFILES`
+		sed -i 's/'$SERVERNAME'/'$HOSTNAME.$REALM'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
 	done
 	#Change drive mapping
+	[ -d "/opt/karoshi/server_network/network_shares/$SERVERNAME" ] && rm -f -R "/opt/karoshi/server_network/network_shares/$SERVERNAME"
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 
 	#Unflag server
