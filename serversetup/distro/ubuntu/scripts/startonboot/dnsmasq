@@ -2,8 +2,11 @@
 #Start dhcp on boot
 if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
 then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status dnsmasq on 1>/dev/null 2>/dev/null
+	#Enable dnsmasq in defaults
+	sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/dnsmasq
+	#Start on boot
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status dnsmasq on 1>/dev/null 2>/dev/null
 else
-chkconfig -f dnsmasq on 1>/dev/null 2>/dev/null
+	chkconfig -f dnsmasq on 1>/dev/null 2>/dev/null
 fi
 
