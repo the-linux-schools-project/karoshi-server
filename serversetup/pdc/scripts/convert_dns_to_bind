@@ -1,0 +1,123 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+#Install bind
+apt-get update
+apt-get install -y bind9
+
+#Set bind to start on boot
+update-rc.d bind9 defaults
+
+#hwclock --systohc
+
+#Create /etc/bind/samba_dns.conf to declare ad-zones
+
+echo 'dlz "AD DNS Zone" {
+    # For BIND 9.8
+    # database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9.so";
+
+    # For BIND 9.9
+    #database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_9.so";
+
+    # For BIND 9.10
+    database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";
+    
+    # For BIND 9.11
+    # database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_11.so";
+};
+' > /etc/bind/samba_dns.conf
+
+#Modify /etc/bind/named.conf to include samba_dns.conf
+
+if [ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]
+then
+	echo 'include "/etc/bind/samba_dns.conf";' >> /etc/bind/named.conf
+fi
+
+#Get dns_forwarder from smb.conf
+DNS_FORWARDER=$(grep forwarder /etc/samba/smb.conf | cut -d"=" -f2 | tr -cd 0-9.)
+
+#Create /etc/bind/named.conf.options with dns forwarder and dns keytab
+
+echo 'options {
+	directory "/var/cache/bind";
+
+	// If there is a firewall between you and nameservers you want
+	// to talk to, you may need to fix the firewall to allow multiple
+	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+	// If your ISP provided one or more IP addresses for stable 
+	// nameservers, you probably want to use them as forwarders.  
+	// Uncomment the following block, and insert the addresses replacing 
+	// the all-0 placeholder.
+
+	forwarders {
+	 	'$DNS_FORWARDER';
+	 };
+
+	//========================================================================
+	// If BIND logs error messages about the root key being expired,
+	// you will need to update your keys.  See https://www.isc.org/bind-keys
+	//========================================================================
+	dnssec-validation yes;
+
+
+	tkey-gssapi-keytab "/var/lib/samba/private/dns.keytab";
+
+	auth-nxdomain no;    # conform to RFC1035
+	listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
+
+#Modify apparmor to allow bind to access samba
+echo '# Samba4 DLZ and Active Directory Zones (default source installation)
+/usr/lib/x86_64-linux-gnu/samba/bind9/** rm,
+/var/lib/samba/private/dns.keytab r,
+/var/lib/samba/private/named.conf r,
+/var/lib/samba/private/dns/** rwk,' > /etc/apparmor.d/local/usr.sbin.named
+
+#Modify /etc/apparmor.d/usr.sbin.named to include /etc/apparmor.d/local/usr.sbin.named
+sed -i 's%#include <local/usr.sbin.named>%include <local/usr.sbin.named>%g' /etc/apparmor.d/usr.sbin.named
+
+#Reload apparmor
+service apparmor restart
+
+#Stop samba4
+service samba4 stop
+
+#Modify smb.conf to disable internal dns
+if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]
+then
+	sed -i '/ldap server require strong auth/a \\tserver services = -dns' /etc/samba/smb.conf
+fi
+
+#Convert samba4 to use bind
+samba_upgradedns --dns-backend=BIND9_DLZ
+
+#Start bind
+service bind9 start
+
+#Start samba4
+service samba4 start
+

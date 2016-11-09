@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#Stop samba4
+service samba4 stop
+
+#Stop bind
+service bind9 stop
+
+#Disable bind9 from starting on boot
+update-rc.d bind9 remove defaults
+
+#Reconfigure samba4 to use internal dns
+samba_upgradedns --dns-backend=SAMBA_INTERNAL
+
+#Modify smb.conf to remove server services = -dns
+sed -i '/server services = -dns/d' /etc/samba/smb.conf
+
+#Start samba4
+service samba4 start
+
