@@ -33,7 +33,6 @@ update-rc.d bind9 defaults
 #hwclock --systohc
 
 #Create /etc/bind/samba_dns.conf to declare ad-zones
-
 echo 'dlz "AD DNS Zone" {
     # For BIND 9.8
     # database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9.so";
@@ -50,17 +49,19 @@ echo 'dlz "AD DNS Zone" {
 ' > /etc/bind/samba_dns.conf
 
 #Modify /etc/bind/named.conf to include samba_dns.conf
-
 if [ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]
 then
 	echo 'include "/etc/bind/samba_dns.conf";' >> /etc/bind/named.conf
 fi
 
+#Set permissions on dns.keytab so that bind can read it.
+chown root:bind /var/lib/samba/private/dns.keytab
+chmod 640 /var/lib/samba/private/dns.keytab
+
 #Get dns_forwarder from smb.conf
 DNS_FORWARDER=$(grep forwarder /etc/samba/smb.conf | cut -d"=" -f2 | tr -cd 0-9.)
 
 #Create /etc/bind/named.conf.options with dns forwarder and dns keytab
-
 echo 'options {
 	directory "/var/cache/bind";
 
