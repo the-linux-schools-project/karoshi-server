@@ -1,0 +1,4 @@
+#!/bin/bash
+service bind9 start 2>&1
+[ "$?" != 0 ] && sleep 5
+

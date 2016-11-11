@@ -141,8 +141,8 @@ function get_status {
 if [ $SERVERTYPE = network ]
 then
 	DSERVICES=cron,monitorix
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
@@ -168,8 +168,8 @@ fi
 if [ $SERVERTYPE = federated ]
 then
 	DSERVICES=cron,monitorix
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,samba
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
@@ -193,8 +193,8 @@ fi
 if [ $SERVERTYPE = federatedslave ]
 then
 	DSERVICES=cron,monitorix
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,samba
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
@@ -238,7 +238,7 @@ DSERVICES=$DSERVICES2
 DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 #List of all services to check
-ALLSERVICES="apache avahi clamd cups cron e2guardian freshclam dhcp dns dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd xserver"
+ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd xserver"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {
@@ -259,13 +259,13 @@ then
 
 	apache=$"Web server"
 	avahi=$"Avahi daemon"
+	bind=$"DNS server"
 	clamd=$"Clamav daemon"
 	cups=$"Print server"
 	cron=$"Schedular"
 	e2guardian=$"Internet filtering"
 	freshclam=$"Clamav-freshclam"
 	dhcp=$"DHCP server"
-	dns=$"Domain name resolution"
 	dovecot=$"Dovecot imap server"
 	icecast=$"Internet Radio Server"
 	mailscanner=$"E-mail server"
@@ -296,6 +296,11 @@ then
 	dnsmasq=$"Dnsmasq service"
 	xserver=$"X Server"
 
+	#Check if this server should be using bind
+	if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
+	then
+		DSERVICES="$DSERVICES bind"
+	fi
 
 	############################
 	#Check suggested services
@@ -336,13 +341,13 @@ else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 		apache="'$"Web server"'"
 		avahi="'$"Avahi daemon"'"
+		bind="'$"DNS Server"'"
 		clamd="'$"Clamav daemon"'"
 		cups="'$"Print server"'"
 		cron="'$"Schedular"'"
 		e2guardian="'$"Internet filtering"'"
 		freshclam="'$"Clamav-freshclam"'"
 		dhcp="'$"DHCP server"'"
-		dns="'$"Domain name resolution"'"
 		dovecot="'$"Dovecot imap server"'"
 		icecast="'$"Internet Radio Server"'"
 		mailscanner="'$"E-mail server"'"
@@ -389,10 +394,19 @@ else
 			FONTCOLOR=#11BE26
 		fi
 		}
+
+		#Check if this server should be using bind
+		if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
+		then
+			DSERVICES="'$DSERVICES' bind"
+		else
+			DSERVICES='$DSERVICES'
+		fi
+
 		############################
 		#Check suggested services
 		############################
-		for SERVICENAME in '$DSERVICES'
+		for SERVICENAME in $DSERVICES
 		do
 			check_status
 			#Show service details
@@ -439,9 +453,4 @@ do
 done
 fi
 exit
-
-
-
-
-
 
