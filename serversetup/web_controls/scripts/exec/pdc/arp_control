@@ -1,0 +1,98 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#
+#Karoshi is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/arp_control_cgi
+then
+	echo `date`: arp_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/arp_control_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $arp_control_cgi'check' ]
+then
+	echo `date`: arp_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: arp_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%'`
+#echo $DATA"<br>"
+if [ -z "$DATA" ]
+then
+	echo `date`: arp_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+ACTION=`echo "$DATA" | cut -s -d: -f4`
+DEVICE=`echo "$DATA" | cut -s -d: -f5`
+MACADDR=`echo "$DATA" | cut -s -d: -f6`
+
+[ -z "$ACTION" ] && ACTION=view
+
+if [ "$ACTION" = view ]
+then
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: 180px;">'$"Device"'</th><th style="width: 180px;">'$"Mac Address"'</th><th style="width: 180px;">'$"Type"'</th><th style="width: 50px;"></th></tr></thead><tbody>'
+	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d)
+	do
+		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
+		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
+		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'
+
+		if [ "$TYPE" = "C" ]
+		then
+			ACTION=static
+			ICON1=/images/submenus/system/disabled.png
+			MSG1=$"Convert to a static arp"
+			TYPEMSG="Dynamic"
+		else
+			ACTION=dynamic
+			ICON1=/images/submenus/system/enabled.png
+			MSG1=$"Remove this static arp"
+			TYPEMSG="Static"
+		fi
+		echo ''$TYPEMSG'</td><td><button class="info" name="_Control_" value="____DEVICE____'$DEVICE'____ACTION____'$ACTION'____">
+		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
+		<span>'$DEVICE'<br>'$MSG1'</span>
+		</button>'	
+		echo '</td></tr>'
+	done
+	echo '</tbody></table>'
+fi
