@@ -142,7 +142,7 @@ chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
 ###########################
 echo `date`: "Setting karoshi and root passwords" >> /opt/karoshi/serversetup/install_log
 function getpassword {
-DATA=`yad --separator=SEPARATOR --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"'' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null | sed 's/|/REPLACEVERTICALLINE/g' | sed 's/SEPARATOR/|/g'`
+DATA=`yad --separator=SEPARATOR --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"\n'' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null | sed 's/|/REPLACEVERTICALLINE/g' | sed 's/SEPARATOR/|/g'`
 PASSWORD1=`echo "$DATA" | cut -d"|" -f1 | sed 's/REPLACEVERTICALLINE/|/g'`
 PASSWORD2=`echo "$DATA" | cut -d"|" -f2 | sed 's/REPLACEVERTICALLINE/|/g'`
 
@@ -150,7 +150,7 @@ PASSWORD2=`echo "$DATA" | cut -d"|" -f2 | sed 's/REPLACEVERTICALLINE/|/g'`
 [ -z "$PASSWORD2" ] && PASSWORD2=notset2
 }
 
-PASSWORDMSG=$"Please enter your choice for the karoshi and system password."
+PASSWORDMSG=$"Enter your choice for the karoshi and system password."
 getpassword
 
 while [ "$PASSWORD1" != "$PASSWORD2" ]
