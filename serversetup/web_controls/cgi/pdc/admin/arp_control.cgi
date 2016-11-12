@@ -91,9 +91,7 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 TCPIP_ADDR=$REMOTE_ADDR
-
-DATA=`cat | tr -cd 'A-Za-z0-9\._:&%\-+*'`
-#echo $DATA"<br>"
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\/*%+"-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/QUADUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -120,7 +118,7 @@ do
 	if [ `echo $DATAHEADER'check'` = DEVICEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		DEVICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		DEVICE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/UNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -144,7 +142,7 @@ done
 function show_status {
 echo '<script>
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/file_manager.cgi";
+window.location = "/cgi-bin/admin/arp_control.cgi";
 </script></div></body></html>'
 exit
 }
@@ -152,6 +150,58 @@ exit
 if [ -z "$ACTION" ]
 then
 	ACTION=view
+fi
+
+#Check data
+
+if [ "$ACTION" = static ] || [ "$ACTION" = dynamic ]
+then
+	if [ -z "$DEVICE" ]
+	then
+		MESSAGE=$"No TCPIP information has been received."
+		show_status
+	fi
+	if [ -z "$MACADDR" ]
+	then
+		MESSAGE=$"No MAC address has been received."
+		show_status
+	fi
+
+	#Check that tcpip number is correct
+	#Check that we have 4 dots
+	if [ `echo $DEVICE | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	then
+		MESSAGE=$"The TCPIP number is not corrrect."
+		show_status
+	fi
+	#Check that no number is greater than 255
+	HIGHESTNUMBER=`echo $DEVICE | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
+	if [ $HIGHESTNUMBER -gt 255 ]
+	then
+		MESSAGE=$"The TCPIP number is not corrrect."
+		show_status
+	fi
+
+	#Check that the mac address is correct
+	#Check that we have 6 sets of data
+	MACADDR2=$(echo $MACADDR | sed 's/%3A/:/g')
+	if [ `echo "$MACADDR2" | sed 's/:/\n/g' | wc -l` != 6 ]
+	then
+		echo "count is:"
+		echo "$MACADDR2" | sed 's/:/\n/g' | wc -l
+		echo "<br>"
+		MESSAGE=''$"You have not entered in a valid mac address1."''
+		show_status	
+	fi
+	#Check max chars
+	for LINEDATA in `echo "$MACADDR2" | sed 's/:/\n/g'`
+	do
+		if [ `echo "$LINEDATA" | wc -L` != 2 ]
+		then
+			MESSAGE=''$"You have not entered in a valid mac address2."''
+			show_status
+		fi
+	done
 fi
 
 #Generate navigation bar
@@ -185,8 +235,13 @@ then
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
 	<td style="height:30px;"><div class="sectiontitle">'$"ARP Control"'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set static ARP entries for all of your servers to protect against ARP poisoning attacks."'</span></a></td></tr></tbody></table>
-	</div><div id="infobox">Be careful using this feature. If you need to change a network card remove the mac address from your static arps first.<br>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Arp_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set static ARP entries for all of your servers to protect against ARP poisoning attacks."'</span></a></td></tr></tbody></table>
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td><img src="/images/help/warning.png" alt=""></td></tr>
+	<tr><td>'$"Be careful using this feature."'</td></tr>
+	<tr><td>'$"If you need to change a network card remove the mac address from your static arps first."'</td></tr>
+	</tbody></table>
+	</div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/arp_control.cgi" method="post">'

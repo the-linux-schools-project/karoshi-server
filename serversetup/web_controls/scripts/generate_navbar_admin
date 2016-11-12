@@ -341,7 +341,8 @@ then
 	echo '		<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$"DHCP"'</a></li>'
 fi
 
-echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a></li>'
+echo '<li><a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a></li>
+<li><a href="/cgi-bin/admin/arp_control.cgi">'$"ARP Control"'</a></li>'
 #VPN
 if [ $VPNCTRL = yes ]
 then

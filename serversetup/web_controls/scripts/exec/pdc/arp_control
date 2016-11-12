@@ -52,43 +52,194 @@ fi
 
 read DATA
 DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%'`
-#echo $DATA"<br>"
 if [ -z "$DATA" ]
 then
 	echo `date`: arp_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 DEVICE=`echo "$DATA" | cut -s -d: -f5`
-MACADDR=`echo "$DATA" | cut -s -d: -f6`
+MACADDR=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
 
 [ -z "$ACTION" ] && ACTION=view
+
+if [ "$ACTION" = static ] || [ "$ACTION" = dynamic ]
+then
+	#Check data
+	if [ -z "$DEVICE" ]
+	then
+		echo `date`: "arp_control - blank device by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		ACTION=view
+	fi
+	if [ -z "$MACADDR" ]
+	then
+		echo `date`: "arp_control - blank mac address by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		ACTION=view
+	fi
+fi
+
+if [ "$ACTION" = static ]
+then
+	echo `date`: "arp_control - converting $DEVICE with $MACADDR to a static arp by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	for SERVER in $(ls -1 /opt/karoshi/server_network/servers)
+	do
+		if [ $SERVER = `hostname-fqdn` ]
+		then
+			#Add static arp only if it is not this server
+			if [ $(net lookup $SERVER) != $DEVICE ]
+			then
+				if [ ! -f /etc/network/if-up.d/static-arp ]
+				then
+					echo "#!/bin/sh" > /etc/network/if-up.d/static-arp
+					chmod 0755 /etc/network/if-up.d/static-arp
+				fi
+			#Add static arp
+			arp -s "$DEVICE" "$MACADDR"
+			#Make sure that that the static arp is still there after a reboot
+			echo "arp -s $DEVICE $MACADDR" >> /etc/network/if-up.d/static-arp
+			fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+			if [ $(net lookup '$SERVER') != '$DEVICE' ]
+			then
+				if [ ! -f /etc/network/if-up.d/static-arp ]
+				then
+					echo "#!/bin/sh" > /etc/network/if-up.d/static-arp
+					chmod 0755 /etc/network/if-up.d/static-arp
+				fi
+				arp -s "'$DEVICE'" "'$MACADDR'"
+				echo "arp -s '$DEVICE' '$MACADDR'" >> /etc/network/if-up.d/static-arp
+			fi
+			'
+		fi
+	done
+	#Add data to static_arps for linux clients
+	echo "$MACADDR" "$DEVICE" >> /var/lib/samba/netlogon/domain_information/static_arps
+	sleep 1
+	ACTION=view
+fi
+
+if [ "$ACTION" = dynamic ]
+then
+	echo `date`: "arp_control - removing $DEVICE with $MACADDR from the static arp list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+	for SERVER in $(ls -1 /opt/karoshi/server_network/servers)
+	do
+		if [ $SERVER != `hostname-fqdn` ]
+		then
+
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+			if [ $(net lookup '$SERVER') != '$DEVICE' ]
+			then
+				arp -d "'$DEVICE'"
+				if [ $(grep -c "'$DEVICE' '$MACADDR'" /etc/network/if-up.d/static-arp) -gt 0 ]
+				then
+					sed -i "/'$DEVICE' '$MACADDR'/d" /etc/network/if-up.d/static-arp
+				fi
+			fi
+			'
+		else
+			#Remove static arp
+			if [ $(net lookup $SERVER) != $DEVICE ]
+			then
+				arp -d "$DEVICE"
+				if [ $(grep -c "$DEVICE $MACADDR" /etc/network/if-up.d/static-arp) -gt 0 ]
+				then
+					#Stop static arp from appearing after a reboot
+					sed -i "/$DEVICE $MACADDR/d" /etc/network/if-up.d/static-arp
+				fi
+			fi
+		fi
+	done
+	#Remove data from static_arps for linux clients
+	if [ $(grep -c "$MACADDR $DEVICE" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
+	then
+		sed -i "/$MACADDR $DEVICE/d" /var/lib/samba/netlogon/domain_information/static_arps
+	fi
+	sleep 1
+	ACTION=view
+fi
 
 if [ "$ACTION" = view ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: 180px;">'$"Device"'</th><th style="width: 180px;">'$"Mac Address"'</th><th style="width: 180px;">'$"Type"'</th><th style="width: 50px;"></th></tr></thead><tbody>'
-	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d)
+
+	ACTION=dynamic
+	ICON1=/images/submenus/system/enabled.png
+	MSG1=$"Remove this static arp"
+	TYPEMSG="Static"
+
+	MAINSERVERIP=`net lookup $(hostname-fqdn)`
+	MAINSERVERMAC=$(ip link show  | awk '/ether/ {print $2}' | sed -n 1,1p)
+
+	#We wont be able to see the main server in this list so check if it is in the static_arps file.
+	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
+	then
+		if [ $(grep -c "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
+		then
+			echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$TYPEMSG'</td>
+			<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
+			<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
+			<span>'$DEVICE'<br>'$MSG1'</span>
+			</button>'	
+			echo '</td></tr>'
+		fi
+	fi
+	#Get arp information and show startic arps
+	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d | grep CM)
 	do
 		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
 		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
 		TYPE=$(echo $ARP_INFO | cut -d, -f4)
-		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'
 
-		if [ "$TYPE" = "C" ]
+		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$TYPEMSG'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
+		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
+		<span>'$DEVICE'<br>'$MSG1'</span>
+		</button>'	
+		echo '</td></tr>'
+	done
+
+	ACTION=static
+	ICON1=/images/submenus/system/disabled.png
+	MSG1=$"Convert to a static arp"
+	TYPEMSG="Dynamic"
+
+	#We wont be able to see the main server in this list so check if it is in the static_arps file.
+	SHOWMAINSERVER=no
+	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
+	then
+		if [ $(grep -c "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) = 0 ]
 		then
-			ACTION=static
-			ICON1=/images/submenus/system/disabled.png
-			MSG1=$"Convert to a static arp"
-			TYPEMSG="Dynamic"
-		else
-			ACTION=dynamic
-			ICON1=/images/submenus/system/enabled.png
-			MSG1=$"Remove this static arp"
-			TYPEMSG="Static"
+			SHOWMAINSERVER=yes
 		fi
-		echo ''$TYPEMSG'</td><td><button class="info" name="_Control_" value="____DEVICE____'$DEVICE'____ACTION____'$ACTION'____">
+	else
+		SHOWMAINSERVER=yes
+	fi
+	if [ $SHOWMAINSERVER = yes ]
+	then
+		echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$TYPEMSG'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
+		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
+		<span>'$DEVICE'<br>'$MSG1'</span>
+		</button>'	
+		echo '</td></tr>'
+	fi
+
+	#Get arp information and show dynamic arps
+	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d | grep -v CM | grep -v incomplete)
+	do
+		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
+		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
+		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+
+		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$TYPEMSG'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
 		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
 		<span>'$DEVICE'<br>'$MSG1'</span>
 		</button>'	
