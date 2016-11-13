@@ -24,8 +24,17 @@ LOG_DATE=`date +%F`
 #Make sure that dkpg doesnt change any config files.
 export DEBIAN_FRONTEND=noninteractive
 
+#Removes all old kernels if set to yes.
 REMOVE_OLD_KERNELS=no
+
+#if the install type is set to scheduled this script has been called via cron so hold cron back from being updated.
 INSTALLTYPE=scheduled
+
+#This list of services are checked to see if they are running before the update is started. After the update is complete each of these services will be checked again and stopped if needed.
+SERVICE_ARRAY=( apache apache_karoshi avahi-daemon bind clamd cron cups dansguardian dovecot dhcp dnsmasq glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix postfwd portmap proftpd radius rpcbind samba squid sogo nut ssh tftpd xinetd )
+
+#All config files in this list are backed up before the update and checked after the update to see if they have changed. If a config file has changed the new config file is moved to .postupdate and the original config file is restored.
+CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dnsmasq,/etc/dnsmasq.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config sshclient,/etc/ssh/ssh_config squid,/etc/squid/squid.conf )
 
 if [ ! -z "$1" ] 
 then
@@ -42,8 +51,6 @@ then
 	mkdir -p /opt/karoshi/logs/server_upgrades/
 	chmod 0700 /opt/karoshi/logs/server_upgrades/
 fi
-
-CONFIGFILE_ARRAY=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dnsmasq,/etc/dnsmasq.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config sshclient,/etc/ssh/ssh_config squid,/etc/squid/squid.conf )
 
 function backup_config_files {
 #Backup service config files
@@ -158,7 +165,6 @@ echo -e "Service: $SERVICENAME - Status befoe update: $STATUS" >> /opt/karoshi/l
 #######################
 #Check which services should be running on this server.
 #######################
-SERVICE_ARRAY=( apache apache_karoshi avahi-daemon clamd cron cups dansguardian dovecot dhcp dnsmasq glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix postfwd portmap proftpd radius rpcbind samba squid sogo nut ssh tftpd xinetd )
 echo -e "$HOSTNAME: `date` - Checking which services are currently set to run on boot.\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 COUNTER=0
 ARRAY_COUNT=${#SERVICE_ARRAY[@]}
@@ -222,7 +228,6 @@ UPDATEINSTALLCHECK=`dpkg -l | grep ^ii | grep -c update-notifier-common`
 #######################
 echo Upgrading the server
 echo -e "\n$HOSTNAME: `date` - Upgrading the server\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-#apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo -e "\n$HOSTNAME: `date` - Upgrade completed\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE

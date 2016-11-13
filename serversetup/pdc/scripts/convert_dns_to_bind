@@ -23,14 +23,32 @@
 #
 #Website: http://www.karoshi.org.uk
 
-#Install bind
-apt-get update
-apt-get install -y bind9
+
+#Check if bind is installed
+which named 1>/dev/null
+if [ $? != 0 ]
+then
+	#Install bind
+	apt-get update
+	apt-get install -y bind9
+fi
 
 #Set bind to start on boot
 update-rc.d bind9 defaults
 
 #hwclock --systohc
+
+#Get ubuntu version
+UBUNTUVER=xenial
+if [ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]
+then
+	UBUNTUVER=trusty
+fi
+
+if [ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]
+then
+	UBUNTUVER=precise
+fi
 
 #Create /etc/bind/samba_dns.conf to declare ad-zones
 echo 'dlz "AD DNS Zone" {
@@ -41,12 +59,34 @@ echo 'dlz "AD DNS Zone" {
     #database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_9.so";
 
     # For BIND 9.10
-    database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";
+    #database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";
     
     # For BIND 9.11
     # database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_11.so";
-};
 ' > /etc/bind/samba_dns.conf
+
+
+if [ $UBUNTUVER = precise ]
+then
+	echo '    #Added by Karoshi for BIND 9.8
+    database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9.so";' >> /etc/bind/samba_dns.conf
+fi
+
+if [ $UBUNTUVER = trusty ]
+then
+	echo '    #Added by Karoshi for BIND 9.9
+    database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_9.so";' >> /etc/bind/samba_dns.conf
+fi
+
+if [ $UBUNTUVER = xenial ]
+then
+	echo '    #Added by Karoshi for BIND 9.10
+    database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";' >> /etc/bind/samba_dns.conf
+fi
+
+echo '};' >> /etc/bind/samba_dns.conf
+
+
 
 #Modify /etc/bind/named.conf to include samba_dns.conf
 if [ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]
@@ -219,6 +259,13 @@ then
 	sed -i '/ldap server require strong auth/a \\tserver services = -dns' /etc/samba/smb.conf
 fi
 
+#Modify smb.conf to removed dns round robin parameter which is not a valid parameter in unpatched samba versions
+if [ $(grep -c "dns round robin = yes" /etc/samba/smb.conf) = 0 ]
+then
+	sed -i '/dns round robin = yes/d' /etc/samba/smb.conf
+fi
+
+
 #Convert samba4 to use bind
 samba_upgradedns --dns-backend=BIND9_DLZ
 
@@ -226,9 +273,10 @@ samba_upgradedns --dns-backend=BIND9_DLZ
 chown root:bind /var/lib/samba/private/dns.keytab
 chmod 640 /var/lib/samba/private/dns.keytab
 
-#Start bind
+#Restart bind
+service bind9 stop
+sleep 1
 service bind9 start
-
 #Start samba4
 service samba4 start
 

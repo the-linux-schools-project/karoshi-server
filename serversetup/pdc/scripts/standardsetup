@@ -46,31 +46,35 @@ function do_setup {
 	echo '# '$"Checking Network"''
 	$BASEINSTALLPATH3/checknetwork pdc 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "17"
+	echo "12"
 	echo '# '$"Setup"' '$"Shorewall"''
 	$BASEINSTALLPATH/setupshorewall 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "34"
+	echo "24"
 	echo '# '$"Setup"' '$"NTP"''
 	$BASEINSTALLPATH/setupntp 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "51"
+	echo "36"
 	echo '# '$"Setup"' '$"Samba"''
 	$BASEINSTALLPATH/setupsamba 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "68"
+	echo "48"
+	echo '# '$"Setup"' '$"Bind"''
+	$BASEINSTALLPATH/convert_dns_to_bind 1>>$KAROSHILOG 2>>$KAROSHILOG
+	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
+	echo "60"
 	echo '# '$"Setup"' '$"Root CA for SSL"''
 	$BASEINSTALLPATH/setup_root-ca 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "85"
+	echo "72"
 	echo '# '$"Setup"' '$"Web Management"''
 	$BASEINSTALLPATH2/setup_web_controls interactive 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "90"
+	echo "84"
 	echo '# '$"Setup"' '$"Monitorix"''
 	/opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG
-	echo "95"
+	echo "96"
 	echo '# '$"Setup"' '$"Monitorix Web Management"''
 	/opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement 1>>$KAROSHILOG 2>>$KAROSHILOG
 	checkstatus 1>>$KAROSHILOG 2>>$KAROSHILOG

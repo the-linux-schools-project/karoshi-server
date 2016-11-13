@@ -171,7 +171,6 @@ echo -e "# Global parameters
 	acl:search=false
 	log level = 1
 	host msdfs = yes
-	dns round robin = yes
 	printing = bsd
 	ldap server require strong auth = No
 	server signing = auto
@@ -223,6 +222,7 @@ echo "[dfs]
 " >> /etc/samba/smb.conf
 
 	restart_samba
+	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
 fi
 
 if [ '$AUTHTYPE' = member ]

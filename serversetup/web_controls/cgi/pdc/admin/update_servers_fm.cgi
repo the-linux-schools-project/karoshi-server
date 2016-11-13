@@ -142,7 +142,7 @@ then
 	WIDTH2=192
 	WIDTH3=200
 	HEIGHT1=25
-	HEIGHT2=20
+	HEIGHT2=18
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
