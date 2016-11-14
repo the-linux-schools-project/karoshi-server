@@ -125,12 +125,7 @@ then
 
 			if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
 			then
-				if [ $MOBILE = yes ]
-				then
-					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
-				else
-					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
-				fi
+				cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
 			fi
 			echo "<br>"
 			let LOGCOUNTER=$LOGCOUNTER+1
@@ -138,12 +133,7 @@ then
 	else
 		if [ -f /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage ]
 		then
-			if [ $MOBILE = yes ]
-			then
-				cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage | sed "s/standard/mobilestandard/g"
-			else
-				cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage
-			fi
+			cat /opt/karoshi/logs/disk_usage/$YEAR-$MONTH-$DAY/disk_usage
 			echo "<br>"
 		else
 			echo $KAROSHI_SERVER: $DAY-$MONTH-$YEAR $"No disk log exists for this date."
@@ -165,12 +155,7 @@ else
 			LOG_FILE_NAME=`echo ${LOG_LIST[$LOGCOUNTER]}`
 			if [ -f /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage ]
 			then
-				if [ '$MOBILE' = yes ]
-				then
-					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage | sed "s/standard/mobilestandard/g"
-				else
-					cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
-				fi
+				cat /opt/karoshi/logs/disk_usage/$LOG_FILE_NAME/disk_usage
 			fi
 			echo "<br>"
 			let LOGCOUNTER=$LOGCOUNTER+1
@@ -178,12 +163,7 @@ else
 		else
 			if [ -f /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage ]
 			then
-				if [ '$MOBILE' = yes ]
-				then
-					cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage | sed "s/standard/mobilestandard/g"
-				else
-					cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage
-				fi
+				cat /opt/karoshi/logs/disk_usage/'$YEAR'-'$MONTH'-'$DAY'/disk_usage
 				echo "<br>"
 			else
 				echo '$DAY'-'$MONTH'-'$YEAR' '$"No disk log exists for this date."'

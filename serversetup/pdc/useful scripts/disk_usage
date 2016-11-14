@@ -185,7 +185,7 @@ ZFSWARN=no
 if [ $SERVER = `hostname-fqdn` ]
 then
 	[ ! -d /opt/karoshi/logs/disk_usage/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/disk_usage/$LOG_DATE
-	sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
+	sleep 4 ; killall df 2>/dev/null | df -h -l | sed '1d' > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$
 	#Convert data to a table
 
 	#Replace spaces
@@ -195,14 +195,14 @@ then
 	COUNTER=1
 	echo \<b\>$SERVER `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 	echo \<table class=\"tablesorter\" style=\"text-align: left\;\"\>\<tbody\> >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
-	echo '<tr><td style="vertical-align: top; width: 180px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 50px;"></td><td style="vertical-align: top; width: 100px;"></td></tr>' >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
+	echo '<tr><td style="vertical-align: top; width: 180px;"><b>'$"Filesystem"'</b></td><td style="vertical-align: top; width: 50px;"><b>'$"Size"'</b></td><td style="vertical-align: top; width: 50px;"><b>'$"Used"'</b></td><td style="vertical-align: top; width: 50px;"><b>'$"Avail"'</b></td><td style="vertical-align: top; width: 50px;"><b>Use%</b></td><td style="vertical-align: top; width: 100px;"><b>'$"Mounted"'</b></td></tr>' >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 
 	while [ $COUNTER -le $LINE_COUNT ]
 	do
 		LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage.$$`
 		if [ $COUNTER = 1 ]
 		then
-			LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+			LINEDATA=`echo "$LINEDATA" | sed "s/Mounted on/Mounted-on/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
 			echo $LINEDATA >> /opt/karoshi/logs/disk_usage/$LOG_DATE/disk_usage
 		else
 			USAGE=`echo $LINEDATA | cut -d' ' -f5 | sed "s/\%//g"`
@@ -252,7 +252,7 @@ else
 	then
 		ssh -x -o PasswordAuthentication=no $SERVER '
 		[ ! -d /opt/karoshi/logs/disk_usage/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/disk_usage/'$LOG_DATE'
-		sleep 4 ; killall df 2>/dev/null | df -h -l > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
+		sleep 4 ; killall df 2>/dev/null | df -h -l | sed "1d"> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$
 		#Convert data to a table
 		DISKWARN=no
 		#Replace spaces
@@ -263,14 +263,14 @@ else
 		echo \<b\>'$SERVER' `date`\</b\>\<br\> > /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 		echo \<table class=\"tablesorter\" style=\"text-align: left\; height: 91px\;\" \>\<tbody\> >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 
-		echo "<tr><td style=\"vertical-align: top; width: 180px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 50px;\"></td><td style=\"vertical-align: top; width: 100px;\"></td></tr>" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
+		echo "<tr><td style=\"vertical-align: top; width: 180px;\"><b>'$"Filesystem"'</b></td><td style=\"vertical-align: top; width: 50px;\"><b>'$"Size"'</b></td><td style=\"vertical-align: top; width: 50px;\"><b>'$"Used"'</b></td><td style=\"vertical-align: top; width: 50px;\"><b>'$"Avail"'</b></td><td style=\"vertical-align: top; width: 50px;\"><b>Use%</b></td><td style=\"vertical-align: top; width: 100px;\"><b>'$"Mounted"'</b></td></tr>" >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 
 		while [ $COUNTER -le $LINE_COUNT ]
 		do
 			LINEDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage.$$`
 			if [ $COUNTER = 1 ]
 				then
-				LINEDATA=`echo "$LINEDATA" | sed "s/Mounted On/Mounted-On/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
+				LINEDATA=`echo "$LINEDATA" | sed "s/Mounted on/Mounted-on/g" | sed "s/^/\<tr\>\<td\>/g" | sed "s/ /\<\/td\>\<td\>/g" | sed "s/$/\<\/td\>\<\/tr\>/"`
 				echo $LINEDATA >> /opt/karoshi/logs/disk_usage/'$LOG_DATE'/disk_usage
 			else
 				USAGE=`echo $LINEDATA | cut -d" " -f5 | sed "s/\%//g"`

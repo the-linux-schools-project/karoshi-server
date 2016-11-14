@@ -384,13 +384,10 @@ then
 		samba-tool dns add 127.0.0.1 $REALM $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 			#Add in the reverse entry for this record if it is an A record
-			if [ $DNSTYPE = bAAAAA ]
+			if [ $DNSTYPE = bAAAAAAA ]
 			then
 				SUBNET=$(grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2)
-				echo adding entry $DNSENTRY subnet $SUBNET name $NAME.$REALM"<br>"
-				#/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIP1 $SUBNET $IDENTITY.$REALM 1>/dev/null
 				/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $DNSENTRY $SUBNET $NAME.$REALM 1>/dev/null
-				sleep 10
 			fi
 		else
 			echo $NAME $DNSENTRY  - $"This entry already exists."

@@ -167,22 +167,23 @@ fi
 if [ "$ACTION" = view ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: 180px;">'$"Device"'</th><th style="width: 180px;">'$"Mac Address"'</th><th style="width: 180px;">'$"Type"'</th><th style="width: 50px;"></th></tr></thead><tbody>'
+	<thead><tr><th style="width: 180px;">'$"Device"'</th><th style="width: 180px;">'$"Mac Address"'</th><th style="width: 180px;">'$"DNS Name"'</th><th style="width: 180px;">'$"Type"'</th><th style="width: 50px;"></th></tr></thead><tbody>'
 
 	ACTION=dynamic
 	ICON1=/images/submenus/system/enabled.png
 	MSG1=$"Remove this static arp"
 	TYPEMSG="Static"
 
-	MAINSERVERIP=`net lookup $(hostname-fqdn)`
+	DNSNAME=$(hostname-fqdn)
+	MAINSERVERIP=$(net lookup $DNSNAME)
 	MAINSERVERMAC=$(ip link show  | awk '/ether/ {print $2}' | sed -n 1,1p)
-
+	
 	#We wont be able to see the main server in this list so check if it is in the static_arps file.
 	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
 	then
-		if [ $(grep -c "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
+		if [ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
 		then
-			echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$TYPEMSG'</td>
+			echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
 			<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
 			<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
 			<span>'$DEVICE'<br>'$MSG1'</span>
@@ -196,8 +197,9 @@ then
 		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
 		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
 		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+		DNSNAME=$(dig -x "$DEVICE" +short)
 
-		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$TYPEMSG'</td>
+		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
 		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
 		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
 		<span>'$DEVICE'<br>'$MSG1'</span>
@@ -214,7 +216,7 @@ then
 	SHOWMAINSERVER=no
 	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
 	then
-		if [ $(grep -c "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) = 0 ]
+		if [ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) = 0 ]
 		then
 			SHOWMAINSERVER=yes
 		fi
@@ -223,7 +225,7 @@ then
 	fi
 	if [ $SHOWMAINSERVER = yes ]
 	then
-		echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$TYPEMSG'</td>
+		echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
 		<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
 		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
 		<span>'$DEVICE'<br>'$MSG1'</span>
@@ -237,8 +239,9 @@ then
 		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
 		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
 		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+		DNSNAME=$(dig -x "$DEVICE" +short)
 
-		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$TYPEMSG'</td>
+		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
 		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
 		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
 		<span>'$DEVICE'<br>'$MSG1'</span>
