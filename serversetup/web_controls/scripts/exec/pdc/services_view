@@ -396,11 +396,13 @@ else
 		}
 
 		#Check if this server should be using bind
-		if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
+		DSERVICES="'$DSERVICES'"
+		if [ -f /etc/samba/smb.conf ]
 		then
-			DSERVICES="'$DSERVICES' bind"
-		else
-			DSERVICES='$DSERVICES'
+			if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
+			then
+				DSERVICES="'$DSERVICES' bind"	
+			fi
 		fi
 
 		############################
