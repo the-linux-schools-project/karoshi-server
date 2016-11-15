@@ -154,7 +154,7 @@ samba-tool group removemembers "$CURRENTPRIGROUP" $USERNAME  1>/dev/null 2>>/opt
 samba-tool group addmembers "$NEWPRIGROUP" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Set new home path for the user
 
-echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$CURRENTSUBUNIT',OU=People,'$LDAPBASE'
 changetype: modify
 replace: unixhomedirectory
 unixhomedirectory: '$HOMEPATH'/'$USERNAME'
@@ -174,11 +174,11 @@ scriptPath: logon.bat '$NEWPRIGROUP'
 
 #Move ldap entry
 
-echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+echo -e 'dn: CN='$USERNAME',OU='$CURRENTPRIGROUP',OU='$CURRENTSUBUNIT',OU=People,'$LDAPBASE'
 changetype: modrdn
 newrdn: CN='$USERNAME'
 deleteoldrdn: 1
-newsuperior: OU='$NEWPRIGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+newsuperior: OU='$NEWPRIGROUP',OU='$NEWSUBUNIT',OU=People,'$LDAPBASE'
 ' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 
