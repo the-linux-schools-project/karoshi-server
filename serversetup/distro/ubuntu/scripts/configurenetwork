@@ -139,6 +139,9 @@ fi
 ##########################
 if [ $CARD_COUNT -gt  1 ]
 then
+	#Disable logging of martian sources
+	sed -i 's/#net.ipv4.conf.all.log_martians = 1/net.ipv4.conf.all.log_martians = 0/g' /etc/sysctl.conf
+
 	echo "NETWORK_INT=bond0" > /opt/karoshi/serversetup/variables/network_card_info
 	echo `date`: Setting up a bonded network $BONDMODE >> /opt/karoshi/serversetup/install_log
 	CARD=bond0
