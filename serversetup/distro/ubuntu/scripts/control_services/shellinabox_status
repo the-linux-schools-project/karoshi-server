@@ -1,0 +1,4 @@
+#!/bin/bash
+[ `ps -e | grep -w -c shellinabox` -gt 0 ] && exit 0
+exit 1
+

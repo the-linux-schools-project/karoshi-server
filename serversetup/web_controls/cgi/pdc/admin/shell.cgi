@@ -86,15 +86,15 @@ FILE=`echo $DATA | cut -s -d_ -f3`
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-WIDTH=1200
-HEIGHT=800
+	DIV_ID=actionbox3
+	WIDTH=1200
+	HEIGHT=800
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=mobileactionbox2
-WIDTH=600
-HEIGHT=800
+	DIV_ID=mobileactionbox2
+	WIDTH=600
+	HEIGHT=800
 fi
 echo '<form name="myform" action="/cgi-bin/admin/add_user.cgi" method="post">'
 
@@ -108,7 +108,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$HOSTNAME' - '$"Shell Access"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Shell_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This gives you shell access through the web browser."'<br><br>'$"Use this feature with care."'</span></a><br><br>'
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$HOSTNAME' - '$"Shell Access"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Shell_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This gives you shell access through the web browser."'<br><br>'$"Use this feature with care."'</span></a><br><br></div><div id="infobox">'
 fi
 
 echo '<iframe src="/admin/shell/" width="'$WIDTH'" height="'$HEIGHT'" frameborder="0"></iframe></div></div></body></html>'

@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#Make sure that shellinabox is installed
+which shellinabox 1>/dev/null
+if [ $? != 0 ]
+then
+	echo '"<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"'
+	echo "<ul><li>"Updating repositories"</li></ul>"
+	apt-get update
+	echo "<ul><li>"Installing shellinabox"</li></ul>"
+	apt-get install -y shellinabox
+	echo "</pre>"
+fi
+
+#Copy in options available
+cp -r /opt/karoshi/serversetup/modules/shellinabox/options-available /etc/shellinabox/
+
+#Modify apache config files for shellinabox
+RELOADAPACHE=no
+if [ `grep -c "#Shellinabox" /etc/apache2/sites-karoshi-enabled/karoshi-local-ssl` = 0 ]
+then
+	sed -i 's@</VirtualHost>@#Shellinabox\nProxyRequests Off\n<Proxy *>\nAuthUserFile /opt/karoshi/web_controls/web_access_admin\nAuthName "Karoshi Web Control"\nAuthType Basic\nrequire valid-user\nOrder Deny,allow\nAllow from all\n</Proxy>\nProxyPass /admin/shell/ https://localhost:4200/\nProxyPassReverse /admin/shell/ https://localhost:4200/\nSSLEngine on\nSSLProxyEngine on\n</VirtualHost>@g' /etc/apache2/sites-karoshi-enabled/karoshi-local-ssl
+	RELOADAPACHE=yes
+fi
+
+if [ `grep -c "#Shellinabox" /etc/apache2/sites-karoshi-enabled/karoshi-global-ssl` = 0 ]
+then
+	sed -i 's@</VirtualHost>@#Shellinabox\nProxyRequests Off\n<Proxy *>\nAuthUserFile /opt/karoshi/web_controls/web_access_admin\nAuthName "Karoshi Web Control"\nAuthType Basic\nrequire valid-user\nOrder Deny,allow\nAllow from all\n</Proxy>\nProxyPass /admin/shell/ https://localhost:4200/\nProxyPassReverse /admin/shell/ https://localhost:4200/\nSSLEngine on\nSSLProxyEngine on\n</VirtualHost>@g' /etc/apache2/sites-karoshi-enabled/karoshi-global-ssl
+	RELOADAPACHE=yes
+fi
+
+#make sure proxy modules are loaded
+if [ ! -e /etc/apache2/mods-enabled_karoshi/proxy.conf ]
+then
+	ln -s /etc/apache2/mods-available/proxy.conf /etc/apache2/mods-enabled_karoshi/proxy.conf                                       
+	RELOADAPACHE=yes
+fi
+if [ ! -e /etc/apache2/mods-enabled_karoshi/proxy.load ]
+then
+	ln -s /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled_karoshi/proxy.load                                       
+	RELOADAPACHE=yes
+fi
+if [ ! -e /etc/apache2/mods-enabled_karoshi/proxy_http.load ]
+then
+	ln -s /etc/apache2/mods-available/proxy_http.load /etc/apache2/mods-enabled_karoshi/proxy_http.load 
+	RELOADAPACHE=yes
+fi
+
+if [ $RELOADAPACHE = yes ]
+then
+	service apache2_karoshi reload
+fi
+
+#Make sure that ssh is running
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ssh
+
+#Restart shellinabox
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shellinabox_stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shellinabox_start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/shellinabox
+
+#Turn on menu entry
+sed -i 's/SHELLCTRL=no/SHELLCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
+echo shellserver > /opt/karoshi/server_network/servers/`hostname-fqdn`/shellserver
+
+
+

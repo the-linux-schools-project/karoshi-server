@@ -141,7 +141,8 @@ SSHSERVERSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && SSHSERVERSTATUS=$"Installed"
 VPNSERVERSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && VPNSERVERSTATUS=$"Installed"
-
+SHELLINABOXSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/shellserver ] && VPNSERVERSTATUS=$"Installed"
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -642,18 +643,6 @@ else
 fi
 
 
-
-#echo '</td><td style="vertical-align: top; width: 180px; height: 40px;">'$"Shell Access"'</td><td style="vertical-align: top; width: 80px;">'
-
-#if [ $SERVERNAME = `hostname-fqdn` ]
-#then
-#echo '<form action="/cgi-bin/admin/module_ajaxterm_fm.cgi" method="post">
-#<input name="_SERVERNAME_'$SERVERNAME'_" value="_SERVERNAME_'$SERVERNAME'_" type="hidden"><a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$SERVERNAME'_" type="image" class="images" src="'$ICON'" value="_SERVERNAME_'$SERVERNAME'_"><span>'$"This will setup an embedded shell in the web management."'</span></a></form>'
-#else
-#echo '<a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ICON2'"><span>'$"This will setup an embedded shell in the web management."'</span></a>'
-#fi
-#echo '</td>'
-
 echo '<td style="vertical-align: top; width: 180px; height: 40px;">'$"VPN Server"'</td><td style="vertical-align: top;">'$VPNSERVERSTATUS'</td>
 <td style="vertical-align: top; width: 80px;">
 '
@@ -671,7 +660,7 @@ else
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info infoabove" name="_AddVPNerver_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"VPN Server"'">
-	<span>'$"This will setup a VPN server for client devices to connect to your network."'</span>
+	<span>'$"You can only install a VPN server on an additional server."'</span>
 	</button>
 	</form>
 	'
@@ -698,7 +687,34 @@ then
 		</button>
 		</form>'
 	fi
+
+
+
+
 fi
 
-echo '</td></tr></tbody></table></div></div></div></body></html>'
+echo '</td></tr>'
+
+echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Shell Access"'</td><td style="vertical-align: top;">'$SHELLINABOXSTATUS'</td><td style="vertical-align: top; width: 80px;">'
+
+if [ $SERVERNAME = `hostname-fqdn` ]
+then
+	echo '<form action="/cgi-bin/admin/module_shellinabox_fm.cgi" method="post">
+	<button class="info infoabove" name="_AddShellServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"This will setup an embedded shell in the web management."'">
+	<span>'$"This will setup an embedded shell in the web management."'</span>
+	</button>
+	</form>
+	'
+else
+	echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info infoabove" name="_AddShellServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"DHCP Server"'">
+	<span>'$"This will setup an embedded shell in the web management."'<br><br>'$"This module can only be applied to the main server or an Additional Domain Controller."'</span>
+	</button>
+	</form>'
+fi
+echo '</td></tr>'
+
+echo '</tbody></table></div></div></div></body></html>'
 exit
