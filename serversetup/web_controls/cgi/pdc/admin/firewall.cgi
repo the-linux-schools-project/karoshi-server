@@ -225,6 +225,13 @@ then
 	done
 fi
 
+if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+then
+	SERVERNAME=$(hostname-fqdn)
+	SERVERTYPE=network
+	SERVERMASTER=notset	
+fi
+
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
@@ -311,7 +318,7 @@ then
 	<div id="'$DIV_ID'">
 	'
 
-	else
+else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>

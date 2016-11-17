@@ -204,7 +204,7 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Scheduled Jobs"' - '$SERVERNAME2'</span>
 <a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Select Server"'</a>
@@ -212,14 +212,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="height:30px; vertical-align: top;"><div class="sectiontitle">'$"Scheduled Jobs"' - '$SERVERNAME2'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></td>
-<td style="vertical-align: top;">
+	echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"' - '$SERVERNAME2'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></td>
+<td>
 <button class="button" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
 '$"Select server"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
 '$"Schedule Job"'
 </button>

@@ -179,6 +179,13 @@ else
 	SERVERNAME2="$SERVERNAME"
 fi
 
+if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+then
+	SERVERNAME=$(hostname-fqdn)
+	SERVERTYPE=network
+	SERVERMASTER=notset	
+fi
+
 if [ -z "$LOGFILE" ]
 then
 	LOGFILE=viewlist

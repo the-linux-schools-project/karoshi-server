@@ -125,38 +125,52 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Scheduled Jobs"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div>
-</div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-<input name="submit" type="submit" class="button" value="'$"Schedule Job"'">
-</form><br>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div>
+	</div><div id="mobileactionbox">
+	<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
+	<input name="submit" type="submit" class="button" value="'$"Schedule Job"'">
+	</form><br>
 '
 else
-echo '
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"'</div></td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
-<td>
-<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-<button class="button" name="ScheduleJob" value="_">
-'$"Schedule Job"'
-</button>
-</form>
-</td>
-</tr></table>
-<br></div><div id="infobox">'
+	echo '
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr>
+	<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"'</div></td>
+	<td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
+	<td>
+	<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
+	<button class="button" name="ScheduleJob" value="_">
+	'$"Schedule Job"'
+	</button>
+	</form>
+	</td>
+	</tr></table>
+	<br></div><div id="infobox">'
 fi
 
-echo '<form action="/cgi-bin/admin/cron_view.cgi" name="selectservers" method="post">'
+echo '<form action="/cgi-bin/admin/cron_view.cgi" id="foo" name="selectservers" method="post">'
 
-#Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Jobs"
+#Redirect to show the services if there is only one server
+if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+then
+	echo '
+	<input name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'$MOBILE'_" value="" type="hidden">
+	<script type="text/javascript">
+	    function myfunc () {
+		var frm = document.getElementById("foo");
+		frm.submit();
+	    }
+	    window.onload = myfunc;
+	</script>'
+else
+	#Show list of servers
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Jobs"
+fi
 echo '</form>'
 
 [ $MOBILE = no ] && echo '</div>'
