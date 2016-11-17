@@ -100,7 +100,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '
-<form action="/cgi-bin/admin/module_radius.cgi" method="post">
+<form action="/cgi-bin/admin/module_shellinabox.cgi" method="post">
 <div id="actionbox">
 <div class="sectiontitle">'$"Setup Shell Access"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">

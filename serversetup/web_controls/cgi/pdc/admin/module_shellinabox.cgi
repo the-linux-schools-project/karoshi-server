@@ -74,7 +74,7 @@ exit
 
 function completed {
 echo '<SCRIPT language="Javascript">'
-echo 'window.location = "radius_access_points.cgi"'
+echo 'window.location = "shell.cgi"'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -91,7 +91,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -107,10 +107,10 @@ fi
 #Check data
 #########################
 #Check to see that SERVERNAME is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server cannot be blank."
-show_status
+	MESSAGE=$"The server cannot be blank."
+	show_status
 fi
 
 #Generate navigation bar
