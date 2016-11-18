@@ -110,15 +110,15 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
 fi
 
 echo '<form id="foo" action="/cgi-bin/admin/uptime.cgi" name="selectservers" method="post">'
@@ -135,7 +135,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td style="height:30px; vertical-align: top;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td style="vertical-align: top;">
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td style="height:30px;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td style="vertical-align: top;">
 </td></tr></tbody></table>
 <br></div><div id="infobox">'
 fi

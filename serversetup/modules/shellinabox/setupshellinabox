@@ -4,16 +4,22 @@
 which shellinabox 1>/dev/null
 if [ $? != 0 ]
 then
-	echo '"<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"'
-	echo "<ul><li>"Updating repositories"</li></ul>"
+	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">
+	<ul><li>'$"Updating repositories"'</li></ul>'
 	apt-get update
-	echo "<ul><li>"Installing shellinabox"</li></ul>"
+	echo '<ul><li>Installing shellinabox</li></ul>'
 	apt-get install -y shellinabox
-	echo "</pre>"
+	echo '</pre>'
 fi
 
 #Copy in options available
 cp -r /opt/karoshi/serversetup/modules/shellinabox/options-available /etc/shellinabox/
+
+#Modify shellinabox to only allow localhost
+if [ $(grep -c "--localhost-only" /etc/default/shellinabox) = 0 ]
+then
+	sed -i 's/--no-beep/--no-beep --no-beep --localhost-only/g' /etc/default/shellinabox
+fi
 
 #Modify apache config files for shellinabox
 RELOADAPACHE=no
@@ -60,10 +66,5 @@ source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shellinabox_stop
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shellinabox_start
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/shellinabox
-
-#Turn on menu entry
-sed -i 's/SHELLCTRL=no/SHELLCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-echo shellserver > /opt/karoshi/server_network/servers/`hostname-fqdn`/shellserver
-
 
 

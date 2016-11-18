@@ -52,7 +52,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Shell Access"'</title><META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE"><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Shell Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -96,7 +96,6 @@ else
 	WIDTH=600
 	HEIGHT=600
 fi
-echo '<form name="myform" action="/cgi-bin/admin/add_user.cgi" method="post">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -108,10 +107,12 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="'$DIV_ID'">
 '
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$HOSTNAME' - '$"Shell Access"'</div> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Shell_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This gives you shell access through the web browser."'<br><br>'$"Use this feature with care."'</span></a><br><br></div><div id="infobox">'
+	echo '<div id="'$DIV_ID'"><div id="titlebox">
+	<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td><div class="sectiontitle">'$"Shell Access"' - '$HOSTNAME'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Shell_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This gives you shell access through the web browser."'<br><br>'$"Use this feature with care."'</span></a></td></tr></tbody></table>
+	<br></div><div id="infobox">'
 fi
 
-echo '<iframe src="/admin/shell/" width="'$WIDTH'" height="'$HEIGHT'" frameborder="0"></iframe></div></div></body></html>'
+echo '<iframe src="/admin/shell/" width="'$WIDTH'" height="'$HEIGHT'"></iframe></div></div></body></html>'
 
 exit
 
