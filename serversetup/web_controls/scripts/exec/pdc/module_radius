@@ -86,7 +86,10 @@ then
 	echo `date`: module_radius - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+
 source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/serversetup/variables/distro
+
 TEXTDOMAIN=karoshi-server
 
 echo `date`: module_radius - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -105,7 +108,6 @@ fi
 #Create ssl certificate
 if [ ! -d /etc/ssl/radius ]
 then
-	source /opt/karoshi/serversetup/variables/distro
 	echo "$REMOTE_USER:$REMOTE_ADDR:$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/radiussslcert
 fi
 
