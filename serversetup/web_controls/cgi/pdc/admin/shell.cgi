@@ -111,8 +111,7 @@ else
 	<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td><div class="sectiontitle">'$"Shell Access"' - '$HOSTNAME'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Shell_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This gives you shell access through the web browser."'<br><br>'$"Use this feature with care."'</span></a></td></tr></tbody></table>
 	<br></div><div id="infobox">'
 fi
-
-echo '<iframe src="/admin/shell/" width="'$WIDTH'" height="'$HEIGHT'"></iframe></div></div></body></html>'
+echo '<iframe src="/admin/shell/" style="width: '$WIDTH'px; height: '$HEIGHT'px; border: 0"></iframe></div></div></div></body></html>'
 
 exit
 

@@ -18,7 +18,7 @@ cp -r /opt/karoshi/serversetup/modules/shellinabox/options-available /etc/shelli
 #Modify shellinabox to only allow localhost
 if [ $(grep -c "--localhost-only" /etc/default/shellinabox) = 0 ]
 then
-	sed -i 's/--no-beep/--no-beep --no-beep --localhost-only/g' /etc/default/shellinabox
+	sed -i 's/--no-beep/--no-beep --localhost-only/g' /etc/default/shellinabox
 fi
 
 #Modify apache config files for shellinabox
