@@ -53,60 +53,51 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" method="post">
-  <div id="actionbox"><div class="sectiontitle">'$"View Incident Logs"'</div>
-  <br>
-  <table class="standard" style="text-align: left; width: 100%;" >
-    <tbody>
-      <tr>
-        <td><input name="_ALPHABET_" value="A" checked="checked" type="radio">A</td>
-        <td><input name="_ALPHABET_" value="B" type="radio">B</td>
-        <td><input name="_ALPHABET_" value="C" type="radio">C</td>
-        <td><input name="_ALPHABET_" value="D" type="radio">D</td>
-        <td><input name="_ALPHABET_" value="E" type="radio">E</td>
-        <td><input name="_ALPHABET_" value="F" type="radio">F</td>
-        <td><input name="_ALPHABET_" value="G" type="radio">G</td>
-        <td><input name="_ALPHABET_" value="H" type="radio">H</td>
-        <td><input name="_ALPHABET_" value="I" type="radio">I</td>
-        <td><input name="_ALPHABET_" value="J" type="radio">J</td>
-        <td><input name="_ALPHABET_" value="K" type="radio">K</td>
-        <td><input name="_ALPHABET_" value="L" type="radio">L</td>
-      </tr>
-      <tr>
-        <td><input name="_ALPHABET_" value="M" type="radio">M</td>
-        <td><input name="_ALPHABET_" value="N" type="radio">N</td>
-        <td><input name="_ALPHABET_" value="O" type="radio">O</td>
-        <td><input name="_ALPHABET_" value="P" type="radio">P</td>
-        <td><input name="_ALPHABET_" value="Q" type="radio">Q</td>
-        <td><input name="_ALPHABET_" value="R" type="radio">R</td>
-        <td><input name="_ALPHABET_" value="S" type="radio">S</td>
-        <td><input name="_ALPHABET_" value="T" type="radio">T</td>
-        <td><input name="_ALPHABET_" value="U" type="radio">U</td>
-        <td><input name="_ALPHABET_" value="V" type="radio">V</td>
-        <td><input name="_ALPHABET_" value="W" type="radio">W</td>
-        <td><input name="_ALPHABET_" value="X" type="radio">X</td>
-      </tr>
-      <tr>
-        <td><input name="_ALPHABET_" value="Y" type="radio">Y</td>
-        <td><input name="_ALPHABET_" value="Z" type="radio">Z</td>
-        <td><input name="_ALPHABET_" value="0" type="radio">0</td>
-        <td><input name="_ALPHABET_" value="1" type="radio">1</td>
-        <td><input name="_ALPHABET_" value="2" type="radio">2</td>
-        <td><input name="_ALPHABET_" value="3" type="radio">3</td>
-        <td><input name="_ALPHABET_" value="4" type="radio">4</td>
-        <td><input name="_ALPHABET_" value="5" type="radio">5</td>
-        <td><input name="_ALPHABET_" value="6" type="radio">6</td>
-        <td><input name="_ALPHABET_" value="7" type="radio">7</td>
-        <td><input name="_ALPHABET_" value="8" type="radio">8</td>
-        <td><input name="_ALPHABET_" value="9" type="radio">9</td>
-      </tr>
-      <tr>
-        <td><input name="_ALPHABET_" value="ALL" type="radio">All</td>
-      </tr>
-    </tbody>
-  </table>
-  <br>
-  </div>
-  <div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div>
+<div id="actionbox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr>
+<td style="height:30px;"><div class="sectiontitle">'$"View Incident Logs"'</div></td>
+<td><button formaction="incident_log_add.cgi" class="button" name="AddIncidentLog" value="_">
+'$"Add Incident Log"'
+</button></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></td>
+</tr></table><br>
+<table class="standard" style="text-align: left;" >
+<tbody>
+<tr><td style="width: 180px;">'$"Filter"'</td><td>
+<select name="_ALPHABET_" style="width: 200px;">
+<option>A</option>
+<option>B</option>
+<option>C</option>
+<option>D</option>
+<option>E</option>
+<option>F</option>
+<option>G</option>
+<option>H</option>
+<option>I</option>
+<option>K</option>
+<option>K</option>
+<option>L</option>
+<option>M</option>
+<option>N</option>
+<option>O</option>
+<option>P</option>
+<option>Q</option>
+<option>R</option>
+<option>S</option>
+<option>T</option>
+<option>U</option>
+<option>V</option>
+<option>W</option>
+<option>X</option>
+<option>Y</option>
+<option>Z</option>
+<option selected="selected" value="ALL">'$"All"'</option>
+</select>
+</td></tr></tbody></table>
+<br>
+</div>
+<div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div>
 </form>
 </div></body>
 </html>
