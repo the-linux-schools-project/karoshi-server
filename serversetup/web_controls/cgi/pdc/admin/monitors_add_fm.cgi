@@ -128,9 +128,9 @@ done
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"Add Monitors"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
-<td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$"Add Monitors"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
+<td>
 <form action="/cgi-bin/admin/mon_status.cgi" method="post">
 	<button class="button" name="_NetworkStatus_" value="_">
 	'$"Network Status"'

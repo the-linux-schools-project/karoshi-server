@@ -189,23 +189,24 @@ echo 'logging {
         print-time yes;
     };
 
-    category default { default_file; };
-    category general { general_file; };
-    category database { database_file; };
-    category security { security_file; };
-    category config { config_file; };
-    category resolver { resolver_file; };
-    category xfer-in { xfer-in_file; };
-    category xfer-out { xfer-out_file; };
-    category notify { notify_file; };
-    category client { client_file; };
-    category unmatched { unmatched_file; };
-    category queries { queries_file; };
-    category network { network_file; };
-    category update { update_file; };
-    category dispatch { dispatch_file; };
-    category dnssec { dnssec_file; };
-    category lame-servers { lame-servers_file; };
+    //Uncomment and restart bind9 to log any of the following sections.
+    //category default { default_file; };
+    //category general { general_file; };
+    //category database { database_file; };
+    //category security { security_file; };
+    //category config { config_file; };
+    //category resolver { resolver_file; };
+    //category xfer-in { xfer-in_file; };
+    //category xfer-out { xfer-out_file; };
+    //category notify { notify_file; };
+    //category client { client_file; };
+    //category unmatched { unmatched_file; };
+    //category queries { queries_file; };
+    //category network { network_file; };
+    //category update { update_file; };
+    //category dispatch { dispatch_file; };
+    //category dnssec { dnssec_file; };
+    //category lame-servers { lame-servers_file; };
 };
 
 options {

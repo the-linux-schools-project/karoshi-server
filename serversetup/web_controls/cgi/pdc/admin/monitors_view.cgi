@@ -114,15 +114,15 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top; width: 110px;"><b>'$"View Monitors"'</b></td>
-<td style="vertical-align: top;">
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$"View Monitors"'</div></td>
+<td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
 <button class="button" name="_AddMonitor_" value="_">
 '$"Add Monitor"'
 </button>
 </form>
-</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
+</td><td><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
 <button class="button" name="_NetworkStatus_" value="_">
 '$"Network Status"'
 </button>

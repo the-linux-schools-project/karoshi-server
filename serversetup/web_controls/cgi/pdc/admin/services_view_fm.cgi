@@ -136,8 +136,8 @@ else
 	echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="height:30px; vertical-align: top;"><div class="sectiontitle">'$"Service Status"'</div>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></td>
+<td><div class="sectiontitle">'$"Service Status"'</div>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></td>
 </tr></table>
 </div><div id="infobox">'
 fi

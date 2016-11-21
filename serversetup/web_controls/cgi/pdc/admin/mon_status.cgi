@@ -160,7 +160,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 #Show title
 echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="vertical-align: top; width: 200px;"><div class="sectiontitle">'$"System Status"' Defcon '$DEFCON'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td style="vertical-align: top;">
+<tbody><tr><td><div class="sectiontitle">'$"System Status"' Defcon '$DEFCON'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td>
 <form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
 	<button class="button" name="_AddMonitor_" value="_">
 	'$"Add Monitor"'

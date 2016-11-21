@@ -72,18 +72,18 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left; " ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"View E-Mail - SMS Alerts"'</b></td>
+<tr><td><div class="sectiontitle">'$"View E-Mail - SMS Alerts"'</div></td>
 <td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a>
 </td>
-<td style="vertical-align: top;">
+<td>
 	<form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
 		<button class="button" name="_AddEmailAlert_" value="_">
 		'$"Add E-Mail Alert"'
 		</button>
 	</form>
 </td>
-<td style="vertical-align: top;">
+<td>
 	<form action="/cgi-bin/admin/mon_status.cgi" method="post">
 		<button class="button" name="_NetworkStatus_" value="_">
 		'$"Network Status"'
