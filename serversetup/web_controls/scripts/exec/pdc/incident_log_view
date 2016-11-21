@@ -133,8 +133,8 @@ COUNTER=1
 if [ $LOGCOUNT -gt 0 ]
 then
 	#Show table of sites
-	echo '<table class="standard" style="text-align: left; width: 1000px; height: 100px;" >
-	<tbody><tr><td style="width: 70px;"><b>'$"Date"'</b></td><td style="width: 45px;"><b>'$"Time"'</b></td><td><b>'$"Incident"'</b></td><td><b>'$"Action Taken"'</b></td><td><b>'$"Users Involved"'</b></td></tr>'
+	echo '<table id="myTable" class="tablesorter">
+	<thead><tr><th style="width: 70px;"><b>'$"Date"'</b></th><th style="width: 50px;"><b>'$"Time"'</b></th><th style="width: 300px;"><b>'$"Incident"'</b></th><th style="width: 300px;"><b>'$"Action Taken"'</b></th><th style="width: 200px;"><b>'$"Users Involved"'</b></th></tr></thead><tbody>'
 	while [ $COUNTER -le $LOGCOUNT ]
 	do
 		LOGDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/incident_log.$$`

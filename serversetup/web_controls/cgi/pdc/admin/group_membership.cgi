@@ -184,8 +184,19 @@ else
 	'$"Choose User"'
 	</button>
 	</form
-	</td>
-	<td style="vertical-align: top;">
+	</td>'
+
+	if [ ! -z "$USERNAME" ]
+	then
+		echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/show_user_info.cgi" method="post">
+		<button class="button" name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_" value="'$USERNAME'">
+		'$"Edit User"'
+		</button>
+		</form>
+		</td>'
+	fi
+
+	echo '<td style="vertical-align: top;">
 	<form action="/cgi-bin/admin/groups.cgi" method="post">
 	<button class="button" name="GroupMangement" value="_">
 	'$"Group Management"'

@@ -43,9 +43,18 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Incident Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
-echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
-echo "</head><body><div id='pagecontainer'>"
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Incident Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'$STYLESHEET'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -111,9 +120,23 @@ then
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Incident Logs"'</div></td>
+<td><form action="incident_log_add.cgi" name="selectservers" method="post"><button class="button" name="AddIncidentLog" value="_">
+'$"Add Incident Log"'
+</button></form></td>
+<td><form action="incident_log_view_fm.cgi" name="selectservers" method="post"><button class="button" name="AddIncidentLog" value="_">
+'$"View Incident Logs"'
+</button></form></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></td>
+</tr></table>
+<br></div><div id="infobox">
+'
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_view.cgi | cut -d' ' -f1`
 #Show logs
 sudo -H /opt/karoshi/web_controls/exec/incident_log_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
 exit

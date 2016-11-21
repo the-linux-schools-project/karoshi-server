@@ -177,7 +177,7 @@ else
 	
 	<button class="button" formaction="update_servers_view_logs_fm.cgi" name="_">'$"View Update Logs"'</button>
 </td>
-</tr></tbody></table><br>'
+</tr></tbody></table><br><br>'
 fi
 
 #Preselect day

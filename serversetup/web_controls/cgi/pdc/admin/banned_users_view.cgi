@@ -130,7 +130,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/banned_users_view2.cgi" name="selectedusers" method="post"><b></b>'
-echo "<div id="actionbox">"
+echo '<div id="actionbox"><div class="sectiontitle">'$"View Banned User Accounts"'</div><br>'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1`
 #Show sites

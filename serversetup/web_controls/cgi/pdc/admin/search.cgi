@@ -114,14 +114,14 @@ echo '<table class="standard"><tbody><tr>'
 
 COUNTER=1
 
-SEARCHRESULT=$(/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v singletext | grep -v 'class="top"' | sed 's/">/" class="simbutton">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g')
+SEARCHRESULT=$(/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v singletext | grep -v 'class="top"' | sed 's/">/" class="simbutton simbuttonwide">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g')
 
 if [ ! -z "$SEARCHRESULT" ]
 then
 
 	for SEARCHLIST in $SEARCHRESULT
 	do
-		if [ $COUNTER = 7 ]
+		if [ $COUNTER = 5 ]
 		then
 			echo "</tr><tr>"
 			COUNTER=1

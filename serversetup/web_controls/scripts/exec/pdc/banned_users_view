@@ -24,7 +24,7 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 
 ########################
 #Check md5checksum
@@ -99,8 +99,8 @@ fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
 then
-echo `date`: banned_users_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: banned_users_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$ALPHABET" ]
@@ -140,27 +140,24 @@ USERCOUNT=`cat /opt/karoshi/.tempdata/badusers.$$ | wc -l`
 COUNTER=1
 if [ $USERCOUNT -gt 0 ]
 then
-#Show submit buttons
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
-echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
-#Show table of sites
-echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="width: 250px;"><b>'$"Banned Users"'</b></td><td style="width: 70px;"><b>'$"Duration"'</b></td><td style="width: 100px;"><b>'$"View Incidents"'</b></td><td style="width: 100px;"><b>'$"Allow"'</b></td></tr>'
-while [ $COUNTER -le $USERCOUNT ]
-do
-USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/badusers.$$`
-USERNAME=`echo $USERDATA | cut -d, -f1`
-BANLENGTH="-"
-[ -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_account_durations/$USERNAME`
-echo "<tr><td>"$USERNAME"</td><td>$BANLENGTH</td><td>""<"input name='"'_VIEWLOG_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td><td>""<"input name='"'_USERNAME_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td></tr>"
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+	#Show table of sites
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: 250px;"><b>'$"Banned Users"'</b></th><th style="width: 70px;"><b>'$"Duration"'</b></th><th style="width: 100px;"><b>'$"View Incidents"'</b></th><th style="width: 100px;"><b>'$"Allow"'</b></th></tr></thead><tbody>'
+	while [ $COUNTER -le $USERCOUNT ]
+	do
+		USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/badusers.$$`
+		USERNAME=`echo $USERDATA | cut -d, -f1`
+		BANLENGTH="-"
+		[ -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_account_durations/$USERNAME`
+		echo "<tr><td>"$USERNAME"</td><td>$BANLENGTH</td><td>""<"input name='"'_VIEWLOG_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td><td>""<"input name='"'_USERNAME_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td></tr>"
+		let COUNTER=$COUNTER+1
+	done
+	echo '</tbody></table><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
-rm -f /opt/karoshi/.tempdata/badusers.$$
+	echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
+	rm -f /opt/karoshi/.tempdata/badusers.$$
 else
-rm -f /opt/karoshi/.tempdata/badusers.$$
-exit 101
+	rm -f /opt/karoshi/.tempdata/badusers.$$
+	exit 101
 fi
 exit

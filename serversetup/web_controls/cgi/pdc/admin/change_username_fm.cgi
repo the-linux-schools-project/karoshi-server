@@ -137,8 +137,18 @@ else
 echo '<div id="'$DIV_ID'">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td><div class="sectiontitle">'$"Change a Username"'</div></td>
-<td style="vertical-align: top;">
+<td><div class="sectiontitle">'$"Change a Username"'</div></td>'
+
+if [ ! -z "$USERNAME" ]
+then
+	echo '<td style="vertical-align: top;">
+	<button class="button" formaction="/cgi-bin/admin/show_user_info.cgi" name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_" value="'$USERNAME'">
+	'$"Edit User"'
+	</button>
+	</td>'
+fi
+
+echo '<td style="vertical-align: top;">
 	<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="____GroupManagement____">
 	'$"Group Management"'
 	</button>
