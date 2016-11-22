@@ -156,7 +156,7 @@ then
 fi
 
 #Get list of all drives
-ALL_DRIVES=( `ls -1 /dev/disk/by-id/ | grep -v CD-ROM | grep -v "wwn\-" | grep -v "\-part"` )
+ALL_DRIVES=( `ls -1 /dev/disk/by-id/ | grep -v CD-ROM | grep -v ATAPI_DVD | grep -v "wwn\-" | grep -v "\-part"` )
 ALL_DRIVES_COUNT=${#ALL_DRIVES[@]}
 
 #Get drive information
