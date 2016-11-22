@@ -228,7 +228,8 @@ UPDATEINSTALLCHECK=`dpkg -l | grep ^ii | grep -c update-notifier-common`
 #######################
 echo Upgrading the server
 echo -e "\n$HOSTNAME: `date` - Upgrading the server\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
-apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--no-triggers" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
+#apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade | tee -a /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo -e "\n$HOSTNAME: `date` - Upgrade completed\n\n" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 echo -e "_________________________________________________\n" >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 

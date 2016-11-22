@@ -172,6 +172,7 @@ then
 			echo $ACTIONLANG $USERNAME '<br>'
 			#Enable account
 			samba-tool user $ACTION $USERNAME
+			echo '<br>'
 		fi
 		let COUNTER=$COUNTER+1
 	done
