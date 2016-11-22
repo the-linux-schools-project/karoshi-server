@@ -230,11 +230,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr style="height: 30px;">
-<td style="vertical-align: top;"><div class="sectiontitle">'$"E-Mail Access"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
+<td><div class="sectiontitle">'$"E-Mail Access"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
 	if [ "$ACTION" != viewrestrictionlist ]
 	then
-		echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_access.cgi" method="post">
+		echo '<td><form action="/cgi-bin/admin/email_access.cgi" method="post">
 		<button class="button" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
 		'$"View Restriction List"'
 		</button>
@@ -242,9 +242,7 @@ else
 	fi
 	if [ "$ACTION" != getchoice ]
 	then
-		echo '<td style="vertical-align: top;">
-
-		<form action="email_access.cgi" method="post">
+		echo '<td><form action="email_access.cgi" method="post">
 		<button class="button" name="_ChooseUserOrGroup_" value="_">
 		'$"Choose User / group"'
 		</button>
