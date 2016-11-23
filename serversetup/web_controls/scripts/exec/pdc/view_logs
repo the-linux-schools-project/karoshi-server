@@ -272,7 +272,7 @@ then
 	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH3'px;">'$"Category"'</th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 		if [ "$SERVERNAME" = `hostname-fqdn` ]
 		then
-			for EVENT in $(ls -1 /opt/karoshi/logs/events/ | sort -r)
+			for EVENT in $(ls -t -1 /opt/karoshi/logs/events/)
 			do
 				#Get time, date and category of the event
 				CATEGORY=$(echo $EVENT | cut -d"-" -f1)
@@ -311,7 +311,7 @@ then
 			done
 		else
 			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-			for EVENT in $(ls -1 /opt/karoshi/logs/events/ | sort -r)
+			for EVENT in $(ls -t -1 /opt/karoshi/logs/events/)
 			do
 				#Get time, date and category of the event
 				CATEGORY=$(echo $EVENT | cut -d"-" -f1)

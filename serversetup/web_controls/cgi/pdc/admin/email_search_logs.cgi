@@ -275,10 +275,7 @@ echo '</select></td>
 </tr>
 <tr><td>'$"Search"' 3</td><td><input tabindex= "4" name="_SEARCH3_" value="'$SEARCH3'" size="14" style="width: 200px;" type="text"></td><td></td></tr>
 <tr><td>'$"Search"' 4</td><td><input tabindex= "4" name="_SEARCH4_" value="'$SEARCH4'" size="14" style="width: 200px;" type="text"></td><td></td></tr>
-<tr><td></td><td>
-<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</td><td></td></tr>
-</tbody></table>
+</tbody></table><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div><div id="infobox">'
 
 #Show search results

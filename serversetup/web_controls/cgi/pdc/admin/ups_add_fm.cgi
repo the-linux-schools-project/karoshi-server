@@ -97,12 +97,12 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td><div class="sectiontitle">'$"Add a UPS"'</div></td>
-<td style="vertical-align: top;">
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a>
+</td>
+<td>
 <button class="button" formaction="ups_status.cgi" name="_UPSStatus" value="_">
 '$"UPS Status"'
 </button>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a>
 </td>
 </tr></tbody></table><br></div><div id="infobox">'
 

@@ -332,7 +332,7 @@ then
 	WIDTH3=200
 	WIDTH4=80
 	WIDTH5=80
-	WIDTH6=192
+	WIDTH6=200
 	WIDTH7=120
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
@@ -347,7 +347,7 @@ else
 	WIDTH3=150
 	WIDTH4=60
 	WIDTH5=50
-	WIDTH6=142
+	WIDTH6=150
 	WIDTH7=120
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
@@ -652,8 +652,9 @@ then
 		GROUPNAMESHORT="$GROUPNAME"
 		[ $MOBILE = yes ] && GROUPNAMESHORT=${GROUPNAME:0:12}
 		GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
+		[ -z "$GROUPID" ] && GROUPID=-1
 
-		if [ $GROUPID -ge 1000 ] && [ $GROUPNAME != nogroup ]
+		if [ "$GROUPID" -ge 1000 ] && [ "$GROUPNAME" != nogroup ]
 		then
 
 			UPPERGROUPNAME=${GROUPNAME^^}

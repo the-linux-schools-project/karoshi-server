@@ -35,7 +35,7 @@ TEXTDOMAIN=karoshi-server
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/tech/search.cgi" method="post">
-<input name="_SEARCH_" tabindex= "1" style="width: 200px; height: 19px;" size="20" type="text">
+<input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">
 <input name="_SEARCH_" type="submit" class="button" value="Search">
 </form></div>'
 
