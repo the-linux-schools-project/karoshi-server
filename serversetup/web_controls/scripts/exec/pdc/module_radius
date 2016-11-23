@@ -116,6 +116,12 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:radius:radius:$SERVERNAME:fr
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
+	#Check that winbindd_priv group exists
+	getent group winbindd_priv freerad 1>/dev/null
+	if [ $? != 0 ]
+	then
+		groupadd winbindd_priv freerad
+	fi
 
 	#Make sure permisisons are correct on winbind
 	usermod -a -G winbindd_priv freerad
@@ -182,6 +188,13 @@ else
 	chown freerad /etc/ssl/radius/radius.key
 	chown freerad /etc/ssl/radius/radius.pem
 	chown freerad /etc/ssl/radius/radius.req
+
+	#Check that winbindd_priv group exists
+	getent group winbindd_priv freerad 1>/dev/null
+	if [ $? != 0 ]
+	then
+		groupadd winbindd_priv freerad
+	fi
 
 	#Make sure permisisons are correct on winbind
 	usermod -a -G winbindd_priv freerad

@@ -525,6 +525,54 @@ cp -f /opt/karoshi/serversetup/all/"useful scripts"/show_server_info /usr/sbin/
 
 #Apparmor
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/apparmor/usr.sbin.clamd /etc/apparmor.d/
+
+#/etc/sysctl.d/10-network-security.conf
+
+if [ $(grep -c "# Ignore ICMP broadcast requests" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Ignore ICMP broadcast requests
+net.ipv4.icmp_echo_ignore_broadcasts = 1' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [ $(grep -c "# Disable source packet routing" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Disable source packet routing
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0 
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [ $(grep -c "# Ignore send redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Ignore send redirects
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0 ' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [ $(grep -c "# Block SYN attacks" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Block SYN attacks
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_syn_retries = 5' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [ $(grep -c "# Log Martians" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Log Martians
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [ $(grep -c "# Ignore ICMP redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]
+then
+	echo '# Ignore ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0 
+net.ipv6.conf.default.accept_redirects = 0' >> /etc/sysctl.d/10-network-security.conf
+fi
 }
 
 function install_e2guardian {
