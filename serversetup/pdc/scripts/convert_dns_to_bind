@@ -23,14 +23,22 @@
 #
 #Website: http://www.karoshi.org.uk
 
-
 #Check if bind is installed
 which named 1>/dev/null
 if [ $? != 0 ]
 then
-	#Install bind
+	echo Updating repostitories
 	apt-get update
+	#Install bind
+	echo Installing Bind
 	apt-get install -y bind9
+fi
+
+#Bail out if bind is not installed
+which named 1>/dev/null
+if [ $? != 0 ]
+then
+	echo Bind is not installed...exiting now.
 fi
 
 #Set bind to start on boot
@@ -65,7 +73,7 @@ echo 'dlz "AD DNS Zone" {
     # database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_11.so";
 ' > /etc/bind/samba_dns.conf
 
-
+#Add in the correct line for the version of Bind installed
 if [ $UBUNTUVER = precise ]
 then
 	echo '    #Added by Karoshi for BIND 9.8
@@ -85,8 +93,6 @@ then
 fi
 
 echo '};' >> /etc/bind/samba_dns.conf
-
-
 
 #Modify /etc/bind/named.conf to include samba_dns.conf
 if [ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]
@@ -265,7 +271,6 @@ if [ $(grep -c "dns round robin = yes" /etc/samba/smb.conf) = 0 ]
 then
 	sed -i '/dns round robin = yes/d' /etc/samba/smb.conf
 fi
-
 
 #Convert samba4 to use bind
 samba_upgradedns --dns-backend=BIND9_DLZ
