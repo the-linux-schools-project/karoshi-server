@@ -91,7 +91,7 @@ HELPCLASS="info"
 WIDTH1=180
 WIDTH2=200
 WIDTH3=180
-WIDTH4=210
+WIDTH4=230
 WIDTH5=90
 WIDTH6=300
 WIDTH7=402
@@ -290,8 +290,8 @@ then
 	echo '<td style="vertical-align: top;"><input name="_ACTION_editfiltergroup_FILTERNAME_'$FILTERNAME'_" type="submit" class="button" value="'$"Edit Filter Group"'"></td>'
 fi
 
-echo '<td style="vertical-align: top;"><input name="_ACTION_view_" type="submit" class="button" value="'$"View Filter Groups"'"></td>
-<td style="vertical-align: top;"><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management'$SUBTITLE'"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
+echo '<td><input name="_ACTION_view_" type="submit" class="button" value="'$"View Filter Groups"'"></td>
+<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management'$SUBTITLE'"><img class="images" alt="" src="/images/help/info.png"><span>'$HELPMSG'</span></a></td>
 </tr></tbody></table><br></form>' 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 }
@@ -301,8 +301,8 @@ function viewfilters {
 #Show add filtergroup button
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 <table class="'$TABLECLASS'" style="text-align: left;" >
-<tr><td style="width: 180px; vertical-align: top;"><div class="sectiontitle">'$"Filter Management"'</div></td>
-<td style="vertical-align: top;">
+<tr><td style="width: '$WIDTH4'px;"><div class="sectiontitle">'$"Filter Management"'</div></td>
+<td>
 <input name="_ACTION_add_" type="submit" class="button" value="'$"Add Filter Group"'">
 </td>'
 
@@ -311,7 +311,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 #<input name="_ACTION_activatechanges_" type="submit" class="button" value="'$"Activate Changes"'">
 #</td>'
 
-echo '<td style="vertical-align: top;"><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the internet filter groups that are available and the groups that are assigned to them."'</span></a></td></tr></tbody></table><br>'
+echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Filter_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the internet filter groups that are available and the groups that are assigned to them."'</span></a></td></tr></tbody></table><br>'
 
 #Show existing filtergroups
 
