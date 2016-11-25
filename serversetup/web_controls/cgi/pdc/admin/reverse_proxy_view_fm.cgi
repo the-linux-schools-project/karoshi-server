@@ -161,13 +161,13 @@ else
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr>'
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$"Reverse Proxy Sites"'</div></td>'
-echo '<td style="vertical-align: top;">
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px;"><div class="sectiontitle">'$"Reverse Proxy Sites"'</div></td>'
+echo '<td>
 <button class="button" formaction="reverse_proxy_add_fm.cgi" name="AddReverseProxy" value="_">
 '$"Add Reverse Proxy"'
 </button>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></td>
 </tr></tbody></table><br>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'

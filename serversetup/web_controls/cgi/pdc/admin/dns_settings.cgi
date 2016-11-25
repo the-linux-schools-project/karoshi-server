@@ -274,25 +274,25 @@ then
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"DNS Settings"' '$SERVER2'</div></td>'
+	<td><div class="sectiontitle">'$"DNS Settings"' '$SERVER2'</div></td>'
 
 	if [ $SERVERNAME != notset ]
 	then
 		echo '
-	<td style="vertical-align: top;">
+	<td>
 	<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
 	<button class="button" name="_">'$"Choose Server"'</button>
 	</form>
 	</td>
 	'
 	else
-		echo '<td style="vertical-align: top;">
+		echo '<td>
 	<form action="/cgi-bin/admin/dnsview_fm.cgi" method="post">
 	<button class="button" name="_ViewDNSEntries_">'$"View DNS Entries"'</button>
 	</form>
 	</td>'
 	fi
-	echo '<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"View and edit the DNS settings for your servers."'</span></a></td></tr></tbody></table></div><div id="infobox">'
+	echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"View and edit the DNS settings for your servers."'</span></a></td></tr></tbody></table></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/dns_settings.cgi" method="post">'

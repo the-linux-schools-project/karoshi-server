@@ -133,9 +133,9 @@ then
 </div></div><div id="mobileactionbox">'
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$"ZFS Status"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"ZFS Status"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
+<td>
 <button class="button" formaction="zfs_raid_create_fm.cgi" name="CreateRaid" value="_">
 '$"Create ZFS Raid"'
 </button>

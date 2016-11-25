@@ -86,7 +86,7 @@ then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox
 	TABLECLASS=standard
-	WIDTH1=192
+	WIDTH1=200
 	WIDTH2=200
 	WIDTH3=400
 	COLS=70
@@ -96,7 +96,7 @@ else
 	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox
 	TABLECLASS=mobilestandard
-	WIDTH1=132
+	WIDTH1=140
 	WIDTH2=140
 	WIDTH3=140
 	COLS=18

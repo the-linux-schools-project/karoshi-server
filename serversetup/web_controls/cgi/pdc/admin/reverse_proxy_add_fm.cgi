@@ -124,13 +124,13 @@ fi
 PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr>'
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px; vertical-align: top;"><div class="sectiontitle">'$"Add Reverse Proxy"'</div></td>'
-echo '<td style="vertical-align: top;">
+[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px;"><div class="sectiontitle">'$"Add Reverse Proxy"'</div></td>'
+echo '<td>
 <button class="button" formaction="reverse_proxy_view_fm.cgi" name="ViewReverseProxies" value="_">
 '$"View Reverse Proxies"'
 </button>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."'<br><br>'$"This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Adding_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."'<br><br>'$"This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."'</span></a></td>
 </tr></tbody></table><br>
   <br>
   <table class="'$TABLECLASS'" style="text-align: left;" >

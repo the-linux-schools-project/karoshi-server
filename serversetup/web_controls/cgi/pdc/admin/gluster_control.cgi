@@ -259,7 +259,7 @@ then
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 <form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="height:30px;"><div class="sectiontitle">Gluster - '$TITLE'</div></td>
+<tr><td><div class="sectiontitle">Gluster - '$TITLE'</div></td>
 <td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></td>
 <td>
 <button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">
@@ -271,7 +271,7 @@ else
 '$"Network Shares"'
 </button>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table></form></div><div id="infobox">'
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table><br></form></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'
