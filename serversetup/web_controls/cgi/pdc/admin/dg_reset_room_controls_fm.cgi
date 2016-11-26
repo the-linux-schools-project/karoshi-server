@@ -73,7 +73,16 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body onLoad="start()"><div id="pagecontainer">'
+echo '<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -104,15 +113,27 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div id="'$DIV_ID'"><b>'$"Reset Room Controls"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset to allow internet access. This could be at the end of each lesson."'</span></a><br><br>'
+	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" >
+<tr><td style="height:30px;"><div class="sectiontitle">'$"Reset Room Controls"'</div></td>
+<td>
+	<form action="dg_room_controls_fm.cgi" method="post">	
+		<button class="button" name="Top" value="_">
+		'$"Room Controls"'
+		</button>
+	</form>
+</td>
+<td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will schedule times when all internet room controls are reset to allow internet access."'</span></a>
+</td></tr></tbody></table><br>
+'
 fi
 
 ICON1=/images/submenus/internet/reset_room_controls_add.png
 ICON2=/images/submenus/internet/reset_room_controls_delete.png
-echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post"><b>'$"Add reset time"'</b><br><br>
+echo '<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post"><br>
 <table class="'$TABLECLASS'" style="text-align: left;" >
     <tbody><tr>
-        <td style="width: 180px;">'$"Time"'</td>
+        <td style="width: 60px;"><b>'$"Time"'</b></td>
         <td style="width: 120px;">
         <select name="_HOURS_" style="width: 50px;">
         <option value="00">00</option>
@@ -163,12 +184,12 @@ if [ -d /opt/karoshi/server_network/internet_room_controls_reset ]
 then
 	if [ `ls -1 /opt/karoshi/server_network/internet_room_controls_reset | wc -l` -gt 0 ]
 	then
-		echo '<b>'$"Reset times"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><th style="width: 200px; vertical-align: top;"><b>'$"Reset times"'</b></th><th style="width: 70px; vertical-align: top;">'$"Delete"'</th></thead><tbody>'
 
 		for RESETTIMES in /opt/karoshi/server_network/internet_room_controls_reset/*
 		do
 			RESETTIME=`basename $RESETTIMES`
-			echo '<tr><td style="width: 180px; vertical-align: top;">'$RESETTIME'<td style="width: 120px;"></td><td>
+			echo '<tr><td>'$RESETTIME'</td><td>
 			<form action="/cgi-bin/admin/dg_reset_room_controls.cgi" method="post">
 				<button class="info" name="_DeleteTime_" value="_ACTION_delete_TIME_'$RESETTIME'_">
 				<img src="'$ICON2'" alt="'$"Delete"'">
