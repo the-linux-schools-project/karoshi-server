@@ -196,7 +196,7 @@ if [ `echo $IMAGEFILE | grep -c .tar.gz$` = 1 ] || [ `echo $IMAGEFILE | grep -c 
 	fi
 
 	#Create table header - username image primary group status
-	echo '<table class="standard" style="text-align: left;" ><tbody>
+	echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;"><b>'$"Username"'</b></td><td style="width: 100px;"><b>'$"Image"'</b></td><td style="width: 100px;"><b>'$"Primary Group"'</b></td><td><b>'$"Status"'</b></td></tr>'
 
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
@@ -238,14 +238,14 @@ if [ `echo $IMAGEFILE | grep -c .tar.gz$` = 1 ] || [ `echo $IMAGEFILE | grep -c 
 				mv /opt/karoshi/.tempdata/user_image_upload.$$/$IMAGE_NAME /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 				chown root.apache_karoshi /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
 				chmod 0440 /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg
-				STATUSMSG=$"Image copied."
+				STATUSMSG=$"Image copied"
 				else
-					echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-					STATUSMSG=$"This image does not match a username."	
+					echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+					STATUSMSG=$"This image does not match a username"	
 				fi
 			else
-				echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username." by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-				STATUSMSG=$"This image does not match a username."
+				echo `date`: user_image_upload - $IMAGE_NAME - $"This image does not match a username" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				STATUSMSG=$"This image does not match a username"
 			fi
 			else
 			echo `date`: user_image_upload - $IMAGE_NAME - $"Incorrect file type" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
