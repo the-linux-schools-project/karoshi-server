@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -49,131 +49,133 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<body onLoad=start() ">div id=pagecontainer>'
+<body onLoad=start()><div id=pagecontainer>'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$"Exam Accounts - Upload Files"'</B> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><td><span>'$"The uploaded files will be copied to a folder called exam_files in each exam account."'<br><br>'$"Any .zip or .tar.gz files will automatically be extracted in each exam home folder."'</span></a>
+
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Exam Accounts - Upload Files"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The uploaded files will be copied to a folder called exam_files in each exam account."'</span></a></td></tr></tbody></table><br>
 <P>
 '$"Please select the files that you want to upload for the exam accounts"':
 <P>
        
-        <TABLE class="standard" BORDER=0 WIDTH="500">
-        <TR>
-            <TD ALIGN=RIGHT>
+        <TABLE class="standard">
+        <tr>
+            <td>
                 '$"File"' 1:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 2:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 3:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-03" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 4:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-04" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 5:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-05" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 6:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-06" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 7:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-07" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 8:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-08" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 9:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-09" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 10:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-10" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 11:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-11" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 12:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-12" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 13:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-13" SIZE="35">
-            </TD>
-        </TR>
-        <TR>
-            <TD ALIGN=RIGHT>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 '$"File"' 14:
-            </TD>
-            <TD>
+            </td>
+            <td>
                 <INPUT TYPE="FILE" NAME="file-to-upload-14" SIZE="35">
-            </TD>
-        </TR>
-		<TR>
-			<TD COLSPAN=2>&nbsp;<BR></TD>
-		</TR>
+            </td>
+        </tr>
+		<tr>
+			<TD COLSPAN=2>&nbsp;<BR></td>
+		</tr>
         </TABLE>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>

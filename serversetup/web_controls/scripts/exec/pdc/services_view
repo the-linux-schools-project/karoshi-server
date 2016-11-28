@@ -234,9 +234,6 @@ do
 done
 DSERVICES=$DSERVICES2
 
-#Sort suggested service list
-DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
-
 #List of all services to check
 ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd xserver"
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -299,8 +296,11 @@ then
 	#Check if this server should be using bind
 	if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
 	then
-		DSERVICES="$DSERVICES bind"
+		DSERVICES="$DSERVICES\nbind"
 	fi
+
+	#Sort suggested service list
+	DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 	############################
 	#Check suggested services
@@ -401,9 +401,12 @@ else
 		then
 			if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]
 			then
-				DSERVICES="'$DSERVICES' bind"	
+				DSERVICES="'$DSERVICES'\nbind"	
 			fi
 		fi
+
+		#Sort suggested service list
+		DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
 
 		############################
 		#Check suggested services

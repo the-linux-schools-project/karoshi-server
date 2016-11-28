@@ -413,7 +413,7 @@ then
 	TITLE=$"New Secondary Group"
 fi
 [ $ACTION = delete ] && TITLE=$"Delete Group"
-[ $ACTION = extragroups ] && TITLE=$"Extra Groups"
+[ $ACTION = extragroups ] && TITLE=$"Associated Groups"
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]

@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Exam Accounts - View Reset Passwords"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head>'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Exam Accounts - View Reset Passwords"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -68,14 +68,14 @@ fi
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_view_reset_passwords.cgi | cut -d' ' -f1`
 #View Reset passwords
@@ -88,7 +88,7 @@ EXEC_STATUS=`echo $?`
 echo '</div>'
 if [ $EXEC_STATUS != 0 ]
 then
-MESSAGE=`echo $"The exam accounts have not had their passwords reset."`
-show_status
+	MESSAGE=`echo $"The exam accounts have not had their passwords reset."`
+	show_status
 fi
 echo "</div></body></html>"

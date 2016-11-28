@@ -229,8 +229,8 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><b>'$TITLEMSG'</b></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></form></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server#Creating_Client_Certificates"><img class="images" alt="" src="/images/help/info.png"><span>'$"VPN Certificates"'</span></a></td>
+<td><b>'$TITLEMSG'</b></td><td><form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></form></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server#Creating_Client_Certificates"><img class="images" alt="" src="/images/help/info.png"><span>'$"VPN Certificates"'</span></a></td>
 </tr></tbody></table></div><div id="infobox">'
 fi
 
