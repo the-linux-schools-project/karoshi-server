@@ -115,7 +115,6 @@ then
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=200
-	HEIGHT=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -123,7 +122,6 @@ else
 	TABLECLASS=mobilestandard
 	WIDTH1=140
 	WIDTH2=160
-	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
@@ -145,9 +143,14 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Schedule Job"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/cron_view_fm.cgi"><input class="button" type="button" name="" value="'$"Scheduled Jobs"'"></a></td>
+<td><div class="sectiontitle">'$"Schedule Job"'</div></td>
+<td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
+<td>
+<button class="button" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="_DHCPLeases_" value="_">
+'$"Scheduled Jobs"'
+</button>
+</td>
 </tr></table></div><div id ="infobox">'
 fi
 
@@ -156,7 +159,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
       <tr>
         <td style="width: '$WIDTH1'px;">
 '$"Minutes"'</td>
-<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px; height: '$HEIGHT'px;">
+<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px;">
 <option value="0">0</option>
 <option value="5">5</option>
 <option value="10">10</option>
@@ -179,7 +182,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the minute you want the job to start on.'"'</span></a>
 </td></tr>
 <tr><td>'$"Hour"'</td>
-<td><select name="___HOUR___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
+<td><select name="___HOUR___" style="width: '$WIDTH2'px;">
 <option value="*">'$"Every hour"'</option>
 <option>0</option>
 <option>1</option>
@@ -210,7 +213,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the hour you want the job to start on.'"'</span></a>
       </td></tr>
 <tr><td>'$"Day"'</td>
-<td><select name="___DAY___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
+<td><select name="___DAY___" style="width: '$WIDTH2'px;">
 <option value="*">'$"Every day"'</option>
 <option>0</option>
 <option>1</option>
@@ -267,7 +270,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the month you want the job to start on.'"'</span></a>
 </td></tr>
 <tr><td>'$"Day of week"'</td>
-<td><select name="___DOFW___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
+<td><select name="___DOFW___" style="width: '$WIDTH2'px;">
 <option value="1-7">'$"Every day"'</option>
 <option value="1-5">'$"Every week day"'</option>
 <option value="6-7">'$"Weekend"'</option>
@@ -286,7 +289,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
       <tr>
         <td>
 '$"Command"'</td>
-        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text"></td><td>
+        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '$WIDTH2'px;" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the command or path to the command that you want to run."'</span></a>
       </td></tr></tbody></table><br><br>'
 

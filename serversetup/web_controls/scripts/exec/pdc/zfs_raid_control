@@ -249,8 +249,9 @@ do
 
 			for RAIDDISK in $ZPOOLDRIVES
 			do
+				RAIDDISK2=$(readlink -f /dev/disk/by-id/$RAIDDISK)
 				#RAIDDISK=`echo /dev/$RAIDDISK`
-				echo '<option value="____POOL____'$POOLNAME'____ACTION____replace____DRIVE____'$DRIVEBYID'____DRIVE2____'$RAIDDISK'____">'$"Replace"' - '$RAIDDISK'</option>'
+				echo '<option value="____POOL____'$POOLNAME'____ACTION____replace____DRIVE____'$DRIVEBYID'____DRIVE2____'$RAIDDISK'____">'$"Replace"' - '$RAIDDISK2'</option>'
 			done
 
 		echo '</select></td><td><a class="info" href="javascript:void(0)"><input name="submit" type="image" class="images" src="'$ICON1'" value=""><span>'$"Add this disk to a raid."'</span></a></td></tr>'

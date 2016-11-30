@@ -197,14 +197,14 @@ else
 
 	echo '<div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$"Create ZFS Raid"' - '$SERVERNAME'</div></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"Create ZFS Raid"' - '$SERVERNAME'</div></td>
+<td>
 <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
-<td style="vertical-align: top;">
+<td>
 <form action="/cgi-bin/admin/zfs_raid_create_fm.cgi" method="post">
 <button class="button" name="_">'$"Create ZFS Raid"'</button>
 </form>
-</td><td style="vertical-align: top;">
+</td><td>
 <form action="zfs_raid_control_fm.cgi" method="post">
 <button class="button" name="_">'$"ZFS Status"'</button>
 </form>
