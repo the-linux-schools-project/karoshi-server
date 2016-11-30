@@ -194,7 +194,7 @@ then
 else
 	LOGFILE2=`echo "$LOGFILE" | sed 's/%3A/:/g'`
 	#Get time, date and category of the event
-	CATEGORY=$(echo $LOGFILE2= | cut -d"-" -f1)
+	CATEGORY=$(echo $LOGFILE2 | cut -d"-" -f1)
 
 	case "$CATEGORY" in
 		syslog)

@@ -407,11 +407,10 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 			echo "'$"Existing ZFS raid arrays have been detected. You can either choose to restore the arrays or use the drives for a new array."'<br><br>"
 		fi
 
-		echo "<b>'$"Raid information"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>"
+		echo "<b>'$"Raid information"'</b><br><table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>"
 		echo -e "$IMPORTINFO"
 		echo "</tbody></table><br>"
-
-		for MOUNTPOINT in `echo -e "$IMPORTINFO" | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
+		for MOUNTPOINT in `zpool import | grep pool: | cut -d: -f2 | sed "s/ zfs-/\//g" | sed "s/-/\//g"`
 		do
 			echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create2.cgi\" target=\"_top\" name = \"frm\">"
 			echo "<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\"><input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\"><input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">"
@@ -426,7 +425,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 </tbody></table><br>
 <input class=\"button\" value='$"Submit"' type=\"submit\"><br><br>"
 		done
-		else
+	else
 
 		echo "<input type="hidden" name="____CREATETYPE____" value="create">"
 

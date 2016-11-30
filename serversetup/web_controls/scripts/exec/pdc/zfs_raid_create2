@@ -487,13 +487,13 @@ done' > /etc/rc2.d/S90zfs-mount-$POOLNAME
 			sort_gluster
 		fi
 
-		zpool import -d /dev/disk/by-id "$POOLNAME"
-
 		if [ -d "$MOUNTPOINT" ]
 		then
 			mv "$MOUNTPOINT" "$MOUNTPOINT"-pre-zfs.$$
 		fi
 		mkdir -p "$MOUNTPOINT"
+
+		zpool import -f -d /dev/disk/by-id "$POOLNAME"
 
 		#Set and Check for posix acl support
 		zfs set acltype=posixacl "$POOLNAME"
@@ -896,7 +896,14 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 			sort_gluster
 		fi
 
-		zpool import -d /dev/disk/by-id '$POOLNAME'
+		#Move existing folder and create a new empty folder
+		if [ -d "'$MOUNTPOINT'" ]
+		then
+			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.'$$'
+		fi
+		mkdir -p '$MOUNTPOINT'
+
+		zpool import -f -d /dev/disk/by-id '$POOLNAME'
 
 		#Set and Check for posix acl support
 		zfs set acltype=posixacl "'$POOLNAME'"
@@ -906,13 +913,6 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		else
 			POSIXSUPPORT=no
 		fi
-
-		#Move existing folder and create a new empty folder
-		if [ -d "'$MOUNTPOINT'" ]
-		then
-			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.'$$'
-		fi
-		mkdir -p '$MOUNTPOINT'
 
 		if [ $POSIXSUPPORT = no ]
 		then
