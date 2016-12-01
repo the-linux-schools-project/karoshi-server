@@ -188,7 +188,7 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 	then
 		for USERFOLDER in `getent passwd | grep ":$HOMEPATH/" | cut -d: -f1`
 		do
-			echo "<li>"$USERFOLDER: Setting Permissions"</li></ul>"
+			echo "<ul><li>"$USERFOLDER: Setting Permissions"</li></ul>"
 			if [ ! -d $HOMEPATH/$USERFOLDER ]
 			then
 				mkdir -p $HOMEPATH/$USERFOLDER
@@ -201,7 +201,7 @@ if [ -f /opt/karoshi/server_network/group_information/$PRIGROUP ]
 		ssh -x -o PasswordAuthentication=no $NEWSERVER '
 		for USERFOLDER in `getent passwd | grep ":'$HOMEPATH'/" | cut -d: -f1`
 		do
-			echo "<li>"$USERFOLDER: Setting Permissions"</li></ul>"
+			echo "<ul><li>"$USERFOLDER: Setting Permissions"</li></ul>"
 			if [ ! -d '$HOMEPATH'/$USERFOLDER ]
 				then
 				mkdir -p '$HOMEPATH'/$USERFOLDER
@@ -448,7 +448,7 @@ do
 		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
 	else
 		#Use short names for windows
-		NEWSERVER2=$(echo $NEWSERVER2 | cut -d"." -f1)
+		NEWSERVER2=$(echo $NEWSERVER | cut -d"." -f1)
 		DFSPATH=$NEWSERVER2\\$USERNAME
 	fi
 	[ -L /var/lib/samba/dfs/homes/$USERNAME ] && rm -f /var/lib/samba/dfs/homes/$USERNAME
