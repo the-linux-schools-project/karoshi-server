@@ -48,7 +48,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Archive the exam accounts"'</div></div><div id="infobox">'
 
 #########################
 #Get data input
@@ -63,14 +63,14 @@ END_POINT=5
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-then
-let COUNTER=$COUNTER+1
-EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 TCPIP_ADDR=$REMOTE_ADDR
@@ -80,7 +80,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
 echo 'window.location = "/cgi-bin/admin/exam_accounts_archive_fm.cgi";'
 echo '</script>'
-echo "</div></div></body></html>"
+echo "</div></div></div></body></html>"
 exit
 }
 #########################
@@ -88,22 +88,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 DAY=`date +%d`
 MONTH=`date +%b`
@@ -117,8 +117,8 @@ EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 0 ]
 then
-MESSAGE=`echo $"All exam accounts have been archived to": /home/staffshare/examfiles/$ARCHIVEFOLDER`
+	MESSAGE=`echo $"All exam accounts have been archived to": /home/staffshare/examfiles/$ARCHIVEFOLDER`
 else
-MESSAGE=`echo $"The exam accounts could not be archived"`
+	MESSAGE=`echo $"The exam accounts could not be archived"`
 fi
 show_status
