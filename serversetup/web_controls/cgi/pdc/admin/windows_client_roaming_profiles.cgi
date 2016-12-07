@@ -345,7 +345,7 @@ then
 	echo '<input name="_FORMCODE_" value="'$MOD_CODE'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left; left: 232px;" >
     <tbody>
 <tr><td style="width: '$WIDTH1'px;">'$"Option"'</td><td>
-<select name="_ACTION_" style="width: '$WIDTH2'px; height: '$HEIGHT2'px;">
+<select name="_ACTION_" style="width: '$WIDTH2'px;">
 <option label="blank"></option>
 <option value="mandatory">'$"Mandatory Profile"'</option>
 <option value="roaming">'$"Roaming Profile"'</option>
@@ -355,26 +355,26 @@ then
 </td></tr>
 <tr><td>
 '$"Primary Group"'</td><td>'
-	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px; height: '$HEIGHT2'px;">/g'
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
 	echo '</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"All users in the group you select will be affected by the action you choose from this menu." $"Leave this blank if you want to enter in a username."'</span></a>
 </td></tr>
 <tr><td>
 '$"Username"'
 </td><td>
-<input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="20" type="text">
+<input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or leave this blank if you want to choose an entire group."'</span></a>
 </td></tr>
 <tr><td>
 '$"Exceptions"'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="20" type="text">
+<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: '$WIDTH2'px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any user accounts that you do not want to modify separated by spaces."'</span></a>
 </td></tr>
 <tr><td style="height:50px; vertical-align: bottom">'$"Modify Code"'</td><td style="vertical-align: bottom; text-align: left;"><b>'$MOD_CODE'</b></td><td></td></tr>
-<tr><td>'$"Confirm"'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" style="height: '$HEIGHT1'px;" maxlength="3" size="3" type="text"></td><td>
+<tr><td>'$"Confirm"'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" maxlength="3" size="3" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the code displayed on the page to confirm this action."'</span></a>
 </td></tr>
 </tbody></table>
