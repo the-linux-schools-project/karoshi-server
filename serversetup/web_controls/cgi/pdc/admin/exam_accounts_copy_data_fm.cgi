@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -66,12 +66,12 @@ echo '
 else
 echo '
   <br>
-  <table class="standard" style="text-align: left; >
+ <table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: 180px;"><span style="font-weight: bold;">'$"Start Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMSTART_" maxlength="3" size="3" value="1" type="text"></td></tr>
-<tr><td><span style="font-weight: bold;">'$"End Account"'</span></td><td>'$"exam"'</td><td><input name="_EXAMEND_" maxlength="3" size="3" value="10" type="text"></td></tr>
-<tr><td><span style="font-weight: bold;">'$"All"'</span></td><td></td><td><input name="_ALL_" value="all" type="checkbox"></td></tr>
-<tr><td><span style="font-weight: bold;">'$"Read only"'</span></td><td></td><td><input name="_READONLY_" value="readonly" type="checkbox"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Start Account"'</td><td>'$"exam"'</td><td><input name="_EXAMSTART_" maxlength="3" size="3" value="1" type="text"></td></tr>
+<tr><td>'$"End Account"'</td><td>'$"exam"'</td><td><input name="_EXAMEND_" maxlength="3" size="3" value="10" type="text"></td></tr>
+<tr><td>'$"All"'</td><td></td><td><input name="_ALL_" value="all" type="checkbox"></td></tr>
+<tr><td>'$"Read only"'</td><td></td><td><input name="_READONLY_" value="readonly" type="checkbox"> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."'</span></a></td></tr>
 </tbody></table>
 </div>
 <div id="submitbox">
