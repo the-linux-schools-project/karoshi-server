@@ -116,18 +116,24 @@ then
 
 	if [ $SERVERNAME = $(hostname-fqdn) ]
 	then
-		echo "<li>$SERVERNAME - "$"Updating repository""</li>"
-		apt-get update
-
 		which git 1>/dev/null
 		if [ $? != 0 ]
 		then
+			echo "<li>$SERVERNAME - "$"Updating repository""</li>"
+			apt-get update
+
 			echo "<li>$SERVERNAME - "$"Installing git""</li>"
 			apt-get install git
 		fi
 
 		echo "<li>$SERVERNAME - "$"Downloading git""</li>"
 		git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+		#Check status
+		if [ $? != 0 ] || [ ! -d /opt/letsencrypt ]
+		then
+			echo "<li>$SERVERNAME - "$"There was a problem installing Lets Encrypt""</li>"
+			exit 101
+		fi
 
 		cd /opt/letsencrypt
 
