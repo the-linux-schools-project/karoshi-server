@@ -191,7 +191,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div class="sectiontitle">'$"Let's Encrypt SSL Certificates"'</div><br></div><div id="infobox">'
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Let's Encrypt SSL Certificates"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"Apply a Let's Encrypt SSL certificate to a server."'</span></a></td></tr></tbody></table><br>
+</div><div id="infobox">'
 fi
 
 if [ -z "$SERVERNAME" ]

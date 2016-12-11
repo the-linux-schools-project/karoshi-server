@@ -207,7 +207,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/server_info_fm.cgi">'$"Select Server"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><b>'$SERVERNAME'</b></td><td style="vertical-align: top;">
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$SERVERNAME'</div></td><td>
 	<form name="myform" action="server_info_fm.cgi" method="post">
 	<button class="button" name="SelectServer" value="_">
 	'$"Select server"'

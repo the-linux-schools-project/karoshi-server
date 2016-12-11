@@ -162,12 +162,22 @@ then
 		if [ "$?" = 0 ]
 		then
 			WEBSERVER=apache
+			CONFIG_FILE=default-ssl
+			CONFIG_AVAIL_PATH=/etc/apache2/sites-available
+			CONFIG_ENABLED_PATH=/etc/apache2/sites-enabled
+			SSLCERTPARAM=SSLCertificateFile
+			SSLCERTKEYPARAM=SSLCertificateKeyFile
 		fi
 
 		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_status"
 		if [ "$?" = 0 ]
 		then
 			WEBSERVER=nginx
+			CONFIG_FILE=default
+			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
+			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
+			SSLCERTPRARAM=ssl_certificate
+			SSLCERTKEYPARAM=ssl_certificate_key
 		fi
 
 		if [ "$WEBSERVER" = notset ]
@@ -194,44 +204,42 @@ then
 		PRIDOMAIN=$(echo "$ALIASLIST" | cut -d, -f1)
 
 		#Configure the web server for the letsencrypt certificate
-		if [ "$WEBSERVER" = apache ]
+
+		#Bckup the configuration file
+		echo "<ul><li>$SERVERNAME - "$"Backing up" "$CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE</li></ul>" 
+		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$"
+
+		#Modify default-ssl - assume we are using the karoshi default-ssl
+		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+
+		#Restart the web server
+		echo "<ul><li>$SERVERNAME - "$"Restarting"" $WEBSERVER</li></ul>"
+
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"stop 1>/dev/null 2>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+		if [ "$?" != 0 ]
 		then
-			#Bckup the configuration file
-			echo "<ul><li>$SERVERNAME - "$"Backing up" "/etc/apache2/sites-enabled/default-ssl to default-ssl-backup-$LOG_DATE</li></ul>" 
-			cp -f "/etc/apache2/sites-enabled/default-ssl" "/etc/apache2/sites-enabled/default-ssl-backup-$LOG_DATE.$$"
-
-			#Modify default-ssl - assume we are using the karoshi default-ssl
-			sed -i "/^SSLCertificateFile/c\SSLCertificateFile /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" /etc/apache2/sites-enabled/default-ssl
-			sed -i "/^SSLCertificateKeyFile/c\SSLCertificateKeyFile /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" /etc/apache2/sites-enabled/default-ssl
-
-			#Restart the web server
-			echo "<ul><li>$SERVERNAME - "$"Restarting Apache""</li></ul>"
-
-			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
-			sleep 1
-			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null 2>/dev/null
-			if [ "$?" != 0 ]
-			then
-				echo "<ul><li>$SERVERNAME - "$"There was a problem starting apache""</li></ul>"
-				echo "<ul><li>$SERVERNAME - "$"Restoring old config file""</li></ul>"
-				mv "/etc/apache2/sites-enabled/default-ssl" "/etc/apache2/sites-enabled/default-ssl-failed-$LOG_DATE.$$"
-				mv -f "/etc/apache2/sites-enabled/default-ssl-backup-$LOG_DATE" /etc/apache2/sites-enabled/default-ssl
-				echo "<ul><li>$SERVERNAME - "$"Starting Apache""</li></ul>"
-				"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start" 1>/dev/null 2>/dev/null
-			fi
-			#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
-
-			let MINUTES=$(($RANDOM%59))
-			let HOURS=$(($RANDOM%24))
-			let DAY=$(($RANDOM%7))
-			echo "$MINUTES" "$HOURS" '*' '*' "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
-			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-			#Show completed message
-			echo '<ul><li>'$SERVERNAME' - '$"The Let's Encrypt certificate has been installed"'</li></ul>'
+			echo "<ul><li>$SERVERNAME - "$"There was a problem starting"" $WEBSERVER</li></ul>"
+			echo "<ul><li>$SERVERNAME - "$"Restoring old config file""</li></ul>"
+			mv "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-failed-$LOG_DATE.$$"
+			mv -f "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$" $CONFIG_ENABLED_PATH/$CONFIG_FILE
+			echo "<ul><li>$SERVERNAME - "$"Starting"" $WEBSERVER</li></ul>"
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+			exit 101
 		fi
+
+		#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
+		let MINUTES=$(($RANDOM%59))
+		let HOURS=$(($RANDOM%24))
+		let DAY=$(($RANDOM%7))
+		echo "$MINUTES" "$HOURS" '*' '*' "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		#Show completed message
+		echo '<ul><li>'$SERVERNAME' - '$"The Let's Encrypt certificate has been installed"'</li></ul>'
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-
 		source /opt/karoshi/serversetup/variables/distro
 		
 		#Make sure we have git installed
@@ -239,14 +247,14 @@ then
 		if [ "$?" != 0 ]
 		then
 
-			echo "<ul><li>'$SERVERNAME' - "$"Updating repository""</li></ul>"
+			echo "<ul><li>'$SERVERNAME' - '$"Updating repository"'</li></ul>"
 			apt-get update
 
-			echo "<ul><li>'$SERVERNAME' - "$"Installing git""</li></ul>"
+			echo "<ul><li>'$SERVERNAME' - '$"Installing git"'</li></ul>"
 			apt-get install git
 			if [ "$?" != 0 ]
 			then
-				echo "<ul><li>'$SERVERNAME' - "$"There was a problem installing git""</li></ul>"
+				echo "<ul><li>'$SERVERNAME' - '$"There was a problem installing git"'</li></ul>"
 				exit 101
 			fi
 		fi
@@ -258,7 +266,7 @@ then
 			git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
 			if [ "$?" != 0 ]
 			then
-				echo "<ul><li>'$SERVERNAME' - "$"There was a problem downloading Lets Encrypt""</li></ul>"
+				echo "<ul><li>'$SERVERNAME' - '$"There was a problem downloading Let's Encrypt"'</li></ul>"
 				exit 101
 			fi
 		else
@@ -277,23 +285,33 @@ then
 		if [ "$?" = 0 ]
 		then
 			WEBSERVER=apache
+			CONFIG_FILE=default-ssl
+			CONFIG_AVAIL_PATH=/etc/apache2/sites-available
+			CONFIG_ENABLED_PATH=/etc/apache2/sites-enabled
+			SSLCERTPARAM=SSLCertificateFile
+			SSLCERTKEYPARAM=SSLCertificateKeyFile
 		fi
 
 		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_status"
 		if [ "$?" = 0 ]
 		then
 			WEBSERVER=nginx
+			CONFIG_FILE=default
+			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
+			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
+			SSLCERTPRARAM=ssl_certificate
+			SSLCERTKEYPARAM=ssl_certificate_key
 		fi
 
 		if [ "$WEBSERVER" = notset ]
 		then
-			echo "<ul><li>'$SERVERNAME' - "$"There is no web server running""</li></ul>"
+			echo "<ul><li>$SERVERNAME - "$"There is no web server running""</li></ul>"
 			exit 101
 		fi
 
 		#Try and create a certificate
-		echo "<ul><li>$SERVERNAME - "$"Creating Certificate""</li></ul>"
-		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		echo "<ul><li>'$SERVERNAME' - '$"Creating Certificate"'</li></ul>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif">"
 		./letsencrypt-auto certonly --non-interactive --agree-tos --email "admin@'$REALM'" --rsa-key-size 4096 --webroot -w /var/www/html -d "'$ALIASLIST'"
 		if [ $? != 0 ]
 		then
@@ -309,41 +327,40 @@ then
 		PRIDOMAIN=$(echo "'$ALIASLIST'" | cut -d, -f1)
 
 		#Configure the web server for the letsencrypt certificate
-		if [ "$WEBSERVER" = apache ]
+
+		#Bckup the configuration file
+		echo "<ul><li>'$SERVERNAME' - '$"Backing up"' "$CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'$LOG_DATE'</li></ul>" 
+		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'$LOG_DATE'.'$$'"
+
+		#Modify default-ssl - assume we are using the karoshi default-ssl
+		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+
+		#Restart the web server
+		echo "<ul><li>'$SERVERNAME' - '$"Restarting"' $WEBSERVER</li></ul>"
+
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"stop 1>/dev/null 2>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+		if [ "$?" != 0 ]
 		then
-			#Bckup the configuration file
-			echo "<ul><li>'$SERVERNAME' - "$"Backing up" "/etc/apache2/sites-enabled/default-ssl to default-ssl-backup-$LOG_DATE</li></ul>" 
-			cp -f "/etc/apache2/sites-enabled/default-ssl" "/etc/apache2/sites-enabled/default-ssl-backup-$LOG_DATE.$$"
-
-			#Modify default-ssl - assume we are using the karoshi default-ssl
-			sed -i "/^SSLCertificateFile/c\SSLCertificateFile /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" /etc/apache2/sites-enabled/default-ssl
-			sed -i "/^SSLCertificateKeyFile/c\SSLCertificateKeyFile /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" /etc/apache2/sites-enabled/default-ssl
-
-			#Restart the web server
-			echo "<ul><li>'$SERVERNAME' - "$"Restarting Apache""</li></ul>"
-
-			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
-			sleep 1
-			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null 2>/dev/null
-			if [ "$?" != 0 ]
-			then
-				echo "<ul><li>'$SERVERNAME' - '$"There was a problem starting apache"'</li></ul>"
-				echo "<ul><li>'$SERVERNAME' - '$"Restoring old config file"'</li></ul>"
-				mv "/etc/apache2/sites-enabled/default-ssl" "/etc/apache2/sites-enabled/default-ssl-failed-'$LOG_DATE'.'$$'"
-				mv -f "/etc/apache2/sites-enabled/default-ssl-backup-'$LOG_DATE'" /etc/apache2/sites-enabled/default-ssl
-				echo "<ul><li>'$SERVERNAME' - '$"Starting Apache"'</li></ul>"
-				"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start" 1>/dev/null 2>/dev/null
-			fi
-			#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
-
-			let MINUTES=$(($RANDOM%59))
-			let HOURS=$(($RANDOM%24))
-			let DAY=$(($RANDOM%7))
-			echo "$MINUTES" "$HOURS" "*" "*" "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
-			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-			#Show completed message
-			echo "<ul><li>'$SERVERNAME' - '$"The Let's Encript certificate has been installed"'</li></ul>"
+			echo "<ul><li>'$SERVERNAME' - '$"There was a problem starting"' $WEBSERVER</li></ul>"
+			echo "<ul><li>'$SERVERNAME' - '$"Restoring old config file"'</li></ul>"
+			mv "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-failed-'$LOG_DATE'.'$$'"
+			mv -f "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$" $CONFIG_ENABLED_PATH/$CONFIG_FILE
+			echo "<ul><li>'$SERVERNAME' - '$"Starting"' $WEBSERVER</li></ul>"
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+			exit 101
 		fi
+
+		#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
+		let MINUTES=$(($RANDOM%59))
+		let HOURS=$(($RANDOM%24))
+		let DAY=$(($RANDOM%7))
+		echo "$MINUTES" "$HOURS" '*' '*' "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		#Show completed message
+		echo "<ul><li>'$SERVERNAME' - '$"The Let's Encrypt certificate has been installed"'</li></ul>"
 		'
 	fi
 fi
