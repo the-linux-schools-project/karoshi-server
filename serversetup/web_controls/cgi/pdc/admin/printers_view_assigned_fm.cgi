@@ -77,19 +77,19 @@ exit
 echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"View Assigned Printers"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the printers that have been assigned to locations."'</span></a></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"View Assigned Printers"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Assigned_Printers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the printers that have been assigned to locations."'</span></a></td>
+<td>
 <button class="button" formaction="/cgi-bin/admin/printers.cgi" name="SHOWPRINTERS" value="_">
 '$"Show Printers"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="/cgi-bin/admin/printers_delete.cgi" name="DELETEPRINTER" value="_">
 '$"Delete Printers"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="/cgi-bin/admin/locations.cgi" name="ADDLOCATION" value="_">
 '$"Add Location"'
 </button>

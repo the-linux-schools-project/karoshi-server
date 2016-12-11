@@ -66,15 +66,15 @@ exit
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
 echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Add Network Printer"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+<tr><td><div class="sectiontitle">'$"Add Network Printer"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></td>
+<td><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
 <input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'">
 </form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
+<td><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
 <input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'">
 </form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+<td><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
 <input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'">
 </form></td>
 </tr></tbody></table><br>

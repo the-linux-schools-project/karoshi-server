@@ -217,14 +217,14 @@ else
 	echo '<div id="'$DIV_ID'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"E-Mail Domains"'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any domains that you have set up for your E-Mail system."'</span></a></td>
-	<td style="vertical-align: top;"><form action="/cgi-bin/admin/email_domains.cgi" method="post">
+	<td><div class="sectiontitle">'$"E-Mail Domains"'</div></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Domains"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any domains that you have set up for your E-Mail system."'</span></a></td>
+	<td><form action="/cgi-bin/admin/email_domains.cgi" method="post">
 	<button class="button" name="_DoAction_" value="_ACTION_'$ALTACTION'_">
 	'$ALTMESSAGE'
 	</button>
 	</form></td>
-	<td style="vertical-align: top;">
+	<td>
 	<form action="email_aliases.cgi" method="post">
 	<button class="button" name="_ViewAliases_" value="_">
 	'$"Aliases"'

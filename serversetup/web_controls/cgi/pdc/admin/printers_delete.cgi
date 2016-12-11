@@ -97,20 +97,20 @@ exit
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
 echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post"><div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Delete a Network Printer"'</b></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"Delete a Network Printer"'</div></td>
+<td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="/cgi-bin/admin/printers.cgi" name="_ShowPrinters_" value="_">
 '$"Show Printers"'
 </button>
 </td>
-<td style="vertical-align: top;">
-<button class="button" formaction="/cgi-bin/admin/printers_add_fm.cg" name="_AddPrinter_" value="_">
+<td>
+<button class="button" formaction="/cgi-bin/admin/printers_add_fm.cgi" name="_AddPrinter_" value="_">
 '$"Add Printer"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="/cgi-bin/admin/locations.cgi" name="_AddLocation_" value="_">
 '$"Add Location"'
 </button>
