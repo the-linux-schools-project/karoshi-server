@@ -1,0 +1,369 @@
+#!/bin/bash
+#Copyright (C) 2016 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ssl_lets_encrypt_cgi
+then
+	echo `date`:ssl_lets_encrypt - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/ssl_lets_encrypt_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $ssl_lets_encrypt_cgi'check' ]
+then
+	echo `date`:ssl_lets_encrypt - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`:ssl_lets_encrypt - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\-\n-+*,' | sed 's/ /-/g'`
+
+
+
+if [ -z "$DATA" ]
+then
+	echo `date`:ssl_lets_encrypt - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+ALIASLIST=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/ /g'`
+ACTION=`echo "$DATA" | cut -s -d: -f6`
+
+########################
+#Check data
+########################
+
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`:ssl_lets_encrypt - Not called by ssl_lets_encrypt.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$ACTION" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ -z "$ALIASLIST" ]
+then
+	echo `date`:ssl_lets_encrypt - Blank aliaslist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`:ssl_lets_encrypt - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo `date`:ssl_lets_encrypt - setting up a certificate on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+source /opt/karoshi/server_network/domain_information/domain_name
+
+if [ "$ACTION" = addcert ]
+then
+	if [ $SERVERNAME = $(hostname-fqdn) ]
+	then
+		source /opt/karoshi/serversetup/variables/distro
+		
+		#Make sure we have git installed
+		which git 1>/dev/null
+		if [ "$?" != 0 ]
+		then
+
+			echo "<ul><li>$SERVERNAME - "$"Updating repository""</li></ul>"
+			apt-get update
+
+			echo "<ul><li>$SERVERNAME - "$"Installing git""</li></ul>"
+			apt-get install git
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>$SERVERNAME - "$"There was a problem installing git""</li></ul>"
+				exit 101
+			fi
+		fi
+
+		#Get the latest version of lestencrypt
+		if [ ! -d /opt/letsencrypt ]
+		then
+			echo "<ul><li>$SERVERNAME - "$"Downloading the latest version of Let's Encrypt to /opt/letsencrypt""</li></ul>"
+			git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>$SERVERNAME - "$"There was a problem downloading Let's Encrypt""</li></ul>"
+				exit 101
+			fi
+		else
+			cd /opt/letsencrypt
+			git pull 1>/dev/null
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>$SERVERNAME - "$"There was a problem updating Let's Encrypt""</li></ul>"
+				exit 101
+			fi	
+		fi	
+
+		#Check if we are running apache or nginx
+		WEBSERVER=notset
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status"
+		if [ "$?" = 0 ]
+		then
+			WEBSERVER=apache
+			CONFIG_FILE=default-ssl
+			CONFIG_AVAIL_PATH=/etc/apache2/sites-available
+			CONFIG_ENABLED_PATH=/etc/apache2/sites-enabled
+			SSLCERTPARAM=SSLCertificateFile
+			SSLCERTKEYPARAM=SSLCertificateKeyFile
+		fi
+
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_status"
+		if [ "$?" = 0 ]
+		then
+			WEBSERVER=nginx
+			CONFIG_FILE=default
+			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
+			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
+			SSLCERTPRARAM=ssl_certificate
+			SSLCERTKEYPARAM=ssl_certificate_key
+		fi
+
+		if [ "$WEBSERVER" = notset ]
+		then
+			echo "<ul><li>$SERVERNAME - "$"There is no web server running""</li></ul>"
+			exit 101
+		fi
+
+		#Try and create a certificate
+		echo "<ul><li>$SERVERNAME - "$"Creating Certificate""</li></ul>"
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		./letsencrypt-auto certonly --non-interactive --agree-tos --email "admin@$REALM" --rsa-key-size 4096 --webroot -w /var/www/html -d "$ALIASLIST"
+		if [ $? != 0 ]
+		then
+			echo "<ul><li>$SERVERNAME - "$"There was a problem creating the certificate with Let's Encrypt""</li></ul>"
+
+			#Show the log
+			cat /var/log/letsencrypt/letsencrypt.log
+			exit 101
+		fi
+		echo '</pre>'
+
+		#Get the first domain in the list because letsencrypt will use this in the path to store the cert in /etc/letsencrypt/live 
+		PRIDOMAIN=$(echo "$ALIASLIST" | cut -d, -f1)
+
+		#Configure the web server for the letsencrypt certificate
+
+		#Bckup the configuration file
+		echo "<ul><li>$SERVERNAME - "$"Backing up" "$CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE</li></ul>" 
+		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$"
+
+		#Modify default-ssl - assume we are using the karoshi default-ssl
+		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+
+		#Restart the web server
+		echo "<ul><li>$SERVERNAME - "$"Restarting"" $WEBSERVER</li></ul>"
+
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"stop 1>/dev/null 2>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+		if [ "$?" != 0 ]
+		then
+			echo "<ul><li>$SERVERNAME - "$"There was a problem starting"" $WEBSERVER</li></ul>"
+			echo "<ul><li>$SERVERNAME - "$"Restoring old config file""</li></ul>"
+			mv "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-failed-$LOG_DATE.$$"
+			mv -f "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$" $CONFIG_ENABLED_PATH/$CONFIG_FILE
+			echo "<ul><li>$SERVERNAME - "$"Starting"" $WEBSERVER</li></ul>"
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+			exit 101
+		fi
+
+		#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
+		let MINUTES=$(($RANDOM%59))
+		let HOURS=$(($RANDOM%24))
+		let DAY=$(($RANDOM%7))
+		echo "$MINUTES" "$HOURS" '*' '*' "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		#Show completed message
+		echo '<ul><li>'$SERVERNAME' - '$"The Let's Encrypt certificate has been installed"'</li></ul>'
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		source /opt/karoshi/serversetup/variables/distro
+		
+		#Make sure we have git installed
+		which git 1>/dev/null
+		if [ "$?" != 0 ]
+		then
+
+			echo "<ul><li>'$SERVERNAME' - '$"Updating repository"'</li></ul>"
+			apt-get update
+
+			echo "<ul><li>'$SERVERNAME' - '$"Installing git"'</li></ul>"
+			apt-get install git
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>'$SERVERNAME' - '$"There was a problem installing git"'</li></ul>"
+				exit 101
+			fi
+		fi
+
+		#Get the latest version of lestencrypt
+		if [ ! -d /opt/letsencrypt ]
+		then
+			echo "<ul><li>'$SERVERNAME' - '$"Downloading the latest version of Let's Encrypt to /opt/letsencrypt"'</li></ul>"
+			git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>'$SERVERNAME' - '$"There was a problem downloading Let's Encrypt"'</li></ul>"
+				exit 101
+			fi
+		else
+			cd /opt/letsencrypt
+			git pull 1>/dev/null
+			if [ "$?" != 0 ]
+			then
+				echo "<ul><li>'$SERVERNAME' - '$"There was a problem updating Let's Encrypt"'</li></ul>"
+				exit 101
+			fi	
+		fi	
+
+		#Check if we are running apache or nginx
+		WEBSERVER=notset
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status"
+		if [ "$?" = 0 ]
+		then
+			WEBSERVER=apache
+			CONFIG_FILE=default-ssl
+			CONFIG_AVAIL_PATH=/etc/apache2/sites-available
+			CONFIG_ENABLED_PATH=/etc/apache2/sites-enabled
+			SSLCERTPARAM=SSLCertificateFile
+			SSLCERTKEYPARAM=SSLCertificateKeyFile
+		fi
+
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_status"
+		if [ "$?" = 0 ]
+		then
+			WEBSERVER=nginx
+			CONFIG_FILE=default
+			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
+			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
+			SSLCERTPRARAM=ssl_certificate
+			SSLCERTKEYPARAM=ssl_certificate_key
+		fi
+
+		if [ "$WEBSERVER" = notset ]
+		then
+			echo "<ul><li>$SERVERNAME - "$"There is no web server running""</li></ul>"
+			exit 101
+		fi
+
+		#Try and create a certificate
+		echo "<ul><li>'$SERVERNAME' - '$"Creating Certificate"'</li></ul>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif">"
+		./letsencrypt-auto certonly --non-interactive --agree-tos --email "admin@'$REALM'" --rsa-key-size 4096 --webroot -w /var/www/html -d "'$ALIASLIST'"
+		if [ $? != 0 ]
+		then
+			echo "<ul><li>'$SERVERNAME' - '$"There was a problem creating the certificate with Let's Encrypt"'</li></ul>"
+
+			#Show the log
+			cat /var/log/letsencrypt/letsencrypt.log
+			exit 101
+		fi
+		echo "</pre>"
+
+		#Get the first domain in the list because letsencrypt will use this in the path to store the cert in /etc/letsencrypt/live 
+		PRIDOMAIN=$(echo "'$ALIASLIST'" | cut -d, -f1)
+
+		#Configure the web server for the letsencrypt certificate
+
+		#Bckup the configuration file
+		echo "<ul><li>'$SERVERNAME' - '$"Backing up"' "$CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'$LOG_DATE'</li></ul>" 
+		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'$LOG_DATE'.'$$'"
+
+		#Modify default-ssl - assume we are using the karoshi default-ssl
+		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+
+		#Restart the web server
+		echo "<ul><li>'$SERVERNAME' - '$"Restarting"' $WEBSERVER</li></ul>"
+
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"stop 1>/dev/null 2>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+		if [ "$?" != 0 ]
+		then
+			echo "<ul><li>'$SERVERNAME' - '$"There was a problem starting"' $WEBSERVER</li></ul>"
+			echo "<ul><li>'$SERVERNAME' - '$"Restoring old config file"'</li></ul>"
+			mv "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-failed-'$LOG_DATE'.'$$'"
+			mv -f "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$" $CONFIG_ENABLED_PATH/$CONFIG_FILE
+			echo "<ul><li>'$SERVERNAME' - '$"Starting"' $WEBSERVER</li></ul>"
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/$WEBSERVER"_"start 1>/dev/null 2>/dev/null
+			exit 101
+		fi
+
+		#Schedule the certificate to be auto updated - create a random day and time for the week so that the servers are not doing it all at the same time.
+		let MINUTES=$(($RANDOM%59))
+		let HOURS=$(($RANDOM%24))
+		let DAY=$(($RANDOM%7))
+		echo "$MINUTES" "$HOURS" "*" "*" "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		#Show completed message
+		echo "<ul><li>'$SERVERNAME' - '$"The Let's Encrypt certificate has been installed"'</li></ul>"
+		'
+	fi
+fi
+
+exit
+
