@@ -133,6 +133,11 @@ then
 	echo `date`: add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
+if [ ${#NEWUSERNAME} -gt 20 ]
+then
+	echo `date`: add_user - The username is longer than 20 characters by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
 if [ -z "$NEWUSERPASSWORD" ]
 then
 	echo `date`: add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

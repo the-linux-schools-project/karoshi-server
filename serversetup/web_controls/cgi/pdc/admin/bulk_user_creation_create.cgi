@@ -172,6 +172,15 @@ then
 	fi
 fi
 
+#Check that the username is 20 characters or less
+USERNAMELENGTH=${#USERNAME}  
+if [ $USERNAMELENGTH -gt 20 ]
+then
+	echo $"Line": $COUNTER - $USERNAME $"The username is greater than 20 characters""<br>"
+	CREATEUSER=no
+fi
+
+
 if [ $PRI_GROUP = getgroupfromcsv ]
 then
 	if [ -z "$USERPGROUP" ]
