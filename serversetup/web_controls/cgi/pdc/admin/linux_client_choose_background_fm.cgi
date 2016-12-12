@@ -85,8 +85,8 @@ then
 	TABLECLASS=standard
 	MAXSTYLES=5
 	WIDTH1=180
-	WIDTH2=400
-	WIDTH3=300
+	WIDTH2=480
+	HEIGHT=300
 	CHARS=25
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -95,8 +95,8 @@ else
 	TABLECLASS=mobilestandard
 	MAXSTYLES=4
 	WIDTH1=90
-	WIDTH2=160
-	WIDTH3=120
+	WIDTH2=192
+	HEIGHT=120
 	CHARS=11
 fi
 
@@ -165,15 +165,15 @@ if [ $BACKGROUND = $DEFAULTBACKGROUND ]
 then
 	echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; background-color: rgb(204, 0, 0); text-align: left;"><b>'$"Default Background"'</b><br><br>'$BACKGROUND_SHORT'</td><td>
 
-	<button style="width: '$WIDTH2'px; height: '$WIDTH3'px;" class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
-	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" alt="'$BACKGROUND'">
+	<button class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
+	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" style="width:'$WIDTH2'px;height:'$HEIGHT'px;" alt="'$BACKGROUND'">
 	<span>'$BACKGROUND'</span>
 	</button>
 	</td></tr>'
 else
 	echo '<tr><td style="width: '$WIDTH1'px; vertical-align: top; text-align: left;">'$BACKGROUND_SHORT'</td><td>
-	<button style="width: '$WIDTH2'px; height: '$WIDTH3'px;" class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
-	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" alt="'$BACKGROUND'">
+	<button class="info" name="___ChooseBackground___" value="___ACTION___choose___BACKGROUND___'$BACKGROUND'___">
+	<img src="/images/linuxclient/backgrounds/'$BACKGROUND'.png" style="width:'$WIDTH2'px;height:'$HEIGHT'px;" alt="'$BACKGROUND'">
 	<span>'$BACKGROUND'</span>
 	</button>
 	</td><td style="width: '$WIDTH1'px; vertical-align: top;">
