@@ -158,9 +158,9 @@ source /opt/karoshi/web_controls/version
 echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td>
-<td style="vertical-align: top;">
+<td><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td>
+<td>
 <form name="myform" action="/cgi-bin/admin/monitorix_fm.cgi" method="post">
 <button class="button" name="_SelectServer_" value="_">
 '$"Select server"'

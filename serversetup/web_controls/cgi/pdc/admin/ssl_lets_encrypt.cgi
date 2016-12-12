@@ -52,7 +52,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Let's Encrypt SSL Certificate"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Let's Encrypt SSL Certificates"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
   <script>
 <!--
@@ -187,11 +187,13 @@ if [ $MOBILE = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Let's Encrypt SSL Certificate"'</span>
+	<span>'$"Let's Encrypt SSL Certificates"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div class="sectiontitle">'$"Let's Encrypt SSL Certificate"'</div><br></div><div id="infobox">'
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Let's Encrypt SSL Certificates"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"Apply a Let's Encrypt SSL certificate to a server."'</span></a></td></tr></tbody></table><br>
+</div><div id="infobox">'
 fi
 
 if [ -z "$SERVERNAME" ]
@@ -205,13 +207,19 @@ else
 	if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
 	then
 		#Show any custom aliases that have been assigned
-		echo $"The following aliases have been assigned to this server and will be added in the SSL certificate."
-		for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+		echo "<ul><li>$SERVERNAME" - $"The following aliases have been assigned to this server and will be added in the SSL certificate.""</li></ul>"
+		for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/$SERVERNAME)
 		do
-			echo "$CUSTOM_ALIAS.$REALM<br>"
+			echo "<ul><li>$CUSTOM_ALIAS.$REALM</li></ul>"
+			ALIASLIST=$(echo $ALIASLIST,$CUSTOM_ALIAS.$REALM)
 		done
+		ALIASLIST=$(echo "$ALIASLIST" | sed 's/^,//g')
+		ACTION=addcert
+		MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1`
+		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIASLIST:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_lets_encrypt
+	else
+		echo "<ul><li>$SERVERNAME: This server has not been set up as a web server and has no aliases</li></ul>"	
 	fi
-
 fi
 
 [ $MOBILE = no ] && echo '</div>'

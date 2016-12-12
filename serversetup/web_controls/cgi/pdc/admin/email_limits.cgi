@@ -123,7 +123,7 @@ then
 '
 else
 	echo '<div id="'$DIV_ID'">
-<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><b>'$"E-Mail Limits"'</b></td>
+<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: middle; height: 20px;"><div class="sectiontitle">'$"E-Mail Limits"'</div></td>
 <td style="vertical-align: middle;">
 </td></tr>
 </tbody></table><br>'
