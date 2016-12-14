@@ -119,7 +119,11 @@ else
 fi
 
 #Get postfix data
-echo '<b>'$"E-Mail Queue"' - '$EMAILSERVER'</b> <a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a><br><br>'
+echo '
+<table class="standard"><tbody><tr>
+<td></td><td><div class="sectiontitle">'$"E-Mail Queue"'  - '$EMAILSERVER'</div></td><td>
+<a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a></td>
+</tr></tbody></table>'
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
@@ -136,9 +140,9 @@ then
 		<tr><td style="width: 180px;">'$"Delete all queued E-Mails"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETEALL_MAILID_NOTSET_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete all queued E-Mails"'</span></a></td></tr>
 		</tbody></table><br>
 
-		<table class="'$TABLECLASS'" style="text-align: left;" >
+		<table id="myTable" class="tablesorter" style="text-align: left;" >
 		<thead>
-		<tr><th style="width: 120px;"><b>'$"Mail ID"'</b></th><th><b>'$"Size"'</b></th><th><b>'$"Date"'</b></th><th><b>'$"Sender"'</b></th><th><b>'$"Recipient"'</b></th><th></th></tr></thead><tbody>'
+		<tr><th style="width: 120px;"><b>'$"Mail ID"'</b></th><th style="min-width: 80px;"><b>'$"Size"'</b></th><th><b>'$"Date"'</b></th><th><b>'$"Sender"'</b></th><th><b>'$"Recipient"'</b></th><th></th></tr></thead><tbody>'
 		COUNTER=0
 		while [ $COUNTER -lt $QUEUEARRAYCOUNT ]
 		do
@@ -172,7 +176,7 @@ then
 	</tbody></table><br>
 	<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 	<thead>
-	<tr><th style=\"width: 120px;\"><b>'$"Mail ID"'</b></th><th><b>'$"Size"'</b></th><th><b>'$"Date"'</b></th><th><b>'$"Sender"'</b></th><th><b>'$"Recipient"'</b></th><th></th></tr></thead><tbody>"
+	<tr><th style=\"width: 120px;\"><b>'$"Mail ID"'</b></th><th style=\"min-width: 80px;\"><b>'$"Size"'</b></th><th><b>'$"Date"'</b></th><th><b>'$"Sender"'</b></th><th><b>'$"Recipient"'</b></th><th></th></tr></thead><tbody>"
 	COUNTER=0
 	while [ $COUNTER -lt $QUEUEARRAYCOUNT ]
 	do

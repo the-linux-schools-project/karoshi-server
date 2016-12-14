@@ -170,8 +170,8 @@ then
 </div></div><div id="mobileactionbox">'
 else
 	echo '
-<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
+<table class="standard"><tbody><tr>
+<td></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
 <a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td>
 <td>
 	
