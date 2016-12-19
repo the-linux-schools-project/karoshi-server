@@ -422,7 +422,7 @@ else
 		############################
 		for SERVICENAME in '$ALLSERVICES'
 		do
-			if [ `echo '$DSERVICES' | grep -c -w $SERVICENAME` = 0 ]
+			if [ `echo $DSERVICES | grep -c -w $SERVICENAME` = 0 ]
 			then
 				check_status
 				echo "<tr><td>$SERVICENAME</td><td>${!SERVICENAME}</td><td><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVICE_$SERVICENAME"_"ACTION_$ACTION"_"\" type=\"image\" class=\"images\" src=\"$ICON\" value=\"\"><span>$SERVICENAME - $MESSAGE</span></a></td></tr>"
