@@ -176,7 +176,7 @@ then
 			CONFIG_FILE=default
 			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
 			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
-			SSLCERTPRARAM=ssl_certificate
+			SSLCERTPARAM=ssl_certificate
 			SSLCERTKEYPARAM=ssl_certificate_key
 		fi
 
@@ -210,7 +210,7 @@ then
 		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-$LOG_DATE.$$"
 
 		#Modify default-ssl - assume we are using the karoshi default-ssl
-		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTPARAM/c\\$SSLCERTPARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 
 		#Restart the web server
@@ -299,7 +299,7 @@ then
 			CONFIG_FILE=default
 			CONFIG_AVAIL_PATH=/etc/nginx/sites-available
 			CONFIG_ENABLED_PATH=/etc/nginx/sites-enabled
-			SSLCERTPRARAM=ssl_certificate
+			SSLCERTPARAM=ssl_certificate
 			SSLCERTKEYPARAM=ssl_certificate_key
 		fi
 
@@ -333,7 +333,7 @@ then
 		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'$LOG_DATE'.'$$'"
 
 		#Modify default-ssl - assume we are using the karoshi default-ssl
-		sed -i "/^$SSLCERTPRARAM/c\\$SSLCERTPRARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+		sed -i "/^$SSLCERTPARAM/c\\$SSLCERTPARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 
 		#Restart the web server
