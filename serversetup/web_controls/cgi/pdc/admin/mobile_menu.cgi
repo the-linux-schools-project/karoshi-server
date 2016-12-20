@@ -178,6 +178,7 @@ echo '	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux C
 [ $RADIUSCTRL = yes ] && echo '	<a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a>'
 
 echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a>
+<a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a>
 </div>'
 
 if [ $PRINTERCTRL = yes ]

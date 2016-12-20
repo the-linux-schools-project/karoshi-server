@@ -24,6 +24,10 @@
 #
 #Website: http://www.karoshi.org.uk
 
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 ##########################
 #Language
 ##########################
@@ -37,7 +41,30 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"UPS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"UPS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ "$MOBILE" = yes ]
+then
+echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
+		***********************************************/
+	</script>
+	<script>
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body><div id="pagecontainer">'
 
 
 function show_status {
@@ -59,7 +86,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -72,14 +99,28 @@ then
 fi
 
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><div class="sectiontitle">'$"UPS Status"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td>
-<td>
-<form action="ups_add_fm.cgi" method="post">
+if [ $MOBILE = no ]
+then
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+else
+	DIV_ID=actionbox
+fi
+
+#Show back button for mobiles
+if [ $MOBILE = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"UPS Status"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div>
+'
+else
+	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"UPS Status"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td><td><form action="ups_add_fm.cgi" method="post">
 <button class="button" name="_AddUPS" value="_">
 '$"Add a UPS"'
 </button>
@@ -87,10 +128,11 @@ echo '<div id="actionbox">
 </td>
 </tr></table>
 <br>'
+fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1`
 #Show UPS status
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 106 ]
 then

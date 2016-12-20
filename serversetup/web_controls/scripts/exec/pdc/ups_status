@@ -61,7 +61,7 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-
+MOBILE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
@@ -105,12 +105,40 @@ TEXTDOMAIN=karoshi-server
 DELETEICON=/images/submenus/file/delete.png
 RESTARTICON=/images/submenus/system/ups_restart.png
 
+
+if [ $MOBILE = no ]
+then
+	WIDTH1=350
+	WIDTH2=160
+	WIDTH3=60
+else
+	WIDTH1=90
+	WIDTH2=100
+	WIDTH3=40
+
+fi
+
 ########################
 #Create table header
 ########################
+
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: 350px;"><b>'$"Server"'</b></th><th style="width: 160px;"><b>'$"UPS Model"'</b></th><th style="width: 60px;"><b>Status</b></th><th style="width: 60px;"><b>'$"Charge"'</b></th><th style="width: 60px;"><b>Volts</b></th><th style="width: 60px;"><b>'$"Load"'</b></th><th style="width: 60px;"><b>'$"Temp"'</b></th><th style="width: 60px;"><b>'$"Run time"'</b></th><th></th><th></th></tr></thead><tbody>
-'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Server"'</b></th>'
+if [ $MOBILE = no ]
+then
+	echo '<th style="width: '$WIDTH2'px;"><b>'$"UPS Model"'</b></th>'
+fi
+echo '<th style="width: '$WIDTH3'px;"><b>Status</b></th><th style="width: '$WIDTH3'px;"><b>'$"Charge"'</b></th>'
+if [ "$MOBILE" = no ]
+then
+	echo '<th style="width: '$WIDTH3'px;"><b>Volts</b></th><th style="width: '$WIDTH3'px;"><b>'$"Load"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Temp"'</b></th>'
+fi
+echo '<th style="width: '$WIDTH3'px;"><b>'$"Run time"'</b></th>'
+if [ $MOBILE = no ]
+then
+	echo '<th></th><th></th>'
+fi
+echo '</tr></thead><tbody>'
 
 function process_ups_data {
 
@@ -196,9 +224,11 @@ else
 fi
 
 #Show data
-echo '<tr><td style="vertical-align: top;"><div style="float:left;width:35%;">'$SERVER_SHORT'</div>
-<div style="float:right;width:65%;">
-<form action="ups_slave_add_fm.cgi" method="post" style=" display:inline!important;">
+echo '<tr><td style="vertical-align: top;">'
+if [ "$MOBILE" = no ]
+then
+	echo '<div style="float:left;width:35%;">'$SERVER_SHORT'</div>
+<div style="float:right;width:65%;"><form action="ups_slave_add_fm.cgi" method="post" style=" display:inline!important;">
 <input type="hidden" name="_UPSSERVER_" value="'$SERVER'">
 <button class="button" name="_AddSlaveUPS" value="_">
 '$"Add a slave UPS"'
@@ -210,8 +240,25 @@ echo '<tr><td style="vertical-align: top;"><div style="float:left;width:35%;">'$
 '$"Add a device"'
 </button>
 </form>
-</div>
-</td><td style="vertical-align: top;">'$UPSMODEL'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER_SHORT' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td><td style="vertical-align: top;">'"$BATTRUNTIME"'</td><td>
+</div>'
+else
+	echo "$SERVER_SHORT"
+fi
+echo '</td>'
+if [ "$MOBILE" = no ]
+then
+	echo '<td style="vertical-align: top;">'$UPSMODEL'</td>'
+fi
+echo '<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SERVER_SHORT' - '$STATUS2'</span></a></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td>'
+
+if [ $MOBILE = no ]
+then
+	echo '<td style="vertical-align: top;">'$UTILITYV1'</td><td style="vertical-align: top;">'$UPSLOAD'</td><td style="vertical-align: top;">'"$UPSTEMP"'</td>'
+fi
+echo '<td style="vertical-align: top;">'"$BATTRUNTIME"'</td>'
+if [ $MOBILE = no ]
+then
+	echo '<td>
 <form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 	<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_MASTER_SERVER_'$SERVER'_UPSMODEL_'$UPSMODEL'_">
 	<img src="'$DELETEICON'" alt="'$"Delete" $UPSMODEL'">
@@ -224,11 +271,13 @@ echo '<tr><td style="vertical-align: top;"><div style="float:left;width:35%;">'$
 	<img src="'$RESTARTICON'" alt="'$SERVER' -'$"Restart UPS deamon"'">
 	<span>'$SERVER_SHORT' -'$"Restart UPS deamon"'</span>
 	</button>
-</form></td></tr>'
+</form></td>'
+fi
+	echo '</tr>'
 }
 
 ########################
-#Get data from each UPS deviceif [ BATTERYCHARGE'null' = null
+#Get data from each UPS device
 ########################
 for SERVERS in /opt/karoshi/server_network/ups/master/*
 do
@@ -268,22 +317,37 @@ do
 			STATUS2="Online"
 		fi
 
-		echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td style="vertical-align: top;">UPS Slave</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td>
-		<form action="/cgi-bin/admin/ups_delete.cgi" method="post">
+		echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$SLAVESERVER'</div></td>'
+		if [ $MOBILE = no ]
+		then
+			echo '<td style="vertical-align: top;">UPS Slave</td>'
+		fi
+		echo '<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td>'
+		if [ "$MOBILE" = no ]
+		then
+			echo '<td style="vertical-align: top;"></td>'
+		fi
+		echo '<td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td>'
+		if [ "$MOBILE" = no ]
+		then
+			echo '<td>
+			<form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 
-			<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_">
-			<img src="'$DELETEICON'" alt="'$SLAVESERVER' - '$"Delete" $UPSMODEL'">
-			<span>'$SLAVESERVER' - '$"Delete" $UPSMODEL'</span>
-			</button>
-		</form>
-		</td><td style="vertical-align: top;">
-		<form action="/cgi-bin/admin/ups_restart.cgi" method="post">
-			<button class="info" name="_RestartUPS_" value="_SLAVE_SERVER_'$SLAVESERVER'_">
-			<img src="'$RESTARTICON'" alt="'$SLAVESERVER' -'$"Restart UPS deamon"'">
-			<span>'$SLAVESERVER' - '$"Restart UPS deamon"'</span>
-			</button>
-		</form>
-		</td></tr>'
+				<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_">
+				<img src="'$DELETEICON'" alt="'$SLAVESERVER' - '$"Delete" $UPSMODEL'">
+				<span>'$SLAVESERVER' - '$"Delete" $UPSMODEL'</span>
+				</button>
+			</form>
+			</td><td style="vertical-align: top;">
+			<form action="/cgi-bin/admin/ups_restart.cgi" method="post">
+				<button class="info" name="_RestartUPS_" value="_SLAVE_SERVER_'$SLAVESERVER'_">
+				<img src="'$RESTARTICON'" alt="'$SLAVESERVER' -'$"Restart UPS deamon"'">
+				<span>'$SLAVESERVER' - '$"Restart UPS deamon"'</span>
+				</button>
+			</form>
+			</td>'
+		fi
+		echo '</tr>'
 	done
 	fi
 	#Show other devices
@@ -292,14 +356,24 @@ do
 		for DEVICES in /opt/karoshi/server_network/ups/master/$SERVER/extra_devices/*
 		do
 			DEVICE=`basename "$DEVICES" | sed 's/+/ /g'`
-			echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td><td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td>
-			<form action="/cgi-bin/admin/ups_delete.cgi" method="post">
-				<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_">
-				<img src="'$DELETEICON'" alt="'$DEVICE' - '$"Delete" $UPSMODEL'">
-				<span>'$DEVICE' - '$"Delete" $UPSMODEL'</span>
-				</button>
-			</form>
-			</td><td style="vertical-align: top;"></td></tr>'
+			echo '<tr><td style="vertical-align: top;"><div style="margin-left: 40px;">'$DEVICE'</div></td>'
+			if [ "$MOBILE" = no ]
+			then
+				echo '<td style="vertical-align: top;">UPS Device</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;">'
+			fi
+			echo '</td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td><td style="vertical-align: top;"></td>'
+			if [ "$MOBILE" = no ]
+			then
+				echo '<td>
+				<form action="/cgi-bin/admin/ups_delete.cgi" method="post">
+					<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_DEVICE_SERVERMASTER_'$SERVER'_SERVER_'$DEVICE'_UPSMODEL_'$UPSMODEL'_">
+					<img src="'$DELETEICON'" alt="'$DEVICE' - '$"Delete" $UPSMODEL'">
+					<span>'$DEVICE' - '$"Delete" $UPSMODEL'</span>
+					</button>
+				</form>
+				</td><td style="vertical-align: top;"></td>'
+			fi
+			echo '</tr>'
 		done
 	fi
 done
