@@ -643,7 +643,7 @@ if [ -f /etc/apparmor.d/usr.sbin.clamd ]
 then
 	if [ $(grep -c Mailscanner /etc/apparmor.d/usr.sbin.clamd) = 0 ]
 	then
-		echo '<ul><li>'$EMAILSERVER' - modifying apparmor to allow mailscanner access for clamd</li></ul>'
+		echo '<ul><li>'$"Modifying apparmor to allow mailscanner access for clamd"'</li></ul>'
 		sed -i '/\/var\/log\/clamav\/\* krw,/a \
 \/var\/spool\/MailScanner\/** rw, \
 \/var\/spool\/MailScanner\/incomming\/* rw,

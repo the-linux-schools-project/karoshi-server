@@ -55,6 +55,7 @@ REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 MESSAGESIZE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 MAILBOXSIZE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+MAILWARN=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
 ########################
 #Check data
 ########################
@@ -83,7 +84,11 @@ then
 	echo `date`: email_limits - Blank mailbox size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit
 fi
-
+if [ -z "$MAILWARN" ]
+then
+	echo `date`: email_limits - Blank mailbox warn by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 	echo `date`: email_limits - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -113,6 +118,9 @@ fi
 if [ $EMAILSERVER != `hostname-fqdn` ]
 then
 	ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+	#Set mailwarn threshold
+	sed -i "/^MAILWARN=/c\MAILWARN='$MAILWARN'" /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue
+
 	#Remove all message_size_limit lines
 	sed -i /^message_size_limit/d /etc/postfix/main.cf
 	#Remove all mailbox_size_limit lines
@@ -129,6 +137,9 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
 '
 else
+	#Set mailwarn threshold
+	sed -i "/^MAILWARN=/c\MAILWARN=$MAILWARN" /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue
+
 	#Remove all message_size_limit lines
 	sed -i /^message_size_limit/d /etc/postfix/main.cf
 	#Remove all mailbox_size_limit lines

@@ -50,7 +50,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=4
+END_POINT=8
 #Assign MESSAGESIZE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -73,6 +73,19 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		MAILBOXSIZE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9\n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+#Assign MAILWARN
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAILWARNcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAILWARN=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9\n'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -123,7 +136,14 @@ then
 	show_status
 fi
 
+#Check to see that MAILWARN is not blank
+if [ -z "$MAILBOXSIZE" ]
+then
+	MESSAGE=$"The mailwarn size option must not be blank."
+	show_status
+fi
+
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits2.cgi | cut -d' ' -f1`
 #Make changes
-sudo -H /opt/karoshi/web_controls/exec/email_limits $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MESSAGESIZE:$MAILBOXSIZE
+sudo -H /opt/karoshi/web_controls/exec/email_limits "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MESSAGESIZE:$MAILBOXSIZE:$MAILWARN"
 exit

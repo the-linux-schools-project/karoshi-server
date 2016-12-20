@@ -25,10 +25,11 @@
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
 #language
-MESSAGELIMITMSG="Message Size Limit"
-MAILBOXLIMITMSG="Mailbox Size Limit"
-HELP1="Enter in the maximum size for each e-mail in megabytes."
-HELP2="Enter in the maximum size for the inboxes in megabytes."
+MESSAGELIMITMSG=$"Message Size Limit"
+MAILBOXLIMITMSG=$"Mailbox Size Limit"
+HELP1=$"Enter in the maximum size for each e-mail in megabytes."
+HELP2=$"Enter in the maximum size for the inboxes in megabytes."
+HELP3=$"The number of E-Mails in the queue to trigger an E-Mail queue warning."
 ########################
 #Check md5checksum
 ########################
@@ -96,7 +97,7 @@ echo `date`: email_limits_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karos
 ############################
 EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 
-if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+if [ -z "$EMAILSERVER" ] 
 then
 	echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -104,29 +105,33 @@ fi
 
 
 
-if [ $EMAILSERVER != `hostname-fqdn` ]
+if [ "$EMAILSERVER" != `hostname-fqdn` ]
 then
 	ssh -x -o PasswordAuthentication=no $EMAILSERVER '
 MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
 MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
+MAILWARN=$(grep "^MAILWARN=" /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue | cut -d"=" -f2)
 #Convert to megabytes
 let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
 echo "<tr><td style=\"width: 180px;\">'$MESSAGELIMITMSG' (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"'$HELPCLASS'\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP1'</span></a></td></tr>
 <tr><td style=\"width: 180px;\">'$MAILBOXLIMITMSG' (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP2'</span></a></td></tr>
+<tr><td style=\"width: 180px;\">Mail Queue Threshold Warning</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MAILWARN\" name=\"_MAILWARN_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$HELP3'</span></a></td></tr>
 "
 
 '
 else
 	MESSAGELIMIT=`grep ^"message_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
 	MBOXLIMIT=`grep ^"mailbox_size_limit =" /etc/postfix/main.cf | sed -n 1,1p | cut -d"=" -f2 | sed "s/ //g"`
+	MAILWARN=$(grep "^MAILWARN=" /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue| cut -d"=" -f2)
 	#Convert to megabytes
 	let MESSAGELIMIT=$MESSAGELIMIT/1024/1024
 	let MBOXLIMIT=$MBOXLIMIT/1024/1024
 
 	echo "<tr><td style=\"width: 180px;\">$MESSAGELIMITMSG (MB)</td><td><input tabindex= \"1\" style=\"width: '$WIDTH1'px;\" value=\"$MESSAGELIMIT\" name=\"_MESSAGESIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"$HELPCLASS\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP1</span></a></td></tr>
 <tr><td style=\"width: 180px;\">$MAILBOXLIMITMSG (MB)</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MBOXLIMIT\" name=\"_MAILBOXSIZE_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP2</span></a></td></tr>
+<tr><td style=\"width: 180px;\">Mail Queue Threshold Warning</td><td><input tabindex= \"2\" style=\"width: '$WIDTH1'px;\" value=\"$MAILWARN\" name=\"_MAILWARN_\" maxlength=\"4\" size=\"4\" type=\"text\"></td><td><a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Limits\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>$HELP3</span></a></td></tr>
 "
 
 fi
