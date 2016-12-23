@@ -49,7 +49,17 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client Software Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client Software Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+'
 
 if [ $MOBILE = yes ]
 then
@@ -115,6 +125,7 @@ fi
 #########################
 END_POINT=6
 #Assign VERSION
+VERSION=""
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
@@ -166,8 +177,8 @@ else
 echo '<form action="/cgi-bin/admin/linux_client_install_software_packages.cgi" name="selectservers" method="post">
 <input name="_VERSION_" value="'$VERSION'" type="hidden">
 
-<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
-<b>'$"Linux Client Software Controls"' - '$VERSION'</b></td><td style="vertical-align: top;"><input type="submit" class="button" value="'$"Software Packages"'"></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the locations that you want to enable updates and software installs for."'</span></a></td></tr></tbody></table></form></div><div id="infobox"><form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
+<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td>
+<div class="sectiontitle">'$"Linux Client Software Controls"' - '$VERSION'</div></td><td><input type="submit" class="button" value="'$"Software Packages"'"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the locations that you want to enable updates and software installs for."'</span></a></td></tr></tbody></table></form></div><div id="infobox"><form action="/cgi-bin/admin/linux_client_software_controls2.cgi" name="selectservers" method="post">'
 fi
 
 function show_software_status {
@@ -223,20 +234,26 @@ fi
 #fi
 
 
-echo '<tr><td><b>'$"Location"'</b></td><td><b>'$LOCATION'</b></td></tr><tr><td style="width: 180px;">'$"Enable software install"'</td><td><a class="info" href="javascript:void(0)"><input name="_SOFTWARE_'$SSTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$SICON'" value=""><span>'$"This will make the Linux clients install any software in the software install lists on boot up."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Enable updates"'</td><td><a class="info" href="javascript:void(0)"><input name="_UPDATES_'$USTATUS'_LOCATION_'$LOCATION'_" type="image" class="images" src="'$UICON'" value=""><span>'$"This will make the Linux clients update their software packages on boot up."'</span></a></td></tr>'
-
+echo '<tr><td>'$LOCATION'</td><td>'$"Enable software install"'</td><td>
+<button class="info" name="_SoftwareInstall_" value="_SOFTWARE_'$SSTATUS'_LOCATION_'$LOCATION'_">
+<img src="'$SICON'" alt="'$"Install"'">
+<span>'$"This will make the Linux clients install any software in the software install lists on boot up."'</span>
+</button>
+</td></tr>
+<tr><td>'$LOCATION'</td><td>'$"Enable updates"'</td><td>
+<button class="info" name="_SoftwareUpdates_" value="_UPDATES_'$USTATUS'_LOCATION_'$LOCATION'_">
+<img src="'$UICON'" alt="'$"Install"'">
+<span>'$"This will make the Linux clients update their software packages on boot up."'</span>
+</button>
+</td></tr>'
 #echo '<tr><td style="width: 180px;">'$"Auto"'</td><td><a class="info" href="javascript:void(0)"><input name="_AUTO_'$ASTATUS'_" type="image" class="images" src="'$AICON'" value=""><span>'$"Set this to auto to hide the software control dialog from appearing when setting up the clients."'</span></a></td></tr>
 #<tr><td style="width: 180px;">'$"Proprietary graphics"'</td><td><a class="info" href="javascript:void(0)"><input name="_GRAPHICS_'$GSTATUS'_" type="image" class="images" src="'$GICON'" value=""><span>'$"This will tell the linux clients to install the relevant proprietary graphics driver for the client."'</span></a></td></tr>
 #<tr><td style="width: 180px;">'$"Restricted extras"'</td><td><a class="info" href="javascript:void(0)"><input name="_RESTRICTED_'$RSTATUS'_" type="image" class="images" src="'$RICON'" value=""><span>'$"This will install software that in a few countries licenses may be required."'</span></a></td></tr>
 #<tr><td style="width: 180px;">'$"Firmware"'</td><td><a class="info" href="javascript:void(0)"><input name="_FIRMWARE_'$FSTATUS'_" type="image" class="images" src="'$FICON'" value=""><span>'$"This will install proprietary firmware."'</span></a></td></tr>'
-
-echo '<tr><td style="height:20px"></td></tr>'
-
 }
 
 #Show controls for auto, graphics drivers and restricted extras
-echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>'
+echo '<input name="_VERSION_" value="'$VERSION'" type="hidden"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 200px;"><b>'$"Location"'</b></th><th style="width: 200px;">'$"Action"'</th><th></th></tr></thead><tbody>'
 
 LOCATION=all
 show_software_status

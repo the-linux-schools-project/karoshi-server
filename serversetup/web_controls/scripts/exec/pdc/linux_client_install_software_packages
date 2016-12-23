@@ -55,8 +55,9 @@ REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
 REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 VERSION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 ACTION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
-SOFTWARE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
-LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+INSTALL=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
+SOFTWARE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
+LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
 
 ########################
 #Check data
@@ -79,22 +80,33 @@ fi
 if [ -z "$VERSION" ]
 then
 	echo `date`: linux_client_install_software_packages - Blank VERSION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit
+	exit 101
 fi
 if [ -z ""$ACTION"" ]
 then
 	echo `date`: linux_client_install_software_packages - Blank ACTION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit
+	exit 101
 fi
+if [ -z ""$INSTALL"" ]
+then
+	echo `date`: linux_client_install_software_packages - Blank INSTALL by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ "$INSTALL" != install ] && [ "$INSTALL" != remove ]
+then
+	echo `date`: linux_client_install_software_packages - incorrect INSTALL option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
 if [ -z "$SOFTWARE" ]
 then
 	echo `date`: linux_client_install_software_packages - Blank SOFTWARE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit
+	exit 101
 fi
 if [ -z "$LOCATION" ]
 then
 	echo `date`: linux_client_install_software_packages - Blank LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	exit
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
@@ -103,24 +115,25 @@ then
 fi
 
 #Make sure install and remove lists exist
-[ ! -d /var/lib/samba/netlogon/linuxclient/$VERSION/software/install ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$VERSION/software/install
-touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+[ ! -d /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL" ] && mkdir -p /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"
+touch /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
 
 function log_action {
-echo "`date`: linux_client_install_software_packages - setting action: "$ACTION": software: $SOFTWARE location: $LOCATION for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "`date`: linux_client_install_software_packages - setting action: "$ACTION": $INSTALL software: $SOFTWARE location: $LOCATION for $VERSION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 }
 
 function sort_list {
-sort /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software > /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software.$$
-rm /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
-mv /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software.$$ /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+sort /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software > /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software.$$
+rm /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
+mv /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software.$$ /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
 }
+
 
 if [ "$ACTION" = add ]
 then
-	if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software` = 0 ]
+	if [ `grep -c -w $SOFTWARE /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software` = 0 ]
 	then
-		echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+		echo $SOFTWARE >> /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
 		sort_list
 		log_action
 	fi
@@ -128,9 +141,14 @@ fi
 
 if [ "$ACTION" = delete ]
 then
-	sed -i 's/'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+	sed -i 's/^'$SOFTWARE'//g' /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
 	#Remove blank lines
-	sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/software/install/"$LOCATION"_software
+	sed -i '/^$/d' /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
+	#CHeck if the file is empty
+	if [ $(cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software | wc -l) = 0 ]
+	then
+		rm -f /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software
+	fi
 	log_action
 fi
 
