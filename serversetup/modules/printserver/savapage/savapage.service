@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- ===================================================================== -->
+<!-- SavaPage Avahi Service                                                -->
+<!-- ===================================================================== -->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+    <!-- ================================================================= -->
+    <!--         The name of the printer as displayed to the user.         -->
+    <!--                   Format: [name] @ %h                             -->
+    <!--                                                                   -->
+    <!--                      $Customize$                                  -->
+    <!-- ================================================================= -->
+    <name replace-wildcards="yes">SavaPage @ %h</name>
+    <!-- ================================================================= -->
+    <service protocol="ipv4">
+        <!-- ============================================================= -->
+        <!--                 !!! Do NOT change !!!                         -->
+        <!-- ============================================================= -->
+        <type>_ipp._tcp</type>
+        <subtype>_universal._sub._ipp._tcp</subtype>
+
+        <!-- ============================================================= -->
+        <!--         The SavaPage IP port (default 8631)                   -->
+        <!--                                                               -->
+        <!--                      $Customize$                              -->
+        <!-- ============================================================= -->
+        <port>8631</port>
+
+        <!-- ============================================================= -->
+        <!--           Printer Description TXT Record Keys                 -->
+        <!--                                                               -->
+        <!--                      $Customize$                              -->
+        <!-- ============================================================= -->
+
+        <!-- ............................................................. -->
+        <!-- The SavaPage queue name formatted as: rp=printers/<queue>     -->
+        <!--                                                               -->
+        <!-- The reserved SavaPage queue name is 'airprint'                -->
+        <!--                                                               -->
+        <!-- NOTE: this is NOT the name displayed to the user.             -->
+        <!-- ............................................................. -->
+        <txt-record>rp=printers/airprint</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- A user readable location of the printer which shows up in the -->
+        <!-- Printer Setup Utility when browsing. Since SavaPage is        -->
+        <!-- virtual and not bound to a location, you can enter a user     -->
+        <!-- message.                                                      -->
+        <!--                                                               -->
+        <!-- For example: note=Login to SavaPage App before printing.      -->
+        <!--                                                               -->
+        <!-- If no location information is available, the value of this    -->
+        <!-- key SHOULD be empty.                                          -->
+        <!-- ............................................................. -->
+        <txt-record>note=Login to SavaPage App before printing.</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- The value must be between 0 – 99. Lower numbers indicate      -->
+        <!-- higher priority. If the priority is not specified, a default  -->
+        <!-- value of “50” will be assumed.                                -->
+        <!--                                                               -->
+        <!-- NOTE: If you want to favor SavaPage enter value 0.            -->
+        <!-- ............................................................. -->
+        <txt-record>priority=0</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- User readable description of the make and model of the        -->
+        <!-- printer which is suitable for display in a user interface     -->
+        <!-- when describing the printer.                                  -->
+        <!-- ............................................................. -->
+        <txt-record>ty=SavaPage Virtual Printer</txt-record>
+
+        <!-- ============================================================= -->
+        <!--           Printer Description TXT Record Keys                 -->
+        <!--                                                               -->
+        <!--                 !!! Do NOT change !!!                         -->
+        <!-- ============================================================= -->
+        <txt-record>txtvers=1</txt-record>
+        <txt-record>qtotal=1</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- The value for this key matches the value of the “Product”     -->
+        <!-- stored in the SAVAPAGE.PPD file (including the parentheses).  -->
+        <!-- Printer Setup Utility will use this key when selecting the    -->
+        <!-- PPD.                                                          -->
+        <!-- ............................................................. -->
+        <txt-record>product=(savapage.org)</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- Future values to consider:                                    -->
+        <!--                                                               -->
+        <!-- application/octet-stream, image/gif,image/jpeg,image/png,     -->
+        <!-- image/tiff, text/html, text/plain, application/openofficeps,  -->
+        <!-- application/vnd.cups-banner                                   -->
+        <!--                                                               -->
+        <!-- NOTE: image/urf SHOULD be present for AirPrint from iOS       -->
+        <!-- devices to work.                                              -->
+        <!-- ............................................................. -->
+        <txt-record>pdl=application/pdf,application/postscript,application/vnd.adobe-reader-postscript,image/urf</txt-record>
+
+        <!-- ============================================================= -->
+        <!--             Printer Protocol TXT Record Keys                  -->
+        <!--                                                               -->
+        <!--                 !!! Do NOT change !!!                         -->
+        <!-- ============================================================= -->
+        <txt-record>Transparent=T</txt-record>
+        <txt-record>Binary=T</txt-record>
+        <txt-record>TBCP=F</txt-record>
+
+        <!-- ============================================================= -->
+        <!--             Printer Feature TXT Record Keys                   -->
+        <!--                                                               -->
+        <!--                 !!! Do NOT change !!!                         -->
+        <!-- ============================================================= -->
+
+        <!-- ............................................................. -->
+        <!-- Capable of generating color output                            -->
+        <!-- ............................................................. -->
+        <txt-record>Color=T</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- Capable of generating fast copies                             -->
+        <!-- ............................................................. -->
+        <txt-record>Copies=T</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- NOT capable of generating two sided output                    -->
+        <!-- ............................................................. -->
+        <txt-record>Duplex=F</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- Capable of handling custom paper sizes                        -->
+        <!-- ............................................................. -->
+        <txt-record>PaperCustom=T</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- NOT capable of binding its output                             -->
+        <!-- ............................................................. -->
+        <txt-record>Bind=F</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- NOT capable of generating collated output                     -->
+        <!-- ............................................................. -->
+        <txt-record>Collate=F</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- NOT Capable of sorting its output                             -->
+        <!-- ............................................................. -->
+        <txt-record>Sort=F</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- NOT capable of stapling output                                -->
+        <!-- ............................................................. -->
+        <txt-record>Staple=F</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- The number of holes of the hole puncher supported by the      -->
+        <!-- printer. A value of “0” means that the printer                -->
+        <!-- does not support hole punch.                                  -->
+        <!-- ............................................................. -->
+        <txt-record>Punch=0</txt-record>
+
+        <!-- ............................................................. -->
+        <!-- The maximum paper size supported by the printer.              -->
+        <!-- Only four possible values exist for this key.                 -->
+        <!--                                                               -->
+        <!-- PaperMax=<legal-A4 : sizes smaller than legal-A4.             -->
+        <!-- PaperMax=legal-A4  : media up to legal and A4 sizes.          -->
+        <!-- PaperMax=isoC-A2   : paper up to the ISO-C and A2 sizes.      -->
+        <!-- PaperMax=>isoC-A2  : sizes larger than ISO-C and A2.          -->
+        <!-- ............................................................. -->
+        <txt-record>PaperMax=legal-A4</txt-record>
+
+        <!-- ============================================================= -->
+        <!--              Printer Misc TXT Record Keys                     -->
+        <!--                                                               -->
+        <!--                 !!! Do NOT change !!!                         -->
+        <!-- ============================================================= -->
+        
+        <!-- ............................................................. -->
+        <!-- Idle: new jobs can start processing without waiting           -->
+        <!-- ............................................................. -->        
+        <txt-record>printer-state=3</txt-record>
+        
+        <!-- ............................................................. -->
+        <txt-record>URF=none</txt-record>
+
+    </service>
+</service-group>

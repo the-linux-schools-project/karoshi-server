@@ -157,13 +157,47 @@ SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
 [ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
 echo $"Print Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/printserver
+echo $"Savapage""<br>" >> /opt/karoshi/server_network/servers/$SERVERNAME/printserver
+echo '<a href="http://savapage.'$REALM':8631/admin" target="_blank">http://savapage.'$REALM':8631/admin</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/printserver
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 
 SHORTSERVERNAME=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
 echo $SHORTSERVERNAME > /var/lib/samba/netlogon/domain_information/print_server
 echo $SERVERNAME > /opt/karoshi/server_network/printserver
 cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
+cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/savapage
+
 sed -i 's/PRINTERCTRL=no/PRINTERCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
+
+#Add savapage ppd to netlogon
+if [ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ]
+then
+	mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
+fi
+cp -f /opt/karoshi/serversetup/modules/printserver/savapage/savapage.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
+
+#Add in savapage icon for linux clients
+for KAROSHICLIENT in $(ls -1 /var/lib/samba/netlogon/linuxclient/ | grep ^karoshi) 
+do
+	[ ! -d /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all
+	echo '[Desktop Entry]
+	Version=1.0
+	Type=Link
+	Name=Savapage
+	Comment=Savapage
+	Icon=Savapage
+	URL=http://savapage.'$REALM':8631' > /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all/Savapage.desktop
+done
+
+#Add dns entry for savapage
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+echo `date`: "module_printserver - checking if savapage.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM savapage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ $? != 0 ]
+then
+	echo `date`: module_printserver - adding savapage "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM savapage CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
 
 ########################
 #Printer Accounting
@@ -283,6 +317,11 @@ then
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 	else
+		scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_start root@$PRINTSERVER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+		scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_status root@$PRINTSERVER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+		scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_stop root@$PRINTSERVER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+		scp /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/savapage root@$PRINTSERVER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/"
+		scp /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/savapage root@$PRINTSERVER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"
 		scp -r /opt/karoshi/serversetup/modules/printserver/ root@$PRINTSERVER:"/opt/karoshi/serversetup/modules/"
 		scp "/opt/karoshi/serversetup/modules/printserver/printer_info" root@$PRINTSERVER:"/opt/karoshi/useful\ scripts/"
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
@@ -395,6 +434,16 @@ fi
 #Show completed message
 ###########################
 echo '<br><b>'$COMPLETEDMSG'</b>'
+
+
+###########################
+#Show completed message
+###########################
+echo '<br>'$"Savapage has been installed and can be accessed from" - '<a href="http://savapage.'$REALM':8631/admin" target="_blank">savapage.'$REALM':8631/admin</a>'
+echo '<br>'$"username":admin - $"password": admin
+echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br><br>'
+
+echo '<br>'$"Add Printer Queues"'<a href="/cgi-bin/admin/printers_add_fm.cgi" target="_blank">Add Printers/admin</a>'
 
 exit
 

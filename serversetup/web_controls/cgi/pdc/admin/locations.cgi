@@ -112,7 +112,7 @@ fi
 if [ $LOCATION_COUNT -gt 0 ]
 then
 	echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
-<thead><tr><th style="width: 200px;"><b>'$"Locations"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+<thead><tr><th style="width: 350px;"><b>'$"Locations"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 COUNTER=1
 while [ $COUNTER -lt $LOCATION_COUNT ]
 do

@@ -235,7 +235,7 @@ echo '<br><form action="/cgi-bin/admin/linux_client_install_software_packages2.c
 function show_software {
 if [ -d /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"/ ]
 then
-	if [ $(ls -1 /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"/*_software | wc -l) != 0 ]
+	if [ $(ls -1 /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"/*_software 2>/dev/null | wc -l) != 0 ]
 	then
 		if [ "$SHOW_TABLE_HEADER" = yes ]
 		then

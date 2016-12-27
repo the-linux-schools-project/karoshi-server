@@ -152,7 +152,7 @@ then
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/minidlnaserver ] && DSERVICES=$DSERVICES,minidlna
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba,savapage
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && DSERVICES=$DSERVICES,icecast
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
@@ -178,7 +178,7 @@ then
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,freshclam,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba,savapage
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
@@ -203,7 +203,7 @@ then
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/emailserver ] && DSERVICES=$DSERVICES,apache,freshclam,mysql,memcached,mailscanner,postfix,dovecot,sogo,clamd
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/squid ] && DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
-	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba
+	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/printserver ] && DSERVICES=$DSERVICES,avahi,cups,samba,savapage
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
 	[ -f /opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
@@ -235,7 +235,7 @@ done
 DSERVICES=$DSERVICES2
 
 #List of all services to check
-ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba sogo squid squiddebproxy vsftpd xserver"
+ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba savapage sogo squid squiddebproxy vsftpd xserver"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	function check_status {
@@ -282,6 +282,7 @@ then
 	radius=$"Authentication service"
 	rpcbind=$"Port Mapper"
 	samba=$"File and print server"
+	savapage=$"Libre Print Management"
 	sogo=$"SOGo E-Mail"
 	squid=$"Internet proxy server"
 	squiddebproxy=$"Squid deb proxy"
@@ -367,6 +368,7 @@ else
 		radius="'$"Authentication service"'"
 		rpcbind="'$"Port Mapper"'"
 		samba="'$"File and print server"'"
+		savapage="'$"Libre Print Management"'"
 		sogo="'$"SOGo E-Mail"'"
 		squid="'$"Internet proxy server"'"
 		squiddebproxy="'$"Squid deb proxy"'"
