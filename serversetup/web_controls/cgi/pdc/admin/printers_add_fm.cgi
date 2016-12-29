@@ -75,7 +75,7 @@ echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tb
 <input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'">
 </form></td>
 <td><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$"Add Location"'">
+<input name="ADDLOCATION" type="submit" class="button" value="'$"Locations"'">
 </form></td>
 </tr></tbody></table><br>
 '

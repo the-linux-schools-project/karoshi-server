@@ -185,7 +185,7 @@ do
 	Type=Link
 	Name=Savapage
 	Comment=Savapage
-	Icon=Savapage
+	Icon=printer
 	URL=http://savapage.'$REALM':8631' > /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all/Savapage.desktop
 done
 
@@ -439,11 +439,10 @@ echo '<br><b>'$COMPLETEDMSG'</b>'
 ###########################
 #Show completed message
 ###########################
+echo '<br>'$"Printer queues can be added"' <a href="/cgi-bin/admin/printers_add_fm.cgi" target="_blank"><b>here</b></a>.<br>'
 echo '<br>'$"Savapage has been installed and can be accessed from" - '<a href="http://savapage.'$REALM':8631/admin" target="_blank">savapage.'$REALM':8631/admin</a>'
 echo '<br>'$"username":admin - $"password": admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br><br>'
-
-echo '<br>'$"Add Printer Queues"'<a href="/cgi-bin/admin/printers_add_fm.cgi" target="_blank">Add Printers/admin</a>'
 
 exit
 

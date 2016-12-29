@@ -112,7 +112,7 @@ echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post"><div id="
 </td>
 <td>
 <button class="button" formaction="/cgi-bin/admin/locations.cgi" name="_AddLocation_" value="_">
-'$"Add Location"'
+'$"Locations"'
 </button>
 </td>
 </tr></tbody></table><br>
