@@ -22,9 +22,12 @@ do
 	#Backup Servers
 	#############################
 	echo Backing up $KAROSHI_SERVER
-	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER ]
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/stop_backup ]
 	then
 		echo `date` - Backups are disabled "for" $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+	elif [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/backuptime ]
+	then
+		echo `date` - Manual backup scheduled "for" $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
 	else
 		echo `date` - Backing up $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
 
