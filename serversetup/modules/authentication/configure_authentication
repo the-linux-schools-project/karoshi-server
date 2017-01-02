@@ -223,8 +223,8 @@ echo "[dfs]
 
 	restart_samba
 	#Replicate all DNS
-	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,DC=elements,DC=com
-	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,DC=elements,DC=com
+	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
+	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
 	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
 fi
 
