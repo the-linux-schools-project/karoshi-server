@@ -6,29 +6,11 @@
 *
 * Created   :   16.02.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -179,7 +161,7 @@ class Search extends RequestProcessor {
 
                     if(self::$decoder->getElementStartTag(SYNC_SEARCH_VALUE)) {
                         $searchvalue = self::$decoder->getElementContent();
-                        $cpo->SetSearchValueLess($searchvalue);
+                        $cpo->SetSearchValueEqualTo($searchvalue);
                         if(!self::$decoder->getElementEndTag()) // SYNC_SEARCH_VALUE
                             return false;
                     }
@@ -194,7 +176,8 @@ class Search extends RequestProcessor {
         }
 
         if(self::$decoder->getElementStartTag(SYNC_SEARCH_OPTIONS)) {
-            while(1) {
+            WBXMLDecoder::ResetInWhile("searchOptions");
+            while(WBXMLDecoder::InWhile("searchOptions")) {
                 if(self::$decoder->getElementStartTag(SYNC_SEARCH_RANGE)) {
                     $searchrange = self::$decoder->getElementContent();
                     $cpo->SetSearchRange($searchrange);
@@ -290,6 +273,8 @@ class Search extends RequestProcessor {
                     $rows = $searchprovider->GetGALSearchResults($searchquery, $searchrange);
                 }
                 elseif ($searchname == ISearchProvider::SEARCH_MAILBOX) {
+                    $backendFolderId = self::$deviceManager->GetBackendIdForFolderId($cpo->GetSearchFolderid());
+                    $cpo->SetSearchFolderid($backendFolderId);
                     $rows = $searchprovider->GetMailboxSearchResults($cpo);
                 }
             }
@@ -305,7 +290,7 @@ class Search extends RequestProcessor {
         }
         $searchprovider->Disconnect();
 
-        self::$topCollector->AnnounceInformation(sprintf("'%s' search found %d results", $searchname, $rows['searchtotal']), true);
+        self::$topCollector->AnnounceInformation(sprintf("'%s' search found %d results", $searchname, (isset($rows['searchtotal']) ? $rows['searchtotal'] : 0) ), true);
 
         self::$encoder->startWBXML();
         self::$encoder->startTag(SYNC_SEARCH_SEARCH);
@@ -401,27 +386,27 @@ class Search extends RequestProcessor {
                         }
                     }
                     elseif ($searchname == ISearchProvider::SEARCH_MAILBOX) {
-                        if (is_array($rows) && !empty($rows)) {
-                            foreach ($rows as $u) {
-                                self::$encoder->startTag(SYNC_SEARCH_RESULT);
-                                    self::$encoder->startTag(SYNC_FOLDERTYPE);
-                                    self::$encoder->content($u['class']);
-                                    self::$encoder->endTag();
-                                    self::$encoder->startTag(SYNC_SEARCH_LONGID);
-                                    self::$encoder->content($u['longid']);
-                                    self::$encoder->endTag();
-                                    self::$encoder->startTag(SYNC_FOLDERID);
-                                    self::$encoder->content($u['folderid']);
-                                    self::$encoder->endTag();
+                        foreach ($rows as $u) {
+                            $folderid = self::$deviceManager->GetFolderIdForBackendId($u['folderid']);
 
-                                    self::$encoder->startTag(SYNC_SEARCH_PROPERTIES);
-                                        $tmp = explode(":", $u['longid']);
-                                        $message = self::$backend->Fetch($u['folderid'], $tmp[1], $cpo);
-                                        $message->Encode(self::$encoder);
+                            self::$encoder->startTag(SYNC_SEARCH_RESULT);
+                                self::$encoder->startTag(SYNC_FOLDERTYPE);
+                                self::$encoder->content($u['class']);
+                                self::$encoder->endTag();
+                                self::$encoder->startTag(SYNC_SEARCH_LONGID);
+                                self::$encoder->content($u['longid']);
+                                self::$encoder->endTag();
+                                self::$encoder->startTag(SYNC_FOLDERID);
+                                self::$encoder->content($folderid);
+                                self::$encoder->endTag();
 
-                                    self::$encoder->endTag();//result
-                                self::$encoder->endTag();//properties
-                            }
+                                self::$encoder->startTag(SYNC_SEARCH_PROPERTIES);
+                                    $tmp = explode(":", $u['longid']);
+                                    $message = self::$backend->Fetch($u['folderid'], $tmp[1], $cpo);
+                                    $message->Encode(self::$encoder);
+
+                                self::$encoder->endTag();//result
+                            self::$encoder->endTag();//properties
                         }
                     }
                     // it seems that android 4 requires range and searchtotal

@@ -6,29 +6,11 @@
 *
 * Created   :   03.04.2008
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +33,7 @@ class Utils {
      * @return string
      */
     static public function PrintAsString($var) {
-      return ($var)?(($var===true)?'true':$var):(($var===false)?'false':(($var==='')?'empty':$var));
+      return ($var)?(($var===true)?'true':$var):(($var===false)?'false':(($var==='')?'empty':(($var == null) ? 'null':$var)));
 //return ($var)?(($var===true)?'true':$var):'false';
     }
 
@@ -209,35 +191,33 @@ class Utils {
         ZLog::Write(LOGLEVEL_DEBUG, "FILEAS_ORDER not defined. Add it to your config.php.");
         return null;
     }
+
     /**
-     * Checks if the PHP-MAPI extension is available and in a requested version
+     * Checks if the PHP-MAPI extension is available and in a requested version.
      *
      * @param string    $version    the version to be checked ("6.30.10-18495", parts or build number)
      *
      * @access public
-     * @return boolean installed version is superior to the checked strin
+     * @return boolean installed version is superior to the checked string
      */
     static public function CheckMapiExtVersion($version = "") {
+        if (!extension_loaded("mapi")) {
+            return false;
+        }
         // compare build number if requested
         if (preg_match('/^\d+$/', $version) && strlen($version) > 3) {
             $vs = preg_split('/-/', phpversion("mapi"));
             return ($version <= $vs[1]);
         }
-
-        if (extension_loaded("mapi")){
-            if (version_compare(phpversion("mapi"), $version) == -1){
-                return false;
-            }
-        }
-        else
+        if (version_compare(phpversion("mapi"), $version) == -1){
             return false;
+        }
 
         return true;
     }
 
     /**
-     * Parses and returns an ecoded vCal-Uid from an
-     * OL compatible GlobalObjectID
+     * Parses and returns an ecoded vCal-Uid from an OL compatible GlobalObjectID.
      *
      * @param string    $olUid      an OL compatible GlobalObjectID
      *
@@ -308,13 +288,32 @@ class Utils {
     /**
      * Converts SYNC_FILTERTYPE into a timestamp
      *
-     * @param int       Filtertype
+     * @param int $filtertype      Filtertype
      *
      * @access public
      * @return long
      */
-    static public function GetCutOffDate($restrict) {
-        switch($restrict) {
+    static public function GetCutOffDate($filtertype) {
+        $back = Utils::GetFiltertypeInterval($filtertype);
+
+        if ($back === false) {
+            return 0; // unlimited
+        }
+
+        return time() - $back;
+    }
+
+    /**
+     * Returns the interval indicated by the filtertype.
+     *
+     * @param int $filtertype
+     *
+     * @access public
+     * @return long|boolean     returns false on invalid filtertype
+     */
+    static public function GetFiltertypeInterval($filtertype) {
+        $back = false;
+        switch($filtertype) {
             case SYNC_FILTERTYPE_1DAY:
                 $back = 60 * 60 * 24;
                 break;
@@ -337,10 +336,9 @@ class Utils {
                 $back = 60 * 60 * 24 * 31 * 6;
                 break;
             default:
-                return 0; // unlimited
+                $back = false;
         }
-
-        return time() - $back;
+        return $back;
     }
 
     /**
@@ -545,19 +543,6 @@ class Utils {
     }
 
     /**
-     * Checks for valid empty group of email
-     * e.g.: undisclosed-recipients:;
-     *
-     * @param string $email
-     *
-     * @access public
-     * @return boolean
-     */
-    static public function CheckEmailEmptyGroup($email) {
-        return (bool) preg_match('/.*:;/', $email);
-    }
-
-    /**
      * Checks if a string is base64 encoded
      *
      * @param string $string    the string to be checked
@@ -595,6 +580,7 @@ class Utils {
          *                      variable    - value of the parameter
          *
          */
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Utils::DecodeBase64URI(): decoding base64 query string: %s", $query));
         $decoded = base64_decode($query);
         $devIdLength = ord($decoded[4]); //device ID length
         $polKeyLength = ord($decoded[5+$devIdLength]); //policy key length
@@ -613,45 +599,6 @@ class Utils {
             $decoded = substr($decoded, 2 + $paramLength);
         }
         return $unpackedQuery;
-    }
-
-    /**
-     * Encode a string or a stream into a base64 string
-     *
-     * @param string or stream $input
-     *
-     * @access public
-     * @return string
-     */
-    public static function EncodeBase64($input) {
-        if (is_resource($input)) {
-            ZLog::Write(LOGLEVEL_DEBUG, "Utils::EncodeBase64(): is_resource");
-            if (defined('BUG68532FIXED') && BUG68532FIXED === true) {
-                ZLog::Write(LOGLEVEL_DEBUG, "Utils::EncodeBase64(): BUG68532FIXED");
-                $stream = $input;
-            } elseif ( ($meta = stream_get_meta_data($input)) && $meta['stream_type'] === 'STDIO') {
-                ZLog::Write(LOGLEVEL_DEBUG, "Utils::EncodeBase64(): STDIO");
-                $stream = $input;
-            } else {
-                ZLog::Write(LOGLEVEL_DEBUG, "Utils::EncodeBase64(): else");
-                //because of bug #68532, we can't work with memory stream,
-                //so we copy input to a tmpfile
-                $stream = tmpfile();
-                stream_copy_to_stream($input, $stream);
-                fclose($input);
-                rewind($stream);
-            }
-            $base64filter = stream_filter_append($stream, 'convert.base64-encode');
-            $base64 = stream_get_contents($stream);
-            stream_filter_remove($base64filter);
-            fclose($stream);
-            return $base64;
-        } elseif (is_string($input)) {
-            ZLog::Write(LOGLEVEL_DEBUG, "Utils::EncodeBase64(): is_string");
-            return base64_encode($input);
-        } else {
-            throw new Exception("unsupported type : ".gettype($input));
-        }
     }
 
     /**
@@ -684,12 +631,17 @@ class Utils {
             case ZPush::COMMAND_RESOLVERECIPIENTS:    return 'ResolveRecipients';
             case ZPush::COMMAND_VALIDATECERT:         return 'ValidateCert';
 
-            // Deprecated commands (AS >= 14)
+            // Deprecated commands
             case ZPush::COMMAND_GETHIERARCHY:         return 'GetHierarchy';
+            case ZPush::COMMAND_CREATECOLLECTION:     return 'CreateCollection';
+            case ZPush::COMMAND_DELETECOLLECTION:     return 'DeleteCollection';
+            case ZPush::COMMAND_MOVECOLLECTION:       return 'MoveCollection';
+            case ZPush::COMMAND_NOTIFY:               return 'Notify';
 
             // Webservice commands
             case ZPush::COMMAND_WEBSERVICE_DEVICE:    return 'WebserviceDevice';
-            case ZPush::COMMAND_WEBSERVICE_USERS:    return 'WebserviceUsers';
+            case ZPush::COMMAND_WEBSERVICE_USERS:     return 'WebserviceUsers';
+            case ZPush::COMMAND_WEBSERVICE_INFO:      return 'WebserviceInfo';
         }
         return false;
     }
@@ -724,12 +676,17 @@ class Utils {
             case 'ResolveRecipients':    return ZPush::COMMAND_RESOLVERECIPIENTS;
             case 'ValidateCert':         return ZPush::COMMAND_VALIDATECERT;
 
-            // Deprecated commands (AS >= 14)
+            // Deprecated commands
             case 'GetHierarchy':         return ZPush::COMMAND_GETHIERARCHY;
+            case 'CreateCollection':     return ZPush::COMMAND_CREATECOLLECTION;
+            case 'DeleteCollection':     return ZPush::COMMAND_DELETECOLLECTION;
+            case 'MoveCollection':       return ZPush::COMMAND_MOVECOLLECTION;
+            case 'Notify':               return ZPush::COMMAND_NOTIFY;
 
             // Webservice commands
             case 'WebserviceDevice':     return ZPush::COMMAND_WEBSERVICE_DEVICE;
             case 'WebserviceUsers':      return ZPush::COMMAND_WEBSERVICE_USERS;
+            case 'WebserviceInfo':       return ZPush::COMMAND_WEBSERVICE_INFO;
         }
         return false;
     }
@@ -762,22 +719,6 @@ class Utils {
             return @strftime("%d/%m/%Y %H:%M:%S", $timestamp);
     }
 
-    /**
-     * Returns a formatted string output from an optional timestamp with microseconds.
-     * If no timestamp is sent, NOW is used.
-     *
-     * @param float $timestamp
-     *
-     * @access public
-     * @return string
-     */
-    public static function GetFormattedMicroTime($timestamp = false) {
-        if(!$timestamp)
-            $timestamp = microtime(true);
-
-        $t = explode('.',number_format($timestamp,6,'.',''),2);
-        return strftime("%Y-%m-%dT%H:%M:%S", $t[0]).'.'.$t[1];
-    }
 
    /**
     * Get charset name from a codepage
@@ -905,6 +846,9 @@ class Utils {
      * @return int
      */
     public static function GetBodyPreferenceBestMatch($bpTypes) {
+        if ($bpTypes === false) {
+            return SYNC_BODYPREFERENCE_PLAIN;
+        }
         // The best choice is RTF, then HTML and then MIME in order to save bandwidth
         // because MIME is a complete message including the headers and attachments
         if (in_array(SYNC_BODYPREFERENCE_RTF, $bpTypes))  return SYNC_BODYPREFERENCE_RTF;
@@ -946,11 +890,16 @@ class Utils {
         if(posix_getuid() == 0 && file_exists($file)) {
             $dir = dirname($file);
             $perm_dir = stat($dir);
-            $perm_log = stat($file);
+            $perm_file = stat($file);
 
-            if($perm_dir[4] !== $perm_log[4] || $perm_dir[5] !== $perm_log[5]) {
-                chown($file, $perm_dir[4]);
-                chgrp($file, $perm_dir[5]);
+            if ($perm_file['uid'] == 0 && $perm_dir['uid'] == 0) {
+                unlink($file);
+                throw new FatalException("FixFileOwner: $dir must be owned by the nginx/apache/php user instead of root");
+            }
+
+            if($perm_dir['uid'] !== $perm_file['uid'] || $perm_dir['gid'] !== $perm_file['gid']) {
+                chown($file, $perm_dir['uid']);
+                chgrp($file, $perm_dir['gid']);
             }
         }
         return true;
@@ -991,79 +940,262 @@ class Utils {
     }
 
     /**
-     * Generate date object from string and timezone.
-     *
-     * @param string $value
-     * @param string $timezone
-     *
-     * @access public
-     * @return int epoch
-     */
-    public static function MakeUTCDate($value, $timezone = null) {
-        $tz = null;
-        if ($timezone) {
-            $tz = timezone_open($timezone);
-        }
-        if (!$tz) {
-            //If there is no timezone set, we use the default timezone
-            $tz = timezone_open(date_default_timezone_get());
-        }
-        //20110930T090000Z
-        $date = date_create_from_format('Ymd\THis\Z', $value, timezone_open("UTC"));
-        if (!$date) {
-            //20110930T090000
-            $date = date_create_from_format('Ymd\THis', $value, $tz);
-        }
-        if (!$date) {
-            //20110930 (Append T000000Z to the date, so it starts at midnight)
-            $date = date_create_from_format('Ymd\THis\Z', $value . "T000000Z", $tz);
-        }
-        return date_timestamp_get($date);
-    }
-
-
-    /**
-     * Generate a tzid from various formats
-     *
-     * @param str $timezone
-     *
-     * @access public
-     * @return timezone id
-     */
-    public static function ParseTimezone($timezone) {
-        //(GMT+01.00) Amsterdam / Berlin / Bern / Rome / Stockholm / Vienna
-        if (preg_match('/GMT(\\+|\\-)0(\d)/', $timezone, $matches)) {
-            return "Etc/GMT" . $matches[1] . $matches[2];
-        }
-        //(GMT+10.00) XXX / XXX / XXX / XXX
-        if (preg_match('/GMT(\\+|\\-)1(\d)/', $timezone, $matches)) {
-            return "Etc/GMT" . $matches[1] . "1" . $matches[2];
-        }
-        ///inverse.ca/20101018_1/Europe/Amsterdam or /inverse.ca/20101018_1/America/Argentina/Buenos_Aires
-        if (preg_match('/\/[.[:word:]]+\/\w+\/(\w+)\/([\w\/]+)/', $timezone, $matches)) {
-            return $matches[1] . "/" . $matches[2];
-        }
-        return TimezoneUtil::getMSTZnameFromTZName(trim($timezone, '"'));
-    }
-
-    /**
      * Safely write data to disk, using an unique tmp file (concurrent write),
-     * and using rename for atomicity
+     * and using rename for atomicity. It also calls FixFileOwner to prevent
+     * ownership/rights problems when running as root
      *
-     * If you use safe_put_contents, you can safely use file_get_contents
+     * If you use SafePutContents, you can safely use file_get_contents
      * (you will always read a fully written file)
      *
      * @param string $filename
      * @param string $data
      * @return boolean|int
      */
-    public static function safe_put_contents($filename, $data) {
+    public static function SafePutContents($filename, $data) {
         //put the 'tmp' as a prefix (and not suffix) so all glob call will not see temp files
-        $tmp = dirname($filename) . DIRECTORY_SEPARATOR . 'tmp-' . getmypid() . '-' . basename($filename);
-        if (($res = file_put_contents($tmp, $data)) !== false)
+        $tmp = dirname($filename).DIRECTORY_SEPARATOR.'tmp-'.getmypid().'-'.basename($filename);
+        if (($res = file_put_contents($tmp, $data)) !== false) {
+            self::FixFileOwner($tmp);
             if (rename($tmp, $filename) !== true)
                 $res = false;
+        }
 
         return $res;
     }
+
+    /**
+     * Format bytes to a more human readable value.
+     * @param int $bytes
+     * @param int $precision
+     *
+     * @access public
+     * @return void|string
+     */
+    public static function FormatBytes($bytes, $precision = 2) {
+        if ($bytes <= 0) return '0 B';
+
+        $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB');
+        $base = log ($bytes, 1024);
+        $fBase = floor($base);
+        $pow = pow(1024, $base - $fBase);
+        return sprintf ("%.{$precision}f %s", $pow, $units[$fBase]);
+    }
+
+    public static function GetAvailableCharacterEncodings() {
+        return array(
+                'UCS-4',
+                'UCS-4BE',
+                'UCS-4LE',
+                'UCS-2',
+                'UCS-2BE',
+                'UCS-2LE',
+                'UTF-32',
+                'UTF-32BE',
+                'UTF-32LE',
+                'UTF-16',
+                'UTF-16BE',
+                'UTF-16LE',
+                'UTF-7',
+                'UTF7-IMAP',
+                'UTF-8',
+                'ASCII',
+                'EUC-JP',
+                'SJIS',
+                'eucJP-win',
+                'SJIS-win',
+                'ISO-2022-JP',
+                'ISO-2022-JP-MS',
+                'CP932',
+                'CP51932',
+                'SJIS-mac',
+                'MacJapanese',
+                'SJIS-Mobile#DOCOMO',
+                'SJIS-DOCOMO',
+                'SJIS-Mobile#KDDI',
+                'SJIS-KDDI',
+                'SJIS-Mobile#SOFTBANK',
+                'SJIS-SOFTBANK',
+                'UTF-8-Mobile#DOCOMO',
+                'UTF-8-DOCOMO',
+                'UTF-8-Mobile#KDDI-A',
+                'UTF-8-Mobile#KDDI-B',
+                'UTF-8-KDDI',
+                'UTF-8-Mobile#SOFTBANK',
+                'UTF-8-SOFTBANK',
+                'ISO-2022-JP-MOBILE#KDDI',
+                'ISO-2022-JP-KDDI',
+                'JIS',
+                'JIS-ms',
+                'CP50220',
+                'CP50220raw',
+                'CP50221',
+                'CP50222',
+                'ISO-8859-1',
+                'ISO-8859-2',
+                'ISO-8859-3',
+                'ISO-8859-4',
+                'ISO-8859-5',
+                'ISO-8859-6',
+                'ISO-8859-7',
+                'ISO-8859-8',
+                'ISO-8859-9',
+                'ISO-8859-10',
+                'ISO-8859-13',
+                'ISO-8859-14',
+                'ISO-8859-15',
+                'byte2be',
+                'byte2le',
+                'byte4be',
+                'byte4le',
+                'BASE64',
+                'HTML-ENTITIES',
+                '7bit',
+                '8bit',
+                'EUC-CN',
+                'CP936',
+                'GB18030',
+                'HZ',
+                'EUC-TW',
+                'CP950',
+                'BIG-5',
+                'EUC-KR',
+                'UHC (CP949)',
+                'ISO-2022-KR',
+                'Windows-1251',
+                'CP1251',
+                'Windows-1252',
+                'CP1252',
+                'CP866 (IBM866)',
+                'KOI8-R',
+                'ArmSCII-8',
+                'ArmSCII8',
+        );
+    }
+
+    /**
+     * Returns folder origin identifier from its id.
+     *
+     * @param string $folderid
+     *
+     * @access public
+     * @return string|boolean  matches values of DeviceManager::FLD_ORIGIN_*
+     */
+    public static function GetFolderOriginFromId($folderid) {
+        $origin = substr($folderid, 0, 1);
+        switch ($origin) {
+            case DeviceManager::FLD_ORIGIN_CONFIG:
+            case DeviceManager::FLD_ORIGIN_GAB:
+            case DeviceManager::FLD_ORIGIN_SHARED:
+            case DeviceManager::FLD_ORIGIN_USER:
+                return $origin;
+        }
+        ZLog::Write(LOGLEVEL_WARN, sprintf("Utils->GetFolderOriginFromId(): Unknown folder origin for folder with id '%s'", $folderid));
+        return false;
+    }
+
+    /**
+     * Returns folder origin as string from its id.
+     *
+     * @param string $folderid
+     *
+     * @access public
+     * @return string
+     */
+    public static function GetFolderOriginStringFromId($folderid) {
+        $origin = substr($folderid, 0, 1);
+        switch ($origin) {
+            case DeviceManager::FLD_ORIGIN_CONFIG:
+                return 'configured';
+            case DeviceManager::FLD_ORIGIN_GAB:
+                return 'GAB';
+            case DeviceManager::FLD_ORIGIN_SHARED:
+                return 'shared';
+            case DeviceManager::FLD_ORIGIN_USER:
+                return 'user';
+        }
+        ZLog::Write(LOGLEVEL_WARN, sprintf("Utils->GetFolderOriginStringFromId(): Unknown folder origin for folder with id '%s'", $folderid));
+        return 'unknown';
+    }
+
+    /**
+     * Splits the id into folder id and message id parts. A colon in the $id indicates
+     * that the id has folderid:messageid format.
+     *
+     * @param string            $id
+     *
+     * @access public
+     * @return array
+     */
+    public static function SplitMessageId($id) {
+        if (strpos($id, ':') !== false) {
+            return explode(':', $id);
+        }
+        return array(null, $id);
+    }
+
+    /**
+     * Detects encoding of the input and converts it to UTF-8.
+     * This is currently only used for authorization header conversion.
+     *
+     * @param string      $data     input data
+     *
+     * @access public
+     * @return string               utf-8 encoded data
+     */
+    public static function ConvertAuthorizationToUTF8($data) {
+        $encoding = mb_detect_encoding($data, "UTF-8, ISO-8859-1");
+
+        if (!$encoding) {
+            $encoding = mb_detect_encoding($data, Utils::GetAvailableCharacterEncodings());
+            if ($encoding) {
+                ZLog::Write(LOGLEVEL_WARN,
+                        sprintf("Utils::ConvertAuthorizationToUTF8(): mb_detect_encoding detected '%s' charset. This charset is not in the default detect list. Please report it to Z-Push developers.",
+                                $encoding));
+            }
+            else {
+                ZLog::Write(LOGLEVEL_ERROR, "Utils::ConvertAuthorizationToUTF8(): mb_detect_encoding failed to detect the Authorization header charset. It's possible that user won't be able to login.");
+            }
+        }
+
+        if ($encoding && strtolower($encoding) != "utf-8") {
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("Utils::ConvertAuthorizationToUTF8(): mb_detect_encoding detected '%s' charset. Authorization header will be converted to UTF-8 from it.", $encoding));
+            return mb_convert_encoding($data, "UTF-8", $encoding);
+        }
+
+        return $data;
+    }
 }
+
+
+
+// TODO Win1252/UTF8 functions are deprecated and will be removed sometime
+//if the ICS backend is loaded in CombinedBackend and Zarafa > 7
+//STORE_SUPPORTS_UNICODE is true and the convertion will not be done
+//for other backends.
+function utf8_to_windows1252($string, $option = "", $force_convert = false) {
+    //if the store supports unicode return the string without converting it
+    if (!$force_convert && defined('STORE_SUPPORTS_UNICODE') && STORE_SUPPORTS_UNICODE == true) return $string;
+
+    if (function_exists("iconv")){
+        return @iconv("UTF-8", "Windows-1252" . $option, $string);
+    }else{
+        return utf8_decode($string); // no euro support here
+    }
+}
+
+function windows1252_to_utf8($string, $option = "", $force_convert = false) {
+    //if the store supports unicode return the string without converting it
+    if (!$force_convert && defined('STORE_SUPPORTS_UNICODE') && STORE_SUPPORTS_UNICODE == true) return $string;
+
+    if (function_exists("iconv")){
+        return @iconv("Windows-1252", "UTF-8" . $option, $string);
+    }else{
+        return utf8_encode($string); // no euro support here
+    }
+}
+
+function w2u($string) { return windows1252_to_utf8($string); }
+function u2w($string) { return utf8_to_windows1252($string); }
+
+function w2ui($string) { return windows1252_to_utf8($string, "//TRANSLIT"); }
+function u2wi($string) { return utf8_to_windows1252($string, "//TRANSLIT"); }

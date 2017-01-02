@@ -6,29 +6,11 @@
 *
 * Created   :   16.02.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,7 +41,8 @@ class MeetingResponse extends RequestProcessor {
 
         while(self::$decoder->getElementStartTag(SYNC_MEETINGRESPONSE_REQUEST)) {
             $req = Array();
-            while(1) {
+            WBXMLDecoder::ResetInWhile("meetingResponseRequest");
+            while(WBXMLDecoder::InWhile("meetingResponseRequest")) {
                 if(self::$decoder->getElementStartTag(SYNC_MEETINGRESPONSE_USERRESPONSE)) {
                     $req["response"] = self::$decoder->getElementContent();
                     if(!self::$decoder->getElementEndTag())
@@ -99,7 +82,13 @@ class MeetingResponse extends RequestProcessor {
             $status = SYNC_MEETRESPSTATUS_SUCCESS;
 
             try {
-                $calendarid = self::$backend->MeetingResponse($req["requestid"], $req["folderid"], $req["response"]);
+                $backendFolderId = self::$deviceManager->GetBackendIdForFolderId($req["folderid"]);
+
+                // if the source folder is an additional folder the backend has to be setup correctly
+                if (!self::$backend->Setup(ZPush::GetAdditionalSyncFolderStore($backendFolderId)))
+                    throw new StatusException(sprintf("HandleMoveItems() could not Setup() the backend for folder id %s/%s", $req["folderid"], $backendFolderId), SYNC_MEETRESPSTATUS_SERVERERROR);
+
+                $calendarid = self::$backend->MeetingResponse($req["requestid"], $backendFolderId, $req["response"]);
                 if ($calendarid === false)
                     throw new StatusException("HandleMeetingResponse() not possible", SYNC_MEETRESPSTATUS_SERVERERROR);
             }

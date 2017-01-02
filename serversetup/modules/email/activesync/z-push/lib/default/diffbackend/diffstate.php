@@ -13,29 +13,11 @@
 *
 * Created   :   02.01.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,6 +36,8 @@ class DiffState implements IChanges {
     protected $flags;
     protected $contentparameters;
     protected $cutoffdate;
+    protected $moveSrcState;
+    protected $moveDstState;
 
     /**
      * Initializes the state
@@ -97,8 +81,9 @@ class DiffState implements IChanges {
                 break;
             case "Contacts":
             case "Tasks":
+            case "Notes":
             default:
-                $this->cutoffdate = 0;
+                $this->cutoffdate = false;
                 break;
         }
     }
@@ -117,23 +102,36 @@ class DiffState implements IChanges {
         return $this->syncstate;
     }
 
-
-    /**----------------------------------------------------------------------------------------------------------
-     * DiffState specific stuff
-     */
-
     /**
-     * Comparing function used for sorting of the differential engine
+     * Sets the states from move operations.
+     * When src and dst state are set, a MOVE operation is being executed.
      *
-     * @param array        $a
-     * @param array        $b
+     * @param mixed         $srcState
+     * @param mixed         (opt) $dstState, default: null
      *
      * @access public
      * @return boolean
      */
-    static public function RowCmp($a, $b) {
-        return strcmp($b['id'], $a['id']);
+    public function SetMoveStates($srcState, $dstState = null) {
+        $this->moveSrcState = $srcState;
+        $this->moveDstState = $dstState;
+        return true;
     }
+
+    /**
+     * Gets the states of special move operations.
+     *
+     * @access public
+     * @return array(0 => $srcState, 1 => $dstState)
+    */
+    public function GetMoveStates() {
+        return array($this->moveSrcState, $this->moveDstState);
+    }
+
+
+    /**----------------------------------------------------------------------------------------------------------
+     * DiffState specific stuff
+     */
 
     /**
      * Differential mechanism
@@ -145,79 +143,58 @@ class DiffState implements IChanges {
      * @return array
      */
     protected function getDiffTo($new) {
-        $changes = array();
+        $changes = $old = array();
 
-        // Sort both arrays in the same way by ID
-        usort($this->syncstate, array("DiffState", "RowCmp"));
-        usort($new, array("DiffState", "RowCmp"));
+        // create associative array of old items with id as key
+        foreach($this->syncstate as &$item) {
+            $old[$item['id']] =& $item;
+        }
 
-        $inew = 0;
-        $iold = 0;
-        $cntstate = count($this->syncstate);
-        $cntnew = count($new);
+        // iterate through new items to identify new or changed items
+        foreach($new as &$item) {
+            $id = $item['id'];
+            $change = array("id" => $id);
 
-        // Get changes by comparing our list of messages with
-        // our previous state
-        while(true) {
-            if($iold >= $cntstate || $inew >= $cntnew)
-                break;
-
-            $cmp = strcmp($this->syncstate[$iold]["id"], $new[$inew]["id"]);
-            if ($cmp == 0) {
-                // Both messages are still available, compare flags and mod
-                if(isset($this->syncstate[$iold]["flags"]) && isset($new[$inew]["flags"]) && $this->syncstate[$iold]["flags"] != $new[$inew]["flags"]) {
-                    // Flags changed
-                    $change = array();
-                    $change["type"] = "flags";
-                    $change["id"] = $new[$inew]["id"];
-                    $change["flags"] = $new[$inew]["flags"];
-                    $changes[] = $change;
-                }
-
-                if(isset($this->syncstate[$iold]["mod"]) && isset($new[$inew]["mod"]) && $this->syncstate[$iold]["mod"] != $new[$inew]["mod"]) {
-                    $change = array();
-                    $change["type"] = "change";
-                    $change["id"] = $new[$inew]["id"];
-                    $changes[] = $change;
-                }
-
-                $inew++;
-                $iold++;
-            } elseif ($cmp > 0) {
-                // Message in state seems to have disappeared (delete)
-                $change = array();
-                $change["type"] = "delete";
-                $change["id"] = $this->syncstate[$iold]["id"];
-                $changes[] = $change;
-                $iold++;
-            } else {
+            if (!isset($old[$id])) {
                 // Message in new seems to be new (add)
-                $change = array();
                 $change["type"] = "change";
-                $change["flags"] = SYNC_NEWMESSAGE;
-                $change["id"] = $new[$inew]["id"];
+                $change['flags'] = SYNC_NEWMESSAGE;
                 $changes[] = $change;
-                $inew++;
+            } else {
+                $old_item =& $old[$id];
+
+                // Both messages are still available, compare flags and mod
+                if(isset($old_item["flags"]) && isset($item["flags"]) && $old_item["flags"] != $item["flags"]) {
+                    // Flags changed
+                    $change["type"] = "flags";
+                    $change["flags"] = $item["flags"];
+                    $changes[] = $change;
+                }
+
+                // @see https://jira.z-hub.io/browse/ZP-955
+                if (isset($old_item['mod']) && isset($item['mod'])) {
+                    if ($old_item['mod'] != $item['mod']) {
+                        $change["type"] = "change";
+                        $changes[] = $change;
+                    }
+                }
+                else if (isset($old_item['mod']) || isset($item['mod'])) {
+                    $change["type"] = "change";
+                    $changes[] = $change;
+                }
+
+                // unset in $old, so $old contains only the deleted items
+                unset($old[$id]);
             }
         }
 
-        while($iold < $cntstate) {
-            // All data left in 'syncstate' have been deleted
-            $change = array();
-            $change["type"] = "delete";
-            $change["id"] = $this->syncstate[$iold]["id"];
-            $changes[] = $change;
-            $iold++;
-        }
-
-        while($inew < $cntnew) {
-            // All data left in new have been added
-            $change = array();
-            $change["type"] = "change";
-            $change["flags"] = SYNC_NEWMESSAGE;
-            $change["id"] = $new[$inew]["id"];
-            $changes[] = $change;
-            $inew++;
+        // now $old contains only deleted items
+        foreach($old as $id => &$item) {
+            // Message in state seems to have disappeared (delete)
+            $changes[] = array(
+                "type" => "delete",
+                "id"   => $id,
+            );
         }
 
         return $changes;
@@ -235,33 +212,29 @@ class DiffState implements IChanges {
      */
     protected function updateState($type, $change) {
         // Change can be a change or an add
-        $change_id = $change['id'];
-        foreach ($this->syncstate as $i => &$state) {
-            if($this->syncstate[$i]["id"] == $change["id"]) {
-                if ($state['id'] == $change_id) {
+        if($type == "change") {
+            for($i=0; $i < count($this->syncstate); $i++) {
+                if($this->syncstate[$i]["id"] == $change["id"]) {
                     $this->syncstate[$i] = $change;
-                    switch ($type) {
-                        case 'change':
-                            $state = $change;
-                            return;
-                        case 'flags':
-                            $state['flags'] = $change['flags'];
-                            return;
-                        case 'delete':
-                            array_splice($this->syncstate, $i, 1);
-                            return;
-                        default:
-                            throw new Exception(sprintf("updateState: type '%s' is not supported", $type));
-                    }
+                    return;
                 }
             }
-        }
-        if($type == "change") {
+            // Not found, add as new
             $this->syncstate[] = $change;
         } else {
-            $flags = empty($change['flags'])?"<no flags>":$change['flags'];
-            $mod = empty($change['mod'])?"<no mod>":$change['mod'];
-            ZLog::Write(LOGLEVEL_WARN, sprintf("updateState: no state modification!!! %s|%s|%s|%s", $type, $change_id, $flags, $mod));
+            for($i=0; $i < count($this->syncstate); $i++) {
+                // Search for the entry for this item
+                if($this->syncstate[$i]["id"] == $change["id"]) {
+                    if($type == "flags") {
+                        // Update flags
+                        $this->syncstate[$i]["flags"] = $change["flags"];
+                    } else if($type == "delete") {
+                        // Delete item
+                        array_splice($this->syncstate, $i, 1);
+                    }
+                    return;
+                }
+            }
         }
     }
 

@@ -6,29 +6,11 @@
 *
 * Created   :   01.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,14 +30,10 @@
     define('TIMEZONE', '');
 
     // Defines the base path on the server
-    define('BASE_PATH', dirname(__FILE__) . '/');
+    define('BASE_PATH', dirname($_SERVER['SCRIPT_FILENAME']). '/');
 
     // Try to set unlimited timeout
     define('SCRIPT_TIMEOUT', 0);
-
-    // Your PHP could have a bug when base64 encoding: https://bugs.php.net/bug.php?id=68532
-    // NOTE: Run "php testing/testing-bug68532fixed.php" to know what value put here
-    define('BUG68532FIXED', false);
 
     // When accessing through a proxy, the "X-Forwarded-For" header contains the original remote IP
     define('USE_X_FORWARDED_FOR_HEADER', false);
@@ -64,74 +42,45 @@
     // This setting specifies the owner parameter in the certificate to look at.
     define("CERTIFICATE_OWNER_PARAMETER", "SSL_CLIENT_S_DN_CN");
 
-    // Location of the trusted CA, e.g. '/etc/ssl/certs/EmailCA.pem'
-    // Uncomment and modify the following line if the validation of the certificates fails.
-    // define('CAINFO', '/etc/ssl/certs/EmailCA.pem');
-
     /*
      * Whether to use the complete email address as a login name
      * (e.g. user@company.com) or the username only (user).
      * This is required for Z-Push to work properly after autodiscover.
      * Possible values:
-     * false - use the username only (default).
-     * true - use the complete email address.
+     *   false - use the username only.
+     *   true  - string the mobile sends as username, e.g. full email address (default).
      */
-    define('USE_FULLEMAIL_FOR_LOGIN', false);
+    define('USE_FULLEMAIL_FOR_LOGIN', true);
 
 /**********************************************************************************
- * Device pre-authorization. Useful when using Z-Push as a standalone product.
+ * StateMachine setting
  *
- * It will use the STATE_MACHINE specified below, to store the users/devices
- * FILE => STATE_DIR/PreAuthUserDevices
- * SQL => auth_users
- *
- * FALSE => default
- * TRUE
- */
-    define('PRE_AUTHORIZE_USERS', false);
-
-    // New users are pre-authorized automatically
-    define('PRE_AUTHORIZE_NEW_USERS', false);
-
-    // New devices are pre-authorized automatically for pre-authorized users
-    define('PRE_AUTHORIZE_NEW_DEVICES', false);
-
-    // Max number of devices pre-authorized for user, you can pre-authorize more manually
-    define('PRE_AUTHORIZE_MAX_DEVICES', 5);
-
-
-/**********************************************************************************
- * Select StateMachine mechanism
- *
- * FILE => FileStateMachine, default
- * SQL => SqlStateMachine
+ * These StateMachines can be used:
+ *   FILE  - FileStateMachine (default). Needs STATE_DIR set as well.
+ *   SQL   - SqlStateMachine has own configuration file. STATE_DIR is ignored.
+ *           State migration script is available, more informations: https://wiki.z-hub.io/x/xIAa
  */
     define('STATE_MACHINE', 'FILE');
-
-/**********************************************************************************
- *  Default FileStateMachine settings
- */
     define('STATE_DIR', '/var/lib/z-push/');
 
-
 /**********************************************************************************
- * Optional SqlStateMachine settings
+ *  IPC - InterProcessCommunication
  *
- * DSN: formatted PDO connection string
- *    mysql:host=xxx;port=xxx;dbname=xxx
- *    DON'T FORGET TO INSTALL THE PHP-DRIVER PACKAGE!!!
- * USER: username to DB
- * PASSWORD: password to DB
- * OPTIONS: array with options needed
+ *  Is either provided by using shared memory on a single host or
+ *  using the memcache provider for multi-host environments.
+ *  When another implementation should be used, the class can be set here explicitly.
+ *  If empty Z-Push will try to use available providers.
  */
-    define('STATE_SQL_DSN', '');
-    define('STATE_SQL_USER', '');
-    define('STATE_SQL_PASSWORD', '');
-    define('STATE_SQL_OPTIONS', serialize(array(PDO::ATTR_PERSISTENT => true)));
-
+    define('IPC_PROVIDER', '');
 
 /**********************************************************************************
  *  Logging settings
+ *
+ *  The LOGBACKEND specifies where the logs are sent to.
+ *  Either to file ("filelog") or to a "syslog" server or a custom log class in core/log/logclass.
+ *  filelog and syslog have several options that can be set below.
+ *  For more information about the syslog configuration, see https://wiki.z-hub.io/x/HIAT
+
  *  Possible LOGLEVEL and LOGUSERLEVEL values are:
  *  LOGLEVEL_OFF            - no logging
  *  LOGLEVEL_FATAL          - log only critical errors
@@ -146,13 +95,12 @@
  *  The verbosity increases from top to bottom. More verbose levels include less verbose
  *  ones, e.g. setting to LOGLEVEL_DEBUG will also output LOGLEVEL_FATAL, LOGLEVEL_ERROR,
  *  LOGLEVEL_WARN and LOGLEVEL_INFO level entries.
+ *
+ *  LOGAUTHFAIL is logged to the LOGBACKEND.
  */
-    define('LOGFILEDIR', '/var/log/z-push/');
-    define('LOGFILE', LOGFILEDIR . 'z-push.log');
-    define('LOGERRORFILE', LOGFILEDIR . 'z-push-error.log');
+    define('LOGBACKEND', 'filelog');
     define('LOGLEVEL', LOGLEVEL_INFO);
     define('LOGAUTHFAIL', false);
-
 
     // To save e.g. WBXML data only for selected users, add the usernames to the array
     // The data will be saved into a dedicated file per user in the LOGFILEDIR
@@ -161,18 +109,24 @@
     define('LOGUSERLEVEL', LOGLEVEL_DEVICEID);
     $specialLogUsers = array();
 
-    // If you want to disable log to file, and log to syslog instead
-    define('LOG_SYSLOG_ENABLED', false);
+    // Filelog settings
+    define('LOGFILEDIR', '/var/log/z-push/');
+    define('LOGFILE', LOGFILEDIR . 'z-push.log');
+    define('LOGERRORFILE', LOGFILEDIR . 'z-push-error.log');
+
+    // Syslog settings
     // false will log to local syslog, otherwise put the remote syslog IP here
     define('LOG_SYSLOG_HOST', false);
     // Syslog port
     define('LOG_SYSLOG_PORT', 514);
     // Program showed in the syslog. Useful if you have more than one instance login to the same syslog
-    define('LOG_SYSLOG_PROGRAM', '[z-push]');
+    define('LOG_SYSLOG_PROGRAM', 'z-push');
+    // Syslog facility - use LOG_USER when running on Windows
+    define('LOG_SYSLOG_FACILITY', LOG_LOCAL0);
 
-
-    define('LOG_MEMORY_PROFILER', false);
-    define('LOG_MEMORY_PROFILER_FILE', '/var/log/z-push/memory_profile');
+    // Location of the trusted CA, e.g. '/etc/ssl/certs/EmailCA.pem'
+    // Uncomment and modify the following line if the validation of the certificates fails.
+    // define('CAINFO', '/etc/ssl/certs/EmailCA.pem');
 
 /**********************************************************************************
  *  Mobile settings
@@ -185,6 +139,10 @@
     // false (default) - Enforce provisioning for all devices
     // true - allow older devices, but enforce policies on devices which support it
     define('LOOSE_PROVISIONING', false);
+
+    // The file containing the policies' settings.
+    // Set a full path or relative to the z-push main directory
+    define('PROVISIONING_POLICYFILE', 'policies.ini');
 
     // Default conflict preference
     // Some devices allow to set if the server or PIM (mobile)
@@ -206,12 +164,7 @@
     // Interval in seconds before checking if there are changes on the server when in Ping.
     // It means the highest time span before a change is pushed to a mobile. Set it to
     // a higher value if you have a high load on the server.
-    define('PING_INTERVAL', 300);
-
-    // Interval in seconds to force a re-check of potentially missed notifications when
-    // using a changes sink. Default are 300 seconds (every 5 min).
-    // This can also be disabled by setting it to false
-    define('SINK_FORCERECHECK', 1200);
+    define('PING_INTERVAL', 30);
 
     // Set the fileas (save as) order for contacts in the webaccess/webapp/outlook.
     // It will only affect new/modified contacts on the mobile which then are synced to the server.
@@ -231,12 +184,14 @@
     // SYNC_FILEAS_LASTFIRST will be used
     define('FILEAS_ORDER', SYNC_FILEAS_LASTFIRST);
 
-    // Amount of items to be synchronized per request
+    // Maximum amount of items to be synchronized per request.
     // Normally this value is requested by the mobile. Common values are 5, 25, 50 or 100.
     // Exporting too much items can cause mobile timeout on busy systems.
-    // Z-Push will use the lowest value, either set here or by the mobile.
-    // default: 100 - value used if mobile does not limit amount of items
-    define('SYNC_MAX_ITEMS', 100);
+    // Z-Push will use the lowest provided value, either set here or by the mobile.
+    // MS Outlook 2013+ request up to 512 items to accelerate the sync process.
+    // If you detect high load (also on subsystems) you could try a lower setting.
+    // max: 512 - value used if mobile does not limit amount of items
+    define('SYNC_MAX_ITEMS', 512);
 
     // The devices usually send a list of supported properties for calendar and contact
     // items. If a device does not includes such a supported property in Sync request,
@@ -245,7 +200,7 @@
     // to tell if a property was deleted or it was not set at all if it does not appear in Sync.
     // This parameter defines Z-Push behaviour during Sync if a device does not issue a list with
     // supported properties.
-    // See also https://jira.zarafa.com/browse/ZP-302.
+    // See also https://jira.z-hub.io/browse/ZP-302.
     // Possible values:
     // false - do not unset properties which are not sent during Sync (default)
     // true  - unset properties which are not sent during Sync
@@ -272,33 +227,46 @@
     // NOTE: THIS IS AN EXPERIMENTAL FEATURE WHICH COULD PREVENT YOUR MOBILES FROM SYNCHRONIZING.
     define('USE_PARTIAL_FOLDERSYNC', false);
 
+    // The minimum accepted time in second that a ping command should last.
+    // It is strongly advised to keep this config to false. Some device
+    // might not be able to send a higher value than the one specificied here and thus
+    // unable to start a push connection.
+    // If set to false, there will be no lower bound to the ping lifetime.
+    // The minimum accepted value is 1 second. The maximum accepted value is 3540 seconds (59 minutes).
+    define('PING_LOWER_BOUND_LIFETIME', false);
+
+    // The maximum accepted time in second that a ping command should last.
+    // If set to false, there will be no higher bound to the ping lifetime.
+    // The minimum accepted value is 1 second. The maximum accepted value is 3540 seconds (59 minutes).
+    define('PING_HIGHER_BOUND_LIFETIME', false);
+
+    // Maximum response time
+    // Mobiles implement different timeouts to their TCP/IP connections. Android devices for example
+    // have a hard timeout of 30 seconds. If the server is not able to answer a request within this timeframe,
+    // the answer will not be recieved and the device will send a new one overloading the server.
+    // There are three categories
+    //   - Short timeout  - server has up within 30 seconds - is automatically applied for not categorized types
+    //   - Medium timeout - server has up to 90 seconds to respond
+    //   - Long timeout   - server has up to 4 minutes to respond
+    // If a timeout is almost reached the server will break and sent the results it has until this
+    // point. You can add DeviceType strings to the categories.
+    // In general longer timeouts are better, because more data can be streamed at once.
+    define('SYNC_TIMEOUT_MEDIUM_DEVICETYPES', "SAMSUNGGTI");
+    define('SYNC_TIMEOUT_LONG_DEVICETYPES',   "iPod, iPad, iPhone, WP, WindowsOutlook");
+
+    // Time in seconds the device should wait whenever the service is unavailable,
+    // e.g. when a backend service is unavailable.
+    // Z-Push sends a "Retry-After" header in the response with the here defined value.
+    // It is up to the device to respect or not this directive so even if this option is set,
+    // the device might not wait requested time frame.
+    // Number of seconds before retry, to disable set to: false
+    define('RETRY_AFTER_DELAY', 300);
+
 /**********************************************************************************
  *  Backend settings
  */
     // the backend data provider
     define('BACKEND_PROVIDER', 'BackendCombined');
-
-    // top collector backend class name
-    //    Default is: TopCollector
-    //    Options: ["TopCollector", "TopCollectorRedis"]
-    define('TOP_COLLECTOR_BACKEND', 'TopCollector');
-
-    // ping tracking backend class name
-    //    Default is: PingTracking
-    //    Options: ["PingTracking", "PingTrackingRedis"]
-    define('PING_TRACKING_BACKEND', 'PingTracking');
-
-    // loop detection backend class name
-    //    Default is: LoopDetection
-    //    Options: ["LoopDetection", "LoopDetectionRedis"]
-    define('LOOP_DETECTION_BACKEND', 'LoopDetection');
-
-    // If using the Redis backends (for top, ping and lookp) make sure to set this values as necessary
-    define('IPC_REDIS_IP', '127.0.0.1');
-    define('IPC_REDIS_PORT', 6379);
-    // Database name/index in Redis: 0 by default
-        // NOTE: this database must be exclusive for z-push, since its content will be ERASED. You are warned.
-    define('IPC_REDIS_DATABASE', 0);
 
 /**********************************************************************************
  *  Search provider settings
@@ -316,6 +284,37 @@
     // might result in timeout. Default is 10.
     define('SEARCH_MAXRESULTS', 10);
 
+/**********************************************************************************
+ *  Kopano Outlook Extension - Settings
+ *
+ *  The Kopano Outlook Extension (KOE) provides MS Outlook 2013 and newer with
+ *  functionality not provided by ActiveSync or not implemented by Outlook.
+ *  For more information, see: https://wiki.z-hub.io/x/z4Aa
+ */
+    // Global Address Book functionality
+    define('KOE_CAPABILITY_GAB', true);
+    // Synchronize mail flags from the server to Outlook/KOE
+    define('KOE_CAPABILITY_RECEIVEFLAGS', true);
+    // Encode flags when sending from Outlook/KOE
+    define('KOE_CAPABILITY_SENDFLAGS', true);
+    // Out-of-office support
+    define('KOE_CAPABILITY_OOF', true);
+    // Out-of-office support with start & end times (superseeds KOE_CAPABILITY_OOF)
+    define('KOE_CAPABILITY_OOFTIMES', true);
+    // Notes support
+    define('KOE_CAPABILITY_NOTES', true);
+    // Shared folder support
+    define('KOE_CAPABILITY_SHAREDFOLDER', true);
+    // Send-As support for Outlook/KOE and mobiles
+    define('KOE_CAPABILITY_SENDAS', true);
+
+    // To synchronize the GAB KOE, the GAB store and folderid need to be specified.
+    // Use the gab-sync script to generate this data. The name needs to
+    // match the config of the gab-sync script.
+    // More information here: https://wiki.z-hub.io/x/z4Aa (GAB Sync Script)
+    define('KOE_GAB_STORE', 'SYSTEM');
+    define('KOE_GAB_FOLDERID', '');
+    define('KOE_GAB_NAME', 'Z-Push-KOE-GAB');
 
 /**********************************************************************************
  *  Synchronize additional folders to all mobiles
@@ -325,11 +324,11 @@
  *
  *  This feature is supported only by certain devices, like iPhones.
  *  Check the compatibility list for supported devices:
- *      http://z-push.sf.net/compatibility
+ *      http://z-push.org/compatibility
  *
  *  To synchronize a folder, add a section setting all parameters as below:
  *      store:      the ressource where the folder is located.
- *                  Zarafa users use 'SYSTEM' for the 'Public Folder'
+ *                  Kopano users use 'SYSTEM' for the 'Public Folder'
  *      folderid:   folder id of the folder to be synchronized
  *      name:       name to be displayed on the mobile device
  *      type:       supported types are:
@@ -337,13 +336,14 @@
  *                      SYNC_FOLDER_TYPE_USER_APPOINTMENT
  *                      SYNC_FOLDER_TYPE_USER_TASK
  *                      SYNC_FOLDER_TYPE_USER_MAIL
+ *                      SYNC_FOLDER_TYPE_USER_NOTE
  *
  *  Additional notes:
- *  - on Zarafa systems use backend/zarafa/listfolders.php script to get a list
+ *  - on Kopano systems use backend/kopano/listfolders.php script to get a list
  *    of available folders
  *
- *  - all Z-Push users must have full writing permissions (secretary rights) so
- *    the configured folders can be synchronized to the mobile
+ *  - all Z-Push users must have at least reading permissions so the configured
+ *    folders can be synchronized to the mobile. Else they are ignored.
  *
  *  - this feature is only partly suitable for multi-tenancy environments,
  *    as ALL users from ALL tenents need access to the configured store & folder.

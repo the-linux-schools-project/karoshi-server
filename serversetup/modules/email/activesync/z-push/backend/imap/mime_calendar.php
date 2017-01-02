@@ -1,4 +1,27 @@
 <?php
+/***********************************************
+* File      :   mime_calendar.php
+* Project   :   Z-Push
+* Descr     :   Functions for using within the IMAP backend
+*
+* Created   :   2015
+*
+* Copyright 2015 - 2016 Zarafa Deutschland GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License, version 3,
+* as published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Consult LICENSE file for details
+************************************************/
 
 function create_calendar_dav($data) {
     ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->create_calendar_dav(): Creating calendar event");
@@ -104,7 +127,6 @@ function update_calendar_attendee($uid, $mailto, $status) {
  *
  * @param Mail_mimeDecode $message
  * @return boolean
- * @access private
  */
 function has_calendar_object($message) {
     if (is_calendar($message)) {
@@ -130,7 +152,6 @@ function has_calendar_object($message) {
  *
  * @param Mail_mimeDecode $message
  * @return boolean
- * @access private
  */
 function is_calendar($message) {
     return isset($message->ctype_primary) && isset($message->ctype_secondary) && $message->ctype_primary == "text" && $message->ctype_secondary == "calendar";
@@ -141,7 +162,6 @@ function is_calendar($message) {
  * Converts a text/calendar part into SyncMeetingRequest
  * This is called on received messages, it's not called for events generated from the mobile
  *
- * @access private
  * @param $part             MIME part
  * @param $output           SyncMail object
  * @param $is_sent_folder   boolean
@@ -179,7 +199,6 @@ function parse_meeting_calendar($part, &$output, $is_sent_folder) {
         switch ($method) {
             case "cancel":
                 $output->messageclass = "IPM.Schedule.Meeting.Canceled";
-                $output->meetingrequest->disallownewtimeproposal = 1;
                 ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->parse_meeting_calendar(): Event canceled, removing calendar object");
                 delete_calendar_dav($uid);
                 break;
@@ -247,7 +266,7 @@ function parse_meeting_calendar($part, &$output, $is_sent_folder) {
 
     $props = $ical->GetPropertiesByPath('VEVENT/DTSTAMP');
     if (count($props) == 1) {
-        $output->meetingrequest->dtstamp = Utils::MakeUTCDate($props[0]->Value());
+        $output->meetingrequest->dtstamp = TimezoneUtil::MakeUTCDate($props[0]->Value());
     }
     $props = $ical->GetPropertiesByPath('VEVENT/UID');
     if (count($props) == 1) {
@@ -255,14 +274,14 @@ function parse_meeting_calendar($part, &$output, $is_sent_folder) {
     }
     $props = $ical->GetPropertiesByPath('VEVENT/DTSTART');
     if (count($props) == 1) {
-        $output->meetingrequest->starttime = Utils::MakeUTCDate($props[0]->Value());
+        $output->meetingrequest->starttime = TimezoneUtil::MakeUTCDate($props[0]->Value());
         if (strlen($props[0]->Value()) == 8) {
             $output->meetingrequest->alldayevent = 1;
         }
     }
     $props = $ical->GetPropertiesByPath('VEVENT/DTEND');
     if (count($props) == 1) {
-        $output->meetingrequest->endtime = Utils::MakeUTCDate($props[0]->Value());
+        $output->meetingrequest->endtime = TimezoneUtil::MakeUTCDate($props[0]->Value());
         if (strlen($props[0]->Value()) == 8) {
             $output->meetingrequest->alldayevent = 1;
         }
@@ -288,10 +307,14 @@ function parse_meeting_calendar($part, &$output, $is_sent_folder) {
                 $output->meetingrequest->sensitivity = "3";
                 break;
             default:
-                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parse_meeting_calendar() - No sensitivity class. Using 2"));
-                $output->meetingrequest->sensitivity = "2";
+                ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->parse_meeting_calendar() - Unknown VEVENT/CLASS '%s'. Using 0", $props[0]->Value()));
+                $output->meetingrequest->sensitivity = "0";
                 break;
         }
+    }
+    else {
+        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->parse_meeting_calendar() - No sensitivity class. Using 0");
+        $output->meetingrequest->sensitivity = "0";
     }
 
     // Get $tz from first timezone
@@ -320,7 +343,6 @@ function parse_meeting_calendar($part, &$output, $is_sent_folder) {
 /**
  * Modify a text/calendar part to transform it in a reply
  *
- * @access private
  * @param $part             MIME part
  * @param $response         Response numeric value
  * @param $condition_value  string

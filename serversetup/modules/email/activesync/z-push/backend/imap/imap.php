@@ -8,29 +8,11 @@
 *
 * Created   :   10.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,7 +49,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
     private static $mimeTypes = false;
 
 
-    public function BackendIMAP() {
+    public function __construct() {
         if (BackendIMAP::$mimeTypes === false) {
             BackendIMAP::$mimeTypes = $this->SystemExtensionMimeTypes();
         }
@@ -218,14 +200,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendIMAP->SendMail(): To defined: %s", $toaddr));
         }
         unset($Mail_RFC822);
-
-        // overwrite CC and BCC with the decoded versions, because we will parse/validate the address in the sending method
-        if (isset($message->headers["cc"])) {
-            $message->headers["cc"] = $message->headers["cc"];
-        }
-        if (isset($message->headers["bcc"])) {
-            $message->headers["bcc"] = $message->headers["bcc"];
-        }
 
         $this->setReturnPathValue($message->headers, $fromaddr);
 
@@ -591,7 +565,7 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             }
         }
         else {
-            throw new StatusException(sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error, imap_delete() failed, the error will show at the logout", $folderid, Utils::PrintAsString($includeSubfolders)), SYNC_ITEMOPERATIONSSTATUS_SERVERERROR);
+            throw new StatusException(sprintf("BackendIMAP->EmptyFolder('%s','%s'): Error, imap_delete() failed; '%s'", $folderid, Utils::PrintAsString($includeSubfolders), @imap_last_error()), SYNC_ITEMOPERATIONSSTATUS_SERVERERROR);
         }
 
         return true;
@@ -1085,30 +1059,32 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             if (Request::GetProtocolVersion() >= 12.0) {
                 $output->asbody = new SyncBaseBody();
 
+                $data = "";
                 switch($bpReturnType) {
                     case SYNC_BODYPREFERENCE_PLAIN:
-                        $output->asbody->data = $textBody;
+                        $data = $textBody;
                         break;
                     case SYNC_BODYPREFERENCE_HTML:
-                        $output->asbody->data = $textBody;
+                        $data = $textBody;
                         break;
                     case SYNC_BODYPREFERENCE_MIME:
                         if ($is_smime) {
                             if ($is_encrypted) {
                                 // #190, KD 2015-06-04 - If message body is encrypted only send the headers, as data should only be in the attachment
-                                $output->asbody->data = $mail_headers;
+                                $data = $mail_headers;
                             }
                             else {
-                                $output->asbody->data = $mail;
+                                $data = $mail;
                             }
                         }
                         else {
-                            $output->asbody->data = build_mime_message($message);
+                            $data = build_mime_message($message);
                         }
                         break;
                     case SYNC_BODYPREFERENCE_RTF:
-                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->GetMessage(): RTF Format NOT CHECKED");
-                        $output->asbody->data = base64_encode($textBody);
+                        ZLog::Write(LOGLEVEL_DEBUG, "BackendIMAP->GetMessage RTF Format NOT SUPPORTED");
+                        // TODO: this is broken. This is no RTF.
+                        $data = base64_encode($textBody);
                         break;
                 }
 
@@ -1123,8 +1099,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                     }
                 }
                 else {
-                    if (strlen($output->asbody->data) > $truncsize) {
-                        $output->asbody->data = Utils::Utf8_truncate($output->asbody->data, $truncsize);
+                    if (strlen($data) > $truncsize) {
+                        $data = Utils::Utf8_truncate($data, $truncsize);
                         $output->asbody->truncated = 1;
                     }
                     else {
@@ -1132,6 +1108,9 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                     }
                 }
 
+                $output->asbody->data = StringStreamWrapper::Open($data);
+                $output->asbody->estimatedDataSize = strlen($data);
+                unset($data);
                 $output->asbody->type = $bpReturnType;
                 if ($bpReturnType == SYNC_BODYPREFERENCE_MIME) {
                     // NativeBodyType can be only (1 => PLAIN, 2 => HTML, 3 => RTF). MIME uses 1
@@ -1140,7 +1119,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 else {
                     $output->nativebodytype = $bpReturnType;
                 }
-                $output->asbody->estimatedDataSize = strlen($output->asbody->data);
 
                 $bpo = $contentparameters->BodyPreference($output->asbody->type);
                 if (Request::GetProtocolVersion() >= 14.0 && $bpo->GetPreview()) {
@@ -1159,26 +1137,24 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                 //DEPRECATED : very old devices, and incomplete code
 
                 $output->bodytruncated = 0;
-                /* BEGIN fmbiete's contribution r1528, ZP-320 */
+                $data = "";
                 if ($bpReturnType == SYNC_BODYPREFERENCE_MIME) {
-                    // truncate body, if requested, but never truncate MIME messages
-                    $output->mimetruncated = 0;
-                    $output->mimedata = $mail;
-                    $output->mimesize = strlen($output->mimedata);
+                   $data = $mail;
                 }
                 else {
-                    // truncate body, if requested
-                    if (strlen($textBody) > $truncsize) {
-                        $output->body = Utils::Utf8_truncate($textBody, $truncsize);
-                        $output->bodytruncated = 1;
-                    }
-                    else {
-                        $output->body = $textBody;
-                        $output->bodytruncated = 0;
-                    }
-                    $output->bodysize = strlen($output->body);
+                   $data = $textBody;
                 }
-                /* END fmbiete's contribution r1528, ZP-320 */
+
+                $output->mimesize = strlen($data);
+                if (strlen($data) > $truncsize && $bpReturnType != SYNC_BODYPREFERENCE_MIME) {
+                    $output->mimedata = StringStreamWrapper::Open(Utils::Utf8_truncate($data, $truncsize));
+                    $output->mimetruncated = 1;
+                }
+                else {
+                    $output->mimetruncated = 0;
+                    $output->mimedata = StringStreamWrapper::Open($data);
+                }
+                unset($data);
             }
 
             unset($textBody);
@@ -1202,18 +1178,8 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
             $output->read = $stat["flags"];
             $output->from = isset($message->headers["from"]) ? $message->headers["from"] : null;
 
-            /* BEGIN fmbiete's contribution r1528, ZP-320 */
             if (isset($message->headers["thread-topic"])) {
                 $output->threadtopic = $message->headers["thread-topic"];
-                /*
-                //FIXME: Conversation support, get conversationid and conversationindex good values
-                if (Request::GetProtocolVersion() >= 14.0) {
-                    // since the conversationid must be unique for a thread we could use the threadtopic in base64 minus the ==
-                    $output->conversationid = strtoupper(str_replace("=", "", base64_encode($output->threadtopic)));
-                    if (isset($message->headers["thread-index"]))
-                        $output->conversationindex = strtoupper($message->headers["thread-index"]);
-                }
-                */
             }
             else {
                 $output->threadtopic = $output->subject;
@@ -1235,7 +1201,6 @@ class BackendIMAP extends BackendDiff implements ISearchProvider {
                     $output->flag->flagstatus = SYNC_FLAGSTATUS_CLEAR;
                 }
             }
-            /* END fmbiete's contribution r1528, ZP-320 */
 
             $Mail_RFC822 = new Mail_RFC822();
             $toaddr = $ccaddr = $replytoaddr = array();

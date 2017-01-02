@@ -6,29 +6,11 @@
 *
 * Created   :   01.06.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,7 +22,6 @@
 *
 * Consult LICENSE file for details
 ************************************************/
-
 
 class TimezoneUtil {
 
@@ -1224,21 +1205,20 @@ class TimezoneUtil {
      *
      * @param string    $name       internal timezone name
      *
-     * @access public
+     * @access private
      * @return string
      */
-    static public function getMSTZnameFromTZName($name) {
+    static private function getMSTZnameFromTZName($name) {
         foreach (self::$mstzones as $mskey => $msdefs) {
-            if ($name == $msdefs[0]) {
+            if ($name == $msdefs[0])
                 return $msdefs[1];
-            }
         }
 
         // Not found? Then retrieve the correct TZName first and try again.
         // That's ugly and needs a proper fix. But for now this method can convert
         // - Europe/Berlin
         // - W Europe Standard Time
-        // to "(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" 
+        // to "(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"
         // which is more correct than the hardcoded default of (GMT+00:00...)
         $tzName = '';
         foreach (self::$phptimezones as $tzn => $phptzs) {
@@ -1249,9 +1229,8 @@ class TimezoneUtil {
         }
         if ($tzName != '') {
             foreach (self::$mstzones as $mskey => $msdefs) {
-                if ($tzName == $msdefs[0]) {
+                if ($tzName == $msdefs[0])
                     return $msdefs[1];
-                }
             }
         }
 
@@ -1298,11 +1277,11 @@ class TimezoneUtil {
     }
 
     /**
-     * Pack timezone info for Sync
+     * Pack timezone info for Sync.
      *
      * @param array     $tz
      *
-     * @access private
+     * @access public
      * @return string
      */
     static public function GetSyncBlobFromTZ($tz) {
@@ -1316,5 +1295,61 @@ class TimezoneUtil {
                 $tz["dstbias"]);
 
         return $packed;
+    }
+
+    /**
+     * Generate date object from string and timezone.
+     *
+     * @param string $value
+     * @param string $timezone
+     *
+     * @access public
+     * @return int epoch
+     */
+    public static function MakeUTCDate($value, $timezone = null) {
+        $tz = null;
+        if ($timezone) {
+            $tz = timezone_open($timezone);
+        }
+        if (!$tz) {
+            //If there is no timezone set, we use the default timezone
+            $tz = timezone_open(date_default_timezone_get());
+        }
+        //20110930T090000Z
+        $date = date_create_from_format('Ymd\THis\Z', $value, timezone_open("UTC"));
+        if (!$date) {
+            //20110930T090000
+            $date = date_create_from_format('Ymd\THis', $value, $tz);
+        }
+        if (!$date) {
+            //20110930 (Append T000000Z to the date, so it starts at midnight)
+            $date = date_create_from_format('Ymd\THis\Z', $value . "T000000Z", $tz);
+        }
+        return date_timestamp_get($date);
+    }
+
+
+    /**
+     * Generate a tzid from various formats
+     *
+     * @param str $timezone
+     *
+     * @access public
+     * @return timezone id
+     */
+    public static function ParseTimezone($timezone) {
+        //(GMT+01.00) Amsterdam / Berlin / Bern / Rome / Stockholm / Vienna
+        if (preg_match('/GMT(\\+|\\-)0(\d)/', $timezone, $matches)) {
+            return "Etc/GMT" . $matches[1] . $matches[2];
+        }
+        //(GMT+10.00) XXX / XXX / XXX / XXX
+        if (preg_match('/GMT(\\+|\\-)1(\d)/', $timezone, $matches)) {
+            return "Etc/GMT" . $matches[1] . "1" . $matches[2];
+        }
+        ///inverse.ca/20101018_1/Europe/Amsterdam or /inverse.ca/20101018_1/America/Argentina/Buenos_Aires
+        if (preg_match('/\/[.[:word:]]+\/\w+\/(\w+)\/([\w\/]+)/', $timezone, $matches)) {
+            return $matches[1] . "/" . $matches[2];
+        }
+        return self::getMSTZnameFromTZName(trim($timezone, '"'));
     }
 }

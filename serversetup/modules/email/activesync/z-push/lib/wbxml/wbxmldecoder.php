@@ -6,29 +6,11 @@
 *
 * Created   :   01.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,10 +23,11 @@
 * Consult LICENSE file for details
 ************************************************/
 
-
 class WBXMLDecoder extends WBXMLDefs {
     private $in;
+
     private $inLog;
+
     private $tagcp = 0;
     private $ungetbuffer;
     private $log = false;
@@ -52,7 +35,46 @@ class WBXMLDecoder extends WBXMLDefs {
     private $inputBuffer = "";
     private $isWBXML = true;
 
+    static private $loopCounter = array();
+    const MAXLOOP = 5000;
+
     const VERSION = 0x03;
+
+    /**
+     * Counts the amount of times a code part has been executed.
+     * When being executed too often, the code throws a WBMXLException.
+     *
+     * @access public
+     * @param String $name
+     * @throws WBXMLException
+     * @return boolean
+     */
+    static public function InWhile($name) {
+        if (!isset(self::$loopCounter[$name])) {
+            self::$loopCounter[$name] = 0;
+        }
+        else {
+            self::$loopCounter[$name]++;
+        }
+
+        if (self::$loopCounter[$name] > self::MAXLOOP) {
+            throw new WBXMLException(sprintf("Loop count in while too high, code '%s' exceeded max. amount of permitted loops", $name));
+        }
+        return true;
+    }
+
+    /**
+     * Resets the inWhile counter.
+     *
+     * @param String $name
+     * @return boolean
+     */
+    static public function ResetInWhile($name) {
+        if (isset(self::$loopCounter[$name])) {
+            unset(self::$loopCounter[$name]);
+        }
+        return true;
+    }
 
     /**
      * WBXML Decode Constructor
@@ -62,11 +84,10 @@ class WBXMLDecoder extends WBXMLDefs {
      *
      * @access public
      */
-    public function WBXMLDecoder($input) {
-        $this->log = defined('WBXML_DEBUG') && WBXML_DEBUG;
+    public function __construct($input) {
+        $this->log = ZLog::IsWbxmlDebugEnabled();
 
         $this->in = $input;
-        $this->inLog = StringStreamWrapper::Open("");
 
         $version = $this->getByte();
         if($version != self::VERSION) {
@@ -103,7 +124,8 @@ class WBXMLDecoder extends WBXMLDefs {
             case EN_TYPE_ENDTAG:
                 return $element;
             case EN_TYPE_CONTENT:
-                while(1) {
+                WBXMLDecoder::ResetInWhile("decoderGetElement");
+                while(WBXMLDecoder::InWhile("decoderGetElement")) {
                     $next = $this->getToken();
                     if($next == false)
                         return false;
@@ -220,7 +242,7 @@ class WBXMLDecoder extends WBXMLDefs {
      * @return string
      */
     public function GetPlainInputStream() {
-        return $this->inputBuffer . stream_get_contents($this->in);
+        return $this->inputBuffer.stream_get_contents($this->in);
     }
 
     /**
@@ -241,21 +263,7 @@ class WBXMLDecoder extends WBXMLDefs {
      */
     public function readRemainingData() {
         ZLog::Write(LOGLEVEL_DEBUG, "WBXMLDecoder->readRemainingData() reading remaining data from input stream");
-        while ($this->getElement());
-    }
-
-    /**
-     * Returns the WBXML data read from the stream
-     *
-     * @access public
-     * @return string - base64 encoded wbxml
-     */
-    public function getWBXMLLog() {
-        $out = "";
-        if ($this->inLog) {
-            $out = base64_encode(stream_get_contents($this->inLog, -1,0));
-        }
-        return $out;
+        while($this->getElement());
     }
 
     /**----------------------------------------------------------------------------------------------------------
@@ -323,7 +331,8 @@ class WBXMLDecoder extends WBXMLDefs {
         // Get the data from the input stream
         $element = array();
 
-        while(1) {
+        WBXMLDecoder::ResetInWhile("decoderGetToken");
+        while(WBXMLDecoder::InWhile("decoderGetToken")) {
             $byte = fread($this->in, 1);
             if($byte === "" || $byte === false)
                 break;
@@ -385,16 +394,12 @@ class WBXMLDecoder extends WBXMLDefs {
      * @return string
      */
     private function getTermStr() {
-        $str = "";
-        while(1) {
-            $in = fread($this->in, 1);
-            //this is faster than ord($in) == 0
-            if($in === "\0" || $in === false || $in === "")
-                break;
-            $str .= $in;
-        }
-
-        return $str;
+        // there is no unlimited "length" for stream_get_line,
+        // so we use a huge value for "length" param (1Gb)
+        // (0 == PHP_SOCK_CHUNK_SIZE (8192))
+        // internaly php read at most PHP_SOCK_CHUNK_SIZE at a time,
+        // so we can use a huge value for "length" without problem
+        return stream_get_line($this->in, 1073741824, "\0");
     }
 
     /**
@@ -423,10 +428,8 @@ class WBXMLDecoder extends WBXMLDefs {
      */
     private function getByte() {
         $ch = fread($this->in, 1);
-        if (strlen($ch) > 0) {
-            fwrite($this->inLog, $ch);
+        if(strlen($ch) > 0)
             return ord($ch);
-        }
         else
             return;
     }
