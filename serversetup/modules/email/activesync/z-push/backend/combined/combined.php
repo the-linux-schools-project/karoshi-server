@@ -14,29 +14,11 @@
 *
 * Created   :   29.11.2010
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,22 +33,13 @@
 
 //include the CombinedBackend's own config file
 require_once("backend/combined/config.php");
-require_once("backend/combined/importer.php");
-require_once("backend/combined/exporter.php");
 
 class BackendCombined extends Backend implements ISearchProvider {
     public $config;
-    /**
-     * @var IBackend[]
-     */
     public $backends;
-    /**
-     * @var IBackend
-     */
     private $activeBackend;
     private $activeBackendID;
     private $numberChangesSink;
-
     private $logon_done = false;
 
     /**
@@ -74,8 +47,8 @@ class BackendCombined extends Backend implements ISearchProvider {
      *
      * @access public
      */
-    public function BackendCombined() {
-        parent::Backend();
+    public function __construct() {
+        parent::__construct();
         $this->config = BackendCombinedConfig::GetBackendCombinedConfig();
 
         $backend_values = array_unique(array_values($this->config['folderbackend']));
@@ -105,8 +78,6 @@ class BackendCombined extends Backend implements ISearchProvider {
             $u = $username;
             $d = $domain;
             $p = $password;
-
-            // Apply mapping from configuration
             if(isset($this->config['backends'][$i]['users'])){
                 if(!isset($this->config['backends'][$i]['users'][$username])){
                     unset($this->backends[$i]);
@@ -119,20 +90,10 @@ class BackendCombined extends Backend implements ISearchProvider {
                 if(isset($this->config['backends'][$i]['users'][$username]['domain']))
                     $d = $this->config['backends'][$i]['users'][$username]['domain'];
             }
-
-            // Apply username mapping from state backend
-            if (isset($this->config['usemapping']) && $this->config['usemapping']) {
-                $mappedUsername = ZPush::GetStateMachine()->GetMappedUsername($u, strtolower($this->config['backends'][$i]['name']));
-                if ($mappedUsername !== null) {
-                    $u = $mappedUsername;
-                }
-            }
-
-            if ($this->backends[$i]->Logon($u, $d, $p) == false) {
+            if($this->backends[$i]->Logon($u, $d, $p) == false){
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined->Logon() failed on %s ", $this->config['backends'][$i]['name']));
                 return false;
             }
-            $this->backends[$i]->SetOriginalUsername($username);
         }
 
         $this->logon_done = true;
@@ -155,12 +116,13 @@ class BackendCombined extends Backend implements ISearchProvider {
      * @param string        $store              target store, could contain a "domain\user" value
      * @param boolean       $checkACLonly       if set to true, Setup() should just check ACLs
      * @param string        $folderid           if set, only ACLs on this folderid are relevant
+     * @param boolean       $readonly           if set, the folder needs at least read permissions
      *
      * @access public
      * @return boolean
      */
-    public function Setup($store, $checkACLonly = false, $folderid = false) {
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined->Setup('%s', '%s', '%s')", $store, Utils::PrintAsString($checkACLonly), $folderid));
+    public function Setup($store, $checkACLonly = false, $folderid = false, $readonly = false) {
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("Combined->Setup('%s', '%s', '%s', '%s')", $store, Utils::PrintAsString($checkACLonly), $folderid, Utils::PrintAsString($readonly)));
         if(!is_array($this->backends)){
             return false;
         }
@@ -169,7 +131,7 @@ class BackendCombined extends Backend implements ISearchProvider {
             if(isset($this->config['backends'][$i]['users']) && isset($this->config['backends'][$i]['users'][$store]['username'])){
                 $u = $this->config['backends'][$i]['users'][$store]['username'];
             }
-            if($this->backends[$i]->Setup($u, $checkACLonly, $folderid) == false){
+            if($this->backends[$i]->Setup($u, $checkACLonly, $folderid, $readonly) == false){
                 ZLog::Write(LOGLEVEL_WARN, "Combined->Setup() failed");
                 return false;
             }
@@ -393,19 +355,6 @@ class BackendCombined extends Backend implements ISearchProvider {
         return $backend->MeetingResponse($requestid, $this->GetBackendFolder($folderid), $response);
     }
 
-    /**
-     * Resolves recipients
-     *
-     * @param SyncObject        $resolveRecipients
-     *
-     * @access public
-     * @return SyncObject       $resolveRecipients
-     */
-    public function ResolveRecipients($resolveRecipients) {
-        // TODO:
-        return false;
-    }
-
 
     /**
      * Deletes all contents of the specified folder.
@@ -425,6 +374,7 @@ class BackendCombined extends Backend implements ISearchProvider {
             return false;
         return $backend->EmptyFolder($this->GetBackendFolder($folderid), $includeSubfolders);
     }
+
 
     /**
      * Indicates if the backend has a ChangesSink.
@@ -472,7 +422,7 @@ class BackendCombined extends Backend implements ISearchProvider {
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCombined->ChangesSinkInitialize('%s') is supported, initializing", $folderid));
             return $backend->ChangesSinkInitialize($this->GetBackendFolder($folderid));
         }
-            
+
         // if the backend doesn't support ChangesSink, we also return true so we don't get an error
         return true;
      }

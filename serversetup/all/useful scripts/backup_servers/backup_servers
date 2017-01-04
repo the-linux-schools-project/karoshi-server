@@ -22,6 +22,14 @@ then
 	echo `date`: backup_servers - no server backup folder information. >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary
 	exit
 fi
+
+#Exit if backup has been disabled
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$THIS_SERVER"/stop_backup ]
+then
+	echo `date` - Backups are disabled "for" "$THIS_SERVER" >> /opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log
+	exit
+fi
+
 #Get server to backup to
 BACKUP_SERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$THIS_SERVER/backupserver | sed 's/ //g'`
 

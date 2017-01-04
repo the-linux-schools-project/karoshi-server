@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -100,15 +100,15 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
 fi
 
 echo '<form action="/cgi-bin/admin/linux_client_install_software_packages.cgi" name="selectservers" method="post"><b></b>'
@@ -123,32 +123,25 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<b>'$"Linux Client software packages"' - '$"Choose client version"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will either be installed or removed by your linux client computers on boot."'</span></a><br><br>'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td>
+<div class="sectiontitle">'$"Linux Client software packages"' - '$"Choose client version"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will either be installed or removed by your linux client computers on boot."'</span></a></td></tr></tbody></table><br>'
 fi
 
 #Show list of supported linux client versions
-VERSIONCOUNTER=0
-ROWCOUNT=6
-[ $MOBILE = yes ] && ROWCOUNT=3
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
-VERSIONICON="/images/submenus/client/version.png"
+
 if [ -f /opt/karoshi/server_network/info ]
 then
-source /opt/karoshi/server_network/info
-source /opt/karoshi/web_controls/version
-LOCATION_NAME="- $LOCATION_NAME"
+	source /opt/karoshi/server_network/info
+	source /opt/karoshi/web_controls/version
+	LOCATION_NAME="- $LOCATION_NAME"
 fi
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: 200px;">'$"Linux Client Version"'</td><td><select name="_VERSION_" style="width: 200px;">'
 
 for VERSION in `cat /var/lib/samba/netlogon/linuxclient/versions.txt`
 do
-[ $VERSIONCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;"><a class="info" href="javascript:void(0)"><input name="_VERSION_'$VERSION'_" type="image" class="images" src="'$VERSIONICON'" value=""><span>'$VERSION'</span></a><br>'$VERSION'</td>'
-let VERSIONCOUNTER=$VERSIONCOUNTER+1
-[ $VERSIONCOUNTER -gt $ROWCOUNT ] && VERSIONCOUNTER=1
+	echo '<option value="'$VERSION'">'$VERSION'</option>'	
 done
 
-echo '</tr></tbody></table><br>'
-echo '</div></form></div></body></html>'
+echo '</select></td></tr></tbody></table><br></div>
+<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
 exit

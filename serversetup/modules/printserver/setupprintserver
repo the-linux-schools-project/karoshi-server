@@ -218,17 +218,20 @@ CUPSSTATUS=`ps -e | grep -c $CUPSVER`
 
 if [ $CUPSSTATUS = 0 ]
 then
-echo '<ul><li>'$"Starting Cups"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
+	echo '<ul><li>'$"Starting Cups"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 fi
 
 SAMBASTATUS=`ps -e | grep -c $SMBVER`
 
 if [ $SAMBASTATUS = 0 ]
 then
-echo '<ul><li>'$"Starting Samba"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	echo '<ul><li>'$"Starting Samba"'</li></ul>'
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
 fi
+
+#Setup savapage
+/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage
 
 exit
 

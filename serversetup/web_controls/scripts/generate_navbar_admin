@@ -436,21 +436,8 @@ echo '	<li class="top"><a href="/cgi-bin/admin/printers.cgi" id="Printer" class=
 			<li><a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a></li>
 			<li><a href="/cgi-bin/admin/printers_add_fm.cgi">'$"Add Network Printer"'</a></li>
 			<li><a href="/cgi-bin/admin/printers_delete.cgi">'$"Delete Network Printer"'</a></li>
+			<li><a href="http://savapage:8631/admin" target="_blank">Savapage</a></li>
 			<li><a href="/cgi-bin/admin/printers_view_assigned_fm.cgi">'$"View Assigned Printers"'</a></li>
-
-
-			<li class="mid"><a href="/cgi-bin/admin/printer_accounting_status_fm.cgi" class="fly">'$"Printer Accounting"'</a>
-					<ul>
-					<li><a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$"Group Printer Usage"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_status_fm.cgi">'$"Enabled Printers"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a></li>
-<li><a href="/cgi-bin/admin/printer_accounting_view_logs_fm.cgi">'$"Printer Accounting Logs"'</a></li>
-					<li><a href="/cgi-bin/admin/printer_accounting_clear_page_counts_fm.cgi">'$"Clear User Page Counts"'</a></li>
-					</ul>
-			</li>
 			<li><a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a></li>
 		</ul>
 	</li>'

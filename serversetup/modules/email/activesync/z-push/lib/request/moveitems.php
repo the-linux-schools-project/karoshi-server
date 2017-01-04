@@ -6,29 +6,11 @@
 *
 * Created   :   16.02.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -86,7 +68,11 @@ class MoveItems extends RequestProcessor {
 
         self::$encoder->startTag(SYNC_MOVE_MOVES);
 
+        $operationResults = array();
+        $operationCounter = 0;
+        $operationTotal = count($moves);
         foreach($moves as $move) {
+            $operationCounter++;
             self::$encoder->startTag(SYNC_MOVE_RESPONSE);
             self::$encoder->startTag(SYNC_MOVE_SRCMSGID);
             self::$encoder->content($move["srcmsgid"]);
@@ -95,22 +81,44 @@ class MoveItems extends RequestProcessor {
             $status = SYNC_MOVEITEMSSTATUS_SUCCESS;
             $result = false;
             try {
+                $sourceBackendFolderId = self::$deviceManager->GetBackendIdForFolderId($move["srcfldid"]);
+
                 // if the source folder is an additional folder the backend has to be setup correctly
-                if (!self::$backend->Setup(ZPush::GetAdditionalSyncFolderStore($move["srcfldid"])))
-                    throw new StatusException(sprintf("HandleMoveItems() could not Setup() the backend for folder id '%s'", $move["srcfldid"]), SYNC_MOVEITEMSSTATUS_INVALIDSOURCEID);
+                if (!self::$backend->Setup(ZPush::GetAdditionalSyncFolderStore($sourceBackendFolderId)))
+                    throw new StatusException(sprintf("HandleMoveItems() could not Setup() the backend for folder id %s/%s", $move["srcfldid"], $sourceBackendFolderId), SYNC_MOVEITEMSSTATUS_INVALIDSOURCEID);
 
-                $importer = self::$backend->GetImporter($move["srcfldid"]);
+                $importer = self::$backend->GetImporter($sourceBackendFolderId);
                 if ($importer === false)
-                    throw new StatusException(sprintf("HandleMoveItems() could not get an importer for folder id '%s'", $move["srcfldid"]), SYNC_MOVEITEMSSTATUS_INVALIDSOURCEID);
+                    throw new StatusException(sprintf("HandleMoveItems() could not get an importer for folder id %s/%s", $move["srcfldid"], $sourceBackendFolderId), SYNC_MOVEITEMSSTATUS_INVALIDSOURCEID);
 
-                // get saved SyncParameters for this folder
+                // get saved SyncParameters of the source folder
                 $spa = self::$deviceManager->GetStateManager()->GetSynchedFolderState($move["srcfldid"]);
                 if (!$spa->HasSyncKey())
                     throw new StatusException(sprintf("MoveItems(): Source folder id '%s' is not fully synchronized. Unable to perform operation.", $move["srcfldid"]), SYNC_MOVEITEMSSTATUS_INVALIDSOURCEID);
+
+                // get saved SyncParameters of the destination folder
+                $destSpa = self::$deviceManager->GetStateManager()->GetSynchedFolderState($move["dstfldid"]);
+                if (!$destSpa->HasSyncKey()) {
+                    $destSpa->SetFolderId($move["dstfldid"]);
+                    $destSpa->SetSyncKey(self::$deviceManager->GetStateManager()->GetZeroSyncKey());
+                }
+
+                $importer->SetMoveStates($spa->GetMoveState(), $destSpa->GetMoveState());
                 $importer->ConfigContentParameters($spa->GetCPO());
 
-                $result = $importer->ImportMessageMove($move["srcmsgid"], $move["dstfldid"]);
-                // We discard the importer state for now.
+                $result = $importer->ImportMessageMove($move["srcmsgid"], self::$deviceManager->GetBackendIdForFolderId($move["dstfldid"]));
+                // We discard the standard importer state for now.
+
+                // Get the move states and save them in the SyncParameters of the src and dst folder
+                list($srcMoveState, $dstMoveState) = $importer->GetMoveStates();
+                if ($spa->GetMoveState() !== $srcMoveState) {
+                    $spa->SetMoveState($srcMoveState);
+                    self::$deviceManager->GetStateManager()->SetSynchedFolderState($spa);
+                }
+                if ($destSpa->GetMoveState() !== $dstMoveState) {
+                    $destSpa->SetMoveState($dstMoveState);
+                    self::$deviceManager->GetStateManager()->SetSynchedFolderState($destSpa);
+                }
             }
             catch (StatusException $stex) {
                 if ($stex->getCode() == SYNC_STATUS_FOLDERHIERARCHYCHANGED) // same as SYNC_FSSTATUS_CODEUNKNOWN
@@ -119,7 +127,15 @@ class MoveItems extends RequestProcessor {
                     $status = $stex->getCode();
             }
 
-            self::$topCollector->AnnounceInformation(sprintf("Operation status: %s", $status), true);
+            if ($operationCounter % 10 == 0) {
+                self::$topCollector->AnnounceInformation(sprintf("Moved %d objects out of %d", $operationCounter, $operationTotal));
+            }
+
+            // save the operation result
+            if (!isset($operationResults[$status])) {
+                $operationResults[$status] = 0;
+            }
+            $operationResults[$status]++;
 
             self::$encoder->startTag(SYNC_MOVE_STATUS);
             self::$encoder->content($status);
@@ -130,6 +146,12 @@ class MoveItems extends RequestProcessor {
             self::$encoder->endTag();
             self::$encoder->endTag();
         }
+
+        self::$topCollector->AnnounceInformation(sprintf("Moved %d - Codes", $operationTotal), true);
+        foreach ($operationResults as $status => $occurences) {
+            self::$topCollector->AnnounceInformation(sprintf("%dx%d", $occurences, $status), true);
+        }
+
 
         self::$encoder->endTag();
         return true;

@@ -1,0 +1,213 @@
+*PPD-Adobe: "4.3"
+*%%%% PPD file for savapage.org with CUPS.
+*%%%% Created by the CUPS PPD Compiler CUPS v2.1.0.
+*% Copyright 2011-2015 by Datraverse B.V.
+*FormatVersion: "4.3"
+*FileVersion: "0.9.11"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PCFileName: "SAVAPAGE.ppd"
+*Product: "(savapage.org)"
+*Manufacturer: "SavaPage"
+*ModelName: "savapage.org"
+*ShortNickName: "savapage.org"
+*NickName: "savapage.org, 0.9.11"
+*PSVersion: "(3010.000) 0"
+*LanguageLevel: "3"
+*ColorDevice: True
+*DefaultColorSpace: RGB
+*FileSystem: False
+*Throughput: "120"
+*LandscapeOrientation: Plus90
+*TTRasterizer: Type42
+*cupsVersion: 2.1
+*cupsModelNumber: 0
+*cupsManualCopies: False
+*cupsFilter: "application/vnd.cups-postscript 100 -"
+*cupsFilter: "application/vnd.cups-pdf 0 -"
+*cupsLanguages: "en nl"
+*OpenUI *PageSize/Media Size: PickOne
+*OrderDependency: 10 AnySetup *PageSize
+*DefaultPageSize: Letter
+*PageSize Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*PageSize A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageSize A3/A3: "<</PageSize[842 1191]/ImagingBBox null>>setpagedevice"
+*PageSize A2/A2: "<</PageSize[1191 1684]/ImagingBBox null>>setpagedevice"
+*PageSize A1/A1: "<</PageSize[1684 2384]/ImagingBBox null>>setpagedevice"
+*PageSize A0/A0: "<</PageSize[2384 3370]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC0/Envelope C0: "<</PageSize[2599 3676]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC1/Envelope C1: "<</PageSize[1837 2599]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC2/Envelope C2: "<</PageSize[1298 1837]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC3/Envelope C3: "<</PageSize[918 1296]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC4/Envelope C4: "<</PageSize[649 918]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC5/Envelope C5: "<</PageSize[459 649]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC6/Envelope C6: "<</PageSize[323 459]/ImagingBBox null>>setpagedevice"
+*PageSize EnvC7/Envelope C7: "<</PageSize[230 323]/ImagingBBox null>>setpagedevice"
+*PageSize EnvDL/Envelope DL: "<</PageSize[312 624]/ImagingBBox null>>setpagedevice"
+*PageSize EnvMonarch/Envelope Monarch: "<</PageSize[279 540]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageSize
+*OpenUI *PageRegion/Media Size: PickOne
+*OrderDependency: 10 AnySetup *PageRegion
+*DefaultPageRegion: Letter
+*PageRegion Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*PageRegion A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageRegion A3/A3: "<</PageSize[842 1191]/ImagingBBox null>>setpagedevice"
+*PageRegion A2/A2: "<</PageSize[1191 1684]/ImagingBBox null>>setpagedevice"
+*PageRegion A1/A1: "<</PageSize[1684 2384]/ImagingBBox null>>setpagedevice"
+*PageRegion A0/A0: "<</PageSize[2384 3370]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC0/Envelope C0: "<</PageSize[2599 3676]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC1/Envelope C1: "<</PageSize[1837 2599]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC2/Envelope C2: "<</PageSize[1298 1837]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC3/Envelope C3: "<</PageSize[918 1296]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC4/Envelope C4: "<</PageSize[649 918]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC5/Envelope C5: "<</PageSize[459 649]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC6/Envelope C6: "<</PageSize[323 459]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvC7/Envelope C7: "<</PageSize[230 323]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvDL/Envelope DL: "<</PageSize[312 624]/ImagingBBox null>>setpagedevice"
+*PageRegion EnvMonarch/Envelope Monarch: "<</PageSize[279 540]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageRegion
+*DefaultImageableArea: Letter
+*ImageableArea Letter/US Letter: "0 0 612 792"
+*ImageableArea A4/A4: "0 0 595 842"
+*ImageableArea A3/A3: "0 0 842 1191"
+*ImageableArea A2/A2: "0 0 1191 1684"
+*ImageableArea A1/A1: "0 0 1684 2384"
+*ImageableArea A0/A0: "0 0 2384 3370"
+*ImageableArea EnvC0/Envelope C0: "0 0 2599 3676"
+*ImageableArea EnvC1/Envelope C1: "0 0 1837 2599"
+*ImageableArea EnvC2/Envelope C2: "0 0 1298 1837"
+*ImageableArea EnvC3/Envelope C3: "0 0 918 1296"
+*ImageableArea EnvC4/Envelope C4: "0 0 649 918"
+*ImageableArea EnvC5/Envelope C5: "0 0 459 649"
+*ImageableArea EnvC6/Envelope C6: "0 0 323 459"
+*ImageableArea EnvC7/Envelope C7: "0 0 230 323"
+*ImageableArea EnvDL/Envelope DL: "0 0 312 624"
+*ImageableArea EnvMonarch/Envelope Monarch: "0 0 279 540"
+*DefaultPaperDimension: Letter
+*PaperDimension Letter/US Letter: "612 792"
+*PaperDimension A4/A4: "595 842"
+*PaperDimension A3/A3: "842 1191"
+*PaperDimension A2/A2: "1191 1684"
+*PaperDimension A1/A1: "1684 2384"
+*PaperDimension A0/A0: "2384 3370"
+*PaperDimension EnvC0/Envelope C0: "2599 3676"
+*PaperDimension EnvC1/Envelope C1: "1837 2599"
+*PaperDimension EnvC2/Envelope C2: "1298 1837"
+*PaperDimension EnvC3/Envelope C3: "918 1296"
+*PaperDimension EnvC4/Envelope C4: "649 918"
+*PaperDimension EnvC5/Envelope C5: "459 649"
+*PaperDimension EnvC6/Envelope C6: "323 459"
+*PaperDimension EnvC7/Envelope C7: "230 323"
+*PaperDimension EnvDL/Envelope DL: "312 624"
+*PaperDimension EnvMonarch/Envelope Monarch: "279 540"
+*OpenUI *ColorModel/Color Mode: PickOne
+*OrderDependency: 10 AnySetup *ColorModel
+*DefaultColorModel: RGB
+*ColorModel Gray/Grayscale: "<</cupsColorSpace 0/cupsColorOrder 0/cupsCompression 0>>setpagedevice"
+*ColorModel RGB/RGB: "<</cupsColorSpace 1/cupsColorOrder 0/cupsCompression 0>>setpagedevice"
+*ColorModel CMYK/CMYK: "<</cupsColorSpace 6/cupsColorOrder 0/cupsCompression 0>>setpagedevice"
+*CloseUI: *ColorModel
+*OpenUI *InputSlot/Media Source: PickOne
+*OrderDependency: 10 AnySetup *InputSlot
+*DefaultInputSlot: main
+*InputSlot main/Main: "<</MediaPosition 0>>setpagedevice"
+*InputSlot top/Top: "<</MediaPosition 1>>setpagedevice"
+*InputSlot middle/Middle: "<</MediaPosition 2>>setpagedevice"
+*InputSlot bottom/Bottom: "<</MediaPosition 3>>setpagedevice"
+*InputSlot side/Side: "<</MediaPosition 4>>setpagedevice"
+*CloseUI: *InputSlot
+*OpenUI *Resolution/Resolution: PickOne
+*OrderDependency: 10 AnySetup *Resolution
+*DefaultResolution: 300dpi
+*Resolution 72dpi/72 DPI: "<</HWResolution[72 72]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 96dpi/96 DPI: "<</HWResolution[96 96]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 144dpi/144 DPI: "<</HWResolution[144 144]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 150dpi/150 DPI: "<</HWResolution[150 150]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 300dpi/300 DPI: "<</HWResolution[300 300]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 600dpi/600 DPI: "<</HWResolution[600 600]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 720dpi/720 DPI: "<</HWResolution[720 720]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 1200dpi/1200 DPI: "<</HWResolution[1200 1200]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 2400dpi/2400 DPI: "<</HWResolution[2400 2400]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 3600dpi/3600 DPI: "<</HWResolution[3600 3600]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*Resolution 4000dpi/4000 DPI: "<</HWResolution[4000 4000]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*CloseUI: *Resolution
+*nl.Translation Manufacturer/SavaPage: ""
+*nl.Translation ModelName/savapage.org: ""
+*nl.Translation ShortNickName/savapage.org: ""
+*nl.Translation NickName/savapage.org, 0.9.11: ""
+*nl.Translation PageSize/Media Size: ""
+*nl.PageSize Letter/US Letter: ""
+*nl.PageSize A4/A4: ""
+*nl.PageSize A3/A3: ""
+*nl.PageSize A2/A2: ""
+*nl.PageSize A1/A1: ""
+*nl.PageSize A0/A0: ""
+*nl.PageSize EnvC0/Envelope C0: ""
+*nl.PageSize EnvC1/Envelope C1: ""
+*nl.PageSize EnvC2/Envelope C2: ""
+*nl.PageSize EnvC3/Envelope C3: ""
+*nl.PageSize EnvC4/Envelope C4: ""
+*nl.PageSize EnvC5/Envelope C5: ""
+*nl.PageSize EnvC6/Envelope C6: ""
+*nl.PageSize EnvC7/Envelope C7: ""
+*nl.PageSize EnvDL/Envelope DL: ""
+*nl.PageSize EnvMonarch/Envelope Monarch: ""
+*nl.Translation ColorModel/Kleur Modus: ""
+*nl.ColorModel Gray/Grijswaarde: ""
+*nl.ColorModel RGB/RGB: ""
+*nl.ColorModel CMYK/CMYK: ""
+*nl.Translation InputSlot/Media Source: ""
+*nl.InputSlot main/Main: ""
+*nl.InputSlot top/Top: ""
+*nl.InputSlot middle/Middle: ""
+*nl.InputSlot bottom/Bottom: ""
+*nl.InputSlot side/Side: ""
+*nl.Translation Resolution/Resolutie: ""
+*nl.Resolution 72dpi/72 DPI: ""
+*nl.Resolution 96dpi/96 DPI: ""
+*nl.Resolution 144dpi/144 DPI: ""
+*nl.Resolution 150dpi/150 DPI: ""
+*nl.Resolution 300dpi/300 DPI: ""
+*nl.Resolution 600dpi/600 DPI: ""
+*nl.Resolution 720dpi/720 DPI: ""
+*nl.Resolution 1200dpi/1200 DPI: ""
+*nl.Resolution 2400dpi/2400 DPI: ""
+*nl.Resolution 3600dpi/3600 DPI: ""
+*nl.Resolution 4000dpi/4000 DPI: ""
+*DefaultFont: Courier
+*Font AvantGarde-Book: Standard "(1.05)" Standard ROM
+*Font AvantGarde-BookOblique: Standard "(1.05)" Standard ROM
+*Font AvantGarde-Demi: Standard "(1.05)" Standard ROM
+*Font AvantGarde-DemiOblique: Standard "(1.05)" Standard ROM
+*Font Bookman-Demi: Standard "(1.05)" Standard ROM
+*Font Bookman-DemiItalic: Standard "(1.05)" Standard ROM
+*Font Bookman-Light: Standard "(1.05)" Standard ROM
+*Font Bookman-LightItalic: Standard "(1.05)" Standard ROM
+*Font Courier: Standard "(1.05)" Standard ROM
+*Font Courier-Bold: Standard "(1.05)" Standard ROM
+*Font Courier-BoldOblique: Standard "(1.05)" Standard ROM
+*Font Courier-Oblique: Standard "(1.05)" Standard ROM
+*Font Helvetica: Standard "(1.05)" Standard ROM
+*Font Helvetica-Bold: Standard "(1.05)" Standard ROM
+*Font Helvetica-BoldOblique: Standard "(1.05)" Standard ROM
+*Font Helvetica-Narrow: Standard "(1.05)" Standard ROM
+*Font Helvetica-Narrow-Bold: Standard "(1.05)" Standard ROM
+*Font Helvetica-Narrow-BoldOblique: Standard "(1.05)" Standard ROM
+*Font Helvetica-Narrow-Oblique: Standard "(1.05)" Standard ROM
+*Font Helvetica-Oblique: Standard "(1.05)" Standard ROM
+*Font NewCenturySchlbk-Bold: Standard "(1.05)" Standard ROM
+*Font NewCenturySchlbk-BoldItalic: Standard "(1.05)" Standard ROM
+*Font NewCenturySchlbk-Italic: Standard "(1.05)" Standard ROM
+*Font NewCenturySchlbk-Roman: Standard "(1.05)" Standard ROM
+*Font Palatino-Bold: Standard "(1.05)" Standard ROM
+*Font Palatino-BoldItalic: Standard "(1.05)" Standard ROM
+*Font Palatino-Italic: Standard "(1.05)" Standard ROM
+*Font Palatino-Roman: Standard "(1.05)" Standard ROM
+*Font Symbol: Special "(001.005)" Special ROM
+*Font Times-Bold: Standard "(1.05)" Standard ROM
+*Font Times-BoldItalic: Standard "(1.05)" Standard ROM
+*Font Times-Italic: Standard "(1.05)" Standard ROM
+*Font Times-Roman: Standard "(1.05)" Standard ROM
+*Font ZapfChancery-MediumItalic: Standard "(1.05)" Standard ROM
+*Font ZapfDingbats: Special "(001.005)" Special ROM
+*% End of SAVAPAGE.ppd, 11082 bytes.

@@ -1,10 +1,31 @@
 <?php
-
+/***********************************************
+* File      :   user_identity.php
+* Project   :   Z-Push
+* Descr     :   Functions for using within the IMAP backend
+*
+* Created   :   2014
+*
+* Copyright 2014 - 2016 Zarafa Deutschland GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License, version 3,
+* as published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Consult LICENSE file for details
+************************************************/
 
 /**
  * Returns the default value for "From"
  *
- * @access private
  * @return string
  */
 function getDefaultFromValue($username, $domain) {
@@ -39,7 +60,6 @@ function getDefaultFromValue($username, $domain) {
 /**
  * Return the default value for "FullName"
  *
- * @access private
  * @param string     $username          Username
  * @return string
  */
@@ -49,7 +69,7 @@ function getDefaultFullNameValue($username, $domain) {
     if (defined('IMAP_DEFAULTFROM')) {
         switch (IMAP_DEFAULTFROM) {
             case 'ldap':
-                $v = getIdentityFromSql($username, $domain, IMAP_FROM_LDAP_FULLNAME, false);
+                $v = getIdentityFromLdap($username, $domain, IMAP_FROM_LDAP_FULLNAME, false);
                 break;
             case 'sql':
                 $v = getIdentityFromSql($username, $domain, IMAP_FROM_SQL_FULLNAME, false);
@@ -66,7 +86,6 @@ function getDefaultFullNameValue($username, $domain) {
 /**
  * Generate the "From"/"FullName" value stored in a LDAP server
  *
- * @access private
  * @params string   $username    username value
  * @params string   $domain      domain value
  * @params string   $identity    pattern to fill with ldap values
@@ -129,7 +148,6 @@ function getIdentityFromLdap($username, $domain, $identity, $encode = true) {
 /**
  * Generate the "From" value stored in a SQL Database
  *
- * @access private
  * @params string   $username    username value
  * @params string   $domain      domain value
  * @return string
@@ -173,7 +191,6 @@ function getIdentityFromSql($username, $domain, $identity, $encode = true) {
 /**
  * Generate the "From" value from the local posix passwd database
  *
- * @access private
  * @params string   $username    username value
  * @params string   $domain      domain value
  * @return string
@@ -221,7 +238,6 @@ function getIdentityFromPasswd($username, $domain, $identity, $encode = true) {
 /**
  * Encode the From value as Base64
  *
- * @access private
  * @param string    $from   From value
  * @return string
  */

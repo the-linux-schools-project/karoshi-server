@@ -10,29 +10,11 @@
 *
 * Created   :   02.01.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,6 +28,7 @@
 ************************************************/
 
 interface IBackend {
+    const HIERARCHYNOTIFICATION = 'hierarchynotification';
     /**
      * Returns a IStateMachine implementation used to save states
      *
@@ -101,11 +84,12 @@ interface IBackend {
      * @param string        $store              target store, could contain a "domain\user" value
      * @param boolean       $checkACLonly       if set to true, Setup() should just check ACLs
      * @param string        $folderid           if set, only ACLs on this folderid are relevant
+     * @param boolean       $readonly           if set, the folder needs at least read permissions
      *
      * @access public
      * @return boolean
      */
-    public function Setup($store, $checkACLonly = false, $folderid = false);
+    public function Setup($store, $checkACLonly = false, $folderid = false, $readonly = false);
 
     /**
      * Logs off
@@ -307,4 +291,46 @@ interface IBackend {
      * @return Array
      */
     public function GetCurrentUsername();
+
+    /**
+     * Indicates if the Backend supports folder statistics.
+     *
+     * @access public
+     * @return boolean
+     */
+    public function HasFolderStats();
+
+    /**
+     * Returns a status indication of the folder.
+     * If there are changes in the folder, the returned value must change.
+     * The returned values are compared with '===' to determine if a folder needs synchronization or not.
+     *
+     * @param string $store         the store where the folder resides
+     * @param string $folderid      the folder id
+     *
+     * @access public
+     * @return string
+     */
+    public function GetFolderStat($store, $folderid);
+
+    /**
+     * Returns the policy name for the user.
+     * If the backend returns false, the 'default' policy is used.
+     * If the backend returns any other name than 'default' the policygroup with
+     * that name (defined in the policies.ini file) will be applied for this user.
+     *
+     * @access public
+     * @return string|boolean
+     */
+    public function GetUserPolicyName();
+
+    /**
+     * Returns the backend ID of the folder of the KOE GAB.
+     *
+     * @param string $foldername
+     *
+     * @access public
+     * @return string|boolean
+     */
+    public function GetKoeGabBackendFolderId($foldername);
 }

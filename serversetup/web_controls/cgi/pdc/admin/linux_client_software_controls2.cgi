@@ -54,6 +54,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 END_POINT=17
 #Assign VERSION
+VERSION=""
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do

@@ -52,8 +52,9 @@ DATA=`echo $DATA | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed
 #########################
 #Assign data to variables
 #########################
-END_POINT=17
+END_POINT=19
 #Assign VERSION
+VERSION=""
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
@@ -75,6 +76,19 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+		fi
+	let COUNTER=$COUNTER+1
+done
+#Assign INSTALL
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = INSTALLcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		INSTALL=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 		fi
 	let COUNTER=$COUNTER+1
@@ -177,6 +191,6 @@ fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_install_software_packages2.cgi | cut -d' ' -f1`
 #Set software control options
-sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$ACTION:$SOFTWARE:$LOCATION:
+sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$ACTION:$INSTALL:$SOFTWARE:$LOCATION:
 completed
 exit

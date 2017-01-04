@@ -222,6 +222,9 @@ echo "[dfs]
 " >> /etc/samba/smb.conf
 
 	restart_samba
+	#Replicate all DNS
+	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
+	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
 	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
 fi
 
@@ -518,7 +521,7 @@ then
 
 	if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 	then
-		echo nameserver '$PDCIP' >> /etc/resolv.conf
+		echo nameserver '$SERVERIP' >> /etc/resolv.conf
 	fi
 	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi

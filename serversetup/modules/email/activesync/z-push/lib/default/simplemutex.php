@@ -6,29 +6,11 @@
 *
 * Created   :   29.02.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,17 +23,23 @@
 * Consult LICENSE file for details
 ************************************************/
 
-class SimpleMutex {
+class SimpleMutex extends InterProcessData {
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        // initialize super parameters
+        $this->allocate = 64;
+        $this->type = 5173;
+        parent::__construct();
 
-    private $file;
-    private $fp;
-
-    public function __construct($file = __FILE__) {
-        $this->file = $file;
+        if (!$this->IsActive()) {
+            ZLog::Write(LOGLEVEL_ERROR, "SimpleMutex not available as InterProcessData is not available. This is not recommended on duty systems and may result in corrupt user/device linking.");
+        }
     }
 
     /**
-     * Blocks the mutex
+     * Blocks the mutex.
      * Method blocks until mutex is available!
      * ATTENTION: make sure that you *always* release a blocked mutex!
      *
@@ -59,18 +47,24 @@ class SimpleMutex {
      * @return boolean
      */
     public function Block() {
-        $this->fp = fopen($this->file, 'r');
-        return flock($this->fp, LOCK_EX);
+        if ($this->IsActive())
+            return $this->blockMutex();
+
+        ZLog::Write(LOGLEVEL_WARN, "Could not enter mutex as InterProcessData is not available. This is not recommended on duty systems and may result in corrupt user/device linking!");
+        return true;
     }
 
     /**
      * Releases the mutex
-     * After the release other processes are able to block the mutex themselfs
+     * After the release other processes are able to block the mutex themselves.
      *
      * @access public
      * @return boolean
      */
     public function Release() {
-        return flock($this->fp, LOCK_UN) && fclose($this->fp) && $this->fp = null;
+        if ($this->IsActive())
+            return $this->releaseMutex();
+
+        return true;
     }
 }

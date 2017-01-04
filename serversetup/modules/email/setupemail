@@ -463,9 +463,7 @@ a2enmod headers 1>/dev/null
 a2enmod rewrite 1>/dev/null
 
 #Setup z-push for SOGo
-
-#Z-Push does not currrently work with php7 - using sogo-activesync instead.
-#/opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
+/opt/karoshi/serversetup/modules/email/setupzpush $ALIAS
 
 #Setup openchange
 #/opt/karoshi/serversetup/modules/email/setupopenchange

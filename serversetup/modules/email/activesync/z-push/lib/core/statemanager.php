@@ -21,29 +21,11 @@
 *
 * Created   :   26.12.2011
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -80,7 +62,7 @@ class StateManager {
      *
      * @access public
      */
-    public function StateManager() {
+    public function __construct() {
         $this->statemachine = ZPush::GetStateMachine();
         $this->hierarchyOperation = ZPush::HierarchyCommand(Request::GetCommandCode());
         $this->deleteOldStates = (Request::GetCommandCode() === ZPush::COMMAND_SYNC || $this->hierarchyOperation);
@@ -129,15 +111,17 @@ class StateManager {
     /**
      * Returns a folder state (SyncParameters) for a folder id
      *
-     * @param $folderid
+     * @param string    $folderid
+     * @param boolean   $fromCacheIfAvailable   if set to false, the folderdata is always reloaded, default: true
      *
      * @access public
      * @return SyncParameters
      */
-    public function GetSynchedFolderState($folderid) {
+    public function GetSynchedFolderState($folderid, $fromCacheIfAvailable = true) {
         // new SyncParameters are cached
-        if (isset($this->synchedFolders[$folderid]))
+        if ($fromCacheIfAvailable && isset($this->synchedFolders[$folderid])) {
             return $this->synchedFolders[$folderid];
+        }
 
         $uuid = $this->device->GetFolderUUID($folderid);
         if ($uuid) {
@@ -198,15 +182,26 @@ class StateManager {
     }
 
     /**
+     * Returns a counter zero SyncKey.
+     *
+     * @access public
+     * @return string
+     */
+    public function GetZeroSyncKey() {
+        return self::BuildStateKey($this->getNewUuid(), 0);
+    }
+
+    /**
      * Gets the state for a specified synckey (uuid + counter)
      *
      * @param string    $synckey
+     * @param boolean   $forceHierarchyLoading, default: false
      *
      * @access public
      * @return string
      * @throws StateInvalidException, StateNotFoundException
      */
-    public function GetSyncState($synckey) {
+    public function GetSyncState($synckey, $forceHierarchyLoading = false) {
         // No sync state for sync key '0'
         if($synckey == "0") {
             $this->oldStateCounter = 0;
@@ -217,8 +212,8 @@ class StateManager {
         list($this->uuid, $this->oldStateCounter) = self::ParseStateKey($synckey);
 
         // make sure the hierarchy cache is in place
-        if ($this->hierarchyOperation)
-            $this->loadHierarchyCache();
+        if ($this->hierarchyOperation || $forceHierarchyLoading)
+            $this->loadHierarchyCache($forceHierarchyLoading);
 
         // the state machine will discard any sync states before this one, as they are no longer required
         return $this->statemachine->GetState($this->device->GetDeviceId(), IStateMachine::DEFTYPE, $this->uuid, $this->oldStateCounter, $this->deleteOldStates);
@@ -300,7 +295,7 @@ class StateManager {
             return $this->statemachine->GetState($this->device->GetDeviceId(), IStateMachine::BACKENDSTORAGE, $this->uuid, $this->oldStateCounter, $this->deleteOldStates);
         }
         else {
-            return $this->statemachine->GetState($this->device->GetDeviceId(), IStateMachine::BACKENDSTORAGE, false, $this->device->GetFirstSyncTime());
+            return $this->statemachine->GetState($this->device->GetDeviceId(), IStateMachine::BACKENDSTORAGE, false, $this->device->GetFirstSyncTime(), false);
         }
     }
 
@@ -316,8 +311,8 @@ class StateManager {
      */
     public function SetBackendStorage($data, $type = self::BACKENDSTORAGE_PERMANENT) {
         if ($type == self::BACKENDSTORAGE_STATE) {
-        if (!$this->uuid)
-            throw new StateNotYetAvailableException();
+            if (!$this->uuid)
+                throw new StateNotYetAvailableException();
 
             // TODO serialization should be done in the StateMachine
             return $this->statemachine->SetState($data, $this->device->GetDeviceId(), IStateMachine::BACKENDSTORAGE, $this->uuid, $this->newStateCounter);
@@ -473,12 +468,14 @@ class StateManager {
      * Loads the HierarchyCacheState and initializes the HierarchyChache
      * if this is an hierarchy operation
      *
+     * @param boolean $forceLoading, default: false
+     *
      * @access private
      * @return boolean
      * @throws StateNotFoundException
      */
-    private function loadHierarchyCache() {
-        if (!$this->hierarchyOperation)
+    private function loadHierarchyCache($forceLoading = false) {
+        if (!$this->hierarchyOperation && $forceLoading == false)
             return false;
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("StateManager->loadHierarchyCache(): '%s-%s-%s-%d'", $this->device->GetDeviceId(), $this->uuid, IStateMachine::HIERARCHY, $this->oldStateCounter));
@@ -517,8 +514,10 @@ class StateManager {
         foreach ($hc->GetDeletedFolders() as $delfolder)
             self::UnLinkState($this->device, $delfolder->serverid);
 
-        foreach ($hc->ExportFolders() as $folder)
+        foreach ($hc->ExportFolders() as $folder) {
             $this->device->SetFolderType($folder->serverid, $folder->type);
+            $this->device->SetFolderBackendId($folder->serverid, $folder->BackendId);
+        }
 
         return $this->statemachine->SetState($this->device->GetHierarchyCacheData(), $this->device->GetDeviceId(), IStateMachine::HIERARCHY, $this->uuid, $this->newStateCounter);
     }

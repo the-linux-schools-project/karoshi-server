@@ -6,29 +6,11 @@
 *
 * Created   :   01.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,11 +23,9 @@
 * Consult LICENSE file for details
 ************************************************/
 
-
 class WBXMLEncoder extends WBXMLDefs {
     private $_dtd;
     private $_out;
-    private $_outLog;
 
     private $_tagcp = 0;
 
@@ -63,11 +43,10 @@ class WBXMLEncoder extends WBXMLDefs {
     private $multipart; // the content is multipart
     private $bodyparts;
 
-    public function WBXMLEncoder($output, $multipart = false) {
-        $this->log = defined('WBXML_DEBUG') && WBXML_DEBUG;
+    public function __construct($output, $multipart = false) {
+        $this->log = ZLog::IsWbxmlDebugEnabled();
 
         $this->_out = $output;
-        $this->_outLog = StringStreamWrapper::Open("");
 
         // reverse-map the DTD
         foreach($this->dtd["namespaces"] as $nsid => $nsname) {
@@ -160,12 +139,12 @@ class WBXMLEncoder extends WBXMLDefs {
     }
 
     /**
-     * Puts content on the output stack
+     * Puts content on the output stack.
      *
-     * @param $content
+     * @param string $content
      *
      * @access public
-     * @return string
+     * @return
      */
     public function content($content) {
         // We need to filter out any \0 chars because it's the string terminator in WBXML. We currently
@@ -176,6 +155,31 @@ class WBXMLEncoder extends WBXMLDefs {
             return;
         $this->_outputStack();
         $this->_content($content);
+    }
+
+    /**
+     * Puts content of a stream on the output stack AND closes it.
+     *
+     * @param resource $stream
+     * @param boolean $asBase64     if true, the data will be encoded as base64, default: false
+     *
+     * @access public
+     * @return
+     */
+    public function contentStream($stream, $asBase64 = false) {
+        if (!$asBase64) {
+            stream_filter_register('replacenullchar', 'ReplaceNullcharFilter');
+            $rnc_filter = stream_filter_append($stream, 'replacenullchar');
+        }
+
+        $this->_outputStack();
+        $this->_contentStream($stream, $asBase64);
+
+        if (!$asBase64) {
+            stream_filter_remove($rnc_filter);
+        }
+
+        fclose($stream);
     }
 
     /**
@@ -198,7 +202,7 @@ class WBXMLEncoder extends WBXMLDefs {
      */
     public function addBodypartStream($bp) {
         if (!is_resource($bp))
-            throw new Exception("WBXMLEncoder->addBodypartStream(): trying to add a ".gettype($bp)." instead off a stream");
+            throw new WBXMLException("WBXMLEncoder->addBodypartStream(): trying to add a ".gettype($bp)." instead of a stream");
         if ($this->multipart)
             $this->bodyparts[] = $bp;
     }
@@ -261,9 +265,10 @@ class WBXMLEncoder extends WBXMLDefs {
     }
 
     /**
-     * Outputs actual data
+     * Outputs actual data.
      *
      * @access private
+     * @param string $content
      * @return
      */
     private function _content($content) {
@@ -271,6 +276,33 @@ class WBXMLEncoder extends WBXMLDefs {
             $this->logContent($content);
         $this->outByte(self::WBXML_STR_I);
         $this->outTermStr($content);
+    }
+
+    /**
+     * Outputs actual data coming from a stream, optionally encoded as base64.
+     *
+     * @access private
+     * @param resource $stream
+     * @param boolean  $asBase64
+     * @return
+     */
+    private function _contentStream($stream, $asBase64) {
+        // write full stream, including the finalizing terminator to the output stream (stuff outTermStr() would do)
+        $this->outByte(self::WBXML_STR_I);
+        if ($asBase64) {
+            $out_filter = stream_filter_append($this->_out, 'convert.base64-encode');
+        }
+        $written = stream_copy_to_stream($stream, $this->_out);
+        if ($asBase64) {
+            stream_filter_remove($out_filter);
+        }
+        fwrite($this->_out, chr(0));
+
+        if ($this->log) {
+            // data is out, do some logging
+            $stat = fstat($stream);
+            $this->logContent(sprintf("<<< written %d of %d bytes of %s data >>>", $written, $stat['size'], $asBase64 ? "base64 encoded":"plain"));
+        }
     }
 
     /**
@@ -295,7 +327,6 @@ class WBXMLEncoder extends WBXMLDefs {
      */
     private function outByte($byte) {
         fwrite($this->_out, chr($byte));
-        fwrite($this->_outLog, chr($byte));
     }
 
     /**
@@ -330,8 +361,6 @@ class WBXMLEncoder extends WBXMLDefs {
     private function outTermStr($content) {
         fwrite($this->_out, $content);
         fwrite($this->_out, chr(0));
-        fwrite($this->_outLog, $content);
-        fwrite($this->_outLog, chr(0));
     }
 
     /**
@@ -437,7 +466,7 @@ class WBXMLEncoder extends WBXMLDefs {
     /**
      * Logs content to ZLog
      *
-     * @param $content
+     * @param string $content
      *
      * @access private
      * @return
@@ -456,41 +485,27 @@ class WBXMLEncoder extends WBXMLDefs {
     private function processMultipart() {
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("WBXMLEncoder->processMultipart() with %d parts to be processed", $this->getBodypartsCount()));
         $len = ob_get_length();
-        // #190 - KD 2015-06-08 Replace ob_get_flush with ob_get_clean; because we don't want to disable the buffering
         $buffer = ob_get_clean();
         $nrBodyparts = $this->getBodypartsCount();
         $blockstart = (($nrBodyparts + 1) * 2) * 4 + 4;
 
-        $data = pack("iii", ($nrBodyparts + 1), $blockstart, $len);
+        fwrite($this->_out, pack("iii", ($nrBodyparts + 1), $blockstart, $len));
 
-        foreach ($this->bodyparts as $bp) {
+        foreach ($this->bodyparts as $i=>$bp) {
             $blockstart = $blockstart + $len;
-            if (is_resource($bp)) {
-                $len = fstat($bp);
-                $len = (isset($len['size'])) ? $len['size'] : 0;
-            } elseif (is_string($bp)) {
-                $len = strlen($bp);
-            } else {
-                throw new Exception("bp is a ".gettype($bp)."!?!");
+            $len = fstat($bp);
+            $len = (isset($len['size'])) ? $len['size'] : 0;
+            if ($len == 0) {
+                ZLog::Write(LOGLEVEL_WARN, sprintf("WBXMLEncoder->processMultipart(): the length of the body part at position %d is 0", $i));
             }
-            $data .= pack("ii", $blockstart, $len);
+            fwrite($this->_out, pack("ii", $blockstart, $len));
         }
 
-        fwrite($this->_out, $data);
         fwrite($this->_out, $buffer);
-        fwrite($this->_outLog, $data);
-        fwrite($this->_outLog, $buffer);
+
         foreach($this->bodyparts as $bp) {
-            if (is_resource($bp)) {
-                stream_copy_to_stream($bp, $this->_out);
-                stream_copy_to_stream($bp, $this->_outLog);
-                fclose($bp);
-            } elseif (is_string($bp)) {
-                fwrite($this->_out, $bp);
-		fwrite($this->_outLog, $bp);
-            } else {
-                throw new Exception("bp is a ".gettype($bp)."!?!");
-            }
+            stream_copy_to_stream($bp, $this->_out);
+            fclose($bp);
         }
     }
 
@@ -501,11 +516,11 @@ class WBXMLEncoder extends WBXMLDefs {
      * @return void
      */
     private function writeLog() {
-        $stat = fstat($this->_outLog);
-        if ($stat['size'] < 524288) {
-            $data = base64_encode(stream_get_contents($this->_outLog, -1,0));
-        }
-        else {
+        if (ob_get_length() === false) {
+            $data = "output buffer disabled";
+        } elseif (ob_get_length() < 524288) {
+            $data = base64_encode(ob_get_contents());
+        } else {
             $data = "more than 512K of data";
         }
         ZLog::Write(LOGLEVEL_WBXML, "WBXML-OUT: ". $data, false);

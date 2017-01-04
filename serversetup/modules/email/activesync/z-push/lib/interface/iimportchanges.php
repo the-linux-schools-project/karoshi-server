@@ -8,29 +8,11 @@
 *
 * Created   :   02.01.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,15 +57,15 @@ interface IImportChanges extends IChanges {
     public function ImportMessageChange($id, $message);
 
     /**
-     * Imports a deletion. This may conflict if the local object has been modified
+     * Imports a deletion. This may conflict if the local object has been modified.
      *
      * @param string        $id
+     * @param boolean       $asSoftDelete   (opt) if true, the deletion is exported as "SoftDelete", else as "Remove" - default: false
      *
      * @access public
      * @return boolean
-     * @throws StatusException
      */
-    public function ImportMessageDeletion($id);
+    public function ImportMessageDeletion($id, $asSoftDelete = false);
 
     /**
      * Imports a change in 'read' flag
@@ -121,7 +103,7 @@ interface IImportChanges extends IChanges {
      * @param object        $folder         SyncFolder
      *
      * @access public
-     * @return boolean/string               status/id of the folder
+     * @return boolean/SyncObject           status/object with the ath least the serverid of the folder set
      * @throws StatusException
      */
     public function ImportFolderChange($folder);
@@ -129,13 +111,12 @@ interface IImportChanges extends IChanges {
     /**
      * Imports a folder deletion
      *
-     * @param string        $id
-     * @param string        $parent id
+     * @param SyncFolder    $folder         at least "serverid" needs to be set
      *
      * @access public
      * @return boolean/int  success/SYNC_FOLDERHIERARCHY_STATUS
      * @throws StatusException
      */
-    public function ImportFolderDeletion($id, $parent = false);
+    public function ImportFolderDeletion($folder);
 
 }

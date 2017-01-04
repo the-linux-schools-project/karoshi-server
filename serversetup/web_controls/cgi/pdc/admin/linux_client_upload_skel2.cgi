@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -62,22 +62,22 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
@@ -85,30 +85,18 @@ fi
 
 echo '<form action="/cgi-bin/admin/linux_client_upload_skel3.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Linux Client upload skel"'</div><br>'
 
-if [ -f /var/lib/samba/netlogon/linuxclient/versions.txt ]
-then
-LINUXVERSION_COUNT=`cat /var/lib/samba/netlogon/linuxclient/versions.txt | wc -l`
-else
-LINUXVERSION_COUNT=0
-fi
 
 #Show current linux client versions
-if [ $LINUXVERSION_COUNT -gt 0 ]
-then
-echo '<table class="standard" style="text-align: left;" ><tbody>'
-echo '<tr><td style="width: 180px;">'$"Linux Version"'</td><td><select name="_LINUXVERSION_" style="width: 185px;">'
-COUNTER=1
-while [ $COUNTER -le $LINUXVERSION_COUNT ]
+
+echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$"Linux Client Version"'</td><td><select name="_LINUXVERSION_" style="width: 200px;">'
+
+for VERSION in `cat /var/lib/samba/netlogon/linuxclient/versions.txt`
 do
-LINUXVERSION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/linuxclient/versions.txt`
-echo '<option value="'$LINUXVERSION'">'$LINUXVERSION'</option>'
-let COUNTER=$COUNTER+1
+	echo '<option value="'$VERSION'">'$VERSION'</option>'	
 done
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the linux version you want to edit."'</span></a></td></tr></tbody></table>'
-else
-echo $"You have no linux client configurations."'<br>'
-fi
-echo "</div>"
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
-echo '</form></div></body></html>'
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the linux version you want to edit."'</span></a></td></tr></tbody></table>
+</div>
+<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div>
+</form></div></body></html>'
 exit

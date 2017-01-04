@@ -7,7 +7,7 @@
  *              Z-Push implements the FileStateMachine which
  *              saves states to disk.
  *              Backends provide their own IStateMachine
-                implementation of this interface and return
+ *              implementation of this interface and return
  *              an IStateMachine instance with IBackend->GetStateMachine().
  *              Old sync states are not deleted until a new sync state
  *              is requested.
@@ -18,29 +18,11 @@
 *
 * Created   :   02.01.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -82,7 +64,7 @@ interface IStateMachine {
      *
      * @access public
      * @return string
-     * @throws StateNotFoundException, StateInvalidException
+     * @throws StateNotFoundException, StateInvalidException, UnavailableException
      */
     public function GetStateHash($devid, $type, $key = false, $counter = false);
 
@@ -99,7 +81,7 @@ interface IStateMachine {
      *
      * @access public
      * @return mixed
-     * @throws StateNotFoundException, StateInvalidException
+     * @throws StateNotFoundException, StateInvalidException, UnavailableException
      */
     public function GetState($devid, $type, $key = false, $counter = false, $cleanstates = true);
 
@@ -114,25 +96,27 @@ interface IStateMachine {
      *
      * @access public
      * @return boolean
-     * @throws StateInvalidException
+     * @throws StateInvalidException, UnavailableException
      */
     public function SetState($state, $devid, $type, $key = false, $counter = false);
 
     /**
-     * Cleans up all older states
-     * If called with a $counter, all states previous state counter can be removed
-     * If called without $counter, all keys (independently from the counter) can be removed
+     * Cleans up all older states.
+     * If called with a $counter, all states previous state counter can be removed.
+     * If additionally the $thisCounterOnly flag is true, only that specific counter will be removed.
+     * If called without $counter, all keys (independently from the counter) can be removed.
      *
      * @param string    $devid              the device id
      * @param string    $type               the state type
      * @param string    $key
      * @param string    $counter            (opt)
+     * @param string    $thisCounterOnly    (opt) if provided, the exact counter only will be removed
      *
      * @access public
      * @return
      * @throws StateInvalidException
      */
-    public function CleanStates($devid, $type, $key, $counter = false);
+    public function CleanStates($devid, $type, $key, $counter = false, $thisCounterOnly = false);
 
     /**
      * Links a user to a device
@@ -155,14 +139,6 @@ interface IStateMachine {
      * @return boolean
      */
     public function UnLinkUserDevice($username, $devid);
-
-    /**
-     * Get all UserDevice mapping
-     *
-     * @access public
-     * @return array
-     */
-    public function GetAllUserDevice();
 
     /**
      * Returns an array with all device ids for a user.
@@ -202,35 +178,4 @@ interface IStateMachine {
      * @return array(mixed)
      */
     public function GetAllStatesForDevice($devid);
-
-    /**
-     * Retrieves the mapped username for a specific username and backend.
-     *
-     * @param string $username The username to lookup
-     * @param string $backend Name of the backend to lookup
-     *
-     * @return string The mapped username or null if none found
-     */
-    public function GetMappedUsername($username, $backend);
-
-    /**
-     * Maps a username for a specific backend to another username.
-     *
-     * @param string $username The username to map
-     * @param string $backend Name of the backend
-     * @param string $mappedname The mappend username
-     *
-     * @return boolean
-     */
-    public function MapUsername($username, $backend, $mappedname);
-
-    /**
-     * Unmaps a username for a specific backend.
-     *
-     * @param string $username The username to unmap
-     * @param string $backend Name of the backend
-     *
-     * @return boolean
-     */
-    public function UnmapUsername($username, $backend);
 }

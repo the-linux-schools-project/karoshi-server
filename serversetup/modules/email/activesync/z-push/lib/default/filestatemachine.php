@@ -10,29 +10,11 @@
 *
 * Created   :   01.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +33,6 @@ class FileStateMachine implements IStateMachine {
 
     private $userfilename;
     private $settingsfilename;
-    private $usermapfilename;
 
     /**
      * Constructor
@@ -61,7 +42,7 @@ class FileStateMachine implements IStateMachine {
      * @access public
      * @throws FatalMisconfigurationException
      */
-    public function FileStateMachine() {
+    public function __construct() {
         if (!defined('STATE_DIR'))
             throw new FatalMisconfigurationException("No configuration for the state directory available.");
 
@@ -74,7 +55,6 @@ class FileStateMachine implements IStateMachine {
         $this->getDirectoryForDevice(Request::GetDeviceID());
         $this->userfilename = STATE_DIR . 'users';
         $this->settingsfilename = STATE_DIR . 'settings';
-        $this->usermapfilename = STATE_DIR . 'usermap';
 
         if ((!file_exists($this->userfilename) && !touch($this->userfilename)) || !is_writable($this->userfilename))
             throw new FatalMisconfigurationException("Not possible to write to the configured state directory.");
@@ -94,7 +74,7 @@ class FileStateMachine implements IStateMachine {
      *
      * @access public
      * @return string
-     * @throws StateNotFoundException, StateInvalidException
+     * @throws StateNotFoundException, StateInvalidException, UnavailableException
      */
     public function GetStateHash($devid, $type, $key = false, $counter = false) {
         $filename = $this->getFullFilePath($devid, $type, $key, $counter);
@@ -119,7 +99,7 @@ class FileStateMachine implements IStateMachine {
      *
      * @access public
      * @return mixed
-     * @throws StateNotFoundException, StateInvalidException
+     * @throws StateNotFoundException, StateInvalidException, UnavailableException
      */
     public function GetState($devid, $type, $key = false, $counter = false, $cleanstates = true) {
         if ($counter && $cleanstates)
@@ -128,10 +108,11 @@ class FileStateMachine implements IStateMachine {
         // Read current sync state
         $filename = $this->getFullFilePath($devid, $type, $key, $counter);
 
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->GetState() on file: '%s'", $filename));
-
         if(file_exists($filename)) {
-            return unserialize(file_get_contents($filename));
+            $contents = file_get_contents($filename);
+            $bytes = strlen($contents);
+            ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->GetState() read '%d' bytes from file: '%s'", $bytes, $filename ));
+            return unserialize($contents);
         }
         // throw an exception on all other states, but not FAILSAVE as it's most of the times not there by default
         else if ($type !== IStateMachine::FAILSAVE)
@@ -149,13 +130,13 @@ class FileStateMachine implements IStateMachine {
      *
      * @access public
      * @return boolean
-     * @throws StateInvalidException
+     * @throws StateInvalidException, UnavailableException
      */
     public function SetState($state, $devid, $type, $key = false, $counter = false) {
         $state = serialize($state);
 
         $filename = $this->getFullFilePath($devid, $type, $key, $counter);
-        if (($bytes = Utils::safe_put_contents($filename, $state)) === false)
+        if (($bytes = Utils::SafePutContents($filename, $state)) === false)
             throw new FatalMisconfigurationException(sprintf("FileStateMachine->SetState(): Could not write state '%s'",$filename));
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->SetState() written %d bytes on file: '%s'", $bytes, $filename));
@@ -163,26 +144,28 @@ class FileStateMachine implements IStateMachine {
     }
 
     /**
-     * Cleans up all older states
-     * If called with a $counter, all states previous state counter can be removed
-     * If called without $counter, all keys (independently from the counter) can be removed
+     * Cleans up all older states.
+     * If called with a $counter, all states previous state counter can be removed.
+     * If additionally the $thisCounterOnly flag is true, only that specific counter will be removed.
+     * If called without $counter, all keys (independently from the counter) can be removed.
      *
      * @param string    $devid              the device id
      * @param string    $type               the state type
      * @param string    $key
      * @param string    $counter            (opt)
+     * @param string    $thisCounterOnly    (opt) if provided, the exact counter only will be removed
      *
      * @access public
      * @return
      * @throws StateInvalidException
      */
-    public function CleanStates($devid, $type, $key, $counter = false) {
+    public function CleanStates($devid, $type, $key, $counter = false, $thisCounterOnly = false) {
         $matching_files = glob($this->getFullFilePath($devid, $type, $key). "*", GLOB_NOSORT);
         if (is_array($matching_files)) {
             foreach($matching_files as $state) {
                 $file = false;
                 if($counter !== false && preg_match('/([0-9]+)$/', $state, $matches)) {
-                    if($matches[1] < $counter) {
+                    if(($thisCounterOnly === false && $matches[1] < $counter) || ($thisCounterOnly === true && $matches[1] == $counter)) {
                         $candidate = $this->getFullFilePath($devid, $type, $key, (int)$matches[1]);
 
                         if ($candidate == $state)
@@ -210,7 +193,7 @@ class FileStateMachine implements IStateMachine {
      * @return boolean     indicating if the user was added or not (existed already)
      */
     public function LinkUserDevice($username, $devid) {
-        $mutex = new SimpleMutex(__FILE__);
+        $mutex = new SimpleMutex();
         $changed = false;
 
         // exclusive block
@@ -233,7 +216,7 @@ class FileStateMachine implements IStateMachine {
             }
 
             if ($changed) {
-                $bytes = Utils::safe_put_contents($this->userfilename, serialize($users));
+                $bytes = Utils::SafePutContents($this->userfilename, serialize($users));
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->LinkUserDevice(): wrote %d bytes to users file", $bytes));
             }
             else
@@ -254,7 +237,7 @@ class FileStateMachine implements IStateMachine {
      * @return boolean
      */
     public function UnLinkUserDevice($username, $devid) {
-        $mutex = new SimpleMutex(__FILE__);
+        $mutex = new SimpleMutex();
         $changed = false;
 
         // exclusive block
@@ -281,7 +264,7 @@ class FileStateMachine implements IStateMachine {
             }
 
             if ($changed) {
-                $bytes = Utils::safe_put_contents($this->userfilename, serialize($users));
+                $bytes = Utils::SafePutContents($this->userfilename, serialize($users));
                 ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->UnLinkUserDevice(): wrote %d bytes to users file", $bytes));
             }
             else
@@ -290,16 +273,6 @@ class FileStateMachine implements IStateMachine {
             $mutex->Release();
         }
         return $changed;
-    }
-
-    /**
-     * Get all UserDevice mapping
-     *
-     * @access public
-     * @return array
-     */
-    public function GetAllUserDevice() {
-        return unserialize(file_get_contents($this->userfilename))?:array();
     }
 
     /**
@@ -379,8 +352,7 @@ class FileStateMachine implements IStateMachine {
 
         $settings[self::VERSION] = $version;
         ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->SetStateVersion() saving supported state version, value '%d'", $version));
-        $status = Utils::safe_put_contents($this->settingsfilename, serialize($settings));
-        Utils::FixFileOwner($this->settingsfilename);
+        $status = Utils::SafePutContents($this->settingsfilename, serialize($settings));
         return $status;
     }
 
@@ -394,136 +366,52 @@ class FileStateMachine implements IStateMachine {
      */
     public function GetAllStatesForDevice($devid) {
         $types = array(IStateMachine::DEVICEDATA, IStateMachine::FOLDERDATA, IStateMachine::FAILSAVE, IStateMachine::HIERARCHY, IStateMachine::BACKENDSTORAGE);
-	$typematch = implode("|", $types);
         $out = array();
         $devdir = $this->getDirectoryForDevice($devid) . "/$devid-";
 
         foreach (glob($devdir . "*", GLOB_NOSORT) as $devdata) {
-            $str = substr($devdata, strlen($devdir)-1);
-            $matches = array();
+            // cut the device dir away and split into parts
+            $parts = explode("-", substr($devdata, strlen($devdir)));
 
-            if (!preg_match("/^(?:-(\w{8}-\w{4}-\w{4}-\w{4}-\w{12}))?(?:-($typematch))?(?:-(\d+))?$/", $str, $matches))
-                throw new Exception(sprintf("GetAllStatesForDevice(): didn't match the regexp !!!: %s", $str));
+            $state = array('type' => false, 'counter' => false, 'uuid' => false);
 
-            $out[] = array(
-                'uuid' => (isset($matches[1]) ? $matches[1] : false),
-                'type' => (isset($matches[2]) ? $matches[2] : false),
-                'counter' => (isset($matches[3]) ? $matches[3] : false),
-            );
+            // part 0 could be "devicedata" or another type in broken states
+            if (isset($parts[0]) && in_array($parts[0], $types))
+                $state['type'] = $parts[0];
+
+            if (isset($parts[0]) && strlen($parts[0]) == 8 &&
+                isset($parts[1]) && strlen($parts[1]) == 4 &&
+                isset($parts[2]) && strlen($parts[2]) == 4 &&
+                isset($parts[3]) && strlen($parts[3]) == 4 &&
+                isset($parts[4]) && strlen($parts[4]) == 12) {
+
+                $state['uuid'] = $parts[0]."-".$parts[1]."-".$parts[2]."-".$parts[3]."-".$parts[4];
+            }
+
+            if (isset($parts[5]) && is_numeric($parts[5])) {
+                $state['counter'] = $parts[5];
+                $state['type'] = ""; // default
+            }
+
+            if (isset($parts[5])) {
+                if (is_int($parts[5])) {
+                    $state['counter'] = $parts[5];
+                }
+                else if (in_array($parts[5], $types)) {
+                    $state['type'] = $parts[5];
+                }
+            }
+            if (isset($parts[6]) && is_numeric($parts[6])) {
+                $state['counter'] = $parts[6];
+            }
+            // Permanent BS are recognized here
+            if($state['counter'] == false && $state['uuid'] == false && isset($parts[1]) && is_numeric($parts[1])) {
+                $state['counter'] = $parts[1];
+            }
+
+            $out[] = $state;
         }
-
         return $out;
-    }
-
-
-    /**
-     * Return if the User-Device has permission to sync against this Z-Push.
-     *
-     * @param string $user          Username
-     * @param string $devid         DeviceId
-     *
-     * @access public
-     * @return integer
-     */
-    public function GetUserDevicePermission($user, $devid) {
-        $mutex = new SimpleMutex();
-
-        $status = SYNC_COMMONSTATUS_SUCCESS;
-
-        $userFile = STATE_DIR . 'PreAuthUserDevices';
-
-        if ($mutex->Block()) {
-            if (@file_exists($userFile)) {
-                $userList = json_decode(@file_get_contents($userFile), true);
-            }
-            else {
-                $userList = Array();
-            }
-
-            // Android PROVISIONING initial step
-                // LG-D802 is sending an empty deviceid
-            if ($devid != "validate" && $devid != "") {
-                $changed = false;
-
-                if (array_key_exists($user, $userList)) {
-                    // User already pre-authorized
-
-                    // User could be blocked if a "authorized" device exist and it's false
-                    if (!$userList[$user]["authorized"]) {
-                        $status = SYNC_COMMONSTATUS_USERDISABLEDFORSYNC;
-                        ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Blocked user '%s', tried '%s'", $user, $devid));
-                    }
-                    else {
-                        if (array_key_exists($devid, $userList[$user])) {
-                            // Device pre-authorized found
-
-                            if ($userList[$user][$devid] === false) {
-                                $status = SYNC_COMMONSTATUS_DEVICEBLOCKEDFORUSER;
-                                ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Blocked device '%s' for user '%s'", $devid, $user));
-                            }
-                            else {
-                                ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Pre-authorized device '%s' for user '%s'", $devid, $user));
-                            }
-                        }
-                        else {
-                            // Device not pre-authorized
-
-                            if (defined('PRE_AUTHORIZE_NEW_DEVICES') && PRE_AUTHORIZE_NEW_DEVICES === true) {
-                                if (defined('PRE_AUTHORIZE_MAX_DEVICES') && PRE_AUTHORIZE_MAX_DEVICES >= count($userList[$user])) {
-                                    $userList[$user][$devid] = true;
-                                    $changed = true;
-                                    ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Pre-authorized new device '%s' for user '%s'", $devid, $user));
-                                }
-                                else {
-                                    $status = SYNC_COMMONSTATUS_MAXDEVICESREACHED;
-                                    ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Max number of devices reached for user '%s', tried '%s'", $user, $devid));
-                                }
-                            }
-                            else {
-                                $status = SYNC_COMMONSTATUS_DEVICEBLOCKEDFORUSER;
-                                $userList[$user][$devid] = false;
-                                $changed = true;
-                                ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Blocked new device '%s' for user '%s'", $devid, $user));
-                            }
-                        }
-                    }
-                }
-                else {
-                    // User not pre-authorized
-
-                    if (defined('PRE_AUTHORIZE_NEW_USERS') && PRE_AUTHORIZE_NEW_USERS === true) {
-                        $userList[$user] = array("authorized" => true);
-                        if (defined('PRE_AUTHORIZE_NEW_DEVICES') && PRE_AUTHORIZE_NEW_DEVICES === true) {
-                            if (defined('PRE_AUTHORIZE_MAX_DEVICES') && PRE_AUTHORIZE_MAX_DEVICES >= count($userList[$user])) {
-                                $userList[$user][$devid] = true;
-                                ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Pre-authorized new device '%s' for new user '%s'", $devid, $user));
-                            }
-                        }
-                        else {
-                            $status = SYNC_COMMONSTATUS_DEVICEBLOCKEDFORUSER;
-                            $userList[$user][$devid] = false;
-                            ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Blocked new device '%s' for new user '%s'", $devid, $user));
-                        }
-
-                        $changed = true;
-                    }
-                    else {
-                        $status = SYNC_COMMONSTATUS_USERDISABLEDFORSYNC;
-                        $userList[$user] = array("authorized" => false, $devid => false);
-                        $changed = true;
-                        ZLog::Write(LOGLEVEL_INFO, sprintf("FileStateMachine->GetUserDevicePermission(): Blocked new user '%s' and device '%s'", $user, $devid));
-                    }
-                }
-
-                if ($changed) {
-                    file_put_contents($userFile, json_encode($userList));
-                }
-            }
-
-            $mutex->Release();
-        }
-
-        return $status;
     }
 
 
@@ -594,112 +482,4 @@ class FileStateMachine implements IStateMachine {
         return false;
     }
 
-    /**
-     * Retrieves the mapped username for a specific username and backend.
-     *
-     * @param string $username The username to lookup
-     * @param string $backend Name of the backend to lookup
-     *
-     * @return string The mapped username or null if none found
-     */
-    public function GetMappedUsername($username, $backend) {
-        $mutex = new SimpleMutex();
-
-        // exclusive block
-        if ($mutex->Block()) {
-            // Read current mapping
-            $filecontents = @file_get_contents($this->usermapfilename);
-            if ($filecontents)
-                $mapping = unserialize($filecontents);
-            else
-                $mapping = array();
-            $mutex->Release();
-        }
-
-        // Find mapping
-        $key = $username . '/' . $backend;
-        if (isset($mapping[$key])) {
-            return $mapping[$key];
-        }
-        return null;
-    }
-
-    /**
-     * Maps a username for a specific backend to another username.
-     *
-     * @param string $username The username to map
-     * @param string $backend Name of the backend
-     * @param string $mappedname The mappend username
-     *
-     * @return boolean
-     */
-    public function MapUsername($username, $backend, $mappedname) {
-        $mutex = new SimpleMutex();
-
-        // exclusive block
-        if ($mutex->Block()) {
-            // Read current mapping
-            $filecontents = @file_get_contents($this->usermapfilename);
-            if ($filecontents)
-                $mapping = unserialize($filecontents);
-            else
-                $mapping = array();
-
-            // Map username + backend to the mapped username
-            $key = $username . '/' . $backend;
-            $mapping[$key] = $mappedname;
-
-            // Write mapping file
-            $bytes = file_put_contents($this->usermapfilename, serialize($mapping));
-            if ($bytes === false) {
-                ZLog::Write(LOGLEVEL_ERROR, "Unable to write to mapping file");
-                return false;
-            }
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->MapUsername(): wrote %d bytes to mapping file", $bytes));
-
-            $mutex->Release();
-        }
-        return true;
-    }
-
-    /**
-     * Unmaps a username for a specific backend.
-     *
-     * @param string $username The username to unmap
-     * @param string $backend Name of the backend
-     *
-     * @return boolean
-     */
-    public function UnmapUsername($username, $backend) {
-        $mutex = new SimpleMutex();
-
-        // exclusive block
-        if ($mutex->Block()) {
-            // Read current mapping
-            $filecontents = @file_get_contents($this->usermapfilename);
-            if ($filecontents)
-                $mapping = unserialize($filecontents);
-            else
-                $mapping = array();
-
-            // Unmap username + backend
-            $key = $username . '/' . $backend;
-            if (!isset($mapping[$key])) {
-                ZLog::Write(LOGLEVEL_INFO, "Username and backend not found in mapping file");
-                return false;
-            }
-            unset($mapping[$key]);
-
-            // Write mapping file
-            $bytes = file_put_contents($this->usermapfilename, serialize($mapping));
-            if ($bytes === false) {
-                ZLog::Write(LOGLEVEL_ERROR, "Unable to write to mapping file");
-                return false;
-            }
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("FileStateMachine->UnmapUsername(): wrote %d bytes to mapping file", $bytes));
-
-            $mutex->Release();
-        }
-        return true;
-    }
 }

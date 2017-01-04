@@ -6,29 +6,11 @@
 *
 * Created   :   16.02.2012
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,16 +43,16 @@ class GetAttachment extends RequestProcessor {
             $stream = $attachment->data;
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("HandleGetAttachment(): attachment stream from backend: %s", $stream));
 
-            if ($stream == null)
-                throw new StatusException(sprintf("HandleGetAttachment(): No stream resource returned by backend for attachment: %s", $attname), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
+            // need to check for a resource here, as eg. feof('Error') === false and causing infinit loop in while!
             if (!is_resource($stream))
-                throw new StatusException(sprintf("HandleGetAttachment(): is_resource(stream) == false for attachment: %s", $attname), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
+                throw new StatusException(sprintf("HandleGetAttachment(): No stream resource returned by backend for attachment: %s", $attname), SYNC_ITEMOPERATIONSSTATUS_INVALIDATT);
 
             header("Content-Type: application/octet-stream");
+            self::$topCollector->AnnounceInformation("Starting attachment streaming", true);
             $l = fpassthru($stream);
             fclose($stream);
             if ($l === false)
-                throw new Exception("HandleGetAttachment(): fpassthru === false !!!");
+                throw new FatalException("HandleGetAttachment(): fpassthru === false !!!");
             self::$topCollector->AnnounceInformation(sprintf("Streamed %d KB attachment", round($l/1024)), true);
             ZLog::Write(LOGLEVEL_DEBUG, sprintf("HandleGetAttachment(): attachment with %d KB sent to mobile", round($l/1024)));
         }

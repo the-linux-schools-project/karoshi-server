@@ -53,7 +53,7 @@ JOBSMSG=$"Jobs"
 CLEARMSG=$"Clear"
 VIEWMSG=$"View"
 TABLECLASS=headings
-WIDTH1=160
+WIDTH1=200
 WIDTH2=80
 
 if [ $MOBILE = yes ]
@@ -152,158 +152,169 @@ if [ -z "$PRINTER" ]
 then
 	#Get total job count
 	TOTALJOBS=$(lpstat -o | wc -l)
-
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;">
-	<thead><tr><th style="height: 20px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th>'
-	if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
+	if [ "$PRINTER_INFO_COUNT" -gt 0 ]
 	then
-		echo '<th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Status"'</b></th>
-		<th style="width: '$WIDTH2'px; vertical-align: top;">
-		<b>'$"Location"'</b></th>'
-	fi
-	echo '<th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$ENABLEDMSG'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$TESTMSG'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;">'$JOBSMSG'</th>'
-		if [ "$TOTALJOBS" -gt 0 ]
-		then
-			echo '<th style="width: '$WIDTH2'px; vertical-align: top;">'$VIEWMSG'</th><th style="width: '$WIDTH2'px; vertical-align: top;">'$CLEARMSG'</th>'
-		fi
-	echo '</tr></thead><tbody>'
-
-	#Process Printer data
-	PRINTER_COUNTER=0
-	while [ $PRINTER_COUNTER -lt $PRINTER_INFO_COUNT ]
-	do
-		PRINTER_NAME=`echo ${PRINTER_INFO[$PRINTER_COUNTER]} | sed 's/://g'`
-		PDNAME=$PRINTER_NAME
-		if [ $MOBILE = yes ]
-		then
-			PDNAME=${PRINTER_NAME:0:15}
-		fi
-
-		let ARRAY_ENTRY=$PRINTER_COUNTER+1
-		QUEUE_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
-		let ARRAY_ENTRY=$PRINTER_COUNTER+2
-		PRINTING_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
-		let ARRAY_ENTRY=$PRINTER_COUNTER+3
-		QUEUE_COUNT=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | tr -cd '0-9'`
-		PRINTER_LOCATION_ICON=$ICON3
-		INFOCLASS="info"
-		if [ $PRINTER_COUNTER -gt 60 ]
-		then
-			INFOCLASS="info infoabove"
-		fi
-
-		if [ `echo $PRINTING_STATUS | grep -c enabled` -gt 0 ]
-		then
-			PRINTER_ICON=$ICON1
-			PRINTER_STATUS=0
-		else
-			PRINTER_ICON=$ICON2
-			PRINTER_LOCATION_ICON=$ICON4
-			PRINTER_STATUS=1
-		fi
-
-		if [ $VIEWMODE = admin ] || [ $VIEWMODE = tech ]
-		then
-			#Get printer destination
-			PRINTER_DEST=`lpstat -v $PRINTER_NAME | cut -d: -f2-`
-			#Get ppd information
-			if [ -f /etc/cups/ppd/$PRINTER_NAME.ppd ]
-			then
-				PPDNICKNAME=`grep ^*NickName: /etc/cups/ppd/$PRINTER_NAME.ppd | cut -d' ' -f2- | sed 's/"//g'`
-				PPDSET=yes
-			else
-				PPDNICKNAME=$"No PPD file set for this printer."
-				PPDSET=no
-				PRINTER_ICON=/images/help/printer_info_no_ppd.png
-			fi
-		fi
-
-		[ -z "$QUEUE_COUNT" ] && QUEUE_COUNT=0
-		#Show information for each printer
-		echo '<tr><td style="width: '$WIDTH1'px; height: 35px;"><b>'$PDNAME'</b></td>'
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;">
+		<thead><tr><th style="height: 20px; width: '$WIDTH1'px; vertical-align: top;"><b>'$"Printer"'</b></th>'
 		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
 		then
-			echo '<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setppd____" value="____'$PRINTER_NAME'____setppd____">
-			<img src="'$PRINTER_ICON'" alt="'$"Set PPD"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span>
-			</button>
-			</form></td>'
+			echo '<th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Status"'</b></th>
+			<th style="width: '$WIDTH2'px; vertical-align: top;">
+			<b>'$"Location"'</b></th>'
 		fi
-
-		#Show printer location
-		PRINTER_LOCATIONS=`echo -e "$LOCATIONDATA" | grep -w $PRINTER_NAME | cut -d, -f1`
-		if [ -z "$PRINTER_LOCATIONS" ]
-		then
-			PRINTER_LOCATIONS=$"This printer has not been assigned to a location."
-			PRINTER_LOCATION_ICON=$ICON10
-		fi
-
-		if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
-		then
-			echo '<td><form action="printers_control.cgi" method="post">
-
-			<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setlocation____" value="____'$PRINTER_NAME'____setlocation____">
-			<img src="'$PRINTER_LOCATION_ICON'" alt="'$"Set Location"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span>
-			</button>
-			</form></td>'
-		fi
-		if [ $PRINTER_STATUS = 1 ]
-		then
-			echo '
-			<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="EnablePrinter" value="____'$PRINTER_NAME'____enable____">
-			<img src="'$ICON6'" alt="'$"Enable Printer"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Enable Printer Queue"'</span>
-			</button>
-			</form></td>
-			<td></td><td></td>'
-		else
-			echo '
-			<td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="DisablePrinter" value="____'$PRINTER_NAME'____disable____">
-			<img src="'$ICON5'" alt="'$"Disable Printer"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Disable Printer Queue"'</span>
-			</button>
-			</form></td>
-			<td style="width: '$WIDTH2'px;"><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="TestPrinter" value="____'$PRINTER_NAME'____test____">
-			<img src="'$ICON7'" alt="'$"Test Printer"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Test Printer Queue"'</span>
-			</button>
-			</form></td><td>'$QUEUE_COUNT'</td>
-		'
-		fi
-
-		INFOCLASS="$INFOCLASS infoleft"
-		#Show clear queue icon
-		if [ $QUEUE_COUNT -gt 0 ]
-		then
-			echo '<td><form action="printers.cgi" method="post">
-			<button class="'$INFOCLASS'" name="ViewJobs" value="____PRINTER____'$PRINTER_NAME'____">
-			<img src="'$ICON11'" alt="'$"View Jobs"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"View Jobs"'</span>
-			</button>
-			</form></td><td><form action="printers_control.cgi" method="post">
-			<button class="'$INFOCLASS'" name="ClearQueue" value="____'$PRINTER_NAME'____clearqueue____">
-			<img src="'$ICON9'" alt="'$"Clear Queue"'">
-			<span>'$"Printer"': '$PRINTER_NAME'<br><br>Clear Printer Queue</span>
-			</button>
-			</form></td></tr>'
-		else
+		echo '<th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$ENABLEDMSG'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$TESTMSG'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;">'$JOBSMSG'</th>'
 			if [ "$TOTALJOBS" -gt 0 ]
 			then
-				echo '<td><img alt="spacer" src="/images/submenus/printer/spacer.png"></td><td></td>'
+				echo '<th style="width: '$WIDTH2'px; vertical-align: top;">'$VIEWMSG'</th><th style="width: '$WIDTH2'px; vertical-align: top;">'$CLEARMSG'</th>'
 			fi
-			echo '</tr>'
-		fi
+		echo '</tr></thead><tbody>'
 
-		let PRINTER_COUNTER=$PRINTER_COUNTER+5
-	done
+		#Process Printer data
+		PRINTER_COUNTER=0
+		while [ $PRINTER_COUNTER -lt $PRINTER_INFO_COUNT ]
+		do
+			PRINTER_NAME=`echo ${PRINTER_INFO[$PRINTER_COUNTER]} | sed 's/://g'`
+			PDNAME=$PRINTER_NAME
+			if [ $MOBILE = yes ]
+			then
+				PDNAME=${PRINTER_NAME:0:15}
+			fi
 
-	echo '</tbody></table>'
+			let ARRAY_ENTRY=$PRINTER_COUNTER+1
+			QUEUE_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
+			let ARRAY_ENTRY=$PRINTER_COUNTER+2
+			PRINTING_STATUS=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | sed 's/_/ /g'`
+			let ARRAY_ENTRY=$PRINTER_COUNTER+3
+			QUEUE_COUNT=`echo ${PRINTER_INFO[$ARRAY_ENTRY]} | tr -cd '0-9'`
+			PRINTER_LOCATION_ICON=$ICON3
+			INFOCLASS="info"
+			if [ $PRINTER_COUNTER -gt 60 ]
+			then
+				INFOCLASS="info infoabove"
+			fi
 
+			if [ `echo $PRINTING_STATUS | grep -c enabled` -gt 0 ]
+			then
+				PRINTER_ICON=$ICON1
+				PRINTER_STATUS=0
+			else
+				PRINTER_ICON=$ICON2
+				PRINTER_LOCATION_ICON=$ICON4
+				PRINTER_STATUS=1
+			fi
+
+			if [ $VIEWMODE = admin ] || [ $VIEWMODE = tech ]
+			then
+				#Get printer destination
+				PRINTER_DEST=`lpstat -v $PRINTER_NAME | cut -d: -f2-`
+				#Get ppd information
+				if [ -f /etc/cups/ppd/$PRINTER_NAME.ppd ]
+				then
+					PPDNICKNAME=`grep ^*NickName: /etc/cups/ppd/$PRINTER_NAME.ppd | cut -d' ' -f2- | sed 's/"//g'`
+					PPDSET=yes
+				else
+					PPDNICKNAME=$"No PPD file set for this printer."
+					PPDSET=no
+					PRINTER_ICON=/images/help/printer_info_no_ppd.png
+				fi
+			fi
+
+			[ -z "$QUEUE_COUNT" ] && QUEUE_COUNT=0
+			#Show information for each printer
+			echo '<tr><td style="width: '$WIDTH1'px; height: 35px;"><b>'$PDNAME'</b></td>'
+			if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
+			then
+				echo '<td><form action="printers_control.cgi" method="post">
+				<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setppd____" value="____'$PRINTER_NAME'____setppd____">
+				<img src="'$PRINTER_ICON'" alt="'$"Set PPD"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Spool status"'<br>'$Jobs: $QUEUE_COUNT'<br>' $"Accepting jobs": $QUEUE_STATUS'<br>'$"Spool status" : $PRINTING_STATUS'<br>'$PRINTER_DEST'<br>'$PPDNICKNAME'</span>
+				</button>
+				</form></td>'
+			fi
+
+			#Show printer location
+			PRINTER_LOCATIONS=`echo -e "$LOCATIONDATA" | grep -w $PRINTER_NAME | cut -d, -f1`
+			if [ -z "$PRINTER_LOCATIONS" ]
+			then
+				PRINTER_LOCATIONS=$"This printer has not been assigned to a location."
+				PRINTER_LOCATION_ICON=$ICON10
+			fi
+
+			if [ $VIEWMODE = admin ] && [ $MOBILE = no ]
+			then
+				echo '<td><form action="printers_control.cgi" method="post">
+
+				<button class="'$INFOCLASS'" name="____'$PRINTER_NAME'____setlocation____" value="____'$PRINTER_NAME'____setlocation____">
+				<img src="'$PRINTER_LOCATION_ICON'" alt="'$"Set Location"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Location"':<br>'$PRINTER_LOCATIONS'</span>
+				</button>
+				</form></td>'
+			fi
+			if [ $PRINTER_STATUS = 1 ]
+			then
+				echo '
+				<td><form action="printers_control.cgi" method="post">
+				<button class="'$INFOCLASS'" name="EnablePrinter" value="____'$PRINTER_NAME'____enable____">
+				<img src="'$ICON6'" alt="'$"Enable Printer"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Enable Printer Queue"'</span>
+				</button>
+				</form></td>
+				<td></td><td></td>'
+			else
+				echo '
+				<td><form action="printers_control.cgi" method="post">
+				<button class="'$INFOCLASS'" name="DisablePrinter" value="____'$PRINTER_NAME'____disable____">
+				<img src="'$ICON5'" alt="'$"Disable Printer"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Disable Printer Queue"'</span>
+				</button>
+				</form></td>
+				<td style="width: '$WIDTH2'px;"><form action="printers_control.cgi" method="post">
+				<button class="'$INFOCLASS'" name="TestPrinter" value="____'$PRINTER_NAME'____test____">
+				<img src="'$ICON7'" alt="'$"Test Printer"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"Test Printer Queue"'</span>
+				</button>
+				</form></td><td>'$QUEUE_COUNT'</td>
+			'
+			fi
+
+			INFOCLASS="$INFOCLASS infoleft"
+			#Show clear queue icon
+			if [ $QUEUE_COUNT -gt 0 ]
+			then
+				echo '<td><form action="printers.cgi" method="post">
+				<button class="'$INFOCLASS'" name="ViewJobs" value="____PRINTER____'$PRINTER_NAME'____">
+				<img src="'$ICON11'" alt="'$"View Jobs"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>'$"View Jobs"'</span>
+				</button>
+				</form></td><td><form action="printers_control.cgi" method="post">
+				<button class="'$INFOCLASS'" name="ClearQueue" value="____'$PRINTER_NAME'____clearqueue____">
+				<img src="'$ICON9'" alt="'$"Clear Queue"'">
+				<span>'$"Printer"': '$PRINTER_NAME'<br><br>Clear Printer Queue</span>
+				</button>
+				</form></td></tr>'
+			else
+				if [ "$TOTALJOBS" -gt 0 ]
+				then
+					echo '<td><img alt="spacer" src="/images/submenus/printer/spacer.png"></td><td></td>'
+				fi
+				echo '</tr>'
+			fi
+
+			let PRINTER_COUNTER=$PRINTER_COUNTER+5
+		done
+
+		echo '</tbody></table>'
+	else
+		echo '<ul><li>'$"No Printer queues have been added"'</ul></li>'
+		sleep 3
+		#There are no printer queues so redirect to add printer queue
+		echo "<form action=\"printers_add_fm.cgi\" method=\"post\" id=\"printersadd\">
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME2"_"SERVERTYPE_$SERVERTYPE"_"SERVERMASTER_$SERVERMASTER"_"\" value=\"\">
+</form>
+<script language=\"JavaScript\" type=\"text/javascript\">
+document.getElementById('printersadd').submit();
+</script>"
+	fi
 	#Reload the page every 3 minutes
 	echo '<form id="refresh_form" action="printers.cgi" method="post"><input type="hidden" name="_ReloadPage_" value="_"> </form>
 <script type="text/javascript">

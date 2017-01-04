@@ -278,17 +278,19 @@ then
 	echo ''$"Forename"'<br>
 	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
+	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	'$"Password"'<br>
+	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	'$"Confirm Password"'<br>
+	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
+
 	if [ $INSTALL_TYPE != home ]
 	then
 		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "3" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
+		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
 	fi
-	echo ''$"Password"'<br>
-	<input tabindex= "4" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
-	'$"Confirm Password"'<br>
-	<input tabindex= "5" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>
-	'$"Change at next logon"'<br>
+
+	echo '	'$"Change at next logon"'<br>
 	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
 	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
 	<option value="n" '$NEXTLOGON2'>'$"No"'</option>
@@ -325,7 +327,13 @@ else
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
         <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
+	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
+	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
+	echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a></td></tr>
+      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
 
 	if [ $INSTALL_TYPE != home ]
 	then
@@ -334,16 +342,10 @@ else
 		echo '	<tr style="display:none;">'
 	fi
 	echo '<td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "3" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
 
-	echo '<tr><td>'$"Password"'</td><td><input tabindex= "4" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
-;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
-	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-	echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "5" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
-	<tr><td>'$"Change at next logon"'</td><td>
+	echo '<tr><td>'$"Change at next logon"'</td><td>
 	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px;">
 	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
 	<option value="n" '$NEXTLOGON2'>'$"No"'</option>

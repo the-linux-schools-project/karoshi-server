@@ -6,29 +6,11 @@
 *
 * Created   :   11.05.2010
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,7 +37,7 @@ class ImportChangesCombined implements IImportChanges {
      *
      * @access public
      */
-    public function ImportChangesCombined(&$backend, $folderid = false, $icc = false) {
+    public function __construct(&$backend, $folderid = false, $icc = false) {
         $this->backend = $backend;
         $this->folderid = $folderid;
         $this->icc = &$icc;
@@ -98,19 +80,20 @@ class ImportChangesCombined implements IImportChanges {
     }
 
     /**
-     * Imports a deletion. This may conflict if the local object has been modified
+     * Imports a deletion. This may conflict if the local object has been modified.
      *
      * @param string        $id
+     * @param boolean       $asSoftDelete   (opt) if true, the deletion is exported as "SoftDelete", else as "Remove" - default: false
      *
      * @access public
      * @return boolean
      */
-    public function ImportMessageDeletion($id) {
+    public function ImportMessageDeletion($id, $asSoftDelete = false) {
         if (!$this->icc) {
             ZLog::Write(LOGLEVEL_ERROR, "ImportChangesCombined->ImportMessageDeletion() icc not configured");
             return false;
         }
-        return $this->icc->ImportMessageDeletion($id);
+        return $this->icc->ImportMessageDeletion($id, $asSoftDelete);
     }
 
     /**
@@ -131,7 +114,6 @@ class ImportChangesCombined implements IImportChanges {
         return $this->icc->ImportMessageReadFlag($id, $flags);
     }
 
-
     /**
      * Imports a move of a message. This occurs when a user moves an item to another folder
      *
@@ -151,15 +133,7 @@ class ImportChangesCombined implements IImportChanges {
             ZLog::Write(LOGLEVEL_WARN, "ImportChangesCombined->ImportMessageMove() cannot move message between two backends");
             return false;
         }
-        $res = $this->icc->ImportMessageMove($id, $this->backend->GetBackendFolder($newfolder));
-
-        if ($res) {
-            //TODO: we should add newid to new folder, instead of a full folder resync
-            ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportChangesCombined->ImportMessageMove(): Force resync of dest folder (%s)", $newfolder));
-            ZPushAdmin::ResyncFolder(Request::GetAuthUser(), Request::GetDeviceID(), $newfolder);
-        }
-
-        return $res;
+        return $this->icc->ImportMessageMove($id, $this->backend->GetBackendFolder($newfolder));
     }
 
 
@@ -173,7 +147,7 @@ class ImportChangesCombined implements IImportChanges {
      * @param object        $folder         SyncFolder
      *
      * @access public
-     * @return boolean/string               status/id of the folder
+     * @return boolean/SyncObject           status/object with the ath least the serverid of the folder set
      */
     public function ImportFolderChange($folder) {
         $id = $folder->serverid;
@@ -206,21 +180,24 @@ class ImportChangesCombined implements IImportChanges {
         }
 
         $this->icc = $this->backend->getBackend($backendid)->GetImporter();
-        $res = $this->icc->ImportFolderChange($folder);
+        $resFolder = $this->icc->ImportFolderChange($folder);
         ZLog::Write(LOGLEVEL_DEBUG, 'ImportChangesCombined->ImportFolderChange() success');
-        return $backendid.$this->backend->config['delimiter'].$res;
+        $folder->serverid = $backendid . $this->backend->config['delimiter'] . $resFolder->serverid;
+        // TODO Check if move folder is supported ($parent is different). This is tricky, because you could tell e.g. a CardDAV folder to be moved to the trash of the IMAP backend on the mobile.
+        return $folder;
     }
 
     /**
      * Imports a folder deletion
      *
-     * @param string        $id
-     * @param string        $parent id
+     * @param SyncFolder    $folder         at least "serverid" needs to be set
      *
      * @access public
      * @return boolean/int  success/SYNC_FOLDERHIERARCHY_STATUS
      */
-    public function ImportFolderDeletion($id, $parent = false) {
+    public function ImportFolderDeletion($folder) {
+        $id = $folder->serverid;
+        $parent = isset($folder->parentid) ? $folder->parentid : false;
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportChangesCombined->ImportFolderDeletion('%s', '%s'), $id, $parent"));
         $backendid = $this->backend->GetBackendId($id);
         if(!empty($this->backend->config['backends'][$backendid]['subfolder']) && $id == $backendid.$this->backend->config['delimiter'].'0') {
@@ -235,7 +212,9 @@ class ImportChangesCombined implements IImportChanges {
             $parent = $this->backend->GetBackendFolder($parent);
 
         $this->icc = $backend->GetImporter();
-        $res = $this->icc->ImportFolderDeletion($id, $parent);
+        $folder->serverid = $id;
+        $folder->parentid = $parent;
+        $res = $this->icc->ImportFolderDeletion($folder);
         ZLog::Write(LOGLEVEL_DEBUG, 'ImportChangesCombined->ImportFolderDeletion() success');
         return $res;
     }
@@ -293,6 +272,40 @@ class ImportChangesCombined implements IImportChanges {
         }
         return $this->icc->GetState();
     }
+
+    /**
+     * Sets the states from move operations.
+     * When src and dst state are set, a MOVE operation is being executed.
+     *
+     * @param mixed         $srcState
+     * @param mixed         (opt) $dstState, default: null
+     *
+     * @access public
+     * @return boolean
+     */
+    public function SetMoveStates($srcState, $dstState = null) {
+        ZLog::Write(LOGLEVEL_DEBUG, "ImportChangesCombined->SetMoveStates()");
+        if (!$this->icc) {
+            ZLog::Write(LOGLEVEL_ERROR, "ImportChangesCombined->SetMoveStates() icc not configured");
+            return false;
+        }
+        $this->icc->SetMoveStates($srcState, $dstState);
+        ZLog::Write(LOGLEVEL_DEBUG, "ImportChangesCombined->SetMoveStates() success");
+    }
+
+    /**
+     * Gets the states of special move operations.
+     *
+     * @access public
+     * @return array(0 => $srcState, 1 => $dstState)
+     */
+    public function GetMoveStates() {
+        if (!$this->icc) {
+            ZLog::Write(LOGLEVEL_ERROR, "ImportChangesCombined->GetMoveStates() icc not configured");
+            return false;
+        }
+        return $this->icc->GetMoveStates();
+    }
 }
 
 
@@ -315,8 +328,8 @@ class ImportHierarchyChangesCombinedWrap {
      *
      * @access public
      */
-    public function ImportHierarchyChangesCombinedWrap($backendid, &$backend, &$ihc) {
-        ZLog::Write(LOGLEVEL_DEBUG, "ImportHierarchyChangesCombinedWrap->ImportHierarchyChangesCombinedWrap('$backendid',...)");
+    public function __construct($backendid, &$backend, &$ihc) {
+        ZLog::Write(LOGLEVEL_DEBUG, "ImportHierarchyChangesCombinedWrap->__construct('$backendid',...)");
         $this->backendid = $backendid;
         $this->backend =& $backend;
         $this->ihc = &$ihc;
@@ -347,14 +360,15 @@ class ImportHierarchyChangesCombinedWrap {
     /**
      * Imports a folder deletion
      *
-     * @param string        $id
+     * @param SyncFolder    $folder         at least "serverid" needs to be set
      *
      * @access public
      *
      * @return boolean/int  success/SYNC_FOLDERHIERARCHY_STATUS
      */
-    public function ImportFolderDeletion($id) {
-        ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportHierarchyChangesCombinedWrap->ImportFolderDeletion('%s')", $id));
-        return $this->ihc->ImportFolderDeletion($this->backendid.$this->backend->config['delimiter'].$id);
+    public function ImportFolderDeletion($folder) {
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("ImportHierarchyChangesCombinedWrap->ImportFolderDeletion('%s')", $folder->serverid));
+        $folder->serverid = $this->backendid . $this->backend->config['delimiter'] . $folder->serverid;
+        return $this->ihc->ImportFolderDeletion($folder);
     }
 }

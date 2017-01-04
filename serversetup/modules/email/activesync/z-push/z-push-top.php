@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 /***********************************************
 * File      :   z-push-top.php
@@ -9,29 +9,11 @@
 *
 * Created   :   07.09.2011
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,19 +27,23 @@
 ************************************************/
 
 require_once 'vendor/autoload.php';
-require_once 'config.php';
+
+if (!defined('ZPUSH_CONFIG')) define('ZPUSH_CONFIG', 'config.php');
+include_once(ZPUSH_CONFIG);
 
 /************************************************
  * MAIN
  */
     declare(ticks = 1);
     define('BASE_PATH_CLI',  dirname(__FILE__) ."/");
-
+    set_include_path(get_include_path() . PATH_SEPARATOR . BASE_PATH_CLI);
     try {
         ZPush::CheckConfig();
-        ZLog::Initialize();
         if (!function_exists("pcntl_signal"))
             throw new FatalException("Function pcntl_signal() is not available. Please install package 'php5-pcntl' (or similar) on your system.");
+
+        if (php_sapi_name() != "cli")
+            throw new FatalException("This script can only be called from the CLI.");
 
         $zpt = new ZPushTop();
 
@@ -74,10 +60,11 @@ require_once 'config.php';
             system("stty sane");
         }
         else
-            echo "Z-Push shared memory interprocess communication is not available.\n";
+            echo "Z-Push interprocess communication (IPC) is not available or TopCollector is disabled.\n";
     }
     catch (ZPushException $zpe) {
-        die(get_class($zpe) . ": ". $zpe->getMessage() . "\n");
+        fwrite(STDERR, get_class($zpe) . ": ". $zpe->getMessage() . "\n");
+        exit(1);
     }
 
     echo "terminated\n";
@@ -122,7 +109,7 @@ class ZPushTop {
      *
      * @access public
      */
-    public function ZPushTop() {
+    public function __construct() {
         $this->starttime = time();
         $this->currenttime = time();
         $this->action = "";
@@ -140,7 +127,7 @@ class ZPushTop {
         $this->pingInterval = (defined('PING_INTERVAL') && PING_INTERVAL > 0) ? PING_INTERVAL : 12;
 
         // get a TopCollector
-        $this->topCollector = ZPush::GetTopCollector();
+        $this->topCollector = new TopCollector();
     }
 
     /**
@@ -169,9 +156,6 @@ class ZPushTop {
      */
     public function run() {
         $this->initialize();
-
-        // Non-blocking read from stdin
-        stream_set_blocking(STDIN, FALSE);
 
         do {
             $this->currenttime = time();
@@ -217,6 +201,9 @@ class ZPushTop {
      * @return boolean
      */
     public function IsAvailable() {
+        if (defined('TOPCOLLECTOR_DISABLED') && constant('TOPCOLLECTOR_DISABLED') === true) {
+            return false;
+        }
         return $this->topCollector->IsActive();
     }
 
@@ -446,7 +433,7 @@ class ZPushTop {
         }
         $this->scrPrintAt(5,0, $str);
 
-        $this->scrPrintAt(4,0,"Action: \033[01m" . $this->action . "\033[0m");
+        $this->scrPrintAt(4,0,"Action: \033[01m".$this->action . "\033[0m");
     }
 
     /**
@@ -456,21 +443,18 @@ class ZPushTop {
      * @return
      */
     private function readLineProcess() {
-        //$ans = explode("^^", shell_exec('bash -c "read -n 1 -t 1 ANS ; echo \\\$?^^\\\$ANS;"'));
-        sleep(1);
-        $ans = false;
-        $ans = fread(STDIN, 1);
+        $ans = explode("^^", `bash -c "read -n 1 -t 1 ANS ; echo \\\$?^^\\\$ANS;"`);
 
-        if ($ans !== false) {
-            if (bin2hex($ans) == "7f") {
-                $this->action = substr($this->action, 0, -1);
+        if ($ans[0] < 128) {
+            if (isset($ans[1]) && bin2hex(trim($ans[1])) == "7f") {
+                $this->action = substr($this->action,0,-1);
             }
 
-            if (trim($ans) != "" ){
-                $this->action .= trim(preg_replace("/[^A-Za-z0-9:]/", "", $ans));
+            if (isset($ans[1]) && $ans[1] != "" ){
+                $this->action .= trim(preg_replace("/[^A-Za-z0-9:]/","",$ans[1]));
             }
 
-            if (bin2hex($ans) == "0a") {
+            if (bin2hex($ans[0]) == "30" && bin2hex($ans[1]) == "0a")  {
                 $cmds = explode(':', $this->action);
                 if ($cmds[0] == "quit" || $cmds[0] == "q" || (isset($cmds[1]) && $cmds[0] == "" && $cmds[1] == "q")) {
                     $this->topCollector->CollectData(true);
@@ -481,7 +465,7 @@ class ZPushTop {
                 else if ($cmds[0] == "clear" ) {
                     $this->topCollector->ClearLatest(true);
                     $this->topCollector->CollectData(true);
-                    $this->topCollector->ReInitSharedMem();
+                    $this->topCollector->ReInitIPC();
                 }
                 else if ($cmds[0] == "filter" || $cmds[0] == "f") {
                     if (!isset($cmds[1]) || $cmds[1] == "") {
@@ -524,14 +508,16 @@ class ZPushTop {
                     $this->status = "resetted";
                     $this->statusexpire = $this->currenttime+2;
                 }
+                // enable/disable wide view
                 else if ($cmds[0] == "wide" || $cmds[0] == "w") {
-                    $this->wide = true;
-                    $this->status = "w i d e  view";
+                    $this->wide = ! $this->wide;
+                    $this->status = ($this->wide)?"w i d e  view" : "normal view";
                     $this->statusexpire = $this->currenttime+2;
                 }
                 else if ($cmds[0] == "help" || $cmds[0] == "h") {
                     $this->helpexpire = $this->currenttime+20;
                 }
+                // grep the log file
                 else if (($cmds[0] == "log" || $cmds[0] == "l") && isset($cmds[1]) ) {
                     if (!file_exists(LOGFILE)) {
                         $this->status = "Logfile can not be found: ". LOGFILE;
@@ -542,6 +528,7 @@ class ZPushTop {
                     }
                     $this->statusexpire = time()+5; // it might be much "later" now
                 }
+                // tail the log file
                 else if (($cmds[0] == "tail" || $cmds[0] == "t")) {
                     if (!file_exists(LOGFILE)) {
                         $this->status = "Logfile can not be found: ". LOGFILE;
@@ -553,6 +540,23 @@ class ZPushTop {
                         $secondary = "";
                         if (isset($cmds[1])) $secondary =  " -n 200 | grep ".escapeshellarg($cmds[1]);
                         system('bash -c "tail -f '. LOGFILE . $secondary . '" > `tty`');
+                        $this->doingTail = false;
+                        $this->status = "Returning from tail, updating data";
+                    }
+                    $this->statusexpire = time()+5; // it might be much "later" now
+                }
+                // tail the error log file
+                else if (($cmds[0] == "error" || $cmds[0] == "e")) {
+                    if (!file_exists(LOGERRORFILE)) {
+                        $this->status = "Error logfile can not be found: ". LOGERRORFILE;
+                    }
+                    else {
+                        $this->doingTail = true;
+                        $this->scrClear();
+                        $this->scrPrintAt(1,0,$this->scrAsBold("Press CTRL+C to return to Z-Push-Top\n\n"));
+                        $secondary = "";
+                        if (isset($cmds[1])) $secondary =  " -n 200 | grep ".escapeshellarg($cmds[1]);
+                        system('bash -c "tail -f '. LOGERRORFILE . $secondary . '" > `tty`');
                         $this->doingTail = false;
                         $this->status = "Returning from tail, updating data";
                     }
@@ -623,6 +627,7 @@ class ZPushTop {
         $h[] = "  ".$this->scrAsBold("f:")." or ".$this->scrAsBold("filter:")."\t\tWithout a search word: resets the filter.";
         $h[] = "  ".$this->scrAsBold("l:STR")." or ".$this->scrAsBold("log:STR")."\tIssues 'less +G' on the logfile, after grepping on the optional STR.";
         $h[] = "  ".$this->scrAsBold("t:STR")." or ".$this->scrAsBold("tail:STR")."\tIssues 'tail -f' on the logfile, grepping for optional STR.";
+        $h[] = "  ".$this->scrAsBold("e:STR")." or ".$this->scrAsBold("error:STR")."\tIssues 'tail -f' on the error logfile, grepping for optional STR.";
         $h[] = "  ".$this->scrAsBold("r")." or ".$this->scrAsBold("reset")."\t\tResets 'wide' or 'filter'.";
         $h[] = "  ".$this->scrAsBold("o:")." or ".$this->scrAsBold("option:")."\t\tSets display options. Valid options specified below";
         $h[] = "  ".$this->scrAsBold("  p")." or ".$this->scrAsBold("push")."\t\tLists/not lists active and open push connections.";
@@ -664,7 +669,7 @@ class ZPushTop {
     /**
      * Pads and trims string
      *
-     * @param string    $string     to be trimmed/padded
+     * @param string    $str        to be trimmed/padded
      * @param int       $size       characters to be considered
      * @param boolean   $cutmiddle  (optional) indicates where to long information should
      *                              be trimmed of, false means at the end
@@ -691,8 +696,9 @@ class ZPushTop {
      * @return array        'width' and 'height' as keys
      */
     private function scrGetSize() {
-        preg_match_all("/rows.([0-9]+);.columns.([0-9]+);/", strtolower(exec('stty -a | fgrep columns')), $output);
-        if(sizeof($output) == 3)
+        $tty = strtolower(exec('stty -a | fgrep columns'));
+        if (preg_match_all("/rows.([0-9]+);.columns.([0-9]+);/", $tty, $output) ||
+            preg_match_all("/([0-9]+).rows;.([0-9]+).columns;/", $tty, $output))
             return array('width' => $output[2][0], 'height' => $output[1][0]);
 
         return array('width' => 80, 'height' => 24);
@@ -705,6 +711,10 @@ class ZPushTop {
      * @return string
      */
     private function getVersion() {
+        if (ZPUSH_VERSION == "SVN checkout" && file_exists(REAL_BASE_PATH.".svn/entries")) {
+            $svn = file(REAL_BASE_PATH.".svn/entries");
+            return "SVN " . substr(trim($svn[4]),stripos($svn[4],"z-push")+7) ." r".trim($svn[3]);
+        }
         return ZPUSH_VERSION;
     }
 

@@ -6,29 +6,11 @@
 *
 * Created   :   01.10.2007
 *
-* Copyright 2007 - 2013 Zarafa Deutschland GmbH
+* Copyright 2007 - 2016 Zarafa Deutschland GmbH
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License, version 3,
-* as published by the Free Software Foundation with the following additional
-* term according to sec. 7:
-*
-* According to sec. 7 of the GNU Affero General Public License, version 3,
-* the terms of the AGPL are supplemented with the following terms:
-*
-* "Zarafa" is a registered trademark of Zarafa B.V.
-* "Z-Push" is a registered trademark of Zarafa Deutschland GmbH
-* The licensing of the Program under the AGPL does not imply a trademark license.
-* Therefore any rights, title and interest in our trademarks remain entirely with us.
-*
-* However, if you propagate an unmodified version of the Program you are
-* allowed to use the term "Z-Push" to indicate that you distribute the Program.
-* Furthermore you may use our trademarks where it is necessary to indicate
-* the intended purpose of a product or service provided you use it in accordance
-* with honest practices in industrial or commercial matters.
-* If you want to propagate modified versions of the Program under the name "Z-Push",
-* you may only do so if you have a written permission by Zarafa Deutschland GmbH
-* (to acquire a permission please contact Zarafa at trademark@zarafa.com).
+* as published by the Free Software Foundation.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,6 +22,38 @@
 *
 * Consult LICENSE file for details
 ************************************************/
+
+if (!function_exists("quoted_printable_encode")) {
+    /**
+     * Process a string to fit the requirements of RFC2045 section 6.7. Note that
+     * this works, but replaces more characters than the minimum set. For readability
+     * the spaces and CRLF pairs aren't encoded though.
+     *
+     * @param string    $string     string to be encoded
+     *
+     * @see http://www.php.net/manual/en/function.quoted-printable-decode.php#89417
+     */
+    function quoted_printable_encode($string) {
+        return preg_replace('/[^\r\n]{73}[^=\r\n]{2}/', "$0=\n", str_replace(array('%20', '%0D%0A', '%'), array(' ', "\r\n", '='), rawurlencode($string)));
+    }
+}
+
+if (!function_exists("apache_request_headers")) {
+    /**
+      * When using other webservers or using php as cgi in apache
+      * the function apache_request_headers() is not available.
+      * This function parses the environment variables to extract
+      * the necessary headers for Z-Push
+      */
+    function apache_request_headers() {
+        $headers = array();
+        foreach ($_SERVER as $key => $value)
+            if (substr($key, 0, 5) == 'HTTP_')
+                $headers[strtr(substr($key, 5), '_', '-')] = $value;
+
+        return $headers;
+    }
+}
 
 if (!function_exists("hex2bin")) {
     /**
@@ -115,4 +129,20 @@ if (!function_exists('http_response_code')) {
 
         return $code;
     }
+}
+
+if (!function_exists('memory_get_peak_usage')) {
+    /**
+     * memory_get_peak_usage is not available prior to PHP 5.2.
+     * This complementary function will return the value of memory_get_usage();
+     * @see http://php.net/manual/en/function.memory-get-usage.php
+     * @see http://php.net/manual/en/function.memory-get-peak-usage.php
+     *
+     * @param boolean $real_usage
+     */
+    function memory_get_peak_usage($real_usage = false) {
+        ZLog::Write(LOGLEVEL_DEBUG, "memory_get_peak_usage() is not available on this system. The value of memory_get_usage() will be used.");
+        return memory_get_usage();
+    }
+
 }

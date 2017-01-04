@@ -1,12 +1,35 @@
 <?php
 
+/***********************************************
+* File      :   mime_encode.php
+* Project   :   Z-Push
+* Descr     :   Functions for using within the IMAP backend
+*
+* Created   :   2014
+*
+* Copyright 2014 - 2016 Zarafa Deutschland GmbH
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License, version 3,
+* as published by the Free Software Foundation.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Consult LICENSE file for details
+************************************************/
+
 /**
  * Add extra parts (not text; inlined or attached parts) to a mimepart object.
  *
  * @param Mail_mimePart $email reference to the object
  * @param array $parts array of parts
  *
- * @access private
  * @return void
  */
 function add_extra_sub_parts(&$email, $parts) {
@@ -43,7 +66,6 @@ function add_extra_sub_parts(&$email, $parts) {
  * @param Mail_mimePart $email reference to the object
  * @param object $part message part
  *
- * @access private
  * @return void
  */
 function add_sub_part(&$email, $part) {
@@ -54,9 +76,9 @@ function add_sub_part(&$email, $part) {
     if (isset($part) && isset($email)) {
         if (isset($part->ctype_primary)) {
             $params['content_type'] = $part->ctype_primary;
-        }
-        if (isset($part->ctype_secondary)) {
-            $params['content_type'] .= '/' . $part->ctype_secondary;
+            if (isset($part->ctype_secondary)) {
+                $params['content_type'] .= '/' . $part->ctype_secondary;
+            }
         }
         if (isset($part->ctype_parameters)) {
             foreach ($part->ctype_parameters as $k => $v) {
@@ -113,7 +135,6 @@ function add_sub_part(&$email, $part) {
  * @param Mail_mimePart $email reference to the object
  * @param object $part message part
  *
- * @access private
  * @return void
  */
 function change_charset_and_add_subparts(&$email, $part) {
@@ -142,7 +163,6 @@ function change_charset_and_add_subparts(&$email, $part) {
  *
  * @param array $message array returned from Mail_mimeDecode->decode
  *
- * @access public
  * @return string MIME message
  */
 function build_mime_message($message) {
@@ -214,7 +234,6 @@ function build_mime_message($message) {
     }
 
     $finalEmail = new Mail_mimePart(isset($message->body) ? $message->body : "", $mimeHeaders);
-    unset($mimeHeaders['headers']);
     unset($mimeHeaders);
 
     if (isset($message->parts)) {
@@ -259,7 +278,6 @@ function build_mime_message($message) {
  *
  * @param Mail_mimeDecode $message
  * @return boolean
- * @access public
  */
 function is_smime($message) {
     $res = false;
@@ -281,7 +299,6 @@ function is_smime($message) {
  *
  * @param Mail_mimeDecode $message
  * @return boolean
- * @access public
  */
 function is_encrypted($message) {
     $res = false;
@@ -300,7 +317,6 @@ function is_encrypted($message) {
  *
  * @param Mail_mimeDecode $message
  * @return boolean
- * @access public
  */
 function is_multipart($message) {
     return isset($message->ctype_primary) && $message->ctype_primary == "multipart";
