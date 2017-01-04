@@ -42,7 +42,8 @@ smtpd_client_restrictions =
 	reject_rbl_client bl.spamcop.net,
 	reject_rbl_client zen.spamhaus.org,
 	reject_rbl_client cbl.abuseat.org,
-	reject_unknown_client_hostname
+	reject_unknown_reverse_client_hostname
+	#reject_unknown_client_hostname
 
 smtpd_sender_restrictions =
 	permit_mynetworks,
