@@ -52,7 +52,7 @@ exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\+\-'`
 if [ -z "$DATA" ]
 then
 	echo `date`: dhcp - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -62,8 +62,8 @@ fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-NEWDOMAINNAMESERVER=`echo "$DATA" | cut -s -d: -f4`
-NEWNETBIOSSERVER=`echo "$DATA" | cut -s -d: -f5`
+NEWDOMAINNAMESERVER=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g' | sed 's/+/ /g;'`
+NEWNETBIOSSERVER=`echo "$DATA" | cut -s -d: -f5 | sed 's/%2C/,/g' | sed 's/+/ /g;'`
 NEWROUTER=`echo "$DATA" | cut -s -d: -f6`
 NEWSUBNET=`echo "$DATA" | cut -s -d: -f7`
 NEWSUBNETMASK=`echo "$DATA" | cut -s -d: -f8`

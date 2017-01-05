@@ -50,7 +50,7 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%\+\-'`
 #########################
 #Assign data to variables
 #########################
@@ -64,7 +64,7 @@ do
 	if [ `echo $DATAHEADER'check'` = DOMAINNAMESERVERcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		DOMAINNAMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		DOMAINNAMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -78,7 +78,7 @@ do
 	if [ `echo $DATAHEADER'check'` = NETBIOSSERVERcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		NETBIOSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
+		NETBIOSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -270,26 +270,14 @@ then
 	MESSAGE=$"DNS Server Error"
 	show_status
 fi
-IPDATA=$DOMAINNAMESERVER
-check_tcpip
-if [ $INPUTCHECK = fail ]
-then
-	MESSAGE=$"DNS Server Error"
-	show_status
-fi
+
 #Check to see that NETBIOSSERVER is not blank
 if [ -z "$NETBIOSSERVER" ]
 then
 	MESSAGE=$"Net Bios Server Error"
 	show_status
 fi
-IPDATA=$NETBIOSSERVER
-check_tcpip
-if [ $INPUTCHECK = fail ]
-then
-	MESSAGE=$"Net Bios Server Error"
-	show_status
-fi
+
 #Check to see that ROUTER is not blank
 if [ -z "$ROUTER" ]
 then
@@ -343,7 +331,7 @@ then
 	show_status
 fi
 #Check to see that ENDADDRESS is not blank
-if [ $ENDADDRESS'null' = null ]
+if [ -z "$ENDADDRESS" ]
 then
 	MESSAGE=$"Range Error"
 	show_status
@@ -355,7 +343,6 @@ then
 	MESSAGE=$"Range Error"
 	show_status
 fi
-
 
 #Check that the start address is in the same range as the server.
 ADDRESS=$STARTADDRESS

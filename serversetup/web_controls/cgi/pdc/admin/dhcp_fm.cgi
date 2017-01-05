@@ -89,10 +89,6 @@ then
 	source /opt/karoshi/server_network/dhcp/dhcp_settings
 else
 	#Guess some useful numbers
-	#Domain name server - use this server ip
-	DOMAINNAMESERVER=`net lookup $HOSTNAME`
-	#Use this server ip
-	NETBIOSSERVER=$DOMAINNAMESERVER
 	ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
 	SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
 	SUBNET=`ipcalc -n $DOMAINNAMESERVER/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2 | cut -d"/" -f1`
@@ -102,6 +98,21 @@ else
 	MAXLEASETIME=43200
 fi
 
+#Domain name server - use this server ip
+DOMAINNAMESERVER=`net lookup $HOSTNAME`
+
+if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
+then
+	#Get a list of all domain controllers in the internal zone
+	for SERVER in $(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
+	do
+		DOMAINNAMESERVER="$DOMAINNAMESERVER, `net lookup $SERVER`"
+	done
+fi
+
+DOMAINNAMESERVER=$(echo "$DOMAINNAMESERVER" | sed 's/,$//g')
+NETBIOSSERVER=$DOMAINNAMESERVER
+
 #Check for a secondary dhcp server
 SECONDARY_DHCP_SERVER=`[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p`
 
@@ -110,12 +121,12 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">
-'$"DNS Server IP"'</td>
+'$"DNS Servers"'</td>
         <td><input value="'$DOMAINNAMESERVER'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
 	<tr>
         <td>
-'$"Netbios Name Server"'</td>
+'$"Netbios Name Servers"'</td>
         <td><input tabindex= "1" value="'$NETBIOSSERVER'" name="_NETBIOSSERVER_" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
