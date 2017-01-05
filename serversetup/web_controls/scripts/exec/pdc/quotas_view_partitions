@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
 then
-echo `date`: quotas_view_partitions - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_partitions.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $quotas_view_partitions_cgi'check' ]
 then
-echo `date`: quotas_view_partitions - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: quotas_view_partitions - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: quotas_view_partitions - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -66,23 +66,23 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: quotas_view_partitions - Not called by quotas_view_partitions.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - Not called by quotas_view_partitions.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: quotas_view_partitions - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: quotas_view_partitions - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: quotas_view_partitions - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_partitions - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: quotas_view_partitions - Viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 #Check for quotas on home partition
@@ -91,14 +91,12 @@ ADDSERVERICON=/images/warnings/server.png
 
 if [ -f /opt/karoshi/server_network/info ]
 then
-source /opt/karoshi/server_network/info
-LOCATION_NAME="- $LOCATION_NAME"
+	source /opt/karoshi/server_network/info
+	LOCATION_NAME="- $LOCATION_NAME"
 fi
 
-echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$"My Servers"' '$LOCATION_NAME'</b></td></tr></tbody></table>'
-
-echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
-<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></td></tr>
+echo '<table class="tablesorter" style="text-align: left;" ><thead><tr><td style="vertical-align: top;">
+<tr><th style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></th></tr></thead><tbody>
 '
 
 #Check main server
@@ -107,45 +105,44 @@ SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
 QUOTASTATUS=off
 if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
 then
-QUOTAICON=/images/submenus/file/quotas_enabled.png
-QUOTASTATUS=on
+	QUOTAICON=/images/submenus/file/quotas_enabled.png
+	QUOTASTATUS=on
 fi
 echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>"
-[ -d /opt/karoshi/server_network/servers/$HOSTNAME ] && cat /opt/karoshi/server_network/servers/$HOSTNAME/*
+[ -d /opt/karoshi/server_network/servers/$(hostname-fqdn) ] && cat /opt/karoshi/server_network/servers/$(hostname-fqdn)/*
 if [ $QUOTASTATUS = on ]
 then
-echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+	echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
 else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_$HOSTNAME"_"\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>$HOSTNAME - $"Enable quotas on this server."</span></a></form></td></tr>"
+	echo '</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/quotas_enable.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_SERVERTYPE_network_SERVERNAME_'$HOSTNAME'_" type="image" class="images" src="'$QUOTAICON'" value=""><span>'$HOSTNAME' - '$"Enable quotas on this server."'</span></a></form></td></tr>'
 fi
 #Check slave servers
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-SERVER=`basename $SERVERS`
-if [ $SERVER != `hostname-fqdn` ]
-then
-[ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $SERVER '
-QUOTAICON=/images/submenus/file/quotas_disabled.png
-SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
-QUOTASTATUS=off
-if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
-then
-QUOTAICON=/images/submenus/file/quotas_enabled.png
-QUOTASTATUS=on
-fi
-echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>'$SERVERROLES'"
-if [ $QUOTASTATUS = on ]
-then
-echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
-else
-echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_'$SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$SERVER' - '$"Enable quotas on this server."'</span></a></form></td></tr>"
-fi
-'
-fi
+	SERVER=`basename $SERVERS`
+	if [ $SERVER != `hostname-fqdn` ]
+	then
+		[ -d /opt/karoshi/server_network/servers/$SERVER ] && SERVERROLES=`cat /opt/karoshi/server_network/servers/$SERVER/*`
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $SERVER '
+		QUOTAICON=/images/submenus/file/quotas_disabled.png
+		SERVERIP=`cat /etc/hosts | grep -w $HOSTNAME | cut -f1`
+		QUOTASTATUS=off
+		if [ `grep -c ,usrquota" " /etc/fstab` != 0 ]
+		then
+		QUOTAICON=/images/submenus/file/quotas_enabled.png
+		QUOTASTATUS=on
+		fi
+		echo "<tr><td style=\"vertical-align: top;\">$HOSTNAME</td><td style=\"vertical-align: top;\">$SERVERIP</td><td>'$SERVERROLES'"
+		if [ $QUOTASTATUS = on ]
+		then
+		echo "</td><td style=\"vertical-align: top;\"><img src=\"$QUOTAICON\" alt=\"quota status\"></td></tr>"
+		else
+		echo "</td><td style=\"vertical-align: top;\"><form action=\"/cgi-bin/admin/quotas_enable.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERTYPE_network_SERVERNAME_'$SERVER'_\" type=\"image\" class=\"images\" src=\"$QUOTAICON\" value=\"\"><span>'$SERVER' - '$"Enable quotas on this server."'</span></a></form></td></tr>"
+		fi
+		'
+	fi
 done
 echo "</tbody></table>"
-
 
 #Check federated servers
 

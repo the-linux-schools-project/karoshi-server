@@ -60,42 +60,42 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -110,60 +110,60 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SERVER is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"You have not chosen a server."
-show_status
+	MESSAGE=$"You have not chosen a server."
+	show_status
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$"The server type cannot be blank."
-show_status
+	MESSAGE=$"The server type cannot be blank."
+	show_status
 fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_enable.cgi | cut -d' ' -f1`
 #Add user
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/quotas_enable
 EXEC_STATUS=`echo $?`
-MESSAGE="$SERVERNAME - $"Quotas have been enabled on /home for this server.""
+MESSAGE=''$SERVERNAME' - '$"Quotas have been enabled on /home for this server."''
 if [ $EXEC_STATUS = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 fi
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE="$SERVERNAME - $"You do not have a partition for /home on this server.""
+	MESSAGE=''$SERVERNAME' - '$"You do not have a partition for /home on this server."''
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=$"The /home partition is listed more than once in fstab on this server."
+	MESSAGE=$"The /home partition is listed more than once in fstab on this server."
 fi
 if [ $EXEC_STATUS = 104 ]
 then
-MESSAGE="$SERVERNAME - $"Quotas are already enabled for the /home partition on this server.""
+	MESSAGE=''$SERVERNAME' - '$"Quotas are already enabled for the /home partition on this server."''
 fi
 if [ $EXEC_STATUS = 105 ]
 then
-MESSAGE=$"SSH is not enabled for this server."
+	MESSAGE=$"SSH is not enabled for this server."
 fi
 show_status
