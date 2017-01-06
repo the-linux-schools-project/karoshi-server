@@ -573,6 +573,9 @@ net.ipv6.conf.all.accept_redirects = 0
 net.ipv4.conf.default.accept_redirects = 0 
 net.ipv6.conf.default.accept_redirects = 0' >> /etc/sysctl.d/10-network-security.conf
 fi
+
+#Copy in rsyslog to logrotate - this works with upstart
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/rsyslog /etc/logrotate.d
 }
 
 function install_e2guardian {

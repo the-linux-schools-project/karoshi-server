@@ -710,7 +710,12 @@ then
 	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVER.$REALM
 fi
 
-#Configure dns for all servers that are not domain controllers
-/opt/karoshi/serversetup/all/scripts/configure_dnsmasq
+if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ]
+then
+	#Configure dns for all servers that are not domain controllers
+	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq
 
+	#Configure dhcp to use the extra domain controller
+
+fi
 exit
