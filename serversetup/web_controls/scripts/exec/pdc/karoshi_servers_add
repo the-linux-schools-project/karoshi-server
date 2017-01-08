@@ -215,11 +215,11 @@ SERVERZONEINFO=`ipcalc -n $SERVERZONEIP | grep ^Network | sed "s/ * / /g" | cut 
 
 if [ '$ZONE' = internal ]
 then
-[ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
+	[ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
 fi
 if [ '$ZONE' = dmz ] || [ '$ZONE' = external ]
 then
-[ $SERVERZONEINFO = '$PDCZONEINFO' ] && exit 104
+	[ $SERVERZONEINFO = '$PDCZONEINFO' ] && exit 104
 fi
 
 sed -i "s/PermitRootLogin Yes/PermitRootLogin without-password/g" /etc/ssh/sshd_config
@@ -230,7 +230,14 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ss
 #Add in fqdn
 if [ ! -f /etc/hostname-fqdn ]
 then
-echo $HOSTNAME.'$REALM' > /etc/hostname-fqdn
+	echo $HOSTNAME.'$REALM' > /etc/hostname-fqdn
+fi
+
+#Make sure logrotation is correct
+if [ $(grep -c "invoke-rc.d rsyslog" /etc/logrotate.d/rsyslog) -gt 0 ]
+then
+	sed -i "s/invoke-rc.d rsyslog rotate > \/dev\/null/reload rsyslog >\/dev\/null 2>\&1 || true/g" /etc/logrotate.d/rsyslog
+	service rsyslog restart 1>/dev/null
 fi
 
 #Create hostname-fqdn command
