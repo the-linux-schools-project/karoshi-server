@@ -128,7 +128,7 @@ then
 			apt-get update
 
 			echo "<ul><li>$SERVERNAME - "$"Installing git""</li></ul>"
-			apt-get install git
+			apt-get install -y git
 			if [ "$?" != 0 ]
 			then
 				echo "<ul><li>$SERVERNAME - "$"There was a problem installing git""</li></ul>"
