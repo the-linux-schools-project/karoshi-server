@@ -1,5 +1,6 @@
 #!/bin/bash
-#Copyright (C) 2016 Paul Sharrad
+#module_printserver
+#Copyright (C) 2007 Paul Sharrad
 
 #This file is part of Karoshi Server.
 #
@@ -25,6 +26,13 @@
 #Website: http://www.karoshi.org.uk
 
 ########################
+#Required input variables
+########################
+#  _SERVERNAME_
+#  _PASSWORD1_  Samba root password for joining the domain.
+#  _PASSWORD2_  Checked against PASSWORD1 for typos.
+
+########################
 #Language
 ########################
 
@@ -37,7 +45,7 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Shell Access"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Print Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -74,7 +82,7 @@ exit
 
 function completed {
 echo '<SCRIPT language="Javascript">'
-echo 'window.location = "shell.cgi"'
+echo 'window.location = "/cgi-bin/admin/printers_add_fm.cgi"'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -91,7 +99,7 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -109,16 +117,16 @@ fi
 #Check to see that SERVERNAME is not blank
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$"The server cannot be blank."
+	MESSAGE=$"The servername cannot be blank."
 	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Shell Access"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Print Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
 #Join server
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_shellinabox.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_shellinabox
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_printserver.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_printserver
 EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 101 ]
@@ -126,7 +134,7 @@ then
 	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 	show_status
 fi
-completed
+
 echo '</div></div></div></body></html>'
 exit
 

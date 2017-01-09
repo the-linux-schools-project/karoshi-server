@@ -1,5 +1,5 @@
 #!/bin/bash
-#Copyright (C) 2016  Paul Sharrad
+#Copyright (C) 2017  Paul Sharrad
 
 #This file is part of Karoshi Server.
 #
@@ -47,7 +47,7 @@ echo '
 <!DOCTYPE html>
 <html>
 <head>
-  <title>'$"Setup Shell Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Setup Savapage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -92,28 +92,32 @@ exit
 #Check to see that servername is not blank
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$"The server cannot be blank."
+	MESSAGE=$"The servername cannot be blank."
 	show_status
 fi
+
+#Check to see if this module has already been installed on the server
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/savapage ]
+then
+	STATUSMSG=$"This module has already been set up on this server."
+fi
+
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '
-<form action="/cgi-bin/admin/module_shellinabox.cgi" method="post">
+<form action="/cgi-bin/admin/module_savapage.cgi" method="post">
 <div id="actionbox">
-<div class="sectiontitle">'$"Setup Shell Access"' - '$SERVERNAME'</div><br>
+
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Savapage"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Print_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up the Savapage Libre Print Management System allowing Web Printing from all devices."' '$"Java and Libre Office will automatically be installed as part of this setup."'</span></a>
+</td></tr></tbody></table><br>
+
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up shell access via your Web Management to you main server."'<br><br>
-'
-
-if [ ! -z "$STATUSMSG" ]
-then
-	echo ''$STATUSMSG'<br><br>'
-fi
-
-echo '</div>
+'$"This will set up the Savapage Libre Print Management System allowing Web Printing from all devices."'<br><br><a href="https://www.savapage.org/">Savapage Libre Print Management</a><br><br>'$"Java and Libre Office will automatically be installed as part of this setup."'<br><br>'$STATUSMSG'
+</div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">
 </div>
