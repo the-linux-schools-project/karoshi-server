@@ -116,7 +116,7 @@ echo '
 
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
-'$"This will set up the Savapage Libre Print Management System allowing Web Printing from all devices."'<br><br><a href="https://www.savapage.org/">Savapage Libre Print Management</a><br><br>'$"Java and Libre Office will automatically be installed as part of this setup."'<br><br>'$STATUSMSG'
+'$"This will set up the Savapage Libre Print Management System allowing Web Printing from all devices."'<br><br>More information can be found for Savapage at <a href="https://www.savapage.org/">www.savapage.org</a><br><br>'$"Java and Libre Office will automatically be installed as part of this setup."'<br><br>'$STATUSMSG'
 </div>
 <div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit">
