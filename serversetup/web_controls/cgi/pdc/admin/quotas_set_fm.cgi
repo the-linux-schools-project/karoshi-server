@@ -53,15 +53,104 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/quotas_set.cgi" name="selectservers" method="post"><b></b>
-  <div id="actionbox"><b>'$"Apply Quota Settings"'</b>
-  <br>
-  <br>
+#########################
+#Get data input
+#########################
+TCPIP_ADDR=$REMOTE_ADDR
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+#########################
+#Assign data to variables
+#########################
+END_POINT=10
+#Assign GROUP
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+#Assign SIZE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SIZEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SIZE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9/n'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+[ -z $SIZE ] && SIZE=300
+
+#Assign MAXFILES
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = MAXFILEScheck ]
+	then
+		let COUNTER=$COUNTER+1
+		MAXFILES=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+[ -z $MAXFILES ] && MAXFILES=2000
+
+#Assign UNIT
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = UNITcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		UNIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+#Assign USERNAME
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+echo '<form action="/cgi-bin/admin/quotas_set.cgi" name="selectservers" method="post">
+<div id="actionbox">
+<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Apply Quota Settings"'</div></td>
+<td>
+<button class="button" formaction="quotas_view_usage_fm.cgi" name="_QuotaUsage_" value="_">
+'$"Quota Usage"'
+</button>
+</td>
+</tr></tbody></table>
+ <br>
 <table class="standard" style="text-align: left;">
   <tbody>
  <tr>
       <td style="width: 180px;">'$"Username"'</td>
-      <td style="width: 120px;"><input size="20" name="_USERNAME_" style="width: 200px;"></td><td>  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to apply these settings to."'<br><br>'$"Leave this field blank if you want to apply the settings to a whole group of users."'</span></a></td>
+      <td style="width: 120px;"><input size="20" name="_USERNAME_" value="'$USERNAME'" style="width: 200px;"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to apply these settings to."'<br><br>'$"Leave this field blank if you want to apply the settings to a whole group of users."'</span></a></td>
     </tr>
     <tr>
       <td style="width: 180px;">'$"Group"'</td>
@@ -70,22 +159,27 @@ echo '<form action="/cgi-bin/admin/quotas_set.cgi" name="selectservers" method="
 #Show groups
 /opt/karoshi/web_controls/group_dropdown_list
 
-echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to apply the quota settings to."'</span></a></td>
+echo '</td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to apply the quota settings to."'</span></a>
+</td>
     </tr>
 
 <tr><td>Unit</td><td>
 <select name="_UNIT_" style="width: 200px;">
-<option value="MB" selected="selected">MB</option> 
-<option>GB</option>
-<option>TB</option>
+<option value="MB">MB</option> 
+<option value="GB" selected="selected">GB</option>
+<option value="TB">TB</option>
 </select>
+</td><td></td></tr>
+<tr><td style="width: 180px;">'$"Size"'</td><td style="width: 120px;"><input maxlength="3" size="9" name="_SIZE_" value="'$SIZE'" style="width: 200px;"></td>
+<td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum file size that users can have on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$"Size"'</td><td style="width: 120px;"><input maxlength="3" size="9" name="_SIZE_" style="width: 200px;" value="300"></td>
-<td> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum file size that users can have on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a></td></tr>
 <tr>
       <td style="width: 180px;">'$"Max Files"'</td>
-      <td style="width: 120px;"><input maxlength="7" size="20" name="_MAXFILES_" style="width: 200px;"
- value="1000"></td><td>  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum number of files that a user can save on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a></td>
+      <td style="width: 120px;"><input maxlength="7" size="20" name="_MAXFILES_" value="'$MAXFILES'" style="width: 200px;"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum number of files that a user can save on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a>
+</td>
     </tr>
   </tbody>
 </table>
@@ -99,5 +193,3 @@ echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt
 '
 exit
 
-
-<option value="allstudents">'$"All Students"'</option>

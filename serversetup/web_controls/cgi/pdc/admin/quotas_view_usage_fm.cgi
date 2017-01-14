@@ -53,15 +53,26 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/quotas_view_usage.cgi" name="selectservers" method="post"><b></b>
-  <div id="actionbox"><b>'$"View Quota Usage"'</b>
-  <br>
+echo '<form action="/cgi-bin/admin/quotas_view_usage.cgi" name="selectservers" method="post">
+  <div id="actionbox">
+
+<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"View Quota Usage"'</div></td>
+<td>
+<button class="button" formaction="quotas_set_fm.cgi" name="_QuotaSettings_" value="_">
+'$"Quota Settings"'
+</button>
+</td>
+</tr></tbody></table>
+
   <br>
 <table class="standard" style="text-align: left;">
   <tbody>
  <tr>
       <td style="width: 180px;">'$"Username"'</td>
-      <td style="width: 120px;"><input size="20" name="_USERNAME_" style="width: 200px;"></td><td>  <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the user that you want to check the quotas for. Leave this field blank if you want to check the quotas for a group."'</span></a></td>
+      <td style="width: 120px;"><input size="20" name="_USERNAME_" style="width: 200px;"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#View_Quota_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the user that you want to check the quotas for. Leave this field blank if you want to check the quotas for a group."'</span></a>
+</td>
     </tr>
     <tr>
       <td style="width: 180px;">'$"Group"'</td>
@@ -70,7 +81,9 @@ echo '<form action="/cgi-bin/admin/quotas_view_usage.cgi" name="selectservers" m
 #Show groups
 /opt/karoshi/web_controls/group_dropdown_list
 
-echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to check the quotas on."'</span></a></td>
+echo '</td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#View_Quota_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to check the quotas on."'</span></a>
+</td>
     </tr>
   </tbody>
 </table>

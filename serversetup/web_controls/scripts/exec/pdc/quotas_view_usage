@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_usage_cgi
 then
-echo `date`: quotas_view_usage - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_usage_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_usage.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $quotas_view_usage_cgi'check' ]
 then
-echo `date`: quotas_view_usage - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: quotas_view_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: quotas_view_usage - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -68,29 +68,29 @@ PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: quotas_view_usage - Not called by quotas_view_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - Not called by quotas_view_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: quotas_view_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: quotas_view_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 #Check to see that USER and GROUP are not blank
-if [ $PRIMARYGROUP'null' = null ] && [ $USERNAME'null' = null ] 
+if [ -z "$PRIMARYGROUP" ] && [ -z "$USERNAME" ] 
 then
-echo `date`: quotas_view_usage - Blank username and group by $REMOTE_USER from $REMOTE_ADDR  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - Blank username and group by $REMOTE_USER from $REMOTE_ADDR  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: quotas_view_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_view_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 echo `date`: quotas_view_usage - viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -98,71 +98,77 @@ echo `date`: quotas_view_usage - viewing by $REMOTE_USER from $REMOTE_ADDR >> /o
 FEDERATED_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-FEDERATED_SERVERS=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		FEDERATED_SERVERS=yes
+	fi
 fi
 
-if [ $USERNAME'null' != null ]
+if [ ! -z "$USERNAME" ]
 then
-SEARCH="$USERNAME"
-PRIMARYGROUP=`id -g -n $USERNAME`
+	SEARCH="$USERNAME"
+	PRIMARYGROUP=`id -g -n $USERNAME`
 else
-SEARCH="$PRIMARYGROUP"
+	SEARCH="$PRIMARYGROUP"
 fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 110px;"><b>Username</b></td><td style="width: 80px;"><b>Server</b></tb><td style="width: 160px;"><b>Homepath</b></td><td>Blocks</td><td><b>Used</b></td><td><b>Size Quota</b></td><td><b>Size Limit</b></td><td><b>File count</b></td><td><b>File Quota</b></td><td><b>File limit</b></td></tr>'
+echo '<form action="/cgi-bin/admin/quotas_set_fm.cgi" name="selectservers" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 110px;"><b>'$"Username"'</b></th><th style="width: 280px;"><b>'$"Homepath"'</b></th><th style="width: 70px;">'$"Blocks"'</th><th style="width: 70px;"><b>'$"Used"'</b></th><th style="width: 80px;"><b>'$"Size Quota"'</b></th><th style="width: 80px;"><b>'$"Size Limit"'</b></th><th style="width: 80px;"><b>'$"File Count"'</b></th><th style="width: 80px;"><b>'$"File Quota"'</b></th><th style="width: 80px;"><b>'$"File limit"'</b></th><th style="width: 80px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 #File servers
 if [ $SERVER = `hostname-fqdn` ]
 then
-for NETWORKUSER in `getent passwd | grep -w $SEARCH | cut -d: -f1`
-do
-QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
-HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
-USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
-BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
-SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
-SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
-if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
-then
-FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
-FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
-FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
-else
-FILECOUNT=`echo $QUOTADATA | cut -d" " -f5`
-FILEQUOTA=`echo $QUOTADATA | cut -d" " -f6`
-FILELIMIT=`echo $QUOTADATA | cut -d" " -f7`
-fi
-echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
-done
-else
-ssh -x -o PasswordAuthentication=no $SERVER '
-for NETWORKUSER in `getent passwd | grep -w '$SEARCH' | cut -d: -f1`
-do
-QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
-HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
-USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
-BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
-SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
-SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
-if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
-then
-FILECOUNT=`echo $QUOTADATA | cut -d" " -f6`
-FILEQUOTA=`echo $QUOTADATA | cut -d" " -f7`
-FILELIMIT=`echo $QUOTADATA | cut -d" " -f8`
-else
-FILECOUNT=`echo $QUOTADATA | cut -d" " -f5`
-FILEQUOTA=`echo $QUOTADATA | cut -d" " -f6`
-FILELIMIT=`echo $QUOTADATA | cut -d" " -f7`
-fi
+	for NETWORKUSER in `getent passwd | grep -w $SEARCH | cut -d: -f1`
+	do
+		QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+		HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+		USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+		BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+		SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+		SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+		FILECOUNT=`echo $QUOTADATA | cut -d" " -f5`
+		FILEQUOTA=`echo $QUOTADATA | cut -d" " -f6`
+		FILELIMIT=`echo $QUOTADATA | cut -d" " -f7`
+		if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+		then
+			WARNINGSTYLE='style="background-color:red; font-weight:bold"'
+			STATUS=$"Over Quota"
+			CHANGEVALBTN='<button class="button" name="_Top_" value="_USERNAME_'$NETWORKUSER'_SIZE_'$SIZELIMIT'_MAXFILES_'$FILELIMIT'_">'$STATUS'</button>'
+		else
+			WARNINGSTYLE=""
+			STATUS=$"Under Quota"
+			CHANGEVALBTN=""
+		fi
 
-echo "<tr><td>$NETWORKUSER</td><td>$HOSTNAME</td><td>$HOMEPATH</td><td>$BLOCKS</td><td>$USEDSIZE</td><td>$SIZEQUOTA</td><td>$SIZELIMIT</td><td>$FILECOUNT</td><td>$FILEQUOTA</td><td>$FILELIMIT</td></tr>"
-done
-'
+		echo "<tr><td $WARNINGSTYLE>$NETWORKUSER</td><td $WARNINGSTYLE>$HOMEPATH</td><td $WARNINGSTYLE>$BLOCKS</td><td $WARNINGSTYLE>$USEDSIZE</td><td $WARNINGSTYLE>$SIZEQUOTA</td><td $WARNINGSTYLE>$SIZELIMIT</td><td $WARNINGSTYLE>$FILECOUNT</td><td $WARNINGSTYLE>$FILEQUOTA</td><td $WARNINGSTYLE>$FILELIMIT</td><td $WARNINGSTYLE>$CHANGEVALBTN</td></tr>"
+	done
+else
+	ssh -x -o PasswordAuthentication=no $SERVER '
+	for NETWORKUSER in `getent passwd | grep -w '$SEARCH' | cut -d: -f1`
+	do
+		QUOTADATA=`quota -vusi $NETWORKUSER | sed -n 3,3p`
+		HOMEPATH=`getent passwd $NETWORKUSER | cut -d: -f6`
+		USEDSIZE=`du -hs $HOMEPATH | sed "s/\t/ /g" | cut -d" " -f1`
+		BLOCKS=`echo $QUOTADATA | cut -d" " -f2`
+		SIZEQUOTA=`echo $QUOTADATA | cut -d" " -f3`
+		SIZELIMIT=`echo $QUOTADATA | cut -d" " -f4`
+		if [ `echo "$QUOTADATA" | grep -c "*"` -gt 0 ]
+		then
+			WARNINGSTYLE="style=\"background-color:red; font-weight:bold\""
+			STATUS=$"Over Quota"
+			CHANGEVALBTN="<button class=\"button\" name=\"_Top_\" value=\"_USERNAME_$NETWORKUSER"_"SIZE_$SIZELIMIT"_"MAXFILES_$FILELIMIT"_"\">$STATUS</button>"
+		else
+			WARNINGSTYLE=""
+			STATUS=$"Under Quota"
+			CHANGEVALBTN=""
+		fi
+		FILECOUNT=`echo $QUOTADATA | cut -d" " -f5`
+		FILEQUOTA=`echo $QUOTADATA | cut -d" " -f6`
+		FILELIMIT=`echo $QUOTADATA | cut -d" " -f7`
+		echo "<tr><td $WARNINGSTYLE>$NETWORKUSER</td><td $WARNINGSTYLE>$HOMEPATH</td><td $WARNINGSTYLE>$BLOCKS</td><td $WARNINGSTYLE>$USEDSIZE</td><td $WARNINGSTYLE>$SIZEQUOTA</td><td $WARNINGSTYLE>$SIZELIMIT</td><td $WARNINGSTYLE>$FILECOUNT</td><td $WARNINGSTYLE>$FILEQUOTA</td><td $WARNINGSTYLE>$FILELIMIT</td><td $WARNINGSTYLE>$CHANGEVALBTN</td></tr>"
+	done
+	'
 fi
 
 #Check federated servers
@@ -225,6 +231,6 @@ fi
 '
 done
 fi
-echo "</tbody></table"
+echo "</tbody></table></form>"
 exit
 
