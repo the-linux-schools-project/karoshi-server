@@ -412,7 +412,7 @@ then
 		[ -f /var/lib/samba/private/idmap.ldb.bak ] && rm -f /var/lib/samba/private/idmap.ldb.bak
 		tdbbackup -s .bak /var/lib/samba/private/idmap.ldb
 		'
-		scp root@"$SERVERNAME":/var/lib/samba/private/idmap.ldb.bak /var/lib/samba/private/idmap.ldb
+		scp root@"$DNSTCPIP":/var/lib/samba/private/idmap.ldb.bak /var/lib/samba/private/idmap.ldb
 
 		#Attempt to join the domain
 		#Delete any existing smb.conf
