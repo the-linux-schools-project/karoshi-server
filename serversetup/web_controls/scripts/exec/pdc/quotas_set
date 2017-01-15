@@ -29,8 +29,8 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_set_cgi
 then
-echo `date`: quotas_set - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_set_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_set.cgi | cut -d' ' -f1`
@@ -142,15 +142,18 @@ if [ ! -z "$USERNAME" ]
 then
 	SEARCH="$USERNAME"
 	PRIMARYGROUP=`id -g -n $USERNAME`
+	SAVESETTINGS=no
 else
 	SEARCH="$PRIMARYGROUP"
+	SAVESETTINGS=yes
 fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
-echo '<table class="tablesorter" id="myTable">
-<thead>
- <tr><th style="width: 80px;"><b>'$"Username"'</b></th><th style="width: 200px;"><b>'$"Server"'</b></th><th style="width: 100px;"><b>'$"Group"'</b></th><th style="width: 100px;"><b>'$"Size Limit"'1</b></th><th style="width: 100px;"><b>'$"Size Limit"'2</b></th><th style="width: 100px;"><b>'$"Max Files"'1</b></th><th style="width: 100px;"><b>'$"Max Files"'2</b></th></tr></thead><tbody>'
+echo '<b>'$"Server"' '$SERVER' - '$"Setting quotas"'</b><br><br>'
+#echo '<table class="tablesorter" id="myTable">
+#<thead>
+# <tr><th style="width: 80px;"><b>'$"Username"'</b></th><th style="width: 200px;"><b>'$"Server"'</b></th><th style="width: 100px;"><b>'$"Group"'</b></th><th style="width: 100px;"><b>'$"Size Limit"'1</b></th><th style="width: 100px;"><b>'$"Size Limit"'2</b></th><th style="width: 100px;"><b>'$"Max Files"'1</b></th><th style="width: 100px;"><b>'$"Max Files"'2</b></th></tr></thead><tbody>'
 
 #Check if quotas are enabled on the server
 
@@ -178,7 +181,8 @@ then
 	do
 		echo `date`: quotas_set - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NETWORKUSER on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		#Set quota
-		echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"$PRIMARYGROUP"</td><td>"$DISPLAYSIZE1"</td><td>"$DISPLAYSIZE2"</td><td>"$MAXFILES1"</td><td>"$MAXFILES2"</td></tr>"
+		echo "<ul><li>$NETWORKUSER $DISPLAYSIZE1 $DISPLAYSIZE2 $MAXFILES1 $MAXFILES2</li></ul>"
+		#echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"$PRIMARYGROUP"</td><td>"$DISPLAYSIZE1"</td><td>"$DISPLAYSIZE2"</td><td>"$MAXFILES1"</td><td>"$MAXFILES2"</td></tr>"
 		if [ $SERVER = `hostname-fqdn` ]
 		then
 			setquota -u $NETWORKUSER $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
@@ -188,11 +192,19 @@ then
 			'
 		fi
 	done
+
+	#Save quota settings if this is for a group of users
+	if [ $SAVESETTINGS = yes ]
+	then
+		[ ! -d /opt/karoshi/server_network/quota_settings ] && mkdir -p /opt/karoshi/server_network/quota_settings
+		echo -e "MAXSIZE1=$MAXSIZE1\nMAXSIZE2=$MAXSIZE2\nMAXFILES1=$MAXFILES1\nMAXFILES2=$MAXFILES2\n" > "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP"
+	fi
 fi
 
 if [ $QUOTASENABLED = no ]
 then
-	echo '<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"'$SERVER'" - '$"Quotas are not enabled for this server"'</th></tr>'
+	echo '<b>'$"Warning"'</b> '$SERVER' - '$"Quotas are not enabled for this server"''
+	#echo '<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"'$SERVER'" - '$"Quotas are not enabled for this server"'</th></tr>'
 fi
 
 if [ $FEDERATED_SERVERS = yes ]
@@ -255,7 +267,9 @@ fi
 echo "</tbody></table>"
 
 #Load view quotas page for the user or the group
-
+echo '</form><form action="quotas_view_usage.cgi" method="post">
+<input name="_USERNAME_'$USERNAME'_GROUP_'$PRIMARYGROUP'_" value="" type="hidden">
+<SCRIPT LANGUAGE="JavaScript">document.forms[2].submit();</SCRIPT></form>'
 
 exit
 

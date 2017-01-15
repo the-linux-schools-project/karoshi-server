@@ -74,6 +74,11 @@ echo '<form action="/cgi-bin/admin/quotas_enable.cgi" name="selectservers" metho
 <table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="height:30px;"><div class="sectiontitle">'$"Enable Quotas on Partitions"'</div></td>
 <td>
+<button class="button" formaction="quotas_view_partitions.cgi" name="_EnabledPartitions_" value="_">
+'$"Enabled Partitions"'
+</button>
+</td>
+<td>
 <button class="button" formaction="quotas_view_usage_fm.cgi" name="_QuotaUsage_" value="_">
 '$"Quota Usage"'
 </button>

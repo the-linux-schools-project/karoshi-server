@@ -360,6 +360,16 @@ then
 	SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
+#Get quota settings if they have been set
+if [ -f "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP" ]
+then
+	source "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP"
+	APPLY_QUOTA=yes
+	echo `date`: add_user - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NEWUSERNAME on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+else
+	APPLY_QUOTA=no
+fi
+
 ##########################
 #Add in acceptable use notification
 ##########################
@@ -384,6 +394,7 @@ fi
 #Get userid
 USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
 
+
 if [ $SERVER = `hostname-fqdn` ] || [ `echo $SERVER | cut -d. -f2-` = `hostname-fqdn` ]
 then
 	#Create home folder
@@ -393,6 +404,12 @@ then
 	chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
 	setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
 	[ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
+
+	#Apply quota settings
+	if [ "$APPLY_QUOTA" = yes ]
+	then
+		setquota -u $NEWUSERNAME $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
+	fi
 fi
 
 #Add dfs path
@@ -427,6 +444,11 @@ then
 	chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
 	[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
 	setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+	#Apply quota settings
+	if [ "'$APPLY_QUOTA'" = yes ]
+	then
+		setquota -u '$USERID' '$MAXSIZE1' '$MAXSIZE2' '$MAXFILES1' '$MAXFILES2' -a /dev/loop0
+	fi
 '
 SSHSTATUS=$?
 	if [ $SSHSTATUS != 0 ]
@@ -511,7 +533,7 @@ then
 	if [ ! -z "$EMAIL_LEVEL" ]
 	then
 		MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 	fi
 fi
 
@@ -863,6 +885,5 @@ then
 		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V6
 	fi
 fi
-
 exit $CREATE_USER_STATUS
 
