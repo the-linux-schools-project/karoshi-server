@@ -576,6 +576,13 @@ fi
 
 #Copy in rsyslog to logrotate - this works with upstart
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/rsyslog /etc/logrotate.d
+
+#Set staging repository back to backports - we are only using staging to get the latest samba4 which has not been moved to backports yet.
+if [ -f /etc/apt/sources.list.d/linux-schools-ubuntu-staging-xenial.list ]
+then
+	mv /etc/apt/sources.list.d/linux-schools-ubuntu-staging-xenial.list /etc/apt/sources.list.d/linux-schools-ubuntu-backports-xenial.list
+	sed -i 's/staging/backports/g' /etc/apt/sources.list.d/linux-schools-ubuntu-backports-xenial.list
+fi
 }
 
 function install_e2guardian {
