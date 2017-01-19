@@ -354,7 +354,7 @@ function show_group_table {
 	do
 		if [ $(echo $DIST_LIST | grep -c -w $ENTRY) = 0 ]
 		then
-
+			[ $SHOW_TABLE = yes ] && show_group_table
 			SHOW_TABLE=no
 			SHOW_TABLE_BT=yes
 			echo '<tr><td>'$ENTRY'</td><td>
