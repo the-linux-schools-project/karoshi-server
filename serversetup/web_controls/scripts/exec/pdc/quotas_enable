@@ -113,6 +113,23 @@ then
 	then
 		exit 103
 	fi
+
+	#Make sure we have quota installed
+	which quota 1>/dev/null
+	if [ $? != 0 ]
+	then
+		#Install quota
+		echo '<ul><li>'$SERVERNAME' - '$"Updating repositories"'</li></ul>'
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		apt-get update
+		echo '</pre>'
+
+		echo '<ul><li>'$SERVERNAME' - '$"Installing quota"'</li></ul>'
+		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		apt-get install -y quota
+		echo '</pre>'
+	fi
+
 	#Get line number for /home entry in fstab
 
 	LINENUMBER=`grep -n -v "#" /etc/fstab | grep /home | cut -d: -f1`
@@ -122,6 +139,7 @@ then
 	then
 		exit 104
 	fi
+
 	FSTABENTRY1=`echo $LINEENTRY | cut -d' ' -f1`
 	FSTABENTRY2=`echo $LINEENTRY | cut -d' ' -f2`
 	FSTABENTRY3=`echo $LINEENTRY | cut -d' ' -f3`
@@ -140,6 +158,7 @@ then
 	quotacheck -mfcug /home
 	quotaon /home
 	#Create cron job to schedule auto update of quotas
+	[ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/ ] && mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/
 	echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/update_quotas.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 fi
@@ -156,6 +175,23 @@ then
 	then
 		exit 103
 	fi
+
+	#Make sure we have quota installed
+	which quota 1>/dev/null
+	if [ $? != 0 ]
+	then
+		#Install quota
+		echo "<ul><li>'$SERVERNAME' - '$"Updating repositories"'</li></ul>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get update
+		echo "</pre>"
+
+		echo "<ul><li>'$SERVERNAME' - '$"Installing quota"'</li></ul>"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+		apt-get install -y quota
+		echo "</pre>"
+	fi
+
 	#Get line number for /home entry in fstab
 	LINENUMBER=`grep -n -v "#" /etc/fstab | grep /home | cut -d: -f1`
 	LINEENTRY=`sed -n $LINENUMBER,$LINENUMBER"p" /etc/fstab`
@@ -182,6 +218,7 @@ then
 	quotacheck -mfcug /home
 	quotaon /home
 	#Create cron job to schedule auto update of quotas
+	[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/ ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/
 	echo 0 5 "*" "*" 1,3,5 \( quotaoff /home \; quotacheck /home -gum \; quotaon /home \) > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/update_quotas.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	'

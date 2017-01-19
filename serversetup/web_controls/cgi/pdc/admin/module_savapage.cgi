@@ -45,7 +45,7 @@ TEXTDOMAIN=karoshi-server
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Print Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Savapage"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -123,13 +123,12 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Print Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
-#Join server
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_printserver.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_printserver
-EXEC_STATUS=`echo $?`
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Savapage"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+#Setup savapage
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_savapage.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_savapage
 
-if [ $EXEC_STATUS = 101 ]
+if [ $? != 0 ]
 then
 	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
 	show_status

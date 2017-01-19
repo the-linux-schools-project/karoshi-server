@@ -47,7 +47,26 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/quotas_view_partitions.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"View Quota Enabled Partitions"'</div></td>
+<td>
+<button class="button" formaction="quotas_enable_fm.cgi" name="_QuotaSettings_" value="_">
+'$"Enable Quotas"'
+</button>
+</td>
+<td>
+<button class="button" formaction="quotas_set_fm.cgi" name="_QuotaSettings_" value="_">
+'$"Quota Settings"'
+</button>
+</td>
+<td>
+<button class="button" formaction="quotas_view_usage_fm.cgi" name="_QuotaUsage_" value="_">
+'$"Quota Usage"'
+</button>
+</td>
+</tr></tbody></table></form></div><div id="infobox">
+<br>'
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';

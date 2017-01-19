@@ -70,10 +70,28 @@ $(document).ready(function()
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<form action="/cgi-bin/admin/quotas_enable.cgi" name="selectservers" method="post"><b></b>
-  <div id="actionbox3"><div id="titlebox"><b>'$"Enable Quotas on Partitions"'</b>
+  <div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"Enable Quotas on Partitions"'</div></td>
+<td>
+<button class="button" formaction="quotas_view_partitions.cgi" name="_EnabledPartitions_" value="_">
+'$"Enabled Partitions"'
+</button>
+</td>
+<td>
+<button class="button" formaction="quotas_view_usage_fm.cgi" name="_QuotaUsage_" value="_">
+'$"Quota Usage"'
+</button>
+</td>
+<td>
+<button class="button" formaction="quotas_set_fm.cgi" name="_QuotaSettings_" value="_">
+'$"Quota Settings"'
+</button>
+</td>
+</tr></tbody></table>
+ <br>
   <br>
-  <br>
-'$"Please choose the server that you want to enable the quotas on."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will enable quotas on the /home partition of the chosen server."'</span></a><br><br></div><div id="infobox">'
+'$"Choose the server that you want to enable the quotas on."' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will enable quotas on the /home partition of the chosen server."'</span></a><br><br></div><div id="infobox">'
 
 #Show list of servers
 /opt/karoshi/web_controls/show_servers $MOBILE servers $"Enable quotas"

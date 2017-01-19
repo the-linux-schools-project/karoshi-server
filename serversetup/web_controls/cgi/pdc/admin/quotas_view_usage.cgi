@@ -43,6 +43,15 @@ echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Quota Usage"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
 </head><body><div id="pagecontainer">'
 #########################
 #Get data input
@@ -57,28 +66,28 @@ END_POINT=10
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign USERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -94,38 +103,53 @@ exit
 #Check data
 #########################
 #Check to see that USER and GROUP are not blank
-if [ $GROUP'null' = null ] && [ $USERNAME'null' = null ] 
+if [ -z "$GROUP" ] && [ -z "$USERNAME" ] 
 then
-MESSAGE=$"You have not chosen a user or a group."
-show_status
+	MESSAGE=$"You have not chosen a user or a group."
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><div class="sectiontitle">'$"View Quota Usage"'</div><br>'
+echo '<div id="actionbox"><form action="/cgi-bin/admin/quotas_view_usage.cgi" name="selectservers" method="post">
+
+<table class="standard" style="text-align: left;" ><tbody><tr>
+<td style="height:30px;"><div class="sectiontitle">'$"View Quota Usage"'</div></td>
+<td>
+<button class="button" formaction="quotas_view_usage_fm.cgi" name="_ChooseQuotaUsage_" value="_">
+'$"Choose user / group"'
+</button>
+</td>
+<td>
+<button class="button" formaction="quotas_set_fm.cgi" name="_QuotaSettings_" value="_">
+'$"Quota Settings"'
+</button>
+</td>
+</tr></tbody></table></form>
+<br>'
 
 #########################
 #Check https access
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_usage.cgi | cut -d' ' -f1`

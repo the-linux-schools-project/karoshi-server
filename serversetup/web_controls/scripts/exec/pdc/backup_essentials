@@ -169,6 +169,11 @@ fi
 
 BACKUPFOLDERS="/etc/apache2 /etc/cups /etc/e2guardian /etc/dhcp /etc/postfix /etc/mdadm /etc/samba /etc/sogo /etc/ssl /root/.ssh /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_access_tech $SERVER_NETWORK /opt/karoshi/asset_register $DFS $NETLOGON /var/lib/samba/samba_backup/pdc_backup /var/www/html_karoshi/images/user_images"
 
+if [ ! -d /var/www/html_karoshi/images/user_images ]
+then
+	mkdir -p /var/www/html_karoshi/images/user_images
+fi
+
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"
 SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`

@@ -412,7 +412,7 @@ then
 		[ -f /var/lib/samba/private/idmap.ldb.bak ] && rm -f /var/lib/samba/private/idmap.ldb.bak
 		tdbbackup -s .bak /var/lib/samba/private/idmap.ldb
 		'
-		scp root@"$SERVERNAME":/var/lib/samba/private/idmap.ldb.bak /var/lib/samba/private/idmap.ldb
+		scp root@"$DNSTCPIP":/var/lib/samba/private/idmap.ldb.bak /var/lib/samba/private/idmap.ldb
 
 		#Attempt to join the domain
 		#Delete any existing smb.conf
@@ -2101,6 +2101,9 @@ fi
 
 if [ "$INSTALL_TYPE" = adcrestore ]
 then
+	#Set /etc/resolv.conf to use the existing domain controller
+	echo domain $REALM > /etc/resolv.conf
+	echo nameserver $DNSTCPIP >> /etc/resolv.conf
 	#Restore dc-data gluster volume	
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn` dc-data restore
 	if [ $? = 0 ]
@@ -2134,6 +2137,8 @@ then
 	done
 	#Seize ad roles back
 	samba-tool fsmo seize --role=all
+	#Set /etc/resolv.conf back to this server
+	create_resolv.conf
 fi
 
 #Set permissions on sysvol

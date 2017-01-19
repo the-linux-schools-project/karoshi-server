@@ -29,16 +29,16 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_set_cgi
 then
-echo `date`: quotas_set - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_set_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_set.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $quotas_set_cgi'check' ]
 then
-echo `date`: quotas_set - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ########################
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: quotas_set - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: quotas_set - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
@@ -71,48 +71,48 @@ USERNAME=`echo "$DATA" | cut -s -d: -f8`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: quotas_set - Not called by quotas_set.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Not called by quotas_set.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER"l ]
 then
-echo `date`: quotas_set - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: quotas_set - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $PRIMARYGROUP'null' = null ] && [ $USERNAME'null' = null ]
+if [ -z "$PRIMARYGROUP" ] && [ -z "$USERNAME" ]
 then
-echo `date`: quotas_set - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $MAXSIZE2'null' = null ]
+if [ -z "$MAXSIZE2" ]
 then
-echo `date`: quotas_set - Blank size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $MAXFILES2'null' = null ]
+if [ -z "$MAXFILES2" ]
 then
-echo `date`: quotas_set - Blank maxfiles by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank maxfiles by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $UNIT'null' = null ]
+if [ -z "$UNIT" ]
 then
-echo `date`: quotas_set - Blank unit by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Blank unit by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ $UNIT != MB ] && [ $UNIT != GB ] && [ $UNIT != TB ] 
 then
-echo `date`: quotas_set - Incorrect unit by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - Incorrect unit by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-echo `date`: quotas_set - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: quotas_set - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 ###########################
@@ -132,41 +132,44 @@ let MAXFILES1=$MAXFILES2*95/100
 FEDERATED_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
-then
-FEDERATED_SERVERS=yes
-fi
+	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	then
+		FEDERATED_SERVERS=yes
+	fi
 fi
 
-if [ $USERNAME'null' != null ]
+if [ ! -z "$USERNAME" ]
 then
-SEARCH="$USERNAME"
-PRIMARYGROUP=`id -g -n $USERNAME`
+	SEARCH="$USERNAME"
+	PRIMARYGROUP=`id -g -n $USERNAME`
+	SAVESETTINGS=no
 else
-SEARCH="$PRIMARYGROUP"
+	SEARCH="$PRIMARYGROUP"
+	SAVESETTINGS=yes
 fi
 
 source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
 
-echo '<table class="standard" style="text-align: left; width: 630px; height: 58px;" >
-<tbody>
- <tr><td style="width: 80px;"><b>'$"Username"'</b></td><td style="width: 80px;"><b>'$"Server"'</b></td><td style="width: 100px;"><b>'$"Group"'</b></td><td style="width: 120px;"><b>'$"Size Limit"'1</b></td><td style="width: 120px;"><b>'$"Size Limit"'2</b></td><td style="width: 110px;"><b>'$"Max Files"'1</b></td><td style="width: 110px;"><b>'$"Max Files"'2</b></td></tr>'
+echo '<b>'$"Server"' '$SERVER' - '$"Setting quotas"'</b><br><br>'
+#echo '<table class="tablesorter" id="myTable">
+#<thead>
+# <tr><th style="width: 80px;"><b>'$"Username"'</b></th><th style="width: 200px;"><b>'$"Server"'</b></th><th style="width: 100px;"><b>'$"Group"'</b></th><th style="width: 100px;"><b>'$"Size Limit"'1</b></th><th style="width: 100px;"><b>'$"Size Limit"'2</b></th><th style="width: 100px;"><b>'$"Max Files"'1</b></th><th style="width: 100px;"><b>'$"Max Files"'2</b></th></tr></thead><tbody>'
 
 #Check if quotas are enabled on the server
 
 QUOTASENABLED=yes
 if [ $SERVER = `hostname-fqdn` ]
 then
-[ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && QUOTASENABLED=no
+	[ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && QUOTASENABLED=no
 
-#Make sure quota file is not locked
-[ $QUOTASENABLED = yes ] && chattr -ia /home/aquota.user
+	#Make sure quota file is not locked
+	#[ $QUOTASENABLED = yes ] && chattr -ia /home/aquota.user
 
 else
-ssh -x -o PasswordAuthentication=no $SERVER '
-[ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && exit 105
-#Make sure quota file is not locked
-chattr -ia /home/aquota.user 
+	ssh -x -o PasswordAuthentication=no $SERVER '
+	[ `grep /home /etc/fstab | grep -c usrquota` = 0 ] && exit 105
+	#Make sure quota file is not locked
+	#chattr -ia /home/aquota.user 
 
 '
 [ `echo $?` = 105 ] && QUOTASENABLED=no
@@ -174,25 +177,34 @@ fi
 
 if [ $QUOTASENABLED = yes ]
 then
-for NETWORKUSER in `getent passwd | grep -w $SEARCH | cut -d: -f1`
-do
-echo `date`: quotas_set - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NETWORKUSER on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#Set quota
-echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"$PRIMARYGROUP"</td><td>"$DISPLAYSIZE1"</td><td>"$DISPLAYSIZE2"</td><td>"$MAXFILES1"</td><td>"$MAXFILES2"</td></tr>"
-if [ $SERVER = `hostname-fqdn` ]
-then
-setquota -u $NETWORKUSER $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
-else
-ssh -x -o PasswordAuthentication=no $SERVER '
-setquota -u '$NETWORKUSER' '$MAXSIZE1' '$MAXSIZE2' '$MAXFILES1' '$MAXFILES2' -a /dev/loop0
-'
-fi
-done
+	for NETWORKUSER in `getent passwd | grep -w $SEARCH | cut -d: -f1`
+	do
+		echo `date`: quotas_set - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NETWORKUSER on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		#Set quota
+		echo "<ul><li>$NETWORKUSER $DISPLAYSIZE1 $DISPLAYSIZE2 $MAXFILES1 $MAXFILES2</li></ul>"
+		#echo "<tr><td>"$NETWORKUSER"</td><td>"$SERVER"</td><td>"$PRIMARYGROUP"</td><td>"$DISPLAYSIZE1"</td><td>"$DISPLAYSIZE2"</td><td>"$MAXFILES1"</td><td>"$MAXFILES2"</td></tr>"
+		if [ $SERVER = `hostname-fqdn` ]
+		then
+			setquota -u $NETWORKUSER $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
+		else
+			ssh -x -o PasswordAuthentication=no $SERVER '
+			setquota -u '$NETWORKUSER' '$MAXSIZE1' '$MAXSIZE2' '$MAXFILES1' '$MAXFILES2' -a /dev/loop0
+			'
+		fi
+	done
+
+	#Save quota settings if this is for a group of users
+	if [ $SAVESETTINGS = yes ]
+	then
+		[ ! -d /opt/karoshi/server_network/quota_settings ] && mkdir -p /opt/karoshi/server_network/quota_settings
+		echo -e "MAXSIZE1=$MAXSIZE1\nMAXSIZE2=$MAXSIZE2\nMAXFILES1=$MAXFILES1\nMAXFILES2=$MAXFILES2\n" > "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP"
+	fi
 fi
 
 if [ $QUOTASENABLED = no ]
 then
-echo "<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"$SERVER" - '$"Quotas are not enabled for this server"'</th></tr>"
+	echo '<b>'$"Warning"'</b> '$SERVER' - '$"Quotas are not enabled for this server"''
+	#echo '<tr><td><b>'$"Warning"'</b></td><TH COLSPAN=5>"'$SERVER'" - '$"Quotas are not enabled for this server"'</th></tr>'
 fi
 
 if [ $FEDERATED_SERVERS = yes ]
@@ -253,6 +265,11 @@ done
 fi
 
 echo "</tbody></table>"
+
+#Load view quotas page for the user or the group
+echo '</form><form action="quotas_view_usage.cgi" method="post">
+<input name="_USERNAME_'$USERNAME'_GROUP_'$PRIMARYGROUP'_" value="" type="hidden">
+<SCRIPT LANGUAGE="JavaScript">document.forms[2].submit();</SCRIPT></form>'
 
 exit
 
