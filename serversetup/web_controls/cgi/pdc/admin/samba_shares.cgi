@@ -265,6 +265,90 @@ then
 		let COUNTER=$COUNTER+1
 	done
 
+	#Assign GROUP7
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP7check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP7=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP8
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP8check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP8=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP9
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP9check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP9=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP10
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP10check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP10=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP11
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP11check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP11=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUP12
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUP12check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUP12=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
 	#Assign GROUPPERMS1
 	COUNTER=2
 	while [ $COUNTER -le $END_POINT ]
@@ -344,6 +428,90 @@ then
 		then
 			let COUNTER=$COUNTER+1
 			GROUPPERMS6=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS7
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS7check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS7=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS8
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS8check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS8=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS9
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS9check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS9=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS10
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS10check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS10=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS11
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS11check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERMS11=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign GROUPPERMS12
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = GROUPPERMS12check ]
+		then
+			let COUNTER=$COUNTER+1
+			GROUPPERM12=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -442,6 +610,90 @@ then
 		then
 			let COUNTER=$COUNTER+1
 			MAPDRIVE6=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE7
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE7check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE7=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE8
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE8check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE8=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE9
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE9check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE9=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE10
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE10check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE10=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE11
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE11check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE11=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign MAPDRIVE12
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = MAPDRIVE12check ]
+		then
+			let COUNTER=$COUNTER+1
+			MAPDRIVE12=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
@@ -681,6 +933,24 @@ then
 
 			GROUP="$GROUP6"
 			check_drive_letter
+
+			GROUP="$GROUP7"
+			check_drive_letter
+
+			GROUP="$GROUP8"
+			check_drive_letter
+
+			GROUP="$GROUP9"
+			check_drive_letter
+
+			GROUP="$GROUP10"
+			check_drive_letter
+
+			GROUP="$GROUP11"
+			check_drive_letter
+
+			GROUP="$GROUP12"
+			check_drive_letter
 		fi
 	fi
 fi
@@ -746,7 +1016,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class=
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUP5:$GROUP6:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$GROUPPERMS5:$GROUPPERMS6:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVE5:$MAPDRIVE6:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUP5:$GROUP6:$GROUP7:$GROUP8:$GROUP9:$GROUP10:$GROUP11:$GROUP12:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$GROUPPERMS5:$GROUPPERMS6:$GROUPPERMS7:$GROUPPERMS8:$GROUPPERMS9:$GROUPPERMS10:$GROUPPERMS11:$GROUPPERMS12:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVE5:$MAPDRIVE6:$MAPDRIVE7:$MAPDRIVE8:$MAPDRIVE9:$MAPDRIVE10:$MAPDRIVE11:$MAPDRIVE12:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
 EXIT_STATUS=$?
 
 if [ $EXIT_STATUS = 102 ]

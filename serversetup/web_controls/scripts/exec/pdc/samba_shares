@@ -71,25 +71,43 @@ GROUP3=`echo "$DATA" | cut -s -d: -f10`
 GROUP4=`echo "$DATA" | cut -s -d: -f11`
 GROUP5=`echo "$DATA" | cut -s -d: -f12`
 GROUP6=`echo "$DATA" | cut -s -d: -f13`
-GROUPPERMS1=`echo "$DATA" | cut -s -d: -f14`
-GROUPPERMS2=`echo "$DATA" | cut -s -d: -f15`
-GROUPPERMS3=`echo "$DATA" | cut -s -d: -f16`
-GROUPPERMS4=`echo "$DATA" | cut -s -d: -f17`
-GROUPPERMS5=`echo "$DATA" | cut -s -d: -f18`
-GROUPPERMS6=`echo "$DATA" | cut -s -d: -f19`
-ALLPERMS=`echo "$DATA" | cut -s -d: -f20`
-MAPDRIVE1=`echo "$DATA" | cut -s -d: -f21`
-MAPDRIVE2=`echo "$DATA" | cut -s -d: -f22`
-MAPDRIVE3=`echo "$DATA" | cut -s -d: -f23`
-MAPDRIVE4=`echo "$DATA" | cut -s -d: -f24`
-MAPDRIVE5=`echo "$DATA" | cut -s -d: -f25`
-MAPDRIVE6=`echo "$DATA" | cut -s -d: -f26`
-MAPDRIVEALL=`echo "$DATA" | cut -s -d: -f27`
-DRIVELETTER=`echo "$DATA" | cut -s -d: -f28`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f29`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f30`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f31`
-MOBILE=`echo "$DATA" | cut -s -d: -f32`
+GROUP7=`echo "$DATA" | cut -s -d: -f14`
+GROUP8=`echo "$DATA" | cut -s -d: -f15`
+GROUP9=`echo "$DATA" | cut -s -d: -f16`
+GROUP10=`echo "$DATA" | cut -s -d: -f17`
+GROUP11=`echo "$DATA" | cut -s -d: -f18`
+GROUP12=`echo "$DATA" | cut -s -d: -f19`
+GROUPPERMS1=`echo "$DATA" | cut -s -d: -f20`
+GROUPPERMS2=`echo "$DATA" | cut -s -d: -f21`
+GROUPPERMS3=`echo "$DATA" | cut -s -d: -f22`
+GROUPPERMS4=`echo "$DATA" | cut -s -d: -f23`
+GROUPPERMS5=`echo "$DATA" | cut -s -d: -f24`
+GROUPPERMS6=`echo "$DATA" | cut -s -d: -f25`
+GROUPPERMS7=`echo "$DATA" | cut -s -d: -f26`
+GROUPPERMS8=`echo "$DATA" | cut -s -d: -f27`
+GROUPPERMS9=`echo "$DATA" | cut -s -d: -f28`
+GROUPPERMS10=`echo "$DATA" | cut -s -d: -f29`
+GROUPPERMS11=`echo "$DATA" | cut -s -d: -f30`
+GROUPPERMS12=`echo "$DATA" | cut -s -d: -f31`
+ALLPERMS=`echo "$DATA" | cut -s -d: -f32`
+MAPDRIVE1=`echo "$DATA" | cut -s -d: -f33`
+MAPDRIVE2=`echo "$DATA" | cut -s -d: -f34`
+MAPDRIVE3=`echo "$DATA" | cut -s -d: -f35`
+MAPDRIVE4=`echo "$DATA" | cut -s -d: -f36`
+MAPDRIVE5=`echo "$DATA" | cut -s -d: -f37`
+MAPDRIVE6=`echo "$DATA" | cut -s -d: -f38`
+MAPDRIVE7=`echo "$DATA" | cut -s -d: -f39`
+MAPDRIVE8=`echo "$DATA" | cut -s -d: -f40`
+MAPDRIVE9=`echo "$DATA" | cut -s -d: -f41`
+MAPDRIVE10=`echo "$DATA" | cut -s -d: -f42`
+MAPDRIVE11=`echo "$DATA" | cut -s -d: -f43`
+MAPDRIVE12=`echo "$DATA" | cut -s -d: -f44`
+MAPDRIVEALL=`echo "$DATA" | cut -s -d: -f45`
+DRIVELETTER=`echo "$DATA" | cut -s -d: -f46`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f47`
+SERVERTYPE=`echo "$DATA" | cut -s -d: -f48`
+SERVERMASTER=`echo "$DATA" | cut -s -d: -f49`
+MOBILE=`echo "$DATA" | cut -s -d: -f50`
 
 [ -z "$MOBILE" ] && MOBILE=no
 [ -z "$ACTION" ] && ACTION=view
@@ -217,17 +235,23 @@ then
 	[ -z "$GROUP4" ] && MAPDRIVE4="" GROUPPERMS4=""
 	[ -z "$GROUP5" ] && MAPDRIVE5="" GROUPPERMS5=""
 	[ -z "$GROUP6" ] && MAPDRIVE6="" GROUPPERMS6=""
+	[ -z "$GROUP7" ] && MAPDRIVE7="" GROUPPERMS7=""
+	[ -z "$GROUP8" ] && MAPDRIVE8="" GROUPPERMS8=""
+	[ -z "$GROUP9" ] && MAPDRIVE9="" GROUPPERMS9=""
+	[ -z "$GROUP10" ] && MAPDRIVE10="" GROUPPERMS10=""
+	[ -z "$GROUP11" ] && MAPDRIVE11="" GROUPPERMS11=""
+	[ -z "$GROUP12" ] && MAPDRIVE12="" GROUPPERMS12=""
 	[ -z "$ALLGROUPS" ] && MAPDRIVEALL=""
-	GROUPLIST="$ALLGROUPS $GROUP1 $GROUP2 $GROUP3 $GROUP4 $GROUP5 $GROUP6"
+	GROUPLIST="$ALLGROUPS $GROUP1 $GROUP2 $GROUP3 $GROUP4 $GROUP5 $GROUP6 $GROUP7 $GROUP8 $GROUP9 $GROUP10 $GROUP11 $GROUP12"
 	GROUPLIST=`echo $GROUPLIST | sed 's/ /,/g'`
-	MAP_DRIVE="$MAPDRIVEALL $MAPDRIVE1 $MAPDRIVE2 $MAPDRIVE3 $MAPDRIVE4 $MAPDRIVE5 $MAPDRIVE6"
+	MAP_DRIVE="$MAPDRIVEALL $MAPDRIVE1 $MAPDRIVE2 $MAPDRIVE3 $MAPDRIVE4 $MAPDRIVE5 $MAPDRIVE6 $MAPDRIVE7 $MAPDRIVE8 $MAPDRIVE9 $MAPDRIVE10 $MAPDRIVE11 $MAPDRIVE12"
 	MAP_DRIVE=`echo $MAP_DRIVE | sed 's/ /,/g'`
-	GROUPPERMS="$ALL_PERMS $GROUPPERMS1 $GROUPPERMS2 $GROUPPERMS3 $GROUPPERMS4 $GROUPPERMS5 $GROUPPERMS6"
+	GROUPPERMS="$ALL_PERMS $GROUPPERMS1 $GROUPPERMS2 $GROUPPERMS3 $GROUPPERMS4 $GROUPPERMS5 $GROUPPERMS6 $GROUPPERMS7 $GROUPPERMS8 $GROUPPERMS9 $GROUPPERMS10 $GROUPPERMS11 $GROUPPERMS12"
 	GROUPPERMS=`echo $GROUPPERMS | sed 's/ /,/g'`
 
 	#Calculate network mask
 	MASK=075
-	if [ $GROUPPERMS1 = 7 ] || [ $GROUPPERMS2 = 7 ] || [ $GROUPPERMS3 = 7 ] || [ $GROUPPERMS4 = 7 ] || [ $GROUPPERMS5 = 7 ] || [ $GROUPPERMS6 = 7 ]
+	if [ $GROUPPERMS1 = 7 ] || [ $GROUPPERMS2 = 7 ] || [ $GROUPPERMS3 = 7 ] || [ $GROUPPERMS4 = 7 ] || [ $GROUPPERMS5 = 7 ] || [ $GROUPPERMS6 = 7 ] || [ $GROUPPERMS7 = 7 ] || [ $GROUPPERMS8 = 7 ] || [ $GROUPPERMS9 = 7 ] || [ $GROUPPERMS10 = 7 ] || [ $GROUPPERMS11 = 7 ] || [ $GROUPPERMS12 = 7 ]
 	then
 		MASK=077
 	fi
@@ -528,6 +552,17 @@ then
 
 	echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">'
 [ "$ACTION" = add ] && echo '<input type="hidden" name="____ACTION____" value="reallyadd____">'
+
+echo '<script>
+function showRow(rowId) {
+    document.getElementById(rowId).style.display = "";
+}
+function hideLink(linkId) {
+    document.getElementById(linkId).style.display = "none";
+}
+</script>
+'
+
 echo '<br><table class="standard" style="text-align: left;" ><tbody>'
 
 if [ "$ACTION" = edit ]
@@ -601,245 +636,90 @@ echo '<option value="0">'$"Do not map drive"'</option>
 <option value="1">'$"Map drive"'</option>
 </select>
 </td>
-</tr>
+</tr>'
 
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
+COUNTER=1
+COUNTER2=2
+SHOWMORE=yes
+SHOWLINK=yes
+while [ $COUNTER -le 12 ]
+do
+	GROUPNAME=GROUP$COUNTER
 
-	if [ ! -z "$GROUP1" ]
+	if [ "$ACTION" = add ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP1'">'$GROUP1'<\/option><option label="dottedline" class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
+		if [ -z "${!GROUPNAME}" ] && [ "$SHOWMORE" = yes ]
+		then
+			SHOWROW="yes"
+			SHOWMORE=no
+		else
+			SHOWROW=none
+			SHOWMORE=no
+		fi
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP1____/g'
+		GROUPNAMENEXT=GROUP$COUNTER2
+		if [ -z "${!GROUPNAMENEXT}" ] && [ "$SHOWMORE" = yes ]
+		then
+			SHOWROW="yes"
+			SHOWMORE=no
+			SHOWLINK=yes
+		else
+			SHOWROW=none
+			SHOWLINK=none
+		fi
+		if [ ! -z "${!GROUPNAME}" ] 
+		then
+			SHOWROW="yes"
+		fi
+		if [ -z "${!GROUPNAMENEXT}" ]
+		then
+			SHOWLINK=yes
+		fi
 	fi
 
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td style="width: '$WIDTH9'px;">
-<select style="width: 200px;" name="____GROUPPERMS1____">'
+	echo '<tr id="row'$COUNTER'" style="display: '$SHOWROW';"><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
+		if [ ! -z "${!GROUPNAME}" ]
+		then
+			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g' | sed 's/<option label="blank"><\/option>/<option value="'${!GROUPNAME}'">'${!GROUPNAME}'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
+		else
+			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g'
+		fi
 
-if [ ! -z "$GROUPPERMS1" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS1 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS1 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS1'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>
-</td><td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
-<td>
-<select style="width: 200px;" name="____MAPDRIVE1____">'
-
-if [ ! -z "$MAPDRIVE1" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE1 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE1'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
-	if [ ! -z "$GROUP2" ]
+		echo '</td><td style="vertical-align:middle">
+		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td>
+	<select style="width: 200px;" name="____GROUPPERMS'$COUNTER'____">'
+	GROUPPERMS=GROUPPERMS$COUNTER
+	if [ ! -z "${!GROUPPERMS}" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP2'">'$GROUP2'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP2____/g'
+		PERMSLANG=$"No Access"
+		[ ${!GROUPPERMS} = 5 ] && PERMSLANG=$"Read only"
+		[ ${!GROUPPERMS} = 7 ] && PERMSLANG=$"Full Access"
+		echo '<option value="'${!GROUPPERMS}'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
 	fi
 
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td>
-<select style="width: 200px;" name="____GROUPPERMS2____">'
-
-if [ ! -z "$GROUPPERMS2" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS2 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS2 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS2'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>	
-<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
-<td>
-<select style="width: 200px;" name="____MAPDRIVE2____">'
-
-if [ ! -z "$MAPDRIVE2" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE2 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE2'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
-	if [ ! -z "$GROUP3" ]
+	echo '<option value="5">'$"Read only"'</option>
+	<option value="7">'$"Full Access"'</option>
+	</select>	
+	<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
+	<td>
+	<select style="width: 200px;" name="____MAPDRIVE'$COUNTER'____">'
+	MAPDRIVE=MAPDRIVE$COUNTER
+	if [ ! -z "${!MAPDRIVE}" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP3'">'$GROUP3'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP3____/g'
+		MAPDRIVELANG=$"Do not map drive"
+		[ "${!MAPDRIVE}" = 1 ] && MAPDRIVELANG=$"Map drive"
+		echo '<option value="'${!MAPDRIVE}'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
 	fi
 
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
-	</td><td>
-<select style="width: 200px;" name="____GROUPPERMS3____">'
+	echo '<option value="1">'$"Map drive"'</option>
+	<option value="0">'$"Do not map drive"'</option>
+	</select>
+	</td><td><a style="display: '$SHOWLINK';" id="link'$COUNTER'" href="javascript: void(0);"onclick="showRow('\''row'$COUNTER2''\''); hideLink('\''link'$COUNTER''\'');"><img src="/images/submenus/system/ups_add.png" alt="Add"></a>
+	</td></tr>'
 
-if [ ! -z "$GROUPPERMS3" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS3 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS3 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS3'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>
-<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td><td>
-<select style="width: 200px;" name="____MAPDRIVE3____">'
-
-
-if [ ! -z "$MAPDRIVE3" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE3 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE3'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
-	if [ ! -z "$GROUP4" ]
-	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP4____/g'
-	fi
-
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
-	</td><td>
-<select style="width: 200px;" name="____GROUPPERMS4____">'
-
-if [ ! -z "$GROUPPERMS4" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS4 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS4 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS4'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>
-<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
-<td>
-<select style="width: 200px;" name="____MAPDRIVE4____">'
-
-if [ ! -z "$MAPDRIVE4" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE4 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE4'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
-	if [ ! -z "$GROUP5" ]
-	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP5____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP4'">'$GROUP4'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP5____/g'
-	fi
-
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
-	</td><td>
-<select style="width: 200px;" name="____GROUPPERMS5____">'
-
-if [ ! -z "$GROUPPERMS5" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS5 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS5 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS5'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>
-<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
-<td>
-<select style="width: 200px;" name="____MAPDRIVE5____">'
-
-if [ ! -z "$MAPDRIVE5" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE5 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE5'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
-	if [ ! -z "$GROUP6" ]
-	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP6____/g' | sed 's/<option label="blank"><\/option>/<option value="'$GROUP6'">'$GROUP6'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP6____/g'
-	fi
-
-	echo '</td><td style="vertical-align:middle">
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a>
-	</td><td>
-<select style="width: 200px;" name="____GROUPPERMS6____">'
-
-if [ ! -z "$GROUPPERMS5" ]
-then
-	PERMSLANG=$"No Access"
-	[ $GROUPPERMS5 = 5 ] && PERMSLANG=$"Read only"
-	[ $GROUPPERMS5 = 7 ] && PERMSLANG=$"Full Access"
-	echo '<option value="'$GROUPPERMS6'">'$PERMSLANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="5">'$"Read only"'</option>
-<option value="7">'$"Full Access"'</option>
-</select>
-<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
-<td>
-<select style="width: 200px;" name="____MAPDRIVE6____">'
-
-if [ ! -z "$MAPDRIVE5" ]
-then
-	MAPDRIVELANG=$"Do not map drive"
-	[ $MAPDRIVE6 = 1 ] && MAPDRIVELANG=$"Map drive"
-	echo '<option value="'$MAPDRIVE6'">'$MAPDRIVELANG'</option><option class="select-dash" disabled="disabled">----------</option>'
-fi
-
-echo '<option value="1">'$"Map drive"'</option>
-<option value="0">'$"Do not map drive"'</option>
-</select>
-</td></tr>
-
-'
+	let "COUNTER += 1"
+	let "COUNTER2 += 1"
+done
 
 echo '</tbody></table><br><br>'
 	if [ "$ACTION" = add ]
