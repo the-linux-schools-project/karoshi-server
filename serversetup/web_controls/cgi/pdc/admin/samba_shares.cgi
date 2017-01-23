@@ -511,7 +511,7 @@ then
 		if [ `echo $DATAHEADER'check'` = GROUPPERMS12check ]
 		then
 			let COUNTER=$COUNTER+1
-			GROUPPERM12=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			GROUPPERMS12=`echo $DATA | cut -s -d'_' -f$COUNTER`
 			break
 		fi
 		let COUNTER=$COUNTER+1
