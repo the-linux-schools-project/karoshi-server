@@ -122,10 +122,10 @@ then
 
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage
-	'
+	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ $? = 101 ] && exit 101
 else
-	/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage
+	/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	[ $? = 101 ] && exit 101
 fi
 

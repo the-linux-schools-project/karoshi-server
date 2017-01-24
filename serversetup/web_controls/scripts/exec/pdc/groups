@@ -125,11 +125,12 @@ if [ $MOBILE = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=200
-	WIDTH2=70
-	WIDTH3=80
+	WIDTH2=55
+	WIDTH3=105
 	WIDTH4=100
-	WIDTH5=140
+	WIDTH5=160
 	WIDTH6=140
+	WIDTH7=80
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/user/edit_user_info.png
 	ICON3=/images/submenus/user/users.png
@@ -143,6 +144,7 @@ else
 	WIDTH4=100
 	WIDTH5=140
 	WIDTH6=140
+	WIDTH7=70
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/user/usersm.png
 	ICON3=/images/submenus/user/users.png
@@ -225,7 +227,7 @@ then
 	      	[ "$MOBILE" = no ] && echo '<tr><th style="width: '$WIDTH2'px;"><b>'$"UID"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"GID"'</b></th>'
 		echo '<th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th>'
 		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Password changed"'</b></th><th style="width: '$WIDTH6'px;"><b>'$"Account Expires"'</b></th>'
-		echo '<th style="width: '$WIDTH2'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Remove"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+		echo '<th style="width: '$WIDTH2'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH7'px;"><b>'$"Remove"'</b></th><th style="width: '$WIDTH7'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
 		do
 
