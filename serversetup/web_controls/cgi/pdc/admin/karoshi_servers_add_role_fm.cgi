@@ -117,8 +117,8 @@ MOODLESTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ] && MOODLESTATUS=$"Installed"
 GITLABSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/gitlab ] && GITLABSTATUS=$"Installed"
-OWNCLOUDSTATUS=""
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ] && OWNCLOUDSTATUS=$"Installed"
+NEXTCLOUDSTATUS=""
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/nextcloud ] && NEXTCLOUDSTATUS=$"Installed"
 RICHDOCUMENTSSTATUS=""
 [ -f /opt/karoshi/server_network/servers/$SERVERNAME/richdocuments ] && RICHDOCUMENTSSTATUS=$"Installed"
 RADIUSSTATUS=""
@@ -183,23 +183,24 @@ else
 fi
 
 #Col2
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+echo '<td>'$"Monitor Server"'</td><td>'$MONITORSERVERSTATUS'</td><td>'
+if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td>'$"Moodle Server"'</td><td>'$MOODLESTATUS'</td><td><form action="/cgi-bin/admin/module_moodle_fm.cgi" method="post">
-	<button class="info" name="_AddMoodleServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Moodle Server"'">
-	<span>'$"This will setup the moodle E-Learning system."'</span>
+	echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post">
+	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Monitoring Server"'">
+	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'</span>
 	</button>
 	</form></td>'
 else
-	echo '<td>'$"Moodle Server"'</td><td></td><td>
+	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddMoodleServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Moodle Server"'">
-	<span>'$"This will setup the moodle E-Learning system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Monitoring Server"'">
+	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'<br><br>'$"This module cannot be applied to your main server."'</span>
 	</button>
-	</form>
-	</td>'
+	</form></td>
+'
 fi
 
 echo '</tr><tr>'
@@ -229,20 +230,20 @@ else
 fi
 
 #Col2
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td>'$"Owncloud Server"'</td><td>'$OWNCLOUDSTATUS'</td><td><form action="/cgi-bin/admin/module_owncloud_fm.cgi" method="post">
-	<button class="info" name="_AddOwnCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Owncloud Server"'">
-	<span>'$"This will provide a cloud file storage system for web access to files."'</span>
+	echo '<td>'$"Moodle Server"'</td><td>'$MOODLESTATUS'</td><td><form action="/cgi-bin/admin/module_moodle_fm.cgi" method="post">
+	<button class="info" name="_AddMoodleServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Moodle Server"'">
+	<span>'$"This will setup the moodle E-Learning system."'</span>
 	</button>
 	</form></td>'
 else
-	echo '</tr><tr><td>'$"Owncloud Server"'</td><td></td><td>
+	echo '<td>'$"Moodle Server"'</td><td></td><td>
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddownCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Owncloud Server"'">
-	<span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	<button class="info" name="_AddMoodleServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Moodle Server"'">
+	<span>'$"This will setup the moodle E-Learning system."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
 	</button>
 	</form>
 	</td>'
@@ -272,6 +273,47 @@ else
 fi
 
 #Col2
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
+then
+	echo '<td>'$"Nextcloud Server"'</td><td>'$NEXTCLOUDSTATUS'</td><td><form action="/cgi-bin/admin/module_nextcloud_fm.cgi" method="post">
+	<button class="info" name="_AddNextCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Nextcloud Server"'">
+	<span>'$"This will provide a cloud file storage system for web access to files."'</span>
+	</button>
+	</form></td>'
+else
+	echo '</tr><tr><td>'$"Nextcloud Server"'</td><td></td><td>
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_AddownCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Nextcloud Server"'">
+	<span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	</button>
+	</form>
+	</td>'
+fi
+
+echo '</tr><tr>'
+
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+	echo '<td>'$"E-Mail Server"'</td><td>'$EMAILSERVERSTATUS'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
+	<button class="info" name="_AddEMailServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"E-Mail Server"'">
+	<span>'$"This will setup a server to provide E-Mail services."'</span>
+	</button>
+	</form></td>'
+else
+	echo '<td>'$"E-Mail Server"'</td><td></td><td>
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_AddEmailServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"E-MailServer"'">
+	<span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	</button>
+	</form>
+	</td>'
+fi
+
+#Col2
 echo '<td>'$"Print Server"'</td><td>'$PRINTSERVERSTATUS'</td><td>'
 
 if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
@@ -298,48 +340,6 @@ fi
 
 echo '</tr><tr>'
 
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-then
-	echo '<td>'$"E-Mail Server"'</td><td>'$EMAILSERVERSTATUS'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
-	<button class="info" name="_AddEMailServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"E-Mail Server"'">
-	<span>'$"This will setup a server to provide E-Mail services."'</span>
-	</button>
-	</form></td>'
-else
-	echo '<td>'$"E-Mail Server"'</td><td></td><td>
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddEmailServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"E-MailServer"'">
-	<span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
-	</button>
-	</form>
-	</td>'
-fi
-
-#Col2
-echo '<td>'$"Radius Server"'</td><td>'$RADIUSSTATUS'</td><td>'
-
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
-then
-	echo '<form action="/cgi-bin/admin/module_radius_fm.cgi" method="post">
-	<button class="info" name="_AddRadiusServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Radius Server"'">
-	<span>'$"This will setup a radius server which can be used for your wireless access points."'</span>
-	</button>
-	</form></td>'
-else
-	echo '
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddRadiusServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Radius Server"'">
-	<span>'$"This will setup a radius server which can be used for your wireless access points."'<br><br>'$"This module can only be applied to a domain controller."'</span>
-	</button>
-	</form></td>'
-fi
-
-echo '</tr><tr>'
-
 echo '<td>'$"File Server"'</td><td>'$FILESERVERSTATUS'</td><td>'
 
 if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
@@ -361,23 +361,24 @@ else
 fi
 
 #Col2
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ]
+echo '<td>'$"Radius Server"'</td><td>'$RADIUSSTATUS'</td><td>'
+
+if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 then
-	echo '<td>'$"Richdocuments for Owncloud"'</td><td>'$RICHDOCUMENTSSTATUS'</td><td><form action="/cgi-bin/admin/module_richdocuments_fm.cgi" method="post">
-	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"richdocuments"'">
-	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'</span>
+	echo '<form action="/cgi-bin/admin/module_radius_fm.cgi" method="post">
+	<button class="info" name="_AddRadiusServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Radius Server"'">
+	<span>'$"This will setup a radius server which can be used for your wireless access points."'</span>
 	</button>
 	</form></td>'
 else
-	echo '<td>'$"Richdocuments for Owncloud"'</td><td></td><td>
+	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_Addrichdocuments_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"richdocuments"'">
-	<span>'$"This will setup richdocuments for Owncloud. An Owncloud application which integrates LibreOffice Online."'<br><br>'$"This module requires the Owncloud module to be installed."'</span>
+	<button class="info" name="_AddRadiusServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Radius Server"'">
+	<span>'$"This will setup a radius server which can be used for your wireless access points."'<br><br>'$"This module can only be applied to a domain controller."'</span>
 	</button>
-	</form>
-	</td>'
+	</form></td>'
 fi
 
 echo '</tr><tr>'
@@ -470,7 +471,7 @@ fi
 echo '</tr><tr>'
 
 echo '<td>'$"Internet Radio Server"'</td><td>'$RADIOSTATUS'</td>
-<td style="vertical-align: top; height: 40px;"><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
+<td><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
 	<button class="info" name="_AddRadioServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON'" alt="'$"Radio Server"'">
 	<span>'$"This will set up the server to act as an internet radio server using icecast."'</span>
@@ -488,7 +489,7 @@ then
 	</button>
 	</form></td>'
 else
-	echo '<td style="vertical-align: top; height: 40px;">'$"Squid Internet Proxy"'</td><td></td><td style="vertical-align: top; height: 40px;">
+	echo '<td>'$"Squid Internet Proxy"'</td><td></td><td>
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info" name="_AddSquidProxyServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"Squid Proxy Server"'">
@@ -583,31 +584,8 @@ else
 	</td>'
 fi
 
-echo '</tr><tr>'
-
-echo '<td>'$"Monitor Server"'</td><td>'$MONITORSERVERSTATUS'</td><td>'
-if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-then
-	echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post">
-	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Monitoring Server"'">
-	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'</span>
-	</button>
-	</form></td>'
-else
-	echo '
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Monitoring Server"'">
-	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'<br><br>'$"This module cannot be applied to your main server."'</span>
-	</button>
-	</form></td>
-'
-fi
-
-echo '<td></td><td></td><td></td>'
-
 echo '</tr>'
+
 #echo '<td></td><td></td><td></td></tr>'
 
 #if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]

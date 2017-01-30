@@ -458,13 +458,13 @@ then
 	rm -f /etc/apache2/conf-enabled/SOGo.conf
 fi
 #Configure php
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php/apache2/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
 
 #Configure proxy_html.conf
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
 
 #Configure mcrypt
-ln -s /etc/php/mods-available/mcrypt.ini /etc/php/apache2/conf.d/20-mcrypt.ini
+#ln -s /etc/php/mods-available/mcrypt.ini /etc/php/apache2/conf.d/20-mcrypt.ini
 
 #Configure suphp
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/suphp.conf /etc/apache2/mods-available/

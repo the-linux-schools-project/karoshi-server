@@ -1,0 +1,287 @@
+#!/bin/bash
+#Copyright (C) 2010 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=`date +%F`
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_nextcloud_cgi
+then
+	echo `date`: module_nextcloud - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/module_nextcloud_cgi
+MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_nextcloud.cgi | cut -d' ' -f1`
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ $MD5SUM'check' != $module_nextcloud_cgi'check' ]
+then
+	echo `date`: module_nextcloud - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: module_nextcloud - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+if [ -z "$DATA" ]
+then
+	echo `date`: module_nextcloud - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
+SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
+########################
+#Check data
+########################
+if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+then
+	echo `date`: module_nextcloud - Not called by module_nextcloud.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: module_nextcloud - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+echo `date`: module_nextcloud - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+exit 101
+fi
+if [ -z "$ALIAS" ]
+then
+	echo `date`: module_nextcloud - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+if [ -z "$SERVERNAME" ]
+then
+	echo `date`: module_nextcloud - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
+fi
+if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+then
+	echo `date`: module_nextcloud - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+echo `date`: module_nextcloud - setting up nextcloud on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+
+#Check that this server has been setup with the correct authentication
+if [ $SERVERNAME != `hostname-fqdn` ]
+then
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	if [ $? = 101 ]
+	then
+		echo $"This server does not have the correct authentication set up on it.""<br><br>"
+		echo `date`: module_nextcloud - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		sleep 2
+		exit 101
+	fi
+fi
+
+echo '<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Nextcloud"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Owncloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"Owncloud allows you to access and synchronise your data from multiple devices."'</span></a>
+</td></tr></tbody></table><br>
+
+</div><div id="infobox">'
+
+source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+
+#Update alias entry for the server
+[ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
+touch /opt/karoshi/server_network/aliases/$SERVERNAME
+[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
+
+#Create keytab for nextcloud
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:nextcloud:$SERVERNAME.$REALM:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+
+function check_already_installed {
+if [ $SERVERNAME = `hostname-fqdn` ]
+then
+	#Check to see if nextcloud is already installed
+	if [ -d /var/www/html/nextcloud ]
+	then
+		echo `date`: module_nextcloud - nextcloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $SERVERNAME - $"Owncloud is already installed on this server."
+		sleep 5
+		exit
+	fi
+else
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	#Check to see if moodle is already installed
+	if [ -d /var/www/html/nextcloud ]
+	then
+		exit 101
+	fi'
+	if [ `echo $?` = 101 ]
+	then
+		echo `date`: module_nextcloud - nextcloud is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $SERVERNAME - $"Owncloud is already installed on this server."
+		sleep 5
+		exit
+	fi
+fi
+}
+
+function add_dns_entry {
+#Add entry to samba4 dns
+LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+source /opt/karoshi/server_network/domain_information/domain_name
+echo `date`: module_nextcloud - checking "if" $DOMAINPATH is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ `echo $?` != 0 ]
+then
+	echo `date`: module_nextcloud - adding $ALIAS "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+fi
+}
+
+function install_nextcloud {
+#Install
+if [ $SERVERNAME = `hostname-fqdn` ]
+then
+	echo `date`: module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
+else
+	echo `date`: module_nextcloud - copying module language files to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Remote server
+	#Copy in language files
+
+	echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
+	#Copy in module
+	echo `date`: module_nextcloud - copying module to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	scp -p -r /opt/karoshi/serversetup/modules/nextcloud root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+
+	#Copy in domain information
+	echo `date`: module_nextcloud - copying domain information to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
+
+	#Copy in root ca
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	[ ! -d /etc/ssl/root-ca ] && mkdir -p /etc/ssl/root-ca
+	'
+	scp /etc/ssl/root-ca/cacert.pem root@$SERVERNAME:/etc/ssl/root-ca
+
+	#Copy in mysql_root_pass
+	scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
+
+	#Install nextcloud
+	echo `date`: module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
+'
+fi
+}
+
+function add_role_information {
+[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+echo $"Nextcloud Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/nextcloud
+echo '<a href="https://'$ALIAS.$REALM'/nextcloud" target="_blank">https://'$ALIAS.$REALM'/nextcloud</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/nextcloud
+[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+echo $SERVERNAME > /opt/karoshi/server_network/nextcloudserver
+echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
+[ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
+echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
+sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
+}
+
+function check_ports {
+if [ $SERVERNAME != `hostname-fqdn` ]
+then
+	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	PORTCHECK=53,88,389
+	echo "<li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
+	SCANRESULT=`nmap '$LDAPSERVER' -p $PORTCHECK -PN`
+	for PORT in `echo $PORTCHECK | sed "s/,/ /g"`
+	do
+	echo "<li>"Checking $PORT"</li></ul>"
+	if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
+	then
+	echo Error - The ldap server cannot be contacted on $PORT"<br>"
+	exit $PORT
+	fi
+	done
+	'
+	EXITSTATUS=$?
+	if [ $EXITSTATUS != 0 ]
+	then
+		exit $EXITSTATUS
+	fi
+fi
+}
+
+function apply_ssl_certificate {
+#######################
+#Apply certificate
+#######################
+echo `date`: module_nextcloud - applying ssl certificate by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+[ `echo $?` != 0 ] && exit 101 
+}
+
+function create_linux_client_icon {
+echo '[Desktop Entry]
+Version=1.0
+Type=Link
+Name=Owncloud
+Comment=Owncloud
+Icon=moodle
+URL=https://'$ALIAS.$REALM'/nextcloud' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all/Owncloud.desktop
+}
+
+check_already_installed
+apply_ssl_certificate
+add_dns_entry
+#check_ports
+install_nextcloud
+add_role_information
+#create_linux_client_icon
+#Show completed message
+#Generate mount.json
+
+#Add in monitoring for the server
+if [ -f /opt/karoshi/server_network/monitoringserver ]
+then
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+fi
+#Create mount.json for user home areas
+/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
+exit
+
