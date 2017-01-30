@@ -705,7 +705,7 @@ fi
 if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER.$REALM/backupserver ]
 then
 	#Get the name of the backup server that has been assigned
-	BACKUPSERVER=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER.$REALM/backupserver)
+	BACKUPSERVER=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER"."$REALM"/backupserver)
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1`
 	#Sort out the ssh key for the backup server
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
@@ -714,15 +714,18 @@ fi
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVER.$REALM
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVER"."$REALM"
 fi
 
-if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ]
+if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ]
 then
 	#Configure dns for all servers that are not domain controllers
-	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq
+	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq all
 
 	#Configure dhcp to use the extra domain controller
 
+else
+	#Configure dnsmasq for the server
+	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVER"."$REALM"
 fi
 exit

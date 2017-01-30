@@ -308,7 +308,7 @@ REALM2=$(echo $REALM | sed 's%\.%\\\\\.%g')
 
 #Run collabora
 echo '<ul><li>'$"Starting Collabora"'</li></ul>'
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='$ALIAS'\\.'$REALM2'' --dns-search="$REALM" --restart always --cap-add MKNOD collabora/code 1> /dev/null
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='$ALIAS'\\.'$REALM2'' --dns=172.17.0.1 --restart always --cap-add MKNOD collabora/code 1> /dev/null
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -353,6 +353,7 @@ if [ $MOD_SHOREWALL = yes ]
 then
 	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	sleep 1
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 

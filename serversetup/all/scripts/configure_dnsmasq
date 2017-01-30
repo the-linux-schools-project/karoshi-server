@@ -30,10 +30,57 @@
 
 LOG_DATE=`date +%F`
 source /opt/karoshi/server_network/domain_information/domain_name
+
+SERVER=$(echo "$1" | tr -cd "0-9.A-Za-z")
+[ -z "$SERVER" ] && SERVER=all
+
+function configure_server {
+if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/$SERVERNAME ] && [ -f /opt/karoshi/server_network/zones/"$ZONE"/servers/"$SERVERNAME" ]
+	then
+		echo `date`: configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		source /opt/karoshi/serversetup/variables/distro
+		#Make sure that dnsmasq is installed
+		which dnsmasq 1> /dev/null
+		if [ $? != 0 ]
+		then
+			echo "<ul><li>'$SERVERNAME' installing dnsmasq</li></ul>"
+			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			apt-get update
+			apt-get install -y dnsmasq
+			echo "</pre>"
+			cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d
+		fi
+		which dnsmasq 1> /dev/null
+		if [ $? = 0 ]
+		then
+			#Configure /etc/dnsmasq.conf
+			[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
+			#Create /etc/resolv.karoshi.conf
+			echo domain '$REALM' > /etc/resolv.karoshi.conf
+			for DNSENTRY in '$DNSIPLIST'
+			do
+				echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
+			done
+			echo domain '$REALM' > /etc/resolv.conf
+			echo nameserver 127.0.0.1 >> /etc/resolv.conf
+			echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
+			service dnsmasq restart
+			#Make sure that dnsmasq is set to start on boot
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
+		fi
+		'
+		#Add in a flag for dnsmasq service
+		[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
+		echo > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
+	fi
+}
+
+
 for ZONE in internal dmz
 do
 	DNSIPLIST=""
-	if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers ]
+	if [ -d /opt/karoshi/server_network/zones/$ZONE/ ]
 	then
 		if [ $ZONE = internal ]
 		then
@@ -46,7 +93,6 @@ do
 				DNSSERVERLIST=`hostname-fqdn`
 			fi
 		fi
-
 		#Create an ip list of servers
 		for DNSSERVER in $DNSSERVERLIST
 		do
@@ -58,49 +104,16 @@ do
 
 		#Create list of DNS servers for the clients to use
 		[ "$ZONE" = internal ] && echo $DNSIPLIST | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers
-
-		for SERVERNAME in `ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/`
-		do
-			if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/$SERVERNAME ]
-			then
-				echo `date`: configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-				ssh -x -o PasswordAuthentication=no $SERVERNAME '
-				source /opt/karoshi/serversetup/variables/distro
-				#Make sure that dnsmasq is installed
-				which dnsmasq 1> /dev/null
-				if [ $? != 0 ]
-				then
-					echo "<ul><li>'$SERVERNAME' installing dnsmasq</li></ul>"
-					echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-					apt-get update
-					apt-get install -y dnsmasq
-					echo "</pre>"
-					cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/dnsmasq /etc/init.d
-				fi
-				which dnsmasq 1> /dev/null
-				if [ $? = 0 ]
-				then
-					#Configure /etc/dnsmasq.conf
-					[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
-					#Create /etc/resolv.karoshi.conf
-					echo domain '$REALM' > /etc/resolv.karoshi.conf
-					for DNSENTRY in '$DNSIPLIST'
-					do
-						echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
-					done
-					echo domain '$REALM' > /etc/resolv.conf
-					echo nameserver 127.0.0.1 >> /etc/resolv.conf
-					echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
-					service dnsmasq restart 1> /dev/null
-					#Make sure that dnsmasq is set to start on boot
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
-				fi
-				'
-				#Add in a flag for dnsmasq service
-				[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-				echo > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
-			fi
-		done
+		if [ "$SERVER" = all ]
+		then 
+			for SERVERNAME in `ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/`
+			do
+				configure_server
+			done
+		else
+			SERVERNAME="$SERVER"
+			configure_server
+		fi
 	fi
 done
 exit

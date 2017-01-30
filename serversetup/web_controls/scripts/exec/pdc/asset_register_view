@@ -775,6 +775,7 @@ fi
 
 if [ $ACTION = showstats ]
 then
+	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 	echo '<b>'$"Statistics"'</b><br><br>'
 
 	#Stats per room
