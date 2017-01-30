@@ -268,27 +268,45 @@ then
 	MESSAGE=$"The surname must not be blank."
 	show_status
 fi
-#Check to see that password fields are not blank
-if [ -z "$PASSWORD1" ]
-then
-	MESSAGE=$"The password must not be blank."
-	show_status
-fi
-if [ -z "$PASSWORD2" ]
-then
-	MESSAGE=$"The password must not be blank."
-	show_status
-fi
+SHOW_PASSWORD=no
+
 if [ -z "$GROUP" ]
 then
 	MESSAGE=$"The group must not be blank."
 	show_status
 fi
-#Check that password has been entered correctly
-if [ "$PASSWORD1" != "$PASSWORD2" ]
+
+#Check to see that password fields are not blank
+if [ -z "$PASSWORD2" ] && [ ! -z "$PASSWORD1" ]
 then
-	MESSAGE=$"The passwords do not match."
+	MESSAGE=$"The password must not be blank."
 	show_status
+fi
+
+if [ -z "$PASSWORD1" ]
+then
+	#Assume that a password needs to be randomly generated
+	#Check password settings
+	source /opt/karoshi/server_network/security/password_settings	
+
+	if [ $PASSWORDCOMPLEXITY = on ]
+	then
+		PASSWORD1=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
+	else
+		PASSWORD1=$(shuf -i 10000000000000-99999999999999 -n 1 | head -c"$MINPASSWORDLENGTH")
+	fi
+	SHOW_PASSWORD=yes
+fi
+
+
+if [ "$SHOW_PASSWORD" = no ]
+then
+	#Check that password has been entered correctly
+	if [ "$PASSWORD1" != "$PASSWORD2" ]
+	then
+		MESSAGE=$"The passwords do not match."
+		show_status
+	fi
 fi
 #Check that usernamestyle is not blank
 if [ -z "$USERNAMESTYLE" ]
@@ -520,6 +538,10 @@ MESSAGE=`echo $"Forename": "${FIRSTNAME^}"'\\n'$"Surname": "${SURNAME^}"'\\n'$"U
 
 	if [[ $EXEC_STATUS -eq 106 ]]; then
 		MESSAGE="$USERNAME - $"A group with the same name as this user already exists, not creating user""
+	fi
+	if [ $SHOW_PASSWORD = yes ]
+	then
+		MESSAGE=`echo $MESSAGE"\n\n"$"Password": "$PASSWORD1"`
 	fi
 	show_status
 fi
