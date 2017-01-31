@@ -291,14 +291,13 @@ echo '</pre>'
 echo '<ul><li>'$"Checking that Docker is working"'</li></ul>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 docker run hello-world
-echo '</pre>'
 #Check that docker worked
 if [ $? != 0 ]
 then
 	echo '<ul><li>'$"There was a problem installing Docker"'</li></ul>'
 	exit
 fi
-
+echo '</pre>'
 #Get collabora for docker
 echo '<ul><li>'$"Downloading Collabora"' - '$"This will take some time"'</li></ul>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
@@ -347,6 +346,16 @@ then
 	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'9980'	'-'#'Collabora-Online /etc/shorewall/rules
 	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+fi
+
+#Make sure we can get to dns which may as well be from the server we are running on since we either have samba4 or dnsmasq
+if [ $(grep -c -w 53 /etc/shorewall/rules) = 0 ]
+then
+	MOD_SHOREWALL=yes
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53'	'-'#'dnsmasq-tcp /etc/shorewall/rules
+	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'53'	'-'#'dnsmasq-udp /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules	
 fi
 
 if [ $MOD_SHOREWALL = yes ]

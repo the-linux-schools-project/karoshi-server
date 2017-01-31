@@ -55,7 +55,10 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zone
 		if [ $? = 0 ]
 		then
 			#Configure /etc/dnsmasq.conf
-			[ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ] && echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
+			if [ `grep -c "resolv-file=/etc/resolv.karoshi.conf" /etc/dnsmasq.conf` = 0 ]
+			then
+				echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
+			fi
 			#Create /etc/resolv.karoshi.conf
 			echo domain '$REALM' > /etc/resolv.karoshi.conf
 			for DNSENTRY in '$DNSIPLIST'
@@ -64,10 +67,15 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zone
 			done
 			echo domain '$REALM' > /etc/resolv.conf
 			echo nameserver 127.0.0.1 >> /etc/resolv.conf
-			echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
-			service dnsmasq restart
 			#Make sure that dnsmasq is set to start on boot
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
+			echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_stop
+			sleep 1
+			echo "<br>"
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_start
+			echo "<br>"
+
 		fi
 		'
 		#Add in a flag for dnsmasq service
