@@ -103,7 +103,7 @@ do
 	if [ `echo $DATAHEADER'check'` = SIZEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		SIZE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9/n'`
+		SIZE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9\./n'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -116,7 +116,7 @@ do
 	if [ `echo $DATAHEADER'check'` = MAXFILEScheck ]
 	then
 		let COUNTER=$COUNTER+1
-		MAXFILES=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		MAXFILES=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9/n'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -213,7 +213,6 @@ then
 	show_status
 fi
 #Check to see that MAXFILES is not blank
-MAXFILES=`echo $MAXFILES | tr -cd '0-9/n'`
 if [ -z "$MAXFILES" ]
 then
 	MESSAGE=$"The max files cannot be blank."

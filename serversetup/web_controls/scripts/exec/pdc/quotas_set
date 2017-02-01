@@ -53,6 +53,7 @@ fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+echo data is :$DATA"<br>"
 if [ -z "$DATA" ]
 then
 	echo `date`: quotas_set - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -119,14 +120,17 @@ fi
 #Assign extra variables
 ###########################
 DISPLAYSIZE2=`echo $MAXSIZE2$UNIT`
-let DISPLAYSIZE1=$MAXSIZE2*95/100
+DISPLAYSIZE1=$(echo "scale=2;$MAXSIZE2*95/100" | bc)
 DISPLAYSIZE1=`echo $DISPLAYSIZE1$UNIT`
-let MAXSIZE2=$MAXSIZE2*1024
-[ $UNIT = GB ] && let MAXSIZE2=$MAXSIZE2*1024
-[ $UNIT = TB ] && let MAXSIZE2=$MAXSIZE2*104857
-let MAXSIZE1=$MAXSIZE2*95/100
-let MAXFILES1=$MAXFILES2*95/100
+MAXSIZE2=$(echo "scale=2;$MAXSIZE2*1024" | bc)
+[ $UNIT = GB ] && MAXSIZE2=$(echo "scale=2;$MAXSIZE2*1024" | bc)
+[ $UNIT = TB ] && MAXSIZE2=$(echo "scale=2;$MAXSIZE2*1048576" | bc)
+MAXSIZE1=$(echo "scale=2;$MAXSIZE2*95/100" | bc)
+MAXFILES1=$(echo "scale=0;$MAXFILES2*95/100" | bc)
 
+#Round up numbers because quotas does not like decimal places
+MAXSIZE1=$(echo "scale=0;($MAXSIZE1+0.5)/1" | bc)
+MAXSIZE2=$(echo "scale=0;($MAXSIZE2+0.5)/1" | bc)
 
 #Check for federated servers
 FEDERATED_SERVERS=no
