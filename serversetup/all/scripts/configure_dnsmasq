@@ -70,10 +70,10 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zone
 			#Make sure that dnsmasq is set to start on boot
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
 			echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_stop
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_stop 1>/dev/null
 			sleep 1
 			echo "<br>"
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_start
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_start 1>/dev/null
 			echo "<br>"
 
 		fi
