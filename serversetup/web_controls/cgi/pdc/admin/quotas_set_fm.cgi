@@ -171,13 +171,13 @@ echo '</td><td>
 <option value="TB">TB</option>
 </select>
 </td><td></td></tr>
-<tr><td style="width: 180px;">'$"Size"'</td><td style="width: 120px;"><input maxlength="3" size="9" name="_SIZE_" value="'$SIZE'" style="width: 200px;"></td>
+<tr><td style="width: 180px;">'$"Size"'</td><td style="width: 120px;"><input maxlength="8" name="_SIZE_" value="'$SIZE'" style="width: 200px;"></td>
 <td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum file size that users can have on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a>
 </td></tr>
 <tr>
       <td style="width: 180px;">'$"Max Files"'</td>
-      <td style="width: 120px;"><input maxlength="7" size="20" name="_MAXFILES_" value="'$MAXFILES'" style="width: 200px;"></td><td>
+      <td style="width: 120px;"><input maxlength="8" name="_MAXFILES_" value="'$MAXFILES'" style="width: 200px;"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Quotas#Quota_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the maximum number of files that a user can save on the system."'<br><br>'$"Users who reach this limit will not be able to save any more files until they have deleted some files."'<br><br>'$"Setting this value to 0 will disable this option."'</span></a>
 </td>
     </tr>
