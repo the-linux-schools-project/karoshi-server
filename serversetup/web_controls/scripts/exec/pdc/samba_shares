@@ -107,10 +107,18 @@ DRIVELETTER=`echo "$DATA" | cut -s -d: -f46`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f47`
 SERVERTYPE=`echo "$DATA" | cut -s -d: -f48`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f49`
-MOBILE=`echo "$DATA" | cut -s -d: -f50`
+RECYCLEBIN=`echo "$DATA" | cut -s -d: -f50`
+FULLAUDIT=`echo "$DATA" | cut -s -d: -f51`
+RECBINDURATION=`echo "$DATA" | cut -s -d: -f52 | tr -cd '0-9'`
+SETPERMISSIONS=`echo "$DATA" | cut -s -d: -f53`
+MOBILE=`echo "$DATA" | cut -s -d: -f54`
 
 [ -z "$MOBILE" ] && MOBILE=no
 [ -z "$ACTION" ] && ACTION=view
+[ -z "$RECYCLEBIN" ] && RECYCLEBIN=no
+[ -z "$FULLAUDIT" ] && FULLAUDIT=no
+[ -z "$RECBINDURATION" ] && RECBINDURATION=14
+[ -z "$SETPERMISSIONS" ] && SETPERMISSIONS=yes
 
 ########################
 #Check data
@@ -191,7 +199,7 @@ WIDTH2=120
 WIDTH3=160
 WIDTH4=100
 WIDTH5=100
-WIDTH6=100
+WIDTH6=180
 WIDTH7=100
 WIDTH8=30
 WIDTH9=100
@@ -263,33 +271,36 @@ then
 		#Create folder
 		[ ! -d "$SHAREPATH" ] && mkdir "$SHAREPATH"
 
-		#Set permissions
-		chmod $MASK "$SHAREPATH"
+		if [ "$SETPERMISSIONS" = yes ]
+		then
+			#Set permissions
+			chmod $MASK "$SHAREPATH"
 
-		#Remove all acls from the folder
-		setfacl -Rb "$SHAREPATH"
+			#Remove all acls from the folder
+			setfacl -Rb "$SHAREPATH"
 		
-		#Add acls for the selected groups
-		GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
-		GROUP_PERMS=( `echo $GROUPPERMS | sed 's/,/ /g'` )
-		GROUPNAMECOUNT=${#GROUPNAMES[*]}
+			#Add acls for the selected groups
+			GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
+			GROUP_PERMS=( `echo $GROUPPERMS | sed 's/,/ /g'` )
+			GROUPNAMECOUNT=${#GROUPNAMES[*]}
 
-		COUNTER=0
-		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
-		do
-			PERM="r-x"
-			GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
-			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			if [ "$GROUPNAME" = all ]
-			then
-				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
-			else
+			COUNTER=0
+			while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+			do
+				PERM="r-x"
 				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-				setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "$SHAREPATH"
-			fi
-			let COUNTER=$COUNTER+1
-		done
+				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
+				GROUPNAME=${GROUPNAMES[$COUNTER]}
+				if [ "$GROUPNAME" = all ]
+				then
+					setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
+				else
+					GROUP_PERM=${GROUP_PERMS[$COUNTER]}
+					setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "$SHAREPATH"
+				fi
+				let COUNTER=$COUNTER+1
+			done
+		fi
 		#Check that the share definition does not already exist in smb.conf
 		if [ `grep -c -w "\[$SHARENAME\]" /etc/samba/smb.conf` =  0 ]
 		then
@@ -301,6 +312,68 @@ then
 			echo "	invalid users = root" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
 			echo "	read only = No" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
 			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+
+			#Add in extra share options for full audit and recycle bin
+			if [ "$RECYCLEBIN" = yes ] && [ "$RECYCLEBIN" = yes ]
+			then
+				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			fi
+			#Add in extra share options for full audit and recycle bin
+			if [ "$RECYCLEBIN" = yes ] && [ "$RECYCLEBIN" != yes ]
+			then
+				echo "	vfs object = recycle" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			fi
+			if [ "$RECYCLEBIN" = yes ]
+			then
+				echo "	recycle:repository = .recycle" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	recycle:keeptree = yes" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	recycle:versions = yes" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+
+				#Schedule recycle bin deletion using tmpreaper
+				[ -d /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs
+				echo '0' '23' '*' '*' '*' '"/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins"'  > /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/tidy_network_recycle_bins.cron
+				/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+			fi
+			if [ "$RECYCLEBIN" != yes ] && [ "$RECYCLEBIN" = yes ]
+			then
+				echo "	vfs object = full_audit" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+			fi
+			if [ "$FULLAUDIT" = yes ]
+			then
+				echo "	full_audit:prefix = %u|%I|%S" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	full_audit:failure = none" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	full_audit:facility = local5" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	full_audit:priority = notice" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+
+				RESTART_RSYSLOGD=no
+				if [ ! -f /etc/rsyslog.d/00-samba-audit.conf ]
+				then
+					echo -e "local5.notice /var/log/samba/file-access.log\n& ~" > /etc/rsyslog.d/00-samba-audit.conf
+					RESTART_RSYSLOGD=yes
+				fi
+
+				if [ ! -f /etc/logrotate.d/samba-file-access ]
+				then
+					echo "/var/log/samba/file-access.log {
+weekly
+rotate 7
+compress
+missingok
+create 0640 syslog adm
+}" > /etc/logrotate.d/samba-file-access
+					touch /var/log/samba/file-access.log
+					chown syslog.adm /var/log/samba/file-access.log 
+					RESTART_RSYSLOGD=yes
+				fi
+
+				if [ "$RESTART_RSYSLOGD" = yes ]
+				then
+					restart rsyslog 1>/dev/null
+				fi
+			fi
+
 			echo >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
 
 			#Add include line to smb.conf
@@ -323,34 +396,38 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 		#Create folder
 		[ ! -d "'$SHAREPATH'" ] && mkdir "'$SHAREPATH'"
+		[ ! -d /opt/karoshi/server_network/network_shares/'$SERVERNAME'/ ] && mkdir -p /opt/karoshi/server_network/network_shares/'$SERVERNAME'/
 		#Set ownership
 
 		chmod '$MASK' "'$SHAREPATH'"
 
-		#Remove all acls from the folder
-		setfacl -Rb "'$SHAREPATH'"
+		if [ "'$SETPERMISSIONS'" = yes ]
+		then
+			#Remove all acls from the folder
+			setfacl -Rb "'$SHAREPATH'"
 
-		#Add acls for the selected groups
-		GROUPNAMES=( `echo '$GROUPLIST' | sed "s/,/ /g"` )
-		GROUP_PERMS=( `echo '$GROUPPERMS' | sed "s/,/ /g"` )
-		GROUPNAMECOUNT=${#GROUPNAMES[*]}
+			#Add acls for the selected groups
+			GROUPNAMES=( `echo '$GROUPLIST' | sed "s/,/ /g"` )
+			GROUP_PERMS=( `echo '$GROUPPERMS' | sed "s/,/ /g"` )
+			GROUPNAMECOUNT=${#GROUPNAMES[*]}
 
-		COUNTER=0
-		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
-		do
-			PERM="r-x"
-			GROUPNAME=${GROUPNAMES[$COUNTER]}
-			GROUP_PERM=${GROUP_PERMS[$COUNTER]}
-			[ "$GROUP_PERM" = 7 ] && PERM="rwx"
-			if [ "$GROUPNAME" = all ]
-			then
-				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "'$SHAREPATH'"
-			else
-				setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
-			fi
-			let COUNTER=$COUNTER+1
+			COUNTER=0
+			while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+			do
+				PERM="r-x"
+				GROUPNAME=${GROUPNAMES[$COUNTER]}
+				GROUP_PERM=${GROUP_PERMS[$COUNTER]}
+				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
+				if [ "$GROUPNAME" = all ]
+				then
+					setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "'$SHAREPATH'"
+				else
+					setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
+				fi
+				let COUNTER=$COUNTER+1
 			
-		done
+			done
+		fi
 		#Check that the share definition does not already exist in smb.conf
 		if [ `grep -c -w "\['$SHARENAME'\]" /etc/samba/smb.conf` =  0 ]
 		then
@@ -362,6 +439,69 @@ then
 			echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
 			echo "	read only = No" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
 			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+
+			#Add in extra share options for full audit and recycle bin
+			if [ "'$RECYCLEBIN'" = yes ] && [ "'$RECYCLEBIN'" = yes ]
+			then
+				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			fi
+			#Add in extra share options for full audit and recycle bin
+			if [ "'$RECYCLEBIN'" = yes ] && [ "'$RECYCLEBIN'" != yes ]
+			then
+				echo "	vfs object = recycle" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			fi
+			if [ "'$RECYCLEBIN'" = yes ]
+			then
+				echo "	recycle:repository = .recycle" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	recycle:keeptree = yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	recycle:versions = yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+
+				#Schedule recycle bin deletion using tmpreaper
+				[ -d /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs
+				echo "0" "23" "*" "*" "*" \"/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins\"  > /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs/tidy_network_recycle_bins.cron
+				/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+			fi
+			if [ "'$RECYCLEBIN'" != yes ] && [ "'$RECYCLEBIN'" = yes ]
+			then
+				echo "	vfs object = full_audit" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			fi
+			if [ "'$FULLAUDIT'" = yes ]
+			then
+				echo "	full_audit:prefix = %u|%I|%S" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	full_audit:failure = none" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	full_audit:facility = local5" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	full_audit:priority = notice" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+
+				RESTART_RSYSLOGD=no
+				if [ ! -f /etc/rsyslog.d/00-samba-audit.conf ]
+				then
+					echo -e "local5.notice /var/log/samba/file-access.log\n& ~" > /etc/rsyslog.d/00-samba-audit.conf
+					RESTART_RSYSLOGD=yes
+				fi
+
+				if [ ! -f /etc/logrotate.d/samba-file-access ]
+				then
+					echo "/var/log/samba/file-access.log {
+weekly
+rotate 7
+compress
+missingok
+create 0640 syslog adm
+}" > /etc/logrotate.d/samba-file-access
+					touch /var/log/samba/file-access.log
+					chown syslog.adm /var/log/samba/file-access.log 
+					RESTART_RSYSLOGD=yes
+				fi
+
+				if [ "$RESTART_RSYSLOGD" = yes ]
+				then
+					restart rsyslog 1>/dev/null
+				fi
+
+			fi
+
 			echo >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
 			#Add include to smb.conf
 			if [ `grep -c "'$SERVERNAME'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
@@ -452,7 +592,10 @@ then
 	echo SERVERTYPE='"'"$SERVERTYPE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
 	echo SERVERMASTER='"'"$SERVERMASTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
 	echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo MASK=$MASK >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+	echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+	echo RECYCLEBIN='"'"$RECYCLEBIN"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+	echo FULLAUDIT='"'"$FULLAUDIT"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+	echo RECBINDURATION='"'"$RECBINDURATION"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
 
 	#Add the folder to the backup configuration
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
@@ -461,6 +604,13 @@ then
 		then
 			echo "$SHAREPATH,$SHARENAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 		fi
+	fi
+
+	#Copy smb data and tidy_network_recycle_bins to the server
+	if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+	then
+		scp /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" root@$SERVERNAME:/opt/karoshi/server_network/network_shares/$SERVERNAME/
+		scp "/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins" root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/tidy_network_recycle_bins"
 	fi
 	}
 
@@ -506,6 +656,9 @@ then
 		if [ -f /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" ]
 		then
 			source /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+			[ "$RECYCLEBIN" = yes ] && RECYCLEBINCHECKED=checked
+			[ "$FULLAUDIT" = yes ] && FULLAUDITCHECKED=checked
+			
 			ALLGROUPS=""
 			ALLPERMS=""
 			MAPDRIVEALL=""
@@ -593,26 +746,26 @@ echo '<tr><td style="width: '$WIDTH6'px;">'$"Share Name"'</td><td>'
 #Only allow share name to be entered if creating a new share.
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "1" name="____SHARENAME____" value="'$SHARENAME'" style="width: 200px;" size="20" type="text"></td><td style="width: '$WIDTH8'px;">
+	echo '<input tabindex= "1" name="____SHARENAME____" value="'$SHARENAME'" style="width: 170px;" size="20" type="text"></td><td style="width: '$WIDTH8'px;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name for the network share."'</span></a>'
 else
-	echo '<input type="hidden" name="____SHARENAME____" value="'$SHARENAME'"><input tabindex= "1" name="____DISPLAYSHARENAME____" value="'$SHARENAME'" style="width: 200px;" size="20" type="text" disabled></td><td style="width: '$WIDTH8'px;">'	
+	echo '<input type="hidden" name="____SHARENAME____" value="'$SHARENAME'"><input tabindex= "1" name="____DISPLAYSHARENAME____" value="'$SHARENAME'" style="width: 170px;" size="20" type="text" disabled></td><td style="width: '$WIDTH8'px;">'	
 fi
 echo '</td></tr>
-<tr><td>'$"Comment"'</td><td><input tabindex= "2" name="____COMMENT____" value="'$COMMENT'" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
+<tr><td>'$"Comment"'</td><td><input tabindex= "2" name="____COMMENT____" value="'$COMMENT'" style="width: 170px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This show as information for your clients when they look at the network share."'</span></a></td></tr>
 <tr><td>'$"Folder Path"'</td><td>'
 
 if [ "$ACTION" = add ]
 then
-	echo '<input tabindex= "3"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 200px;" size="20" type="text"></td><td>
+	echo '<input tabindex= "3"  name="____SHAREPATH____" value="'$SHAREPATH'" style="width: 170px;" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the path that you want the share to use."'</span></a>'
 else
-	echo '<input type="hidden" name="____SHAREPATH____" value="'$SHAREPATH'"><input tabindex= "3"  name="____DISPLAYSHAREPATH____" value="'$SHAREPATH'" style="width: 200px;" size="20" type="text" disabled></td><td>'
+	echo '<input type="hidden" name="____SHAREPATH____" value="'$SHAREPATH'"><input tabindex= "3"  name="____DISPLAYSHAREPATH____" value="'$SHAREPATH'" style="width: 170px;" size="20" type="text" disabled></td><td>'
 fi
 
 echo '</td></tr>
 <tr><td>'$"Drive Letter"'</td><td>
-<select style="width: 200px;" name="____DRIVELETTER____">
+<select style="width: 170px;" name="____DRIVELETTER____">
 <option label="DriveLetter" value="'$DRIVELETTER'">'$DRIVELETTER'</option><option class="select-dash" disabled="disabled">----------</option>'
 for DRIVELETTER in D E F G H I J K L M N O P Q R S T U V W X Y Z
 do
@@ -622,10 +775,14 @@ echo '</select>
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will map the drive with the drive letter you have chosen. This only affects Windows clients." $"Leave this bank to auto assign a drive letter."'</span></a></td>
 </tr>
-<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle"><select style="width: 200px;" name="____DISPLAYALLUSERS____"><option value="ignore">'$"All Users"'</option></select>
+<tr><td>'$"Set Permissions"'</td><td><input type="checkbox" name="____SETPERMISSIONS____" value="yes" checked></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"By default acl permissions are set on the network share to allow the selected users to access the share."'<br><br>'$"If you do not want any permissions changed or you want to set them yourself then deselect this option."'</span></a></td></tr>
+<tr><td>'$"Full Audit Logs"'</td><td><input type="checkbox" name="____FULLAUDIT____" value="yes" '$FULLAUDITCHECKED'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will log the usernames and times of creation, deletion, and modification of files and folders on the share."'</span></a></td></tr>
+<tr><td>'$"Recycle Bin"'</td><td><input type="checkbox" name="____RECYCLEBIN____" value="yes" '$RECYCLEBINCHECKED'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will add a hidden folder called .recycle in the network share where all changed and deleted files are stored."'</span></a></td></tr>
+<tr><td>'$"Recycle Bin Duration"' ('$"Days"')</td><td><input tabindex= "3"  name="____RECBINDURATION____" value="'$RECBINDURATION'" style="width: 170px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"The duration in days that files are kept in the recycle folder before being deleted."'</span></a></td></tr>
+<tr><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle"><select style="width: 170px;" name="____DISPLAYALLUSERS____"><option value="ignore">'$"All Users"'</option></select>
 	</td><td style="vertical-align:middle">
 	</td><td>
-<select style="width: 200px;" name="____ALLPERMS____">'
+<select style="width: 170px;" name="____ALLPERMS____">'
 
 if [ ! -z "$ALLGROUPS" ]
 then
@@ -641,7 +798,7 @@ echo '<option value="0">'$"No Access"'</option>
 </select>
 </td><td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
 <td>
-<select style="width: 200px;" name="____MAPDRIVEALL____">'
+<select style="width: 170px;" name="____MAPDRIVEALL____">'
 
 if [ ! -z "$MAPDRIVEALL" ]
 then
@@ -698,14 +855,14 @@ do
 	echo '<tr id="row'$COUNTER'" style="display: '$SHOWROW';"><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 		if [ ! -z "${!GROUPNAME}" ]
 		then
-			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g' | sed 's/<option label="blank"><\/option>/<option value="'${!GROUPNAME}'">'${!GROUPNAME}'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g'
+			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g' | sed 's/<option label="blank"><\/option>/<option value="'${!GROUPNAME}'">'${!GROUPNAME}'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g' | sed 's/200/170/g'
 		else
-			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g'
+			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'$COUNTER'____/g' | sed 's/200/170/g'
 		fi
 
 		echo '</td><td style="vertical-align:middle">
 		<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to allow access to the folder."'</span></a></td><td>
-	<select style="width: 200px;" name="____GROUPPERMS'$COUNTER'____">'
+	<select style="width: 170px;" name="____GROUPPERMS'$COUNTER'____">'
 	GROUPPERMS=GROUPPERMS$COUNTER
 	if [ ! -z "${!GROUPPERMS}" ]
 	then
@@ -720,7 +877,7 @@ do
 	</select>	
 	<td style="vertical-align:middle"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the permissions that you want to set for this group for the share."'</span></a></td>
 	<td>
-	<select style="width: 200px;" name="____MAPDRIVE'$COUNTER'____">'
+	<select style="width: 170px;" name="____MAPDRIVE'$COUNTER'____">'
 	MAPDRIVE=MAPDRIVE$COUNTER
 	if [ ! -z "${!MAPDRIVE}" ]
 	then

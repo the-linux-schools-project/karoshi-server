@@ -274,12 +274,30 @@ function show_file_servers {
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
-for SERVERS in /opt/karoshi/server_network/servers/*
+
+#Show the main server
+show_pdc
+
+FILLCOLOUR=green
+ZONE=$"Internal"
+
+SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/servers)
+ADCLIST=""
+[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
+for SERVER in $SERVERLIST
 do
-	FILLCOLOUR=green
-	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	[ $CUSTOM != $SERVER ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ] && show_server
+	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+	then
+		show_server
+	fi
+done
+
+for SERVER in $SERVERLIST
+do
+	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ]
+	then
+		show_server
+	fi
 done
 
 #Show gluster volumes

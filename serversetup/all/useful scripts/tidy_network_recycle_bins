@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -f /opt/karoshi/server_network/network_shares/$(hostname-fqdn)/ ]
+then
+	for SHARE in $(ls -1 /opt/karoshi/server_network/network_shares/$(hostname-fqdn)/)
+	do
+		source /opt/karoshi/server_network/network_shares/$(hostname-fqdn)/"$SHARE"
+		[ -z "$RECYCLEBIN" ] && RECYCLEBIN="no"
+		[ -z "$RECBINDURATION" ] && RECBINDURATION="16"
+
+	if [ "$RECYCLEBIN" = yes ]
+	then
+		if [ -d "$SHAREPATH"/.recycle ]
+		then
+			tmpreaper "$RECBINDURATION"d "$SHAREPATH"/.recycle
+		fi
+	fi
+	done
+fi
+
