@@ -84,6 +84,7 @@ if [ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]
 then
 	SQUIDVER=trusty
 	SQUIDPATH=squid3
+	[ ! -e /etc/squid ] && ln -s /etc/squid3 /etc/squid
 fi
 
 if [ $(lsb_release -a 2>/dev/null | grep -c xenial) -gt 0 ]
