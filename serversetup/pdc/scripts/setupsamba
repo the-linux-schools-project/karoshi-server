@@ -1882,8 +1882,12 @@ then
 	#Linux Client support
 	#########################
 	echo `date`: "Adding linux client support" >> /opt/karoshi/serversetup/install_log
+
 	[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION
+	[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/
+
+/libreoffice/extensions/
 
 	cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 
@@ -1912,8 +1916,8 @@ then
 	#Add in support for older client versions
 	for OLDERCLIENTVERSION in $OLDERCLIENTVERSIONS
 	do
-		[ ! -d /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION
-		cp -f -R /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/desktop-icons
+		[ ! -d /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/libreoffice/extensions/
+		cp -f -R /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/desktop-icons 
 	done
 
 	#Create information for linux clients
