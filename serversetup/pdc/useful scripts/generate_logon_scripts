@@ -185,6 +185,15 @@ get_shares
 
 #Add in paths for home share on linux and mac clients
 #Not needed on windows clients - handled by logonform.kix
+
+if [ -f /opt/karoshi/server_network/network_information/linux_client_mountpath ]
+then
+	#Create empty file to mount at top level of the user's home area or enter in a relative path for the mountpoint
+	HOMEMOUNTPATH=$(cat "/opt/karoshi/server_network/network_information/linux_client_mountpath")
+else
+	HOMEMOUNTPATH=/network/home
+fi
+
 if [ "$DFS" = yes ]
 then
 	#Mot using dfs
@@ -198,7 +207,7 @@ then
 		get_pri_group_number
 		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
 		do
-			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
 		#Mac
 		echo '
@@ -218,7 +227,7 @@ else
 		GROUPNAME=`basename $PRI_GROUPS`
 		source /opt/karoshi/server_network/group_information/$GROUPNAME
 		get_pri_group_number
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
 		#Mac
 		echo '
