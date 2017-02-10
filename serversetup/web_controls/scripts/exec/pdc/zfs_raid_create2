@@ -295,6 +295,9 @@ then
 
 		#Set posix acl support
 		zfs set acltype=posixacl "$POOLNAME"
+
+		#Disable dedup as it needs a lot of memory 
+		zfs set dedup=off "$POOLNAME"
 		
 		#Mount partition on a temporary mount point
 		[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
@@ -601,6 +604,9 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 		#Set posix acl support
 		zfs set acltype=posixacl "'$POOLNAME'"
+
+		#Disable dedup as it needs a lot of memory 
+		zfs set dedup=off "'$POOLNAME'"
 
 		#Mount partition on a temporary mount point
 		[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
