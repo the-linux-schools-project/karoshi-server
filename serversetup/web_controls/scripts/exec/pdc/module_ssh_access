@@ -132,7 +132,7 @@ then
 	then
 		sed $LINENUM'c'\ACCEPT'	'net:$RESTRICT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
 	else
-		sed $LINENUM'c'\ACCEPT'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
+		sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'pdc_ssh_rule /etc/shorewall/rules > /etc/shorewall/rulestemp
 	fi
 	rm -f /etc/shorewall/rules
 	mv /etc/shorewall/rulestemp /etc/shorewall/rules

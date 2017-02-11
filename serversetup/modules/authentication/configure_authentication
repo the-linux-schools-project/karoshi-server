@@ -316,6 +316,7 @@ then
 	#Create nslcd.conf
 	echo uid nslcd > /etc/nslcd.conf
 	echo gid nslcd >> /etc/nslcd.conf
+	echo idle_timelimit 300 >> /etc/nslcd.conf
 	echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
 	echo base OU=People,$LDAPBASE >> /etc/nslcd.conf
 	#Not needed for anonymous bind
@@ -389,6 +390,7 @@ then
 	#Create nslcd.conf
 	echo uid nslcd > /etc/nslcd.conf
 	echo gid nslcd >> /etc/nslcd.conf
+	echo idle_timelimit 300 >> /etc/nslcd.conf
 	if [ '$AUTHTYPE' = rodc ] || [ '$AUTHTYPE' = adc ]
 	then
 		echo uri ldapi://%2fvar%2flib%2fsamba%2fprivate%2fldapi/ >> /etc/nslcd.conf
