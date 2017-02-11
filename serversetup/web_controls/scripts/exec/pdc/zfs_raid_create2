@@ -435,6 +435,10 @@ then
 
 		#Set posix acl support
 		zfs set acltype=posixacl "$POOLNAME"
+
+		#Disable dedup as it needs a lot of memory
+		zfs set dedup=off "$POOLNAME"
+
 		zfs set mountpoint="$MOUNTPOINT" "$POOLNAME"
 		zfs mount "$POOLNAME"
 
@@ -762,6 +766,9 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 
 		#Set posix acl support
 		zfs set acltype=posixacl "'$POOLNAME'"
+
+		#Disable dedup as it needs a lot of memory 
+		zfs set dedup=off "'$POOLNAME'"
 
 		zfs set mountpoint="'$MOUNTPOINT'" "'$POOLNAME'"
 		zfs mount "'$POOLNAME'"
