@@ -831,13 +831,13 @@ then
 
 	NAME="relatives"
 	DESC="Relatives"
-	LDAPPATH="OU=parents,OU=family,OU=People,$LDAPBASE"
+	LDAPPATH="OU=relatives,OU=family,OU=People,$LDAPBASE"
 	add_organisational_unit
 	creategpos
 
 	NAME="carers"
 	DESC="Carers"
-	LDAPPATH="OU=parents,OU=family,OU=People,$LDAPBASE"
+	LDAPPATH="OU=carers,OU=family,OU=People,$LDAPBASE"
 	add_organisational_unit
 	creategpos
 
@@ -1886,8 +1886,6 @@ then
 	[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION
 	[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/
-
-/libreoffice/extensions/
 
 	cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 
