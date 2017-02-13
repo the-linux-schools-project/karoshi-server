@@ -305,10 +305,12 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
+	SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"Firewall Rules"' '$SERVER2'</span>'
-	if [ "$SERVERNAME" != notset ]
+		<span>'$"Firewall Rules"' '$SERVERNAME2'</span>'
+	if [ "$SERVERNAME" != notset ] && [ "$SERVERCOUNT" != 1 ]
 	then
 		echo '<a href="/cgi-bin/admin/firewall.cgi">'$"Select Server"'</a>'
 	else

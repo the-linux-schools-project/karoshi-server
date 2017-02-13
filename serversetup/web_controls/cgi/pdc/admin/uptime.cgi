@@ -196,12 +196,18 @@ fi
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
+	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Display Uptime"'</span>
-<a href="/cgi-bin/admin/uptime_fm.cgi">'$"Select Server"'</a>
-</div></div><div id="mobileactionbox">
-'
+	<span>'$"Display Uptime"'</span>'
+
+	if [ "$SERVERCOUNT" = 1 ]
+	then
+		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
+	else
+		echo '<a href="/cgi-bin/admin/uptime_fm.cgi">'$"Select Server"'</a>'
+	fi
+	echo '</div></div><div id="mobileactionbox">'
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr><td style="height:30px;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td>
 <form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">

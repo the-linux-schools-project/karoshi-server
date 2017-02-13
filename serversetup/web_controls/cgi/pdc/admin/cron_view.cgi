@@ -204,13 +204,18 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
+	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Scheduled Jobs"' - '$SERVERNAME2'</span>
-<a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Select Server"'</a>
-</div></div><div id="mobileactionbox">
-'
+	<span>'$"Scheduled Jobs"' - '$SERVERNAME2'</span>'
 
+	if [ "$SERVERCOUNT" = 1 ]
+	then
+		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
+	else
+		echo '<a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Select Server"'</a>'
+	fi
+	echo '</div></div><div id="mobileactionbox">'
 else
 	echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"' - '$SERVERNAME2'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></td>

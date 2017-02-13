@@ -109,39 +109,52 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-WIDTH=180
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=180
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
-WIDTH=160
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=160
 fi
 
-echo '<form action="/cgi-bin/admin/disk_information.cgi" name="selectservers" method="post">'
+echo '<form id="foo" action="/cgi-bin/admin/disk_information.cgi" name="selectservers" method="post">'
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Disk Information"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">'
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
-echo '
-<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><b>'$"Disk Information"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></td>
-</tr></tbody></table><br>
-</div><div id="infobox">'
+	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
+	<td style="vertical-align: top;"><b>'$"Disk Information"'</b></td>
+	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></td>
+	</tr></tbody></table><br>
+	</div><div id="infobox">'
 fi
 
-#Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show disk info"
+#Redirect to show the disk information if there is only one server
+if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+then
+	echo '
+	<input name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'$MOBILE'_" value="" type="hidden">
+	<script type="text/javascript">
+	    function myfunc () {
+		var frm = document.getElementById("foo");
+		frm.submit();
+	    }
+	    window.onload = myfunc;
+	</script>'
+else
+	#Show list of servers
+	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show disk info"
+fi
 
 [ $MOBILE = no ] && echo '</div>'
 

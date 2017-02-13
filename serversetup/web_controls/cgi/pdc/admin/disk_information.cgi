@@ -188,11 +188,18 @@ fi
 if [ $MOBILE = yes ]
 then
 	SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Disk Information"' - '$SERVERNAME2'</span>
-	<a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Select Server"'</a>
-	</div></div><div id="mobileactionbox">'
+	<span>'$"Disk Information"' - '$SERVERNAME2'</span>'
+	if [ "$SERVERCOUNT" = 1 ]
+	then
+		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
+	else
+		echo '<a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Select Server"'</a>'
+	fi
+
+	echo '</div></div><div id="mobileactionbox">'
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
 	<td style="vertical-align: top;"><b>'$"Disk Information"' - '$SERVERNAME'</b></td>

@@ -211,7 +211,11 @@ then
 	EXTRASMARTINFO=`smartctl -a $DISK`
 	DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
 	PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	if [ -z "$DISK_AGE" ]
+	then
+		DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours_and_Msec | sed "s/ * / /g" | cut -d" " -f11 | cut -d"+" -f1 | tr -cd "0-9\n"`
+	fi
 	#Convert disk age to days
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
@@ -412,7 +416,13 @@ then
 	EXTRASMARTINFO=`smartctl -a $DISK`
 	DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
 	PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+
+	if [ -z "$DISK_AGE" ]
+	then
+		DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours_and_Msec | sed "s/ * / /g" | cut -d" " -f11 | cut -d"+" -f1 | tr -cd "0-9\n"`
+	fi
+
 	#Convert disk age to days
 	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
 	DISK_AGE_UNIT=$"Days"
