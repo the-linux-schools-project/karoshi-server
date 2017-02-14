@@ -163,7 +163,17 @@ else
 
 	</script></td></tr>"
 
-
+	#Check if we need to show a drop down for the domains if we have a trusted domain added
+	if [ -d /opt/karoshi/server_network/domain_information/trusted_domains ]
+	then
+		source /opt/karoshi/server_network/domain_information/domain_name
+		echo '<tr><td>'$"Domain"'</td><td><select name="_REALM_" style="width: 200px; padding-left:0px;padding-right:0px"><option value="">'$REALM'</option>'
+		for TRUSTED_DOMAIN in $(ls -1 /opt/karoshi/server_network/domain_information/trusted_domains)
+		do
+			echo '<option value="'$TRUSTED_DOMAIN'">'$TRUSTED_DOMAIN'</option>'	
+		done
+		echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the domain that this user is on."'</span></a></td></tr>'
+	fi
 
 	echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
 <tr><td>&nbsp;</td></tr>

@@ -219,7 +219,7 @@ if [ "$PROXY_LOADBALANCE" = yes ]
 then
 	echo proxy > /var/lib/samba/netlogon/domain_information/proxy_server
 else
-	PROXYSERVER=`echo $PROXYSERVER | sed 's/.'$REALM'//g'`
+	PROXYSERVER=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
 	echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
 fi
 exit

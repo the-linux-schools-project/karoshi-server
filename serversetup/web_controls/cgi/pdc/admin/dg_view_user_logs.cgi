@@ -95,11 +95,11 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
@@ -112,7 +112,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=14
+END_POINT=16
 #Assign USERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
@@ -163,6 +163,20 @@ do
 	then
 		let COUNTER=$COUNTER+1
 		DETAILED=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign REALM
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = REALMcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		REALM=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -303,7 +317,7 @@ do
 
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_user_logs.cgi | cut -d' ' -f1`
 	#View logs
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_logs
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$DETAILED:$REALM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_logs
 	EXEC_STATUS=`echo $?`
 	if [ $EXEC_STATUS = 101 ]
 	then
