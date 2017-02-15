@@ -220,7 +220,7 @@ then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 		<thead><tr><th style="width: '$WIDTH'px;"><b>'$"Asset"'</b></th>'
 
-		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"Tcpip"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac-address"'</b></th>'
+		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"Mac-address"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Tcpip"'</b></th>'
 
 		echo '<th><b>'$"Access"'</b></th><th><b>'$"Media Access"'</b></th></tr></thead><tbody>'
 
