@@ -121,7 +121,8 @@ echo `date`: dg_view_site_logs2 - Viewing logs "for" $WEBSITE $LOGDATE by $REMOT
 TABLECLASS=standard
 WIDTH1=60
 WIDTH2=90
-WIDTH3=110
+WIDTH3=250
+WIDTH4=250
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
@@ -129,13 +130,15 @@ then
 	WIDTH1=30
 	WIDTH2=60
 	WIDTH3=90
+	WIDTH4=90
 fi
 
 #Create table header
 if [ $MOBILE = no ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td style="vertical-align: top;"><b>'$"Site Internet Logs"' '$WEBSITE' '$LOGDATE'</b></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post" target="_blank">
-<input name="_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'_" type="submit" class="button" value="'$"Ban Website"'">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"Site Internet Logs"' '$WEBSITE' '$LOGDATE'</b></td><td><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
+<input name="_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'_" type="submit" class="button" value="'$"Ban Website"'"></form></td><td><form action="/cgi-bin/admin/dg_view_site_logs_fm.cgi" method="post">
+<input name="_ChooseSite_" type="submit" class="button" value="'$"Choose Website"'">
 </form></td></tr></tbody></table><br></div><div id="infobox">'
 else
 	echo '<b>'$"Site Internet Logs"' '$WEBSITE' '$LOGDATE'</b><br><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post" target="_blank">
@@ -199,7 +202,7 @@ function viewlogs {
 if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ] || [ -f /opt/karoshi/.tempdata/sitelog_allowed.$$ ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th><b>'$"Client"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th style="width: '$WIDTH4'px;"><b>'$"Client"'</b></th></tr></thead><tbody>'
 	if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ]
 	then	
 		sort -t">" -s -k 6 /opt/karoshi/.tempdata/sitelog_denied.$$

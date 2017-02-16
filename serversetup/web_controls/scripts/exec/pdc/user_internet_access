@@ -67,7 +67,7 @@ then
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+%'`
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+@%'`
 
 if [ -z "$DATA" ]
 then
@@ -126,9 +126,12 @@ PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
 
 TABLECLASS=standard
 HELPCLASS="info"
-WIDTH1=180
+WIDTH1=250
 WIDTH2=300
-WIDTH3=40
+WIDTH3=50
+WIDTH4=70
+WIDTH5=110
+WIDTH6=110
 ICON1=/images/submenus/internet/internet_allow.png
 ICON2=/images/submenus/system/edit.png
 if [ $MOBILE = yes ]
@@ -138,6 +141,9 @@ then
 	WIDTH1=90
 	WIDTH2=190
 	WIDTH3=25
+	WIDTH4=70
+	WIDTH5=70
+	WIDTH5=70
 	ICON1=/images/submenus/internet/internet_allowm.png
 	ICON2=/images/submenus/system/editm.png
 fi
@@ -247,8 +253,8 @@ echo '</tr>
 
 if [ `cat /etc/squid/badusers.list | wc -l` -gt 0 ]
 then
-	echo '<b>'$"Banned Users"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;"><b>'$"Users"'</b></td><td><b>'$"Duration"'</b></td><td><b>'$"View Incidents"'</b></td><td><b>'$"Allow"'</b></td></tr>'
+	echo '<b>'$"Banned Users"'</b><br><br><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: '$WIDTH1'px;"><b>'$"Users"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Duration"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"View Incidents"'</b></th><th style="width: '$WIDTH6'px;"><b>'$"Allow"'</b></th></tr></thead><tbody>'
 
 	for BADUSER in `cat /etc/squid/badusers.list`
 	do
@@ -284,34 +290,32 @@ COUNTER=0
 while [ $COUNTER -lt $USERNAME_ARRAY_COUNT ]
 do
 	USERNAME=`echo ${USERNAME_ARRAY[$COUNTER]}`
-	#Check to see that the user exists
-	getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
-	if [ $? = 0 ]
+	#Convert the domain part to uppercase
+	USERNAME=$(echo $USERNAME | sed 's/@.*/\U&\E/')
+	#Record ban details
+	if [ ! -z "$BANLENGTH" ]
 	then
-		#Record ban details
-		if [ ! -z "$BANLENGTH" ]
-		then
-			echo `date`: user_internet_access - $USERNAME banned "for" $BANLENGTH days by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo $BANLENGTH > /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
-			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:"$ACTIONTAKEN" $"Ban duration" $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
-		else
-			echo `date`: user_internet_access - $USERNAME banned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
-		fi
-
-		#Ban the user
-		touch /etc/squid/badusers.list
-		if [ ! -f /etc/squid/badusers.list ]
-		then
-			echo sampleuser > /etc/squid/badusers.list
-		fi
-		if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
-		then
-			echo $USERNAME >> /etc/squid/badusers.list
-			sort /etc/squid/badusers.list > /etc/squid/badusers.list1
-			mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
-		fi
+		echo `date`: user_internet_access - $USERNAME banned "for" $BANLENGTH days by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo $BANLENGTH > /opt/karoshi/logs/banned_user_internet_durations/$USERNAME
+		echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:"$ACTIONTAKEN" $"Ban duration" $BANLENGTH $DAYSMSG:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
+	else
+		echo `date`: user_internet_access - $USERNAME banned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date | sed 's/:/-/g'`:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS >> /opt/karoshi/logs/incident_logs/$USERNAME
 	fi
+
+	#Ban the user
+	touch /etc/squid/badusers.list
+	if [ ! -f /etc/squid/badusers.list ]
+	then
+		echo sampleuser > /etc/squid/badusers.list
+	fi
+	if [ `grep -c -w ^$USERNAME /etc/squid/badusers.list` = 0 ]
+	then
+		echo $USERNAME >> /etc/squid/badusers.list
+		sort /etc/squid/badusers.list > /etc/squid/badusers.list1
+		mv -f /etc/squid/badusers.list1 /etc/squid/badusers.list
+	fi
+
 	let COUNTER=$COUNTER+1
 done
 

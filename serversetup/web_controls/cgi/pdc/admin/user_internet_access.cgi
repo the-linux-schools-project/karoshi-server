@@ -69,7 +69,16 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	// ]]>
 	</script>'
 fi
-echo '</head><body onLoad="start()"><div id="pagecontainer">'
+echo '<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -103,7 +112,7 @@ then
 		if [ `echo $DATAHEADER'check'` = USERNAMEScheck ]
 			then
 			let COUNTER=$COUNTER+1
-			USERNAMES=`echo $DATA | cut -s -d'_' -f$COUNTER`
+			USERNAMES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%40/@/g'`
 			break
 		fi
 		let COUNTER=$COUNTER+1

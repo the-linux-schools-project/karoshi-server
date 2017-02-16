@@ -108,7 +108,7 @@ fi
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:&%\-'`
 #########################
 #Assign data to variables
 #########################
@@ -121,7 +121,7 @@ do
 	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%40/@/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -168,15 +168,15 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-#Assign REALM
+#Assign DOMAIN
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = REALMcheck ]
+	if [ `echo $DATAHEADER'check'` = DOMAINcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		REALM=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		DOMAIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -304,6 +304,11 @@ do
 		show_status
 	fi
 
+	if [ ! -z "$DOMAIN" ]
+	then
+		USERNAME="$USERNAME@$DOMAIN"
+	fi
+
 	#Show back button for mobiles
 	if [ $MOBILE = yes ]
 	then
@@ -317,7 +322,7 @@ do
 
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_user_logs.cgi | cut -d' ' -f1`
 	#View logs
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$DETAILED:$REALM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_logs
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_logs
 	EXEC_STATUS=`echo $?`
 	if [ $EXEC_STATUS = 101 ]
 	then

@@ -66,7 +66,7 @@ then
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-@'`
 if [ -z "$DATA" ]
 then
 	echo `date`: dg_view_user_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -80,8 +80,7 @@ DAY=`echo "$DATA" | cut -s -d: -f5`
 MONTH=`echo "$DATA" | cut -s -d: -f6`
 YEAR=`echo "$DATA" | cut -s -d: -f7`
 DETAILED=`echo "$DATA" | cut -s -d: -f8`
-REALM=`echo "$DATA" | cut -s -d: -f9`
-MOBILE=`echo "$DATA" | cut -s -d: -f10`
+MOBILE=`echo "$DATA" | cut -s -d: -f9`
 
 
 ########################
@@ -89,8 +88,8 @@ MOBILE=`echo "$DATA" | cut -s -d: -f10`
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-echo `date`: dg_view_user_logs - Not called by dg_view_user_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: dg_view_user_logs - Not called by dg_view_user_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 if [ -z "$REMOTE_USER" ]
@@ -143,16 +142,14 @@ fi
 
 echo `date`: dg_view_user_logs - Viewing logs "for" $USERNAME $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ ! -z "$REALM" ]
-then
-	USERNAME="$USERNAME@$REALM"
-fi
+source /opt/karoshi/server_network/domain_information/domain_name
 
 #View logs
 
 WIDTH1=60
 WIDTH2=90
-WIDTH3=110
+WIDTH3=250
+WIDTH4=250
 TABLECLASS=standard
 
 if [ $MOBILE = yes ]
@@ -160,6 +157,7 @@ then
 	WIDTH1=30
 	WIDTH2=60
 	WIDTH3=90
+	WIDTH4=90
 	FILTERMSG=""
 	TABLECLASS=mobilestandard
 fi
@@ -180,16 +178,15 @@ fi
 #Create table header
 if [ $MOBILE = no ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top; width: 25px;"><form action="user_internet_access.cgi" method="post" target="_blank">
-<input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'">
-</form></td><td><form action="dg_view_user_logs.cgi" method="post" target="_top">
-<input name="_USERNAME_'$USERNAME'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_" type="submit" class="button" value="'$DETAILEDLOGSMSG'">
-</form></td><td><form action="dg_view_user_usage.cgi" method="post" target="_top">
-<input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Internet usage"'">
-</form></td></tr></tbody></table><br></div><div id="infobox">'
+	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b></td>
+<td style="vertical-align: top; width: 25px;"><form action="user_internet_access.cgi" method="post"><input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'"></form></td>
+<td><form action="dg_view_user_logs.cgi" method="post" target="_top"><input name="_USERNAME_'$USERNAME'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_" type="submit" class="button" value="'$DETAILEDLOGSMSG'"></form></td>
+<td><form action="dg_view_user_usage.cgi" method="post" target="_top"><input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Internet usage"'"></form></td>
+<td><form action="dg_view_user_logs_fm.cgi" method="post" target="_top"><input name="_ChangeUser_" type="submit" class="button" value="'$"Change user"'"></form></td>
+</tr></tbody></table><br></div><div id="infobox">'
 else
 	echo '<b>'$"User Internet Logs"' '$USERNAME' '$DAY'-'$MONTH'-'$YEAR'</b><br><table class="'$TABLECLASS'" style="text-align: left;"><tbody>
-<tr><td><form action="user_internet_access.cgi" method="post" target="_blank">
+<tr><td><form action="user_internet_access.cgi" method="post">
 <input name="_ACTION_view_USERNAMES_'$USERNAME'_" type="submit" class="button" value="'$"Ban User"'">
 </form></td><td><form action="dg_view_user_usage.cgi" method="post" target="_top">
 <input name="_USERNAME_'$USERNAME'_" type="submit" class="button" value="'$"Internet usage"'">
@@ -199,25 +196,44 @@ fi
 
 function create_temp_logfile {
 #Create a temporary log file from all of the servers
+
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
-	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz >> /opt/karoshi/.tempdata/$USERNAME.$$
-	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz $USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
+	if [ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS ]
+	then
+		if [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ]
+		then
+			#Text log
+			cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
+		elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ]
+		then
+			#Archive log
+			tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz >> /opt/karoshi/.tempdata/$USERNAME.$$
+		elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz ]
+		then
+			#Global archive log
+			tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz $USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
+		fi
+	fi
 else
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'.tar.gz ] && LOGTYPE=globalarchive
-
-	[ $LOGTYPE = text ] && exit 105
-	[ $LOGTYPE = archive ] && exit 106
-	[ $LOGTYPE = globalarchive ] && exit 107
+	if [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS' ]
+	then
+		if [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ]
+		then
+			#Text log
+			exit 105
+		elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ]
+		then
+			#Archive log
+			exit 106
+		elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'.tar.gz ]
+		then
+			#Global archive log
+			exit 107
+		fi
+	fi
 	'
 	LOGTYPE=$?
 	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ' >> /opt/karoshi/.tempdata/$USERNAME.$$
@@ -230,7 +246,7 @@ function viewlogs {
 if [ -f /opt/karoshi/.tempdata/$USERNAME.$$ ] && [ $(wc -l /opt/karoshi/.tempdata/$USERNAME.$$ | cut -d" " -f1) -gt 0 ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Client"'</b></th><th></th><th><b>'$"Website"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Client"'</b></th><th></th><th style="width: '$WIDTH4'px;"><b>'$"Website"'</b></th></tr></thead><tbody>'
 	sort -t">" -s -k 6 /opt/karoshi/.tempdata/$USERNAME.$$
 	rm -f /opt/karoshi/.tempdata/$USERNAME.$$
 	echo '</tbody></table><br>'

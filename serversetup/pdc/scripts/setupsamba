@@ -1885,7 +1885,7 @@ then
 
 	[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION
-	[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/libreoffice/extensions/
+	tar -xvzf /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION.tar.gz -C /var/lib/samba/netlogon/linuxclient 1>/dev/null
 
 	cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 

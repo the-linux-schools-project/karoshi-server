@@ -49,7 +49,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<body onLoad=start()><div id=pagecontainer>'
+<body onLoad=start()><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox">

@@ -137,7 +137,8 @@ echo `date`: dg_view_computer_logs - Viewing logs "for" $TCPIP $DAY-$MONTH-$YEAR
 TABLECLASS=standard
 WIDTH1=60
 WIDTH2=90
-WIDTH3=110
+WIDTH3=250
+WIDTH4=250
 if [ $MOBILE = yes ]
 then
 	TABLECLASS=mobilestandard
@@ -145,6 +146,7 @@ then
 	WIDTH1=30
 	WIDTH2=60
 	WIDTH3=90
+	WIDTH4=90
 fi
 
 #Set detailed path
@@ -165,7 +167,7 @@ fi
 #Create table header
 if [ "$MOBILE" = no ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td style="vertical-align: top;"><b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top; width: 25px;"> <form action="/cgi-bin/admin/dg_view_computer_logs.cgi" method="post" target="_top">
+	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td><form action="/cgi-bin/admin/dg_view_computer_logs.cgi" method="post" target="_top">
 <input name="_TCPIP_'$TCPIP'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_" type="submit" class="button" value="'$DETAILEDLOGSMSG'">
 </form></td></tr></tbody></table><br></div><div id="infobox">'
 else
@@ -205,7 +207,7 @@ function viewlogs {
 if [ -f /opt/karoshi/.tempdata/$TCPIP.$$ ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th><b>'$"Website"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th style="width: '$WIDTH4'px;"><b>'$"Website"'</b></th></tr></thead><tbody>'
 sort -t">" -s -k 6 /opt/karoshi/.tempdata/$TCPIP.$$
 	rm -f /opt/karoshi/.tempdata/$TCPIP.$$
 	echo '</tbody></table><br>'
