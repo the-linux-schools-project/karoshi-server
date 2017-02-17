@@ -3,6 +3,9 @@
 REALM=internal
 [  -f /opt/karoshi/server_network/domain_information/domain_name ] && source /opt/karoshi/server_network/domain_information/domain_name
 
+TRUSTED_DOMAINS=no
+[ -d /opt/karoshi/server_network/domain_information/trusted_domains ] && TRUSTED_DOMAINS=yes
+
 #Check for dfs support
 DFS=no
 [ -f /var/lib/samba/netlogon/domain_information/dfs_enabled ] && DFS=yes
@@ -105,12 +108,20 @@ mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
 
 else
 	get_pri_group_number
-	#Linux - check if line is uniqie and add linux drive map
-	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+	if [ "$TRUSTED_DOMAINS" = yes ]
 	then
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		#Linux - check if line is unique and add linux drive map
+		if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+		then
+			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		fi
+	else
+		#Linux - check if line is unique and add linux drive map
+		if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
+		then
+			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		fi
 	fi
-	
 	#Mac
 	echo '
 #'$SHARE'
@@ -181,8 +192,6 @@ do
 done
 }
 
-get_shares 
-
 #Add in paths for home share on linux and mac clients
 #Not needed on windows clients - handled by logonform.kix
 
@@ -207,8 +216,12 @@ then
 		get_pri_group_number
 		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
 		do
-			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-
+			if [ "$TRUSTED_DOMAINS" = yes ]
+			then
+				echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+			else
+				echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+			fi
 		#Mac
 		echo '
 #Network home area
@@ -245,6 +258,47 @@ echo 'if [ ! -z "$HOMESERVER" ]
 then
 	mount -t smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
 fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
+#Add in network shares
+get_shares 
+
+#Add in domain trust shares
+if [ "$TRUSTED_DOMAINS" = yes ]
+then
+	for TRUSTED_DOMAIN in $(ls -1 /opt/karoshi/server_network/domain_information/trusted_domains/)
+	do
+		if [ -d "/opt/karoshi/server_network/domain_information/trusted_domains/$TRUSTED_DOMAIN/network_shares/" ]
+		then
+			for TRUST_SERVER in $(ls -1 "/opt/karoshi/server_network/domain_information/trusted_domains/$TRUSTED_DOMAIN/network_shares/")
+			do
+				for TRUST_SHARE in $(ls -1 "/opt/karoshi/server_network/domain_information/trusted_domains/$TRUSTED_DOMAIN/network_shares/$TRUST_SERVER/")
+				do
+					source "/opt/karoshi/server_network/domain_information/trusted_domains/$TRUSTED_DOMAIN/network_shares/$TRUST_SERVER/$TRUST_SHARE"
+					if [ "$SHAREPATH" = username ]
+					then
+						LINUXSHAREPATH="%(DOMAIN_USER)"
+						WINSHAREPATH='$username'	
+					else
+						LINUXSHAREPATH="$SHAREPATH"
+						WINSHAREPATH="$SHAREPATH"
+					fi
+					for TRUST_GROUP in $(echo $GROUPLIST | sed 's/,/ /g')
+					do
+						#Linux drive map
+						echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="'$LINUXSHAREPATH'" server="'$SERVER'" sgrp="'$TRUST_GROUP'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+						#Windows drive maps
+						touch /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
+						[ -z "$DRIVELETTER" ] && DRIVERLETTER='*'
+						if [ `grep -F -c "$WINSHAREPATH" /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix` = 0 ]
+						then
+							echo run '"net use '$DRIVELETTER' \\'$SERVER'\'$WINSHAREPATH' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
+						fi
+					done
+				done
+			done
+		fi
+	done
+fi
 
 #Complete mount-shares.sh
 echo -e '\n#Show mounted shares on desktop\ndefaults write /Users/$LoggedInUser/Library/Preferences/com.apple.finder.plist ShowMountedServersOnDesktop -bool TRUE\nkillall Finder' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
