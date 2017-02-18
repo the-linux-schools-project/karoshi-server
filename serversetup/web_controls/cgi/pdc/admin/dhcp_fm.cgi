@@ -84,6 +84,9 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 
 #Get current dhcp data
 
+#Domain name server - use this server ip
+DOMAINNAMESERVER=`net lookup $HOSTNAME`
+
 if [ -f /opt/karoshi/server_network/dhcp/dhcp_settings ]
 then
 	source /opt/karoshi/server_network/dhcp/dhcp_settings
@@ -97,9 +100,6 @@ else
 	DEFAULTLEASETIME=21600
 	MAXLEASETIME=43200
 fi
-
-#Domain name server - use this server ip
-DOMAINNAMESERVER=`net lookup $HOSTNAME`
 
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
 then
