@@ -119,19 +119,28 @@ foreach $line (@lines){
 		if ($state eq $userinput){
 			push (@lease_states,"<tr><td>$ip</td><td>$start_date_time</td><td>$end_date_time</td><td>$mac</td><td>$state</td><td>$name</td><td>
 <form action=\"dhcp_reservations.cgi\" method=\"post\">
-<button class=\"info infoleft\" name=\"_Delete_\" value=\"_ACTION_add_MACADDRESS_$mac\_TCPIPADDRESS_$ip\_CLIENTHOSTNAME_$name\_\">
-<img src=\"/images/submenus/system/dnsadd.png\" alt=\"Delete\">
+<button class=\"info infoleft\" name=\"_Reserve_\" value=\"_ACTION_add_MACADDRESS_$mac\_TCPIPADDRESS_$ip\_CLIENTHOSTNAME_$name\_\">
+<img src=\"/images/submenus/system/dnsadd.png\" alt=\"Reserve\">
 <span>Reserve<br>$name<br>$ip<br>$mac</span>
 </button>
 </form>
-</td></tr>\n");
+</td>
+<td>
+<form action=\"dhcp_bans.cgi\" method=\"post\">
+<button class=\"info infoleft\" name=\"_Add_\" value=\"_ACTION_add_MACADDRESS_$mac\_TCPIPADDRESS_$ip\_CLIENTHOSTNAME_$name\_\">
+<img src=\"/images/submenus/system/dnsban.png\" alt=\"Ban\">
+<span>Reserve<br>$name<br>$ip<br>$mac</span>
+</button>
+</form>
+</td>
+</tr>\n");
         		$readit = 0;
 			}
         }
 }
 
 @lease_states=sort (@lease_states);
-my $header=("<table id='myTable' class='tablesorter' style='text-align: left;'><thead><tr><th style='width: 120px;'><b>IP</b></th><th style='width: 150px;'><b>Start Time</b></th><th style='width: 150px;'><b>End Time</b></th><th style='width: 140px;'><b>Mac Address</b></th><th style='width: 80px;'><b>State</b></th><th style='width: 210px;'><b>Hostname</b></th><th style='width: 70px;'>Reserve</th></tr></thead><tbody>\n");
+my $header=("<table id='myTable' class='tablesorter' style='text-align: left;'><thead><tr><th style='width: 120px;'><b>IP</b></th><th style='width: 150px;'><b>Start Time</b></th><th style='width: 150px;'><b>End Time</b></th><th style='width: 140px;'><b>Mac Address</b></th><th style='width: 80px;'><b>State</b></th><th style='width: 210px;'><b>Hostname</b></th><th style='width: 70px;'>Reserve</th><th style='width: 70px;'>Ban</th></tr></thead><tbody>\n");
 
 print "<tr><td style='width: 160px;'>Total leases</td><td>$lease</td></tr>\n";
 print "<tr><td>Total active leases</td><td>$active</td></tr></tbody></table><br>\n";

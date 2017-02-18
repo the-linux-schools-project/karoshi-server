@@ -94,22 +94,27 @@ done
 echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_view_leases.cgi" method="post">
 
 <table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;">
+<tr><td style="width:180px"><div class="sectiontitle">'$"View DHCP Leases"'</div></td><td style="vertical-align: top;">
 <button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
 '$"Configure DHCP"'
 </button>
-</td><td style="vertical-align: top;">
+</td><td>
 <button class="button" formaction="dhcp_reservations.cgi" name="_DHCPReservations_" value="_">
 '$"DHCP Reservations"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
+<button class="button" formaction="dhcp_bans.cgi" name="_DHCPBans_" value="_">
+'$"DHCP bans"'
+</button>
+</td>
+<td>
 <input name="_OPTION_active_" type="submit" class="button" value="'$"Show Active Leases"'"></td>'
 
 #Only show backup leases button if we have a secondary dhcp server
 [ -d /opt/karoshi/server_network/dhcp_servers ] && echo '<td style="vertical-align: top;"><input name="_OPTION_backup_" type="submit" class="button" value="'$"Show Backup Leases"'"></td>'
 
-echo '<td style="vertical-align: top;"><input name="_OPTION_free_" type="submit" class="button" value="'$"Show Free Leases"'"></td>
+echo '<td><input name="_OPTION_free_" type="submit" class="button" value="'$"Show Free Leases"'"></td>
 </tr>
 </tbody></table><br></form>
 </div><div id="infobox">'
