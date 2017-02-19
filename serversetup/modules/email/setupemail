@@ -185,6 +185,12 @@ then
 	echo -e "auth_username_format = %Ln\n\n" >> /etc/dovecot/dovecot.conf
 fi
 
+#Disable IPV6
+if [ $(grep -c ^"listen =" /etc/dovecot/dovecot.conf) ]
+then
+	echo "listen = *" >> /etc/dovecot/dovecot.conf
+fi
+
 #Modify dovecot lda to enable sieve support
 sed -i "s/#mail_plugins = \$mail_plugins/mail_plugins = \$mail_plugins sieve/g" /etc/dovecot/conf.d/15-lda.conf
 sed -i "s/#lda_mailbox_autocreate = no/lda_mailbox_autocreate = yes/g" /etc/dovecot/conf.d/15-lda.conf
