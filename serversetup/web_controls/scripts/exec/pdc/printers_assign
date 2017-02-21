@@ -145,7 +145,7 @@ do
 		then
 			LOCATION=$(echo "$DATAENTRY" | cut -d, -f1)
 			let DEFAULTPCOUNT=$PRINTERCOUNT+3
-			DEFAULTPRINTER=$(echo "$DATAENTRY" | cut -d, -f"$DEFAULTPCOUNT" | sed 's/'$PRINTER'//g')
+			DEFAULTPRINTER=$(echo "$DATAENTRY" | cut -d, -f"$DEFAULTPCOUNT" | sed 's/'$PRINTER'$//g')
 			[ -z "$DEFAULTPRINTER" ] && DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f3`
 			let LASTPCOUNT=$PRINTERCOUNT+2
 			PRINTERS=$(echo "$DATAENTRY" | cut -d, -f3-"$LASTPCOUNT" | sed 's/'$PRINTER'//g')

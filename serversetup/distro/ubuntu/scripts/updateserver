@@ -159,7 +159,7 @@ then
 	fi
 fi
 STATUS_ARRAY[$COUNTER]=$STATUS
-echo -e "Service: $SERVICENAME - Status befoe update: $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
+echo -e "Service: $SERVICENAME - Status before update: $STATUS" >> /opt/karoshi/logs/server_upgrades/$LOG_DATE
 }
 
 #######################
@@ -386,6 +386,7 @@ echo  "`hostname-fqdn | cut -d. -f1`: `date` - This server has now rebooted.\n" 
 	#If the server hangs on reboot use the force reboot script to make sure we get a reboot.
 	if [ -f /opt/karoshi/force_reboot ]
 	then
+		echo -e "$HOSTNAME: `date` - force reboot flag detected - forcing a reboot." >>/opt/karoshi/logs/server_upgrades/$LOG_DATE
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/force_reboot
 	else
 		shutdown -r now 1>> /opt/karoshi/logs/server_upgrades/$LOG_DATE 2>> /opt/karoshi/logs/server_upgrades/$LOG_DATE
