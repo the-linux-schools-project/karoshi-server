@@ -114,48 +114,51 @@ rm -f /var/lib/samba/netlogon/printers_data.txt
 }
 
 #Create printers.txt if it doesnt exist
-if [ ! -f /var/lib/samba/netlogon/printers.txt ]
+if [ ! -f /var/lib/samba/netlogon/printers.txt.$$ ]
 then
-	echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt
-	echo '*'Printer names must match share names on the printer server >> /var/lib/samba/netlogon/printers.txt
-	echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt
-	echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt
-	echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt
-	echo '*' >> /var/lib/samba/netlogon/printers.txt
-	echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt
-	echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt
-	echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt
-	echo >> /var/lib/samba/netlogon/printers.txt
-	echo --start-- >> /var/lib/samba/netlogon/printers.txt
-	chmod 0644 /var/lib/samba/netlogon/printers.txt
+	echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'Printer names must match share names on the printer server >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*' >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt.$$
+	echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt.$$
+	echo >> /var/lib/samba/netlogon/printers.txt.$$
+	echo --start-- >> /var/lib/samba/netlogon/printers.txt.$$
+	chmod 0644 /var/lib/samba/netlogon/printers.txt.$$
 fi
 
-
 #Remove printer from all locations
-COUNTER=0
-while [ $(grep -c ",$PRINTER," /var/lib/samba/netlogon/printers.txt) -gt 0 ]
+STARTLINE=$(grep -n "\-\-start\-\-" /var/lib/samba/netlogon/printers.txt | cut -d: -f1 | sed -n 1,1p)
+for PRINTERDATA in $(sed '1,'$STARTLINE'd' /var/lib/samba/netlogon/printers.txt)
 do
-	PRINTLINENO=$(grep -n ",$PRINTER," /var/lib/samba/netlogon/printers.txt | cut -d: -f1 | sed -n 1,1p)
-	DATAENTRY=`sed -n $PRINTLINENO,$PRINTLINENO'p' /var/lib/samba/netlogon/printers.txt | grep -w $PRINTER`
-	if [ ! -z "$DATAENTRY" ]
+	LOCATION=$(echo $PRINTERDATA | cut -d, -f1)
+
+	PCOUNT=$(echo $PRINTERDATA | cut -d, -f2)
+	let PEND=$PCOUNT+2
+	let DPCPOUNT=$PEND+1
+	PRINTERS=$(echo "$PRINTERDATA" | cut -d, -f3-"$PEND")	
+	DPRINTER=$(echo "$PRINTERDATA" | cut -d, -f"$DPCPOUNT")	
+
+	if [ $(echo $PRINTERS | grep -c -w $PRINTER) -gt 0 ]
 	then
-		sed -i $PRINTLINENO'd' /var/lib/samba/netlogon/printers.txt
-		PRINTERCOUNT=$(echo "$DATAENTRY" | cut -d, -f2)
-		if [ $PRINTERCOUNT -gt 1 ]
+		#Remove the printer from the printer file
+		PRINTERS=$(echo $PRINTERS | sed 's/^'$PRINTER',//g' | sed 's/,'$PRINTER'$//g' | sed 's/,'$PRINTER',/,/g')
+
+		#Remove the default printer and assign a new one if it matches 
+		if [ $(echo "$DPRINTER" | grep -c -w "$PRINTER") -gt 0 ]
 		then
-			LOCATION=$(echo "$DATAENTRY" | cut -d, -f1)
-			let DEFAULTPCOUNT=$PRINTERCOUNT+3
-			DEFAULTPRINTER=$(echo "$DATAENTRY" | cut -d, -f"$DEFAULTPCOUNT" | sed 's/'$PRINTER'$//g')
-			[ -z "$DEFAULTPRINTER" ] && DEFAULTPRINTER=`echo $DATAENTRY | cut -d, -f3`
-			let LASTPCOUNT=$PRINTERCOUNT+2
-			PRINTERS=$(echo "$DATAENTRY" | cut -d, -f3-"$LASTPCOUNT" | sed 's/'$PRINTER'//g')
-			let PRINTERCOUNT=$PRINTERCOUNT-1
-			echo "$LOCATION,$PRINTERCOUNT,$PRINTERS,$DEFAULTPRINTER" | sed 's/,,/,/g' >> /var/lib/samba/netlogon/printers.txt
-			fi
+			DPRINTER=$(echo "$PRINTERS" | cut -d, -f1)
+		fi
+		let PCOUNT-=1	
 	fi
-	let COUNTER="$COUNTER"+1
-	[ "$COUNTER" = 1000 ] && break
+	[ "$PCOUNT" -ge 1 ] && echo $LOCATION,$PCOUNT,$PRINTERS,$DPRINTER >> /var/lib/samba/netlogon/printers.txt.$$
 done
+
+cat /var/lib/samba/netlogon/printers.txt.$$ > /var/lib/samba/netlogon/printers.txt
+rm /var/lib/samba/netlogon/printers.txt.$$
 
 #Add printer to locations
 COUNTER=0
@@ -178,7 +181,7 @@ do
 		#Delete empty lines
 		sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
 		#Add in printer
-		if [ `echo $PRINTERS | grep -c $PRINTER` = 0 ]
+		if [ `echo $PRINTERS | grep -c -w $PRINTER` = 0 ]
 		then
 			PRINTERS=`echo $PRINTER,$PRINTERS`
 			let PRINTERCOUNT=$PRINTERCOUNT+1
