@@ -84,7 +84,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
 #########################
@@ -112,7 +112,7 @@ do
 	if [ `echo $DATAHEADER'check'` = FILTERNAMEcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		FILTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		FILTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -126,7 +126,7 @@ do
 	if [ `echo $DATAHEADER'check'` = FILTERDATAcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		FILTERDATA=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		FILTERDATA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -140,7 +140,7 @@ do
 	if [ `echo $DATAHEADER'check'` = FILTERDATA2check ]
 	then
 		let COUNTER=$COUNTER+1
-		FILTERDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		FILTERDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -154,7 +154,7 @@ do
 	if [ `echo $DATAHEADER'check'` = FILTERDATA3check ]
 	then
 		let COUNTER=$COUNTER+1
-		FILTERDATA3=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		FILTERDATA3=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -173,7 +173,7 @@ then
 			if [ `echo $DATAHEADER'check'` = FILTERDATA4check ]
 			then
 				let COUNTER=$COUNTER+1
-				FILTERDATA4=$FILTERDATA4\_`echo $DATA | cut -s -d'_' -f$COUNTER`
+				FILTERDATA4=$FILTERDATA4\_`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
 			fi
 			let COUNTER=$COUNTER+1
 		done

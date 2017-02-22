@@ -157,7 +157,7 @@ exit
 
 #Check data
 
-if [ $ACTION = reallyban ] || [ $ACTION = delete ]
+if [ $ACTION = reallyadd ] || [ $ACTION = delete ]
 then
 	#Check that clienthostname is not blank
 	if [ -z "$CLIENTHOSTNAME" ]
@@ -168,7 +168,7 @@ then
 	fi
 fi
 
-if [ $ACTION = reallyban ]
+if [ $ACTION = reallyadd ]
 then
 	#Check that mac address is not blank
 	if [ -z "$MACADDRESS" ]
@@ -196,7 +196,7 @@ then
 			fi
 		done
 		#Check to see that the mac address has not already been added
-		if [ $(grep -r -H -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/reservations/ | grep -v -w "$CLIENTHOSTNAME" | grep -c -w "$MACADDRESS") -gt 0 ]
+		if [ $(grep -r -h -w "$MACADDRESS" /opt/karoshi/server_network/dhcp/bans/ | grep -c -w "$MACADDRESS") -gt 0 ]
 		then
 				ACTION=view
 				MESSAGE=$"This mac address is already in use."
@@ -252,7 +252,7 @@ then
 	fi
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td width:180px"><div class="sectiontitle">'$"DHCP Bans"'</div></td>
+	<td><div class="sectiontitle">'$"DHCP Bans"'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Bans"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows stop a MAC address from being assigned a tcpip number."'</span></a></td>
 	<td>'
 
