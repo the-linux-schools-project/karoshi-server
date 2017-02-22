@@ -129,7 +129,7 @@ foreach $line (@lines){
 <form action=\"dhcp_bans.cgi\" method=\"post\">
 <button class=\"info infoleft\" name=\"_Add_\" value=\"_ACTION_add_MACADDRESS_$mac\_TCPIPADDRESS_$ip\_CLIENTHOSTNAME_$name\_\">
 <img src=\"/images/submenus/system/dnsban.png\" alt=\"Ban\">
-<span>Reserve<br>$name<br>$ip<br>$mac</span>
+<span>Ban<br>$name<br>$ip<br>$mac</span>
 </button>
 </form>
 </td>
