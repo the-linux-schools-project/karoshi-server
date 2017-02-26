@@ -197,7 +197,7 @@ fi
 #########################
 #Check data
 #########################
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ]  && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ]
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ]  && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -277,6 +277,37 @@ then
 	done
 fi
 
+if [ "$ACTION" = DELETEACLPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ]
+then
+	END_POINT=50
+	#Assign ACLOWNER
+	COUNTER=2
+	while [ "$COUNTER" -le "$END_POINT" ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = ACLOWNERcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			ACLOWNER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign ACLGROUP
+	COUNTER=2
+	while [ "$COUNTER" -le "$END_POINT" ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo $DATAHEADER'check'` = ACLGROUPcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			ACLGROUP=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+fi
 
 if [ "$ACTION" = REALLYSETPERMS ]
 then
@@ -611,7 +642,7 @@ fi
 echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 echo '</form>'
 [ $MOBILE = no ] && echo '</div>'

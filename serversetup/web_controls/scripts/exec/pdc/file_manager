@@ -108,7 +108,7 @@ then
 	ACTION=notset
 fi
 
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ]
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ]
 then
 	echo `date`: file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -130,6 +130,12 @@ then
 	ROWCOUNT=6
 	WIDTH=90
 	WIDTH2=120
+	WIDTH3=370
+	WIDTH4=60
+	WIDTH5=90
+	WIDTH6=140
+	WIDTH7=70
+
 	COLSIZE=95
 	ROWSIZE=28
 	SERVERICON="/images/submenus/system/computer.png"
@@ -161,6 +167,11 @@ else
 ROWCOUNT=3
 	WIDTH=70
 	WIDTH2=90
+	WIDTH3=100
+	WIDTH4=50
+	WIDTH5=60
+	WIDTH6=100
+	WIDTH7=70
 	COLSIZE=36
 	ROWSIZE=26
 	TABLECLASS=mobilestandard
@@ -966,80 +977,108 @@ show_directory
 
 function set_perms {
 convert_special_chars
-echo $"Set Permissions" - "$LOCATION""<br><br><br>"
+
 #Get ownership details
 getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
-GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
-#Get current permissions of the item
-CURRENT_PERMS=`ls -d -l "$LOCATION" | cut -d" " -f1`
-#Get size
-ITEMSIZE=`du -h -s "$LOCATION" | cut -f1`
-#Get file info
-ITEMTYPE=`file "$LOCATION" | cut -d: -f2`
-#Basename
-SHORTNAME=`basename "$LOCATION"`
-#Last modified
-LASTMOD=`stat -c %y "$LOCATION" | cut -d. -f1`
-#Last accessed
-LASTACC=`stat -c %x "$LOCATION" | cut -d. -f1`
+	OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
+	GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
+	#Get current permissions of the item
+	CURRENT_PERMS=`ls -d -l "$LOCATION" | cut -d" " -f1`
+	#Get size
+	ITEMSIZE=`du -h -s "$LOCATION" | cut -f1`
+	#Get file info
+	ITEMTYPE=`file "$LOCATION" | cut -d: -f2`
+	#Basename
+	SHORTNAME=`basename "$LOCATION"`
+	#Last modified
+	LASTMOD=`stat -c %y "$LOCATION" | cut -d. -f1`
+	#Last accessed
+	LASTACC=`stat -c %x "$LOCATION" | cut -d. -f1`
 
-echo '<b>'$"Basic Information"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left; " >
-<tbody>
-<tr><td style="width: '$WIDTH2'px;">'$"Name"'</td><td>'$SHORTNAME'</td></tr>
-<tr><td>'$"Path"'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$"Size"'</td><td>'$ITEMSIZE'</td></tr>
-<tr><td>'$"Type"'</td><td>'$ITEMTYPE'</td></tr>
-<tr><td>'$"Last accessed"'</td><td>'$LASTACC'</td></tr>
-<tr><td>'$"Last modified"'</td><td>'$LASTMOD'</td></tr>
-</tbody></table><br>
-<b>'$"Ownership"'</b><br><br><table class="'$TABLECLASS'" style="text-align: left; " >
-<tbody>
-<tr><td style="width: '$WIDTH2'px;">'$"User"'</td><td><input tabindex= "1" name="_OWNER_" value="'$OWNER'" size="20" type="text"></td></tr>
-<tr><td>'$"Group"'</td><td><input tabindex= "2" name="_GROUP_" value='"$GROUP"' size="20" type="text"></td></tr>
-</tbody></table><br>
-<b>'$"Permissions"'</b><br><br>'
+	echo '<b>'$"Information"'</b><br><table class="tablesorter" style="text-align: left; " >
+	<tbody>
+	<tr><td style="width: '$WIDTH2'px;">'$"Name"'</td><td style="width: '$WIDTH3'px;">'$SHORTNAME'</td></tr>
+	<tr><td>'$"Path"'</td><td>'$LOCATION'</td></tr>
+	<tr><td>'$"Size"'</td><td>'$ITEMSIZE'</td></tr>
+	<tr><td>'$"Type"'</td><td>'$ITEMTYPE'</td></tr>
+	<tr><td>'$"Last accessed"'</td><td>'$LASTACC'</td></tr>
+	<tr><td>'$"Last modified"'</td><td>'$LASTMOD'</td></tr>
+	</tbody></table><br>
+	<b>'$"Basic Permissions"'</b><br><table class="tablesorter" style="text-align: left; " >
+	<tbody>
+	<tr><td style="width: '$WIDTH2'px;">'$"User"'</td><td style="width: '$WIDTH3'px;"><input tabindex= "1" name="_OWNER_" value="'$OWNER'" size="20" type="text"></td></tr>
+	<tr><td>'$"Group"'</td><td><input tabindex= "2" name="_GROUP_" value='"$GROUP"' size="20" type="text"></td></tr>
+	</tbody></table>'
 
 
-DIRECTORY=no
-[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
-[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
-[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
-[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+	DIRECTORY=no
+	[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+	[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+	[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
 
-[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
-[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
-[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+	[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+	[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
 
-[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
-[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
-[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
-EXECENTERMSG=$"Enter"
-[ $DIRECTORY = no ] && EXECENTERMSG=$"Exec"
-#Show ownership
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH2px';"></td><td>'$"Read"'</td><td>'$"Write"'</td><td>'$EXECENTERMSG'</td><td>'$"Special"'</td><td></td></tr>
-<tr><td>'$"User"'</td><td><input name="_USERREAD_" '$USERREAD' value="1" type="checkbox"></td><td><input name="_USERWRITE_" '$USERWRITE' value="1" type="checkbox"></td><td><input name="_USEREXEC_" '$USEREXEC' value="1" type="checkbox"></td><td><input name="_SETUID_" '$SETUID' value="1" type="checkbox"></td><td>'$"Set User ID"'</td></tr>
-<tr><td>'$"Group"'</td><td><input name="_GROUPREAD_" '$GROUPREAD' value="1" type="checkbox"></td><td><input name="_GROUPWRITE_" '$GROUPWRITE' value="1" type="checkbox"></td><td><input name="_GROUPEXEC_" '$GROUPEXEC' value="1" type="checkbox"></td><td><input name="_SETGID_" value="1" type="checkbox"></td><td>'$"Set Group ID"'</td></tr>
-<tr><td>'$"Other"'</td><td><input name="_OTHERREAD_" '$OTHERREAD' value="1" type="checkbox"></td><td><input name="_OTHERWRITE_" '$OTHERWRITE' value="1" type="checkbox"></td><td><input name="_OTHEREXEC_" '$OTHEREXEC' value="1" type="checkbox"></td><td><input name="_STICKY_" '$STICKY' value="1" type="checkbox"></td><td>'$"Sticky"'</td></tr></tbody></table><br>'
+	[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+	[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+	EXECENTERMSG=$"Enter"
+	[ $DIRECTORY = no ] && EXECENTERMSG=$"Exec"
+	#Show ownership
 
-#Show recursive options if the item is a directory
-if [ $DIRECTORY = yes ]
-then
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH2'px;">'$"Recursive"'</td><td><input name="_RECURSIVE_" value="1" type="checkbox"></td></tr>
-<tr><td>'$"Exec Files"'</td><td><input name="_EXECRECURSE_" value="1" type="checkbox"></td></tr></tbody></table>'
-fi
+	echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+	<tr><td style="width: '$WIDTH2'px;"></td><td style="width: '$WIDTH4'px;">'$"Read"'</td><td style="width: '$WIDTH4'px;">'$"Write"'</td><td style="width: '$WIDTH4'px;">'$EXECENTERMSG'</td><td style="width: '$WIDTH4'px;">'$"Special"'</td><td style="width: '$WIDTH5'px;"></td></tr>
+	<tr><td>'$"User"'</td><td><input name="_USERREAD_" '$USERREAD' value="1" type="checkbox"></td><td><input name="_USERWRITE_" '$USERWRITE' value="1" type="checkbox"></td><td><input name="_USEREXEC_" '$USEREXEC' value="1" type="checkbox"></td><td><input name="_SETUID_" '$SETUID' value="1" type="checkbox"></td><td>'$"Set User ID"'</td></tr>
+	<tr><td>'$"Group"'</td><td><input name="_GROUPREAD_" '$GROUPREAD' value="1" type="checkbox"></td><td><input name="_GROUPWRITE_" '$GROUPWRITE' value="1" type="checkbox"></td><td><input name="_GROUPEXEC_" '$GROUPEXEC' value="1" type="checkbox"></td><td><input name="_SETGID_" value="1" type="checkbox"></td><td>'$"Set Group ID"'</td></tr>
+	<tr><td>'$"Other"'</td><td><input name="_OTHERREAD_" '$OTHERREAD' value="1" type="checkbox"></td><td><input name="_OTHERWRITE_" '$OTHERWRITE' value="1" type="checkbox"></td><td><input name="_OTHEREXEC_" '$OTHEREXEC' value="1" type="checkbox"></td><td><input name="_STICKY_" '$STICKY' value="1" type="checkbox"></td><td>'$"Sticky"'</td></tr></tbody></table>'
+
+	#Show recursive options if the item is a directory
+	if [ $DIRECTORY = yes ]
+	then
+		echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+		<tr><td style="width: '$WIDTH2'px;">'$"Recursive"'</td><td style="width: '$WIDTH3'px;"><input name="_RECURSIVE_" value="1" type="checkbox"></td></tr>
+		<tr><td>'$"Exec Files"'</td><td><input name="_EXECRECURSE_" value="1" type="checkbox"></td></tr></tbody></table>'
+	fi
+
+	#Show extended permissions
+	SHOWTABLEHEADER=yes
+	SHOWTABLEFOOTER=no	
+	for ACLDATA in $(getfacl --omit-header --skip-base -p -d "$LOCATION" | grep -v '^user::\|^group::\|^other::\|^mask::')
+	do
+		if [ "$SHOWTABLEHEADER" = yes ]
+		then
+			echo '<br><b>ACL '$"Permissions"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
+	<tr><td style="width: '$WIDTH2'px;"><b>'$"User"' / '$"Group"'</b></td><td style="width: '$WIDTH6'px;"><b>'$"Name"'</b></td><td style="width: '$WIDTH6'px;"><b>Access</b></td><td style="width: '$WIDTH7'px;"><b>Delete</b></td></tr>'
+			SHOWTABLEHEADER=no
+			SHOWTABLEFOOTER=yes
+		fi
+
+		ACLTYPE=$(echo $ACLDATA | cut -d: -f1)
+		ACLUSER=$(echo $ACLDATA | cut -d: -f2)
+		ACLPERMS=$(echo $ACLDATA | cut -d: -f3)
+		ACLPERM=$"Read only"
+		[ $(echo "$ACLPERMS" | grep -c "w") -gt 0 ] && ACLPERM=$"Read and Write"
+		echo '<tr><td>'$ACLTYPE'</td><td>'$ACLUSER'</td><td>'$ACLPERM'</td><td>
+		<button class="info" name="_Delete_" value="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_DELETEACLPERMS_ACLOWNER_'$ACLUSER'_ACLGROUP_'$ACLTYPE'_">
+		<img src="'$ICON5'" alt="'$"Delete"'">
+		<span>'$"Delete"'<br>'$ACLTYPE' - '$ACLUSER'</span>
+		</button>
+		</td></tr>'
+		
+	done
+	[ "$SHOWTABLEFOOTER" = yes ] && echo '</tbody></table>'
 fi
 
 if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
@@ -1200,8 +1239,7 @@ fi
 '
 fi
 
-echo '<br>
-<input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
+echo '<br><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
 '
 }
 
@@ -2082,8 +2120,38 @@ echo '<input name="_ACTION_REALLYSEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMAS
 
 }
 
+
+function really_delete_acl_perms {
+ACLOWNER=`echo "$DATA" | cut -s -d: -f18`
+ACLGROUP=`echo "$DATA" | cut -s -d: -f19`
+echo "location is $LOCATION<br>
+acl owner is $ACLOWNER<br>
+acl group is $ACLGROUP<br>
+"
+}
+
+function delete_acl_perms {
+ACLOWNER=`echo "$DATA" | cut -s -d: -f18`
+ACLGROUP=`echo "$DATA" | cut -s -d: -f19`
+#Confirm deletion of acl permissions.
+convert_special_chars
+getlastlocation
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$ACLGROUP'</td><td>'$ACLOWNER'</td></tr>
+<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
+</tbody></table>
+'$"Are you sure that you want to delete this acl?"'<br><br>
+<input name="_ACTION_REALLYDELETEACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACLOWNER_'$ACLOWNER'_ACLGROUP_'$ACLGROUP'_" type="submit" class="button" value="'$"Delete"'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
+'
+}
+
 [ $ACTION = ENTER ] && show_directory #converted to federated_mode
 [ $ACTION = DELETE ] && delete_item #converted to federated_mode
+[ $ACTION = DELETEACLPERMS ] && delete_acl_perms
+[ $ACTION = REALLYDELETEACLPERMS ] && really_delete_acl_perms
 [ $ACTION = REALLYDELETE ] && really_delete_item #converted to federated_mode
 [ $ACTION = SETPERMS ] && set_perms #converted to federated_mode
 [ $ACTION = REALLYSETPERMS ] && really_set_perms #converted to federated_mode
