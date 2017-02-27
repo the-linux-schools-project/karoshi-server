@@ -2124,10 +2124,11 @@ echo '<input name="_ACTION_REALLYSEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMAS
 function really_delete_acl_perms {
 ACLOWNER=`echo "$DATA" | cut -s -d: -f18`
 ACLGROUP=`echo "$DATA" | cut -s -d: -f19`
-echo "location is $LOCATION<br>
-acl owner is $ACLOWNER<br>
-acl group is $ACLGROUP<br>
-"
+convert_special_chars
+getlastlocation
+echo `date`: "file_manager - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+setfacl -Rx $ACLGROUP:$ACLOWNER,d:$ACLGROUP:$ACLOWNER "$LOCATION"
+show_directory
 }
 
 function delete_acl_perms {
