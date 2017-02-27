@@ -2127,7 +2127,29 @@ ACLGROUP=`echo "$DATA" | cut -s -d: -f19`
 convert_special_chars
 getlastlocation
 echo `date`: "file_manager - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-setfacl -Rx $ACLGROUP:$ACLOWNER,d:$ACLGROUP:$ACLOWNER "$LOCATION"
+
+
+if [ $SERVERNAME = $(hostname-fqdn) ]
+then
+	setfacl -Rx $ACLGROUP:$ACLOWNER,d:$ACLGROUP:$ACLOWNER "$LOCATION"
+fi
+
+if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+then
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'"
+	'
+fi
+
+if [ $SERVERTYPE = federatedslave ]
+then
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+	echo `date`: file_manager \(federated mode\) - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'"
+	'\''
+	'
+fi
 show_directory
 }
 
