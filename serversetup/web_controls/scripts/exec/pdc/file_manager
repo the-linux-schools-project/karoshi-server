@@ -108,7 +108,7 @@ then
 	ACTION=notset
 fi
 
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ]
+if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ] && [ $ACTION != ADDACLPERMS ] && [ $ACTION != REALLYADDACLPERMS ]
 then
 	echo `date`: file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -1052,6 +1052,13 @@ then
 		<tr><td>'$"Exec Files"'</td><td><input name="_EXECRECURSE_" value="1" type="checkbox"></td></tr></tbody></table>'
 	fi
 
+	echo '<br><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">'
+
+	echo '</form><form action="/cgi-bin/admin/file_manager.cgi" method="post"><br><b>ACL '$"Permissions"'</b> <button class="button" name="_Addaclperms_" value="_ACTION_ADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_">
+	'$"Add ACL"'
+	</button>
+	'
+
 	#Show extended permissions
 	SHOWTABLEHEADER=yes
 	SHOWTABLEFOOTER=no	
@@ -1059,7 +1066,7 @@ then
 	do
 		if [ "$SHOWTABLEHEADER" = yes ]
 		then
-			echo '<br><b>ACL '$"Permissions"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
+			echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="width: '$WIDTH2'px;"><b>'$"User"' / '$"Group"'</b></td><td style="width: '$WIDTH6'px;"><b>'$"Name"'</b></td><td style="width: '$WIDTH6'px;"><b>Access</b></td><td style="width: '$WIDTH7'px;"><b>Delete</b></td></tr>'
 			SHOWTABLEHEADER=no
 			SHOWTABLEFOOTER=yes
@@ -1238,9 +1245,6 @@ fi
 '\''
 '
 fi
-
-echo '<br><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
-'
 }
 
 
@@ -2150,6 +2154,7 @@ then
 	'\''
 	'
 fi
+LOCATION="$LASTLOCATION"
 show_directory
 }
 
@@ -2161,7 +2166,7 @@ convert_special_chars
 getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 
-echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+echo '<b>'$"Delete ACL"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$ACLGROUP'</td><td>'$ACLOWNER'</td></tr>
 <tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
 </tbody></table>
@@ -2171,8 +2176,86 @@ echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 '
 }
 
+
+function really_add_acl_perms {
+ACLOWNERS=`echo "$DATA" | cut -s -d: -f18`
+ACLPERMISSIONS=`echo "$DATA" | cut -s -d: -f20`
+convert_special_chars
+getlastlocation
+for ACLOWNER in $(echo $ACLOWNERS | sed 's/+/ /g')
+do
+	getent passwd "$ACLOWNER" 1>/dev/null
+	if [ $? = 0 ]
+	then
+		ACLGROUP=u
+	fi
+
+	getent group "$ACLOWNER" 1>/dev/null
+	if [ $? = 0 ]
+	then
+		ACLGROUP=g
+	fi
+
+	if [ ! -z $ACLGROUP ]
+	then
+		echo `date`: "file_manager - adding $ACLOWNER: $ACLPERMISSIONS on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+		if [ $SERVERNAME = $(hostname-fqdn) ]
+		then
+		 	setfacl -Rm d:"$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS","$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS" "$LOCATION"
+		fi
+
+		if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
+			'
+		fi
+
+		if [ $SERVERTYPE = federatedslave ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
+			echo `date`: file_manager \(federated mode\) - adding '$ACLOWNER': '$ACLPERMISSIONS' on '$LOCATION' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
+			'\''
+			'
+		fi
+
+
+	else
+		echo `date`: "file_manager - $ACLOWNER does not exist as a user or a group by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE	
+	fi
+done
+LOCATION="$LASTLOCATION"
+show_directory
+}
+
+function add_acl_perms {
+convert_special_chars
+getlastlocation
+LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+echo '<b>'$"Add ACL"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td><td></td></tr>
+<tr><td>'$"Username"' / '$"Groupname"'</td><td><input tabindex= "1" name="_ACLOWNER_" style="width: 200px" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username or a groupname that you want to add an ACL for."'<br><br>'$"Use spaces for additional usernames / groupnames."'</span></a></td></tr>
+<tr><td>'$"Permissions"'</td><td>
+<select name="_ACLPERMISSIONS_" style="width: 200px;">
+<option value="rwx">'$"Read and write"'</option>
+<option value="r-x">'$"Read only"'</option>
+</select>
+</td><td></td></tr>
+</tbody></table>
+<br>
+<input name="_ACTION_REALLYADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACLOWNER_'$ACLOWNER'_ACLGROUP_'$ACLGROUP'_" type="submit" class="button" value="'$"Add"'">
+<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
+'
+}
+
 [ $ACTION = ENTER ] && show_directory #converted to federated_mode
 [ $ACTION = DELETE ] && delete_item #converted to federated_mode
+[ $ACTION = ADDACLPERMS ] && add_acl_perms
+[ $ACTION = REALLYADDACLPERMS ] && really_add_acl_perms
 [ $ACTION = DELETEACLPERMS ] && delete_acl_perms
 [ $ACTION = REALLYDELETEACLPERMS ] && really_delete_acl_perms
 [ $ACTION = REALLYDELETE ] && really_delete_item #converted to federated_mode
