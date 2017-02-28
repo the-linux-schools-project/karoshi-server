@@ -95,13 +95,12 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
 
 #########################
 #Assign data to variables
 #########################
-END_POINT=11
+END_POINT=15
 #Assign CLIENTHOSTNAME
 
 COUNTER=2
@@ -125,6 +124,20 @@ do
 		then
 		let COUNTER=$COUNTER+1
 		MACADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3A/:/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign COMMENT
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = COMMENTcheck ]
+		then
+		let COUNTER=$COUNTER+1
+		COMMENT=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3A/:/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -211,7 +224,7 @@ then
 	DIV_ID=actionbox3
 	WIDTH1=180
 	WIDTH2=110
-	WIDTH3=110
+	WIDTH3=300
 	WIDTH4=70	
 	WIDTH5=200
 	ICON1=/images/submenus/system/edit.png
@@ -224,7 +237,7 @@ else
 	DIV_ID=actionbox2
 	WIDTH1=80
 	WIDTH2=100
-	WIDTH3=80
+	WIDTH3=100
 	WIDTH4=70
 	WIDTH5=150
 	ICON1=/images/submenus/system/editm.png
@@ -296,7 +309,7 @@ then
 		CHECKDELETED=no
 		[ -d /opt/karoshi/server_network/dhcp/bans_delete ] && CHECKDELETED=yes
 		echo '<form id="bans" name="bans" action="/cgi-bin/admin/dhcp_bans.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width:'$WIDTH4'px;">'
+		<tr><th style="width: '$WIDTH1'px;"><b>'$"Host name"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Mac Address"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Comment"'</b></th><th style="width:'$WIDTH4'px;">'
 		if [ ! -d /opt/karoshi/server_network/dhcp/bans_delete/ ]
 		then
 			echo '<button class="button" name="_DeleteAll_" value="_ACTION_deleteall_CLIENTHOSTNAME_deleteall_">
@@ -322,8 +335,9 @@ then
 				DELETESTYLE='style="color: #FFF; background-color:#CA0D26"'
 			fi
 			#Get details
+			COMMENT=""
 			source $CLIENTHOSTNAMES
-			echo '<tr><td id="'$CLIENTHOSTNAME'" '$DELETESTYLE'>'$CLIENTHOSTNAME'</td><td '$DELETESTYLE'>'$MACADDRESS'</td><td '$DELETESTYLE'>
+			echo '<tr><td id="'$CLIENTHOSTNAME'" '$DELETESTYLE'>'$CLIENTHOSTNAME'</td><td '$DELETESTYLE'>'$MACADDRESS'</td><td '$DELETESTYLE'>'$COMMENT'</td><td '$DELETESTYLE'>
 			<button class="info" name="_Delete_" value="_ACTION_'$DELETEACTION'_CLIENTHOSTNAME_'$CLIENTHOSTNAME'_">
 			<img src="'$ICON2'" alt="'$ALTDELETEMSG'">
 			<span>'$ALTDELETEMSG'</span>
@@ -349,6 +363,7 @@ echo '<form name="addban" action="/cgi-bin/admin/dhcp_bans.cgi" method="post"><i
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Ban"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to ban."'</span></a></td></tr>
 <tr><td>'$"Mac Address"'</td><td><input tabindex= "2" style="width: '$WIDTH5'px;" name="_MACADDRESS_" value="'$MACADDRESS'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Ban"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mac address of the client computer or device that you want to ban."'</span></a></td></tr>
+<tr><td>'$"Comment"'</td><td><input tabindex= "3" style="width: '$WIDTH5'px;" name="_COMMENT_" size="20" type="text"></td>
 </tbody></table><br>'
 
 echo '<br>'
@@ -363,7 +378,7 @@ if [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelet
 then
 	MACADDRESS=`echo $MACADDRESS | sed 's/:/%3A/g'`
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$CLIENTHOSTNAME:$MACADDRESS:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_bans
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$CLIENTHOSTNAME:$MACADDRESS:$COMMENT:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_bans
 	#view_bans
 	FORMID=bans
 	if [ "$ACTION" = delete ] || [ $ACTION = canceldelete ]

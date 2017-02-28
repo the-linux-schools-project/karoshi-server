@@ -53,7 +53,7 @@ then
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+'`
 if [ -z "$DATA" ]
 then
 	echo `date`: dhcp_bans - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -65,6 +65,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5`
 MACADDRESS=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
+COMMENT=`echo "$DATA" | cut -s -d: -f7 | sed 's/+/ /g'`
 
 ########################
 #Check data
@@ -107,7 +108,6 @@ then
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
-
 
 function updatedhcpconf {
 
@@ -186,7 +186,8 @@ then
 	grep -r "$MACADDRESS" /opt/karoshi/server_network/dhcp/bans 1>/dev/null
 	if [ $? != 0 ]
 	then
-		echo -e "MACADDRESS=$MACADDRESS" > /opt/karoshi/server_network/dhcp/bans/$CLIENTHOSTNAME
+		echo -e 'MACADDRESS="'$MACADDRESS'"' > /opt/karoshi/server_network/dhcp/bans/$CLIENTHOSTNAME
+		echo -e 'COMMENT="'$COMMENT'"' >> /opt/karoshi/server_network/dhcp/bans/$CLIENTHOSTNAME
 		updatedhcpconf
 	else
 		echo `date`: dhcp_bans - mac address: $MACADDRESS - this mac address is already banned from the DHCP server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
