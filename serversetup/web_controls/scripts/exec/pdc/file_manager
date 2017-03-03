@@ -164,7 +164,7 @@ then
 	VIEWHEIGHT1=36
 	INFOCLASS1="info"
 else
-ROWCOUNT=3
+	ROWCOUNT=3
 	WIDTH=70
 	WIDTH2=90
 	WIDTH3=100
@@ -634,19 +634,19 @@ echo '</tbody></table>'
 }
 
 function convert_special_chars {
-LOCATION=`echo "$LOCATION" |  sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
+LOCATION=`echo "$LOCATION" |  sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/ﾬ/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
 }
 
 function convert_special_chars2 {
-ITEMMOVE=`echo "$ITEMMOVE" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
+ITEMMOVE=`echo "$ITEMMOVE" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/ﾬ/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%26/\&/g'`
 }
 
 function convert_special_chars3 {
-TEXTCONTENT=`echo "$TEXTCONTENT" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g'`
+TEXTCONTENT=`echo "$TEXTCONTENT" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/ﾬ/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g'`
 }
 
 function convert_special_chars4 {
-SEARCH=`echo "$SEARCH" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/¬/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g' | sed "s/Z%%%%%Z/_/g"`
+SEARCH=`echo "$SEARCH" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | sed 's/%25/%/g' | sed 's/%5E/^/g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%7E/~/g' | sed 's/%23/#/g' | sed 's/%40/@/g' | sed 's/%7B/{/g'  | sed 's/%7D/}/g' | sed 's/%3E/>/g' | sed 's/%3C/</g' | sed 's/%C2%AC/ﾬ/g' | sed 's/%7C/|/g' | sed 's/%2C/,/g' | sed 's/%3B/;/g' | sed 's/%3A/:/g' | sed 's/%3D/=/g' | sed 's/%2B/+/g' | sed 's/%3F/?/g' | sed 's/%5B/[/g' | sed 's/%5D/]/g' | sed 's/REPLACEUNDERSCORE/_/g' | sed 's/%99/*/g' | sed 's/%24/$/g' | sed 's/%26/\&/g' | sed "s/Z%%%%%Z/_/g"`
 }
 
 
@@ -1091,78 +1091,108 @@ fi
 if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
-GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
-CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+	OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
+	GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
+	#Get current permissions of the item
+	CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+	#Get size
+	ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
+	#Get file info
+	ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
+	#Basename
+	SHORTNAME=`basename "'$LOCATION'"`
+	#Last modified
+	LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
+	#Last accessed
+	LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
 
-#Get size
-ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
-#Get file info
-ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
-#Basename
-SHORTNAME=`basename "'$LOCATION'"`
-#Last modified
-LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
-#Last accessed
-LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
-
-echo "<b>'$"Basic Information"'</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left; \">
-<tbody>
-<tr><td style=\"width: '$WIDTH2'px;\">'$"Name"'</td><td>$SHORTNAME</td></tr>
-<tr><td>'$"Path"'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$"Size"'</td><td>$ITEMSIZE</td></tr>
-<tr><td>'$"Type"'</td><td>$ITEMTYPE</td></tr>
-<tr><td>'$"Last accessed"'</td><td>$LASTACC</td></tr>
-<tr><td>'$"Last modified"'</td><td>$LASTMOD</td></tr>
-</tbody></table><br>
-"
-
-#Show ownership
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left; \">
-<tbody>
-<tr><td style=\"width: '$WIDTH2'px;\">'$"User"'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
-<tr><td>'$"Group"'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
-</tbody></table><br>
-"
-echo '$"Permissions"'"<br><br>"
-#Get current permissions of the item
+	echo "<b>'$"Information"'</b><br><table class="tablesorter" style=\"text-align: left; \">
+	<tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\">'$"Name"'</td><td style=\"width: '$WIDTH3'px;\">$SHORTNAME</td></tr>
+	<tr><td>'$"Path"'</td><td>'$LOCATION'</td></tr>
+	<tr><td>'$"Size"'</td><td>$ITEMSIZE</td></tr>
+	<tr><td>'$"Type"'</td><td>$ITEMTYPE</td></tr>
+	<tr><td>'$"Last accessed"'</td><td>$LASTACC</td></tr>
+	<tr><td>'$"Last modified"'</td><td>$LASTMOD</td></tr>
+	</tbody></table><br>
+	<b>'$"Basic Permissions"'</b><br><table class=\"tablesorter\" style=\"text-align: left; \" >
+	<tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\">'$"User"'</td><td style=\"width: '$WIDTH3'px;\"><input tabindex= \"1\" name=\"_OWNER_\" value=$OWNER size=\"20\" type=\"text\"></td></tr>
+	<tr><td>'$"Group"'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=$GROUP size=\"20\" type=\"text\"></td></tr>
+	</tbody></table>"
 
 
-DIRECTORY=no
-[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
-[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
-[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
-[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+	DIRECTORY=no
+	[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+	[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+	[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
 
-[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
-[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
-[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+	[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+	[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
 
-[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
-[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
-[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
-EXECENTERMSG='$"Enter"'
-[ $DIRECTORY = no ] && EXECENTERMSG='$"Exec"'
+	[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+	[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+	EXECENTERMSG=$"Enter"
+	[ $DIRECTORY = no ] && EXECENTERMSG=$"Exec"
+	#Show ownership
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-<tr><td style=\"width: '$WIDTH2'px;\"></td><td>'$"Read"'</td><td>'$"Write"'</td><td>$EXECENTERMSG</td><td>'$"Special"'</td></tr>
-<tr><td>'$"User"'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>'$"Set User ID"'</td></tr>
-<tr><td>'$"Group"'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>'$"Set Group ID"'</td></tr>
-<tr><td>'$"Other"'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>'$"Sticky"'</td></tr></tbody></table><br><br>"
+	echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\"></td><td style=\"width: '$WIDTH4'px;\">'$"Read"'</td><td style=\"width: '$WIDTH4'px;\">'$"Write"'</td><td style=\"width: '$WIDTH4'px;\">$EXECENTERMSG</td><td style=\"width: '$WIDTH4'px;\">'$"Special"'</td><td style=\"width: '$WIDTH5'px;\"></td></tr>
+	<tr><td>'$"User"'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>'$"Set User ID"'</td></tr>
+	<tr><td>'$"Group"'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" value=\"1\" type=\"checkbox\"></td><td>'$"Set Group ID"'</td></tr>
+	<tr><td>'$"Other"'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>'$"Sticky"'</td></tr></tbody></table>"
 
-#Show recursive options if the item is a directory
-if [ $DIRECTORY = yes ]
-then
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>"
-echo "<tr><td style=\"width: '$WIDTH2'px;\">'$"Recursive"'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
-echo "<tr><td>'$"Exec Files"'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
-fi
+	#Show recursive options if the item is a directory
+	if [ $DIRECTORY = yes ]
+	then
+		echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+		<tr><td style=\"width: '$WIDTH2'px;\">'$"Recursive"'</td><td style=\"width: '$WIDTH3'px;\"><input name=\"_RECURSIVE_\" value=\"1\" type="checkbox"></td></tr>
+		<tr><td>'$"Exec Files"'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
+	fi
+
+	echo "<br><input name=\"_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_\" type=\"submit\" class=\"button\" value=\"'$"Submit"'\"> <input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_\" type=\"submit\" class=\"button\" value=\"'$"Cancel"'\">"
+
+	echo "</form><form action=\"/cgi-bin/admin/file_manager.cgi\" method=\"post\"><br><b>ACL '$"Permissions"'</b> <button class=\"button\" name=\"_Addaclperms_\" value=\"_ACTION_ADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_\">
+	'$"Add ACL"'
+	</button>
+	"
+
+	#Show extended permissions
+	SHOWTABLEHEADER=yes
+	SHOWTABLEFOOTER=no	
+	for ACLDATA in $(getfacl --omit-header --skip-base -p -d "'$LOCATION'" | grep -v "^user::\|^group::\|^other::\|^mask::")
+	do
+		if [ "$SHOWTABLEHEADER" = yes ]
+		then
+			echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\"><b>'$"User"' / '$"Group"'</b></td><td style=\"width: '$WIDTH6'px;\"><b>'$"Name"'</b></td><td style=\"width: '$WIDTH6'px;\"><b>Access</b></td><td style=\"width: '$WIDTH7'px;\"><b>'$"Delete"'</b></td></tr>"
+			SHOWTABLEHEADER=no
+			SHOWTABLEFOOTER=yes
+		fi
+
+		ACLTYPE=$(echo $ACLDATA | cut -d: -f1)
+		ACLUSER=$(echo $ACLDATA | cut -d: -f2)
+		ACLPERMS=$(echo $ACLDATA | cut -d: -f3)
+		ACLPERM="'$"Read only"'"
+		[ $(echo "$ACLPERMS" | grep -c "w") -gt 0 ] && ACLPERM="'$"Read and Write"'"
+		echo "<tr><td>$ACLTYPE</td><td>$ACLUSER</td><td>$ACLPERM</td><td>
+		<button class=\"info\" name=\"_Delete_\" value=\"_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_DELETEACLPERMS_ACLOWNER_$ACLUSER\_ACLGROUP_$ACLTYPE\_\">
+		<img src=\"'$ICON5'\" alt=\"'$"Delete"'\">
+		<span>'$"Delete"'<br>'$ACLTYPE' - '$ACLUSER'</span>
+		</button>
+		</td></tr>"
+		
+	done
+	[ "$SHOWTABLEFOOTER" = yes ] && echo "</tbody></table>"
 '
 fi
 
@@ -1171,77 +1201,109 @@ if [ $SERVERTYPE = federatedslave ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
-GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
-#Get current permissions of the item
-CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+	OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
+	GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
+	#Get current permissions of the item
+	CURRENT_PERMS=`ls -d -l "'$LOCATION'" | cut -d" " -f1`
+	#Get size
+	ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
+	#Get file info
+	ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
+	#Basename
+	SHORTNAME=`basename "'$LOCATION'"`
+	#Last modified
+	LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
+	#Last accessed
+	LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
 
-#Get size
-ITEMSIZE=`du -h -s "'$LOCATION'" | cut -f1`
-#Get file info
-ITEMTYPE=`file "'$LOCATION'" | cut -d: -f2`
-#Basename
-SHORTNAME=`basename "'$LOCATION'"`
-#Last modified
-LASTMOD=`stat -c %y "'$LOCATION'" | cut -d. -f1`
-#Last accessed
-LASTACC=`stat -c %x "'$LOCATION'" | cut -d. -f1`
+	echo "<b>'$"Information"'</b><br><table class="tablesorter" style=\"text-align: left; \">
+	<tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\">'$"Name"'</td><td style=\"width: '$WIDTH3'px;\">$SHORTNAME</td></tr>
+	<tr><td>'$"Path"'</td><td>'$LOCATION'</td></tr>
+	<tr><td>'$"Size"'</td><td>$ITEMSIZE</td></tr>
+	<tr><td>'$"Type"'</td><td>$ITEMTYPE</td></tr>
+	<tr><td>'$"Last accessed"'</td><td>$LASTACC</td></tr>
+	<tr><td>'$"Last modified"'</td><td>$LASTMOD</td></tr>
+	</tbody></table><br>
+	<b>'$"Basic Permissions"'</b><br><table class=\"tablesorter\" style=\"text-align: left; \" >
+	<tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\">'$"User"'</td><td style=\"width: '$WIDTH3'px;\"><input tabindex= \"1\" name=\"_OWNER_\" value=$OWNER size=\"20\" type=\"text\"></td></tr>
+	<tr><td>'$"Group"'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=$GROUP size=\"20\" type=\"text\"></td></tr>
+	</tbody></table>"
 
-echo "<b>Basic Information</b><br><br><table class=\"'$TABLECLASS'\" style=\"text-align: left; \">
-<tbody>
-<tr><td style=\"width: '$WIDTH2'px;\">'$"Name"'</td><td>$SHORTNAME</td></tr>
-<tr><td>Path</td><td>$LOCATION</td></tr>
-<tr><td>Size</td><td>$ITEMSIZE</td></tr>
-<tr><td>Type</td><td>$ITEMTYPE</td></tr>
-<tr><td>Last accessed</td><td>$LASTACC</td></tr>
-<tr><td>Last modified</td><td>$LASTMOD</td></tr>
-</tbody></table><br>
-"
 
-#Show ownership
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left; \">
-<tbody>
-<tr><td style=\"width: '$WIDTH2'px;\">'$"User"'</td><td><input tabindex= \"1\" name=\"_OWNER_\" value=\"$OWNER\" size=\"20\" type=\"text\"></td></tr>
-<tr><td>'$"Group"'</td><td><input tabindex= \"2\" name=\"_GROUP_\" value=\"$GROUP\" size=\"20\" type=\"text\"></td><td></td></tr>
-</tbody></table><br>
-"
-echo '$"Permissions"'"<br><br>"
+	DIRECTORY=no
+	[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
+	[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
+	[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
 
-DIRECTORY=no
-[ ${CURRENT_PERMS:0:1} = d ] && DIRECTORY=yes
-[ ${CURRENT_PERMS:1:1} = r ] && USERREAD="checked=checked"
-[ ${CURRENT_PERMS:2:1} = w ] && USERWRITE="checked=checked"
-[ ${CURRENT_PERMS:3:1} = x ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && USEREXEC="checked=checked"
-[ ${CURRENT_PERMS:3:1} = s ] && SETUID="checked=checked"
+	[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
+	[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
+	[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
 
-[ ${CURRENT_PERMS:4:1} = r ] && GROUPREAD="checked=checked"
-[ ${CURRENT_PERMS:5:1} = w ] && GROUPWRITE="checked=checked"
-[ ${CURRENT_PERMS:6:1} = x ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && GROUPEXEC="checked=checked"
-[ ${CURRENT_PERMS:6:1} = s ] && SETGID="checked=checked"
+	[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
+	[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
+	[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
+	EXECENTERMSG=$"Enter"
+	[ $DIRECTORY = no ] && EXECENTERMSG=$"Exec"
+	#Show ownership
 
-[ ${CURRENT_PERMS:7:1} = r ] && OTHERREAD="checked=checked"
-[ ${CURRENT_PERMS:8:1} = w ] && OTHERWRITE="checked=checked"
-[ ${CURRENT_PERMS:9:1} = x ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && OTHEREXEC="checked=checked"
-[ ${CURRENT_PERMS:9:1} = t ] && STICKY="checked=checked"
-EXECENTERMSG='$"Enter"'
-[ $DIRECTORY = no ] && EXECENTERMSG='$"Exec"'
+	echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\"></td><td style=\"width: '$WIDTH4'px;\">'$"Read"'</td><td style=\"width: '$WIDTH4'px;\">'$"Write"'</td><td style=\"width: '$WIDTH4'px;\">$EXECENTERMSG</td><td style=\"width: '$WIDTH4'px;\">'$"Special"'</td><td style=\"width: '$WIDTH5'px;\"></td></tr>
+	<tr><td>'$"User"'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>'$"Set User ID"'</td></tr>
+	<tr><td>'$"Group"'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" value=\"1\" type=\"checkbox\"></td><td>'$"Set Group ID"'</td></tr>
+	<tr><td>'$"Other"'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>'$"Sticky"'</td></tr></tbody></table>"
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-<tr><td style=\"width: '$WIDTH2'px;\"></td><td>'$"Read"'</td><td>'$"Write"'</td><td>$EXECENTERMSG</td><td>'$"Special"'</td></tr>
-<tr><td>'$"User"'</td><td><input name=\"_USERREAD_\" $USERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_USERWRITE_\" $USERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_USEREXEC_\" $USEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETUID_\" $SETUID value=\"1\" type=\"checkbox\"></td><td>'$"Set User ID"'</td></tr>
-<tr><td>'$"Group"'</td><td><input name=\"_GROUPREAD_\" $GROUPREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPWRITE_\" $GROUPWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_GROUPEXEC_\" $GROUPEXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_SETGID_\" $SETGID value=\"1\" type=\"checkbox\"></td><td>'$"Set Group ID"'</td></tr>
-<tr><td>'$"Other"'</td><td><input name=\"_OTHERREAD_\" $OTHERREAD value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHERWRITE_\" $OTHERWRITE value=\"1\" type=\"checkbox\"></td><td><input name=\"_OTHEREXEC_\" $OTHEREXEC value=\"1\" type=\"checkbox\"></td><td><input name=\"_STICKY_\" $STICKY value=\"1\" type=\"checkbox\"></td><td>'$"Sticky"'</td></tr></tbody></table><br><br>"
+	#Show recursive options if the item is a directory
+	if [ $DIRECTORY = yes ]
+	then
+		echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+		<tr><td style=\"width: '$WIDTH2'px;\">'$"Recursive"'</td><td style=\"width: '$WIDTH3'px;\"><input name=\"_RECURSIVE_\" value=\"1\" type="checkbox"></td></tr>
+		<tr><td>'$"Exec Files"'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
+	fi
 
-#Show recursive options if the item is a directory
-if [ $DIRECTORY = yes ]
-then
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>"
-echo "<tr><td style=\"width: '$WIDTH2'px;\">'$"Recursive"'</td><td><input name=\"_RECURSIVE_\" value=\"1\" type=\"checkbox\"></td></tr>"
-echo "<tr><td>'$"Exec Files"'</td><td><input name=\"_EXECRECURSE_\" value=\"1\" type=\"checkbox\"></td></tr></tbody></table>"
-fi
+	echo "<br><input name=\"_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_\" type=\"submit\" class=\"button\" value=\"'$"Submit"'\"> <input name=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_\" type=\"submit\" class=\"button\" value=\"'$"Cancel"'\">"
+
+	echo "</form><form action=\"/cgi-bin/admin/file_manager.cgi\" method=\"post\"><br><b>ACL '$"Permissions"'</b> <button class=\"button\" name=\"_Addaclperms_\" value=\"_ACTION_ADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_\">
+	'$"Add ACL"'
+	</button>
+	"
+
+	#Show extended permissions
+	SHOWTABLEHEADER=yes
+	SHOWTABLEFOOTER=no	
+	for ACLDATA in $(getfacl --omit-header --skip-base -p -d "'$LOCATION'" | grep -v "^user::\|^group::\|^other::\|^mask::")
+	do
+		if [ "$SHOWTABLEHEADER" = yes ]
+		then
+			echo "<table class=\"tablesorter\" style=\"text-align: left;\" ><tbody>
+	<tr><td style=\"width: '$WIDTH2'px;\"><b>'$"User"' / '$"Group"'</b></td><td style=\"width: '$WIDTH6'px;\"><b>'$"Name"'</b></td><td style=\"width: '$WIDTH6'px;\"><b>Access</b></td><td style=\"width: '$WIDTH7'px;\"><b>'$"Delete"'</b></td></tr>"
+			SHOWTABLEHEADER=no
+			SHOWTABLEFOOTER=yes
+		fi
+
+		ACLTYPE=$(echo $ACLDATA | cut -d: -f1)
+		ACLUSER=$(echo $ACLDATA | cut -d: -f2)
+		ACLPERMS=$(echo $ACLDATA | cut -d: -f3)
+		ACLPERM="'$"Read only"'"
+		[ $(echo "$ACLPERMS" | grep -c "w") -gt 0 ] && ACLPERM="'$"Read and Write"'"
+		echo "<tr><td>$ACLTYPE</td><td>$ACLUSER</td><td>$ACLPERM</td><td>
+		<button class=\"info\" name=\"_Delete_\" value=\"_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_DELETEACLPERMS_ACLOWNER_$ACLUSER\_ACLGROUP_$ACLTYPE\_\">
+		<img src=\"'$ICON5'\" alt=\"'$"Delete"'\">
+		<span>'$"Delete"'<br>'$ACLTYPE' - '$ACLUSER'</span>
+		</button>
+		</td></tr>"
+		
+	done
+	[ "$SHOWTABLEFOOTER" = yes ] && echo "</tbody></table>"
+'
 '\''
 '
 fi
@@ -2202,12 +2264,28 @@ do
 
 		if [ $SERVERNAME = $(hostname-fqdn) ]
 		then
+			#Check if there are any existing acls
+			if [ $(getfacl --omit-header --skip-base -p -d "$LOCATION" | wc -l) = 0 ]
+			then
+				#This location currently has no acls set so remove all file permissions before the acls are set.
+				echo `date`: "file_manager - no ACLS have been set on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: "file_manager - setting owner and group to root and permissions to 0000 on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				chown root.root -R "$LOCATION"
+				chmod 0000 -R "$LOCATION"
+			fi
+
 		 	setfacl -Rm d:"$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS","$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS" "$LOCATION"
 		fi
 
 		if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 		then
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			#Check if there are any existing acls
+			if [ $(getfacl --omit-header --skip-base -p -d "'$LOCATION'" | wc -l) = 0 ]
+			then
+				chown root.root -R "'$LOCATION'"
+				chmod 0000 -R "'$LOCATION'"
+			fi
 			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
 			'
 		fi
@@ -2217,6 +2295,12 @@ do
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 			echo `date`: file_manager \(federated mode\) - adding '$ACLOWNER': '$ACLPERMISSIONS' on '$LOCATION' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+			#Check if there are any existing acls
+			if [ $(getfacl --omit-header --skip-base -p -d "'$LOCATION'" | wc -l) = 0 ]
+			then
+				chown root.root -R "'$LOCATION'"
+				chmod 0000 -R "'$LOCATION'"
+			fi
 			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
 			'\''
 			'
