@@ -1052,7 +1052,7 @@ then
 		<tr><td>'$"Exec Files"'</td><td><input name="_EXECRECURSE_" value="1" type="checkbox"></td></tr></tbody></table>'
 	fi
 
-	echo '<br><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">'
+	echo '<br><input name="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_REALLYSETPERMS_" type="submit" class="button" value="'$"Submit"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Back"'">'
 
 	echo '</form><form action="/cgi-bin/admin/file_manager.cgi" method="post"><br><b>ACL '$"Permissions"'</b> <button class="button" name="_Addaclperms_" value="_ACTION_ADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_">
 	'$"Add ACL"'
@@ -1078,7 +1078,7 @@ then
 		ACLPERM=$"Read only"
 		[ $(echo "$ACLPERMS" | grep -c "w") -gt 0 ] && ACLPERM=$"Read and Write"
 		echo '<tr><td>'$ACLTYPE'</td><td>'$ACLUSER'</td><td>'$ACLPERM'</td><td>
-		<button class="info" name="_Delete_" value="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_DELETEACLPERMS_ACLOWNER_'$ACLUSER'_ACLGROUP_'$ACLTYPE'_">
+		<button class="info infoabove" name="_Delete_" value="_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACTION_DELETEACLPERMS_ACLOWNER_'$ACLUSER'_ACLGROUP_'$ACLTYPE'_">
 		<img src="'$ICON5'" alt="'$"Delete"'">
 		<span>'$"Delete"'<br>'$ACLTYPE' - '$ACLUSER'</span>
 		</button>
@@ -2216,8 +2216,13 @@ then
 	'\''
 	'
 fi
-LOCATION="$LASTLOCATION"
-show_directory
+
+#Reload the page to show the new permissions
+echo '</form>
+<form METHOD=POST ACTION="/cgi-bin/admin/file_manager.cgi" target="_top" name = "frm">
+<input type="hidden" name="_Properties" value="_ACTION_SETPERMS_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_">
+</form><script>document.frm.submit();</script><form>
+'
 }
 
 function delete_acl_perms {
@@ -2234,7 +2239,7 @@ echo '<b>'$"Delete ACL"'</b><br><table class="tablesorter" style="text-align: le
 </tbody></table>
 '$"Are you sure that you want to delete this acl?"'<br><br>
 <input name="_ACTION_REALLYDELETEACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACLOWNER_'$ACLOWNER'_ACLGROUP_'$ACLGROUP'_" type="submit" class="button" value="'$"Delete"'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
+<input name="_ACTION_SETPERMS_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Cancel"'">
 '
 }
 
@@ -2311,8 +2316,12 @@ do
 		echo `date`: "file_manager - $ACLOWNER does not exist as a user or a group by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE	
 	fi
 done
-LOCATION="$LASTLOCATION"
-show_directory
+#Reload the page to show the new permissions
+echo '</form>
+<form METHOD=POST ACTION="/cgi-bin/admin/file_manager.cgi" target="_top" name = "frm">
+<input type="hidden" name="_Properties" value="_ACTION_SETPERMS_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_">
+</form><script>document.frm.submit();</script><form>
+'
 }
 
 function add_acl_perms {
@@ -2320,19 +2329,18 @@ convert_special_chars
 getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 echo '<b>'$"Add ACL"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td><td></td></tr>
-<tr><td>'$"Username"' / '$"Groupname"'</td><td><input tabindex= "1" name="_ACLOWNER_" style="width: 200px" size="20" type="text"></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username or a groupname that you want to add an ACL for."'<br><br>'$"Use spaces for additional usernames / groupnames."'</span></a></td></tr>
+<tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td></tr>
+<tr><td>'$"Username"' / '$"Groupname"'</td><td><input tabindex= "1" name="_ACLOWNER_" style="width: 200px" size="20" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img style="vertical-align: text-top;" class="images" align="middle" alt="" src="/images/help/info.png"><span>'$"Enter in the username or a groupname that you want to add an ACL for."'<br><br>'$"Use spaces for additional usernames / groupnames."'</span></a></td></tr>
 <tr><td>'$"Permissions"'</td><td>
 <select name="_ACLPERMISSIONS_" style="width: 200px;">
 <option value="rwx">'$"Read and write"'</option>
 <option value="r-x">'$"Read only"'</option>
 </select>
-</td><td></td></tr>
+</td></tr>
 </tbody></table>
 <br>
 <input name="_ACTION_REALLYADDACLPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_ACLOWNER_'$ACLOWNER'_ACLGROUP_'$ACLGROUP'_" type="submit" class="button" value="'$"Add"'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'">
+<input name="_ACTION_SETPERMS_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Cancel"'">
 '
 }
 
