@@ -92,7 +92,7 @@ then
 	echo `date`: shutdown - No shutdown option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ]
+if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ] && [ $SHUTDOWN_OPTION != wakeonlan ]
 then
 	echo `date`: shutdown - Incorrect shutdown option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -148,14 +148,17 @@ if [ $SHUTDOWN_OPTION = shutdown ]
 then
 	SHUTDOWN_OPTION=-h
 	ACTIONMSG2=$"Shutdown in progress"
-else
+elif [ $SHUTDOWN_OPTION = reboot ]
+then
 	SHUTDOWN_OPTION=-r
 	ACTIONMSG2=$"Reboot in progress"
+else
+	ACTIONMSG2=$"Wake on lan packet sent to"
 fi
 
 function tabletop {
 echo '<table class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="vertical-align: top; width: 220px"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 220px;"><b>'$"Shutdown/Reboot"'</b></th></tr></thead><tbody>'
+<tr><th style="vertical-align: top; width: 220px"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 300px;"><b>'$"Action"'</b></th></tr></thead><tbody>'
 }
 
 function tablerow {
@@ -176,7 +179,10 @@ then
 	tablerow
 	endtable
 	sleep 1
-	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
+	if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+	then
+		shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
+	fi
 fi
 
 #Shutdown other server
@@ -185,13 +191,27 @@ then
 	KAROSHISERVER=$SERVERNAME
 	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 	then
+
+		if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+		then		
+			ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			shutdown '$SHUTDOWN_OPTION' now &
+			' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		else
+			#Send wakeon lan packet to the server
+			SERVERNAME2=$(echo $SERVERNAME | cut -d. -f1)
+			if [ -f /opt/karoshi/server_network/mac_addresses/$SERVERNAME2 ]
+			then
+				MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/$SERVERNAME2 | cut -d" " -f1)
+				ACTIONMSG2="$ACTIONMSG2 $MAC_ADDR"
+				echo `date`: "Sending wakeonlan packet for $SERVERNAME with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				wakeonlan "$MAC_ADDR" 1>/dev/null
+			fi
+		fi
 		tabletop
 		tablerow
 		endtable
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-		[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		shutdown '$SHUTDOWN_OPTION' now &
-		' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	fi
 	#Shutdown federated slave server
 	if [ $SERVERTYPE = federatedslave ]
@@ -220,8 +240,20 @@ then
 			if [ "$KAROSHISERVER" != `hostname-fqdn` ]
 			then
 				let SERVERCOUNTER=$SERVERCOUNTER+1
+				if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+				then
+					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				else
+					KAROSHISERVER2=$(echo $KAROSHISERVER| cut -d. -f1)
+					if [ -f /opt/karoshi/server_network/mac_addresses/$KAROSHISERVER2 ]
+					then
+						MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/$KAROSHISERVER2 | cut -d" " -f1)
+						ACTIONMSG2="$ACTIONMSG2 $MAC_ADDR"
+						echo `date`: "Sending wakeonlan packet for $KAROSHISERVER with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+						wakeonlan "$MAC_ADDR" 1>/dev/null
+					fi
+				fi
 				tablerow
-				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			fi
 		done
 	fi
@@ -258,13 +290,17 @@ then
 	fi
 
 	#Wait if other servers are shutting down first
-	if [ $SERVERCOUNTER -gt 0 ]
+	if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
 	then
-		sleep 8
+		if [ $SERVERCOUNTER -gt 0 ]
+		then
+			sleep 8
+		fi
+		KAROSHISERVER=$(hostname-fqdn)
+
+		tablerow
+		shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 	fi
-	KAROSHISERVER=$(hostname-fqdn)
-	tablerow
-	shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 	endtable
 fi
 exit

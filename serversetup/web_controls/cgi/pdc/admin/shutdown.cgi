@@ -95,84 +95,84 @@ END_POINT=15
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SHUTDOWNcheck ]
-then
-let COUNTER=$COUNTER+1
-SHUTDOWN_OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SHUTDOWNcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SHUTDOWN_OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERNAME
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SHUTDOWNCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign FORMCODE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-then
-let COUNTER=$COUNTER+1
-FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 function show_status {
@@ -188,80 +188,80 @@ exit
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that shutdown option is not blank
-if [ $SHUTDOWN_OPTION'null' = null ]
+if [ -z "$SHUTDOWN_OPTION" ]
 then
-MESSAGE=$"No shutdown option."
-show_status
+	MESSAGE=$"No shutdown option."
+	show_status
 fi
 
 #Only allow shutdown and reboot.
-if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ]
+if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ] && [ $SHUTDOWN_OPTION != wakeonlan ]
 then
-MESSAGE=$"You must only choose shutdown or reboot."
-show_status
+	MESSAGE=$"You must only choose shutdown or reboot."
+	show_status
 fi
 #Check to see that a server has been picked to shut down
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"You must choose a server to shut down."
-show_status
+	MESSAGE=$"You must choose a server to shut down."
+	show_status
 fi
 #Check to see that a server type is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$"The server type cannot be blank."
-show_status
+	MESSAGE=$"The server type cannot be blank."
+	show_status
 fi
 
 
 #Check to see that SHUTDOWNCODE is not blank
-if [ $SHUTDOWNCODE'null' = null ]
+if [ -z "$SHUTDOWNCODE" ]
 then
-MESSAGE=$"The shutdown code must not be blank."
-show_status
+	MESSAGE=$"The shutdown code must not be blank."
+	show_status
 fi
 #Check to see that FORMCODE is not blank
-if [ $FORMCODE'null' = null ]
+if [ -z "$FORMCODE" ]
 then
-MESSAGE=$"The form code must not be blank."
-show_status
+	MESSAGE=$"The form code must not be blank."
+	show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
 if [ $FORMCODE != $SHUTDOWNCODE ]
 then
-MESSAGE=$"Incorrect shutdown code."
-show_status
+	MESSAGE=$"Incorrect shutdown code."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
@@ -275,7 +275,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/shutdown_fm.cgi">'$SERVERNAME'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br>'
+	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br>'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1`
@@ -284,8 +284,8 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHUTDOWN_OPTION:$SERVERNAME:$SERVERTYPE
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
-MESSAGE=$"The form code must not be blank."
-show_status
+	MESSAGE=$"The form code must not be blank."
+	show_status
 fi
 echo "</div>"
 echo "</div></body></html>"

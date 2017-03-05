@@ -136,8 +136,8 @@ then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Shutdown-Reboot Server"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">'
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
 echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br></div><div id="infobox">'
 fi
@@ -154,6 +154,11 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="reboot" type="radio"></td>
         <td></td>
       </tr>
+      <tr>
+        <td>'$"Wake on lan"'</td>
+        <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWN_" value="wakeonlan" type="radio"></td>
+        <td></td>
+      </tr>
 <tr><td>'$"Shutdown Code"'</td>
         <td style="vertical-align: top; text-align: left;"><b>'$SHUTDOWN_CODE'</b></td>
         <td></td>
@@ -166,7 +171,7 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 '
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all $"Shutdown/Reboot"
+/opt/karoshi/web_controls/show_servers $MOBILE all $"Submit"
 
 [ $MOBILE = no ] && echo '</div>'
 
