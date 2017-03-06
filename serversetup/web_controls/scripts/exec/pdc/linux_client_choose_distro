@@ -167,8 +167,8 @@ then
 	[ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
 	if [ `ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l` -gt 0 ]
 	then
-		echo "<table id=\"myTable2\" class=\"tablesorter\" style=\"text-align: left;\">
-		<thead><th style=\"width: 300px;\">'$"Distribution Server ISO Images"'</th><th style=\"width: 200px;\">'$"Netboot Version"'</th><th style=\"width: 80px;\">'$"Delete"'</th></tr></thead><tbody>"
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;">
+		<thead><th style="width: 300px;">'$"Distribution Server ISO Images"'</th><th style="width: 200px;">'$"Netboot Version"'</th><th style="width: 80px;">'$"Delete"'</th></tr></thead><tbody>'
 		for ISOIMAGES in /home/distributions/linux_iso/*.iso
 		do
 			ISOIMAGE=`basename "$ISOIMAGES"`

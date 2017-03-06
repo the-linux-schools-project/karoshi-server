@@ -68,13 +68,13 @@ FILE=`echo $DATA | cut -s -d_ -f7`
 echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"Configure DHCP"'</div></td>
+<tr><td style="width:180px"><div class="sectiontitle">'$"Configure DHCP"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPLeases_" value="_">
 '$"View DHCP Leases"'
 </button>
-</td><td style="vertical-align: top;">
+</td><td>
 <button class="button" formaction="dhcp_reservations.cgi" name="_DHCPReservations_" value="_">
 '$"DHCP Reservations"'
 </button>
