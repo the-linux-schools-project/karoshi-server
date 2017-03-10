@@ -523,6 +523,7 @@ then
 	server role = active directory domain controller
 	dns forwarder = '$DNSFORWARD'
 	idmap_ldb:use rfc2307 = yes
+	idmap config * : range = 30000-400000
 	acl:search=false
 	log level = 1
 	log file = /var/log/samba/log.%U
