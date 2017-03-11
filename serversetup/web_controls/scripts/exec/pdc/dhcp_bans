@@ -90,7 +90,7 @@ then
 	echo `date`: dhcp_bans - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ $ACTION != reallydelete ]
+if [ $ACTION != reallydelete ] && [ $ACTION != restartdhcp ]
 then
 	if [ -z "$CLIENTHOSTNAME" ]
 	then
@@ -108,6 +108,10 @@ then
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
+
+function restartdhcp {
+echo "$REMOTE_USER:$REMOTE_ADDR:" | /opt/karoshi/web_controls/exec/dhcp_restart
+}
 
 function updatedhcpconf {
 
@@ -141,13 +145,6 @@ then
 	echo "include \"/etc/dhcp/dhcpd_bans.conf\";" >> /etc/dhcp/dhcpd.conf
 fi
 
-#Restart DHCP
-echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li></ul>'
-echo `date`: dhcp_bans - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 #Sync config file to failover server
 if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
@@ -155,26 +152,12 @@ then
 	do
 		if [ "$DHCPSERVER" != `hostname-fqdn` ]
 		then
-			echo '<ul><li>'$DHCPSERVER' - '$"Restarting dhcp"'</li>'
-			echo `date`: dhcp_bans- $DHCPSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			scp /etc/dhcp/dhcpd_bans.conf root@$DHCPSERVER:/etc/dhcp/
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '
-			source /opt/karoshi/serversetup/variables/distro
-
-			#Make sure config file is included in dhcpd.conf
-			if [ $(grep -c "/etc/dhcp/dhcpd_bans.conf" /etc/dhcp/dhcpd.conf) = 0 ]
-			then
-				echo "include \"/etc/dhcp/dhcpd_bans.conf\";" >> /etc/dhcp/dhcpd.conf
-			fi
-
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
-			'
 		fi
 	done
-sleep 2
 fi
-
+#Create flag file to alert that the dhcp service needs restarting
+touch /opt/karoshi/server_network/dhcp/restart_required
 }
 
 if [ "$ACTION" = reallyadd ]
@@ -247,11 +230,17 @@ then
 		rm -f /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME"
 	done
 	updatedhcpconf
+	restartdhcp
 fi
 
 if [ "$ACTION" = activatechanges ]
 then
 	updatedhcpconf
+fi
+
+if [ "$ACTION" = restartdhcp ]
+then
+	restartdhcp
 fi
 
 exit

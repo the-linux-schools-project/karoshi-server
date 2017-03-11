@@ -287,11 +287,18 @@ else
 	if [ -d /opt/karoshi/server_network/dhcp/bans_delete ]
 	then
 		echo '<td>
-			<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
-			'$"Delete DHCP bans"'
-			</button>
-			</td>
-			'
+		<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
+		'$"Delete DHCP bans"'
+		</button>
+		</td>'
+	fi
+	if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
+	then
+		echo '<td>
+		<button class="button" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
+		'$"Activate Changes"'
+		</button>
+		</td>'
 	fi
 	echo '</tr></tbody></table></form></div><div id="infobox">
 	'
@@ -374,7 +381,7 @@ echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"
 [ $ACTION = view ] && view_bans
 [ $ACTION = add ] && add_ban
 
-if [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelete ] || [ $ACTION = deleteall ] || [ $ACTION = clearall ]|| [ $ACTION = reallyadd ]
+if [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelete ] || [ $ACTION = deleteall ] || [ $ACTION = clearall ] || [ $ACTION = reallyadd ] || [ $ACTION = restartdhcp ]
 then
 	MACADDRESS=`echo $MACADDRESS | sed 's/:/%3A/g'`
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1`

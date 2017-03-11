@@ -53,7 +53,7 @@ then
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+'`
 if [ -z "$DATA" ]
 then
 	echo `date`: dhcp_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -90,7 +90,7 @@ then
 	echo `date`: dhcp_reservations - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-if [ $ACTION != reallydelete ]
+if [ $ACTION != reallydelete ] && [ $ACTION != restartdhcp ]
 then
 	if [ -z "$CLIENTHOSTNAME" ]
 	then
@@ -118,11 +118,11 @@ source /opt/karoshi/server_network/domain_information/domain_name
 function add_dns {
 #Add dns
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo `date`: dhcp_reservations - checking "if" $CLIENTHOSTNAME is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dhcp_reservations - checking "if" "$CLIENTHOSTNAME" is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 samba-tool dns query 127.0.0.1 $REALM $CLIENTHOSTNAME A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 if [ $? != 0 ]
 then
-	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dhcp_reservations - adding "$CLIENTHOSTNAME" $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	samba-tool dns add 127.0.0.1 $REALM $CLIENTHOSTNAME A $TCPIPADDRESS --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 }
@@ -136,6 +136,11 @@ then
 	echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME $TCPIPADDRESS  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	samba-tool dns delete 127.0.0.1 $REALM $CLIENTHOSTNAME A $TCPIPADDRESS --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
+}
+
+
+function restartdhcp {
+echo "$REMOTE_USER:$REMOTE_ADDR:" | /opt/karoshi/web_controls/exec/dhcp_restart
 }
 
 function updatedhcpconf {
@@ -159,13 +164,6 @@ fi
 #Cat reservation list  into dhcpd.conf
 cat /opt/karoshi/server_network/dhcp/reservation_list > /etc/dhcp/dhcpd_reservations.conf
 
-#Restart DHCP
-echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li></ul>'
-echo `date`: dhcp_reservations - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
 #Sync config file to failover server
 if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
@@ -173,20 +171,18 @@ then
 	do
 		if [ "$DHCPSERVER" != `hostname-fqdn` ]
 		then
-			echo '<ul><li>'$DHCPSERVER' - '$"Restarting dhcp"'</li>'
-			echo `date`: client_boot_controls2 - $DHCPSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 			scp /etc/dhcp/dhcpd_reservations.conf root@$DHCPSERVER:/etc/dhcp/
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '
-			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
-			'
 		fi
 	done
-sleep 2
 fi
-
+#Create flag file to alert that the dhcp service needs restarting
+touch /opt/karoshi/server_network/dhcp/restart_required
 }
+
+if [ "$ACTION" = restartdhcp ]
+then
+	restartdhcp
+fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
@@ -268,6 +264,7 @@ then
 		rm -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME"
 	done
 	updatedhcpconf
+	restartdhcp
 fi
 
 if [ "$ACTION" = activatechanges ]

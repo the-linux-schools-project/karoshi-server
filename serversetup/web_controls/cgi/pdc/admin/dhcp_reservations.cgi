@@ -295,14 +295,14 @@ then
 	fi
 else
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top; width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
-	<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
-	<td style="vertical-align: top;">
+	<td style="width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
+	<td>
 	<button class="button" formaction="dhcp_import_reservations_fm.cgi" name="_DHCPImportReseravations_" value="_">
 	'$"Import DHCP Reservations"'
 	</button>
 	</td>
-	<td style="vertical-align: top;">'
+	<td>'
 
 	if [ $ACTION = view ]
 	then
@@ -310,23 +310,30 @@ else
 	else
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'">'
 	fi
-	echo '</td><td style="vertical-align: top;">
+	echo '</td><td>
 	<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPViewLeases_" value="_">
 	'$"View DHCP Leases"'
 	</button>
-	</td><td style="vertical-align: top;">
+	</td><td>
 	<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
 	'$"Configure DHCP"'
 	</button>
 	</td>'
 	if [ -d /opt/karoshi/server_network/dhcp/reservations_delete ]
 	then
-		echo '<td style="vertical-align: top;">
-			<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
-			'$"Delete DHCP reservations"'
-			</button>
-			</td>
-			'
+		echo '<td>
+		<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
+		'$"Delete DHCP reservations"'
+		</button>
+		</td>'
+	fi
+	if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
+	then
+		echo '<td>
+		<button class="button" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
+		'$"Activate Changes"'
+		</button>
+		</td>'
 	fi
 	echo '</tr></tbody></table></form></div><div id="infobox">
 	'
@@ -424,7 +431,7 @@ echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"
 [ $ACTION = add ] && add_reservation
 [ $ACTION = edit ] && add_reservation
 
-if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelete ] || [ $ACTION = deleteall ] || [ $ACTION = clearall ]|| [ $ACTION = reallyadd ]
+if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = delete ] || [ $ACTION = canceldelete ] || [ $ACTION = deleteall ] || [ $ACTION = clearall ] || [ $ACTION = reallyadd ] || [ $ACTION = restartdhcp ]
 then
 	MACADDRESS=`echo $MACADDRESS | sed 's/:/%3A/g'`
 	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`

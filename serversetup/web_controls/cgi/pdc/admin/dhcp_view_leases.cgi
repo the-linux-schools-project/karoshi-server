@@ -114,10 +114,30 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 #Only show backup leases button if we have a secondary dhcp server
 [ -d /opt/karoshi/server_network/dhcp_servers ] && echo '<td style="vertical-align: top;"><input name="_OPTION_backup_" type="submit" class="button" value="'$"Show Backup Leases"'"></td>'
 
-echo '<td><input name="_OPTION_free_" type="submit" class="button" value="'$"Show Free Leases"'"></td>
-</tr>
+echo '<td><input name="_OPTION_free_" type="submit" class="button" value="'$"Show Free Leases"'"></td>'
+
+if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
+then
+	echo '<td>
+	<button class="button" name="_ActivateChanges_" value="_OPTION_restartdhcp_">
+	'$"Activate Changes"'
+	</button>
+	</td>'
+fi
+
+echo '</tr>
 </tbody></table><br></form>
 </div><div id="infobox">'
+
+if [ "$OPTION" = restartdhcp ]
+then
+	echo "$REMOTE_USER:$REMOTE_ADDR:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_restart
+	OPTION=""
+	#Reload page
+	echo '<form id="reloadpage" name="reservervations" action="/cgi-bin/admin/dhcp_view_leases.cgi" method="post"><script>
+	document.getElementById("reloadpage").submit();
+	</script></form>'
+fi
 
 #Show lease information
 /opt/karoshi/web_controls/leasecheck.pl $OPTION

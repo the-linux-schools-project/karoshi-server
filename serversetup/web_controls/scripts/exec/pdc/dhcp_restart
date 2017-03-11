@@ -1,0 +1,59 @@
+#!/bin/bash
+#Restart DHCP
+LOG_DATE=`date +%F`
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ $numArgs != 0 ]
+then
+	echo `date`: dhcp_reservations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+read DATA
+DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+'`
+if [ -z "$DATA" ]
+then
+	echo `date`: dhcp_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
+REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
+
+if [ -z "$REMOTE_USER" ]
+then
+	echo `date`: dhcp_restart - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo `date`: dhcp_restart - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
+fi
+
+echo '<ul><li>'$HOSTNAME' - '$"Restarting dhcp"'</li></ul>'
+echo `date`: dhcp_restart - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+source /opt/karoshi/serversetup/variables/distro
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+
+if [ -d /opt/karoshi/server_network/dhcp_servers ]
+then
+	for DHCPSERVER in `ls -1 /opt/karoshi/server_network/dhcp_servers`
+	do
+		if [ "$DHCPSERVER" != `hostname-fqdn` ]
+		then
+			echo '<ul><li>'$DHCPSERVER' - '$"Restarting dhcp"'</li>'
+			echo `date`: dhcp_restart - $DHCPSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DHCPSERVER '
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
+			'
+		fi
+	done
+fi
+[ -f /opt/karoshi/server_network/dhcp/restart_required ] && rm -f /opt/karoshi/server_network/dhcp/restart_required
