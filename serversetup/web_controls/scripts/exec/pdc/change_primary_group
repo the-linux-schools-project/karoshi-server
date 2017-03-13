@@ -160,7 +160,7 @@ replace: unixhomedirectory
 unixhomedirectory: '$HOMEPATH'/'$USERNAME'
 -
 replace: profilePath
-profilePath: \\\\%LOGONSERVER%\\applications\\profiles\\'$NEWPRIGROUP'
+profilePath: %LOGONSERVER%\\applications\\profiles\\'$NEWPRIGROUP'
 -
 replace: homeDirectory
 homeDirectory: \\\\'$SERVER'\\'$USERNAME'
