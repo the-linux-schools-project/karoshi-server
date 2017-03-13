@@ -378,8 +378,13 @@ then
 
 		echo "</pre>"
 
-		#Mount partition on boot
+		#Set minidlna to wait for zfs
+		if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+		then
+			sed -i 's/Required-Start:    $local_fs $network $remote_fs/Required-Start:    $local_fs $network $remote_fs zfs-mount-all/g' /etc/init.d/minidlna
+		fi
 
+		#Mount partition on boot
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
 
 		#Set minidlna to wait for zfs-mount-all

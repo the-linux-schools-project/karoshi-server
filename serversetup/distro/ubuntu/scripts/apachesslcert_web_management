@@ -51,7 +51,7 @@ echo "<ul><li>Creating key for 50002 access</li></ul>"
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$LOCALNAME"\n"$SERVERNAME"\n"$EMAILADDRESS"\n" | openssl req -new -x509 -days 3650 -nodes -out server_web_management_50002.crt -keyout server_web_management_50002.key
 #Create client certificate
 echo "<ul><li>Creating client key</li></ul>"
-openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 8129
+openssl genrsa -aes256 -passout pass:$LDAPPASS -out client_web_management.key 8192
 chmod 0600 /etc/ssl/webmanagement/client_web_management.key
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"manage.$LOCALNAME"\n"manage.$SERVERNAME"\n"$EMAILADDRESS"\n""\n\n"$UNIQUE_REF"\n"Karoshi Web Management"\n" | openssl req -new -passin pass:$LDAPPASS -key client_web_management.key -out client_web_management.csr
 chmod 0600 /etc/ssl/webmanagement/client_web_management.csr

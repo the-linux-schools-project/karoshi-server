@@ -96,7 +96,7 @@ source /opt/karoshi/serversetup/variables/distro
 
 echo `date`: apply_ssl_certificate - applying certificate "for" $ALIAS.$REALM by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ $ALIAS = manage ]
+if [ "$SERVER" = "$HOSTNAME" ]
 then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
 else
