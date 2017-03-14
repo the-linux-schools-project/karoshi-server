@@ -31,7 +31,7 @@ SERVER=$(echo $1 | tr -cd 'A-Za-z0-9\._-')
 
 if [ $SERVER = $(hostname-fqdn) ]
 then
-	DNSFORWARDERS=$(grep "dns forwarder" /etc/samba/smb.conf | tr -cd "0-9.") 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	DNSFORWARDERS=$(grep "dns forwarder" /etc/samba/smb.conf | grep -v "#" | tr -cd "0-9.") 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 else
 	DNSFORWARDERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 	PDC_STATUS=no
@@ -40,7 +40,7 @@ else
 		if [ $(grep -c "dns forwarder" /etc/samba/smb.conf) -gt 0 ]
 		then
 			PDC_STATUS=yes
-			grep "dns forwarder" /etc/samba/smb.conf | tr -cd "0-9."
+			grep "dns forwarder" /etc/samba/smb.conf | grep -v "#" | tr -cd "0-9."
 		fi
 	fi
 	if [ "$PDC_STATUS" = no ]
@@ -49,7 +49,7 @@ else
 		then
 			grep "nameserver" /etc/resolv.karoshi.conf  | tr -cd "0-9.\n"
 		else
-			grep "nameserver" /etc/resolv.conf  | tr -cd "0-9.\n"
+			grep "nameserver" /etc/resolv.conf  | grep -v "#" | tr -cd "0-9.\n"
 		fi
 	fi
 	') 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
