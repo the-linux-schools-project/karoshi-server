@@ -227,10 +227,7 @@ then
 	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
 	do
 		source /opt/karoshi/server_network/group_information/"$PRIGROUP"
-		if [ "$SERVERNAME" = "$SERVER" ] || [ "$SERVERNAME" = "$EMAILSERVER" ]
-		then
-			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
-		fi
+		echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	done
 fi
 exit

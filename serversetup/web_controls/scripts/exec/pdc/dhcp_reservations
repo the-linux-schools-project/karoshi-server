@@ -63,7 +63,7 @@ REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
-CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5`
+CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-'`
 MACADDRESS=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
 TCPIPADDRESS=`echo "$DATA" | cut -s -d: -f7`
 
