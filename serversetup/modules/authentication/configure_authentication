@@ -223,10 +223,6 @@ echo "[dfs]
 " >> /etc/samba/smb.conf
 
 	restart_samba
-	#Replicate all DNS
-	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
-	samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
-	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
 fi
 
 if [ '$AUTHTYPE' = member ]
@@ -524,7 +520,7 @@ then
 
 	if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ] 
 	then
-		echo nameserver '$SERVERIP' >> /etc/resolv.conf
+		echo nameserver '$PDCIP' >> /etc/resolv.conf
 	fi
 	' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
@@ -646,13 +642,13 @@ touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 #Reconfigure resolv.conf for domain controllers - this needs to be done after samba has finished syncing.
 
 function configure_adc_resolv {
-sleep 60
+
 COUNTER=0
 while [ $(dig "$REALM" | grep -c -w "$SERVERIP") = 0 ]
 do
 	sleep 10
 	let COUNTER="$COUNTER"+1
-	[ $COUNTER = 60 ] && break
+	[ $COUNTER = 600 ] && break
 done
 
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
@@ -660,11 +656,15 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 echo domain '$REALM' > /etc/resolv.conf
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
 echo timeout:1 >> /etc/resolv.conf
+#Replicate all DNS
+samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
+samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
+/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
 '
 }
 
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
-	configure_adc_resolv &
+	configure_adc_resolv
 fi
 exit
