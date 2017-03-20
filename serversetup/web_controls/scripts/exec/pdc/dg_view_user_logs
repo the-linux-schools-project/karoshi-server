@@ -200,39 +200,34 @@ function create_temp_logfile {
 if [ $PROXYSERVER = `hostname-fqdn` ]
 then
 	LOGTYPE="notset"
-	if [ -d /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS ]
+	if [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ]
 	then
-		if [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME ]
-		then
-			#Text log
-			cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
-		elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ]
-		then
-			#Archive log
-			tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz >> /opt/karoshi/.tempdata/$USERNAME.$$
-		elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz ]
-		then
-			#Global archive log
-			tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz $USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
-		fi
+		#Text log
+		cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
+	elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz ]
+	then
+		#Archive log
+		tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS/$USERNAME.tar.gz >> /opt/karoshi/.tempdata/$USERNAME.$$
+	elif [ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz ]
+	then
+		#Global archive log
+		tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz $USERS/$USERNAME >> /opt/karoshi/.tempdata/$USERNAME.$$
 	fi
 else
 	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-	if [ -d /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS' ]
+
+	if [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ]
 	then
-		if [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME' ]
-		then
-			#Text log
-			exit 105
-		elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ]
-		then
-			#Archive log
-			exit 106
-		elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'.tar.gz ]
-		then
-			#Global archive log
-			exit 107
-		fi
+		#Text log
+		exit 105
+	elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'/'$USERNAME'.tar.gz ]
+	then
+		#Archive log
+		exit 106
+	elif [ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$USERS'.tar.gz ]
+	then
+		#Global archive log
+		exit 107
 	fi
 	'
 	LOGTYPE=$?
