@@ -138,5 +138,6 @@ if [ $EXEC_STATUS = 106 ]
 then
 	echo $"No UPS devices have been added."
 fi
-echo '</div></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+echo '</div></body></html>'
 exit
