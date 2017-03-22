@@ -84,22 +84,22 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 
 #Get current dhcp data
 
-#Domain name server - use this server ip
-DOMAINNAMESERVER=`net lookup $HOSTNAME`
+
 
 if [ -f /opt/karoshi/server_network/dhcp/dhcp_settings ]
 then
 	source /opt/karoshi/server_network/dhcp/dhcp_settings
-else
-	#Guess some useful numbers
-	ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-	SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-	SUBNET=`ipcalc -n $DOMAINNAMESERVER/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2 | cut -d"/" -f1`
-	STARTADDRESS=
-	ENDADDRESS=
-	DEFAULTLEASETIME=21600
-	MAXLEASETIME=43200
 fi
+
+#Domain name server - use this server ip
+DOMAINNAMESERVER=`net lookup $HOSTNAME`
+
+#Guess some useful numbers if needed
+[ -z "$ROUTER" ] && ROUTER=`grep gateway /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+[ -z "$SUBNETMASK" ] && SUBNETMASK=`grep netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
+[ -z "$SUBNET" ] && SUBNET=`ipcalc -n $DOMAINNAMESERVER/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2 | cut -d"/" -f1`
+[ -z "$DEFAULTLEASETIME" ] && DEFAULTLEASETIME=21600
+[ -z "$MAXLEASETIME" ] && MAXLEASETIME=43200
 
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers ]
 then
@@ -110,7 +110,7 @@ then
 	done
 fi
 
-DOMAINNAMESERVER=$(echo "$DOMAINNAMESERVER" | sed 's/,$//g')
+DOMAINNAMESERVER=$(echo "$DOMAINNAMESERVER" | sed 's/,,//g' | sed 's/,$//g')
 NETBIOSSERVER=$DOMAINNAMESERVER
 
 #Check for a secondary dhcp server
