@@ -197,7 +197,7 @@ sed -i "s/#lda_mailbox_autocreate = no/lda_mailbox_autocreate = yes/g" /etc/dove
 sed -i "s/#lda_mailbox_autosubscribe = no/lda_mailbox_autosubscribe = yes/g" /etc/dovecot/conf.d/15-lda.conf		
 
 #Modify dovecot sieve to use a default sieve rule for mta to send spam to a spam folder
-sed -i "s%#sieve_before =%sieve_before = /etc/dovecot/sieve/default.sieve%g" /etc/dovecot/conf.d/90-sieve.conf
+sed -i "s%#sieve_before = /var/lib/dovecot/sieve.d/%sieve_before = /etc/dovecot/sieve/default.sieve%g" /etc/dovecot/conf.d/90-sieve.conf
 
 #Create default.sieve
 [ ! -d /etc/dovecot/sieve ] && mkdir -p /etc/dovecot/sieve
