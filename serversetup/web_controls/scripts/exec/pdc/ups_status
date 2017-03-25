@@ -229,7 +229,7 @@ if [ "$MOBILE" = no ]
 then
 	echo '<div style="float:left;width:35%;">'$SERVER_SHORT'</div>
 <div style="float:right;width:65%;"><form action="ups_slave_add_fm.cgi" method="post" style=" display:inline!important;">
-<input type="hidden" name="_UPSSERVER_" value="'$SERVER'">
+<input type="hidden" name="_UPSSERVER_" value="'$SERVER','$UPSMODEL'">
 <button class="button" name="_AddSlaveUPS" value="_">
 '$"Add a slave UPS"'
 </button>
@@ -286,8 +286,8 @@ do
 	#Get UPSMODELS
 	for UPSMODELS in /opt/karoshi/server_network/ups/master/$SERVER/drivers/*
 	do
-	UPSMODEL=`basename $UPSMODELS`
-	process_ups_data
+		UPSMODEL=`basename $UPSMODELS`
+		process_ups_data
 	done
 	#Check for ups slaves
 	if [ -d /opt/karoshi/server_network/ups/slave/$SERVER/users/ ]
@@ -298,13 +298,14 @@ do
 		#Chech ups status
 		if [ $SLAVESERVER = `hostname-fqdn` ]
 		then
-			upsmon status 1>/dev null 2>/dev/null
-			SLAVESTATUS=$?
+			UPS_SERVER=$(sed -n 1,1p /etc/nut/upsmon.conf | cut -d" " -f2)
+			upsc $UPS_SERVER 1>/dev/null 2>/dev/null
+			exit $?
 		else
 			ssh -x -o PasswordAuthentication=no $SLAVESERVER '
-			upsmon 1>/dev/null 2>/dev/null
-			SLAVESTATUS=$?
-			exit $SLAVESTATUS
+			UPS_SERVER=$(sed -n 1,1p /etc/nut/upsmon.conf | cut -d" " -f2)
+			upsc $UPS_SERVER 1>/dev/null 2>/dev/null
+			exit $?
 			'
 			SLAVESTATUS=$?
 		fi
