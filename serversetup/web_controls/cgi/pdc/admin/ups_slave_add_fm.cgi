@@ -46,7 +46,7 @@ fi
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-'`
 
 END_POINT=9
 #Assign UPSSERVER
@@ -57,7 +57,9 @@ do
 	if [ `echo $DATAHEADER'check'` = UPSSERVERcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		UPSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		UPSSERVERDATA=$(echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%2C/,/g')
+		UPSSERVER=$(echo "$UPSSERVERDATA" | cut -d, -f1)
+		UPSMODEL=$(echo "$UPSSERVERDATA" | cut -d, -f2)
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -169,7 +171,7 @@ then
 	done
 	echo '</select>'
 else
-	echo '<input type="hidden" name="_UPSSERVER_" value="'$UPSSERVER'">'$UPSSERVER''
+	echo '<input type="hidden" name="_UPSSERVER_" value="'$UPSSERVER','$UPSMODEL'">'$UPSSERVER' : '$UPSMODEL''
 fi
 
 

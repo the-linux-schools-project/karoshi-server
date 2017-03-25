@@ -125,7 +125,7 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><b>'$"Add a slave UPS"'</b><br><br>'$UPSMODEL $SERVERNAME.''
+echo '<div id="actionbox"><b>'$"Add a slave UPS"'</b><br>'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_slave_add.cgi | cut -d' ' -f1`
 #Add UPS
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSSERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_slave_add
