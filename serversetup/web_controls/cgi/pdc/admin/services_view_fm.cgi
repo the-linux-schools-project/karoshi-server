@@ -111,13 +111,13 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
-TABLECLASS=mobilestandard
+	DIV_ID=menubox
+	TABLECLASS=mobilestandard
 fi
 
 
@@ -136,7 +136,7 @@ else
 	echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td><div class="sectiontitle">'$"Service Status"'</div>
+<td style="height:30px"><div class="sectiontitle">'$"Service Status"'</div>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></td>
 </tr></table>
 </div><div id="infobox">'

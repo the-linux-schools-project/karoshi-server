@@ -248,7 +248,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-	echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"Add a New User"'</div><br>'
+	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Add a New User"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add new users to your system."'</span></a></td></tr></tbody></table><br>'
 fi
 
 #Check that this server is not part of a federated setup

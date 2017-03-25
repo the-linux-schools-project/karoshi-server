@@ -59,13 +59,13 @@ source /opt/karoshi/server_network/security/password_settings
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
 
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Bulk User Creation"'</div></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"Bulk User Creation"'</div></td>
+<td>
 <button class="button" formaction="/cgi-bin/admin/bulk_user_creation_view_passwords_fm.cgi" name="ViewNewPasswords" value="_">
 '$"View new passwords"'
 </button>
 </td>
-<td style="vertical-align: top;">
+<td>
 <button class="button" formaction="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi" name="ImportEnrolmentNumbers" value="_">
 '$"Import enrolment numbers"'
 </button>

@@ -58,8 +58,9 @@ echo '
 #Get current settings
 ##########################
 
-echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox"><b>'$"Default User Settings"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Sets the default settings for user accounts."'</span></a>
-<br><br>'
+echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Default User Settings"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Sets the default settings for user accounts."'</span></a></td></tr></tbody></table><br>'
 #Get lockout settings
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:GETDATA" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings

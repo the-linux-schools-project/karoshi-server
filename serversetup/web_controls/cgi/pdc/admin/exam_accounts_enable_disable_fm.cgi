@@ -36,7 +36,7 @@ TEXTDOMAIN=karoshi-server
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -52,10 +52,9 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post"><div id="actionbox"><b>'$"Enable - Disable all exam accounts"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Use this option to allow or deny access to all of the exam accounts."'</span></a>
-
-<br>
-  <br>
+echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post">
+<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Enable - Disable all exam accounts"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Use this option to allow or deny access to all of the exam accounts."'</span></a></td></tr></tbody></table><br>
   <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>

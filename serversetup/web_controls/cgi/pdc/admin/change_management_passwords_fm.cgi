@@ -124,8 +124,12 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<b>'$"Management Passwords"'</b> <a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to change important passwords on your system that are needed to access specific services."'</span></a>
-<br><br>'
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr>
+<td style="height:30px"><div class="sectiontitle">'$"Management Passwords"'</div>
+<td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to change important passwords on your system that are needed to access specific services."'</span></a></td>
+</tr></table><br>
+'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>

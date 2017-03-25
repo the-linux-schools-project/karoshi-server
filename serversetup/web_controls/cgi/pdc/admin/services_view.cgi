@@ -208,7 +208,7 @@ SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="height:30px;"><div class="sectiontitle">'$"Service Status"' - '$SERVERNAME'</div></td>
+	<td style="height:30px"><div class="sectiontitle">'$"Service Status"' - '$SERVERNAME'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the services that you want to start or stop."'</span></a></td>
 	<td>
 	<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
@@ -217,7 +217,7 @@ else
 	</button>
 	</form>
 	</td>
-	</tr></table><br>
+	</tr></table>
 	</div><div id="infobox">
 '
 fi

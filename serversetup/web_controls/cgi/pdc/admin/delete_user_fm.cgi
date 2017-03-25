@@ -147,7 +147,8 @@ then
 </div></div>
 '
 else
-	echo '<div class="sectiontitle">'$"Delete User"'</div><br>'
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Delete User"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Delete users from your system."'</span></a></td></tr></tbody></table><br>'
 fi
 
 #Check that this server is not part of a federated setup

@@ -102,13 +102,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<div id="actionbox"><div class="sectiontitle">'$"Reset User Lockout"'</div><br>'
+	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Reset User Lockout"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a></td></tr></tbody></table><br>'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Username"'</td>
  <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to reset the user lockout for."'</span></a>
 </td></tr>
 </tbody></table><br><br>'
 

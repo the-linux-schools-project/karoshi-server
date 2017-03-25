@@ -54,16 +54,16 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '
 <form action="/cgi-bin/admin/remote_management_add.cgi" method="post">
-  <div id="actionbox">
+  <div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><b>'$"Add Web Management User"'</b></td>
+<td><div class="sectiontitle">'$"Add Web Management User"'</div></td>
 <td style="vertical-align: top;">
-<button class="button" formaction="remote_management_view.cgi" name="ViewUsers" value="_">
+<button class="button" name="_ViewUsers_" formaction="remote_management_view.cgi" value="_">
 '$"View"'
 </button>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."'</span></a>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."'</span></a>
 </td>
 </tr></tbody></table>
   <br>
@@ -71,30 +71,30 @@ echo '
     <tbody>
       <tr>
         <td style="width: 180px;">Job Title</td>
-        <td><input name="_JOBTITLE_" style="width: 200px;" size="20"></td>
+        <td><input name="_JOBTITLE_" style="width: 200px;" size="20"></td><td></td>
       </tr>
       <tr>
         <td>Forename</td>
-        <td><input name="_FORENAME_" style="width: 200px;" size="20"></td>
+        <td><input name="_FORENAME_" style="width: 200px;" size="20"></td><td></td>
       </tr>
       <tr>
         <td>Surname</td>
-        <td><input name="_SURNAME_" style="width: 200px;" size="20"></td>
+        <td><input name="_SURNAME_" style="width: 200px;" size="20"></td><td></td>
       </tr>
       <tr>
         <td>
 '$"Username"'</td>
-        <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
+        <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td><td></td>
       </tr>
       <tr>
         <td>
 '$"Password"'</td>
-        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td></td>
       </tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
+        <td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
       </tr>
       <tr>
         <td>'$"Access Level"'</td><td>
@@ -110,10 +110,10 @@ echo '
       </tr>
     </tbody>
   </table>
-  </div>
-  <div id="submitbox">
+<br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
   </div>
+</div>
 </form>
 </div></body>
 </html>

@@ -57,9 +57,9 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/modify_groups.cgi" method="post">
   <div id="actionbox">
-  <b>'$"Bulk User Actions"'</b> 
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will affect a group of users."'</span></a>
-<br><br>
+
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Bulk User Actions"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bulk_User_Actions"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will affect a group of users."'</span></a></td></tr></tbody></table><br>
   <table class="standard" style="text-align: left; left: 232px;" >
     <tbody>
 <tr><td style="width: 180px;">
