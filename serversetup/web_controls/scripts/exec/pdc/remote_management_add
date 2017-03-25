@@ -150,11 +150,11 @@ echo $USERNAME:"$FORENAME":"$SURNAME":"$JOBTITLE":$PRIMARYADMINSTATUS:$PRIMARYAD
 #Add entry to htpasswd list
 if [ $PRIMARYADMIN = 1 ] || [ $PRIMARYADMIN = 2 ]
 then
-	htpasswd -B -b /opt/karoshi/web_controls/web_access_admin $USERNAME $PASSWORD 2>/dev/null
+	htpasswd -B -C 4 -b /opt/karoshi/web_controls/web_access_admin $USERNAME $PASSWORD 2>/dev/null
 fi
 if [ $PRIMARYADMIN = 3 ]
 then
-	htpasswd -B -b /opt/karoshi/web_controls/web_access_tech $USERNAME $PASSWORD 2>/dev/null
+	htpasswd -B -C 4 -b /opt/karoshi/web_controls/web_access_tech $USERNAME $PASSWORD 2>/dev/null
 fi
 
 #Create combined htpassword file for any features that require both admin and tech access.

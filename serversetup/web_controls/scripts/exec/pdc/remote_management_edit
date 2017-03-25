@@ -207,10 +207,10 @@ then
 	convertchars
 	if [ $ADMINLEVEL = 1 ] || [ $ADMINLEVEL = 2 ]
 	then
-		htpasswd -B -b /opt/karoshi/web_controls/web_access_admin $USERNAME "$PASSWORD"
+		htpasswd -B -C 4 -b /opt/karoshi/web_controls/web_access_admin $USERNAME "$PASSWORD"
 	fi
 	if [ $ADMINLEVEL = 3 ]
 	then
-		htpasswd -B -b /opt/karoshi/web_controls/web_access_tech $USERNAME "$PASSWORD"
+		htpasswd -B -C 4 -b /opt/karoshi/web_controls/web_access_tech $USERNAME "$PASSWORD"
 	fi
 fi
