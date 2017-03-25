@@ -24,22 +24,22 @@
 #
 #Website: http://www.karoshi.org.uk
 LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_edit_cgi
 then
-echo `date`: remote_management_edit - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_edit_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_edit.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
+[ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $remote_management_edit_cgi'check' ]
 then
-echo `date`: remote_management_edit - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 ########################
 #Get variables
@@ -47,16 +47,16 @@ fi
 numArgs=$#
 if [ $numArgs != 0 ]
 then
-echo `date`: remote_management_edit - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 read DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
-if [ $DATA'null' = null ]
+if [ -z "$DATA" ]
 then
-echo `date`: remote_management_edit - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
@@ -83,54 +83,54 @@ PASSWORD=`echo $PASSWORD | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: remote_management_edit - Not called by remote_management_edit.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - Not called by remote_management_edit.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: remote_management_edit - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: remote_management_edit - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: remote_management_edit - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo `date`: remote_management_edit - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit
 fi
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/remote_management_users` != 1 ]
 then
-echo `date`: remote_management_edit - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo `date`: remote_management_edit - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 101
 fi
 [ ! -f /opt/karoshi/web_controls/remote_management_users ] && ( touch /opt/karoshi/web_controls/remote_management_users ; chmod 0600 /opt/karoshi/web_controls/remote_management_users )
 #Check that user is a primary admin
 PRISTATUS=`grep $REMOTE_USER: /opt/karoshi/web_controls/remote_management_users | cut -d: -f5`
-if [ $PRISTATUS'null' = null ]
+if [ -z "$PRISTATUS" ]
 then
-PRISTATUS=no
+	PRISTATUS=no
 fi
 if [ $PRISTATUS != yes ]
 then
-echo `date`: remote_management_edit - Not a primary admin editing $USERNAME "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 103
+	echo `date`: remote_management_edit - Not a primary admin editing $USERNAME "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	exit 103
 fi
 #Check the remote management user does not exist.
 if [ `cut -d: -f1 /opt/karoshi/web_controls/remote_management_users | grep -c -w $USERNAME` = 0 ]
 then
-exit 102
+	exit 102
 fi
 
 #Edit remote management user in list
 
 #get line number of user
 LINE_NUMBER=`grep -n ^$USERNAME: /opt/karoshi/web_controls/remote_management_users | cut -d: -f1`
-if [ $LINE_NUMBER'null' = null ]
+if [ -z "$LINE_NUMBER" ]
 then
-exit 101
+	exit 101
 fi
 USER_DATA=`sed -n $LINE_NUMBER,$LINE_NUMBER'p' /opt/karoshi/web_controls/remote_management_users`
 CURRENT_FORENAME=`echo $USER_DATA | cut -d: -f2`
@@ -138,35 +138,35 @@ CURRENT_SURNAME=`echo $USER_DATA | cut -d: -f3`
 CURRENT_JOBTITLE=`echo $USER_DATA | cut -d: -f4`
 CURRENT_PRIADMIN=`echo $USER_DATA | cut -d: -f5`
 CURRENT_ADMIN_LEVEL=`echo $USER_DATA | cut -d: -f6`
-if [ $FORENAME'null' = null ]
+if [ -z "$FORENAME" ]
 then
-FORENAME=$CURRENT_FORENAME
+	FORENAME=$CURRENT_FORENAME
 else
-FORENAME=`echo $FORENAME | sed 's/+/ /g'`
+	FORENAME=`echo $FORENAME | sed 's/+/ /g'`
 fi
-if [ $SURNAME'null' = null ]
+if [ -z "$SURNAME" ]
 then
-SURNAME=$CURRENT_SURNAME
+	SURNAME=$CURRENT_SURNAME
 else
-SURNAME=`echo $SURNAME | sed 's/+/ /g'`
+	SURNAME=`echo $SURNAME | sed 's/+/ /g'`
 fi
-if [ $JOBTITLE'null' = null ]
+if [ -z "$JOBTITLE" ]
 then
-JOBTITLE=$CURRENT_JOBTITLE
+	JOBTITLE=$CURRENT_JOBTITLE
 else
-JOBTITLE=`echo $JOBTITLE | sed 's/+/ /g'`
+	JOBTITLE=`echo $JOBTITLE | sed 's/+/ /g'`
 fi
-if [ $PRIMARYADMIN'null' = null ]
+if [ -z "$PRIMARYADMIN" ]
 then
-ADMINLEVEL=$CURRENT_ADMIN_LEVEL
+	ADMINLEVEL=$CURRENT_ADMIN_LEVEL
 else
-ADMINLEVEL=$PRIMARYADMIN
+	ADMINLEVEL=$PRIMARYADMIN
 fi
 if [ $ADMINLEVEL = 1 ]
 then
-PRIMARYADMIN=yes
+	PRIMARYADMIN=yes
 else
-PRIMARYADMIN=""
+	PRIMARYADMIN=""
 fi
 #Modify entry in remote_management_users
 echo `date`: remote_management_edit - $USERNAME edited by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -175,41 +175,42 @@ sed -i $LINE_NUMBER'c'\\$USERNAME:"$FORENAME":"$SURNAME":"$JOBTITLE":$PRIMARYADM
 
 if [ $ADMINLEVEL = 1 ] || [ $ADMINLEVEL = 2 ]
 then
-if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_tech` -gt 0 ]
-then
-#Move password
-if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_admin` = 0 ]
-then
-USERLINE=`grep -n ^$USERNAME: /opt/karoshi/web_controls/web_access_tech | cut -d: -f1`
-sed -n $USERLINE,$USERLINE'p' /opt/karoshi/web_controls/web_access_tech >> /opt/karoshi/web_controls/web_access_admin
-fi
-htpasswd -D /opt/karoshi/web_controls/web_access_tech $USERNAME
-fi
+	if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_tech` -gt 0 ]
+	then
+		#Move password
+		if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_admin` = 0 ]
+		then
+			USERLINE=`grep -n ^$USERNAME: /opt/karoshi/web_controls/web_access_tech | cut -d: -f1`
+			sed -n $USERLINE,$USERLINE'p' /opt/karoshi/web_controls/web_access_tech >> /opt/karoshi/web_controls/web_access_admin
+		fi
+		htpasswd -D /opt/karoshi/web_controls/web_access_tech $USERNAME
+	fi
 fi
 
 if [ $ADMINLEVEL = 3 ]
 then
-if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_admin` -gt 0 ]
-then
-#Move password
-if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_tech` = 0 ]
-then
-USERLINE=`grep -n ^$USERNAME: /opt/karoshi/web_controls/web_access_admin | cut -d: -f1`
-sed -n $USERLINE,$USERLINE'p' /opt/karoshi/web_controls/web_access_admin >> /opt/karoshi/web_controls/web_access_tech
+	if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_admin` -gt 0 ]
+	then
+		#Move password
+		if [ `grep -c ^$USERNAME: /opt/karoshi/web_controls/web_access_tech` = 0 ]
+		then
+			USERLINE=`grep -n ^$USERNAME: /opt/karoshi/web_controls/web_access_admin | cut -d: -f1`
+			sed -n $USERLINE,$USERLINE'p' /opt/karoshi/web_controls/web_access_admin >> /opt/karoshi/web_controls/web_access_tech
+		fi
+		htpasswd -D /opt/karoshi/web_controls/web_access_admin $USERNAME
+	fi
 fi
-htpasswd -D /opt/karoshi/web_controls/web_access_admin $USERNAME
-fi
-fi
+
 #Modify entry in htpasswd list
-if [ $PASSWORD'null' != null ]
+if [ ! -z "$PASSWORD" ]
 then
-convertchars
-if [ $ADMINLEVEL = 1 ] || [ $ADMINLEVEL = 2 ]
-then
-htpasswd -b /opt/karoshi/web_controls/web_access_admin $USERNAME "$PASSWORD"
-fi
-if [ $ADMINLEVEL = 3 ]
-then
-htpasswd -b /opt/karoshi/web_controls/web_access_tech $USERNAME "$PASSWORD"
-fi
+	convertchars
+	if [ $ADMINLEVEL = 1 ] || [ $ADMINLEVEL = 2 ]
+	then
+		htpasswd -B -b /opt/karoshi/web_controls/web_access_admin $USERNAME "$PASSWORD"
+	fi
+	if [ $ADMINLEVEL = 3 ]
+	then
+		htpasswd -B -b /opt/karoshi/web_controls/web_access_tech $USERNAME "$PASSWORD"
+	fi
 fi

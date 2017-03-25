@@ -577,7 +577,7 @@ then
 		check_user_details
 	done
 
-	htpasswd -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
+	htpasswd -B -b /opt/karoshi/web_controls/web_access_admin $NEWUSERNAME $NEWUSERPASSWORD
 
 	#Copy in user prefs
 	if [ -f /opt/karoshi/web_controls/global_prefs ]
