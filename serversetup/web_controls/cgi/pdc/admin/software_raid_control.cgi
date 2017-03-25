@@ -67,42 +67,42 @@ END_POINT=30
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERTYPE
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #Assign SERVERMASTER
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-then
-let COUNTER=$COUNTER+1
-SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
 
 #########################
@@ -110,48 +110,48 @@ done
 #########################
 if [ https_$HTTPS != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SERVERNAME is not blank
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-MESSAGE=$"The server cannot be blank."
-show_status
+	MESSAGE=$"The server cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERTYPE is not blank
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-MESSAGE=$"The servertype cannot be blank."
-show_status
+	MESSAGE=$"The servertype cannot be blank."
+	show_status
 fi
 
 #Check to see that SERVERMASTER is not blank
 if [ $SERVERTYPE = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-MESSAGE=$"The servermaster cannot be blank."
-show_status
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		MESSAGE=$"The servermaster cannot be blank."
+		show_status
+	fi
 fi
 
 MOBILE=no
@@ -175,13 +175,13 @@ echo '<div id="'$DIV_ID'">'
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
-<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Control Software Raid" - $SERVERNAME'</b></a></td></tr></tbody></table>'
+<tbody><tr><td><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<td><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Control Software Raid" - $SERVERNAME'</b></a></td></tr></tbody></table>'
 else
 echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: middle;"><div class="sectiontitle">'$"Control Software Raid"' - '$SERVERNAME'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"This page shows the status of your software raid. You can also add and remove drives from the raid array here."'"</span></a></td>
-<td style="vertical-align: top;">
+<tr><td><div class="sectiontitle">'$"Control Software Raid"' - '$SERVERNAME'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Software_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"This page shows the status of your software raid. You can also add and remove drives from the raid array here."'"</span></a></td>
+<td>
 <a href="/cgi-bin/admin/software_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$"Create Software Raid"'"></a>
 </td>
 </tr></tbody></table>
