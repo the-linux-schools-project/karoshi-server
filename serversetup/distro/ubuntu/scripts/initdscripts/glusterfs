@@ -19,7 +19,7 @@ NAME=glusterd
 SCRIPTNAME=/etc/init.d/$NAME
 DAEMON=/usr/sbin/$NAME
 PIDFILE=/var/run/$NAME.pid
-GLUSTERD_OPTS=""
+GLUSTERD_OPTS="--log-level=ERROR"
 PID=`test -f $PIDFILE && cat $PIDFILE`
 
 

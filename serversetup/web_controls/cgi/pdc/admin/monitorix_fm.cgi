@@ -118,8 +118,8 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
+<td style="height:30px"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
 fi
 
 echo '<table class="'$TABLECLASS'" style="text-align: left;" >
