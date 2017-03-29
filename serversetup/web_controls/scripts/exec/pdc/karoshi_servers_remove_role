@@ -561,37 +561,69 @@ fi
 
 ##########################
 #radioserver
-#Unflags this server from using joomla. Deletes all joomla files and the joomla database.
+#Unflags this server from using icecast.
 ##########################
 
 if [ $MODULE = radioserver ]
 then
-echo "<ul><li>"$SERVERNAME: $"Removing Icecast radio server""</li></ul>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-#Stop icecast server
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
-#Stop icecast server from running on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Stop icecast server
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
-#Stop icecast server from running on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
-'
-fi
-#Unflag server
-echo "<ul><li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed""</li></ul>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
-[ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
-completed
+	echo "<ul><li>"$SERVERNAME: $"Removing Icecast radio server""</li></ul>"
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		#Stop icecast server
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
+		#Stop icecast server from running on boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		#Stop icecast server
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/icecast_stop
+		#Stop icecast server from running on boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/icecast 2>/dev/null
+		'
+	fi
+	#Unflag server
+	echo "<ul><li>"$SERVERNAME: $"Internet Radio Server" - $"Designation removed""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radioserver
+	[ -f /opt/karoshi/server_network/radioserver ] && rm -f /opt/karoshi/server_network/radioserver
+	completed
 fi
 
 ##########################
-#radioserver
+#radiusserver
+#Unflags this server from using radius.
+##########################
+
+if [ $MODULE = radiusserver ]
+then
+	echo "<ul><li>"$SERVERNAME: $"Removing Radius server""</li></ul>"
+	if [ $SERVERNAME = `hostname-fqdn` ]
+	then
+		#Stop radius
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop
+		#Stop radius from running on boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/radius 2>/dev/null
+	else
+		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		#Stop radius
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop
+		#Stop radius server from running on boot
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/radius 2>/dev/null
+		'
+	fi
+	#Unflag server
+	echo "<ul><li>"$SERVERNAME: $"Radius Server" - $"Designation removed""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiussserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radiussserver
+	[ -f /opt/karoshi/server_network/radius_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/radius_servers/$SERVERNAME
+	completed
+fi
+
+
+##########################
+#rremote ssh
 #Unflags this server from using joomla. Deletes all joomla files and the joomla database.
 ##########################
 

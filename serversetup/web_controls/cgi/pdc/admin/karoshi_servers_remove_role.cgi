@@ -327,6 +327,12 @@ case "$ROLE_FILE" in
 	CONSEQUENCES=$"Unflags this server as a radio server. Stops icecast-server from running on the server."
 	MODULES=yes
 	;;
+	radiusserver)
+	ROLE_NAME=$"Radius Server"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as a radus server. Stops radius from running on the server."
+	MODULES=yes
+	;;
 	openvpn)
 	ROLE_NAME=$"OpenVPN Server"
 	ROLE_NAME_STATUS=set
