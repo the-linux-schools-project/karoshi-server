@@ -68,7 +68,8 @@ ACTION=`echo "$DATA" | cut -s -d: -f6`
 NAME=`echo "$DATA" | cut -s -d: -f7`
 DNSENTRY=`echo "$DATA" | cut -s -d: -f8`
 DNSTYPE=`echo "$DATA" | cut -s -d: -f9`
-MOBILE=`echo "$DATA" | cut -s -d: -f10`
+ZONE=`echo "$DATA" | cut -s -d: -f10`
+MOBILE=`echo "$DATA" | cut -s -d: -f11`
 ########################
 #Check data
 ########################
@@ -155,13 +156,15 @@ then
 
 		#List of entries that we dont want to be able to edit
 		DONTDISPLAY="_msdcs,_sites,_tcp,_udp,DomainDnsZones,ForestDnsZones"
-		DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --password $LDAPPASS | sed 's/ * //g' | sed 's/:/,/g' | sed 's/=/,/g' | sed 's/(/,/g' | sed 's/)/,/g'`
-
+		[ -z "$ZONE" ] && ZONE="$REALM"
+		DNSZONELIST=$(samba-tool dns zonelist 127.0.0.1 -U Administrator --password $LDAPPASS | grep pszZoneName | grep -v arpa | grep -v _msdcs. | cut -d: -f2 | sed "s/^ //g")
+		DNSINFO=`samba-tool dns query 127.0.0.1 $ZONE $ZONE ALL -U Administrator --password $LDAPPASS | sed 's/ * //g' | sed 's/:/,/g' | sed 's/=/,/g' | sed 's/(/,/g' | sed 's/)/,/g'`
+		
 		#Create top of table
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 		<tr><th style="width: '$WIDTH1'px;"><b>'$"DNS Name"'</b></th>'
 
-		[ $MOBILE = no ] && echo '<th style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Type"'</b></th>'
+		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Type"'</b></th>'
 
 		echo '<th style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th>'
 
@@ -188,9 +191,9 @@ then
 					#echo $NAME - $COL2"<br>"
 
 
-					echo "<tr><td style=\"vertical-align: top;\">$NAME</td>"
-					[ $MOBILE = no ] && echo "<td style=\"vertical-align: top;\">$COL1</td>"
-					echo '<td style="vertical-align: top;">'$COL2'</td>
+					echo "<tr><td>$NAME</td>"
+					[ $MOBILE = no ] && echo "<td>$COL1</td>"
+					echo '<td>'$COL2'</td>
 					<td>
 					<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 						<button class="info" name="_Edit_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_edit_NAME_'$NAME'_DNSENTRY_'$COL2'_DNSTYPE_'$COL1'_">
@@ -243,9 +246,9 @@ then
 
 	#Create top of table
 	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"vertical-align: top; width: '$WIDTH1'px;\"><b>'$"DNS Name"'</b></td>"
-	[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top; width: '$WIDTH2'px;\"><b>'$"Type"'</b></td>"
-	echo "<td style="vertical-align: top; width: '$WIDTH3'px;"><b>'$"Entry"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td>"
+	<tr><td style=\"width: '$WIDTH1'px;\"><b>'$"DNS Name"'</b></td>"
+	[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>'$"Type"'</b></td>"
+	echo "<td style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td>"
 
 	[ $MONITORSERVER = yes ] && echo "<td><b>'$"Monitor"'</b></td>"
 	echo "</tr>"
@@ -270,9 +273,9 @@ then
 	fi
 
 	#Add line to table
-	echo "<tr><td style=\"vertical-align: top;\">$NAME2</td>"
-	[ '$MOBILE' = no ] && echo "<td style=\"vertical-align: top;\">$DNSTYPE</td>"
-	echo "<td style=\"vertical-align: top;\">$DNSENTRY2</td>
+	echo "<tr><td>$NAME2</td>"
+	[ '$MOBILE' = no ] && echo "<td>$DNSTYPE</td>"
+	echo "<td>$DNSENTRY2</td>
 	<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Edit"'<br>$NAME<br>$DNSENTRY</span></a></form></td>
 	<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 

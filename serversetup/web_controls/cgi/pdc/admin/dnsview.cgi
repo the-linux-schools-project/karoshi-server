@@ -186,6 +186,20 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign ZONE
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = ZONEcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'$MESSAGE'")';
@@ -300,7 +314,7 @@ fi
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$ZONE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
 
 if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = reallyadd ]
 then

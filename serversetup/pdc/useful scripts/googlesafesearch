@@ -20,32 +20,34 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 RESTARTSAMBA=no
 GOOGLEINFO=`samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LDAPPASS" | grep google`
 
+
+
 for GOOGLEZONE in $GOOGLEZONES
 do
 	if [[ "$ACTION" == add ]]
 	then
 		#Create dns zones
-		if [[ `grep -c -w www.$GOOGLEZONE <<< $GOOGLEINFO` = 0 ]]
+		if [[ `grep -c -w $GOOGLEZONE <<< $GOOGLEINFO` = 0 ]]
 		then
 			RESTARTSAMBA=yes
-			echo Creating www."$GOOGLEZONE"
-			samba-tool dns zonecreate 127.0.0.1 www.$GOOGLEZONE --username=Administrator --password="$LDAPPASS"
+			echo Creating "$GOOGLEZONE"
+			samba-tool dns zonecreate 127.0.0.1 $GOOGLEZONE --username=Administrator --password="$LDAPPASS"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 www.$GOOGLEZONE forcesafesearch.google.com.www.$GOOGLEZONE CNAME forcesafesearch.google.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 $GOOGLEZONE forcesafesearch.google.com.$GOOGLEZONE CNAME forcesafesearch.google.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
 
 			#Add in dns record for forcesafesearch.google.com
-			samba-tool dns add 127.0.0.1 www.$GOOGLEZONE www.$GOOGLEZONE A $GOOGLESAFEIP --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 $GOOGLEZONE www.$GOOGLEZONE A $GOOGLESAFEIP --username=Administrator --password="$LDAPPASS" 1>/dev/null
 		fi
 	fi
 
 	if [[ "$ACTION" == delete ]]
 	then
 		#Remove dns zone if it exists
-		if [[ `grep -c -w www.$GOOGLEZONE <<< $GOOGLEINFO` > 0 ]]
+		if [[ `grep -c -w $GOOGLEZONE <<< $GOOGLEINFO` > 0 ]]
 		then
 			RESTARTSAMBA=yes
-			echo Deleting www."$GOOGLEZONE"
-			samba-tool dns zonedelete 127.0.0.1 www.$GOOGLEZONE --username=Administrator --password="$LDAPPASS"
+			echo Deleting "$GOOGLEZONE"
+			samba-tool dns zonedelete 127.0.0.1 $GOOGLEZONE --username=Administrator --password="$LDAPPASS"
 		fi
 	fi
 done
