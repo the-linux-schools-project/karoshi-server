@@ -318,10 +318,12 @@ do
 			STATUS2="Online"
 		fi
 
-		echo '<tr><td><div style="margin-left: 40px;">'$SLAVESERVER'</div></td>'
+		echo '<tr>'
 		if [ $MOBILE = no ]
 		then
-			echo '<td>UPS Slave</td>'
+			echo '<td><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td>UPS Slave</td>'
+		else
+			echo '<td>'$SLAVESERVER'</td>'
 		fi
 		echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td>'
 		if [ "$MOBILE" = no ]
@@ -359,10 +361,12 @@ do
 		for DEVICES in /opt/karoshi/server_network/ups/master/$SERVER/extra_devices/*
 		do
 			DEVICE=`basename "$DEVICES" | sed 's/+/ /g'`
-			echo '<tr><td><div style="margin-left: 40px;">'$DEVICE'</div></td>'
+			echo '<tr>'
 			if [ "$MOBILE" = no ]
 			then
-				echo '<td>UPS Device</td><td></td><td></td><td></td>'
+				echo '<td><div style="margin-left: 40px;">'$DEVICE'</div></td><td>UPS Device</td><td></td><td></td><td></td>'
+			else
+				echo '<td>'$DEVICE'</td>'
 			fi
 			echo '<td></td><td></td><td></td>'
 			if [ "$MOBILE" = no ]
