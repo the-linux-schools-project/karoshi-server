@@ -504,8 +504,18 @@ then
 		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $ZONE $NAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
 		if [ "$ENTRYCOUNT" = 0 ]
 		then
+			#Make sure that the dns entry has a dot in it if it is a cname - add in the current zone if it does not.
+			if [ $DNSTYPE = CNAME ]
+			then
+				if [ $(echo "$DNSENTRY" | grep -c "\.") = 0 ]
+				then
+					DNSENTRY="$DNSENTRY.$ZONE"
+				fi
+			fi
+
+
 			echo "`date`: dnsview - adding $NAME $DNSENTRY to the dns records in zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns add 127.0.0.1 $ZONE $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			samba-tool dns add 127.0.0.1 $ZONE $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 			#Add in the reverse entry for this record if it is an A record
 			if [ $DNSTYPE = bAAAAAAA ]
