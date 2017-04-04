@@ -100,7 +100,7 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+-'`
 #########################
 #Assign data to variables
 #########################
-END_POINT=17
+END_POINT=19
 
 #Assign SERVERNAME
 COUNTER=2
@@ -212,7 +212,7 @@ exit
 function show_dns {
 echo "
 <form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\" id=\"showdns\">
-<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_view_\" value=''>
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_$ACTION"_"ZONE_$ZONE"_"\" value=''>
 </form>
 <script language=\"JavaScript\" type=\"text/javascript\">
 <!--
@@ -238,6 +238,13 @@ then
 	show_status
 fi
 
+#Set a default zone
+if [ -z "$ZONE" ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	ZONE="$REALM"
+fi
+
 #Check to see that action is not blank.
 [ -z "$ACTION" ] && ACTION=view
 
@@ -252,10 +259,12 @@ MONITORSERVER=no
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
+	WIDTH1=180
 	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	WIDTH1=100
 	DIV_ID=actionbox2
 fi
 
@@ -270,12 +279,23 @@ ACTION2=view
 
 [ $ACTION = edit ] && TITLE=$"Edit a DNS Entry"
 [ $ACTION = add ] && TITLE=$"Add DNS Entry"
+[ $ACTION = viewdnszones ] && TITLE=$"View DNS Zones"
+[ $ACTION = adddzone ] && TITLE=$"Add DNS Zone"
+[ $ACTION = deletezone ] && TITLE=$"Delete DNS Zone"
 
 if [ $ACTION = view ]
 then
 	ALTTITLE=$"Add DNS Entry"
 	ACTION2=add
 	ICON=/images/submenus/system/dnsaddm.png
+fi
+
+ACTION3=viewdnszones
+ALTTITLE3=$"DNS Zones"
+if [ $ACTION = viewdnszones ]
+then
+	ALTTITLE3=$"Add Zone"
+	ACTION3=addzone
 fi
 
 SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
@@ -295,9 +315,17 @@ then
 '
 else
 	echo '<table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$TITLE' - '$SERVERNAME2'</div></td><td style="vertical-align: top;">
+<tr><td style="min-width: '$WIDTH1'px;"><div class="sectiontitle">'$TITLE'</div></td>
+<td>
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_">
+<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION3'_ZONE_'$ZONE'_">
+'$ALTTITLE3'
+</button>
+</form>
+</td>
+<td>
+<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_ZONE_'$ZONE'_">
 '$ALTTITLE'
 </button>
 </form>
@@ -307,7 +335,7 @@ else
 <button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
 </form>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td>
 </tr></tbody></table>'
 fi
 
@@ -316,8 +344,14 @@ fi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$ZONE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
 
-if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = reallyadd ]
+if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = reallyadd ] || [ $ACTION = reallyaddzone ] || [ $ACTION = reallydeletezone ]
 then
+	if [ $ACTION = reallyaddzone ] || [ $ACTION = reallydeletezone ]
+	then
+		ACTION=viewdnszones
+	else
+		ACTION=view
+	fi
 	show_dns
 fi
 

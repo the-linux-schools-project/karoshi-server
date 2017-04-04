@@ -52,7 +52,7 @@ do
 done
 
 #Restart samba4 to activate any zones that have been added or deleted.
-if [[ "$RESTARTSAMBA" == yes ]]
+if [[ "$RESTARTSAMBA" == yes ]] && [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) == 0 ]]
 then
 	service samba4 stop
 	service samba4 start

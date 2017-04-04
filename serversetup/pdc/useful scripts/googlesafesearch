@@ -52,8 +52,8 @@ do
 	fi
 done
 
-#Restart samba4 to activate any zones that have been added or deleted.
-if [[ "$RESTARTSAMBA" == yes ]]
+#Restart samba4 to activate any zones that have been added or deleted - not needed with bind.
+if [[ "$RESTARTSAMBA" == yes ]] && [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) == 0 ]]
 then
 	service samba4 stop
 	service samba4 start

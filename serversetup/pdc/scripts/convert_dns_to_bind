@@ -266,7 +266,7 @@ then
 	sed -i '/ldap server require strong auth/a \\tserver services = -dns' /etc/samba/smb.conf
 fi
 
-#Modify smb.conf to removed dns round robin parameter which is not a valid parameter in unpatched samba versions
+#Modify smb.conf to remove dns round robin parameter which is not a valid parameter in unpatched samba versions
 if [ $(grep -c "dns round robin = yes" /etc/samba/smb.conf) = 0 ]
 then
 	sed -i '/dns round robin = yes/d' /etc/samba/smb.conf
