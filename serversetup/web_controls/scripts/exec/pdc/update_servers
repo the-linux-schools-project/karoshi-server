@@ -67,7 +67,8 @@ MINUTES=`echo "$DATA" | cut -s -d: -f6`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f7`
 SERVERTYPE=`echo "$DATA" | cut -s -d: -f8`
 SERVERMASTER=`echo "$DATA" | cut -s -d: -f9`
-MOBILE=`echo "$DATA" | cut -s -d: -f10`
+FORCEREBOOT=`echo "$DATA" | cut -s -d: -f10`
+MOBILE=`echo "$DATA" | cut -s -d: -f11`
 ########################
 #Check data
 ########################
@@ -138,10 +139,11 @@ else
 	echo `date`: update_server - disabling updates "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
-if [ -z "$MOBILE" ]
-then
-	MOBILE=no
-fi
+#Set mobile to no if it is blank
+[ -z "$MOBILE" ] && MOBILE=no
+
+#Set force reboot to no if it is blank
+[ -z "$FORCEREBOOT" ] && FORCEREBOOT=no
 
 function recordtime {
 FOLDER=servers
@@ -163,6 +165,11 @@ then
 	[ $DAY = 8 ] && DAY2=$"Every day"
 
 	echo "$DAY2 $HOURS:$MINUTES" > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+	if [ "$FORCEREBOOT" = yes ]
+	then
+		#Add in force reboot information
+		echo '<a class="info infoleft" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"This server will force a reboot if a reboot is required after system updates."'</span></a>' >> /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
+	fi
 else
 	[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME
 fi
@@ -179,6 +186,14 @@ then
 		[ ! -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
 		echo $MINUTES $HOURS '*' '*' $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron
 		echo $MINUTES $HOURS "*" "*" $DAY /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
+
+		#Create flag file for force reboot
+		if [ "$FORCEREBOOT" = yes ]
+		then
+			touch /opt/karoshi/force_reboot
+		else
+			[ -f /opt/karoshi/force_reboot ] && rm -f /opt/karoshi/force_reboot
+		fi
 	else
 		[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/updateserver.cron
 	fi
@@ -197,6 +212,14 @@ then
 			[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
 			echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
 			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+			#Create flag file for force reboot
+			if [ "'$FORCEREBOOT'" = yes ]
+			then
+				touch /opt/karoshi/force_reboot
+			else
+				[ -f /opt/karoshi/force_reboot ] && rm -f /opt/karoshi/force_reboot
+			fi
 			'
 		else
 			[ -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron ] && rm -f /opt/karoshi/server_network/upgrade_schedules/$FOLDER/$SERVERNAME.cron
@@ -219,6 +242,15 @@ then
 		[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
 		echo '$MINUTES' '$HOURS' "*" "*" '$DAY' /opt/karoshi/serversetup/all/scripts/updateserver > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/updateserver.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+		#Create flag file for force reboot
+		if [ "'$FORCEREBOOT'" = yes ]
+		then
+			touch /opt/karoshi/force_reboot
+		else
+			[ -f /opt/karoshi/force_reboot ] && rm -f /opt/karoshi/force_reboot
+		fi
+
 		'\''
 		'
 	else
@@ -240,8 +272,11 @@ then
 	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
 	then
 		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/force_reboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERNAME:"/opt/karoshi/serversetup/all/scripts/"
+
+		
 		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 		#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot" root@$SERVERNAME:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
@@ -253,6 +288,7 @@ fi
 if [ $SERVERTYPE = federatedslave ]
 then
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/force_reboot" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@$SERVERMASTER:"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/scripts/"
 	#scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@$SERVERMASTER:"//opt/karoshi/serversetup/distro/ubuntu/scripts/"
@@ -262,6 +298,7 @@ then
 	scp -r "/opt/karoshi/serversetup/all/samba4/samba4install" root@$SERVERMASTER:"/opt/karoshi/serversetup/all/samba4/"
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
+	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/force_reboot" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport" root@'$SERVERNAME':"/opt/karoshi/serversetup/distro/ubuntu/scripts/"
 	scp "/opt/karoshi/serversetup/all/scripts/updateserver" root@'$SERVERNAME':"/opt/karoshi/serversetup/all/scripts/"
 	scp -r "/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts" root@'$SERVERNAME':"//opt/karoshi/serversetup/distro/ubuntu/scripts/"

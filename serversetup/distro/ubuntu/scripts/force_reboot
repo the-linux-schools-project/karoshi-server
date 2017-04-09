@@ -34,7 +34,7 @@ done
 sleep 5
 
 #Umount everything else that is not in use
-umount -a
+umount -a &
 sleep 5
 #Reboot
 reboot -f

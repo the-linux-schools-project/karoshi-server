@@ -162,6 +162,21 @@ do
 	let COUNTER=$COUNTER+1
 done
 
+#Assign FORCEREBOOT
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = FORCEREBOOTcheck ]
+	then
+		let COUNTER=$COUNTER+1
+		FORCEREBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -270,6 +285,9 @@ then
 	fi
 fi
 
+#Set force reboot to no if it is blank
+[ -z "$FORCEREBOOT" ] && FORCEREBOOT=no
+
 #Check to see that HOURS is not blank
 if [ -z "$HOURS" ]
 then
@@ -313,7 +331,7 @@ then
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$FORCEREBOOT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
 show_page
 
 echo "</div></div></body></html>"

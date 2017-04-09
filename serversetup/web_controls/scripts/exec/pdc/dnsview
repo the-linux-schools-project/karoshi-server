@@ -462,6 +462,13 @@ then
 	then
 		echo "`date`: dnsview - creating zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 		samba-tool dns zonecreate 127.0.0.1 $ZONE --username=Administrator --password="$LDAPPASS" 1> /dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		#Restart samba if we are using internal dns
+		if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]
+		then
+			service samba4 stop
+			service samba4 start
+		fi
+		
 	else
 		echo "`date`: dnsview - attempt to create zone $ZONE - but this is not fully qualified by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	fi
