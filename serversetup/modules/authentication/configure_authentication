@@ -98,11 +98,17 @@ fi
 #Get samba 4 database password
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
+if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
+then
+	echo '<ul><li>'`hostname-fqdn`' - '$"Converting DNS to use internal dns"'</li></ul>'
+	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_internal 1>/dev/null
+fi
+
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
 
 function restart_samba {
-echo "<ul><li><b>"$HOSTNAME - '$"Restarting Samba"'"</b></li></ul>"
+echo "<ul><li>"'$SERVERNAME'.'$REALM' - '$"Restarting Samba"'"</li></ul>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 5
@@ -127,7 +133,7 @@ echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 MODCHECK=`grep -c -w '$RULESET' /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo "<ul><li><b>'$"Adding shorewall ports"'</b></li></ul><b>tcp</b> '$TCPPORTS'<br><b>udp</b> '$UDPPORTS'<br><br>"
+	echo "<ul><li>'$SERVERNAME'.'$REALM' - '$"Adding shorewall ports"'</li></ul>tcp '$TCPPORTS'<br>udp '$UDPPORTS'<br><br>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"'$RULESET'-tcp /etc/shorewall/rules
 	echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"'$RULESET'-udp >> /etc/shorewall/rules
@@ -138,7 +144,7 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<ul><li><b>'$"Join Domain"'</b></li></ul>"
+echo "<ul><li>'$SERVERNAME'.'$REALM' - '$"Join Domain"'</li></ul>"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]
@@ -351,7 +357,7 @@ fi
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo "<ul><li><b>'$"Configure Authentication"'</b></li></ul>"
+	echo "<ul><li>'$SERVERNAME'.'$REALM' - '$"Configure Authentication"'</li></ul>"
 
 	source /opt/karoshi/serversetup/variables/distro
 
@@ -540,7 +546,7 @@ then
 		UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
 	fi
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo "<ul><li><b>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</b></li></ul>"
+	echo "<ul><li>"Checking to see that '$PORTSCANIP' can be contacted on ports: '$PORTCHECK'"</li></ul>"
 	for PORT in `echo '$PORTCHECK' | sed "s/,/ /g"`
 	do
 	echo '$"Port"': $PORT - '$"Server"': '$PORTSCANIP'"<br>"
@@ -562,7 +568,7 @@ fi
 }
 
 function configure_ntp {
-echo '<ul><li><b>'$"Configuring NTP"'</b></li></ul>'
+echo '<ul><li>'$SERVERNAME'.'$REALM' - '$"Configuring NTP"'</li></ul>'
 NTPSERVER=$KRBSERVER
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
@@ -642,29 +648,25 @@ touch /opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME
 #Reconfigure resolv.conf for domain controllers - this needs to be done after samba has finished syncing.
 
 function configure_adc_resolv {
-
-COUNTER=0
-while [ $(dig "$REALM" | grep -c -w "$SERVERIP") = 0 ]
-do
-	sleep 10
-	let COUNTER="$COUNTER"+1
-	[ $COUNTER = 600 ] && break
-done
-
+echo '<ul><li>'$SERVERNAME' - '$"Converting DNS to use Bind"'</li></ul>'
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
+#Convert DNS to use Bind instead of internal dns
+/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind 1>/dev/null
 #Point adc and rodc servers at themselves for resolv.conf
 echo domain '$REALM' > /etc/resolv.conf
 echo nameserver '$SERVERIP' >> /etc/resolv.conf
 echo timeout:1 >> /etc/resolv.conf
 #Replicate all DNS
-samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
-samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
-/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind
+#samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=DomainDnsZones,'$LDAPBASE'
+#samba-tool drs replicate '$SERVERNAME'.'$REALM' '$HOSTNAME'.'$REALM' DC=ForestDnsZones,'$LDAPBASE'
 '
 }
 
 if [ $AUTHTYPE = adc ] || [ $AUTHTYPE = rodc ]
 then
+	#Convert PDC back to bind
+	echo '<ul><li>'`hostname-fqdn`' - '$"Converting DNS to use Bind"'</li></ul>'
+	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind 1>/dev/null
 	configure_adc_resolv
 fi
 exit

@@ -138,7 +138,7 @@ chmod 0700 /root/.ssh
 if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
 then
 	echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo '<ul><li><b>'$"Creating server ssh key"' - '$"This will take some time"'</b></li></ul>'
+	echo '<ul><li>'$"Creating server ssh key"' - '$"This will take some time"'</li></ul>'
 	#Check that timeout has been set
 	TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
 	[ $TIMEOUTSTATUS != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
@@ -360,8 +360,8 @@ then
 				then
 					if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE` = 0 ]
 					then
-						sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
-						echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+						sed -i '1i <span class="reinstall">' /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+						echo 'RE-INSTALL MODULE<br></span>' >> /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
 					fi
 				fi
 			done

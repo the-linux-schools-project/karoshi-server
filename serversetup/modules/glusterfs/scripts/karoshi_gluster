@@ -68,7 +68,7 @@ PORTS=111,24007:24009,49152:49200,34865:34867
 
 if [ $ACTION != removebrick ] && [ $ACTION != removeserver ]
 then
-	echo '<ul><li><b>'$"Configure"' GlusterFS - '$VOLUME'</b></li></ul>'
+	echo '<ul><li>'$"Configure"' GlusterFS - '$VOLUME'</li></ul>'
 fi
 
 function mount_volume {

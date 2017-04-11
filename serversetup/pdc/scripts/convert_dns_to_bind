@@ -23,6 +23,8 @@
 #
 #Website: http://www.karoshi.org.uk
 
+source /opt/karoshi/serversetup/variables/distro
+
 #Check if bind is installed
 which named 1>/dev/null
 if [ $? != 0 ]
@@ -258,7 +260,7 @@ sed -i 's%#include <local/usr.sbin.named>%include <local/usr.sbin.named>%g' /etc
 service apparmor restart
 
 #Stop samba4
-service samba4 stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 
 #Modify smb.conf to disable internal dns
 if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]
@@ -280,9 +282,9 @@ chown root:bind /var/lib/samba/private/dns.keytab
 chmod 640 /var/lib/samba/private/dns.keytab
 
 #Restart bind
-service bind9 stop
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
 sleep 1
-service bind9 start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/bind_start 1>/dev/null 2>/dev/null
 #Start samba4
-service samba4 start
+/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 

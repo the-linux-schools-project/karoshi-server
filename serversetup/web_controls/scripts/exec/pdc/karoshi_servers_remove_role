@@ -1198,10 +1198,13 @@ then
 	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
 	then
 		#Demote from dc role in samba4
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
-		echo "<ul><li>"'$SERVERNAME': '$"Demoting domain controller role"'"</li></ul>"
-		samba-tool domain demote --username=Administrator --password='$LDAPPASS'
-		'
+		#ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		#echo "<ul><li>"'$SERVERNAME': '$"Demoting domain controller role"'"</li></ul>"
+		#samba-tool domain demote --username=Administrator --password='$LDAPPASS'
+		#'
+		#Remove all dns entries for the domain controller
+		SERVERNAMESHORT=$(echo $SERVERNAME | cut -d. -f1)
+		samba-tool domain demote --remove-other-dead-server=$SERVERNAMESHORT
 	fi
 
 	#Remove zone information

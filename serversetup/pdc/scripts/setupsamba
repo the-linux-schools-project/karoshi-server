@@ -1361,7 +1361,7 @@ if [ $INSTALL_TYPE != adcrestore ] && [ "$INSTALL_TYPE" != archiverestore ]
 then
 	PRIMARY_GROUP=profilemanagement
 	SUBUNIT=other
-	HOMEPATH=/home/users/
+	HOMEPATH=/home/users/profilemanagement
 	SECONDARYGROUP=""
 	make_primary_group_info
 
