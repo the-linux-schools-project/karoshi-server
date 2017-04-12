@@ -181,6 +181,8 @@ echo -e "# Global parameters
 	printing = bsd
 	ldap server require strong auth = No
 	server signing = auto
+	wide links = yes
+	allow insecure wide links = yes
 " > /etc/samba/smb.conf
 
 if [ '$ZONE' = internal ]

@@ -533,6 +533,8 @@ then
 	printing = bsd
 	ldap server require strong auth = No
 	server signing = auto
+	wide links = yes
+	allow insecure wide links = yes
 
 [dfs]
 	path = /var/lib/samba/dfs
