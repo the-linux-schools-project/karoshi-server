@@ -533,7 +533,6 @@ then
 	printing = bsd
 	ldap server require strong auth = No
 	server signing = auto
-	wide links = yes
 	allow insecure wide links = yes
 
 [dfs]
@@ -541,6 +540,7 @@ then
 	msdfs root = yes
 	guest ok = Yes
 	msdfs shuffle referrals = yes
+	wide links = yes
 
 [sysvol]
 	comment = sysvol share

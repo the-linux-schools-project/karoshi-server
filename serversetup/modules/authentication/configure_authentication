@@ -181,7 +181,6 @@ echo -e "# Global parameters
 	printing = bsd
 	ldap server require strong auth = No
 	server signing = auto
-	wide links = yes
 	allow insecure wide links = yes
 " > /etc/samba/smb.conf
 
@@ -201,6 +200,7 @@ echo "[dfs]
 	msdfs root = yes
 	guest ok = Yes
 	msdfs shuffle referrals = yes
+	wide links = yes
 
 [netlogon]
 	comment = Netlogon Share
