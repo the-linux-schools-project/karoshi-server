@@ -264,7 +264,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	WIDTH1=100
+	WIDTH1=120
 	DIV_ID=actionbox2
 fi
 
@@ -272,26 +272,26 @@ fi
 
 
 
-TITLE=$"View DNS Entries"
-ALTTITLE=$"View DNS Entries"
+TITLE=$"View Entries"
+ALTTITLE=$"View Entries"
 ICON=/images/submenus/system/dnsviewm.png
 ACTION2=view
 
-[ $ACTION = edit ] && TITLE=$"Edit a DNS Entry"
-[ $ACTION = add ] && TITLE=$"Add DNS Entry"
-[ $ACTION = viewdnszones ] && TITLE=$"View DNS Zones"
-[ $ACTION = adddzone ] && TITLE=$"Add DNS Zone"
-[ $ACTION = deletezone ] && TITLE=$"Delete DNS Zone"
+[ $ACTION = edit ] && TITLE=$"Edit an Entry"
+[ $ACTION = add ] && TITLE=$"Add Entry"
+[ $ACTION = viewdnszones ] && TITLE=$"View Zones"
+[ $ACTION = adddzone ] && TITLE=$"Add Zone"
+[ $ACTION = deletezone ] && TITLE=$"Delete Zone"
 
 if [ $ACTION = view ]
 then
-	ALTTITLE=$"Add DNS Entry"
+	ALTTITLE=$"Add Entry"
 	ACTION2=add
 	ICON=/images/submenus/system/dnsaddm.png
 fi
 
 ACTION3=viewdnszones
-ALTTITLE3=$"DNS Zones"
+ALTTITLE3=$"Zones"
 if [ $ACTION = viewdnszones ]
 then
 	ALTTITLE3=$"Add Zone"
@@ -309,7 +309,15 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
+<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION3'_ZONE_'$ZONE'_">
+'$ALTTITLE3'
+</button>
+</form>
+<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 <input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
+</form>
+<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
+<button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
 </form>
 <br>
 '
