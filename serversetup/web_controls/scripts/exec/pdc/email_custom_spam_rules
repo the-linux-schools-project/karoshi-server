@@ -54,13 +54,12 @@ then
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-?'`
 if [ -z "$DATA" ]
 then
 	echo `date`: email_custom_spam_rules - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-echo $DATA"<br>"
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
@@ -113,6 +112,7 @@ then
 	WIDTH1=300
 	WIDTH2=80
 	WIDTH3=80
+	WIDTH4=200
 	ICON1="/images/submenus/file/edit.png"
 	ICON2="/images/submenus/file/delete.png"
 else
@@ -121,38 +121,89 @@ else
 	WIDTH1=100
 	WIDTH2=40
 	WIDTH3=80
+	WIDTH4=100
 	ICON1="/images/submenus/file/editm.png"
 	ICON2="/images/submenus/file/deletem.png"
 fi
 
-function completed_status {
-echo '<SCRIPT language="Javascript">'
-echo 'window.location = "/cgi-bin/admin/email_custom_spam_rules.cgi";'
-echo '</script>'
-echo "</body></html>"
-exit
+function create_spam_assassin_file {
+
+input="/opt/karoshi/server_network/email/custom_spam_rules"
+output="/opt/karoshi/server_network/email/custom_spam_rules.cf"
+[ -f "$output" ] && rm -f "$output"
+i=1
+while IFS= read -r data
+do
+	if [ ! -z "$data" ]
+	then
+		RDATA=$(echo "$data" | cut -d, -f1)
+		RSCORE=$(echo "$data" | cut -d, -f2)
+		echo -e "body	rule$i	/$RDATA/i" >> "$output"
+		echo -e "score	rule$i	$RSCORE\n" >> "$output"
+		((i++))
+	fi
+done < "$input"
+
 }
 
 if [ "$ACTION" = reallydelete ]
 then
 	echo `date`: "email_custom_spam_rules - deleting $RULEDATA by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo ruledata $RULEDATA
 	sed -i '/^'$RULEDATA',/d' /opt/karoshi/server_network/email/custom_spam_rules
+	create_spam_assassin_file
 	ACTION=view
 fi
 
 if [ "$ACTION" = delete ]
 then
 	#Confirm delete request
-	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Criteria"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Score"'</b></th></thead><tbody>
+	echo '
+	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
+	<input type="hidden" name="_ACTION_" value="reallydelete">
+	<input type="hidden" name="_RULEDATA_" value="'$RULEDATA'">
+	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Criteria"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Score"'</b></th></thead><tbody>
 	<tr><td>'$RULEDATA'</td><td>'$RULESCORE'</td></tr>
 	</tbody></table><br>
 	'$"Are you sure that you want to delete this rule?"'
 	<br><br>
-	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-	<input type="hidden" name="_ACTION_" value="reallydelete">
-	<input type="hidden" name="_RULEDATA_" value="'$RULEDATA'">
-	<input value="'$"Submit"'" class="button" type="submit"></form>
+	<input value="'$"Delete"'" class="button" type="submit"></form>
+	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
+fi
+
+if [ $ACTION = reallyadd ]
+then
+	[ ! -d /opt/karoshi/server_network/email/ ] && mkdir /opt/karoshi/server_network/email/
+	touch /opt/karoshi/server_network/email/custom_spam_rules
+	echo `date`: "email_custom_spam_rules - adding $RULEDATA with score $RULESCORE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	if [ $(grep -c ^"$RULEDATA," /opt/karoshi/server_network/email/custom_spam_rules) = 0 ]
+	then
+		echo "$RULEDATA,$RULESCORE" >> /opt/karoshi/server_network/email/custom_spam_rules
+		sort /opt/karoshi/server_network/email/custom_spam_rules > /opt/karoshi/server_network/email/custom_spam_rules.$$
+		rm -f /opt/karoshi/server_network/email/custom_spam_rules
+		mv /opt/karoshi/server_network/email/custom_spam_rules.$$ /opt/karoshi/server_network/email/custom_spam_rules
+		create_spam_assassin_file
+	fi
+	ACTION=view
+fi
+
+if [ $ACTION = add ]
+then
+	echo '<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input name="_ACTION_" value="reallyadd" type="hidden">
+	<table class="'$TABLECLASS'" style="text-align: left;" >
+	<tbody><tr><td style="width: '$WIDTH4'px;">'$"Criteria"'</td>
+	<td><input tabindex= "1" name="_RULEDATA_" style="width: '$WIDTH4'px;" size="20" type="text"></td><td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria for this rule. Be careful not to cause false positives."'</span></a>
+	</td></tr>
+	<tr><td>'$"Score"'</td><td>
+	<select name="_RULESCORE_" style="width: '$WIDTH4'px;">'
+	COUNTER=10
+	for i in $(seq 1 20)
+	do
+		echo '<option value="'$i'">'$i'</option>'
+	done
+	echo '</select> 
+	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the spam score that you want for this rule."'</span></a></td></tr></tbody></table><br><br>
+	<input value="'$"Add"'" class="button" type="submit"></form>
 	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
@@ -187,50 +238,6 @@ then
 	else
 		echo $"No custom spam rules have been added."
 	fi
-fi
-
-if [ $ACTION = add ]
-then
-	echo '<form  style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input name="_ACTION_" value="reallyadd" type="hidden">'
-	if [ "$MOBILE" = no ]
-	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
-<tbody><tr><td style="width: '$WIDTH2'px;">'$"Username"'</td>
-<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
-</td></tr>
- <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
-<tr><td>'$"Domain"'</td><td>'
-	else
-		echo ''$"Username"'<br>
-		<div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
-		'$"Alias"'<br>
-		<input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text"><br>
-		'$"Domain"'<br>
-		'
-	fi
-
-	#Show a list of domains for the alias
-	echo '<select name="_DOMAIN_" style="width: '$WIDTH2'px; height: 30px;">
-	<option value="'$REALM'">'$REALM'</option>'
-
-	if [ -d /opt/karoshi/server_network/email/virtual_domains ]
-	then
-		for VIRTUAL_DOMAIN in $(ls -1 /opt/karoshi/server_network/email/virtual_domains)
-		do
-			echo '<option value="'$VIRTUAL_DOMAIN'">'$VIRTUAL_DOMAIN'</option>'
-		done
-	fi
-
-	echo '</select>'
-	if [ "$MOBILE" = no ]
-	then
-		echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the domain that you want for the username."'</span></a></td></tr></tbody></table><br><br>'
-	else
-		echo '<br><br>'
-	fi
-	echo '<input class="button" value="'$"Submit"'" type="submit">'
-	echo '</form><form  style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
 exit

@@ -81,8 +81,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-echo $DATA"<br>"
+DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%'`
 #########################
 #Assign data to variables
 #########################
@@ -105,10 +104,15 @@ done
 if [ -z "$ACTION" ]
 then
 	ACTION=view
-	ACTION2=add
-	ACTIONTEXT="Add Rule"
-else
+fi
 
+if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
+then
+	ACTION2=add
+	ACTIONTEXT=$"Add Rule"
+else
+	ACTION2=view
+	ACTIONTEXT=$"View Rules"	
 fi
 
 #Assign RULEDATA
@@ -119,7 +123,7 @@ do
 	if [ `echo $DATAHEADER'check'` = RULEDATAcheck ]
 	then
 		let COUNTER=$COUNTER+1
-		RULEDATA=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		RULEDATA=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3F/?/g'`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -196,9 +200,11 @@ else
 <td><div class="sectiontitle">'$"Custom E-Mail Spam Rules"'</div></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></td>
 <td>
+<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
 <button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
-'$"Add"'
+'$ACTIONTEXT'
 </button>
+</form>
 </td></tr></table><br></div><div id="infobox">'
 fi
 
