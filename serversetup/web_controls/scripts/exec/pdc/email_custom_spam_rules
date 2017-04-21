@@ -65,8 +65,9 @@ REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
 REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 ACTION=`echo "$DATA" | cut -s -d: -f4`
 RULEDATA=`echo "$DATA" | cut -s -d: -f5`
-RULESCORE=`echo "$DATA" | cut -s -d: -f6`
-MOBILE=`echo "$DATA" | cut -s -d: -f7`
+RULEDATA2=`echo "$DATA" | cut -s -d: -f6`
+RULESCORE=`echo "$DATA" | cut -s -d: -f7`
+MOBILE=`echo "$DATA" | cut -s -d: -f8`
 ########################
 #Check data
 ########################
@@ -118,9 +119,9 @@ then
 else
 	USERNAMEMSG=$"User"
 	TABLECLASS=mobilestandard
-	WIDTH1=100
-	WIDTH2=40
-	WIDTH3=80
+	WIDTH1=80
+	WIDTH2=60
+	WIDTH3=70
 	WIDTH4=100
 	ICON1="/images/submenus/file/editm.png"
 	ICON2="/images/submenus/file/deletem.png"
@@ -170,8 +171,13 @@ then
 	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
-if [ $ACTION = reallyadd ]
+if [ $ACTION = reallyadd ] || [ $ACTION = reallyedit ]
 then
+	if [ ! -z "$RULEDATA2" ]
+	then
+		sed -i '/^'$RULEDATA2',/d' /opt/karoshi/server_network/email/custom_spam_rules
+	fi	
+
 	[ ! -d /opt/karoshi/server_network/email/ ] && mkdir /opt/karoshi/server_network/email/
 	touch /opt/karoshi/server_network/email/custom_spam_rules
 	echo `date`: "email_custom_spam_rules - adding $RULEDATA with score $RULESCORE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -186,24 +192,41 @@ then
 	ACTION=view
 fi
 
-if [ $ACTION = add ]
+if [ $ACTION = add ] || [ $ACTION = edit ]
 then
-	echo '<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input name="_ACTION_" value="reallyadd" type="hidden">
-	<table class="'$TABLECLASS'" style="text-align: left;" >
+
+	ACTION2=reallyadd
+	BUTTONTEXT=$"Add"
+	if [ $ACTION = edit ]
+	then
+		ACTION2=reallyedit
+		BUTTONTEXT=$"Edit"
+	fi
+	echo '<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input name="_ACTION_" value="'$ACTION2'" type="hidden">'
+
+	[ $ACTION = edit ] && echo '<input name="_RULEDATA2_" value="'$RULEDATA'" type="hidden">'
+
+	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 	<tbody><tr><td style="width: '$WIDTH4'px;">'$"Criteria"'</td>
-	<td><input tabindex= "1" name="_RULEDATA_" style="width: '$WIDTH4'px;" size="20" type="text"></td><td>
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria for this rule. Be careful not to cause false positives."'</span></a>
+	<td><input tabindex= "1" name="_RULEDATA_" style="width: '$WIDTH4'px;" value="'$RULEDATA'" size="20" type="text"></td><td>
+	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria for this rule. Be careful not to cause false positives."'<br><br>'$"Use a ? as a wildcard letter."'<br><br>'$"This is not case sensitive."'</span></a>
 	</td></tr>
 	<tr><td>'$"Score"'</td><td>
 	<select name="_RULESCORE_" style="width: '$WIDTH4'px;">'
 	COUNTER=10
+	if [ ! -z "$RULESCORE" ]
+	then 
+		echo '<option value="'$RULESCORE'">'$RULESCORE'</option>
+		<option disabled>----------------</option>'
+
+	fi
 	for i in $(seq 1 20)
 	do
 		echo '<option value="'$i'">'$i'</option>'
 	done
 	echo '</select> 
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the spam score that you want for this rule."'</span></a></td></tr></tbody></table><br><br>
-	<input value="'$"Add"'" class="button" type="submit"></form>
+	<input value="'$BUTTONTEXT'" class="button" type="submit"></form>
 	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
@@ -222,7 +245,7 @@ then
 				RULEDATA=$(echo "$data" | cut -d, -f1)
 				SCORE=$(echo "$data" | cut -d, -f2)
 				echo '<tr><td>'"$RULEDATA"'</td><td>'"$SCORE"'</td><td>
-				<button class="info" name="_Edit" value="_ACTION_edit_'"$RULEDATA"'_">
+				<button class="info" name="_Edit" value="_ACTION_edit_RULEDATA_'$RULEDATA'_RULESCORE_'$SCORE'_">
 				<img src="'$ICON1'" alt="'$"Edit"'">
 				<span>'$"Edit"'<br>'"$RULEDATA"'</span>
 				</button>

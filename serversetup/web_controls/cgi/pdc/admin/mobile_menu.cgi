@@ -205,6 +205,7 @@ echo '      <div class="collapsed">
 	<a href="/cgi-bin/admin/email_protected_distribution_lists.cgi">'$"Protected Distribution Lists"'</a>
 	<a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a>
 	<a href="/cgi-bin/admin/email_limits.cgi">'$"E-Mail limits"'</a>
+	<a href="/cgi-bin/admin/email_custom_spam_rules.cgi">'$"Custom Spam Rules"'</a>
 	<a href="/cgi-bin/admin/email_access.cgi">'$"Access Controls"'</a>
 	<a href="/cgi-bin/admin/email_authentication.cgi">'$"Authentication Controls"'</a>
 	<a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$"E-Mail queue"'</a>

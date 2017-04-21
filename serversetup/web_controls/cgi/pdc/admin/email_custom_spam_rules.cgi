@@ -42,7 +42,7 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Custom E-Mail Spam Rules"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Custom Spam Rules"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -120,6 +120,20 @@ COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
 	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	if [ `echo $DATAHEADER'check'` = RULEDATA2check ]
+	then
+		let COUNTER=$COUNTER+1
+		RULEDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3F/?/g'`
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+
+#Assign RULEDATA2
+COUNTER=2
+while [ $COUNTER -le $END_POINT ]
+do
+	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
 	if [ `echo $DATAHEADER'check'` = RULEDATAcheck ]
 	then
 		let COUNTER=$COUNTER+1
@@ -192,12 +206,17 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Custom E-Mail Spam Rules"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">'
-	echo '<br><br>'
+</div></div><div id="mobileactionbox">
+<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
+<button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
+'$ACTIONTEXT'
+</button>
+</form>
+'
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr style="height: 30px;">
-<td><div class="sectiontitle">'$"Custom E-Mail Spam Rules"'</div></td>
+<td><div class="sectiontitle">'$"Custom Spam Rules"'</div></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></td>
 <td>
 <form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
@@ -209,7 +228,7 @@ else
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$RULEDATA:$RULESCORE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_custom_spam_rules
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$RULEDATA:$RULEDATA2:$RULESCORE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_custom_spam_rules
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
