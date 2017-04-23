@@ -123,7 +123,7 @@ do
 	if [ `echo $DATAHEADER'check'` = RULEDATA2check ]
 	then
 		let COUNTER=$COUNTER+1
-		RULEDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3F/?/g'`
+		RULEDATA2=`echo $DATA | cut -s -d'_' -f$COUNTER`
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -211,20 +211,42 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
 '$ACTIONTEXT'
 </button>
-</form>
-'
+</form>'
+if [ -f /opt/karoshi/server_network/email/activate_spam_rule_changes ] && [ "$ACTION" != activatechanges ]
+then
+	echo '
+	<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
+	<button class="button" name="_Add_" value="_ACTION_activatechanges_">
+	'$"Activate Changes"'
+	</button>
+	</form>
+	' 
+fi
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr style="height: 30px;">
 <td><div class="sectiontitle">'$"Custom Spam Rules"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Custom_Spam_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></td>
 <td>
 <form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
 <button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
 '$ACTIONTEXT'
 </button>
 </form>
-</td></tr></table><br></div><div id="infobox">'
+</td>'
+	if [ -f /opt/karoshi/server_network/email/activate_spam_rule_changes ] && [ "$ACTION" != activatechanges ]
+	then
+		echo '
+		<td>
+		<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
+		<button class="button" name="_Add_" value="_ACTION_activatechanges_">
+		'$"Activate Changes"'
+		</button>
+		</form>
+		</td>
+		' 
+	fi
+	echo '</tr></table><br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1`
