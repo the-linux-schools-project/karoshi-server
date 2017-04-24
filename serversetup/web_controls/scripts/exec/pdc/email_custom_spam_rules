@@ -142,7 +142,7 @@ then
 	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
 	echo '<ul><li>'$EMAILSERVER' - '$"Restarting MailScanner"'</li></ul>'
 	#Copy rule to spamassassin folder
-	if [ $EMAILSERVER=$(hostname-fqdn) ]
+	if [ $EMAILSERVER = $(hostname-fqdn) ]
 	then
 		cp "$output" /etc/spamassassin/
 		#At the moment spamasssin only seems to see new rules if we completely restart mailscanner
