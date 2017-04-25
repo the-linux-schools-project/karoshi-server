@@ -287,7 +287,7 @@ then
 	'
 	else
 		echo '<td>
-	<form action="/cgi-bin/admin/dnsview_fm.cgi" method="post">
+	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 	<button class="button" name="_ViewDNSEntries_">'$"View DNS Entries"'</button>
 	</form>
 	</td>'

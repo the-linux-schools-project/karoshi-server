@@ -227,15 +227,13 @@ exit
 #Check to see that SERVERNAME is not blank
 if [ -z "$SERVERNAME" ]
 then
-	MESSAGE=$"The servername cannot be blank."
-	show_status
+	SERVERNAME=$(hostname-fqdn)
 fi
 
 #Check to see that SERVERTYPE is not blank
 if [ -z "$SERVERTYPE" ]
 then
-	MESSAGE=$"The servertype cannot be blank."
-	show_status
+	SERVERTYPE=network
 fi
 
 #Set a default zone

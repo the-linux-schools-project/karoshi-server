@@ -177,7 +177,7 @@ echo '	<a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux C
 [ $MONITORINGCTRL = yes ] && echo '	<a href="/cgi-bin/admin/mon_status.cgi">'$"Network Status"'</a>'
 [ $RADIUSCTRL = yes ] && echo '	<a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a>'
 
-echo '<a href="/cgi-bin/admin/dnsview_fm.cgi">'$"DNS"'</a>
+echo '<a href="/cgi-bin/admin/dnsview.cgi">'$"DNS"'</a>
 <a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a>
 </div>'
 
