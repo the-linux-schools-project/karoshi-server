@@ -295,6 +295,7 @@ do
 		for SLAVESERVERS in /opt/karoshi/server_network/ups/slave/$SERVER/users/*
 		do
 		SLAVESERVER=`basename $SLAVESERVERS`
+		SLAVESERVER_SHORT=$(echo "$SLAVESERVER" | cut -d"." -f1)
 		#Chech ups status
 		if [ $SLAVESERVER = `hostname-fqdn` ]
 		then
@@ -323,7 +324,7 @@ do
 		then
 			echo '<td><div style="margin-left: 40px;">'$SLAVESERVER'</div></td><td>UPS Slave</td>'
 		else
-			echo '<td>'$SLAVESERVER'</td>'
+			echo '<td>'$SLAVESERVER_SHORT'</td>'
 		fi
 		echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td>'
 		if [ "$MOBILE" = no ]
