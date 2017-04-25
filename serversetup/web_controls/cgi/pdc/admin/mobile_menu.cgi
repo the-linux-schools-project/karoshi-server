@@ -141,7 +141,6 @@ echo '	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a
         <a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$"Management Logs"'</a>
         <a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Cron"'</a>
         <a href="/cgi-bin/admin/remote_management_change_language.cgi">'$"Change Language"'</a>
-        <a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$"Change Theme"'</a>
         <a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Custom Command"'</a>
         <a href="/cgi-bin/admin/services_view_fm.cgi">'$"Control Services"'</a>
 	<a href="/cgi-bin/admin/firewall.cgi">'$"Firewall Rules"'</a>
