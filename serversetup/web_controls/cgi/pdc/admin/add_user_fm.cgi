@@ -46,29 +46,29 @@ fi
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Get install type
 INSTALL_TYPE=education
 if [ -f /opt/karoshi/server_network/install_type ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 fi
 
 if [ -f /opt/karoshi/server_network/default_username_style ]
 then
 	source /opt/karoshi/server_network/default_username_style
-	[ $DEFAULTSTYLE = 1 ] && SELECT1='selected="selected"'
-	[ $DEFAULTSTYLE = 2 ] && SELECT2='selected="selected"'
-	[ $DEFAULTSTYLE = 3 ] && SELECT3='selected="selected"'
-	[ $DEFAULTSTYLE = 4 ] && SELECT4='selected="selected"'
-	[ $DEFAULTSTYLE = 5 ] && SELECT5='selected="selected"'
-	[ $DEFAULTSTYLE = 6 ] && SELECT6='selected="selected"'
-	[ $DEFAULTSTYLE = 7 ] && SELECT7='selected="selected"'
-	[ $DEFAULTSTYLE = 8 ] && SELECT8='selected="selected"'
-	[ $DEFAULTSTYLE = 9 ] && SELECT9='selected="selected"'
-	[ $DEFAULTSTYLE = 10 ] && SELECT10='selected="selected"'
+	[ "$DEFAULTSTYLE" = 1 ] && SELECT1='selected="selected"'
+	[ "$DEFAULTSTYLE" = 2 ] && SELECT2='selected="selected"'
+	[ "$DEFAULTSTYLE" = 3 ] && SELECT3='selected="selected"'
+	[ "$DEFAULTSTYLE" = 4 ] && SELECT4='selected="selected"'
+	[ "$DEFAULTSTYLE" = 5 ] && SELECT5='selected="selected"'
+	[ "$DEFAULTSTYLE" = 6 ] && SELECT6='selected="selected"'
+	[ "$DEFAULTSTYLE" = 7 ] && SELECT7='selected="selected"'
+	[ "$DEFAULTSTYLE" = 8 ] && SELECT8='selected="selected"'
+	[ "$DEFAULTSTYLE" = 9 ] && SELECT9='selected="selected"'
+	[ "$DEFAULTSTYLE" = 10 ] && SELECT10='selected="selected"'
 else
 	DEFAULTSTYLE=1
 	SELECT1='selected="selected"'
@@ -76,7 +76,7 @@ fi
 
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -86,7 +86,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -169,7 +169,7 @@ if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Username";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$USERNAME'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$USERNAME"'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 usernameValue = "'$"Enter a username"'";
 	status10 = "true";
 }
@@ -194,7 +194,7 @@ if (enrollmentValue == "") {
 
 '
 
-if [ $INSTALL_TYPE = education ]
+if [ "$INSTALL_TYPE" = education ]
 then
 	echo 'document.myform.____USERNAMESTYLE____.options[0]=new Option("" + firstnameValue[0] + surnameValue + yearValue, "userstyleS1", false, status1);
 document.myform.____USERNAMESTYLE____.options[1]=new Option("" + yearValue + firstnameValue[0] + surnameValue, "userstyleS2", false, status2);
@@ -221,14 +221,14 @@ echo '}
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
-FILE=`echo $DATA | cut -s -d_ -f3`
+FILE=$(echo "$DATA" | cut -s -d_ -f3)
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	#Generate navigation bar
@@ -239,7 +239,7 @@ fi
 echo '<form name="myform" action="/cgi-bin/admin/add_user.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -253,7 +253,7 @@ else
 fi
 
 #Check that this server is not part of a federated setup
-if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
+if [ -f /opt/karoshi/server_network/servers/"$HOSTNAME"/federated_server ]
 then
 	echo $"This server is part of a federated system. Users must be created on the main federation server." '</div></div></body></html>'
 	exit
@@ -262,39 +262,39 @@ fi
 #Get request data if asked
 if [ -z "$FILE" ]
 then
-	if [ -f /opt/karoshi/user_requests/new_users/$FILE ]
+	if [ -f "/opt/karoshi/user_requests/new_users/$FILE" ]
 	then
-		NEW_USER_DATA=`sed -n 1,1p /opt/karoshi/user_requests/new_users/$FILE`
-		FORENAME=`echo $NEW_USER_DATA | cut -d: -f1`
-		SURNAME=`echo $NEW_USER_DATA | cut -d: -f2`
-		GROUP=`echo $NEW_USER_DATA | cut -d: -f3`
-		ENROLLMENTNUMBER=`echo $NEW_USER_DATA | cut -d: -f4`
-		echo '<input name="____REQUESTFILE____" value="'$FILE'" type="hidden">'
+		NEW_USER_DATA=$(sed -n 1,1p "/opt/karoshi/user_requests/new_users/$FILE")
+		FORENAME=$(echo "$NEW_USER_DATA" | cut -d: -f1)
+		SURNAME=$(echo "$NEW_USER_DATA" | cut -d: -f2)
+		GROUP=$(echo "$NEW_USER_DATA" | cut -d: -f3)
+		ENROLLMENTNUMBER=$(echo "$NEW_USER_DATA" | cut -d: -f4)
+		echo '<input name="____REQUESTFILE____" value="'"$FILE"'" type="hidden">'
 	fi
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Password"'<br>
 	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
 	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
 
-	if [ $INSTALL_TYPE != home ]
+	if [ "$INSTALL_TYPE" != home ]
 	then
 		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
+		<input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
 	fi
 
 	echo '	'$"Change at next logon"'<br>
 	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
-	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
-	<option value="n" '$NEXTLOGON2'>'$"No"'</option>
+	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
+	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
 	</select><br>'
 	
 	echo ''$"Primary group"'<br>'
@@ -302,21 +302,21 @@ then
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
 	fi
 	echo '<br>
 	'$"Username style"'<br>
 	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px;" onClick="rewriteselect();">
-		<option value="userstyleS1" '$SELECT1'>'$"auser09"'</option>
-		<option value="userstyleS2" '$SELECT2'>'$"09auser"'</option>
-		<option value="userstyleS3" '$SELECT3'>'$"usera09"'</option>
-		<option value="userstyleS4" '$SELECT4'>'$"arnold.user09"'</option>
-		<option value="userstyleS5" '$SELECT5'>'$"user.arnold09"'</option>
-		<option value="userstyleS6" '$SELECT6'>'$"09usera"'</option>
-		<option value="userstyleS7" '$SELECT7'>'$"09arnoldu"'</option>
-		<option value="userstyleS8" '$SELECT8'>'$"arnoldu"'</option>
-		<option value="userstyleS9" '$SELECT9'>'$"Enrollment number as username."'</option>
-		<option value="userstyleS10" '$SELECT10'>'$"Enter a username"'</option>
+		<option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>
+		<option value="userstyleS2" '"$SELECT2"'>'$"09auser"'</option>
+		<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
+		<option value="userstyleS4" '"$SELECT4"'>'$"arnold.user09"'</option>
+		<option value="userstyleS5" '"$SELECT5"'>'$"user.arnold09"'</option>
+		<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>
+		<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>
+		<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>
+		<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number as username."'</option>
+		<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
 		</select><br>
 		<span id="extraoptions1"></span><br>
 		<span id="extraoptions2"></span><br>'
@@ -324,32 +324,32 @@ else
 
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input tabindex= "1" value="'$FORENAME'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
-        <td><input tabindex= "2" value="'$SURNAME'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
 	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
 	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-	echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a></td></tr>
+	echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a></td></tr>
       <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
 
-	if [ $INSTALL_TYPE != home ]
+	if [ "$INSTALL_TYPE" != home ]
 	then
 		echo '	<tr>'
 	else
 		echo '	<tr style="display:none;">'
 	fi
 	echo '<td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'$ENROLLMENTNUMBER'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
+        <td><input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
 
 	echo '<tr><td>'$"Change at next logon"'</td><td>
 	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px;">
-	<option value="y" '$NEXTLOGON1'>'$"Yes"'</option>
-	<option value="n" '$NEXTLOGON2'>'$"No"'</option>
+	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
+	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
 	</select>
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 	<tr><td>'$"Primary group"'</td><td>'
@@ -357,23 +357,23 @@ else
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'$GROUP'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>
         <td>'$"Username style"'</td>
         <td>
         <select  tabindex= "8" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '$SELECT1'>'$"auser09"'</option>'
-        [ $INSTALL_TYPE = education ] && echo '<option value="userstyleS2" '$SELECT2'>'$"Style"' 2: '$"09auser"'</option>'
-        echo '<option value="userstyleS3" '$SELECT3'>'$"usera09"'</option>
-        <option value="userstyleS4" '$SELECT4'>'$"arnold.user09"'</option>
-        <option value="userstyleS5" '$SELECT5'>'$"user.arnold09"'</option>'
-	[ $INSTALL_TYPE = education ] && echo '<option value="userstyleS6" '$SELECT6'>'$"09usera"'</option>'
-	[ $INSTALL_TYPE = education ] && echo '<option value="userstyleS7" '$SELECT7'>'$"09arnoldu"'</option>'
-        echo '<option value="userstyleS8" '$SELECT8'>'$"arnoldu"'</option>'
-        [ $INSTALL_TYPE = education ] && echo '<option value="userstyleS9" '$SELECT9'>'$"Enrollment number as username"'</option>'
-	echo '<option value="userstyleS10" '$SELECT10'>'$"Enter a username"'</option>
+        <option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>'
+        [ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09auser"'</option>'
+        echo '<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
+        <option value="userstyleS4" '"$SELECT4"'>'$"arnold.user09"'</option>
+        <option value="userstyleS5" '"$SELECT5"'>'$"user.arnold09"'</option>'
+	[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>'
+	[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>'
+        echo '<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>'
+        [ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number as username"'</option>'
+	echo '<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
 	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
 	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
 	</tbody></table><br>

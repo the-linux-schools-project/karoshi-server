@@ -45,11 +45,11 @@ TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
+TCPIP_ADDR="$REMOTE_ADDR"
 DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
 #########################
 #Assign data to variables
@@ -111,37 +111,37 @@ do
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
+	DATAHEADER=$(echo $DATA | cut -s -d'_' -f$COUNTER)
+	if [[ $DATAHEADER'check' = PASSWORD2check ]]
 	then
 		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		PASSWORD2=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
 #Assign group
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ $DATAHEADER'check' = GROUPcheck ]]
 	then
 		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9'`
+		GROUP=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER" | tr -cd 'A-Za-z0-9')
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
 #Assign USERNAMESTYLE
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMESTYLEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ $DATAHEADER'check' = USERNAMESTYLEcheck ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAMESTYLE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9'`
+		let COUNTER="$COUNTER"+1
+		USERNAMESTYLE=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER" | tr -cd 'A-Za-z0-9')
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -149,13 +149,13 @@ done
 
 #Assign USERNAME
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ $DATAHEADER'check' = USERNAMEcheck ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd 'A-Za-z0-9' | tr 'A-Z' 'a-z'`
+		let COUNTER="$COUNTER"+1
+		USERNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER" | tr -cd 'A-Za-z0-9' | tr 'A-Z' 'a-z')
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -163,13 +163,13 @@ done
 
 #Assign REQUESTFILE
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = REQUESTFILEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ $DATAHEADER'check' = REQUESTFILEcheck ]]
 	then
-		let COUNTER=$COUNTER+1
-		REQUESTFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		REQUESTFILE=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -177,13 +177,13 @@ done
 
 #Assign NEXTLOGON
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER"check = NEXTLOGONcheck ]]
 	then
-		let COUNTER=$COUNTER+1
-		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		NEXTLOGON=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -194,10 +194,10 @@ STARTCGI=add_user_fm.cgi
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/'$STARTCGI'";
 </script>'
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></body></html>'
 exit
 }
@@ -219,7 +219,7 @@ fi
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -234,7 +234,7 @@ fi
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [[ https_$HTTPS != https_on ]]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -242,13 +242,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -289,7 +289,7 @@ then
 	#Check password settings
 	source /opt/karoshi/server_network/security/password_settings	
 
-	if [ $PASSWORDCOMPLEXITY = on ]
+	if [ "$PASSWORDCOMPLEXITY" = on ]
 	then
 		PASSWORD1=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
 	else
@@ -315,13 +315,13 @@ then
 	show_status
 fi
 #Check that usernamestyle is the correct value
-if [ $USERNAMESTYLE != userstyleS1 ] && [ $USERNAMESTYLE != userstyleS2 ] && [ $USERNAMESTYLE != userstyleS3 ] && [ $USERNAMESTYLE != userstyleS4 ] && [ $USERNAMESTYLE != userstyleS5 ] && [ $USERNAMESTYLE != userstyleS6 ] && [ $USERNAMESTYLE != userstyleS7 ] && [ $USERNAMESTYLE != userstyleS8 ] && [ $USERNAMESTYLE != userstyleS9 ] && [ $USERNAMESTYLE != userstyleS10 ]
+if [ "$USERNAMESTYLE" != userstyleS1 ] && [ "$USERNAMESTYLE" != userstyleS2 ] && [ "$USERNAMESTYLE" != userstyleS3 ] && [ "$USERNAMESTYLE" != userstyleS4 ] && [ "$USERNAMESTYLE" != userstyleS5 ] && [ "$USERNAMESTYLE" != userstyleS6 ] && [ "$USERNAMESTYLE" != userstyleS7 ] && [ "$USERNAMESTYLE" != userstyleS8 ] && [ "$USERNAMESTYLE" != userstyleS9 ] && [ "$USERNAMESTYLE" != userstyleS10 ]
 then
 	MESSAGE=$"Incorrect username style."
 	show_status
 fi
 #Check that username is not blank for style 10
-if [ $USERNAMESTYLE = userstyleS10 ]
+if [ "$USERNAMESTYLE" = userstyleS10 ]
 then
 	if [ -z "$USERNAME" ]
 	then
@@ -337,7 +337,7 @@ DUPLICATECHECK=0
 function check_username {
 NAMESTATUS=ok
 id -u "$USERNAME" 1>/dev/null 2>/dev/null
-if [ $? = 0 ]
+if [ "$?" = 0 ]
 then
 	NAMESTATUS=error
 fi
@@ -349,40 +349,40 @@ fi
 }
 
 function create_username {
-source /opt/karoshi/server_network/group_information/$GROUP
+source /opt/karoshi/server_network/group_information/"$GROUP"
 source /opt/karoshi/web_controls/version
 if [ "$USERNAMESTYLE" = userstyleS1 ]
 then
-	USERNAME=`echo ${FIRSTNAME:0:1}$SURNAME$YEARSUFFIX$COUNTER`
+	USERNAME="${FIRSTNAME:0:1}$SURNAME$YEARSUFFIX$COUNTER"
 fi
 if [ "$USERNAMESTYLE" = userstyleS2 ]
 then
-	USERNAME=`echo $YEARSUFFIX$COUNTER${FIRSTNAME:0:1}$SURNAME`
+	USERNAME="$YEARSUFFIX$COUNTER${FIRSTNAME:0:1}$SURNAME"
 fi
 if [ "$USERNAMESTYLE" = userstyleS3 ]
 then
-	USERNAME=`echo $SURNAME${FIRSTNAME:0:1}$YEARSUFFIX$COUNTER`
+	USERNAME="$SURNAME${FIRSTNAME:0:1}$YEARSUFFIX$COUNTER"
 fi
 if [ "$USERNAMESTYLE" = userstyleS4 ]
 then
-	USERNAME=`echo $FIRSTNAME.$SURNAME$YEARSUFFIX$COUNTER`
+	USERNAME="$FIRSTNAME.$SURNAME$YEARSUFFIX$COUNTER"
 fi
 if [ "$USERNAMESTYLE" = userstyleS5 ]
 then
-	USERNAME=`echo $SURNAME.$FIRSTNAME$YEARSUFFIX$COUNTER`
+	USERNAME="$SURNAME.$FIRSTNAME$YEARSUFFIX$COUNTER"
 fi
 if [ "$USERNAMESTYLE" = userstyleS6 ]
 then
-	USERNAME=`echo $YEARSUFFIX$COUNTER$SURNAME${FIRSTNAME:0:1}`
+	USERNAME="$YEARSUFFIX$COUNTER$SURNAME${FIRSTNAME:0:1}"
 fi
 if [ "$USERNAMESTYLE" = userstyleS7 ]
 then
-	USERNAME=`echo $YEARSUFFIX$COUNTER$FIRSTNAME${SURNAME:0:1}`
+	USERNAME="$YEARSUFFIX$COUNTER$FIRSTNAME${SURNAME:0:1}"
 fi
 if [ "$USERNAMESTYLE" = userstyleS8 ]
 then
 	[ -z "$COUNTER" ] && COUNTER=1
-	USERNAME=`echo $FIRSTNAME${SURNAME:0:$COUNTER}`
+	USERNAME="$FIRSTNAME${SURNAME:0:$COUNTER}"
 fi
 if [ "$USERNAMESTYLE" = userstyleS9 ]
 then
@@ -393,21 +393,21 @@ then
 		show_status
 	fi
 	[ -z "$COUNTER" ] && COUNTER=1
-	if [ $DUPLICATECHECK = 0 ]
+	if [ "$DUPLICATECHECK" = 0 ]
 	then
-		USERNAME=`echo $ENROLLMENTNUMBER`
+		USERNAME="$ENROLLMENTNUMBER"
 	else
-		USERNAME=`echo $ENROLLMENTNUMBER.$COUNTER`
+		USERNAME="$ENROLLMENTNUMBER.$COUNTER"
 	fi
 fi
 
 if [ "$USERNAMESTYLE" = userstyleS10 ]
 then
 	[ -z "$COUNTER" ] && COUNTER=1
-	USERNAME=`echo $USERNAME$COUNTER`
+	USERNAME="$USERNAME$COUNTER"
 fi
 
-USERNAME=`echo $USERNAME | tr 'A-Z' 'a-z'`
+USERNAME=$(echo "$USERNAME" | tr 'A-Z' 'a-z')
 }
 
 [ -z "$USERNAME" ] && create_username
@@ -417,12 +417,12 @@ INITUSERNAME=$USERNAME
 DUPLICATECHECK=1
 ACTIONUSER=0
 
-if [ $USERNAMESTYLE != userstyleS8 ]
+if [ "$USERNAMESTYLE" != userstyleS8 ]
 then
-	while [ $DUPLICATECHECK = 1 ]
+	while [ "$DUPLICATECHECK" = 1 ]
 	do
 		check_username
-		if [ $NAMESTATUS = error ]
+		if [ "$NAMESTATUS" = error ]
 		then
 			[ -z "$COUNTER" ] && COUNTER=1
 			#user exists
@@ -435,7 +435,7 @@ then
 	done
 fi
 
-if [ $USERNAMESTYLE = userstyleS8 ]
+if [ "$USERNAMESTYLE" = userstyleS8 ]
 then
 	while [ $DUPLICATECHECK = 1 ]
 	do
@@ -456,7 +456,7 @@ fi
 source /opt/karoshi/server_network/security/password_settings
 
 #Convert special characters back for new password to check password strength
-NEW_PASSWORD=`echo "$PASSWORD1" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
+NEW_PASSWORD=$(echo "$PASSWORD1" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g')
 
 PASSLENGTH=${#NEW_PASSWORD}
 
@@ -473,21 +473,20 @@ then
 	CHARCHECK=ok
 
 	#Check that the password has a combination of characters and numbers
-	if [ `echo "$PASSWORD1"'1' | tr -cd '0-9\n'` = 1 ]
+	if [[ $(echo "$PASSWORD1"'1' | tr -cd '0-9\n') = 1 ]]
 	then
 		CHARCHECK=fail
 	fi
-	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Za-z\n'` = A ]
+	if [[ $(echo "$PASSWORD1"'A' | tr -cd 'A-Za-z\n') = A ]]
 	then
 		CHARCHECK=fail
 	fi
 
-	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Z\n'` = A ]
+	if [[ $(echo "$PASSWORD1"'A' | tr -cd 'A-Z\n') = A ]]
 	then
 		CASECHECK=fail
-		CASECHECK2=$"Failed"
 	fi
-	if [ `echo "$PASSWORD1"'a' | tr -cd 'a-z\n'` = a ]
+	if [[ $(echo "$PASSWORD1"'a' | tr -cd 'a-z\n') = a ]]
 	then
 		CASECHECK=fail
 	fi
@@ -500,48 +499,49 @@ then
 fi
 
 #Prompt to create user with revised username if username existed or create user.
-if [ $ACTIONUSER = 1 ]
+if [ "$ACTIONUSER" = 1 ]
 then
 	echo '<form action="/cgi-bin/admin/add_user.cgi" method="post">
-	<input name="____FIRSTNAME____" value="'$FIRSTNAME'" type="hidden">
-	<input name="____SURNAME____" value="'$SURNAME'" type="hidden">
-	<input name="____PASSWORD1____" value="'$PASSWORD1'" type="hidden">
-	<input name="____PASSWORD2____" value="'$PASSWORD2'" type="hidden">
-	<input name="____GROUP____" value="'$GROUP'" type="hidden">
-	<input name="____USERNAMESTYLE____" value="'$USERNAMESTYLE'" type="hidden">
-	<input name="____USERNAME____" value="'$USERNAME'" type="hidden">
-	<input name="____ENROLLMENTNUMBER____" value="'$ENROLLMENTNUMBER'" type="hidden">
-	'$INITUSERNAME' - '$"This user already exists."'<br><br>'$"Create user"' '$USERNAME'?<br><br>
+	<input name="____FIRSTNAME____" value="'"$FIRSTNAME"'" type="hidden">
+	<input name="____SURNAME____" value="'"$SURNAME"'" type="hidden">
+	<input name="____PASSWORD1____" value="'"$PASSWORD1"'" type="hidden">
+	<input name="____PASSWORD2____" value="'"$PASSWORD2"'" type="hidden">
+	<input name="____GROUP____" value="'"$GROUP"'" type="hidden">
+	<input name="____USERNAMESTYLE____" value="'"$USERNAMESTYLE"'" type="hidden">
+	<input name="____USERNAME____" value="'"$USERNAME"'" type="hidden">
+	<input name="____ENROLLMENTNUMBER____" value="'"$ENROLLMENTNUMBER"'" type="hidden">
+	'"$INITUSERNAME"' - '$"This user already exists."'<br><br>'$"Create user"' '"$USERNAME"'?<br><br>
 	<input value="'$"Submit"'" class="button" type="submit">
 	</form></div></div></body></html>'
 	exit
 else
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
 	#Add user
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/add_user
-EXEC_STATUS=`echo $?`
-MESSAGE=`echo $"Forename": "${FIRSTNAME^}"'\\n'$"Surname": "${SURNAME^}"'\\n'$"Username": $USERNAME'\\n'$"Created with primary group" $GROUP.`
-	if [ $EXEC_STATUS = 101 ]
+EXEC_STATUS="$?"
+	MESSAGE=''$"Forename":' '"${FIRSTNAME^}"'\\n'$"Surname"': '"${SURNAME^}"'\\n'$"Username"': '"$USERNAME"'\\n'$"Created with primary group"' '"$GROUP"'.'
+	if [[ $EXEC_STATUS = 101 ]]
 	then
-		MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+		MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''
 	fi
 
-	if [ $EXEC_STATUS = 103 ]
+	if [[ $EXEC_STATUS = 103 ]]
 	then
-		MESSAGE=`echo "$MESSAGE" $"The enrolment number entered is already in use and has been left blank for this user."`
+		MESSAGE=''"$MESSAGE"' '$"The enrolment number entered is already in use and has been left blank for this user."''
 	fi
 
-	if [ $EXEC_STATUS = 105 ]
+	if [[ $EXEC_STATUS = 105 ]]
 	then
-		MESSAGE=`echo $"A server required for this action was offline." $"Please check the karoshi web administration logs for more details."`
+		MESSAGE=''$"A server required for this action was offline."' '$"Please check the karoshi web administration logs for more details."''
 	fi
 
-	if [[ $EXEC_STATUS -eq 106 ]]; then
-		MESSAGE="$USERNAME - $"A group with the same name as this user already exists, not creating user""
-	fi
-	if [ $SHOW_PASSWORD = yes ]
+	if [[ $EXEC_STATUS -eq 106 ]]
 	then
-		MESSAGE=`echo $MESSAGE"\n\n"$"Password": "$PASSWORD1"`
+		MESSAGE=''"$USERNAME"' - '$"A group with the same name as this user already exists, not creating user"''
+	fi
+	if [[ $SHOW_PASSWORD = yes ]]
+	then
+		MESSAGE=''"$MESSAGE"'\n\n'$"Password"': '"$PASSWORD1"''
 	fi
 	show_status
 fi
