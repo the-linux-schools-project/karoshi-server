@@ -356,8 +356,7 @@ CREATE_USER_STATUS="$?"
 if [ "$PRIMARYGROUP" = itadmin ] || [ "$PRIMARYGROUP" = tech ]
 then
 	echo "$(date): add_user - allowing $NEWUSERNAME to join clients to the domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	net rpc rights grant -U "$NEWUSERNAME%$NEWUSERPASSWORD" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-	SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+	net rpc rights grant -U "$NEWUSERNAME%$NEWUSERPASSWORD" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
 #Get quota settings if they have been set
@@ -702,8 +701,7 @@ then
 echo `date`: add_user \(federated mode\) - allowing '"$NEWUSERNAME"' to "join" clients to the domain by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 #Get domain name
 SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-net rpc rights grant -U '"$NEWUSERNAME"'%"'"$NEWUSERPASSWORD"'" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
-SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
+net rpc rights grant -U '"$NEWUSERNAME"'%"'"$NEWUSERPASSWORD"'" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
 #Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
