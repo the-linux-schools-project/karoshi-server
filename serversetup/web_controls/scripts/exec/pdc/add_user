@@ -22,50 +22,50 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 FAILED_SERVER=no
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
 then
-	echo `date`: add_user - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
 [[ -z "$MD5SUM" ]] && MD5SUM=not_set
 if [[ $MD5SUM'check' != $add_user_cgi'check' ]]
 then
-	echo `date`: add_user - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
 then
-	echo `date`: add_user - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1)
 [[ -z "$MD5SUM2" ]] && MD5SUM2=not_set
 if [[ $MD5SUM2'check' != $add_user_cgi'check' ]]
 then
-	echo `date`: add_user - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi
 then
-	echo `date`: add_user - No admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - No admin bulk user creation MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_create_cgi
-MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
+MD5SUM3=$(md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1)
 [[ -z "$MD5SUM3" ]] && MD5SUM3=not_set
 if [[ $MD5SUM3'check' != $bulk_user_creation_create_cgi'check' ]]
 then
-	echo `date`: add_user - Incorrect admin bulk user creation MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Incorrect admin bulk user creation MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -73,113 +73,113 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [[ $numArgs != 0 ]]
+if [[ "$numArgs" != 0 ]]
 then
-	echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g')
 if [[ -z "$DATA" ]]
 then
-	echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-FIRSTNAME=`echo "$DATA" | cut -s -d: -f4`
-SURNAME=`echo "$DATA" | cut -s -d: -f5`
-NEWUSERNAME=`echo "$DATA" | cut -s -d: -f6`
-NEWUSERPASSWORD=`echo "$DATA" | cut -s -d: -f7`
-PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f8`
-USERNAMESTYLE=`echo "$DATA" | cut -s -d: -f9`
-ENROLLMENTNUMBER=`echo "$DATA" | cut -s -d: -f10`
-REQUESTFILE=`echo "$DATA" | cut -s -d: -f11`
-BULKUSERCREATION=`echo "$DATA" | cut -s -d: -f12`
-NEXTLOGON=`echo "$DATA" | cut -s -d: -f13`
-USERSGROUPS=`echo "$DATA" | cut -s -d: -f14-`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+FIRSTNAME=$(echo "$DATA" | cut -s -d: -f4)
+SURNAME=$(echo "$DATA" | cut -s -d: -f5)
+NEWUSERNAME=$(echo "$DATA" | cut -s -d: -f6)
+NEWUSERPASSWORD=$(echo "$DATA" | cut -s -d: -f7)
+PRIMARYGROUP=$(echo "$DATA" | cut -s -d: -f8)
+USERNAMESTYLE=$(echo "$DATA" | cut -s -d: -f9)
+ENROLLMENTNUMBER=$(echo "$DATA" | cut -s -d: -f10)
+REQUESTFILE=$(echo "$DATA" | cut -s -d: -f11)
+BULKUSERCREATION=$(echo "$DATA" | cut -s -d: -f12)
+NEXTLOGON=$(echo "$DATA" | cut -s -d: -f13)
+USERSGROUPS=$(echo "$DATA" | cut -s -d: -f14-)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM3"'check' ]
 then
-	echo `date`: add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: add_user - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank remote user" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: add_user - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$FIRSTNAME" ]
 then
-	echo `date`: add_user - Blank firstname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank firstname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SURNAME" ]
 then
-	echo `date`: add_user - Blank surname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank surname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWUSERNAME" ]
 then
-	echo `date`: add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ ${#NEWUSERNAME} -gt 20 ]
+if [ "${#NEWUSERNAME}" -gt 20 ]
 then
-	echo `date`: add_user - The username is longer than 20 characters by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - The username is longer than 20 characters by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWUSERPASSWORD" ]
 then
-	echo `date`: add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank password by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$PRIMARYGROUP" ]
 then
-	echo `date`: add_user - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ ! -f /opt/karoshi/server_network/group_information/$PRIMARYGROUP ]
+if [ ! -f "/opt/karoshi/server_network/group_information/$PRIMARYGROUP" ]
 then
-	echo `date`: add_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - no primary group information 'for' $PRIMARYGROUP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$USERNAMESTYLE" ]
 then
-	echo `date`: add_user - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Blank usernamestyle by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $USERNAMESTYLE != userstyleS1 ] && [ $USERNAMESTYLE != userstyleS2 ] && [ $USERNAMESTYLE != userstyleS3 ] && [ $USERNAMESTYLE != userstyleS4 ] && [ $USERNAMESTYLE != userstyleS5 ] && [ $USERNAMESTYLE != userstyleS6 ] && [ $USERNAMESTYLE != userstyleS7 ] && [ $USERNAMESTYLE != userstyleS8 ] && [ $USERNAMESTYLE != userstyleS9 ] && [ $USERNAMESTYLE != userstyleS10 ]
+if [ "$USERNAMESTYLE" != userstyleS1 ] && [ "$USERNAMESTYLE" != userstyleS2 ] && [ "$USERNAMESTYLE" != userstyleS3 ] && [ "$USERNAMESTYLE" != userstyleS4 ] && [ "$USERNAMESTYLE" != userstyleS5 ] && [ "$USERNAMESTYLE" != userstyleS6 ] && [ "$USERNAMESTYLE" != userstyleS7 ] && [ "$USERNAMESTYLE" != userstyleS8 ] && [ "$USERNAMESTYLE" != userstyleS9 ] && [ "$USERNAMESTYLE" != userstyleS10 ]
 then
-	echo `date`: add_user - Incorrect usernamestyle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Incorrect usernamestyle by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: add_user - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if getent passwd $NEWUSERNAME >/dev/null; then
-	echo `date`: add_user - User with the username $NEWUSERNAME already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if getent passwd "$NEWUSERNAME" >/dev/null; then
+	echo "$(date): add_user - User with the username $NEWUSERNAME already exists" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if getent group $NEWUSERNAME >/dev/null; then
-	echo `date`: add_user - Group name conflict found - group $NEWUSERNAME already exists >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if getent group "$NEWUSERNAME" >/dev/null; then
+	echo "$(date): add_user - Group name conflict found - group $NEWUSERNAME already exists" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 106
 fi
 
 if [ -z "$NEXTLOGON" ]
 then
-	MEXTLOGON=n
+	NEXTLOGON=n
 fi 
 
 [ ! -d /opt/karoshi/server_network/offline_servers ] && mkdir -p /opt/karoshi/server_network/offline_servers
@@ -188,9 +188,8 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 source /opt/karoshi/server_network/domain_information/domain_name
@@ -200,7 +199,7 @@ source /opt/karoshi/server_network/security/password_settings
 #Convert special characters back for password
 ########################
 
-NEWUSERPASSWORD=`echo "$NEWUSERPASSWORD" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g' | sed 's/%2A/*/g'`
+NEWUSERPASSWORD=$(echo "$NEWUSERPASSWORD" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g' | sed 's/%2A/*/g')
 
 ##########################
 #Check for federated servers
@@ -208,7 +207,7 @@ NEWUSERPASSWORD=`echo "$NEWUSERPASSWORD" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l) -gt 0 ]]
 	then
 		FEDERATED_LDAP_SERVERS=yes
 	fi
@@ -218,56 +217,57 @@ fi
 #Get server and home path for new user
 ########################
 SECONDARYGROUP=""
-source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
-SERVER=`echo $SERVER | cut -d, -f1`
+source "/opt/karoshi/server_network/group_information/$PRIMARYGROUP"
+SERVER=$(echo "$SERVER" | cut -d, -f1)
 source /opt/karoshi/server_network/domain_information/domain_name
-GROUPLIST=$SECONDARYGROUP
-echo `date`: add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): add_user - creating $NEWUSERNAME, Primary group: $PRIMARYGROUP from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ######################
 #Create User
 ######################
 
 
-PRIMARYGROUPID=`getent group | grep -w ^$PRIMARYGROUP | cut -d: -f3 | sed -n 1,1p`
+PRIMARYGROUPID=$(getent group | grep -w ^"$PRIMARYGROUP" | cut -d: -f3 | sed -n 1,1p)
 [ -z "$PRIMARYGROUPID" ] && exit 101
 
 #############################
 #Make sure first name and surname are capitalised
 #############################
-FIRST_CHAR=`echo ${FIRSTNAME:0:1} | tr 'a-z' 'A-Z'`
-FIRSTNAME=`echo $FIRST_CHAR${FIRSTNAME:1}`
+FIRSTNAME=$(echo "$FIRSTNAME" | tr '[:upper:]' '[:lower:]')
+FIRST_CHAR=$(echo "${FIRSTNAME:0:1}" | tr '[:lower:]' '[:upper:]' )
+FIRSTNAME="$FIRST_CHAR${FIRSTNAME:1}"
 
-FIRST_CHAR=`echo ${SURNAME:0:1} | tr 'a-z' 'A-Z'`
-SURNAME=`echo $FIRST_CHAR${SURNAME:1}`
+SURNAME=$(echo "$SURNAME" | tr '[:upper:]' '[:lower:]')
+FIRST_CHAR=$(echo "${SURNAME:0:1}" | tr '[:lower:]' '[:upper:]' )
+SURNAME="$FIRST_CHAR${SURNAME:1}"
 
 #Add user to samba4 ldap
-samba-tool user add "$NEWUSERNAME" --userou='OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People' --profile-path=%LOGONSERVER%\\applications\\profiles\\"$PRIMARYGROUP"  --script-path="logon.bat $PRIMARYGROUP" --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname="$SURNAME" --given-name="$FIRSTNAME" --use-username-as-cn  --random-password --mail-address="$NEWUSERNAME@$REALM" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user add "$NEWUSERNAME" --userou='OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People' --profile-path=%LOGONSERVER%\\applications\\profiles\\"$PRIMARYGROUP"  --script-path="logon.bat $PRIMARYGROUP" --home-directory='\\'"$SERVER"'\'"$NEWUSERNAME" --surname="$SURNAME" --given-name="$FIRSTNAME" --use-username-as-cn  --random-password --mail-address="$NEWUSERNAME@$REALM" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
 #--login-shell=/bin/bash --gecos=$NEWUSERNAME -- not supported in latest build ???
 
 #Change password
-samba-tool user setpassword "$NEWUSERNAME" --newpassword="$NEWUSERPASSWORD" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool user setpassword "$NEWUSERNAME" --newpassword="$NEWUSERPASSWORD" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Change password on next logon
 if [ "$NEXTLOGON" = y ]
 then
-	echo `date`:add_user - forcing "$NEWUSERNAME" to change password on next logon by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	net sam set pwdmustchangenow "$NEWUSERNAME" yes 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date):add_user - forcing $NEWUSERNAME to change password on next logon by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	net sam set pwdmustchangenow "$NEWUSERNAME" yes 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Add user to primary group
-samba-tool group addmembers "$PRIMARYGROUP" "$NEWUSERNAME"  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+samba-tool group addmembers "$PRIMARYGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Add user to any additional groups
 if [ ! -z "$USERSGROUPS" ]
 then
-	for USERSGROUP in $(echo "$USERSGROUPS" | sed 's/:/ /g')
+	for USERSGROUP in ${USERSGROUPS/:/}
 	do
-		echo `date`: "add_user - adding $NEWUSERNAME to $USERSGROUP" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool group addmembers "$USERSGROUP" "$NEWUSERNAME"  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): add_user - adding $NEWUSERNAME to $USERSGROUP" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool group addmembers "$USERSGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	done
 fi
 
@@ -275,21 +275,21 @@ fi
 #Add user to supplementary groups
 if [ ! -z "$SECONDARYGROUP" ]
 then
-	SECONDARYGROUP=`echo $SECONDARYGROUP | sed 's/,/ /g'`
+	SECONDARYGROUP="${SECONDARYGROUP/,/}"
 	for EXTRAGROUP in $SECONDARYGROUP
 	do
-		samba-tool group addmembers "$EXTRAGROUP" "$NEWUSERNAME"  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		samba-tool group addmembers "$EXTRAGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	done
 fi
 
 #Add tech and itadmin users to the domain admins group
-if [ $PRIMARYGROUP = itadmin ] || [ $PRIMARYGROUP = tech ]
+if [ "$PRIMARYGROUP" = itadmin ] || [ "$PRIMARYGROUP" = tech ]
 then
-	samba-tool group addmembers "Domain Admins" $NEWUSERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool group addmembers "Domain Admins" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Get samba 4 database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
@@ -297,17 +297,17 @@ echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-PRIGROUPID=`getent group $PRIMARYGROUP | cut -d: -f3`
+PRIGROUPID=$(getent group "$PRIMARYGROUP" | cut -d: -f3)
 
 echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $PRIGROUPID
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-UIDNUMBER=`getent passwd $NEWUSERNAME | cut -d: -f3`
+UIDNUMBER=$(getent passwd "$NEWUSERNAME" | cut -d: -f3)
 
 echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
@@ -322,7 +322,7 @@ loginshell: /bin/bash
 -
 add: unixhomedirectory
 unixhomedirectory: $HOMEPATH/$NEWUSERNAME
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 #changetype: modify
@@ -330,14 +330,14 @@ unixhomedirectory: $HOMEPATH/$NEWUSERNAME
 #primaryGroupID: $PRIGROUPID
 #-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-if [ ! -z $ENROLLMENTNUMBER ]
+if [ ! -z "$ENROLLMENTNUMBER" ]
 then
 #Add in employee number if it has been set
 echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
 add: employeeNumber
 employeeNumber: $ENROLLMENTNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Set password to never expire
@@ -347,16 +347,16 @@ then
 changetype: modify
 replace: useraccountcontrol
 useraccountcontrol: 66048
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
-CREATE_USER_STATUS=`echo $?`
+CREATE_USER_STATUS="$?"
 
 #Allow new user to join clients to the domain if they are a member of the itadmin or tech groups
 if [ "$PRIMARYGROUP" = itadmin ] || [ "$PRIMARYGROUP" = tech ]
 then
-	echo `date`: add_user - allowing "$NEWUSERNAME" to "join" clients to the domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	net rpc rights grant -U "$NEWUSERNAME"%"$NEWUSERPASSWORD" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+	echo "$(date): add_user - allowing $NEWUSERNAME to join clients to the domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	net rpc rights grant -U "$NEWUSERNAME%$NEWUSERPASSWORD" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 	SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
@@ -365,7 +365,7 @@ if [ -f "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP" ]
 then
 	source "/opt/karoshi/server_network/quota_settings/$PRIMARYGROUP"
 	APPLY_QUOTA=yes
-	echo `date`: add_user - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 "for" $NEWUSERNAME on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - Setting Maxsize:$MAXSIZE2 Maxfiles:$MAXFILES2 for $NEWUSERNAME on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 else
 	APPLY_QUOTA=no
 fi
@@ -382,38 +382,38 @@ fi
 #Check to see if grace time has been disabled
 GRACE_TIME=yes
 [ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ] && GRACE_TIME=no
-if [ $GRACE_TIME = yes ]
+if [ "$GRACE_TIME" = yes ]
 then
 	#Get default grace time
-	[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+	[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9)
 	[ -z "$GRACE_TIMER" ] && GRACE_TIMER=14
 	#Add acceptable use
-	echo $GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y` > /opt/karoshi/server_network/acceptable_use_authorisations/pending/$NEWUSERNAME
+	echo "$GRACE_TIMER,$REMOTE_USER,$(date +%d-%m-%Y)" > "/opt/karoshi/server_network/acceptable_use_authorisations/pending/$NEWUSERNAME"
 fi
 
 #Get userid
-USERID=`getent passwd $NEWUSERNAME | cut -d: -f3`
+USERID=$(getent passwd "$NEWUSERNAME" | cut -d: -f3)
 
 
-if [ $SERVER = `hostname-fqdn` ] || [ `echo $SERVER | cut -d. -f2-` = `hostname-fqdn` ]
+if [[ "$SERVER" = $(hostname-fqdn) ]] || [[ $(echo "$SERVER" | cut -d. -f2-) = $(hostname-fqdn) ]]
 then
 	#Create home folder
 
-	[ ! -d $HOMEPATH/$NEWUSERNAME/ ] && mkdir -p $HOMEPATH/$NEWUSERNAME/
-	chown -R $NEWUSERNAME:root $HOMEPATH/$NEWUSERNAME/
-	chmod -R 0600 $HOMEPATH/$NEWUSERNAME/
-	setfacl -m u::rwx,g::---,o::---,m::r-x $HOMEPATH/$NEWUSERNAME/
-	[ `echo $HOMEPATH | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x $HOMEPATH/$NEWUSERNAME/
+	[ ! -d "$HOMEPATH/$NEWUSERNAME/" ] && mkdir -p "$HOMEPATH/$NEWUSERNAME/"
+	chown -R "$NEWUSERNAME":root "$HOMEPATH/$NEWUSERNAME/"
+	chmod -R 0600 "$HOMEPATH/$NEWUSERNAME/"
+	setfacl -m u::rwx,g::---,o::---,m::r-x "$HOMEPATH/$NEWUSERNAME/"
+	[[ $(echo "$HOMEPATH" | grep -c students) -gt 0 ]] && setfacl -Rm group:staff:r-x,d:group:staff:r-x "$HOMEPATH/$NEWUSERNAME/"
 
 	#Apply quota settings
 	if [ "$APPLY_QUOTA" = yes ]
 	then
-		setquota -u $NEWUSERNAME $MAXSIZE1 $MAXSIZE2 $MAXFILES1 $MAXFILES2 -a /dev/loop0
+		setquota -u "$NEWUSERNAME" "$MAXSIZE1" "$MAXSIZE2" "$MAXFILES1" "$MAXFILES2" -a /dev/loop0
 	fi
 fi
 
 #Add dfs path
-[ -L /var/lib/samba/dfs/homes/$NEWUSERNAME ] && rm -f /var/lib/samba/dfs/homes/$NEWUSERNAME
+[ -L "/var/lib/samba/dfs/homes/$NEWUSERNAME" ] && rm -f "/var/lib/samba/dfs/homes/$NEWUSERNAME"
 if [ ! -z "$GLUSTERVOL" ]
 then
 	DFSPATH=""
@@ -421,42 +421,43 @@ then
 	do
 		#Use short names for windows
 		GLUSTERSERVER=$(basename "$GLUSTERSERVERS" | cut -d"." -f1)
-		DFSPATH=$DFSPATH,$GLUSTERSERVER\\$NEWUSERNAME
+		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$NEWUSERNAME"
 	done
-	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
-	[ -L /var/lib/samba/dfs/$NEWUSERNAME ] && rm -f /var/lib/samba/dfs/homes/$NEWUSERNAME
-	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/homes/$NEWUSERNAME
+	DFSPATH="${DFSPATH/#,/}"
+
+	[ -L "/var/lib/samba/dfs/$NEWUSERNAME" ] && rm -f "/var/lib/samba/dfs/homes/$NEWUSERNAME"
+	ln -s msdfs:"$DFSPATH" "/var/lib/samba/dfs/homes/$NEWUSERNAME"
 
 else
 	#Use short names for windows
-	SERVER2=$(echo $SERVER | cut -d"." -f1)
-	ln -s msdfs:$SERVER2\\$NEWUSERNAME /var/lib/samba/dfs/homes/$NEWUSERNAME
+	SERVER2=$(echo "$SERVER" | cut -d"." -f1)
+	ln -s msdfs:"$SERVER2\\$NEWUSERNAME" "/var/lib/samba/dfs/homes/$NEWUSERNAME"
 fi
 
 ############################
 #Create user home area on extra fileserver
 ############################
-if [ $SERVER != `hostname-fqdn` ] && [ `echo $SERVER | cut -d. -f2-` != `hostname-fqdn` ]
+if [[ "$SERVER" != $(hostname-fqdn) ]] && [[ $(echo "$SERVER" | cut -d. -f2-) != $(hostname-fqdn) ]]
 then
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-	[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
-	chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
-	chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-	[ `echo '$HOMEPATH' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '$HOMEPATH'/'$NEWUSERNAME'/
-	setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	[ ! -d '"$HOMEPATH"'/'"$NEWUSERNAME"' ] && mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'
+	chown -R '"$USERID"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'
+	chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'
+	[ `echo '"$HOMEPATH"' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+	setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 	#Apply quota settings
 	if [ "'$APPLY_QUOTA'" = yes ]
 	then
-		setquota -u '$USERID' '$MAXSIZE1' '$MAXSIZE2' '$MAXFILES1' '$MAXFILES2' -a /dev/loop0
+		setquota -u '"$USERID"' '"$MAXSIZE1"' '"$MAXSIZE2"' '"$MAXFILES1"' '"$MAXFILES2"' -a /dev/loop0
 	fi
 '
 SSHSTATUS=$?
-	if [ $SSHSTATUS != 0 ]
+	if [ "$SSHSTATUS" != 0 ]
 	then
-		echo `date`: add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		echo $SERVER,fileserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+		echo "$(date): add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$SERVER,fileserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
 		FAILED_SERVER=yes
-		FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
+		FAILEDSERVERLIST="$FAILEDSERVERLIST,$SERVER"
 	fi
 fi
 
@@ -465,32 +466,32 @@ fi
 ###########################
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-	if [ $EMAILSERVER != `hostname-fqdn` ] && [ `echo $EMAILSERVER | cut -d. -f2-` != `hostname-fqdn` ]
+	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+	if [[ "$EMAILSERVER" != $(hostname-fqdn) ]] && [[ $(echo "$EMAILSERVER" | cut -d. -f2-) != $(hostname-fqdn) ]]
 	then 
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-		[ ! -d /home/users/email/'$NEWUSERNAME' ] && mkdir /home/users/email/'$NEWUSERNAME'
+		[ ! -d /home/users/email/'"$NEWUSERNAME"' ] && mkdir /home/users/email/'"$NEWUSERNAME"'
 
-		chown -R '$USERID':root /home/users/email/'$NEWUSERNAME'
-		chmod -R 0600 /home/users/email/'$NEWUSERNAME'
-		chmod -R u+X /home/users/email/'$NEWUSERNAME'
+		chown -R '"$USERID"':root /home/users/email/'"$NEWUSERNAME"'
+		chmod -R 0600 /home/users/email/'"$NEWUSERNAME"'
+		chmod -R u+X /home/users/email/'"$NEWUSERNAME"'
 
-		[ ! -d '$HOMEPATH''/''$NEWUSERNAME' ] && mkdir -p '$HOMEPATH''/''$NEWUSERNAME'
+		[ ! -d '"$HOMEPATH"''/''"$NEWUSERNAME"' ] && mkdir -p '"$HOMEPATH"''/''"$NEWUSERNAME"'
 			
-		chown -R '$USERID':root '$HOMEPATH''/''$NEWUSERNAME'
-		chmod -R 0600 '$HOMEPATH''/''$NEWUSERNAME'
-		setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+		chown -R '"$USERID"':root '"$HOMEPATH"''/''"$NEWUSERNAME"'
+		chmod -R 0600 '"$HOMEPATH"''/''"$NEWUSERNAME"'
+		setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 
 		#Add in openchange data
-		#openchange_newuser --create '$NEWUSERNAME'
+		#openchange_newuser --create '"$NEWUSERNAME"'
 
 		#Add staff user to the protected distribution list
-		if [ "$SUBUNIT" = personnel ]
+		if [ "'"$SUBUNIT"'" = personnel ]
 		then
-			if [ $(grep -c "'$NEWUSERNAME'@" /etc/postfix/distribution_list_users) = 0 ]
+			if [ $(grep -c "'"$NEWUSERNAME"'@" /etc/postfix/distribution_list_users) = 0 ]
 			then
-				echo "'$NEWUSERNAME'@'$REALM' OK" >> /etc/postfix/distribution_list_users
+				echo "'"$NEWUSERNAME"'@'"$REALM"' OK" >> /etc/postfix/distribution_list_users
 				cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
 				rm /etc/postfix/distribution_list_users
 				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
@@ -498,30 +499,30 @@ then
 			fi
 		fi
 		'
-		SSHSTATUS=`echo $?`
-		if [ $SSHSTATUS != 0 ]
+		SSHSTATUS="$?"
+		if [ "$SSHSTATUS" != 0 ]
 		then
-			echo `date`: add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			echo $EMAILSERVER,emailserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
+			echo "$(date): add_user - $NEWUSERNAME ssh failure on $EMAILSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			echo "$EMAILSERVER,emailserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
 			FAILED_SERVER=yes
-		FAILEDSERVERLIST=$FAILEDSERVERLIST,$EMAILSERVER
+			FAILEDSERVERLIST="$FAILEDSERVERLIST,$EMAILSERVER"
 		fi
 	else
 		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-		mkdir /home/users/email/$NEWUSERNAME
-		chown $NEWUSERNAME -R /home/users/email/$NEWUSERNAME
-		chmod 0600 -R /home/users/email/$NEWUSERNAME
-		chmod u+X -R /home/users/email/$NEWUSERNAME
+		mkdir "/home/users/email/$NEWUSERNAME"
+		chown "$NEWUSERNAME" -R "/home/users/email/$NEWUSERNAME"
+		chmod 0600 -R "/home/users/email/$NEWUSERNAME"
+		chmod u+X -R "/home/users/email/$NEWUSERNAME"
 		#Add in openchange data
 		#openchange_newuser --create $NEWUSERNAME
 
 		#Add staff user to the protected distribution list
 		if [ "$SUBUNIT" = personnel ]
 		then
-			if [ $(grep -c "$NEWUSERNAME@" /etc/postfix/distribution_list_users) = 0 ]
+			if [[ $(grep -c "$NEWUSERNAME@" /etc/postfix/distribution_list_users) = 0 ]]
 			then
 				echo "$NEWUSERNAME@$REALM OK" >> /etc/postfix/distribution_list_users
-				cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
+				sort /etc/postfix/distribution_list_users > /etc/postfix/distribution_list_users1
 				rm /etc/postfix/distribution_list_users
 				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
 				postmap hash:/etc/postfix/distribution_list_users
@@ -532,7 +533,7 @@ then
 	#Set E-Mail access level if it has been set for the group.
 	if [ ! -z "$EMAIL_LEVEL" ]
 	then
-		MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+		MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 	fi
 fi
@@ -540,52 +541,52 @@ fi
 ######################
 #Add user to any federated servers
 ######################
-if [ $FEDERATED_LDAP_SERVERS = yes ]
+if [ "$FEDERATED_LDAP_SERVERS" = yes ]
 then
 
 for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
 do
-FEDERATEDSERVER=`basename $FEDERATEDSERVERS`
+FEDERATEDSERVER=$(basename "$FEDERATEDSERVERS")
 ######################
 #Export ldif file to add to the federated server
 ######################
-echo `date`: add_user \(federated mode\) - exporting $NEWUSERNAME to $FEDERATEDSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): add_user \(federated mode\) - exporting $NEWUSERNAME to $FEDERATEDSERVER from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDSERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDSERVER" '
 ######################
 #Create user on federated server
 ######################
 
 SECONDARYGROUP=""
-source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
+source /opt/karoshi/server_network/group_information/'"$PRIMARYGROUP"'
 source /opt/karoshi/server_network/domain_information/domain_name
 GROUPLIST=$SECONDARYGROUP
 
-echo `date`: add_user \(federated mode\) - creating '$NEWUSERNAME', Primary group: '$PRIMARYGROUP' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo `date`: add_user \(federated mode\) - creating '"$NEWUSERNAME"', Primary group: '"$PRIMARYGROUP"' from '"$REMOTE_ADDR"' by '"$REMOTE_USER"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
 #Add user to samba4 ldap
-samba-tool user add '$NEWUSERNAME' --userou="OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'$NEWUSERNAME' --script-path=logon.bat --surname='$SURNAME' --given-name='$FIRSTNAME' --use-username-as-cn  --random-password --mail-address='$NEWUSERNAME'@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool user add '"$NEWUSERNAME"' --userou="OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'"$NEWUSERNAME"' --script-path=logon.bat --surname='"$SURNAME"' --given-name='"$FIRSTNAME"' --use-username-as-cn  --random-password --mail-address='"$NEWUSERNAME"'@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
 #Change password
-samba-tool user setpassword '$NEWUSERNAME' --newpassword="'$NEWUSERPASSWORD'" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool user setpassword '"$NEWUSERNAME"' --newpassword="'"$NEWUSERPASSWORD"'" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
 #Add user to primary group
-samba-tool group addmembers "'$PRIMARYGROUP'" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool group addmembers "'"$PRIMARYGROUP"'" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
 #Add user to supplementary groups
-if [ `echo "'$SECONDARYGROUP'"null | sed "s/ //g"` != null ]
+if [ `echo "'"$SECONDARYGROUP"'"null | sed "s/ //g"` != null ]
 then
-SECONDARYGROUP=`echo '$SECONDARYGROUP' | sed "s/,/ /g"`
-for EXTRAGROUP in '$SECONDARYGROUP'
+SECONDARYGROUP=`echo '"$SECONDARYGROUP"' | sed "s/,/ /g"`
+for EXTRAGROUP in '"$SECONDARYGROUP"'
 do
-samba-tool group addmembers "'$EXTRAGROUP'" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool group addmembers "'"$EXTRAGROUP"'" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 done
 fi
 
 #Add tech and itadmin users to the domain admins group
-if [ '$PRIMARYGROUP' = itadmin ] || [ '$PRIMARYGROUP' = tech ]
+if [ '"$PRIMARYGROUP"' = itadmin ] || [ '"$PRIMARYGROUP"' = tech ]
 then
-samba-tool group addmembers "Domain Admins" '$NEWUSERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+samba-tool group addmembers "Domain Admins" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 fi
 
 #Get samba 4 database password
@@ -593,38 +594,38 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixaccount
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-PRIGROUPID=`getent group '$PRIMARYGROUP' | cut -d: -f3`
+PRIGROUPID=`getent group '"$PRIMARYGROUP"' | cut -d: -f3`
 
-echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
-gidnumber: '$PRIGROUPID'
+gidnumber: '"$PRIGROUPID"'
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-UIDNUMBER=`getent passwd '$NEWUSERNAME' | cut -d: -f3`
+UIDNUMBER=`getent passwd '"$NEWUSERNAME"' | cut -d: -f3`
 
-echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
 -
 add: division
-division: '$PRIMARYGROUP'
+division: '"$PRIMARYGROUP"'
 -
 add: loginshell
 loginshell: /bin/bash
 -
 add: unixhomedirectory
-unixhomedirectory: '$HOMEPATH'/'$NEWUSERNAME'
+unixhomedirectory: '"$HOMEPATH"'/'"$NEWUSERNAME"'
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
-#echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+#echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
 #changetype: modify
 #replace: primaryGroupID
 #primaryGroupID: $PRIGROUPID
@@ -633,36 +634,36 @@ unixhomedirectory: '$HOMEPATH'/'$NEWUSERNAME'
 if [ ! -z $ENROLLMENTNUMBER ]
 then
 #Add in employee number if it has been set
-echo -e "dn: CN='$NEWUSERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,$LDAPBASE
+echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
 changetype: modify
 add: employeeNumber
-employeeNumber: '$ENROLLMENTNUMBER'
+employeeNumber: '"$ENROLLMENTNUMBER"'
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 fi
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 /opt/karoshi/"useful scripts"/createmailfolders
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail
+mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/Mail
 /opt/karoshi/"useful scripts"/createmailfolders
-cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/
-cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME'
-chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/
-chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+cp /opt/karoshi/.tempdata/INBOX.* '"$HOMEPATH"'/'"$NEWUSERNAME"'/Mail/
+cp /opt/karoshi/.tempdata/.mailboxlist '"$HOMEPATH"'/'"$NEWUSERNAME"'
+chown -R '"$NEWUSERNAME:$PRIMARYGROUP"' '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 
 #Create home folder
 if [ $SERVER = `hostname-fqdn` ]
 then
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
-chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
-chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+chown -R '"$NEWUSERNAME"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 else
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/
-chown -R '$NEWUSERNAME':root '$HOMEPATH'/'$NEWUSERNAME'/
-chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '$HOMEPATH'/'$NEWUSERNAME'/
+mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+chown -R '"$NEWUSERNAME"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
+setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 "
 fi
 
@@ -674,47 +675,47 @@ if [ $EMAILSERVER != `hostname-fqdn` ]
 then 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '\''
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/'$NEWUSERNAME'
-chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
-chmod 0700 /home/users/email/'$NEWUSERNAME'
+mkdir /home/users/email/'"$NEWUSERNAME"'
+chown '"$NEWUSERNAME"' /home/users/email/'"$NEWUSERNAME"'
+chmod 0700 /home/users/email/'"$NEWUSERNAME"'
 '\''
 
 SSHSTATUS=`echo $?`
 if [ $SSHSTATUS != 0 ]
 then
-echo `date`: add_user - '$NEWUSERNAME' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/'$NEWUSERNAME'
+echo `date`: add_user - '"$NEWUSERNAME"' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/'"$NEWUSERNAME"'
 FAILED_SERVER=yes
 FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
 fi
 else
 [ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/'$NEWUSERNAME'
-chown '$NEWUSERNAME' /home/users/email/'$NEWUSERNAME'
-chmod 0700 /home/users/email/'$NEWUSERNAME'
+mkdir /home/users/email/'"$NEWUSERNAME"'
+chown '"$NEWUSERNAME"' /home/users/email/'"$NEWUSERNAME"'
+chmod 0700 /home/users/email/'"$NEWUSERNAME"'
 fi
 fi
 
 #Allow new user to join clients to the domain if they are a member of the itadmin group
-if [ '$PRIMARYGROUP' = itadmin ]
+if [ '"$PRIMARYGROUP"' = itadmin ]
 then
-echo `date`: add_user \(federated mode\) - allowing '$NEWUSERNAME' to "join" clients to the domain by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo `date`: add_user \(federated mode\) - allowing '"$NEWUSERNAME"' to "join" clients to the domain by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 #Get domain name
 SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-net rpc rights grant -U '$NEWUSERNAME'%"'$NEWUSERPASSWORD'" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+net rpc rights grant -U '"$NEWUSERNAME"'%"'"$NEWUSERPASSWORD"'" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 fi
 
 #Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
-echo '$NEWUSERNAME','$PRIMARYGROUP' >> /var/lib/samba/netlogon/primarygroups.txt
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
+echo '"$NEWUSERNAME"','"$PRIMARYGROUP"' >> /var/lib/samba/netlogon/primarygroups.txt
+' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+SSHSTATUS="$?"
+if [ "$SSHSTATUS" != 0 ]
 then
-echo `date`: add_user - $NEWUSERNAME ssh failure on $FEDERATEDSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $FEDERATEDSERVER,federatedserver >> /opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$FEDERATEDSERVER
+	echo "$(date): add_user - $NEWUSERNAME ssh failure on $FEDERATEDSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$FEDERATEDSERVER,federatedserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
+	FAILED_SERVER=yes
+	FAILEDSERVERLIST="$FAILEDSERVERLIST,$FEDERATEDSERVER"
 fi
 done
 fi
@@ -722,11 +723,11 @@ fi
 #Delete request file if this user has been requested by a member of staff
 if [ ! -z "$REQUESTFILE" ]
 then
-	if [ -f /opt/karoshi/user_requests/new_users/$REQUESTFILE ]
+	if [ -f "/opt/karoshi/user_requests/new_users/$REQUESTFILE" ]
 	then
-		rm -f /opt/karoshi/user_requests/new_users/$REQUESTFILE
-		NEWUSERCOUNT=`ls -1 /opt/karoshi/user_requests/new_users/ | wc -l`
-		if [ $NEWUSERCOUNT = 0 ]
+		rm -f "/opt/karoshi/user_requests/new_users/$REQUESTFILE"
+		NEWUSERCOUNT=$(ls -1 /opt/karoshi/user_requests/new_users/ | wc -l)
+		if [ "$NEWUSERCOUNT" = 0 ]
 		then
 			#Update warnings
 			/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete request_new_users
@@ -734,7 +735,7 @@ then
 	fi
 fi
 
-if [ $GRACE_TIME = yes ]
+if [ "$GRACE_TIME" = yes ]
 then
 	#Generate page warning
 	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
@@ -742,40 +743,36 @@ fi
 
 if [ ! -z "$BULKUSERCREATION" ]
 then
-	if [ ! -d /opt/karoshi/bulk_user_creation/$PRIMARYGROUP ]
+	if [ ! -d "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP" ]
 	then
-		mkdir -p /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
-		chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP
+		mkdir -p "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP"
+		chmod 0700 "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP"
 	fi
-	if [ ! -f /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt ]
+	if [ ! -f "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt" ]
 	then
-		touch /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-		chmod 0700 /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+		touch "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt"
+		chmod 0700 "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt"
 	fi
 
-	echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-	echo $FIRSTNAME $SURNAME >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-	echo Username: $NEWUSERNAME Password: "$NEWUSERPASSWORD" >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-	echo >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
-	echo ----------------------------------------------------- >> /opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt
+	echo -e "\n$FIRSTNAME $SURNAME\nUsername: $NEWUSERNAME Password: $NEWUSERPASSWORD\n-----------------------------------------------------\n" >> "/opt/karoshi/bulk_user_creation/$PRIMARYGROUP/$PRIMARYGROUP.txt"
 fi
 
 #Show servers that are offline
 
-if [ $FAILED_SERVER = yes ]
+if [ "$FAILED_SERVER" = yes ]
 then
-	FAILEDSERVERLIST=`echo $FAILEDSERVERLIST | sed 's/^,//g' | sed 's/,/, /g'`
+	FAILEDSERVERLIST=$(echo "$FAILEDSERVERLIST" | sed 's/^,//g' | sed 's/,/, /g')
 	MESSAGE="The following servers were not online:\n\n$FAILEDSERVERLIST\n\nThe system will automatically attempt to repair this problem at 6.00 am every morning."
 	echo '<script type="text/javascript">'
-	echo 'alert("'$MESSAGE'");'
+	echo 'alert("'"$MESSAGE"'");'
 	echo '</script>'
 	echo "</body></html>"
 fi
 
 #Ban email use if needed
-if [ -f /opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP ]
+if [ -f "/opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP" ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 fi
 
@@ -788,102 +785,102 @@ then
  		source /etc/default/locale
 	fi
 	MOODLESERVER=$(sed -n 1,1p /opt/karoshi/server_network/moodleserver)
-	COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-	CITY=`cat /etc/timezone | cut -d/ -f2`
+	COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+	CITY=$(cut -d/ -f2 /etc/timezone)
 
-	echo `date`: add_user - adding $NEWUSERNAME to moodle on $MOODLESERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): add_user - adding $NEWUSERNAME to moodle on $MOODLESERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-	if [ $MOODLESERVER = $(hostname-fqdn) ]
+	if [[ "$MOODLESERVER" = $(hostname-fqdn) ]]
 	then
-		if [ ! -z $ENROLLMENTNUMBER ]
+		if [ ! -z "$ENROLLMENTNUMBER" ]
 		then
-			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname $FIRSTNAME --lastname $SURNAME --email $NEWUSERNAME@$REALM --city $CITY --country $COUNTRY --auth ldap  --idnumber $ENROLLMENTNUMBER $NEWUSERNAME 1>/dev/null
+			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname "$FIRSTNAME" --lastname "$SURNAME" --email "$NEWUSERNAME@$REALM" --city "$CITY" --country "$COUNTRY" --auth ldap  --idnumber "$ENROLLMENTNUMBER" "$NEWUSERNAME" 1>/dev/null
 		else
-			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname $FIRSTNAME --lastname $SURNAME --email $NEWUSERNAME@$REALM --city $CITY --country $COUNTRY --auth ldap $NEWUSERNAME 1>/dev/null
+			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname "$FIRSTNAME" --lastname "$SURNAME" --email "$NEWUSERNAME@$REALM" --city "$CITY" --country "$COUNTRY" --auth ldap "$NEWUSERNAME" 1>/dev/null
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MOODLESERVER '
-		if [ ! -z '$ENROLLMENTNUMBER' ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$MOODLESERVER" '
+		if [ ! -z '"$ENROLLMENTNUMBER"' ]
 		then
-			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '$FIRSTNAME' --lastname '$SURNAME' --email '$NEWUSERNAME'@'$REALM' --city '$CITY' --country '$COUNTRY' --auth ldap  --idnumber '$ENROLLMENTNUMBER' '$NEWUSERNAME' 1>/dev/null
+			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '"$FIRSTNAME"' --lastname '"$SURNAME"' --email '"$NEWUSERNAME"'@'"$REALM"' --city '"$CITY"' --country '"$COUNTRY"' --auth ldap  --idnumber '"$ENROLLMENTNUMBER"' '"$NEWUSERNAME"' 1>/dev/null
 		else
-			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '$FIRSTNAME' --lastname '$SURNAME' --email '$NEWUSERNAME'@'$REALM' --city '$CITY' --country '$COUNTRY' --auth ldap '$NEWUSERNAME' 1>/dev/null
+			sudo -u www-data moosh -p /var/www/html/moodle user-create  --firstname '"$FIRSTNAME"' --lastname '"$SURNAME"' --email '"$NEWUSERNAME"'@'"$REALM"' --city '"$CITY"' --country '"$COUNTRY"' --auth ldap '"$NEWUSERNAME"' 1>/dev/null
 		fi
 		'
 	fi
 fi
 
 #Add in windows profile support
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP" ]
 then
 	if [ -d /home/applications/profiles/defaultprofile ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating an XP profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/$PRIMARYGROUP
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating an XP profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile "/home/applications/profiles/$PRIMARYGROUP"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP"
 	fi
 fi
 
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V2 ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V2" ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V2 ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating a Windows 7 profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/$PRIMARYGROUP.V2
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V2
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V2
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V2
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 7 profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile.V2 "/home/applications/profiles/$PRIMARYGROUP.V2"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V2"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V2"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V2"
 	fi
 fi
 
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V3 ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V3" ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V3 ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating a Windows 8.0 profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/$PRIMARYGROUP.V3
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V3
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V3
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V3
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 8.0 profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile.V3 "/home/applications/profiles/$PRIMARYGROUP.V3"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V3"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V3"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V3"
 	fi
 fi
 
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V4 ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V4" ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V4 ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating a Windows 8.1 profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/$PRIMARYGROUP.V4
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V4
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V4
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V4
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 8.1 profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile.V4 "/home/applications/profiles/$PRIMARYGROUP.V4"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V4"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V4"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V4"
 	fi
 fi
 
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V5 ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V5" ]
 then
 	if [ -d /home/applications/profiles/defaultprofile.V5 ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating a Windows 10 profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/$PRIMARYGROUP.V5
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V5
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V5
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V5
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 10 profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile.V5 "/home/applications/profiles/$PRIMARYGROUP.V5"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V5"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V5"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V5"
 	fi
 fi
 
-if [ ! -d /home/applications/profiles/$PRIMARYGROUP.V6 ]
+if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V6" ]
 then
-	if [ -d /home/applications/profiles/defaultprofile.V6 ]
+	if [ -d "/home/applications/profiles/defaultprofile.V6" ]
 	then
-		echo "<ul><li>"$PRIMARYGROUP - $"Creating a Windows 10 Aniversary profile""</li></ul>"
-		cp -f -R /home/applications/profiles/defaultprofile.V6 /home/applications/profiles/$PRIMARYGROUP.V6
-		chown -R root.itadmin /home/applications/profiles/$PRIMARYGROUP.V6
-		chmod 0664 -R /home/applications/profiles/$PRIMARYGROUP.V6
-		chmod u+X,g+X,o+X -R /home/applications/profiles/$PRIMARYGROUP.V6
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 10 Aniversary profile""</li></ul>"
+		cp -f -R /home/applications/profiles/defaultprofile.V6 "/home/applications/profiles/$PRIMARYGROUP.V6"
+		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V6"
+		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V6"
+		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V6"
 	fi
 fi
-exit $CREATE_USER_STATUS
+exit "$CREATE_USER_STATUS"
 
