@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,15 +31,15 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_custom_spam_rules_cgi
 then
-	echo `date`: email_custom_spam_rules - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_custom_spam_rules_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_custom_spam_rules_cgi'check' ]
+if [ "$MD5SUM" != "$email_custom_spam_rules_cgi" ]
 then
-	echo `date`: email_custom_spam_rules - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -47,51 +47,51 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_custom_spam_rules - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_custom_spam_rules - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-RULEDATA=`echo "$DATA" | cut -s -d: -f5`
-RULEDATA2=`echo "$DATA" | cut -s -d: -f6`
-RULESCORE=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+RULEDATA=$(echo "$DATA" | cut -s -d: -f5)
+RULEDATA2=$(echo "$DATA" | cut -s -d: -f6)
+RULESCORE=$(echo "$DATA" | cut -s -d: -f7)
+MOBILE=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5" != "$MD5SUM" ]
 then
-	echo `date`: email_custom_spam_rules - Not called by email_custom_spam_rules.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - Not called by email_custom_spam_rules.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_custom_spam_rules - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_custom_spam_rules - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: email_custom_spam_rules - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ -z $ACTION ]
+if [ -z "$ACTION" ]
 then
 	ACTION=view
 fi
@@ -100,14 +100,12 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 source /opt/karoshi/server_network/domain_information/domain_name
 
 if [ "$MOBILE" = no ]
 then
-	USERNAMEMSG=$"Username"
 	TABLECLASS=standard
 	WIDTH1=300
 	WIDTH2=80
@@ -116,7 +114,6 @@ then
 	ICON1="/images/submenus/file/edit.png"
 	ICON2="/images/submenus/file/delete.png"
 else
-	USERNAMEMSG=$"User"
 	TABLECLASS=mobilestandard
 	WIDTH1=80
 	WIDTH2=60
@@ -139,17 +136,17 @@ document.getElementById("refreshpage").submit(); // SUBMIT FORM
 
 if [ "$ACTION" = activatechanges ]
 then
-	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-	echo '<ul><li>'$EMAILSERVER' - '$"Restarting MailScanner"'</li></ul>'
+	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+	echo '<ul><li>'"$EMAILSERVER"' - '$"Restarting MailScanner"'</li></ul>'
 	#Copy rule to spamassassin folder
-	if [ $EMAILSERVER = $(hostname-fqdn) ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		cp "$output" /etc/spamassassin/
 		#At the moment spamasssin only seems to see new rules if we completely restart mailscanner
 		service mailscanner restart 1>/dev/null
 	else
-		scp "$output" root@$EMAILSERVER:/etc/spamassassin/
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		scp "$output" root@"$EMAILSERVER":/etc/spamassassin/
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		#At the moment spamasssin only seems to see new rules if we completely restart mailscanner
 		service mailscanner restart 1>/dev/null
 		'
@@ -171,10 +168,9 @@ then
 			RDATA=$(echo "$data" | cut -d, -f1)
 			RSCORE=$(echo "$data" | cut -d, -f2)
 			#Make sure we have no dots in the rule name
-			RNAME=$(echo "$RDATA" | sed 's/\./dot/g')
-			echo "body	rule$i"_"$RNAME	/\\b$RDATA\\b/i" >> "$output"
-			
-			echo -e "score	rule$i"_"$RNAME	$RSCORE\n" >> "$output"
+			RNAME=${RDATA//./}
+			echo "body	rule""$i""_$RNAME	/\\b$RDATA\\b/i" >> "$output"
+			echo -e "score	rule""$i""_$RNAME	$RSCORE\n" >> "$output"
 			((i++))
 		fi
 	done < "$input"
@@ -187,10 +183,10 @@ touch /opt/karoshi/server_network/email/activate_spam_rule_changes
 
 if [ "$ACTION" = reallydelete ]
 then
-	echo `date`: "email_custom_spam_rules - deleting $RULEDATA by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	sed -i '/^'$RULEDATA',/d' "$input"
+	echo "$(date): email_custom_spam_rules - deleting $RULEDATA by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	sed -i '/^'"$RULEDATA"',/d' "$input"
 	#Check to see if we have any lines left
-	if [ $(cat "$input" | wc -c) = 0 ]
+	if [[ $(wc -c < "$input") = 0 ]]
 	then
 		rm -f "$input"
 	fi
@@ -204,9 +200,9 @@ then
 	echo '
 	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
 	<input type="hidden" name="_ACTION_" value="reallydelete">
-	<input type="hidden" name="_RULEDATA_" value="'$RULEDATA'">
-	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Criteria"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Score"'</b></th></thead><tbody>
-	<tr><td>'$RULEDATA'</td><td>'$RULESCORE'</td></tr>
+	<input type="hidden" name="_RULEDATA_" value="'"$RULEDATA"'">
+	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Criteria"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Score"'</b></th></thead><tbody>
+	<tr><td>'"$RULEDATA"'</td><td>'"$RULESCORE"'</td></tr>
 	</tbody></table><br>
 	'$"Are you sure that you want to delete this rule?"'
 	<br><br>
@@ -214,18 +210,18 @@ then
 	<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
-if [ $ACTION = reallyadd ] || [ $ACTION = reallyedit ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
-	echo `date`: "email_custom_spam_rules - adding $RULEDATA with score $RULESCORE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_custom_spam_rules - adding $RULEDATA with score $RULESCORE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ ! -d /opt/karoshi/server_network/email/ ] && mkdir /opt/karoshi/server_network/email/
 	touch "$input"
 
 	if [ ! -z "$RULEDATA2" ]
 	then
-		sed -i '/^'$RULEDATA2',/d' "$input"
+		sed -i '/^'"$RULEDATA2"',/d' "$input"
 	fi
 
-	if [ $(grep -c ^"$RULEDATA," "$input") = 0 ]
+	if [[ $(grep -c ^"$RULEDATA," "$input") = 0 ]]
 	then
 		echo "$RULEDATA,$RULESCORE" >> "$input"
 		sort "$input" > "$input".$$
@@ -236,37 +232,37 @@ then
 	refreshpage
 fi
 
-if [ $ACTION = add ] || [ $ACTION = edit ]
+if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
 then
 
 	ACTION2=reallyadd
 	BUTTONTEXT=$"Add"
-	if [ $ACTION = edit ]
+	if [ "$ACTION" = edit ]
 	then
 		ACTION2=reallyedit
 		BUTTONTEXT=$"Edit"
 	fi
 	echo '<form style="display: inline;" action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><input name="_ACTION_" value="'$ACTION2'" type="hidden">'
 
-	[ $ACTION = edit ] && echo '<input name="_RULEDATA2_" value="'$RULEDATA'" type="hidden">'
+	[ "$ACTION" = edit ] && echo '<input name="_RULEDATA2_" value="'"$RULEDATA"'" type="hidden">'
 
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
 	<tbody><tr><td style="width: '$WIDTH4'px;">'$"Criteria"'</td>
-	<td><input tabindex= "1" name="_RULEDATA_" style="width: '$WIDTH4'px;" value="'$RULEDATA'" size="20" type="text"></td><td>
+	<td><input tabindex= "1" name="_RULEDATA_" style="width: '"$WIDTH4"'px;" value="'"$RULEDATA"'" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Custom_Spam_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the search criteria for this rule. Be careful not to cause false positives."'<br><br>'$"Use a . as a wildcard letter."'<br><br>'$"This is not case sensitive."'</span></a>
 	</td></tr>
 	<tr><td>'$"Score"'</td><td>
-	<select name="_RULESCORE_" style="width: '$WIDTH4'px;">'
-	COUNTER=10
+	<select name="_RULESCORE_" style="width: '"$WIDTH4"'px;">'
+
 	if [ ! -z "$RULESCORE" ]
 	then 
-		echo '<option value="'$RULESCORE'">'$RULESCORE'</option>
+		echo '<option value="'"$RULESCORE"'">'"$RULESCORE"'</option>
 		<option disabled>----------------</option>'
 
 	fi
 	for i in $(seq 1 15)
 	do
-		echo '<option value="'$i'">'$i'</option>'
+		echo '<option value="'"$i"'">'"$i"'</option>'
 	done
 	echo '</select> 
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Custom_Spam_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the spam score that you want for this rule."'</span></a></td></tr></tbody></table><br><br>
@@ -279,7 +275,7 @@ if [ "$ACTION" = view ]
 then
 	if [ -f "$input" ]
 	then
-		echo '<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Criteria"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Score"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		echo '<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Criteria"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Score"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Edit"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 		while IFS= read -r data
 		do
@@ -288,19 +284,19 @@ then
 				RULEDATA=$(echo "$data" | cut -d, -f1)
 				SCORE=$(echo "$data" | cut -d, -f2)
 				echo '<tr><td>'"$RULEDATA"'</td><td>'"$SCORE"'</td><td>
-				<button class="info" name="_Edit" value="_ACTION_edit_RULEDATA_'$RULEDATA'_RULESCORE_'$SCORE'_">
+				<button class="info" name="_Edit" value="_ACTION_edit_RULEDATA_'"$RULEDATA"'_RULESCORE_'"$SCORE"'_">
 				<img src="'$ICON1'" alt="'$"Edit"'">
 				<span>'$"Edit"'<br>'"$RULEDATA"'</span>
 				</button>
 				</td><td>
-				<button class="info" name="_Delete" value="_ACTION_delete_RULEDATA_'$RULEDATA'_RULESCORE_'$SCORE'_">
-				<img src="'$ICON2'" alt="'$"Delete"'">
+				<button class="info" name="_Delete" value="_ACTION_delete_RULEDATA_'"$RULEDATA"'_RULESCORE_'"$SCORE"'_">
+				<img src="'"$ICON2"'" alt="'$"Delete"'">
 				<span>'$"Delete"'<br>'"$RULEDATA"'</span>
 				</button>
 				</td></tr>'
 			fi
 		done < "$input"
-		echo "</tbody></table></form>"
+		echo '</tbody></table></form>'
 	else
 		echo $"No custom spam rules have been added."
 	fi

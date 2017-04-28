@@ -43,7 +43,6 @@ export TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Custom Spam Rules"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
-<script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -127,7 +126,7 @@ get_data
 RULEDATA="$DATAENTRY"
 
 #Assign RULEDATA2
-DATANAME=RULEDATA
+DATANAME=RULEDATA2
 get_data
 RULEDATA2="$DATAENTRY"
 
