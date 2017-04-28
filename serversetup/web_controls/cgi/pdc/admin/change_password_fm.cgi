@@ -37,11 +37,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,12 +52,12 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Change User Password"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Change User Password"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -81,66 +81,46 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=9
-#Assign USERNAME
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
 #Assign PASSWORD1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
+
 #Assign PASSWORD2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
+
 #Assign NEXTLOGON
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=NEXTLOGON
+get_data
+NEXTLOGON="$DATAENTRY"
 
 if [ -z "$NEXTLOGON" ]
 then
@@ -165,33 +145,32 @@ source /opt/karoshi/server_network/security/password_settings
 
 echo '<form action="/cgi-bin/admin/change_password.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Change a User Password"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div>
-'
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div>'
 else
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Change a User Password"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></td></tr></tbody></table><br>'
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td><div class="sectiontitle">'$"Change a User Password"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></td></tr></tbody></table><br>'
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
 '$"Username"'<br>
 <input tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+ value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"New Password"'<br>
-<input tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
+<input tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br>
+<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br>
 '$"Change at next logon"'<br>
 <input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'><br><br>
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
@@ -204,7 +183,7 @@ echo '<table class="standard" style="text-align: left;" >
 '$"Username"'</td>
         <td><div id="suggestions"></div>
 <input tabindex= "1" style="width: 200px;" name="____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+ value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change the password for."'</span></a>
 </td>'
 
@@ -216,20 +195,20 @@ echo '</td></tr>
       <tr>
         <td>
 '$"New Password"'</td>
-        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"></td><td>
+        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"Leave the password fields blank if you want a random password."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~<br><br>'
 
 [ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a>
+echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a>
 </td>
       </tr>
       <tr>
         <td style="vertical-align: top;">
 '$"Confirm New Password"'</td>
-        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td><td></td>
+        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td><td></td>
       </tr>
-	<tr><td style="vertical-align: top;">'$"Change at next logon"'</td><td><input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
+	<tr><td style="vertical-align: top;">'$"Change at next logon"'</td><td><input type="checkbox" name="____NEXTLOGON____" value="yes" '"$CHECKED"'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 <tr>
      <td style="vertical-align: top; height: 120px;"></td><td></td><td></td>
       </tr>
@@ -237,11 +216,11 @@ echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br></span></a>
   </table>'
 fi
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-echo '</div><div id="submitbox">'
+	echo '</div><div id="submitbox">'
 else
-echo '<br>'
+	echo '<br>'
 fi
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 echo '</form></div></body></html>'

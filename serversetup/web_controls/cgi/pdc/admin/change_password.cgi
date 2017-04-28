@@ -37,95 +37,68 @@
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change a User Password"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change a User Password"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=12
-#Assign USERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
-#Assign PASSWORD1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-#Assign PASSWORD2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-#Assign NEXTLOGON
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NEXTLOGONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NEXTLOGON=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+}
 
-#Assign _VIEWIMAGE_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
+#Assign PASSWORD1
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
+
+#Assign PASSWORD2
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
+
+#Assign NEXTLOGON
+DATANAME=NEXTLOGON
+get_data
+NEXTLOGON="$DATAENTRY"
+
+#Assign VIEWIMAGE
+DATANAME=VIEWIMAGE
+get_data
+VIEWIMAGE="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/change_password_fm.cgi"
 </script>
 </div></body></html>'
@@ -134,7 +107,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -142,18 +115,18 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -165,27 +138,27 @@ then
 fi
 #Check to see that the user exists
 getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS != 0 ]
+USEREXISTSTATUS="$?"
+if [ "$USEREXISTSTATUS" != 0 ]
 then
 	MESSAGE=$"This username does not exist."
 	show_status
 fi
 
 #Dont change passwords for certain users
-if [ $USERNAME = karoshi ] || [ $USERNAME = root ]
+if [ "$USERNAME" = karoshi ] || [ "$USERNAME" = root ]
 then
 	MESSAGE=$"You can not change the password for this user."
 	show_status
 fi
 
 #Check view image tick box
-if [ $VIEWIMAGE'check' = yescheck ]
+if [ "$VIEWIMAGE" = yes ]
 then
 echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/change_password_fm.cgi" method="post" name="form">'
-echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
-echo '<input name="_PASSWORD1_" value="'$PASSWORD1'" type="hidden">'
-echo '<input name="_PASSWORD2_" value="'$PASSWORD2'" type="hidden"></form>'
+echo '<input name="_USERNAME_" value="'"$USERNAME"'" type="hidden">'
+echo '<input name="_PASSWORD1_" value="'"$PASSWORD1"'" type="hidden">'
+echo '<input name="_PASSWORD2_" value="'"$PASSWORD2"'" type="hidden"></form>'
 
 echo '<SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
@@ -196,14 +169,14 @@ exit
 fi
 
 #Check to see that the user is not in acceptable use category
-if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME ]
+if [ -f "/opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME" ]
 then
 	#Check to see how many days of trial are left
-	GRACE_TIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME | cut -d, -f1 | tr -cd 0-9`
+	GRACE_TIME=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME" | cut -d, -f1 | tr -cd 0-9)
 	[ -z "$GRACE_TIME" ] && GRACE_TIME=0
-	if [ $GRACE_TIME = 0 ]
+	if [ "$GRACE_TIME" = 0 ]
 	then
-		MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
+		MESSAGE=''"$USERNAME"' - '$"This user has not signed an acceptable use policy and their account has now been suspended."''
 		show_status
 	fi
 fi
@@ -216,7 +189,7 @@ SHOW_PASSWORD=no
 #Create a random password if password1 has not been set to the minium password length set in default user settings
 if [ -z "$PASSWORD1" ]
 then
-	if [ $PASSWORDCOMPLEXITY = on ]
+	if [ "$PASSWORDCOMPLEXITY" = on ]
 	then
 		PASSWORD1=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
 	else
@@ -225,9 +198,14 @@ then
 	SHOW_PASSWORD=yes
 fi
 
-#Check to see that password fields match if they are not blank
-if [ ! -z "$PASSWORD1" ] && [ ! -z "$PASSWORD2" ]
+if [ "$SHOW_PASSWORD" = no ]
 then
+	#Check to see that password fields match if they are not blank
+	if [ -z "$PASSWORD2" ]
+	then
+		MESSAGE=$"You have not confirmed the password."
+		show_status
+	fi
 	#Check that password has been entered correctly
 	if [ "$PASSWORD1" != "$PASSWORD2" ]
 	then
@@ -237,7 +215,7 @@ then
 fi
 
 #Convert special characters back for new password to check password strength
-NEW_PASSWORD=`echo "$PASSWORD1" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
+NEW_PASSWORD=$(echo "$PASSWORD1" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g')
 
 PASSLENGTH=${#NEW_PASSWORD}
 
@@ -255,21 +233,20 @@ then
 	CHARCHECK=ok
 
 	#Check that the password has a combination of characters and numbers
-	if [ `echo "$PASSWORD1"'1' | tr -cd '0-9\n'` = 1 ]
+	if [[ $(echo "$PASSWORD1"'1' | tr -cd '0-9\n') = 1 ]]
 	then
 		CHARCHECK=fail
 	fi
-	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Za-z\n'` = A ]
+	if [[ $(echo "$PASSWORD1"'A' | tr -cd 'A-Za-z\n') = A ]]
 	then
 		CHARCHECK=fail
 	fi
 
-	if [ `echo "$PASSWORD1"'A' | tr -cd 'A-Z\n'` = A ]
+	if [[ $(echo "$PASSWORD1"'A' | tr -cd 'A-Z\n') = A ]]
 	then
 		CASECHECK=fail
-		CASECHECK2=$"Failed"
 	fi
-	if [ `echo "$PASSWORD1"'a' | tr -cd 'a-z\n'` = a ]
+	if [[ $(echo "$PASSWORD1"'a' | tr -cd 'a-z\n') = a ]]
 	then
 		CASECHECK=fail
 	fi
@@ -284,24 +261,24 @@ fi
 #Change password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/change_password
 EXEC_STATUS="$?"
-if [ $EXEC_STATUS = 0 ]
+if [ "$EXEC_STATUS" = 0 ]
 then
 
 	#Reset user lockout just in case
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 
-	MESSAGE=`echo $"Password changed for" $USERNAME.`
-	if [ $SHOW_PASSWORD = yes ]
+	MESSAGE=''$"Password changed for"' '"$USERNAME"'.'
+	if [ "$SHOW_PASSWORD" = yes ]
 	then
-		MESSAGE=`echo $MESSAGE"\n\n"$"Password": "$PASSWORD1"`
+		MESSAGE=''"$MESSAGE"'\n\n'$"Password"': '"$PASSWORD1"''
 	fi
 else
-	MESSAGE=`echo $"The password was not changed for" $USERNAME.`
+	MESSAGE=''$"The password was not changed for"' '"$USERNAME".''
 fi
-if [ $EXEC_STATUS = 102 ]
+if [ "$EXEC_STATUS" = 102 ]
 then
-	MESSAGE=`echo $USERNAME - $"This user account has been suspended."`
+	MESSAGE=''"$USERNAME"' - '$"This user account has been suspended."''
 fi
 show_status
 exit

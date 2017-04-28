@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -55,7 +55,7 @@ echo '
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -89,7 +89,7 @@ $(document).ready(function()
 </head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
@@ -112,11 +112,11 @@ fi
 
 echo '<form action="/cgi-bin/admin/change_management_passwords.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -127,14 +127,14 @@ else
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td style="height:30px"><div class="sectiontitle">'$"Management Passwords"'</div>
-<td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to change important passwords on your system that are needed to access specific services."'</span></a></td>
+<td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to change important passwords on your system that are needed to access specific services."'</span></a></td>
 </tr></table><br>
 '
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">System Password</td><td>
-<select name="____USERACCOUNT____"  tabindex="1" style="width: '$WIDTH2'px;">
+<select name="____USERACCOUNT____"  tabindex="1" style="width: '"$WIDTH2"'px;">
 <option label="blank"></option>
 <option>karoshi</option>
 <option>Administrator</option>
@@ -142,22 +142,22 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 '
 #<option value="sambaroot">Samba Root</option>
 echo '<option>root</option>
-</select></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
+</select></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
 </td></tr>
-<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '$WIDTH1'px;" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'$CHARACTERHELP' space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'"$CHARACTERHELP"' space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~
 </span></a>
 </td></tr>
-<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '$WIDTH1'px;" type="password"></td><td></td></tr>
+<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td></td></tr>
 </tbody></table><br><br>'
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all $"Change password" no no ____
+/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Change password" no no ____
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit
