@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 FAILED_SERVER=no
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
 then
-	echo `date`: dhcp_reservations - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dhcp_reservations - No admin MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dhcp_reservations_cgi'check' ]
+if [ "$MD5SUM" != "$dhcp_reservations_cgi" ]
 	then
-	echo `date`: dhcp_reservations - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,55 +46,55 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dhcp_reservations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+')
 if [ -z "$DATA" ]
 then
-	echo `date`: dhcp_reservations - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-'`
-MACADDRESS=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
-TCPIPADDRESS=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+CLIENTHOSTNAME=$(echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-')
+MACADDRESS=$(echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g')
+TCPIPADDRESS=$(echo "$DATA" | cut -s -d: -f7)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] 
+if [ "$REMOTE_MD5" != "$MD5SUM" ] 
 then
-	echo `date`: dhcp_reservations - Not called by dhcp_reservations.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - Not called by dhcp_reservations.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dhcp_reservations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dhcp_reservations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: dhcp_reservations - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - Blank action by $REMOTE_USER" from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ $ACTION != reallydelete ] && [ $ACTION != restartdhcp ]
 then
 	if [ -z "$CLIENTHOSTNAME" ]
 	then
-		echo `date`: dhcp_reservations - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - Blank client hostname by $REMOTE_USER" from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -102,39 +102,38 @@ if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = impo
 then
 	if [ -z "$MACADDRESS" ]
 	then
-		echo `date`: dhcp_reservations - Blank mac address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - Blank mac address by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 	if [ -z "$TCPIPADDRESS" ]
 	then
-		echo `date`: dhcp_reservations - Blank tcpip  address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - Blank tcpip  address by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
-
 function add_dns {
 #Add dns
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo `date`: dhcp_reservations - checking "if" "$CLIENTHOSTNAME" is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $CLIENTHOSTNAME A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $? != 0 ]
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+echo "$(date): dhcp_reservations - checking if "$CLIENTHOSTNAME" is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$CLIENTHOSTNAME" A --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-	echo `date`: dhcp_reservations - adding "$CLIENTHOSTNAME" $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM $CLIENTHOSTNAME A $TCPIPADDRESS --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - adding "$CLIENTHOSTNAME" $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" "$CLIENTHOSTNAME" A "$TCPIPADDRESS" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 }
 
 function delete_dns {
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo `date`: dhcp_reservations - checking "if" $CLIENTHOSTNAME is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $CLIENTHOSTNAME A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+echo "$(date): dhcp_reservations - checking if $CLIENTHOSTNAME is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$CLIENTHOSTNAME" A --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ $? = 0 ]
 then
-	echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME $TCPIPADDRESS  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns delete 127.0.0.1 $REALM $CLIENTHOSTNAME A $TCPIPADDRESS --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - deleting $CLIENTHOSTNAME $TCPIPADDRESS  by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns delete 127.0.0.1 "$REALM" "$CLIENTHOSTNAME" A "$TCPIPADDRESS" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 }
 
@@ -149,13 +148,13 @@ function updatedhcpconf {
 
 [ -f /opt/karoshi/server_network/dhcp/reservation_list ] && rm -f /opt/karoshi/server_network/dhcp/reservation_list
 touch /opt/karoshi/server_network/dhcp/reservation_list
-if [ `ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l` -gt 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l) -gt 0 ]]
 then
 	for RESERVATIONS in /opt/karoshi/server_network/dhcp/reservations/*
 	do
-		source $RESERVATIONS
-		RESERVATION=`basename $RESERVATIONS`
-		echo -e '\nhost '$RESERVATION' {\n\thardware ethernet '$MACADDRESS';\n\tfixed-address '$TCPIPADDRESS';\n}' >> /opt/karoshi/server_network/dhcp/reservation_list
+		source "$RESERVATIONS"
+		RESERVATION=$(basename "$RESERVATIONS")
+		echo -e '\nhost '"$RESERVATION"' {\n\thardware ethernet '"$MACADDRESS"';\n\tfixed-address '"$TCPIPADDRESS"';\n}' >> /opt/karoshi/server_network/dhcp/reservation_list
 	done
 	echo >> /opt/karoshi/server_network/dhcp/reservation_list
 fi
@@ -167,11 +166,11 @@ cat /opt/karoshi/server_network/dhcp/reservation_list > /etc/dhcp/dhcpd_reservat
 #Sync config file to failover server
 if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
-	for DHCPSERVER in `ls -1 /opt/karoshi/server_network/dhcp_servers`
+	for DHCPSERVER in $(ls -1 /opt/karoshi/server_network/dhcp_servers)
 	do
-		if [ "$DHCPSERVER" != `hostname-fqdn` ]
+		if [[ "$DHCPSERVER" != $(hostname-fqdn) ]]
 		then
-			scp /etc/dhcp/dhcpd_reservations.conf root@$DHCPSERVER:/etc/dhcp/
+			scp /etc/dhcp/dhcpd_reservations.conf root@"$DHCPSERVER":/etc/dhcp/
 		fi
 	done
 fi
@@ -187,9 +186,9 @@ fi
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
 	#Add dhcp reservation and restart dhcp
-	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
-	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME
+	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > "/opt/karoshi/server_network/dhcp/reservations/$CLIENTHOSTNAME"
 	add_dns
 	updatedhcpconf
 fi
@@ -197,7 +196,7 @@ fi
 if [ "$ACTION" = import ]
 then
 	#Add dhcp reservation
-	echo `date`: dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - adding $CLIENTHOSTNAME - mac address: $MACADDRESS tpcip: $TCPIPADDRESS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations
 	echo -e "MACADDRESS=$MACADDRESS\nTCPIPADDRESS=$TCPIPADDRESS" > /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME"
 	add_dns
@@ -206,7 +205,7 @@ fi
 if [ "$ACTION" = activateimport ]
 then
 	#Add dhcp reservation and restart dhcp
-	echo `date`: dhcp_reservations - activating import by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - activating import by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	updatedhcpconf
 fi
 
@@ -214,7 +213,7 @@ if [ "$ACTION" = delete ]
 then
 	if [ -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" ]
 	then
-		echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
 		cp -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
 	fi
@@ -225,26 +224,26 @@ then
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
 	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/reservations/)
 	do
-		echo `date`: dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		cp -f /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
 	done
 fi
 
 if [ "$ACTION" = clearall ]
 then
-	echo `date`: dhcp_reservations - clearing all reservations by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - clearing all reservations by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete
 fi
 
 if [ "$ACTION" = canceldelete ]
 then
-	echo `date`: dhcp_reservations - canceling deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_reservations - canceling deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [ -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME" ]
 	then
 		rm -f /opt/karoshi/server_network/dhcp/reservations_delete/"$CLIENTHOSTNAME"
 	fi
 	#Delete folder if it is empty so that delete reservations button no longer shows
-	if [ $(ls -1 /opt/karoshi/server_network/dhcp/reservations_delete | wc -l) = 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/dhcp/reservations_delete | wc -l) = 0 ]]
 	then
 		rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete
 	fi
@@ -255,7 +254,7 @@ then
 	[ ! -d /opt/karoshi/server_network/dhcp/reservations_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/reservations_delete
 	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/reservations_delete/)
 	do
-		echo `date`: dhcp_reservations - really deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_reservations - really deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		#Get tcpip address
 		source /opt/karoshi/server_network/dhcp/reservations/"$CLIENTHOSTNAME"
 		rm -f -R /opt/karoshi/server_network/dhcp/reservations_delete

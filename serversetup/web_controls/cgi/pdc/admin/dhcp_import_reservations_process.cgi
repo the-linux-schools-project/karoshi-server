@@ -35,31 +35,25 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Import DHCP Reservations"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Import DHCP Reservations"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Import DHCP Reservations"'</div></div><div id="infobox">
 <br><br>'
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-#GROUP=`echo $DATA | cut -d'_' -f3`
 
 function show_status {
 
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/dhcp_import_reservations_fm.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -83,7 +77,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -97,7 +91,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -109,26 +103,33 @@ fi
 [ -d /var/www/karoshi/dhcp-static_lease_import ] || mkdir -p /var/www/karoshi/dhcp-static_lease_import
 chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/dhcp-static_lease_import
-if [ `dir /var/www/karoshi/dhcp-static_lease_import --format=single-column | wc -l` != 1 ]
+if [[ $(dir /var/www/karoshi/dhcp-static_lease_import --format=single-column | wc -l) != 1 ]]
 then
 	MESSAGE=$"File upload error."
 	show_status
 fi
-CSVFILE=`ls /var/www/karoshi/dhcp-static_lease_import`
+CSVFILE=$(ls /var/www/karoshi/dhcp-static_lease_import)
 echo >> /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
 cat /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | tr -cd 'A-Za-z0-9\.,_:\-\n' > /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"2
 rm -f /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
 mv /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"2 /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
 sed -i '/^$/d' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
-CSVFILE_LINES=`cat /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | wc -l`
-[ -f /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ ] && rm -f /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$
+CSVFILE_LINES=$(cat /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | wc -l)
+[ -f /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ ] && rm -f "/var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$"
 COUNTER=1
 
-while [ $COUNTER -le $CSVFILE_LINES ]
+source /opt/karoshi/server_network/dhcp/dhcp_settings
+
+function convert_ip_to_int {
+IFS=. read -r a b c d <<< "$ip"
+printf '%s%d\n' "$((a * 256 ** 3 + b * 256 ** 2 + c * 256 + d))"
+}
+
+while [ "$COUNTER" -le "$CSVFILE_LINES" ]
 do
-	CLIENTNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f1`
-	MAC=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f2`
-	TCPIP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f3`
+	CLIENTNAME=$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f1)
+	MAC=$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f2)
+	TCPIP=$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE" | cut -s -d, -f3)
 	echo "$COUNTER: $CLIENTNAME $MAC $TCPIP""<br>"
 	if [ -z "$CLIENTNAME" ]
 	then
@@ -149,7 +150,7 @@ do
 	#Check that the clientname is not already in use
 	if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 	then
-		if [ `grep -c -w "host $CLIENTNAME" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
+		if [[ $(grep -c -w "host $CLIENTNAME" /etc/dhcp/dhcpd_reservations.conf) -gt 0 ]]
 		then
 			MESSAGE=''$"Error on line $COUNTER"' - '$"This client name is already in use."''
 			show_status
@@ -158,14 +159,14 @@ do
 
 	#Check tcpip
 	#Check dots
-	if [ `echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	if [[ $(echo "$TCPIP" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]]
 	then
 		MESSAGE=''$"Error on line $COUNTER"' - '$"You have not entered in a correct tcpip address."''
 		show_status
 	fi
 	#Check that no number is greater than 255
-	HIGHESTNUMBER=`echo $TCPIP | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-	if [ $HIGHESTNUMBER -gt 255 ]
+	HIGHESTNUMBER=$(echo "$TCPIP" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
+	if [ "$HIGHESTNUMBER" -gt 255 ]
 	then
 		MESSAGE=''$"Error on line $COUNTER"' - '$"You have not entered in a correct tcpip address."''
 		show_status
@@ -173,7 +174,7 @@ do
 	#Check to see that the tcpip number has not already been added
 	if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 	then
-		if [ `grep -c "$TCPIP;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
+		if [[ $(grep -c "$TCPIP;" /etc/dhcp/dhcpd_reservations.conf) -gt 0 ]]
 		then
 			MESSAGE=''$"Error on line $COUNTER"' - '$"This TCPIP address is already in use."''
 			show_status
@@ -182,15 +183,15 @@ do
 
 	#Check mac address
 	#Check colons 00:13:77:b8:39:17
-	if [ `echo "$MAC" | sed 's/:/\n/g' | wc -l` != 6 ]
+	if [[ $(echo "$MAC" | sed 's/:/\n/g' | wc -l) != 6 ]]
 	then
 		MESSAGE=''$"Error on line $COUNTER"' - '$"You have not entered in a valid mac address."''
 		show_status	
 	fi
 	#Check max chars
-	for LINEDATA in `echo "$MAC" | sed 's/:/\n/g'`
+	for LINEDATA in $(echo "$MAC" | sed 's/:/\n/g')
 	do
-		if [ `echo "$LINEDATA" | wc -L` != 2 ]
+		if [[ $(echo "$LINEDATA" | wc -L) != 2 ]]
 		then
 			MESSAGE=''$"Error on line $COUNTER"' - '$"You have not entered in a valid mac address."''
 			show_status
@@ -199,19 +200,38 @@ do
 	#Check to see that the mac address has not already been added
 	if [ -f /etc/dhcp/dhcpd_reservations.conf ]
 	then
-		if [ `grep -c "$MAC;" /etc/dhcp/dhcpd_reservations.conf` -gt 0 ]
+		if [[ $(grep -c "$MAC;" /etc/dhcp/dhcpd_reservations.conf) -gt 0 ]]
 		then
 			MESSAGE=''$"Error on line $COUNTER"' - '$"This mac address is already in use."''
 			show_status
 		fi
 	fi
 
+	#Check that the mac address is not in the dhcp range
+
+	ip="$STARTADDRESS"
+	int_range_start=$(convert_ip_to_int)
+
+	ip="$ENDADDRESS"
+	int_range_end=$(convert_ip_to_int)
+
+	ip="$TCPIP"
+	int_ip_num=$(convert_ip_to_int)
+
+
+	if [ "$int_ip_num" -ge "$int_range_start" ] && [ "$int_ip_num" -le "$int_range_end" ]
+	then
+		MESSAGE=$"This TCPIP address is inside the DHCP reservation range."
+		sshow_status
+
+	fi
+
 	echo "$CLIENTNAME","$MAC","$TCPIP" >> /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$
 	let COUNTER=$COUNTER+1
 done
-CSVMDSUM=`md5sum /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ | cut -d' ' -f1`
+CSVMDSUM=$(md5sum /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ | cut -d' ' -f1)
 rm -f /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_import_reservations_process.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_import_reservations_process.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CSVMDSUM:$$:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_import_reservations
 show_dhcp_reservations
 echo "</div></div></div></body></html>"

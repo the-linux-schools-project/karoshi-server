@@ -143,7 +143,12 @@ do
 	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
 		let COUNTER="$COUNTER"+1
-		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		if [ -z "$GET_TO_END" ]
+		then
+			DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		else
+			DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER"-)
+		fi
 		break
 	fi
 	let COUNTER=$COUNTER+1
@@ -174,7 +179,9 @@ then
 	#Get users to approve
 	DATANAME=USERNAME
 	get_data
-	USERNAMES="${$DATAENTRY//_ACTION_approve_USERNAME_/,}"
+	GET_TO_END="yes"
+	USERNAMES="${DATAENTRY//_ACTION_approve_USERNAME_/,}"
+	GET_TO_END=""
 fi
 
 if [ "$ACTION" = enableac ] || [ "$ACTION" = disableac ]
