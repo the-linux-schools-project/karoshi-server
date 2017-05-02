@@ -362,13 +362,15 @@ function view_reservations {
 
 SHOWENTRIES=no
 if [ -d /opt/karoshi/server_network/dhcp/reservations ]
-then 
+then
 	if [[ $(ls -1 /opt/karoshi/server_network/dhcp/reservations | wc -l) -gt 0 ]]
 	then
 		SHOWENTRIES=yes
 
 		echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Host name"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Mac Address"'</b></th><th style="width:'"$WIDTH3"'px;"><b>'$"TCPIP address"'</b></th><th style="width:'"$WIDTH4"'px;">'$"Edit"'</th><th style="width:'"$WIDTH4"'px;">'
+		<tr>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH1"'px;"><b>'$"Host name"'</b></th>'
+		echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Mac Address"'</b></th><th style="width:'"$WIDTH3"'px;"><b>'$"TCPIP address"'</b></th><th style="width:'"$WIDTH4"'px;">'$"Edit"'</th><th style="width:'"$WIDTH4"'px;">'
 		if [ ! -d /opt/karoshi/server_network/dhcp/reservations_delete/ ]
 		then
 			echo '<button class="button" name="_DeleteAll_" value="_ACTION_deleteall_CLIENTHOSTNAME_deleteall_">
@@ -395,7 +397,14 @@ then
 			fi
 			#Get details
 			source "$CLIENTHOSTNAMES"
-			echo '<tr><td id="'"$CLIENTHOSTNAME"'" '"$DELETESTYLE"'>'"$CLIENTHOSTNAME"'</td><td '"$DELETESTYLE"'>'"$MACADDRESS"'</td><td '"$DELETESTYLE"'>'"$TCPIPADDRESS"'</td><td '"$DELETESTYLE"'>'
+			echo '<tr>'
+			if [ "$MOBILE" = no ]
+			then
+				echo '<td id="'"$CLIENTHOSTNAME"'" '"$DELETESTYLE"'>'"$CLIENTHOSTNAME"'</td><td '"$DELETESTYLE"'>'"$MACADDRESS"'</td>'
+			else
+				echo '<td id="'"$CLIENTHOSTNAME"'" '"$DELETESTYLE"'>'"$MACADDRESS"'</td>'
+			fi
+			echo '<td '"$DELETESTYLE"'>'"$TCPIPADDRESS"'</td><td '"$DELETESTYLE"'>'
 			if [ -z "$DELETESTYLE" ]
 			then
 				echo '<button class="info" name="_Edit_" value="_ACTION_edit_'"$CLIENTHOSTNAME"'_CLIENTHOSTNAME_'"$CLIENTHOSTNAME"'_MACADDRESS_'"$MACADDRESS"'_TCPIPADDRESS_'"$TCPIPADDRESS"'_">
