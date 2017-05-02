@@ -334,7 +334,7 @@ do
 		
 		if [ "$MOBILE" = no ]
 		then
-			echo '<td></td><td></td><td></td><td></td><td>
+			echo '<td>'$UTILITYV1'</td><td>'$UPSLOAD'</td><td>'"$UPSTEMP"'</td><td>'"$BATTRUNTIME"'</td><td>
 			<form action="/cgi-bin/admin/ups_delete.cgi" method="post">
 
 				<button class="info" name="_DeleteUPS_" value="_SERVERTYPE_SLAVE_SERVERMASTER_'$SERVER'_SERVER_'$SLAVESERVER'_UPSMODEL_'$UPSMODEL'_">
@@ -351,7 +351,7 @@ do
 			</form>
 			</td>'
 		else
-			echo '<td></td><td></td>'
+			echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td>'"$BATTRUNTIME"'</td>'
 		fi
 		echo '</tr>'
 	done
