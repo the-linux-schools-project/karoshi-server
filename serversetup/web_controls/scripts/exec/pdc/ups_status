@@ -329,7 +329,7 @@ do
 		echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$STATUSICON'"><span>'$SLAVESERVER' - '$STATUS2'</span></a></td>'
 		if [ "$MOBILE" = no ]
 		then
-			echo '<td></td>'
+			echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td>'
 		fi
 		
 		if [ "$MOBILE" = no ]
@@ -365,11 +365,11 @@ do
 			echo '<tr>'
 			if [ "$MOBILE" = no ]
 			then
-				echo '<td><div style="margin-left: 40px;">'$DEVICE'</div></td><td>UPS Device</td><td></td><td></td><td></td>'
+				echo '<td><div style="margin-left: 40px;">'$DEVICE'</div></td><td>UPS Device</td><td></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td>'$UTILITYV1'</td><td>'$UPSLOAD'</td><td>'"$UPSTEMP"'</td><td>'"$BATTRUNTIME"'</td>'
 			else
-				echo '<td>'$DEVICE'</td>'
+				echo '<td>'$DEVICE'</td><td></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/submenus/system/'$BATTCHARGEICON'"><span>'$SERVER' - '$BATTERYCHARGE'</span></a></td><td>'"$BATTRUNTIME"'</td>'
 			fi
-			echo '<td></td><td></td><td></td>'
+
 			if [ "$MOBILE" = no ]
 			then
 				echo '<td>
