@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
 then
-	echo `date`: groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $groups_cgi'check' ]
+if [ "$MD5SUM" != "$groups_cgi" ]
 then
-	echo `date`: groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,83 +45,83 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-,'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-,')
 if [ -z "$DATA" ]
 then
-	echo `date`: groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-GROUPNAME=`echo "$DATA" | cut -s -d: -f4`
-ACTION=`echo "$DATA" | cut -s -d: -f5`
-TYPE=`echo "$DATA" | cut -s -d: -f6`
-PROFILE=`echo "$DATA" | cut -s -d: -f7`
-HOMESERVER=`echo "$DATA" | cut -s -d: -f8`
-CATEGORY=`echo "$DATA" | cut -s -d: -f9`
-SECGROUP=`echo "$DATA" | cut -s -d: -f10`
-EXTRAGROUPS=`echo "$DATA" | cut -s -d: -f11`
-USERNAME=`echo "$DATA" | cut -s -d: -f12`
-MOBILE=`echo "$DATA" | cut -s -d: -f13`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+GROUPNAME=$(echo "$DATA" | cut -s -d: -f4)
+ACTION=$(echo "$DATA" | cut -s -d: -f5)
+TYPE=$(echo "$DATA" | cut -s -d: -f6)
+PROFILE=$(echo "$DATA" | cut -s -d: -f7)
+HOMESERVER=$(echo "$DATA" | cut -s -d: -f8)
+CATEGORY=$(echo "$DATA" | cut -s -d: -f9)
+SECGROUP=$(echo "$DATA" | cut -s -d: -f10)
+EXTRAGROUPS=$(echo "$DATA" | cut -s -d: -f11)
+USERNAME=$(echo "$DATA" | cut -s -d: -f12)
+MOBILE=$(echo "$DATA" | cut -s -d: -f13)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5" != "$MD5SUM" ]
 then
-	echo `date`: groups - Not called by groups.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Not called by groups.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: groups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$GROUPNAME" ]
 then
-	echo `date`: groups - Blank groupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Blank groupname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$TYPE" ]
 then
-	echo `date`: groups - Blank type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - Blank type by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $ACTION = reallyadd ] && [ $TYPE = primary ]
+if [ "$ACTION" = reallyadd ] && [ "$TYPE" = primary ]
 then
 	if [ -z "$HOMESERVER" ]
 	then
-		echo `date`: groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): groups - Blank home server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 	if [ -z "$CATEGORY" ]
 	then
-		echo `date`: groups - Blank category by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): groups - Blank category by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=200
@@ -133,9 +133,8 @@ then
 	WIDTH7=80
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/user/edit_user_info.png
-	ICON3=/images/submenus/user/users.png
-	ICON4=/images/submenus/user/user_enabled.png
-	ICON5=/images/submenus/user/user_disabled.png
+	ICON3=/images/submenus/user/user_enabled.png
+	ICON4=/images/submenus/user/user_disabled.png
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=120
@@ -147,9 +146,8 @@ else
 	WIDTH7=70
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/user/usersm.png
-	ICON3=/images/submenus/user/users.png
-	ICON4=/images/submenus/user/user_enabledm.png
-	ICON5=/images/submenus/user/user_disabledm.png
+	ICON3=/images/submenus/user/user_enabledm.png
+	ICON4=/images/submenus/user/user_disabledm.png
 fi
 
 
@@ -157,13 +155,12 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Get samba 4 database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
 
 ##########################
@@ -172,7 +169,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 FEDERATED_LDAP_SERVERS=no
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l) -gt 0 ]]
 	then
 		FEDERATED_LDAP_SERVERS=yes
 	fi
@@ -180,132 +177,131 @@ fi
 
 if [ "$ACTION" = removeuser ]
 then
-	echo `date`: groups - "removing "$USERNAME" from $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - removing $USERNAME from $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	samba-tool group removemembers "$GROUPNAME" "$USERNAME" 1>/dev/null
 	exit
 fi
 
 if [ "$ACTION" = adduser ]
 then
-	echo `date`: groups - "adding "$USERNAME" to $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - adding $USERNAME to $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	samba-tool group addmembers "$GROUPNAME" "$USERNAME" 1>/dev/null
 	exit
 fi
 
 if [ "$ACTION" = disableuser ]
 then
-	echo `date`: groups - "disabling "$USERNAME" by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - disabling $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	samba-tool user disable "$USERNAME" 1>/dev/null
 	exit
 fi
 
 if [ "$ACTION" = enableuser ]
 then
-	echo `date`: groups - "enabling "$USERNAME" by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - enabling $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	samba-tool user enable "$USERNAME" 1>/dev/null
 	exit
 fi
 
 if [ "$ACTION" = showusers ]
 then
-	echo `date`: groups - "showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): groups - showing all users in group $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	source /opt/karoshi/server_network/domain_information/domain_name
-	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 	#Show box to add users to the group.
-	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-      	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Users"'</b></td><td></td><td></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
-<input tabindex= "1" style="width: '$WIDTH1'px;" name="____ACTION____adduser____GROUPNAME____'$GROUPNAME'____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table></form><br><br>'
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+      	<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Add Users"'</b></td><td></td><td></td></tr><tr><td><b>'$"Username"'</b></td><td><div id="suggestions"></div>
+<input tabindex= "1" style="width: '"$WIDTH1"'px;" name="____ACTION____adduser____GROUPNAME____'"$GROUPNAME"'____USERNAME____" 
+ value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><input value="'$"Submit"'" class="button" type="submit"></td></tr></tbody></table></form><br><br>'
 	#Check how many users there are in the group before showing any users.
-	if [[ `getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l` > 0 ]]
+	if [[ $(getent group "$GROUPNAME" | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l) -gt 0 ]]
 	then
-		SERVERNAME=`hostname-fqdn`
-		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+		SERVERNAME=$(hostname-fqdn)
 		#Show all users in the group.
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>'
-	      	[ "$MOBILE" = no ] && echo '<tr><th style="width: '$WIDTH2'px;"><b>'$"UID"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"GID"'</b></th>'
-		echo '<th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th>'
-		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH3'px;"><b>'$"First Name"'</b></th><th style="width: '$WIDTH3'px;"><b>'$"Last Name"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Groups"'</b></th><th style="width: '$WIDTH5'px;"><b>'$"Password changed"'</b></th><th style="width: '$WIDTH6'px;"><b>'$"Account Expires"'</b></th>'
-		echo '<th style="width: '$WIDTH2'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH7'px;"><b>'$"Remove"'</b></th><th style="width: '$WIDTH7'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
-		for GROUPMEMBER in `samba-tool group listmembers "$GROUPNAME"`
+	      	[ "$MOBILE" = no ] && echo '<tr><th style="width: '"$WIDTH2"'px;"><b>'$"UID"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"GID"'</b></th>'
+		echo '<th style="width: '"$WIDTH3"'px;"><b>'$"Username"'</b></th>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH3"'px;"><b>'$"First Name"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Last Name"'</b></th><th style="width: '"$WIDTH4"'px;"><b>'$"Groups"'</b></th><th style="width: '"$WIDTH5"'px;"><b>'$"Password changed"'</b></th><th style="width: '"$WIDTH6"'px;"><b>'$"Account Expires"'</b></th>'
+		echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Edit"'</b></th><th style="width: '"$WIDTH7"'px;"><b>'$"Remove"'</b></th><th style="width: '"$WIDTH7"'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+		for GROUPMEMBER in $(samba-tool group listmembers "$GROUPNAME")
 		do
 
 			#Get user data
-			PRIGROUP=$(id -g -n "$GROUPMEMBER")
+			#PRIGROUP=$(id -g -n "$GROUPMEMBER")
 			SUPPGROUPS=$(id -G -n "$GROUPMEMBER" | sed 's/ /<br>/g')
-			LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$GROUPMEMBER | sed "s/[\]/BACKSLASH/g"`
+			LDAPDATA=$(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$GROUPMEMBER" | sed "s/[\]/BACKSLASH/g")
 
 
-			CN=`echo -e "$LDAPDATA" | grep ^cn: | cut -d: -f2 | sed 's/^ //g'`
-			LASTNAME=`echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g'`
-			FIRSTNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
-			LDAPUSERNAME=`echo -e "$LDAPDATA" | grep ^uid: | cut -d: -f2 | sed 's/^ //g'`
-			UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
-			GIDNUMBER=`echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g'`
-			EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
-			HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g'`
-			HOMEDIRECTORY2=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\\/g'`
-			GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
-			SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
-			SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
-			SAMBAPWDCANCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g'`
-			DISPLAYNAME=`echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g'`
-			MAILLOCALADDRESS=`echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g'`
-			EMAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
-			SHADOWLASTCHANGE=`echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | sed 's/^ //g'`
-			SHADOWMAX=`echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g'`
-			SAMBAPASSWORDHISTORY=`echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g'`
-			SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
-			BADPASSWORDTIME=`echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g'`
-			BADPASSWORDCOUNT=`echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g'`
-			LOCKOUTTIME=`echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g'`
+			#CN=$(echo -e "$LDAPDATA" | grep ^cn: | cut -d: -f2 | sed 's/^ //g')
+			LASTNAME=$(echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g')
+			FIRSTNAME=$(echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g')
+			#LDAPUSERNAME=$(echo -e "$LDAPDATA" | grep ^uid: | cut -d: -f2 | sed 's/^ //g')
+			UIDNUMBER=$(echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g')
+			GIDNUMBER=$(echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g')
+			#EMPLOYEENUMBER=$(echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g')
+			#HOMEDIRECTORY=$(echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g')
+			#HOMEDIRECTORY2=$(echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\\/g')
+			#GECOS=$(echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g')
+			#SAMBALOGONTIME=$(echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g')
+			#SAMBALOGOFFTIME=$(echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g')
+			#SAMBAPWDCANCHANGE=$(echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g')
+			#DISPLAYNAME=$(echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g')
+			#MAILLOCALADDRESS=$(echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g')
+			#EMAIL=$(echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g')
+			#SHADOWLASTCHANGE=$(echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | sed 's/^ //g')
+			#SHADOWMAX=$(echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g')
+			#SAMBAPASSWORDHISTORY=$(echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g')
+			#SAMBAPWDLASTSET=$(echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g')
+			#BADPASSWORDTIME=$(echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g')
+			#BADPASSWORDCOUNT=$(echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g')
+			#LOCKOUTTIME=$(echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g')
 			USERACCOUNTCONTROL=$(echo -e "$LDAPDATA" | grep ^userAccountControl: | cut -d: -f2 | tr -cd "0-9")
 
 			AD_PWDLASTSET=$(echo -e "$LDAPDATA" | grep ^pwdLastSet: | cut -d: -f2 | tr -cd "0-9")
-			AD_PWDLASTSET_EPOCH=`echo $((($AD_PWDLASTSET/10000000)-11644473600))`
+			AD_PWDLASTSET_EPOCH=$((($AD_PWDLASTSET/10000000)-11644473600))
 			AD_PWDLASTSET_DATE=$(date +"%d %b %Y" -d @"$AD_PWDLASTSET_EPOCH")
 
 
 			AD_EXPIRES=$(echo -e "$LDAPDATA" | grep ^accountExpires: | cut -d: -f2 | tr -cd "0-9")
-			AD_EXPIRES_EPOCH=`echo $((($AD_EXPIRES/10000000)-11644473600))`
+			AD_EXPIRES_EPOCH=$((($AD_EXPIRES/10000000)-11644473600))
 			AD_EXPIRES_DATE=$(date +"%d %b %Y" -d @"$AD_EXPIRES_EPOCH")
 
-			if [ $USERACCOUNTCONTROL = 514 ]
+			if [ "$USERACCOUNTCONTROL" = 514 ]
 			then
-				STATUSICON="$ICON5"
+				STATUSICON="$ICON4"
 				STATUSTEXT=$"Enable User Account"
 				STATUSACTION=enableuser
 			else
-				STATUSICON="$ICON4"
+				STATUSICON="$ICON3"
 				STATUSTEXT=$"Disable User Account"
 				STATUSACTION=disableuser
 			fi
 
 			echo '<tr>'
-			[ "$MOBILE" = no ] && echo '<td>'$UIDNUMBER'</td><td>'$GIDNUMBER'</td>'
-			echo '<td>'$GROUPMEMBER'</td>'
-			[ "$MOBILE" = no ] && echo '<td>'$FIRSTNAME'</td><td>'$LASTNAME'</td><td>'$SUPPGROUPS'</td><td>'$AD_PWDLASTSET_DATE'</td><td>'$AD_EXPIRES_DATE'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'"$UIDNUMBER"'</td><td>'"$GIDNUMBER"'</td>'
+			echo '<td>'"$GROUPMEMBER"'</td>'
+			[ "$MOBILE" = no ] && echo '<td>'"$FIRSTNAME"'</td><td>'"$LASTNAME"'</td><td>'"$SUPPGROUPS"'</td><td>'"$AD_PWDLASTSET_DATE"'</td><td>'"$AD_EXPIRES_DATE"'</td>'
 			echo '<td>
 			<form name="myform" action="/cgi-bin/admin/show_user_info.cgi" method="post">
-			<button class="info" name="_ShowUserInfo_" value="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_USERNAME_'$GROUPMEMBER'_">
+			<button class="info" name="_ShowUserInfo_" value="_SERVERTYPE_network_SERVERNAME_'"$SERVERNAME"'_USERNAME_'"$GROUPMEMBER"'_">
 			<img src="'$ICON2'" alt="'$"Show users in this group."'">
-			<span>'$"Edit"' '$GROUPMEMBER'</span>
+			<span>'$"Edit"' '"$GROUPMEMBER"'</span>
 			</button>
 			</form>
 			</td><td>
 				<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-					<button class="info infoleft" name="____RemoveUser____" value="____ACTION____removeuser____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
-					<img src="'$ICON1'" alt="'$"remove this user from the group."'">
-					<span>'$GROUPMEMBER' - '$"remove this user from the group."'</span>
+					<button class="info infoleft" name="____RemoveUser____" value="____ACTION____removeuser____GROUPNAME____'"$GROUPNAME"'____USERNAME____'"$GROUPMEMBER"'____">
+					<img src="'"$ICON1"'" alt="'$"remove this user from the group."'">
+					<span>'"$GROUPMEMBER"' - '$"remove this user from the group."'</span>
 					</button>
 				</form>
 			</td>
 			<td>
 				<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-					<button class="info infoleft" name="____DisableUser____" value="____ACTION____'$STATUSACTION'____GROUPNAME____'$GROUPNAME'____USERNAME____'$GROUPMEMBER'____">
-					<img src="'$STATUSICON'" alt="'$STATUSTEXT'">
-					<span>'$GROUPMEMBER' - '$STATUSTEXT'</span>
+					<button class="info infoleft" name="____DisableUser____" value="____ACTION____'"$STATUSACTION"'____GROUPNAME____'"$GROUPNAME"'____USERNAME____'"$GROUPMEMBER"'____">
+					<img src="'"$STATUSICON"'" alt="'"$STATUSTEXT"'">
+					<span>'"$GROUPMEMBER"' - '"$STATUSTEXT"'</span>
 					</button>
 				</form>
 			</td>
@@ -316,42 +312,42 @@ then
 	exit
 fi
 
-if [ $ACTION = editextrargroups ]
+if [ "$ACTION" = editextrargroups ]
 then
-	echo `date`: groups - editing $GROUPNAME with extragroups: $EXTRAGROUPS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	sed -i 's/^SECONDARYGROUP=.*/SECONDARYGROUP='$EXTRAGROUPS'/' /opt/karoshi/server_network/group_information/"$GROUPNAME"
+	echo "$(date): groups - editing $GROUPNAME with extragroups: $EXTRAGROUPS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	sed -i 's/^SECONDARYGROUP=.*/SECONDARYGROUP='"$EXTRAGROUPS"'/' /opt/karoshi/server_network/group_information/"$GROUPNAME"
 fi
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ]
 then
-	echo `date`: groups - adding $GROUPNAME "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	if [ $TYPE = primary ]
+	echo "$(date): groups - adding $GROUPNAME type $TYPE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ "$TYPE" = primary ]
 	then
 #Add a new primary group
-samba-tool group add --groupou="OU=Groups,OU=People" $GROUPNAME 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+samba-tool group add --groupou="OU=Groups,OU=People" "$GROUPNAME" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-GIDNUMBER=`getent group $GROUPNAME | cut -d: -f3`
+GIDNUMBER=$(getent group "$GROUPNAME" | cut -d: -f3)
 echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE "
 
 echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: gidnumber
 gidnumber: $GIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 
 
 
 		#Create a subcontainer for users of the group
-		THISYEAR=`date +%Y`
-		DAY=`date +%d`
-		MONTH=`date +%m`
+		THISYEAR=$(date +%Y)
+		DAY=$(date +%d)
+		MONTH=$(date +%m)
 
-		hour=`date +%H`
-		minutes=`date +%M`
-		seconds=`date +%S`
+		hour=$(date +%H)
+		minutes=$(date +%M)
+		seconds=$(date +%S)
 		CREATETIME=$THISYEAR$MONTH$DAY$hour$minutes$seconds.0Z
 
 		NAME="$GROUPNAME"
@@ -373,34 +369,34 @@ objectclass: organizationalUnit
 usnchanged: 3372
 usncreated: 3371
 whenchanged: $CREATETIME
-whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
+whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 
 
 
 		##########################
 		#Create data files
 		##########################
-		[ -e /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
-		[ -e /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix ] && cp -f /var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix /var/lib/samba/netlogon/windows_settings/security/$GROUPNAME.kix
-		[ `grep -c $GROUPNAME /var/lib/samba/netlogon/groups.txt` = 0 ] && echo $GROUPNAME,$HOMESERVER >> /var/lib/samba/netlogon/groups.txt
-		echo SERVER=$HOMESERVER > /opt/karoshi/server_network/group_information/$GROUPNAME
-		echo HOMEPATH=/home/users/$CATEGORY/$GROUPNAME  >> /opt/karoshi/server_network/group_information/$GROUPNAME
-		echo SUBUNIT=$CATEGORY >> /opt/karoshi/server_network/group_information/$GROUPNAME
-		echo SECONDARYGROUP=$SECGROUP >> /opt/karoshi/server_network/group_information/$GROUPNAME
-		echo YEARSUFFIX=$YEARSUFFIX >> /opt/karoshi/server_network/group_information/$GROUPNAME
+		[ -e "/var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix" ] && cp -f "/var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix" "/var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix"
+		[ -e "/var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix" ] && cp -f "/var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix" "/var/lib/samba/netlogon/windows_settings/security/$GROUPNAME.kix"
+		[[ $(grep -c "$GROUPNAME" /var/lib/samba/netlogon/groups.txt) = 0 ]] && echo "$GROUPNAME","$HOMESERVER" >> /var/lib/samba/netlogon/groups.txt
+		echo "SERVER=$HOMESERVER" > "/opt/karoshi/server_network/group_information/$GROUPNAME"
+		echo "HOMEPATH=/home/users/$CATEGORY/$GROUPNAME"  >> "/opt/karoshi/server_network/group_information/$GROUPNAME"
+		echo "SUBUNIT=$CATEGORY" >> "/opt/karoshi/server_network/group_information/$GROUPNAME"
+		echo "SECONDARYGROUP=$SECGROUP" >> "/opt/karoshi/server_network/group_information/$GROUPNAME"
+		echo "YEARSUFFIX=$YEARSUFFIX" >> "/opt/karoshi/server_network/group_information/$GROUPNAME"
 
 		#Add group to restriction list if an email server has been setup.
 		if [ -f /opt/karoshi/server_network/emailserver ]
 		then
-			MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:4:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 		fi
 
 		#Add the folder to the backup configuration
-		if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders ]
+		if [ -f "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders" ]
 		then
-			if [ $(grep -c "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME" /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders) = 0 ]
+			if [[ $(grep -c "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME" "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders") = 0 ]]
 			then
-				echo "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders
+				echo "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME",21 >> "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders"
 			fi
 		fi
 
@@ -409,64 +405,64 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 	fi
 
-	if [ $TYPE = secondary ]
+	if [ "$TYPE" = secondary ]
 	then
 		#Add a new secondary group
 		#Get samba 4 database password
-		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+		LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 		source /opt/karoshi/server_network/domain_information/domain_name
 
-	samba-tool group add --groupou="OU=Groups,OU=People" $GROUPNAME 1>/dev/null
-GIDNUMBER=`getent group $GROUPNAME | cut -d: -f3`
+	samba-tool group add --groupou="OU=Groups,OU=People" "$GROUPNAME" 1>/dev/null
+GIDNUMBER=$(getent group "$GROUPNAME" | cut -d: -f3)
 echo -e "dn: CN=$GROUPNAME,OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
 -
 add: displayname
-displayname: "$GROUPNAME"
+displayname: $GROUPNAME
 -
 add: mail
 mail: $GROUPNAME@$REALM
 -
 add: gidnumber
 gidnumber: $GIDNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null
 
 	#Add flag file for the secondary group
 	[ ! -d /opt/karoshi/server_network/group_information_secondary ] && mkdir -p /opt/karoshi/server_network/group_information_secondary
-	echo "$GROUPNAME" > /opt/karoshi/server_network/group_information_secondary/$GROUPNAME
+	echo "$GROUPNAME" > "/opt/karoshi/server_network/group_information_secondary/$GROUPNAME"
 	fi
 
-	if [ $FEDERATED_LDAP_SERVERS = yes ]
+	if [ "$FEDERATED_LDAP_SERVERS" = yes ]
 	then
 		for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
 		do
-		FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
+		FEDERATEDLDAPSERVER=$(basename "$FEDERATEDLDAPSERVERS")
 
-		echo `date`: groups \(federated mode\) - adding $GROUPNAME to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): groups \(federated mode\) - adding $GROUPNAME to $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDLDAPSERVER" '
 ######################
 #Import group to federated ldap server
 ######################
-echo `date`: new_group \(federated mode\) - adding '$GROUPNAME' from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+echo `date`: new_group \(federated mode\) - adding '"$GROUPNAME"' from '"$REMOTE_ADDR"' by '"$REMOTE_USER"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 source /opt/karoshi/server_network/domain_information/domain_name
 
-samba-tool group add --groupou="OU=Groups,OU=People" '$GROUPNAME' 1>/dev/null
+samba-tool group add --groupou="OU=Groups,OU=People" '"$GROUPNAME"' 1>/dev/null
 echo
-GIDNUMBER=`getent group '$GROUPNAME' | cut -d: -f3`
-echo -e "dn: CN='$GROUPNAME',OU=Groups,OU=People,$LDAPBASE
+GIDNUMBER=`getent group '"$GROUPNAME"' | cut -d: -f3`
+echo -e "dn: CN='"$GROUPNAME"',OU=Groups,OU=People,$LDAPBASE
 changetype: modify
 add: objectclass
 objectclass: posixgroup
 -
 add: displayname
-displayname: "'$GROUPNAME'"
+displayname: "'"$GROUPNAME"'"
 -
 add: mail
-mail: '$GROUPNAME'@$REALM
+mail: '"$GROUPNAME"'@$REALM
 -
 add: gidnumber
 gidnumber: $GIDNUMBER
@@ -476,78 +472,78 @@ gidnumber: $GIDNUMBER
 	fi
 fi
 
-if [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallydelete ]
 then
-        echo `date`: groups - deleting $GROUPNAME "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+        echo "$(date): groups - deleting $GROUPNAME type $TYPE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
         if [ "$TYPE" = dynamic ] && [ "$GROUPNAME" = all ]
         then
                 for DYNAMIC_GROUP in $(ls -1 /opt/karoshi/server_network/group_information_dynamic)
                 do
-                        echo `date`: groups - deleting "$DYNAMIC_GROUP" "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-                        samba-tool group delete "$DYNAMIC_GROUP" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-                        rm -f /opt/karoshi/server_network/group_information_dynamic/"$DYNAMIC_GROUP" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+                        echo "$(date): groups - deleting $DYNAMIC_GROUP type $TYPE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+                        samba-tool group delete "$DYNAMIC_GROUP" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+                        rm -f /opt/karoshi/server_network/group_information_dynamic/"$DYNAMIC_GROUP" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
                 done
         else
-                samba-tool group delete $GROUPNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+                samba-tool group delete "$GROUPNAME" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
         fi
 
-	if [ $TYPE = primary ]
+	if [ "$TYPE" = primary ]
 	then
 		
-		if [ -f /opt/karoshi/server_network/group_information/$GROUPNAME ]
+		if [ -f "/opt/karoshi/server_network/group_information/$GROUPNAME" ]
 		then
-			source /opt/karoshi/server_network/group_information/$GROUPNAME
+			source "/opt/karoshi/server_network/group_information/$GROUPNAME"
 
 			#Delete parent folder for home areas in /home/users
-			echo `date`: groups - deleting "$HOMEPATH" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			if [ $SERVER = $(hostname-fqdn) ]
+			echo "$(date): groups - deleting $HOMEPATH by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			if [[ "$SERVER" = $(hostname-fqdn) ]]
 			then
 				if [ -d "$HOMEPATH" ]
 				then
 					rm -f -R "$HOMEPATH"
 				fi
 			else
-				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-				if [ -d "'$HOMEPATH'" ]
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+				if [ -d "'"$HOMEPATH"'" ]
 				then
-					rm -f -R "'$HOMEPATH'"
+					rm -f -R "'"$HOMEPATH"'"
 				fi
 				'	
 			fi
 
 			#Delete ldap container
 			source /opt/karoshi/server_network/domain_information/domain_name
-			LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+			LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 			echo -e "dn: OU=$GROUPNAME,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: delete
-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null
+" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null
 
 			#Delete group information
-			rm -f /opt/karoshi/server_network/group_information/$GROUPNAME
+			rm -f "/opt/karoshi/server_network/group_information/$GROUPNAME"
 		fi
 
 		#Delete windows profile
-		[ -d /home/applications/profiles/$GROUPNAME ] && rm -f -R /home/applications/profiles/$GROUPNAME
-		[ -L /home/applications/profiles/$GROUPNAME.V2 ] && rm -f -R /home/applications/profiles/$GROUPNAME.V2
+		[ -d "/home/applications/profiles/$GROUPNAME" ] && rm -f -R "/home/applications/profiles/$GROUPNAME"
+		[ -L "/home/applications/profiles/$GROUPNAME.V2" ] && rm -f -R "/home/applications/profiles/$GROUPNAME.V2"
 		#Delete windows drives
-		[ -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix
+		[ -f "/var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix" ] && rm -f "/var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix"
 
 		#Remove group from restriction list if an email server has been setup.
 		if [ -f /opt/karoshi/server_network/emailserver ]
 		then
 			source /opt/karoshi/server_network/domain_information/domain_name
 			EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
-			MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:1:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 			#Remove the group from the protected distribution lists
-			if [ "$EMAILSERVER" = `hostname-fqdn` ]
+			if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 			then
 				sed -i "/^$GROUPNAME@$REALM\t/d" /etc/postfix/protected_distribution_lists
 				postmap hash:/etc/postfix/protected_distribution_lists
 			else
-				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-				sed -i "/^'$GROUPNAME'@'$REALM'\t/d" /etc/postfix/protected_distribution_lists
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+				sed -i "/^'"$GROUPNAME"'@'"$REALM"'\t/d" /etc/postfix/protected_distribution_lists
 				postmap hash:/etc/postfix/protected_distribution_lists
 				'
 			fi
@@ -559,30 +555,30 @@ changetype: delete
 		/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 	fi
 
-	if [ $TYPE = dynamic ]
+	if [ "$TYPE" = dynamic ]
 	then
 		#Delete group information
-		[ -f /opt/karoshi/server_network/group_information_dynamic/$GROUPNAME ] && rm -f /opt/karoshi/server_network/group_information_dynamic/$GROUPNAME
+		[ -f "/opt/karoshi/server_network/group_information_dynamic/$GROUPNAME" ] && rm -f "/opt/karoshi/server_network/group_information_dynamic/$GROUPNAME"
 	fi
 
-	if [ $FEDERATED_LDAP_SERVERS = yes ]
+	if [ "$FEDERATED_LDAP_SERVERS" = yes ]
 	then
 		for FEDERATEDLDAPSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
 		do
-			FEDERATEDLDAPSERVER=`basename $FEDERATEDLDAPSERVERS`
-			echo `date`: groups \(federated mode\) - deleting $GROUPNAME on $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-			echo `date`: groups \(federated mode\) - deleting '$GROUPNAME' "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-			samba-tool group delete '$GROUPNAME' 1>/dev/null
+			FEDERATEDLDAPSERVER=$(basename "$FEDERATEDLDAPSERVERS")
+			echo "$(date): groups \(federated mode\) - deleting $GROUPNAME on $FEDERATEDLDAPSERVER from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDLDAPSERVER" '
+			echo `date`: groups \(federated mode\) - deleting '"$GROUPNAME"' "type" $TYPE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool group delete '"$GROUPNAME"' 1>/dev/null
 
-			if [ '$TYPE' = primary ]
+			if [ '"$TYPE"' = primary ]
 			then
 			#Delete group information
-			[ -f /opt/karoshi/server_network/group_information/'$GROUPNAME' ] && rm -f /opt/karoshi/server_network/group_information/'$GROUPNAME'
+			[ -f /opt/karoshi/server_network/group_information/'"$GROUPNAME"' ] && rm -f /opt/karoshi/server_network/group_information/'"$GROUPNAME"'
 			#Delete windows profile
-			[ -d /home/applications/profiles/'$GROUPNAME' ] && rm -f -R /home/applications/profiles/'$GROUPNAME'
+			[ -d /home/applications/profiles/'"$GROUPNAME"' ] && rm -f -R /home/applications/profiles/'"$GROUPNAME"'
 			#Delete windows drives
-			[ -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'$GROUPNAME'.kix
+			[ -f /var/lib/samba/netlogon/windows_settings/drives/'"$GROUPNAME"'.kix ] && rm -f /var/lib/samba/netlogon/windows_settings/drives/'"$GROUPNAME"'.kix
 
 			#Recreate pam mount for the linux clients
 			/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts

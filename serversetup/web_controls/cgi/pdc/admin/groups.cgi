@@ -39,15 +39,15 @@ source /opt/karoshi/web_controls/version
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/js/jquery.js"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Group Management"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -61,7 +61,7 @@ $(document).ready(function()
 
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -86,14 +86,11 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
-#echo $DATA"<br>"
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/groups.cgi"
 </script>
 </div></div></form></body></html>'
@@ -104,47 +101,41 @@ exit
 #Assign data to variables
 #########################
 END_POINT=27
-#Assign GROUPNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/REPLACEUNDERSCORE/_/g'`
+		let COUNTER="$COUNTER"+1
+		if [ -z "$GET_TO_END" ]
+		then
+			DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		else
+			DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER"-)
+		fi
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign GROUPNAME
+DATANAME=GROUPNAME
+get_data
+GROUPNAME="${DATAENTRY//REPLACEUNDERSCORE/_}"
 
 #Assign TYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=TYPE
+get_data
+TYPE="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 [ -z "$TYPE" ] && TYPE=notset
 [ -z "$ACTION" ] && ACTION=view
@@ -152,88 +143,38 @@ done
 #Assign USERNAME
 if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ] || [ "$ACTION" = disableuser ] || [ "$ACTION" = enableuser ]
 then
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=USERNAME
+	get_data
+	USERNAME="$DATAENTRY"
 fi
 
 if [ "$ACTION" = reallyadd ] && [ "$TYPE" = primary ]
 then
 	#Assign HOMESERVER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = HOMESERVERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			HOMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=HOMESERVER
+	get_data
+	HOMESERVER="$DATAENTRY"
 
 	#Assign CATEGORY
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = CATEGORYcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			CATEGORY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=CATEGORY
+	get_data
+	CATEGORY="$DATAENTRY"
 
 	#Assign SECGROUP
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SECGROUPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SECGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-			fi
-		let COUNTER=$COUNTER+1
-	done
-	fi
-
-
-	if [ $ACTION = editextrargroups ]
-	then
-	#Assign EXTRAGROUPS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = EXTRAGROUPNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			EXTRAGROUPS=`echo $DATA | cut -s -d'_' -f$COUNTER- | sed 's/_EXTRAGROUPNAME_/,/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SECGROUP
+	get_data
+	SECGROUP="$DATAENTRY"
 fi
 
-#Get install type
-INSTALL_TYPE=education
-if [ -f /opt/karoshi/server_network/install_type ]
+
+if [ "$ACTION" = editextrargroups ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	#Assign EXTRAGROUPS
+	DATANAME=EXTRAGROUPNAME
+	GET_TO_END="yes"
+	get_data
+	EXTRAGROUPS="${DATAENTRY//_EXTRAGROUPNAME_/,}"
+	GET_TO_END=""
 fi
 
 PROTECTEDLIST="itadmin exams karoshi staff nogroup"
@@ -241,7 +182,7 @@ PROTECTEDLIST="itadmin exams karoshi staff nogroup"
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -255,7 +196,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -265,12 +206,9 @@ fi
 #Check data
 #########################
 
-#Check to see that GROUPNAME is not blank
 TITLE=$"Group Management"
-ACTIONTYPE=add
-ACTIONMSG="$NEWGROUPMSG"
 
-if [ "$ACTION" != add ] && [ $ACTION != delete ] && [ $ACTION != view ] && [ $ACTION != reallyadd ] && [ $ACTION != reallydelete ] && [ $ACTION != extragroups ] && [ $ACTION != editextrargroups ] && [ $ACTION != showusers ] && [ $ACTION != removeuser ] && [ $ACTION != adduser ] && [ $ACTION != disableuser ] && [ $ACTION != enableuser ]
+if [ "$ACTION" != add ] && [ "$ACTION" != delete ] && [ "$ACTION" != view ] && [ "$ACTION" != reallyadd ] && [ "$ACTION" != reallydelete ] && [ "$ACTION" != extragroups ] && [ "$ACTION" != editextrargroups ] && [ "$ACTION" != showusers ] && [ "$ACTION" != removeuser ] && [ "$ACTION" != adduser ] && [ "$ACTION" != disableuser ] && [ "$ACTION" != enableuser ]
 then
 	MESSAGE=$"An incorrect action has been entered."
 	show_status
@@ -286,7 +224,7 @@ then
 	fi
 fi
 
-if [ $ACTION = add ] || [ $ACTION = delete ] || [ "$ACTION" = reallyadd ] || [ $ACTION = reallydelete ] || [ $ACTION = extragroups ] || [ $ACTION = editextrargroups ]
+if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = extragroups ] || [ "$ACTION" = editextrargroups ]
 then
 	if [ -z "$TYPE" ]
 	then
@@ -295,7 +233,7 @@ then
 	fi
 fi
 
-if [ $ACTION = showusers ] || [ $ACTION = removeuser ] || [ $ACTION = adduser ]
+if [ "$ACTION" = showusers ] || [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ]
 then
 	if [ -z "$GROUPNAME" ]
 	then
@@ -304,7 +242,7 @@ then
 	fi
 fi
 
-if [ $ACTION = removeuser ] || [ $ACTION = adduser ] || [ $ACTION = disableuser ] || [ $ACTION = enableuser ]
+if [ "$ACTION" = removeuser ] || [ "$ACTION" = adduser ] || [ "$ACTION" = disableuser ] || [ "$ACTION" = enableuser ]
 then
 	if [ -z "$USERNAME" ]
 	then
@@ -313,7 +251,7 @@ then
 	fi
 	#Check that the username exists
 	getent passwd "$USERNAME" 1>/dev/null
-	if [ $? != 0 ]
+	if [ "$?" != 0 ]
 	then
 		MESSAGE=$"This username does not exist."
 		show_status
@@ -323,7 +261,7 @@ fi
 
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -355,7 +293,7 @@ else
 fi
 
 function do_action {
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMESERVER:$CATEGORY:$SECGROUP:$EXTRAGROUPS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/groups
 }
 
@@ -370,10 +308,10 @@ then
 	ACTION=showusers
 fi
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ]
 then
 	#Check that the group does not already exist
-	getent group $GROUPNAME 1>/dev/null
+	getent group "$GROUPNAME" 1>/dev/null
 	if [ $? = 0 ]
 	then
 		MESSAGE=$"A group with that name already exists."
@@ -381,8 +319,8 @@ then
 	fi
 
 	#Check that a user with the same name does not already exist
-	getent passwd $GROUPNAME 1>/dev/null
-	if [ $? = 0 ]
+	getent passwd "$GROUPNAME" 1>/dev/null
+	if [ "$?" = 0 ]
 	then
 		MESSAGE=$"A user with that name already exists."
 		show_status
@@ -392,31 +330,31 @@ then
 	ACTION=view
 fi
 
-if [ $ACTION = editextrargroups ]
+if [ "$ACTION" = editextrargroups ]
 then
 	do_action
 	ACTION=view
 fi
 
-if [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallydelete ]
 then
 	do_action
 	ACTION=view
 fi
 
-if [ $ACTION = add ] && [ $TYPE = primary ]
+if [ "$ACTION" = add ] && [ "$TYPE" = primary ]
 then 
 	TITLE=$"New Primary Group"
 fi
-if [ $ACTION = add ] && [ $TYPE = secondary ]
+if [ "$ACTION" = add ] && [ "$TYPE" = secondary ]
 then 
 	TITLE=$"New Secondary Group"
 fi
-[ $ACTION = delete ] && TITLE=$"Delete Group"
-[ $ACTION = extragroups ] && TITLE=$"Associated Groups"
+[ "$ACTION" = delete ] && TITLE=$"Delete Group"
+[ "$ACTION" = extragroups ] && TITLE=$"Associated Groups"
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
@@ -425,19 +363,19 @@ then
 	</div></div><div id="mobileactionbox">
 	'
 	else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 	<tr>'
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
-		echo '<td><div class="sectiontitle">'$TITLE' '$GROUPNAME'</div></td>'
+		echo '<td><div class="sectiontitle">'"$TITLE"' '"$GROUPNAME"'</div></td>'
 	else
-		echo '<td><div class="sectiontitle">'$GROUPNAME'</div></td>'
+		echo '<td><div class="sectiontitle">'"$GROUPNAME"'</div></td>'
 	fi
 
-if [ $ACTION = view ] 
+if [ "$ACTION" = view ] 
 then
 	echo '<td style="vertical-align: top;">
 	<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
@@ -461,7 +399,7 @@ then
 	</td>'
 
 
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
 		echo '<td style="vertical-align: top;">
 		<form name="DynamicGroups" action="/cgi-bin/admin/dynamic_groups_fm.cgi" method="post">
@@ -486,7 +424,7 @@ then
 		</td>'
 
 
-		if [ $TYPE = dynamic ]
+		if [ "$TYPE" = dynamic ]
 		then
 			echo '<td style="vertical-align: top;"><form name="DynamicGroups" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="button" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
@@ -507,7 +445,7 @@ else
 fi
 echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></td></tr></tbody></table>'
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	echo '</div><div id="infobox">'
 fi
@@ -519,14 +457,14 @@ then
 fi
 
 #Show form for adding groups
-if [ $ACTION = add ] && [ $TYPE = secondary ]
+if [ "$ACTION" = add ] && [ "$TYPE" = secondary ]
 then
-echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____secondary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" >
+echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____secondary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'"$TABLECLASS"'" style="text-align: left;" >
     <tbody>
       <tr>
-        <td style="width: '$WIDTH3'px;">
+        <td style="width: '"$WIDTH3"'px;">
 '$"Secondary group"'</td>
-        <td><input name="____GROUPNAME____" style="width: '$WIDTH3'px;" type="text">
+        <td><input name="____GROUPNAME____" style="width: '"$WIDTH3"'px;" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Secondary_Goup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new supplementary group that you want to create."'<br><br>'$"Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."'</span></a>
 </td>
@@ -538,31 +476,31 @@ echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><inpu
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 
-if [ $ACTION = add ] && [ $TYPE = primary ]
+if [ "$ACTION" = add ] && [ "$TYPE" = primary ]
 then
-	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'$TABLECLASS'" style="text-align: left;" >
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'"$TABLECLASS"'" style="text-align: left;" >
 	    <tbody>
-	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '$WIDTH6'px;" size="20" type="text"></td><td>
+	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '"$WIDTH6"'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the new primary group that you want to create."'<br><br>'$"This could be used where you need different profiles for staff and require more staff groups."'</span></a>
 
 	</td></tr>
-	<tr><td>'$"Home Server"'</td><td><select name="____HOMESERVER____" style="width: '$WIDTH3'px;">'
+	<tr><td>'$"Home Server"'</td><td><select name="____HOMESERVER____" style="width: '"$WIDTH3"'px;">'
 
 	#Generate a list of servers for the home folders
 	FILESERVERCOUNT=0
 	for KAROSHI_SERVER in /opt/karoshi/server_network/servers/*
 	do
-		KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-		if [ -f /opt/karoshi/server_network/servers/$KAROSHI_SERVER/fileserver ]
+		KAROSHI_SERVER=$(basename "$KAROSHI_SERVER")
+		if [ -f /opt/karoshi/server_network/servers/"$KAROSHI_SERVER"/fileserver ]
 		then
-			SERVERARRAY[$FILESERVERCOUNT]=$KAROSHI_SERVER
-			let FILESERVERCOUNT=$FILESERVERCOUNT+1
+			SERVERARRAY[$FILESERVERCOUNT]="$KAROSHI_SERVER"
+			let FILESERVERCOUNT="$FILESERVERCOUNT"+1
 		fi
 	done
 	COUNTER=0
-	while [ $COUNTER -lt $FILESERVERCOUNT ]
+	while [ "$COUNTER" -lt "$FILESERVERCOUNT" ]
 	do
-		echo '<option value="'${SERVERARRAY[$COUNTER]}'">'${SERVERARRAY[$COUNTER]}'</option>'
+		echo '<option value="'"${SERVERARRAY[$COUNTER]}"'">'"${SERVERARRAY[$COUNTER]}"'</option>'
 		let COUNTER=$COUNTER+1
 	done
 	echo '</select></td><td>
@@ -573,7 +511,7 @@ then
 	for CATEGORY in $(ls -1 /opt/karoshi/server_network/categories/ )
 	do
 		source /opt/karoshi/server_network/categories/"$CATEGORY"
-		echo '	<option value="'$CATEGORY'">'$CATEGORYNAME'</option>'
+		echo '	<option value="'"$CATEGORY"'">'"$CATEGORYNAME"'</option>'
 	done
 	echo '<option value="other">'$"Other"'</option>
 	</select>
@@ -581,50 +519,50 @@ then
 	</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
 	#Show list of groups
 
 	[ "$TYPE" = notset ] && TYPE=primary
 
 	#Get a list of groups
-	if [ $TYPE = primary ]
+	if [ "$TYPE" = primary ]
 	then
 		GROUPTYPE=$"Primary"
 		GTYPE=primary
 		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information` )
 	fi
 
-	if [ $TYPE = secondary ]
+	if [ "$TYPE" = secondary ]
 	then
 		GROUPTYPE=$"Secondary"
 		GTYPE=secondary
 		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information_secondary` )
 	fi
 
-	if [ $TYPE = dynamic ]
+	if [ "$TYPE" = dynamic ]
 	then
 		GROUPTYPE=$"Dynamic"
 		GTYPE=dynamic
 		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information_dynamic` )
 	fi
 
-	if [ $TYPE = all ]
+	if [ "$TYPE" = all ]
 	then
 		GROUPLIST=( `ls -1 /opt/karoshi/server_network/group_information` `ls -1 /opt/karoshi/server_network/group_information_secondary` `ls -1 /opt/karoshi/server_network/group_information_dynamic` )	
 	fi
 
 	#Get the number of groups in the array
-	GROUPCOUNT=${#GROUPLIST[@]} 
+	GROUPCOUNT="${#GROUPLIST[@]}" 
 	COUNTER=0
 
 	echo  '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group"'</b></th>'
 
 
-	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"Group id"'</b></th><th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"User count"'</b></th>'
+	[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH2"'px; vertical-align:top;"><b>'$"Group id"'</b></th><th style="width: '"$WIDTH2"'px; vertical-align:top;"><b>'$"User count"'</b></th>'
 
-	echo '<td style="width: '$WIDTH5'px; vertical-align:top;">
+	echo '<td style="width: '"$WIDTH5"'px; vertical-align:top;">
 	<select name="____TYPE____" onchange="this.form.submit()">
 	<option value="'$TYPE'">'$"Type"'</option>
 	<option class="select-dash" disabled="disabled">----------</option>
@@ -636,31 +574,31 @@ then
 	<noscript><input type="submit" value="Submit"></noscript>
 	</td>'
 
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
-		echo '<th style="width: '$WIDTH7'px; vertical-align:top;">'$"Category"'</th><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
+		echo '<th style="width: '"$WIDTH7"'px; vertical-align:top;">'$"Category"'</th><th style="width: '"$WIDTH3"'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
 	fi
 
-	echo '<th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '$WIDTH4'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+	echo '<th style="width: '"$WIDTH4"'px; vertical-align:top;"><b>'$"Members"'</b></th><th style="width: '"$WIDTH4"'px; vertical-align:top;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 	source /opt/karoshi/web_controls/group_dropdown_def
 	
 
-	while [ $COUNTER -lt $GROUPCOUNT ]
+	while [ "$COUNTER" -lt "$GROUPCOUNT" ]
 	do
-		GROUPNAME=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
+		GROUPNAME="${GROUPLIST[$COUNTER]//____/ }"
 		GROUPNAMESHORT="$GROUPNAME"
-		[ $MOBILE = yes ] && GROUPNAMESHORT=${GROUPNAME:0:12}
-		GROUPID=`getent group "$GROUPNAME" | cut -d: -f3`
+		[ $MOBILE = yes ] && GROUPNAMESHORT="${GROUPNAME:0:12}"
+		GROUPID=$(getent group "$GROUPNAME" | cut -d: -f3)
 		[ -z "$GROUPID" ] && GROUPID=-1
 
 		if [ "$GROUPID" -ge 1000 ] && [ "$GROUPNAME" != nogroup ]
 		then
 
-			UPPERGROUPNAME=${GROUPNAME^^}
-			LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
+			UPPERGROUPNAME="${GROUPNAME^^}"
+			LABEL="${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}"
 
-			if [ $TYPE = all ]
+			if [ "$TYPE" = all ]
 			then
 				GROUPTYPE=$"Secondary"
 				GTYPE=secondary
@@ -676,101 +614,128 @@ then
 				fi
 			fi
 			#Show primary, secondary, dynamic, or all groups
-			MEMBERCOUNT=`getent group $GROUPNAME | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l`
-			echo '<tr><td>'$GROUPNAMESHORT' '$LABEL'</td><td>'
+			MEMBERCOUNT=$(getent group "$GROUPNAME" | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l)
+			echo '<tr><td>'"$GROUPNAMESHORT"' '"$LABEL"'</td><td>'
 			SUBUNIT=""
-			[ $MOBILE = no ] && echo ''$GROUPID'</td><td>'$MEMBERCOUNT'</td><td>'
-			[ $GTYPE = primary ] && source /opt/karoshi/server_network/group_information/"$GROUPNAME"
-			echo ''$GROUPTYPE'</td>'
-			if [ $MOBILE = no ]
+			[ "$MOBILE" = no ] && echo ''"$GROUPID"'</td><td>'"$MEMBERCOUNT"'</td><td>'
+			[ "$GTYPE" = primary ] && source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+			echo ''"$GROUPTYPE"'</td>'
+			if [ "$MOBILE" = no ]
 			then
-				echo '<td>'$SUBUNIT'</td><td>'
-				if [ $GTYPE = primary ]
+				echo '<td>'"$SUBUNIT"'</td><td>'
+				if [ "$GTYPE" = primary ]
 				then
 					echo '
 
 
-			<button class="info" name="____changeextragroups____" value="____ACTION____extragroups____GROUPNAME____'$GROUPNAME'____TYPE____'$GTYPE'____">
+			<button class="info" name="____changeextragroups____" value="____ACTION____extragroups____GROUPNAME____'"$GROUPNAME"'____TYPE____'"$GTYPE"'____">
 			<img src="'$ICON2'" alt="'$"changeextragroups"'">
-			<span>'$"Change the extra groups associated with this group."' '$GROUPNAME'</span>
-			</button> '$SECONDARYGROUP''
+			<span>'$"Change the extra groups associated with this group."' '"$GROUPNAME"'</span>
+			</button> '"$SECONDARYGROUP"''
 				fi
 				echo '</td>'
 			fi
 
 			echo '<td>
-			<button class="info infoleft" name="____showusers____" value="____ACTION____showusers____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
-			<img src="'$ICON3'" alt="'$"Show users in this group."'">
-			<span>'$GROUPNAME' - '$"Show users in this group."'</span>
+			<button class="info infoleft" name="____showusers____" value="____ACTION____showusers____GROUPNAME____'"$GROUPNAME"'____TYPE____'"$TYPE"'____">
+			<img src="'"$ICON3"'" alt="'$"Show users in this group."'">
+			<span>'"$GROUPNAME"' - '$"Show users in this group."'</span>
 			</button></td><td>'
 			PROTECTED=no
-			[ `echo $PROTECTEDLIST | grep -c $GROUPNAME` -gt 0 ] && PROTECTED=yes
+			[[ $(echo "$PROTECTEDLIST" | grep -c "$GROUPNAME") -gt 0 ]] && PROTECTED=yes
 			if [ "$PROTECTED" = no ]
 			then
 				if [ "$MEMBERCOUNT" = 0 ] || [ "$GTYPE" = secondary ] || [ "$GTYPE" = dynamic ] 
 				then
 					echo '
-			<button class="info infoleft" name="____deletegroup____" value="____ACTION____delete____GROUPNAME____'$GROUPNAME'____TYPE____'$TYPE'____">
-			<img src="'$ICON1'" alt="'$"delete this group."'">
-			<span>'$GROUPNAME' - '$"delete this group."'</span>
+			<button class="info infoleft" name="____deletegroup____" value="____ACTION____delete____GROUPNAME____'"$GROUPNAME"'____TYPE____'"$TYPE"'____">
+			<img src="'"$ICON1"'" alt="'$"delete this group."'">
+			<span>'"$GROUPNAME"' - '$"delete this group."'</span>
 			</button>'
 				fi
 			fi
 			echo '</td></tr>'
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 	echo '</tbody></table></form>'
 fi
 
-if [ $ACTION = delete ]
+if [ "$ACTION" = delete ]
 then
-	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">
-	<b>'$"Group name": $GROUPNAME'</b><br><br>'
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'"$TYPE"'____" value=""><input type="hidden" name="____GROUPNAME____'"$GROUPNAME"'____" value=""><input type="hidden" name="____ACTION____reallydelete____" value="">'
 
 	if [ "$TYPE" = dynamic ] && [ "$GROUPNAME" = all ]
 	then
-		echo $"Are you sure that you want to delete all dynamic groups?"	
+		echo '<b>'$"Group name"': '"$GROUPNAME"'</b><br><br>'$"Are you sure that you want to delete all dynamic groups?"''	
 	else
+		echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
+		<thead><tr><th style="width: '$WIDTH1'px; vertical-align:top;"><b>'$"Group"'</b></th>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"Group id"'</b></th><th style="width: '$WIDTH2'px; vertical-align:top;"><b>'$"User count"'</b></th>'
+		echo '<th style="width: '$WIDTH5'px; vertical-align:top;">'$"Type"'</th>'
+
+		if [ "$MOBILE" = no ]
+		then
+			echo '<th style="width: '$WIDTH7'px; vertical-align:top;">'$"Category"'</th><th style="width: '$WIDTH3'px; vertical-align:top;"><b>'$"Associated groups"'</b></th>'
+		fi
+
+		echo '</tr></thead><tbody>'
+
+		echo '<tr><td>'"$GROUPNAME"'</td>'
+		if [ "$MOBILE" = no ]
+		then
+			GROUPID=$(getent group "$GROUPNAME" | cut -d: -f3)
+			MEMBERCOUNT=$(getent group "$GROUPNAME" | cut -d: -f4- | sed '/^$/d' | sed 's/,/\n/g' | wc -l)
+			echo '<td>'"$GROUPID"'</td><td>'"$MEMBERCOUNT"'</td>'
+		fi
+		GROUPTYPE=$"Primary"
+		[ "$TYPE" = secondary ] && GROUPTYPE=$"Secondary"
+		echo '<td>'"$GROUPTYPE"'</td>'
+		if [ "$MOBILE" = no ]
+		then
+			[ "$TYPE" = primary ] && source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+			echo '<td>'"$SUBUNIT"'</td><td>'"$SECONDARYGROUP"'</td>'
+		fi
+		echo '</tr></tbody></table>'
 		echo $"Are you sure that you want to delete this group?"
 	fi
 	echo '<br><br><input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 
-if [ $ACTION = extragroups ]
+if [ "$ACTION" = extragroups ]
 then
 	#Get a list of groups already asociated with this group
 	source /opt/karoshi/server_network/group_information/"$GROUPNAME"
 
-	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'$TYPE'____" value=""><input type="hidden" name="____GROUPNAME____'$GROUPNAME'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
+	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____'"$TYPE"'____" value=""><input type="hidden" name="____GROUPNAME____'"$GROUPNAME"'____" value=""><input type="hidden" name="____ACTION____editextrargroups____" value="">'
 
 	#Show list of groups
-	GROUPLIST=( `getent group | cut -d: -f1 | sed 's/ /____/g' | sort` )
+	GROUPLIST=( $(getent group | cut -d: -f1 | sed 's/ /____/g' | sort) )
 	GROUPCOUNT=${#GROUPLIST[@]}  
 	COUNTER=0
 
-	echo  '<div class="sectiontitle">'$GROUPNAME'</div><br><table id="myTable" class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Group name"'</b></th><th><b>Select</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></th></tr></thead><tbody>'
+	echo  '<table id="myTable" class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Group name"'</b></th><th><b>Select</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#Extra_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the extra groups that you want new users to be members of when the users are created."'</span></a></th></tr></thead><tbody>'
 
-	while [ $COUNTER -lt $GROUPCOUNT ]
+	while [ "$COUNTER" -lt "$GROUPCOUNT" ]
 	do
-		GROUPNAMECHOICE=`echo ${GROUPLIST[$COUNTER]} | sed 's/____/ /g'`
-		GROUPID=`getent group "$GROUPNAMECHOICE" | cut -d: -f3`
-		if [ $GROUPID -ge 1000 ] && [ $GROUPNAMECHOICE != $GROUPNAME ] && [ $GROUPNAME != nogroup ]
+		GROUPNAMECHOICE="${GROUPLIST[$COUNTER]//____/ }"
+		GROUPID=$(getent group "$GROUPNAMECHOICE" | cut -d: -f3)
+		if [ "$GROUPID" -ge 1000 ] && [ "$GROUPNAMECHOICE" != "$GROUPNAME" ] && [ "$GROUPNAME" != nogroup ]
 		then
-			echo '<tr><td>'$GROUPNAMECHOICE'</td><td>'
+			echo '<tr><td>'"$GROUPNAMECHOICE"'</td><td>'
 			CHECKED=""
-			[ `echo $SECONDARYGROUP | grep -c -w $GROUPNAMECHOICE` -gt 0 ] && CHECKED=checked
-			echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'$GROUPNAMECHOICE'" '$CHECKED'></td></tr>'
+			[[ $(echo "$SECONDARYGROUP" | grep -c -w "$GROUPNAMECHOICE") -gt 0 ]] && CHECKED=checked
+			echo '<input type="checkbox" name="____EXTRAGROUPNAME____" value="'"$GROUPNAMECHOICE"'" '"$CHECKED"'></td></tr>'
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 
 	echo '</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 
 fi
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
 
