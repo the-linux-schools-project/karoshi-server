@@ -622,12 +622,11 @@ then
 			echo ''"$GROUPTYPE"'</td>'
 			if [ "$MOBILE" = no ]
 			then
-				echo '<td>'"$SUBUNIT"'</td><td>'
+				echo '<td>'"$SUBUNIT"'</td><td style="display:inline-block;">'
 				if [ "$GTYPE" = primary ]
 				then
+					SECONDARYGROUP=${SECONDARYGROUP//,/ }
 					echo '
-
-
 			<button class="info" name="____changeextragroups____" value="____ACTION____extragroups____GROUPNAME____'"$GROUPNAME"'____TYPE____'"$GTYPE"'____">
 			<img src="'$ICON2'" alt="'$"changeextragroups"'">
 			<span>'$"Change the extra groups associated with this group."' '"$GROUPNAME"'</span>
@@ -693,7 +692,11 @@ then
 		echo '<td>'"$GROUPTYPE"'</td>'
 		if [ "$MOBILE" = no ]
 		then
-			[ "$TYPE" = primary ] && source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+			if [ "$TYPE" = primary ]
+			then
+				source /opt/karoshi/server_network/group_information/"$GROUPNAME"
+				SECONDARYGROUP=${SECONDARYGROUP//,/ }
+			fi
 			echo '<td>'"$SUBUNIT"'</td><td>'"$SECONDARYGROUP"'</td>'
 		fi
 		echo '</tr></tbody></table>'
