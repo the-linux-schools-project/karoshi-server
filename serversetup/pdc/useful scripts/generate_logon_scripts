@@ -13,7 +13,7 @@ DFS=no
 #Remove all auto generated kix entries.
 for KIXFILES in /var/lib/samba/netlogon/windows_settings/drives/*
 do
-	KIXFILE=`basename "$KIXFILES"`
+	KIXFILE=$(basename "$KIXFILES")
 	sed -i '/;Karoshi_auto_generated/d' /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE"	
 done
 
@@ -69,14 +69,29 @@ then
 else
 	#Add windows drive map
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
-	if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix` = 0 ]
+	if [[ $(grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix) = 0 ]]
 	then
 		echo run '"net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
 fi
 }
 
-function add_drive_map_linux_and_mac {
+function add_drive_map_linux {
+if [ "$GROUPNAME" = all ]
+then
+	if [[ $(grep -c '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5) = 0 ]]
+	then
+		echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi	
+else
+	if [[ $(grep -c '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" sgrp="'"$GROUPNAME"'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5) = 0 ]]
+	then
+		echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" sgrp="'"$GROUPNAME"'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	fi	
+fi
+}
+
+function add_drive_map_mac {
 #Set paths to shares
 if [ "$DFS" = yes ]
 then
@@ -93,13 +108,6 @@ fi
 if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
-
-	#Linux - Check if line is unique and add linux drive map
-	if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
-	then 
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-	fi
-	#Mac
 	echo '
 #'$SHARE'
 [ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
@@ -108,20 +116,6 @@ mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
 
 else
 	get_pri_group_number
-	if [ "$TRUSTED_DOMAINS" = yes ]
-	then
-		#Linux - check if line is unique and add linux drive map
-		if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
-		then
-			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-		fi
-	else
-		#Linux - check if line is unique and add linux drive map
-		if [ `grep -c '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5` = 0 ]
-		then
-			echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARE'" path="'$CLIENTPATH1'" server="'$SMBSERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-		fi
-	fi
 	#Mac
 	echo '
 #'$SHARE'
@@ -138,22 +132,22 @@ fi
 }
 
 function get_shares {
-MAINSERVER=`hostname-fqdn`
+MAINSERVER=$(hostname-fqdn)
 SERVERLIST="`echo $MAINSERVER` `ls -1 /opt/karoshi/server_network/network_shares/ | sed "s/$MAINSERVER//g"`"
 for SERVERS in /opt/karoshi/server_network/network_shares/*
 do
 	#Get names of servers with network shares
-	SERVER=`basename $SERVERS`
+	SERVER=$(basename $SERVERS)
 	#Get data for network shares
-	if [ `ls -1 /opt/karoshi/server_network/network_shares/$SERVER/ | wc -l` -gt 0 ]
+	if [ $(ls -1 /opt/karoshi/server_network/network_shares/$SERVER/ | wc -l) -gt 0 ]
 	then
 		for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
 		do
-			SHARE=`basename $SHARES`
+			SHARE=$(basename "$SHARES")
 			DRIVELETTER=""
-			source /opt/karoshi/server_network/network_shares/$SERVER/$SHARE
-			GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
-			MAP_DRIVES=( `echo $MAP_DRIVE | sed 's/,/ /g'` )
+			source "/opt/karoshi/server_network/network_shares/$SERVER/$SHARE"
+			GROUPNAMES=( `echo "$GROUPLIST" | sed 's/,/ /g'` )
+			MAP_DRIVES=( `echo "$MAP_DRIVE" | sed 's/,/ /g'` )
 			if [ -z "$DRIVELETTER" ]
 			then
 				DRIVELETTER="*"
@@ -173,15 +167,17 @@ do
 				then
 					#add_drive_map for windows
 					add_drive_map_windows
-					#Add drive map for linux due to broken dfs in mount.cfs
-
+					#Add drive map for linux
+					echo "Adding share $SHARE for linux"
+					add_drive_map_linux
+					#Mac
 					#Get server(s) that the share is on in case it it gluster aware
 					if [ -L /var/lib/samba/dfs/$SHARE ]
 					then
-						for DFSSERVER in $(ls -l /var/lib/samba/dfs/$SHARE | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
+						for DFSSERVER in $(ls -l "/var/lib/samba/dfs/$SHARE" | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
 						do
-							SERVER2=$(echo $DFSSERVER | cut -d"\\" -f1)
-							add_drive_map_linux_and_mac
+							SERVER2=$(echo "$DFSSERVER" | cut -d"\\" -f1)
+							add_drive_map_mac
 						done
 					fi
 				fi
@@ -205,8 +201,8 @@ fi
 
 if [ "$DFS" = yes ]
 then
-	#Mot using dfs
-	#echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/home" path="dfs/homes/%(USER)" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+	#Use dfs paths for home areas
+	echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="dfs/homes/%(USER)" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
 	#Having to add an entry for each server if the first one connects the second one will fail because it is already mounted.
 	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
@@ -216,14 +212,8 @@ then
 		get_pri_group_number
 		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
 		do
-			if [ "$TRUSTED_DOMAINS" = yes ]
-			then
-				echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" sgrp="'$GROUPNAME'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-			else
-				echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$HOMESERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-			fi
-		#Mac
-		echo '
+			#Mac
+			echo '
 #Network home area
 if [ $PrimaryGroup = '$GROUPNAME' ]
 then
@@ -305,7 +295,7 @@ echo -e '\n#Show mounted shares on desktop\ndefaults write /Users/$LoggedInUser/
 
 #Complete pam_mount.conf.xml.krb5
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-
+exit
 #Create external storage for owncloud / nextcloud
 if [ -f /opt/karoshi/server_network/nextcloudserver ]
 then
