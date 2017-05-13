@@ -6,9 +6,21 @@ REALM=internal
 TRUSTED_DOMAINS=no
 [ -d /opt/karoshi/server_network/domain_information/trusted_domains ] && TRUSTED_DOMAINS=yes
 
-#Check for dfs support
-DFS=no
-[ -f /var/lib/samba/netlogon/domain_information/dfs_enabled ] && DFS=yes
+#Check if we have owncloud or nextcloud
+CLOUDSTORAGE=no
+if [ -f /opt/karoshi/server_network/nextcloudserver ]
+then
+	CLOUDSTORAGE=yes
+	CLOUDSERVERTYPE=nextcloud
+	STORAGE='\\OCA\\Files_External\\Lib\\Storage\\SMB'
+fi
+
+if [ -f /opt/karoshi/server_network/owncloudserver ]
+then
+	CLOUDSTORAGE=yes
+	CLOUDSERVERTYPE=owncloud
+	STORAGE='\\OC\\Files\\Storage\\SMB'
+fi
 
 #Remove all auto generated kix entries.
 for KIXFILES in /var/lib/samba/netlogon/windows_settings/drives/*
@@ -16,6 +28,13 @@ do
 	KIXFILE=$(basename "$KIXFILES")
 	sed -i '/;Karoshi_auto_generated/d' /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE"	
 done
+
+if [ "$CLOUDSTORAGE" = yes ]
+then
+	#Delete any existing json files for owncloud or nextcloud and recreate the folder
+	[ -d "/home/$CLOUDSERVERTYPE/import_json" ] && rm -f -R "/home/$CLOUDSERVERTYPE/import_json"
+	mkdir -p "/home/$CLOUDSERVERTYPE/import_json"
+fi
 
 #Create linux client pam mount header.
 [ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
@@ -38,19 +57,14 @@ sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/script
 
 #Get primary group
 function get_pri_group_number {
-GROUPNUM=`getent group "$GROUPNAME" | cut -d: -f3`
+GROUPNUM=$(getent group "$GROUPNAME" | cut -d: -f3)
 }
 
 function add_drive_map_windows {
 #Set paths to shares
-if [ "$DFS" = yes ]
-then
-	SMBSERVER2='$lserver'
-	CLIENTPATH2='\dfs\'$SHARE''
-else
-	SMBSERVER2='\\'$SERVER''
-	CLIENTPATH2='\'$SHARE''
-fi
+
+SMBSERVER2='$lserver'
+CLIENTPATH2='\dfs\'"$SHARE"''
 
 if [ "$GROUPNAME" = all ]
 then
@@ -59,11 +73,11 @@ then
 	#Add windows drive map
 	for KIXFILES in /opt/karoshi/server_network/group_information/*
 	do
-		KIXFILE=`basename "$KIXFILES"`
+		KIXFILE=$(basename "$KIXFILES")
 		touch /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
-		if [ `grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix` = 0 ]
+		if [[ $(grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix) = 0 ]]
 		then
-			echo run '"net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
+			echo run '"net use '"$DRIVELETTER"' '"$SMBSERVER2"''"$CLIENTPATH2"' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$KIXFILE".kix
 		fi
 	done
 else
@@ -71,7 +85,7 @@ else
 	touch /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	if [[ $(grep -F -c "$CLIENTPATH2" /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix) = 0 ]]
 	then
-		echo run '"net use '$DRIVELETTER' '$SMBSERVER2''$CLIENTPATH2' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
+		echo run '"net use '"$DRIVELETTER"' '"$SMBSERVER2"''"$CLIENTPATH2"' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$GROUPNAME".kix
 	fi
 fi
 }
@@ -93,99 +107,33 @@ fi
 
 function add_drive_map_mac {
 #Set paths to shares
-if [ "$DFS" = yes ]
-then
-	#Not using dfs for linux clients - mount.cifs does not do dfs failover correctly
-	#CLIENTPATH1=dfs/"$SHARE"
-	#SMBSERVER="$REALM"
-	CLIENTPATH1="$SHARE"
-	SMBSERVER="$SERVER2"
-else
-	CLIENTPATH1="$SHARE"
-	SMBSERVER="$SERVER2"
-fi
+
+CLIENTPATH1=dfs/"$SHARE"
+SMBSERVER="$REALM"
 
 if [ "$GROUPNAME" = all ]
 then
 	#Add in a drive map for all users
 	echo '
-#'$SHARE'
-[ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
-mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+#'"$SHARE"'
+[ ! -d /tmp/$LoggedInUser/'"$SHARE"'/ ] && mkdir -p /tmp/$LoggedInUser/'"$SHARE"'/
+mount -t smbfs "//'"$SMBSERVER"'/'"$CLIENTPATH1"'" /tmp/$LoggedInUser/'"$SHARE"'/
 ' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 else
 	get_pri_group_number
-	#Mac
 	echo '
-#'$SHARE'
-if [ $PrimaryGroup = '$GROUPNAME' ]
+#'"$SHARE"'
+if [ $PrimaryGroup = '"$GROUPNAME"' ]
 then
-	[ ! -d /tmp/$LoggedInUser/'$SHARE'/ ] && mkdir -p /tmp/$LoggedInUser/'$SHARE'/
-	if [ $(mount | grep -c "/tmp/$LoggedInUser/'$SHARE'/") = 0 ]
+	[ ! -d /tmp/$LoggedInUser/'"$SHARE"'/ ] && mkdir -p /tmp/$LoggedInUser/'"$SHARE"'/
+	if [ $(mount | grep -c "/tmp/$LoggedInUser/'"$SHARE"'/") = 0 ]
 	then
-		mount -t smbfs "//'$SMBSERVER'/'$CLIENTPATH1'" /tmp/$LoggedInUser/'$SHARE'/
+		mount -t smbfs "//'"$SMBSERVER"'/'"$CLIENTPATH1"'" /tmp/$LoggedInUser/'"$SHARE"'/
 	fi
 fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 fi
-}
-
-function get_shares {
-MAINSERVER=$(hostname-fqdn)
-SERVERLIST="`echo $MAINSERVER` `ls -1 /opt/karoshi/server_network/network_shares/ | sed "s/$MAINSERVER//g"`"
-for SERVERS in /opt/karoshi/server_network/network_shares/*
-do
-	#Get names of servers with network shares
-	SERVER=$(basename $SERVERS)
-	#Get data for network shares
-	if [ $(ls -1 /opt/karoshi/server_network/network_shares/$SERVER/ | wc -l) -gt 0 ]
-	then
-		for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
-		do
-			SHARE=$(basename "$SHARES")
-			DRIVELETTER=""
-			source "/opt/karoshi/server_network/network_shares/$SERVER/$SHARE"
-			GROUPNAMES=( `echo "$GROUPLIST" | sed 's/,/ /g'` )
-			MAP_DRIVES=( `echo "$MAP_DRIVE" | sed 's/,/ /g'` )
-			if [ -z "$DRIVELETTER" ]
-			then
-				DRIVELETTER="*"
-			else
-				DRIVELETTER="$DRIVELETTER:"
-			fi
-			GROUPNAMECOUNT=${#GROUPNAMES[*]}
-			COUNTER=0
-			while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
-			do
-				GROUPNAME=${GROUPNAMES[$COUNTER]}
-				DO_MAP=${MAP_DRIVES[$COUNTER]}
-				#echo $SHARE $GROUPNAME $DO_MAP
-				let COUNTER=$COUNTER+1
-
-				if [ $DO_MAP = 1 ]
-				then
-					#add_drive_map for windows
-					add_drive_map_windows
-					#Add drive map for linux
-					echo "Adding share $SHARE for linux"
-					add_drive_map_linux
-					#Mac
-					#Get server(s) that the share is on in case it it gluster aware
-					if [ -L /var/lib/samba/dfs/$SHARE ]
-					then
-						for DFSSERVER in $(ls -l "/var/lib/samba/dfs/$SHARE" | cut -d">" -f2 | cut -d: -f2 | sed 's/,/ /g')
-						do
-							SERVER2=$(echo "$DFSSERVER" | cut -d"\\" -f1)
-							add_drive_map_mac
-						done
-					fi
-				fi
-
-			done
-		done
-	fi
-done
 }
 
 #Add in paths for home share on linux and mac clients
@@ -199,58 +147,118 @@ else
 	HOMEMOUNTPATH=/network/home
 fi
 
-if [ "$DFS" = yes ]
-then
-	#Use dfs paths for home areas
-	echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="dfs/homes/%(USER)" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+#Add in linux home area mount - using dfs
+echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="dfs/homes/%(USER)" server="'$REALM'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 
-	#Having to add an entry for each server if the first one connects the second one will fail because it is already mounted.
-	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
-	do
-		GROUPNAME=`basename $PRI_GROUPS`
-		source /opt/karoshi/server_network/group_information/$GROUPNAME
-		get_pri_group_number
-		for HOMESERVER in `echo $SERVER | sed 's/,/ /g'`
-		do
-			#Mac
-			echo '
-#Network home area
-if [ $PrimaryGroup = '$GROUPNAME' ]
-then
-	HOMESERVER='$SERVER'
-fi
+#Add in mac home area mount - using dfs
+echo '#Network home area
+mount -t smbfs "//'"$REALM"'/dfs/homes/$LoggedInUser/" /tmp/$LoggedInUser/home/
 ' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
+
+#Add home path for Nextcloud or Owncloud
+if [ "$CLOUDSTORAGE" = yes ]
+then
+	echo '[
+	{
+		"mount_point": "\/home",
+		"storage": "'$STORAGE'",
+		"authentication_type": "password::sessioncredentials",
+		"configuration": {
+		    "host": "'$REALM'",
+		    "share": "dfs\/homes\/$user",
+		    "root": "",
+		    "domain": ""
+		},
+		"options": {
+		    "encrypt": true,
+		    "previews": true,
+		    "filesystem_check_changes": 1,
+		    "enable_sharing": false
+		},
+		"applicable_users": [],
+		"applicable_groups": []
+	}
+]
+' > /home/"$CLOUDSERVERTYPE"/import_json/homes.json
+fi
+
+function add_drive_cloudstorage {
+if [ "$CLOUDSTORAGE" = yes ]
+then
+	echo '[
+	{
+		"mount_point": "\/'"$SHARE"'",
+		"storage": "'$STORAGE'",
+		"authentication_type": "password::sessioncredentials",
+		"configuration": {
+		    "host": "'$REALM'",
+		    "share": "dfs\/'"$SHARE"'",
+		    "root": "",
+		    "domain": ""
+		},
+		"options": {
+		    "encrypt": true,
+		    "previews": true,
+		    "filesystem_check_changes": 1,
+		    "enable_sharing": false
+		},
+		"applicable_users": [],' > /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+
+
+	if [ "$GROUPNAME" = all ]
+	then
+		echo '		"applicable_groups": []' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+	else
+		echo '		"applicable_groups": [
+		"'"$GROUPNAME"'"
+		]' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+	fi
+	echo '	}
+]' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+fi
+}
+
+#Add in network shares
+for SERVER in $(ls -1 /opt/karoshi/server_network/network_shares/)
+do
+	#Get data for network shares
+	for SHARE in $(ls -1 /opt/karoshi/server_network/network_shares/"$SERVER"/)
+	do
+		DRIVELETTER=""
+		source "/opt/karoshi/server_network/network_shares/$SERVER/$SHARE"
+		GROUPNAMES=( `echo "$GROUPLIST" | sed 's/,/ /g'` )
+		MAP_DRIVES=( `echo "$MAP_DRIVE" | sed 's/,/ /g'` )
+		if [ -z "$DRIVELETTER" ]
+		then
+			DRIVELETTER="*"
+		else
+			DRIVELETTER="$DRIVELETTER:"
+		fi
+		GROUPNAMECOUNT=${#GROUPNAMES[*]}
+		COUNTER=0
+		while [ "$COUNTER" -lt "$GROUPNAMECOUNT" ]
+		do
+			GROUPNAME=${GROUPNAMES[$COUNTER]}
+			DO_MAP=${MAP_DRIVES[$COUNTER]}
+			#echo $SHARE $GROUPNAME $DO_MAP
+			let COUNTER=$COUNTER+1
+
+			if [ "$DO_MAP" = 1 ]
+			then
+				#add_drive_map for windows
+				add_drive_map_windows
+				#Add drive map for linux
+				add_drive_map_linux
+				#Mac
+				add_drive_map_mac
+				#Nextcloud or Owncloud
+				add_drive_cloudstorage
+			fi
 
 		done
 	done
+done
 
-else
-	for PRI_GROUPS in /opt/karoshi/server_network/group_information/*
-	do
-		GROUPNAME=`basename $PRI_GROUPS`
-		source /opt/karoshi/server_network/group_information/$GROUPNAME
-		get_pri_group_number
-		echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~'$HOMEMOUNTPATH'" path="%(USER)" server="'$SERVER'" gid="'$GROUPNUM'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-
-		#Mac
-		echo '
-#Network home area
-if [ $PrimaryGroup = '$GROUPNAME' ]
-then
-	HOMESERVER='$SERVER'
-fi
-' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
-
-	done
-fi
-
-echo 'if [ ! -z "$HOMESERVER" ]
-then
-	mount -t smbfs "//$HOMESERVER/$LoggedInUser/" /tmp/$LoggedInUser/home/
-fi' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
-
-#Add in network shares
-get_shares 
 
 #Add in domain trust shares
 if [ "$TRUSTED_DOMAINS" = yes ]
@@ -275,13 +283,13 @@ then
 					for TRUST_GROUP in $(echo $GROUPLIST | sed 's/,/ /g')
 					do
 						#Linux drive map
-						echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'$SHARENAME'" path="'$LINUXSHAREPATH'" server="'$SERVER'" sgrp="'$TRUST_GROUP'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+						echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARENAME"'" path="'"$LINUXSHAREPATH"'" server="'"$SERVER"'" sgrp="'"$TRUST_GROUP"'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 						#Windows drive maps
 						touch /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
 						[ -z "$DRIVELETTER" ] && DRIVERLETTER='*'
-						if [ `grep -F -c "$WINSHAREPATH" /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix` = 0 ]
+						if [[ $(grep -F -c "$WINSHAREPATH" /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix) = 0 ]]
 						then
-							echo run '"net use '$DRIVELETTER' \\'$SERVER'\'$WINSHAREPATH' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
+							echo run '"net use '"$DRIVELETTER"' \\'"$SERVER"'\'"$WINSHAREPATH"' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
 						fi
 					done
 				done
@@ -295,124 +303,42 @@ echo -e '\n#Show mounted shares on desktop\ndefaults write /Users/$LoggedInUser/
 
 #Complete pam_mount.conf.xml.krb5
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
-exit
-#Create external storage for owncloud / nextcloud
-if [ -f /opt/karoshi/server_network/nextcloudserver ]
+
+#Import json files to Nextcloud or Owncloud
+if [ "$CLOUDSTORAGE" = yes ]
 then
-	CLOUDSERVERTYPE=nextcloud
-	STORAGE='\\OCA\\Files_External\\Lib\\Storage\\SMB'
-fi
+	CLOUDSERVER=$(sed -n 1,1p /opt/karoshi/server_network/"$CLOUDSERVERTYPE"server)
 
-if [ -f /opt/karoshi/server_network/owncloudserver ]
-then
-	CLOUDSERVERTYPE=owncloud
-	STORAGE='\\OC\\Files\\Storage\\SMB'
-fi
-
-if [ ! -z "$CLOUDSERVERTYPE" ]
-then
-	CLOUDSERVER=`sed -n 1,1p /opt/karoshi/server_network/"$CLOUDSERVERTYPE"server`
-	SERVERLIST=""
-	#Delete any existing json files and recreate the folder
-	[ -d /home/$CLOUDSERVERTYPE/import_json ] && rm -f -R /home/$CLOUDSERVERTYPE/import_json
-	mkdir -p /home/$CLOUDSERVERTYPE/import_json
-
-	#Get a list of all servers and primary groups
-	for PRI_GROUP in $(ls -1 /opt/karoshi/server_network/group_information)
-	do
-		source /opt/karoshi/server_network/group_information/$PRI_GROUP
-		SERVERLIST="$SERVERLIST\n$SERVER:$PRI_GROUP"
-	done
-
-	function start_json_file {
-	echo '[
-    {
-        "mount_point": "\/home",
-        "storage": "'$STORAGE'",
-        "authentication_type": "password::sessioncredentials",
-        "configuration": {
-            "host": "'$SERVER'",
-            "share": "$user",
-            "root": "",
-            "domain": ""
-        },
-        "options": {
-            "encrypt": true,
-            "previews": true,
-            "filesystem_check_changes": 1,
-            "enable_sharing": false
-        },
-        "applicable_users": [],
-        "applicable_groups": [
-		"'$PRI_GROUP'",' > /home/$CLOUDSERVERTYPE/import_json/$SERVER.json
-	}
-
-	function complete_json_file {
-	#Remove comma from after the final group.
-	sed -i 's/"'$LASTPRI_GROUP'",/"'$LASTPRI_GROUP'"/g' /home/$CLOUDSERVERTYPE/import_json/$LASTSERVER.json
-	#Add in closing brackets.
-	echo '        ]
-    }
-]
-' >> /home/$CLOUDSERVERTYPE/import_json/$LASTSERVER.json
-	}
-
-	LASTSERVER=notset
-	LASTPRI_GROUP=notset
-	for SERVERDATA in $(echo -e "$SERVERLIST" | sed 's/^ //g' | sort)
-	do
-		SERVER=$(echo $SERVERDATA | cut -d: -f1)
-		PRI_GROUP=$(echo $SERVERDATA | cut -d: -f2)
-		if [ $LASTSERVER != $SERVER ]
-		then
-			#Complete the last server if a json file exists for it
-			if [ -f /home/$CLOUDSERVERTYPE/import_json/$LASTSERVER.json ]
-			then
-				complete_json_file
-			fi
-
-		        #New server so start a new json file
-			start_json_file
-		else
-			#Same server so add to the same json file
-		        echo  '		"'$PRI_GROUP'",' >> /home/$CLOUDSERVERTYPE/import_json/$SERVER.json
-		fi
-		LASTSERVER="$SERVER"
-		LASTPRI_GROUP="$PRI_GROUP"
-	done
-	#Complete the last json file
-	complete_json_file
-
-	if [ $CLOUDSERVER = $(hostname-fqdn) ]
+	if [ "$CLOUDSERVER" = $(hostname-fqdn) ]
 	then
 		#Get existing external mount ids
-		MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/$CLOUDSERVERTYPE/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
+		MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
 		#Delete any existing external mounts from the cloud server
 		for MOUNTID in $(echo -e "$MOUNTIDS")
 		do
-			sudo -u www-data /usr/bin/php /var/www/html/$CLOUDSERVERTYPE/occ files_external:delete "$MOUNTID" -y
+			sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:delete "$MOUNTID" -y
 		done
 		#Import the json files into the cloud server
-		for JSONFILE in $(ls -1 /home/$CLOUDSERVERTYPE/import_json)
+		for JSONFILE in $(ls -1 /home/"$CLOUDSERVERTYPE"/import_json)
 		do
-			sudo -u www-data /usr/bin/php /var/www/html/$CLOUDSERVERTYPE/occ files_external:import /home/$CLOUDSERVERTYPE/import_json/$JSONFILE
+			sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:import /home/"$CLOUDSERVERTYPE"/import_json/"$JSONFILE"
 		done
 	else
 		#Copy the json files to the cloud server
-		rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group -o "/home/$CLOUDSERVERTYPE/import_json" $CLOUDSERVER:/home/$CLOUDSERVERTYPE/ 1>/dev/null
+		rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group -o "/home/$CLOUDSERVERTYPE/import_json" "$CLOUDSERVER":/home/"$CLOUDSERVERTYPE"/ 1>/dev/null
 
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $CLOUDSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$CLOUDSERVER" '
 		#Get existing external mount ids
-		MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/'$CLOUDSERVERTYPE'/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
+		MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/'"$CLOUDSERVERTYPE"'/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
 		#Delete any existing external mounts from the cloud server
 		for MOUNTID in $(echo -e "$MOUNTIDS")
 		do
-			sudo -u www-data /usr/bin/php /var/www/html/'$CLOUDSERVERTYPE'/occ files_external:delete "$MOUNTID" -y
+			sudo -u www-data /usr/bin/php /var/www/html/'"$CLOUDSERVERTYPE"'/occ files_external:delete "$MOUNTID" -y
 		done
 		#Import the json files into the cloud server
-		for JSONFILE in $(ls -1 /home/'$CLOUDSERVERTYPE'/import_json)
+		for JSONFILE in $(ls -1 /home/'"$CLOUDSERVERTYPE"'/import_json)
 		do
-			sudo -u www-data /usr/bin/php /var/www/html/'$CLOUDSERVERTYPE'/occ files_external:import /home/'$CLOUDSERVERTYPE'/import_json/$JSONFILE
+			sudo -u www-data /usr/bin/php /var/www/html/'"$CLOUDSERVERTYPE"'/occ files_external:import /home/'"$CLOUDSERVERTYPE"'/import_json/$JSONFILE
 		done
 	'
 	fi
