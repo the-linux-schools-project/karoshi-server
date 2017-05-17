@@ -47,7 +47,7 @@ fi
 numArgs=$#
 if [ "$numArgs" != 0 ]
 then
-	echo `date`: samba_shares - incorrect number of arguments >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): samba_shares - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -180,7 +180,7 @@ then
 	fi
 fi
 
-if [ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	echo "$(date): samba_shares - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -190,7 +190,6 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
@@ -202,7 +201,7 @@ WIDTH5=100
 WIDTH6=180
 WIDTH7=100
 WIDTH8=30
-WIDTH9=100
+#WIDTH9=100
 WIDTH10=180
 WIDTH11=30
 
@@ -222,7 +221,6 @@ then
 		VOLUME=$(echo "$SERVERNAME" | cut -d. -f1)
 		if [ ! -d "/opt/karoshi/server_network/gluster-volumes/$VOLUME" ]
 		then
-			MESSAGE=$"The new server you have chosen is not configured as a Karoshi file server."
 			show_status
 		else
 			GLUSTER=yes
@@ -251,18 +249,18 @@ then
 	[ -z "$GROUP12" ] && MAPDRIVE12="" GROUPPERMS12=""
 	[ -z "$ALLGROUPS" ] && MAPDRIVEALL=""
 	GROUPLIST="$ALLGROUPS $GROUP1 $GROUP2 $GROUP3 $GROUP4 $GROUP5 $GROUP6 $GROUP7 $GROUP8 $GROUP9 $GROUP10 $GROUP11 $GROUP12"
-	GROUPLIST=$(echo "$GROUPLIST" | sed 's/ /,/g')
+	GROUPLIST="$(echo $GROUPLIST | sed 's/ /,/g')"
 	MAP_DRIVE="$MAPDRIVEALL $MAPDRIVE1 $MAPDRIVE2 $MAPDRIVE3 $MAPDRIVE4 $MAPDRIVE5 $MAPDRIVE6 $MAPDRIVE7 $MAPDRIVE8 $MAPDRIVE9 $MAPDRIVE10 $MAPDRIVE11 $MAPDRIVE12"
-	MAP_DRIVE=$(echo "$MAP_DRIVE" | sed 's/ /,/g')
+	MAP_DRIVE="$(echo $MAP_DRIVE | sed 's/ /,/g')"
 	GROUPPERMS="$ALL_PERMS $GROUPPERMS1 $GROUPPERMS2 $GROUPPERMS3 $GROUPPERMS4 $GROUPPERMS5 $GROUPPERMS6 $GROUPPERMS7 $GROUPPERMS8 $GROUPPERMS9 $GROUPPERMS10 $GROUPPERMS11 $GROUPPERMS12"
-	GROUPPERMS=$(echo "$GROUPPERMS" | sed 's/ /,/g')
+	GROUPPERMS="$(echo $GROUPPERMS | sed 's/ /,/g')"
 
 	#Calculate network mask
 	MASK=075
 	MASK=$MASK$ALLPERMS
 	
 	function create_network_share {
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	if [ "$SERVERNAME" = "$(hostname-fqdn)" ]
 	then
 		#Create folder
 		[ ! -d "$SHAREPATH" ] && mkdir "$SHAREPATH"
@@ -276,8 +274,8 @@ then
 			setfacl -Rb "$SHAREPATH"
 		
 			#Add acls for the selected groups
-			GROUPNAMES=( `echo $GROUPLIST | sed 's/,/ /g'` )
-			GROUP_PERMS=( `echo $GROUPPERMS | sed 's/,/ /g'` )
+			GROUPNAMES=( `echo "$GROUPLIST" | sed 's/,/ /g'` )
+			GROUP_PERMS=( `echo "$GROUPPERMS" | sed 's/,/ /g'` )
 			GROUPNAMECOUNT=${#GROUPNAMES[*]}
 
 			COUNTER=0
@@ -298,7 +296,7 @@ then
 			done
 		fi
 		#Check that the share definition does not already exist in smb.conf
-		if [ `grep -c -w "\[$SHARENAME\]" /etc/samba/smb.conf` =  0 ]
+		if [[ $(grep -c -w "\[$SHARENAME\]" /etc/samba/smb.conf) =  0 ]]
 		then
 			#Add data to custom smb.conf
 			[ ! -d /etc/samba/extra_network_shares/"$SERVERNAME" ] && mkdir -p /etc/samba/extra_network_shares/"$SERVERNAME"
@@ -312,7 +310,7 @@ then
 			#Add in extra share options for full audit and recycle bin
 			if [ "$RECYCLEBIN" = yes ] && [ "$RECYCLEBIN" = yes ]
 			then
-				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
 			fi
 			#Add in extra share options for full audit and recycle bin
 			if [ "$RECYCLEBIN" = yes ] && [ "$RECYCLEBIN" != yes ]
@@ -338,7 +336,7 @@ then
 			if [ "$FULLAUDIT" = yes ]
 			then
 				echo "	full_audit:prefix = %u|%I|%S" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
-				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/$SERVERNAME/"$SHARENAME".conf
+				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
 				echo "	full_audit:failure = none" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
 				echo "	full_audit:facility = local5" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
 				echo "	full_audit:priority = notice" >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
@@ -373,12 +371,13 @@ create 0640 syslog adm
 			echo >> /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf
 
 			#Add include line to smb.conf
-			if [ `grep -c "$SERVERNAME"/"$SHARENAME".conf /etc/samba/smb.conf` = 0 ]
+			if [[ $(grep -c "$SERVERNAME"/"$SHARENAME".conf /etc/samba/smb.conf) = 0 ]]
 			then
 				echo  >> /etc/samba/smb.conf
 				echo include = /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf >> /etc/samba/smb.conf
 			fi
 			#Restart samba
+			echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 			sleep 1
@@ -387,7 +386,7 @@ create 0640 syslog adm
 	fi
 
 
-	if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != $(hostname-fqdn) ] || [ "$SERVERTYPE" = federated ]
+	if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != "$(hostname-fqdn)" ] || [ "$SERVERTYPE" = federated ]
 	then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		#Create folder
@@ -416,59 +415,59 @@ create 0640 syslog adm
 				[ "$GROUP_PERM" = 7 ] && PERM="rwx"
 				if [ "$GROUPNAME" = all ]
 				then
-					setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "'$SHAREPATH'"
+					setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "'"$SHAREPATH"'"
 				else
-					setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
+					setfacl -Rm d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'"$SHAREPATH"'"
 				fi
 				let COUNTER=$COUNTER+1
 			
 			done
 		fi
 		#Check that the share definition does not already exist in smb.conf
-		if [ `grep -c -w "\['$SHARENAME'\]" /etc/samba/smb.conf` =  0 ]
+		if [ `grep -c -w "\['"$SHARENAME"'\]" /etc/samba/smb.conf` =  0 ]
 		then
 			#Add data to custom smb.conf
-			[ ! -d /etc/samba/extra_network_shares/'$SERVERNAME' ] && mkdir -p /etc/samba/extra_network_shares/'$SERVERNAME'
-			echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-			echo "	comment = \"'$COMMENT'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-			echo "	path = \"'$SHAREPATH'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-			echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-			echo "	read only = No" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			[ ! -d /etc/samba/extra_network_shares/'"$SERVERNAME"' ] && mkdir -p /etc/samba/extra_network_shares/'"$SERVERNAME"'
+			echo "['"$SHARENAME"']" > /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+			echo "	comment = \"'"$COMMENT"'\"" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+			echo "	path = \"'"$SHAREPATH"'\"" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+			echo "	invalid users = root" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+			echo "	read only = No" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+			echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 
 			#Add in extra share options for full audit and recycle bin
-			if [ "'$RECYCLEBIN'" = yes ] && [ "'$RECYCLEBIN'" = yes ]
+			if [ "'"$RECYCLEBIN"'" = yes ] && [ "'"$RECYCLEBIN"'" = yes ]
 			then
-				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	vfs objects = recycle full_audit" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 			fi
 			#Add in extra share options for full audit and recycle bin
-			if [ "'$RECYCLEBIN'" = yes ] && [ "'$RECYCLEBIN'" != yes ]
+			if [ "'"$RECYCLEBIN"'" = yes ] && [ "'"$RECYCLEBIN"'" != yes ]
 			then
-				echo "	vfs object = recycle" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	vfs object = recycle" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 			fi
-			if [ "'$RECYCLEBIN'" = yes ]
+			if [ "'"$RECYCLEBIN"'" = yes ]
 			then
-				echo "	recycle:repository = .recycle" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	recycle:keeptree = yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	recycle:versions = yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	recycle:repository = .recycle" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	recycle:keeptree = yes" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	recycle:versions = yes" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 
 				#Schedule recycle bin deletion using tmpreaper
-				[ -d /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs
-				echo "0" "23" "*" "*" "*" \"/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins\"  > /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs/tidy_network_recycle_bins.cron
+				[ -d /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs
+				echo "0" "23" "*" "*" "*" \"/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins\"  > /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs/tidy_network_recycle_bins.cron
 				/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 			fi
-			if [ "'$RECYCLEBIN'" != yes ] && [ "'$RECYCLEBIN'" = yes ]
+			if [ "'"$RECYCLEBIN"'" != yes ] && [ "'"$RECYCLEBIN"'" = yes ]
 			then
-				echo "	vfs object = full_audit" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	vfs object = full_audit" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 			fi
 			if [ "'$FULLAUDIT'" = yes ]
 			then
-				echo "	full_audit:prefix = %u|%I|%S" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	full_audit:failure = none" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	full_audit:facility = local5" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-				echo "	full_audit:priority = notice" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+				echo "	full_audit:prefix = %u|%I|%S" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	full_audit:success = mkdir rmdir read write sendfile rename unlink chmod" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	full_audit:failure = none" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	full_audit:facility = local5" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+				echo "	full_audit:priority = notice" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 
 				RESTART_RSYSLOGD=no
 				if [ ! -f /etc/rsyslog.d/00-samba-audit.conf ]
@@ -498,14 +497,15 @@ create 0640 syslog adm
 
 			fi
 
-			echo >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+			echo >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 			#Add include to smb.conf
-			if [ `grep -c "'$SERVERNAME'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+			if [ `grep -c "'"$SERVERNAME"'"/"'"$SHARENAME"'".conf /etc/samba/smb.conf` = 0 ]
 			then
 				echo  >> /etc/samba/smb.conf
-				echo include = /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+				echo include = /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf >> /etc/samba/smb.conf
 			fi
 			#Restart samba
+			echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 			sleep 1
@@ -521,13 +521,13 @@ create 0640 syslog adm
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
 		#Create folder
-		[ ! -d "'$SHAREPATH'" ] && mkdir "'$SHAREPATH'"
+		[ ! -d "'"$SHAREPATH"'" ] && mkdir "'"$SHAREPATH"'"
 		#Set ownership
-		chmod '$MASK' "/home/'$FOLDERNAME'"
+		chmod '"$MASK"' "/home/'"$FOLDERNAME"'"
 
 		#Add acls for the selected groups
-		GROUPNAMES=( `echo '$GROUPLIST' | sed "s/,/ /g"` )
-		GROUP_PERMS=( `echo '$GROUPPERMS' | sed "s/,/ /g"` )
+		GROUPNAMES=( `echo '"$GROUPLIST"' | sed "s/,/ /g"` )
+		GROUP_PERMS=( `echo '"$GROUPPERMS"' | sed "s/,/ /g"` )
 		GROUPNAMECOUNT=${#GROUPNAMES[*]}
 
 		COUNTER=0
@@ -541,29 +541,30 @@ create 0640 syslog adm
 			then
 				setfacl -Rm d:u::rwx,g::"$PERM",o::"$PERM" "$SHAREPATH"
 			else
-				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'$SHAREPATH'"
+				setfacl -Rm d:u::---,d:g::---,d:g:"$GROUPNAME":"$PERM",g:"$GROUPNAME":"$PERM" "'"$SHAREPATH"'"
 			fi
 			let COUNTER=$COUNTER+1
 			
 		done
 
 		#Add data to custom smb.conf
-		[ ! -d /etc/samba/extra_network_shares/'$SERVERNAME' ] && mkdir -p /etc/samba/extra_network_shares/'$SERVERNAME'
-		echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	comment = \"'$COMMENT'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	path = \"'$SHAREPATH'\"" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	read only = No" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
-		echo >> /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf
+		[ ! -d /etc/samba/extra_network_shares/'"$SERVERNAME"' ] && mkdir -p /etc/samba/extra_network_shares/'"$SERVERNAME"'
+		echo "['"$SHARENAME"']" > /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo "	comment = \"'"$COMMENT"'\"" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo "	path = \"'"$SHAREPATH"'\"" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo "	invalid users = root" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo "	read only = No" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
+		echo >> /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf
 		#Add include to smb.conf
-		if [ `grep -c "'$SERVERNAME'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+		if [ `grep -c "'"$SERVERNAME"'"/"'"$SHARENAME"'".conf /etc/samba/smb.conf` = 0 ]
 		then
 			echo >> /etc/samba/smb.conf
-			echo include = /etc/samba/extra_network_shares/'$SERVERNAME'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+			echo include = /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf >> /etc/samba/smb.conf
 		fi
 		#Restart samba
 		source /opt/karoshi/serversetup/variables/distro
+		echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
@@ -571,42 +572,42 @@ create 0640 syslog adm
 		EXITSTATUS=`echo $?`
 		exit $EXITSTATUS
 		'
-		EXITSTATUS=$?
+		EXITSTATUS="$?"
 		[ "$EXITSTATUS" != 0 ] && exit "$EXITSTATUS"
 		
 	fi
 
 	#Add data to custom smb.conf
-	[ ! -d /opt/karoshi/server_network/network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVERNAME
-	echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo COMMENT='"'"$COMMENT"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo SHAREPATH=$SHAREPATH >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo USERLIST='"''"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo GROUPLIST='"'"$GROUPLIST"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo SERVERTYPE='"'"$SERVERTYPE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo SERVERMASTER='"'"$SERVERMASTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo RECYCLEBIN='"'"$RECYCLEBIN"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo FULLAUDIT='"'"$FULLAUDIT"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
-	echo RECBINDURATION='"'"$RECBINDURATION"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+	[ ! -d /opt/karoshi/server_network/network_shares/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/network_shares/"$SERVERNAME"
+	echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo COMMENT='"'"$COMMENT"'"' > /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo USERLIST='"''"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo GROUPLIST='"'"$GROUPLIST"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo SERVERTYPE='"'"$SERVERTYPE"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo SERVERMASTER='"'"$SERVERMASTER"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo RECYCLEBIN='"'"$RECYCLEBIN"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo FULLAUDIT='"'"$FULLAUDIT"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
+	echo RECBINDURATION='"'"$RECBINDURATION"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
 
 	#Add the folder to the backup configuration
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders ]
 	then
-		if [ $(grep -c "$SHAREPATH,$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]
+		if [[ $(grep -c "$SHAREPATH,$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]]
 		then
 			echo "$SHAREPATH,$SHARENAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 		fi
 	fi
 
 	#Copy smb data and tidy_network_recycle_bins to the server
-	if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != `hostname-fqdn` ] || [ "$SERVERTYPE" = federated ]
+	if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != "$(hostname-fqdn)" ] || [ "$SERVERTYPE" = federated ]
 	then
-		scp /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" root@$SERVERNAME:/opt/karoshi/server_network/network_shares/$SERVERNAME/
-		scp "/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins" root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/tidy_network_recycle_bins"
+		scp /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME" root@"$SERVERNAME":/opt/karoshi/server_network/network_shares/"$SERVERNAME"/
+		scp "/opt/karoshi/serversetup/all/useful scripts/tidy_network_recycle_bins" root@"$SERVERNAME":"/opt/karoshi/serversetup/all/useful\ scripts/tidy_network_recycle_bins"
 	fi
 	}
 
@@ -615,20 +616,20 @@ create 0640 syslog adm
 		create_network_share
 		#Add in dfs link
 		#Use short names for windows
-		SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
+		SERVERNAME2=$(echo "$SERVERNAME" | cut -d"." -f1)
 		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
-		ln -s msdfs:$SERVERNAME2\\$SHARENAME /var/lib/samba/dfs/$SHARENAME
+		ln -s "msdfs:$SERVERNAME2\\$SHARENAME" /var/lib/samba/dfs/"$SHARENAME"
 	else
 		#Get a list of servers in the gluster volume.
-		GLUSTERSERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$SERVERNAME/servers`
+		GLUSTERSERVERS=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$SERVERNAME"/servers)
 		GLUSTERVOL=$SERVERNAME
 		#GLUSTERSERVERS=`echo $GLUSTERSERVERS | sed 's/ /,/g'`
 
 		for SERVERNAME in $GLUSTERSERVERS
 		do
 			#Use short names for windows
-			SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
-			DFSPATH=$DFSPATH,$SERVERNAME2\\$SHARENAME
+			SERVERNAME2=$(echo "$SERVERNAME" | cut -d"." -f1)
+			DFSPATH="$DFSPATH,$SERVERNAME2\\$SHARENAME"
 			create_network_share
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVERNAME" "$SHAREPATH" "$GLUSTERVOL" copydata 1>/dev/null
 		done
@@ -649,16 +650,16 @@ then
 	if [ "$ACTION" = edit ]
 	then
 		#Get existing share information 
-		if [ -f /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME" ]
+		if [ -f /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME" ]
 		then
-			source /opt/karoshi/server_network/network_shares/$SERVERNAME/"$SHARENAME"
+			source /opt/karoshi/server_network/network_shares/"$SERVERNAME"/"$SHARENAME"
 			[ "$RECYCLEBIN" = yes ] && RECYCLEBINCHECKED=checked
 			[ "$FULLAUDIT" = yes ] && FULLAUDITCHECKED=checked
 			
 			ALLGROUPS=""
 			ALLPERMS=""
 			MAPDRIVEALL=""
-			if [ $(echo "$GROUPLIST" | grep -c ^all) -gt 0 ]
+			if [[ $(echo "$GROUPLIST" | grep -c ^all) -gt 0 ]]
 			then
 				ALLGROUPS=ALL
 				ALLPERMS=$(echo "$GROUPPERMS" | cut -d, -f1)
@@ -924,6 +925,7 @@ then
 		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
 	
 		#Restart samba
+		echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
@@ -940,6 +942,7 @@ then
 		[ -L /var/lib/samba/dfs/"'"$SHARENAME"'" ] && rm -f /var/lib/samba/dfs/"'"$SHARENAME"'"
 	
 		#Restart samba
+		echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
@@ -1000,7 +1003,7 @@ then
 				GROUPPERMS=$(echo "$GROUPPERMS" | sed 's/,/<br>/g' | sed 's/7/'$"Full Access"'/g;' | sed 's/5/'$"Read Only"'/g;')
 				#Translate map drives
 				MAP_DRIVE=$(echo "$MAP_DRIVE" | sed 's/,/<br>/g' | sed 's/1/'$"Yes"'/g' | sed 's/0/'$"No"'/g')
-				echo '<tr><td style="vertical-align:top">'"$SERVER"'</td><td style="vertical-align:top">'"$NETSHARE"'</td><td style="vertical-align:top">'"$SHAREPATH"'</td><td style="vertical-align:top">'`echo ""$GROUPLIST"" | sed "s/,/<br>/g"`'</td><td style="vertical-align:top">'"$GROUPPERMS"'</td><td style="vertical-align:top">'"$MAP_DRIVE"'</td><td style="vertical-align:top">'"$DRIVELETTER"'</td>'
+				echo '<tr><td style="vertical-align:top">'"$SERVER"'</td><td style="vertical-align:top">'"$NETSHARE"'</td><td style="vertical-align:top">'"$SHAREPATH"'</td><td style="vertical-align:top">'$(echo "$GROUPLIST" | sed "s/,/<br>/g")'</td><td style="vertical-align:top">'"$GROUPPERMS"'</td><td style="vertical-align:top">'"$MAP_DRIVE"'</td><td style="vertical-align:top">'"$DRIVELETTER"'</td>'
 				if [ "$NETSHARE" != sysvol ] && [ "$NETSHARE" != netlogon ] && [ "$NETSHARE" != applications ]
 				then
 					echo '<td style="vertical-align:top">

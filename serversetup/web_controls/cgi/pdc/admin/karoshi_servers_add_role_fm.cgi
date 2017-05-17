@@ -158,6 +158,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 <tr><th style="width: 200px;">'$"Module"'</th><th style="width: 100px;">'$"Status"'</th><th style="width: 100px;">'$"Install"'</th><th style="width: 200px;">'$"Module"'</th><th style="width: 100px;">'$"Status"'</th><th style="width: 100px;">'$"Install"'</th></tr></thead>
 <tbody><tr>'
 
+#Col1
 echo '<td>'$"Backup Server"'</td><td>'$BACKUPSERVERSTATUS'</td><td>'
 
 if [ $SERVERNAME != `hostname-fqdn` ]
@@ -176,53 +177,6 @@ else
 	<button class="info" name="_AddbackupServer_" value="_SERVERNAME_'$SERVERNAME'_">
 	<img src="'$ICON2'" alt="'$"backup Server"'">
 	<span>'$"This will setup a backup server."'<br><br>'$"This module cannot be applied to your main server."'</span>
-	</button>
-	</form>
-	</td>
-	'
-fi
-
-#Col2
-echo '<td>'$"Monitor Server"'</td><td>'$MONITORSERVERSTATUS'</td><td>'
-if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-then
-	echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post">
-	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Monitoring Server"'">
-	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'</span>
-	</button>
-	</form></td>'
-else
-	echo '
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Monitoring Server"'">
-	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'<br><br>'$"This module cannot be applied to your main server."'</span>
-	</button>
-	</form></td>
-'
-fi
-
-echo '</tr><tr>'
-
-echo '<td>'$"DHCP Server"'</td><td>'$DHCPSTATUS'</td><td>'
-
-if [ $SERVERNAME = `hostname-fqdn` ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
-then
-	echo '<form action="/cgi-bin/admin/dhcp_fm.cgi" method="post">
-	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"This will provide a DHCP server for your network."'">
-	<span>'$"This will provide a DHCP server for your network."'</span>
-	</button>
-	</form>
-	</td>'
-else
-	echo '
-
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"DHCP Server"'">
-	<span>'$"This will provide a DHCP server for your network."'<br><br>'$"This module can only be applied to the main server or an Additional Domain Controller."'</span>
 	</button>
 	</form>
 	</td>
@@ -251,6 +205,54 @@ fi
 
 echo '</tr><tr>'
 
+#Col1
+echo '<td>'$"DHCP Server"'</td><td>'$DHCPSTATUS'</td><td>'
+
+if [ $SERVERNAME = `hostname-fqdn` ] || [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
+then
+	echo '<form action="/cgi-bin/admin/dhcp_fm.cgi" method="post">
+	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"This will provide a DHCP server for your network."'">
+	<span>'$"This will provide a DHCP server for your network."'</span>
+	</button>
+	</form>
+	</td>'
+else
+	echo '
+
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_AddDHCPServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"DHCP Server"'">
+	<span>'$"This will provide a DHCP server for your network."'<br><br>'$"This module can only be applied to the main server or an Additional Domain Controller."'</span>
+	</button>
+	</form>
+	</td>
+	'
+fi
+
+#Col2
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
+then
+	echo '<td>'$"Nextcloud Server"'</td><td>'$NEXTCLOUDSTATUS'</td><td><form action="/cgi-bin/admin/module_nextcloud_fm.cgi" method="post">
+	<button class="info" name="_AddNextCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Nextcloud Server"'">
+	<span>'$"This will provide a cloud file storage and home access system for web access to files."'<br><br>'$"Users will be able to access their network shares over the internet."'</span>
+	</button>
+	</form></td>'
+else
+	echo '</tr><tr><td>'$"Nextcloud Server"'</td><td></td><td>
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_AddownCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Nextcloud Server"'">
+	<span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	</button>
+	</form>
+	</td>'
+fi
+
+echo '</tr><tr>'
+
+#Col1
 echo '<td>'$"Distribution Server"'</td><td>'$DISTROSERVERSTATUS'</td><td>'
 
 if [ -f /opt/karoshi/server_network/dhcpserver ]
@@ -270,47 +272,6 @@ else
 	</button>
 	</form></td>
 	'
-fi
-
-#Col2
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ]
-then
-	echo '<td>'$"Nextcloud Server"'</td><td>'$NEXTCLOUDSTATUS'</td><td><form action="/cgi-bin/admin/module_nextcloud_fm.cgi" method="post">
-	<button class="info" name="_AddNextCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Nextcloud Server"'">
-	<span>'$"This will provide a cloud file storage system for web access to files."'</span>
-	</button>
-	</form></td>'
-else
-	echo '</tr><tr><td>'$"Nextcloud Server"'</td><td></td><td>
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddownCloudServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Nextcloud Server"'">
-	<span>'$"This will provide a cloud file storage system for web access to files."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
-	</button>
-	</form>
-	</td>'
-fi
-
-echo '</tr><tr>'
-
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
-then
-	echo '<td>'$"E-Mail Server"'</td><td>'$EMAILSERVERSTATUS'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
-	<button class="info" name="_AddEMailServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"E-Mail Server"'">
-	<span>'$"This will setup a server to provide E-Mail services."'</span>
-	</button>
-	</form></td>'
-else
-	echo '<td>'$"E-Mail Server"'</td><td></td><td>
-	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddEmailServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"E-MailServer"'">
-	<span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
-	</button>
-	</form>
-	</td>'
 fi
 
 #Col2
@@ -340,24 +301,24 @@ fi
 
 echo '</tr><tr>'
 
-echo '<td>'$"File Server"'</td><td>'$FILESERVERSTATUS'</td><td>'
-
-if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
+#Col1
+if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<form action="/cgi-bin/admin/module_fileserver_fm.cgi" method="post">
-	<button class="info" name="_AddFileerver_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Add File Server."'">
-	<span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'</span>
+	echo '<td>'$"E-Mail Server"'</td><td>'$EMAILSERVERSTATUS'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
+	<button class="info" name="_AddEMailServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"E-Mail Server"'">
+	<span>'$"This will setup a server to provide E-Mail services."'</span>
 	</button>
 	</form></td>'
 else
-	echo '
+	echo '<td>'$"E-Mail Server"'</td><td></td><td>
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddFileServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"File Server"'">
-	<span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'<br><br>'$"The main server already acts as a file server."'</span>
+	<button class="info" name="_AddEmailServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"E-MailServer"'">
+	<span>'$"This will setup a server to provide E-Mail services."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
 	</button>
-	</form></td>'
+	</form>
+	</td>'
 fi
 
 #Col2
@@ -383,23 +344,25 @@ fi
 
 echo '</tr><tr>'
 
-if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+#Col1
+echo '<td>'$"File Server"'</td><td>'$FILESERVERSTATUS'</td><td>'
+
+if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/slave_ldap_servers/$SERVERNAME ]
 then
-	echo '<td>'$"Gitlab Server"'</td><td>'$GITLABSTATUS'</td><td><form action="/cgi-bin/admin/module_gitlab_fm.cgi" method="post">
-	<button class="info" name="_AddGitServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Git Server"'">
-	<span>'$"This will setup the Gitlab module."'</span>
+	echo '<form action="/cgi-bin/admin/module_fileserver_fm.cgi" method="post">
+	<button class="info" name="_AddFileerver_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Add File Server."'">
+	<span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'</span>
 	</button>
 	</form></td>'
 else
-	echo '<td>'$"Gitlab Server"'</td><td></td><td>
+	echo '
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddGitlabServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Gitlab Server"'">
-	<span>'$"This will setup the Gitlab Server."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	<button class="info" name="_AddFileServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"File Server"'">
+	<span>'$"This will setup a server to provide home areas for selected groups of users. By default the primary domain controller provides home areas for all users."' '$"Using this feature will allow you to spread the server load in larger networks."'<br><br>'$"The main server already acts as a file server."'</span>
 	</button>
-	</form>
-	</td>'
+	</form></td>'
 fi
 
 #Col2
@@ -424,20 +387,21 @@ fi
 
 echo '</tr><tr>'
 
+#Col1
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
-	echo '<td>'$"Home Access Server"'</td><td>'$HOMEACCESSSTATUS'</td><td><form action="/cgi-bin/admin/module_smbwebclient_fm.cgi" method="post">
-	<button class="info" name="_AddHomeAccessServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON'" alt="'$"Home Access Server"'">
-	<span>'$"This will setup a server to provide web based access to home areas."'</span>
+	echo '<td>'$"Gitlab Server"'</td><td>'$GITLABSTATUS'</td><td><form action="/cgi-bin/admin/module_gitlab_fm.cgi" method="post">
+	<button class="info" name="_AddGitServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Git Server"'">
+	<span>'$"This will setup the Gitlab module."'</span>
 	</button>
 	</form></td>'
 else
-	echo '<td>'$"Home Access Server"'</td><td></td><td>
+	echo '<td>'$"Gitlab Server"'</td><td></td><td>
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddHomeAccessServer_" value="_SERVERNAME_'$SERVERNAME'_">
-	<img src="'$ICON2'" alt="'$"Home Access Server"'">
-	<span>'$"This will setup a server to provide web based access to home areas."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
+	<button class="info" name="_AddGitlabServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Gitlab Server"'">
+	<span>'$"This will setup the Gitlab Server."'<br><br>'$"This module cannot be applied to a server running the reverse proxy module."'</span>
 	</button>
 	</form>
 	</td>'
@@ -470,6 +434,7 @@ fi
 
 echo '</tr><tr>'
 
+#Col1
 echo '<td>'$"Internet Radio Server"'</td><td>'$RADIOSTATUS'</td>
 <td><form action="/cgi-bin/admin/module_radioserver_fm.cgi" method="post">
 	<button class="info" name="_AddRadioServer_" value="_SERVERNAME_'$SERVERNAME'_">
@@ -501,6 +466,7 @@ fi
 
 echo '</tr><tr>'
 
+#Col1
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<td>'$"Joomla"'</td><td>'$JOOMLASTATUS'</td><td><form action="/cgi-bin/admin/module_joomla_fm.cgi" method="post">
@@ -543,6 +509,7 @@ fi
 
 echo '</tr><tr>'
 
+#Col1
 if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
 then
 	echo '<td>'$"Kanboard"'</td><td>'$KANBOARDSTATUS'</td><td><form action="/cgi-bin/admin/module_kanboard_fm.cgi" method="post">
@@ -584,7 +551,30 @@ else
 	</td>'
 fi
 
-echo '</tr>'
+echo '</tr><tr>'
+
+#Col1
+echo '<td>'$"Monitor Server"'</td><td>'$MONITORSERVERSTATUS'</td><td>'
+if [ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ]
+then
+	echo '<form action="/cgi-bin/admin/module_monitoring_fm.cgi" method="post">
+	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON'" alt="'$"Monitoring Server"'">
+	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'</span>
+	</button>
+	</form></td>'
+else
+	echo '
+	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
+	<button class="info" name="_AddMonitoringServer_" value="_SERVERNAME_'$SERVERNAME'_">
+	<img src="'$ICON2'" alt="'$"Monitoring Server"'">
+	<span>'$"This will provide a monitoring server for you network that will alert you if there are any problems."'<br><br>'$"This module cannot be applied to your main server."'</span>
+	</button>
+	</form></td>
+'
+fi
+
+echo '<td></td><td></td><td></td></tr>'
 
 #echo '<td></td><td></td><td></td></tr>'
 
