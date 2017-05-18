@@ -487,8 +487,6 @@ create 0640 syslog adm
 }" > /etc/logrotate.d/samba-file-access
 					touch /var/log/samba/file-access.log
 					chown syslog.adm /var/log/samba/file-access.log 
-					RESTART_RSYSLOGD=yes
-				fi
 
 				if [ "$RESTART_RSYSLOGD" = yes ]
 				then

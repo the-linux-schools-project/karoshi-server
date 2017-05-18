@@ -23,49 +23,49 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
 then
-	echo `date`: lockout_reset - No Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - No Staff MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/lockout_reset_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $lockout_reset_cgi'check' ]
+if [ "$MD5SUM"'check' != "$lockout_reset_cgi"'check' ]
 then
-	echo `date`: lockout_reset - Incorrect Staff MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Incorrect Staff MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
 then
-	echo `date`: lockout_reset - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - No Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/lockout_reset_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $lockout_reset_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$lockout_reset_cgi"'check' ]
 then
-	echo `date`: lockout_reset - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Incorrect Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
 then
-	echo `date`: lockout_reset - No Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - No Tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/lockout_reset_cgi
-MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/tech/lockout_reset.cgi | cut -d' ' -f1`
+MD5SUM3=$(md5sum /var/www/cgi-bin_karoshi/tech/lockout_reset.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM3" ] && MD5SUM3=not_set
-if [ $MD5SUM3'check' != $lockout_reset_cgi'check' ]
+if [ "$MD5SUM3"'check' != "$lockout_reset_cgi"'check' ]
 then
-	echo `date`: lockout_reset - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Incorrect Tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -74,56 +74,56 @@ fi
 ########################
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: lockout_reset - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-USERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+USERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM3"'check' ]
 then
-	echo `date`: lockout_reset - Not called by lockout_reset.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Not called by lockout_reset.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: lockout_reset - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: lockout_reset - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$USERNAME" ]
 then
-	echo `date`: lockout_reset - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): lockout_reset - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
 
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE")
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get the base dn of the user
-USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
+USERDN=$(ldapsearch -o ldif-wrap=no -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep ^dn:)
 
 #Reset the lockout on any domain controllers - this is just in case we have slow replication.
 function adc_lockout_reset {
-for DOMAIN_CONTROLLER in $(ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers)
+for DOMAIN_CONTROLLER in $(ls -1 /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers)
 do
-	echo `date`: "lockout_reset - Resetting $USERNAME on $DOMAIN_CONTROLLER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DOMAIN_CONTROLLER '
-	echo -e "'$USERDN'\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w '$LDAPPASS' -D "cn=Administrator,cn=Users,'$LDAPBASE'" 1>/dev/null
+	echo "$(date): lockout_reset - Resetting $USERNAME on $DOMAIN_CONTROLLER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$DOMAIN_CONTROLLER" '
+	echo -e "'"$USERDN"'\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w '"$LDAPPASS"' -D "cn=Administrator,cn=Users,'"$LDAPBASE"'" 1>/dev/null
 	'
 done
 }
@@ -143,6 +143,6 @@ then
 fi
 
 #Reset the lockout on the pdc
-echo `date`: "lockout_reset - Resetting $USERNAME on" $(hostname-fqdn) "by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo -e "$USERDN\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): lockout_reset - Resetting $USERNAME on $(hostname-fqdn) by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo -e "$USERDN\nchangetype: modify\nreplace: badPwdCount\nbadPwdCount: 0\n-\nreplace: badPasswordTime\nbadPasswordTime: 0\n-\nreplace: lockoutTime\nlockoutTime: 0\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit

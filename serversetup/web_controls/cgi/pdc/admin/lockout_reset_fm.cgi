@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Reset User Lockout"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Reset User Lockout"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -75,13 +75,18 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	};
 	// ]]>
 	</script>'
+	WIDTH1=120
+	WIDTH2=140
+else
+	WIDTH1=180
+	WIDTH2=200
 fi
 echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	TABLECLASS=standard
@@ -93,7 +98,7 @@ fi
 echo '<form action="/cgi-bin/admin/lockout_reset.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -102,16 +107,23 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+	echo '<div id="'"$DIV_ID"'"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Reset User Lockout"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a></td></tr></tbody></table><br>'
 fi
-
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Username"'</td>
- <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+if [ "$MOBILE" = no ]
+then
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Username"'</td>
+ <td><div id="suggestions"></div><input tabindex= "1" style="width: '"$WIDTH2"'px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to reset the user lockout for."'</span></a>
 </td></tr>
 </tbody></table><br><br>'
+else
+	echo '<div id="suggestions"></div>
+	'$"Username"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
+ 	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>'
+fi
 
 [ "$MOBILE" = no ] && echo '</div><div id="submitbox">'
 
