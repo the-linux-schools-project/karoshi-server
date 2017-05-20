@@ -1,7 +1,8 @@
 #!/bin/bash
-if [ `ps aux | grep -w -c squid-deb-proxy.conf` -gt 1 ]
+if [[ $(ps aux | grep -w -c squid-deb-proxy.conf) -gt 1 ]]
 then
-exit 0
+	exit 0
 else
-exit 1
+	exit 1
 fi
+

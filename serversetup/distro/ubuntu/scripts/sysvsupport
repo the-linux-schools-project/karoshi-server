@@ -111,50 +111,39 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mount-gluster-
 [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon /etc/init.d/
 
 #Check if we have zfs
-if [ $(ls -1 /etc/rc2.d/ | grep -c "zfs-mount-all") -gt 0 ]
+if [[ $(ls -1 /etc/rc2.d/ | grep -c "zfs-mount-all") -gt 0 ]]
 then
 	#Make sure we are waiting for ZFS
 
 	#Set minidlna to wait for zfs-mount-all
-	if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+	if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
 	then
 		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
 	fi
 	#Set gluster to wait for zfs-mount-all
-	if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+	if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
 	then
 		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
 	fi
 fi
 
-#Make sure no scripts have been added to /etc/init for upstart.
-[ `ls /etc/init/cups* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/cups*
-[ `ls /etc/init/mysql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/mysql*
-[ `ls /etc/init/postgresql* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/postgresql*
-[ `ls /etc/init/smbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/smbd*
-[ `ls /etc/init/nmbd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nmbd*
-[ `ls /etc/init/squid* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/squid*
-[ `ls /etc/init/ssh* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/ssh*
-[ `ls /etc/init/tftpd-hpa* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/tftpd-hpa*
-[ `ls /etc/init/xinetd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/xinetd*
-[ `ls /etc/init/dovecot* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dovecot*
-[ `ls /etc/init/vsftpd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/vsftpd*
-[ `ls /etc/init/portmap* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/portmap*
-[ `ls /etc/init/rpcbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/rpcbind*
-[ `ls /etc/init/memcached* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/memcached*
-[ `ls /etc/init/isc-dhcp* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/isc-dhcp*
-[ `ls /etc/init/glusterfs* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/glusterfs*
-[ `ls /etc/init/monitorix* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/monitorix*
-[ `ls /etc/init/freeradius* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/freeradius*
-[ `ls /etc/init/samba* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/samba*
-[ `ls /etc/init/dnsmasq* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/dnsmasq*
-[ `ls /etc/init/winbind* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/winbind*
-[ `ls /etc/init/openvpn* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/openvpn*
-[ `ls /etc/init/nfs-kernel-server* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nfs-kernel-server*
-[ `ls /etc/init/statd* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/statd*
-[ `ls /etc/init/nginx* 2>/dev/null | wc -l` -gt 0 ] && rm -f /etc/init/nginx*
+#Get rid of any upstart and systemd configurations
 
-#May need to add more to this list.
+for service in cups clamav-daemon mysql postgresql smbd nmdd squid ssh tftpd-hpa xinetd dovecot vsftpd portmap rpcbind memcached isc-dhcp glusterfs monitorix freeradius samba dnsmasq windbind openvpn nfs-kernel-server statd nginx
+do
+	#Upstart
+	#Make sure no scripts have been added to /etc/init for upstart.
+	[[ $(ls /etc/init/"$service"* 2>/dev/null | wc -l) -gt 0 ]] && rm -f /etc/init/"$service"*
 
+	#Systemd
+	if [[ $(ls /lib/systemd/system/"$service"* 2>/dev/null | wc -l) -gt 0 ]]
+	then
+		#Disable the systemd service
+		systemctl disable "$service".service
+
+		#Get rid of any systemd configurations	
+		rm -f /lib/systemd/system/"$service"*
+	fi
+done
 exit
 

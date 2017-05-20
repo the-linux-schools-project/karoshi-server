@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ `ps -e | grep -w -c tftpd` -gt 0 ]
+if [[ $(pgrep -c tftpd) -gt 0 ]]
 then
 	exit 0
 else
