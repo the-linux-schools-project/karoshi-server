@@ -34,11 +34,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,8 +49,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Change a Username"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Change a Username"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
@@ -58,27 +58,33 @@ echo '
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\--'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\--')
 #########################
 #Assign data to variables
 #########################
 END_POINT=7
-#Assign USERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
 
-if [ $MOBILE = yes ]
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
+if [ "$MOBILE" = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -103,7 +109,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox
@@ -125,16 +131,16 @@ fi
 echo '<form action="/cgi-bin/admin/change_username.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Change a Username"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="'$DIV_ID'">
+</div></div><div id="'"$DIV_ID"'">
 '
 else
-echo '<div id="'$DIV_ID'">
+	echo '<div id="'"$DIV_ID"'">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
 <td><div class="sectiontitle">'$"Change a Username"'</div></td>'
@@ -142,7 +148,7 @@ echo '<div id="'$DIV_ID'">
 if [ ! -z "$USERNAME" ]
 then
 	echo '<td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/show_user_info.cgi" name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_" value="'$USERNAME'">
+	<button class="button" formaction="/cgi-bin/admin/show_user_info.cgi" name="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_" value="'"$USERNAME"'">
 	'$"Edit User"'
 	</button>
 	</td>'
@@ -157,28 +163,43 @@ echo '<td style="vertical-align: top;">
 <br>'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left; height: 30px;" >
-    <tbody>
-      <tr>
-        <td style="width: '$WIDTH1'px;">
-'$"Username"'</td>
-        <td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" value="'$USERNAME'" size="20" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
-</td></tr>
-<tr><td>'$"New Username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
-      </tr>
-<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
-      </tr>
-<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '$WIDTH2'px;  height: '$HEIGHT'px;" type="text"></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
-      </tr>
-    </tbody>
-  </table>
-  <br>'
+if [ "$MOBILE" = no ]
+then
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left; height: 30px;" >
+	<tbody>
+	<tr>
+	<td style="width: '"$WIDTH1"'px;">
+	'$"Current Username"'</td>
+	<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" value="'"$USERNAME"'" size="20" style="width: '"$WIDTH2"'px; height: '"$HEIGHT"'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
+	</td></tr>
+	<tr><td>'$"New username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '"$WIDTH2"'px;  height: '"$HEIGHT"'px;" type="text"></td><td>
+	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
+	</tr>
+	<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '"$WIDTH2"'px;  height: '"$HEIGHT"'px;" type="text"></td><td>
+	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
+	      </tr>
+	<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '"$WIDTH2"'px;  height: '"$HEIGHT"'px;" type="text"></td><td>
+	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
+	</tr>
+	</tbody>
+	</table>
+	<br>'
+else
+	echo '<div id="suggestions"></div>
+	'$"Current username"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
+	 value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+	'$"New username"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_NEWUSERNAME_" size="20" type="text"><br>
+	'$"New forename"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_FIRSTNAME_" size="20" type="text"><br>
+	'$"New surname"'<br>
+	<input tabindex= "1" style="width: 160px; height: 30px;" name="_SURNAME_" size="20" type="text"><br>
+	<br>'
+fi
 
-[ $MOBILE = no ] && echo '</div><div id="submitbox">'
+[ "$MOBILE" = no ] && echo '</div><div id="submitbox">'
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>
 '

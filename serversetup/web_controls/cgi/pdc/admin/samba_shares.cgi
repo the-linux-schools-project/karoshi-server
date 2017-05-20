@@ -35,7 +35,7 @@ source /opt/karoshi/web_controls/version
 
 STYLESHEET=defaultstyle.css
 [ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
@@ -60,777 +60,307 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADRUPLEUNDERSCORE/g' | se
 #########################
 #Assign data to variables
 #########################
-END_POINT=$(echo $DATA | sed 's/_/\n/g' | wc -l)
-let ENDPOINT=$ENDPOINT+1
+END_POINT=$(echo "$DATA" | sed 's/_/\n/g' | wc -l)
+let ENDPOINT="$ENDPOINT"+1
 
-#Assign ACTION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 [ -z "$ACTION" ] && ACTION=view
 
 if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ]
 then
 	#Assign SHARENAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SHARENAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SHARENAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SHARENAME
+	get_data
+	SHARENAME="$DATAENTRY"
 
 	#Assign SERVERNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERNAME
+	get_data
+	SERVERNAME="$DATAENTRY"
 
 	#Assign SERVERTYPE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERTYPE
+	get_data
+	SERVERTYPE="$DATAENTRY"
 
 	#Assign SERVERMASTER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
-
+	DATANAME=SERVERMASTER
+	get_data
+	SERVERMASTER="$DATAENTRY"
 fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ]
 then
 	#Assign COMMENT
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = COMMENTcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			COMMENT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=COMMENT
+	get_data
+	COMMENT="$DATAENTRY"
+
 	#Assign SHARENAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SHARENAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SHARENAME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd "0-9A-Za-z"`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SHARENAME
+	get_data
+	SHARENAME=$(echo "$DATAENTRY" | tr -cd "0-9A-Za-z")
+
 	#Assign SHAREPATH
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SHAREPATHcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SHAREPATH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%2F/\//g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SHAREPATH
+	get_data
+	SHAREPATH=$(echo "$DATAENTRY" | sed 's/%2F/\//g')
+
 	#Assign GROUP1
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP1check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP1
+	get_data
+	GROUP1="$DATAENTRY"
 
 	#Assign GROUP2
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP2check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP2
+	get_data
+	GROUP2="$DATAENTRY"
 
 	#Assign GROUP3
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP3check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP3=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP3
+	get_data
+	GROUP3="$DATAENTRY"
 
 	#Assign GROUP4
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP4check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP4=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP4
+	get_data
+	GROUP4="$DATAENTRY"
 
 	#Assign GROUP5
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP5check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP5=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP5
+	get_data
+	GROUP5="$DATAENTRY"
 
 	#Assign GROUP6
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP6check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP6=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP6
+	get_data
+	GROUP6="$DATAENTRY"
 
 	#Assign GROUP7
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP7check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP7=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP7
+	get_data
+	GROUP7="$DATAENTRY"
 
 	#Assign GROUP8
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP8check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP8=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP8
+	get_data
+	GROUP8="$DATAENTRY"
 
 	#Assign GROUP9
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP9check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP9=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP9
+	get_data
+	GROUP9="$DATAENTRY"
 
 	#Assign GROUP10
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP10check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP10=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP10
+	get_data
+	GROUP10="$DATAENTRY"
 
 	#Assign GROUP11
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP11check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP11=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP11
+	get_data
+	GROUP11="$DATAENTRY"
 
 	#Assign GROUP12
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUP12check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP12=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP12
+	get_data
+	GROUP12="$DATAENTRY"
 
 	#Assign GROUPPERMS1
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS1check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS1
+	get_data
+	GROUPPERMS1="$DATAENTRY"
 
 	#Assign GROUPPERMS2
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS2check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS2
+	get_data
+	GROUPPERMS2="$DATAENTRY"
 
 	#Assign GROUPPERMS3
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS3check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS3=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS3
+	get_data
+	GROUPPERMS3="$DATAENTRY"
 
 	#Assign GROUPPERMS4
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS4check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS4=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS4
+	get_data
+	GROUPPERMS4="$DATAENTRY"
 
 	#Assign GROUPPERMS5
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS5check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS5=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS5
+	get_data
+	GROUPPERMS5="$DATAENTRY"
 
 	#Assign GROUPPERMS6
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS6check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS6=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS6
+	get_data
+	GROUPPERMS6="$DATAENTRY"
 
 	#Assign GROUPPERMS7
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS7check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS7=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS7
+	get_data
+	GROUPPERMS7="$DATAENTRY"
 
 	#Assign GROUPPERMS8
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS8check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS8=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS8
+	get_data
+	GROUPPERMS8="$DATAENTRY"
 
 	#Assign GROUPPERMS9
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS9check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS9=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS9
+	get_data
+	GROUPPERMS9="$DATAENTRY"
 
 	#Assign GROUPPERMS10
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS10check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS10=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS10
+	get_data
+	GROUPPERMS10="$DATAENTRY"
 
 	#Assign GROUPPERMS11
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS11check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS11=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS11
+	get_data
+	GROUPPERMS11="$DATAENTRY"
 
 	#Assign GROUPPERMS12
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPPERMS12check ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPPERMS12=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPPERMS12
+	get_data
+	GROUPPERMS12="$DATAENTRY"
 
 	#Assign ALLPERMS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ALLPERMScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ALLPERMS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=ALLPERMS
+	get_data
+	ALLPERMS="$DATAENTRY"
 
 	#Assign MAPDRIVE1
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE1check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE1
+	get_data
+	MAPDRIVE1="$DATAENTRY"
 
 	#Assign MAPDRIVE2
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE2check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE2
+	get_data
+	MAPDRIVE2="$DATAENTRY"
 
 	#Assign MAPDRIVE3
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE3check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE3=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE3
+	get_data
+	MAPDRIVE3="$DATAENTRY"
 
 	#Assign MAPDRIVE4
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE4check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE4=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE4
+	get_data
+	MAPDRIVE4="$DATAENTRY"
 
 	#Assign MAPDRIVE5
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE5check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE5=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE5
+	get_data
+	MAPDRIVE5="$DATAENTRY"
 
 	#Assign MAPDRIVE6
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE6check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE6=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE6
+	get_data
+	MAPDRIVE6="$DATAENTRY"
 
 	#Assign MAPDRIVE7
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE7check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE7=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE7
+	get_data
+	MAPDRIVE7="$DATAENTRY"
 
 	#Assign MAPDRIVE8
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE8check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE8=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE8
+	get_data
+	MAPDRIVE8="$DATAENTRY"
 
 	#Assign MAPDRIVE9
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE9check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE9=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE9
+	get_data
+	MAPDRIVE9="$DATAENTRY"
 
 	#Assign MAPDRIVE10
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE10check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE10=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE10
+	get_data
+	MAPDRIVE10="$DATAENTRY"
 
 	#Assign MAPDRIVE11
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE11check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE11=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE11
+	get_data
+	MAPDRIVE11="$DATAENTRY"
 
 	#Assign MAPDRIVE12
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVE12check ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVE12=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MAPDRIVE12
+	get_data
+	MAPDRIVE12="$DATAENTRY"
 
 	#Assign MAPDRIVEALL
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MAPDRIVEALLcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			MAPDRIVEALL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
-
+	DATANAME=MAPDRIVEALL
+	get_data
+	MAPDRIVEALL="$DATAENTRY"
 
 	#Assign SERVERNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
-
+	DATANAME=SERVERNAME
+	get_data
+	SERVERNAME="$DATAENTRY"
 
 	#Assign SERVERTYPE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERTYPE
+	get_data
+	SERVERTYPE="$DATAENTRY"
 
 	#Assign SERVERMASTER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERMASTER
+	get_data
+	SERVERMASTER="$DATAENTRY"
 
 	#Assign DRIVELETTER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = DRIVELETTERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			DRIVELETTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=DRIVELETTER
+	get_data
+	DRIVELETTER="$DATAENTRY"
 
 	#Assign RECYCLEBIN
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = RECYCLEBINcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			RECYCLEBIN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=RECYCLEBIN
+	get_data
+	RECYCLEBIN="$DATAENTRY"
 
 	#Assign FULLAUDIT
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FULLAUDITcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			FULLAUDIT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=FULLAUDIT
+	get_data
+	FULLAUDIT="$DATAENTRY"
 
 	#Assign RECBINDURATION
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = RECBINDURATIONcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			RECBINDURATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=RECBINDURATION
+	get_data
+	RECBINDURATION="$DATAENTRY"
 
 	#Assign SETPERMISSIONS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SETPERMISSIONScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SETPERMISSIONS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SETPERMISSIONS
+	get_data
+	SETPERMISSIONS="$DATAENTRY"
 	[ -z "$SETPERMISSIONS" ] && SETPERMISSIONS=no
 fi
 
 function show_status {
 echo '<script>'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/samba_shares.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -931,8 +461,8 @@ then
 	PROTECTEDPATHS2="/usr /boot /bin /etc /lib /sbin /sys /root /dev /tmp"
 
 	#Strip trailing slash for SHAREPATH
-	SHAREPATH=`echo $SHAREPATH | sed 's/\/$//g'`
-	if [ `echo "$PROTECTEDPATHS" | grep -c "$SHAREPATH"` -gt 0 ]
+	SHAREPATH=$(echo "$SHAREPATH" | sed 's/\/$//g')
+	if [[ $(echo "$PROTECTEDPATHS" | grep -c "$SHAREPATH") -gt 0 ]]
 	then
 		MESSAGE=$"This is a protected path and cannot be added as a share."
 		show_status
@@ -940,7 +470,7 @@ then
 
 	for CHECKPATH in $PROTECTEDPATHS2
 	do
-		if [ `echo "$SHAREPATH" | grep -c "$CHECKPATH"` -gt 0 ]
+		if [[ $(echo "$SHAREPATH" | grep -c "$CHECKPATH") -gt 0 ]]
 		then
 			MESSAGE=$"This is a protected path and cannot be added as a share."
 			show_status
@@ -964,7 +494,7 @@ then
 			for SHARE in $SHARELIST
 			do
 				EXISTINGSHARE=$(basename "$SHARE")
-				if [ $(grep 'DRIVELETTER="'$DRIVELETTER'"' $SHARE | wc -l) -gt 0 ]
+				if [[ $(grep 'DRIVELETTER="'"$DRIVELETTER"'"' "$SHARE" | wc -l) -gt 0 ]]
 				then
 					MESSAGE=''$"This drive letter is already in use for"' '$EXISTINGSHARE''
 					show_status
@@ -1071,7 +601,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class=
 '
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$COMMENT:$SHARENAME:$SHAREPATH:$GROUP1:$GROUP2:$GROUP3:$GROUP4:$GROUP5:$GROUP6:$GROUP7:$GROUP8:$GROUP9:$GROUP10:$GROUP11:$GROUP12:$GROUPPERMS1:$GROUPPERMS2:$GROUPPERMS3:$GROUPPERMS4:$GROUPPERMS5:$GROUPPERMS6:$GROUPPERMS7:$GROUPPERMS8:$GROUPPERMS9:$GROUPPERMS10:$GROUPPERMS11:$GROUPPERMS12:$ALLPERMS:$MAPDRIVE1:$MAPDRIVE2:$MAPDRIVE3:$MAPDRIVE4:$MAPDRIVE5:$MAPDRIVE6:$MAPDRIVE7:$MAPDRIVE8:$MAPDRIVE9:$MAPDRIVE10:$MAPDRIVE11:$MAPDRIVE12:$MAPDRIVEALL:$DRIVELETTER:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$RECYCLEBIN:$FULLAUDIT:$RECBINDURATION:$SETPERMISSIONS:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_shares
 EXIT_STATUS=$?
 

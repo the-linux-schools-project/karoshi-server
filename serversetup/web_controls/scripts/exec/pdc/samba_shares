@@ -377,7 +377,7 @@ create 0640 syslog adm
 				echo include = /etc/samba/extra_network_shares/"$SERVERNAME"/"$SHARENAME".conf >> /etc/samba/smb.conf
 			fi
 			#Restart samba
-			echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
+			#echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 			sleep 1
@@ -487,8 +487,6 @@ create 0640 syslog adm
 }" > /etc/logrotate.d/samba-file-access
 					touch /var/log/samba/file-access.log
 					chown syslog.adm /var/log/samba/file-access.log 
-					RESTART_RSYSLOGD=yes
-				fi
 
 				if [ "$RESTART_RSYSLOGD" = yes ]
 				then
@@ -505,7 +503,7 @@ create 0640 syslog adm
 				echo include = /etc/samba/extra_network_shares/'"$SERVERNAME"'/"'"$SHARENAME"'".conf >> /etc/samba/smb.conf
 			fi
 			#Restart samba
-			echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
+			#echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 			sleep 1
@@ -564,7 +562,7 @@ create 0640 syslog adm
 		fi
 		#Restart samba
 		source /opt/karoshi/serversetup/variables/distro
-		echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
+		#echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
@@ -668,7 +666,7 @@ then
 			
 			COUNTER=1
 			GROUPCOUNTER=1
-			for GROUPNAME in $(echo "$GROUPLIST" | sed 's/,/ /g')
+			for GROUPNAME in ${GROUPLIST//,/ }
 			do
 				if [ "$GROUPNAME" != all ]
 				then
@@ -925,7 +923,7 @@ then
 		[ -L /var/lib/samba/dfs/"$SHARENAME" ] && rm -f /var/lib/samba/dfs/"$SHARENAME"
 	
 		#Restart samba
-		echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
+		#echo '<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>'
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
@@ -942,7 +940,7 @@ then
 		[ -L /var/lib/samba/dfs/"'"$SHARENAME"'" ] && rm -f /var/lib/samba/dfs/"'"$SHARENAME"'"
 	
 		#Restart samba
-		echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
+		#echo "<ul><li>'"$SERVERNAME"' - '$"Restarting Samba"'</ul></li>"
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 		sleep 1
@@ -953,7 +951,7 @@ then
 	#Remove folder from backup configuration
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders ]
 	then
-		if [[ $(grep -c "$SHAREPATH","$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) -gt 0 ]]
+		if [[ $(grep -c "$SHAREPATH,$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) -gt 0 ]]
 		then
 			sed -i "/,$SHARENAME,/d" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 		fi
@@ -1003,7 +1001,7 @@ then
 				GROUPPERMS=$(echo "$GROUPPERMS" | sed 's/,/<br>/g' | sed 's/7/'$"Full Access"'/g;' | sed 's/5/'$"Read Only"'/g;')
 				#Translate map drives
 				MAP_DRIVE=$(echo "$MAP_DRIVE" | sed 's/,/<br>/g' | sed 's/1/'$"Yes"'/g' | sed 's/0/'$"No"'/g')
-				echo '<tr><td style="vertical-align:top">'"$SERVER"'</td><td style="vertical-align:top">'"$NETSHARE"'</td><td style="vertical-align:top">'"$SHAREPATH"'</td><td style="vertical-align:top">'$(echo "$GROUPLIST" | sed "s/,/<br>/g")'</td><td style="vertical-align:top">'"$GROUPPERMS"'</td><td style="vertical-align:top">'"$MAP_DRIVE"'</td><td style="vertical-align:top">'"$DRIVELETTER"'</td>'
+				echo '<tr><td style="vertical-align:top">'"$SERVER"'</td><td style="vertical-align:top">'"$NETSHARE"'</td><td style="vertical-align:top">'"$SHAREPATH"'</td><td style="vertical-align:top">'"${GROUPLIST//,/<br>}"'</td><td style="vertical-align:top">'"$GROUPPERMS"'</td><td style="vertical-align:top">'"$MAP_DRIVE"'</td><td style="vertical-align:top">'"$DRIVELETTER"'</td>'
 				if [ "$NETSHARE" != sysvol ] && [ "$NETSHARE" != netlogon ] && [ "$NETSHARE" != applications ]
 				then
 					echo '<td style="vertical-align:top">

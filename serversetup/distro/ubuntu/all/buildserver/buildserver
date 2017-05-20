@@ -67,7 +67,7 @@ removepackages="wpasupplicant nscd byobu xterm orage ppp php-fpm landscape-commo
 
 #Check that this script is running as root.
 
-if [ `id -u` != 0 ]
+if [ "$(id -u)" != 0 ]
 then
 	echo This script must be run as root.
 	exit
@@ -104,7 +104,7 @@ then
 
 	#Make sure that there is an admin group
 	getent group admin 1>/dev/null
-	[ $? != 0 ] && groupadd admin
+	[ "$?" != 0 ] && groupadd admin
 
 	#Add karoshi user to the admin group
 	usermod -a -G admin karoshi
@@ -198,20 +198,20 @@ function install_additional_software {
 #Install software
 if [ $INSTALL_BATCH = yes ]
 then
-		apt-get -y install $extrapackages 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		apt-get -y install "$extrapackages" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 		if [ $? != 0 ]
 		then
 			echo There was a problem installing the extra packages. Press return to continue.
 		fi
 else
-	for package in `echo $extrapackages`
+	for package in $extrapackages
 	do
 		echo -e "\nInstalling $package\n"
 		sleep 1
-		apt-get -y install $package 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 		if [ $? != 0 ]
 		then
-			echo $package: There was a problem installing this package. Press return to continue.
+			echo "$package: There was a problem installing this package. Press return to continue."
 			[ $AUTO = no ] && read pause
 		fi
 	done
@@ -228,21 +228,21 @@ sleep 1
 
 if [ $INSTALL_BATCH = yes ]
 then
-		apt-get -y install $packages 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		apt-get -y install "$packages" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 		if [ $? != 0 ]
 		then
 			echo There was a problem installing the packages. Press return to continue.
 		fi
 else
-	for package in `echo $packages`
+	for package in $packages
 	do
 		echo -e "\nInstalling $package\n"
 		sleep 1
-		apt-get -y install $package 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
-		if [ $? != 0 ]
+		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		if [ "$?" != 0 ]
 		then
-			echo $package: There was a problem installing this package. Press return to continue.
-			[ $AUTO = no ] && read pause
+			echo "$package: There was a problem installing this package. Press return to continue."
+			[ "$AUTO" = no ] && read pause
 		fi
 	done
 fi
@@ -271,11 +271,11 @@ function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
 services="apache apache_karoshi bind clamd cron cups dhcp dns dovecot e2guardian fail2ban glusterfs icecast2 mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
-for service in `echo $services`
+for service in $services
 do
 	echo -e "\nStopping $service\n"
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/$service"_"stop
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/$service
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"$service"_stop
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"$service"
 done
 
 #Stop lightdm in sysv - let upstart start it.
@@ -288,7 +288,7 @@ function sysvsupport {
 
 function install_mailscanner {
 #Install dependencies
-apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-`uname -r` build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl perl-modules libdbd-mysql-perl libsys-hostname-long-perl 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-"$(uname -r)" build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl perl-modules libdbd-mysql-perl libsys-hostname-long-perl 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 
 #MAILSCANNERVER=4.85.2-3
 #[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
@@ -321,7 +321,7 @@ cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plym
 update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth /usr/share/plymouth/themes/karoshi-logo/karoshi-logo.plymouth 100
 update-alternatives --config default.plymouth
 #Get selection number for karoshi theme
-SELECT=`update-alternatives --list default.plymouth | grep -n karoshi-logo | cut -d: -f1`
+SELECT=$(update-alternatives --list default.plymouth | grep -n karoshi-logo | cut -d: -f1)
 #Set karoshi theme as the default theme
 echo -e "\nSetting karoshi-logo theme as the default theme for plymouth.\n"
 echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-logo
@@ -342,14 +342,14 @@ update-grub
 
 function remove_software {
 
-for package in `echo $removepackages`
+for package in $removepackages
 do
 	echo -e "\nRemoving $package\n"
 	sleep 1
-	apt-get -y purge $package 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+	apt-get -y purge "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 	if [ $? != 0 ]
 	then
-		echo $package: There was a problem removing this package. Press return to continue.
+		echo "$package": There was a problem removing this package. Press return to continue.
 		[ $AUTO = no ] && read pause
 	fi
 done
@@ -391,7 +391,7 @@ groupdel staff
 #Copy in ssl.conf
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/ssl.conf /etc/apache2/mods-available/
 
-if [ $INSTALL_REMASTERSYS = yes ]
+if [ "$INSTALL_REMASTERSYS" = yes ]
 then
 	#Configure remastersys
 	cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
@@ -406,14 +406,14 @@ fi
 #Import public gpg keys - needed for official patches to be applied later.
 for PUBLIC_KEY in /opt/karoshi/serversetup/all/keys/*
 do
-	KEYNAME=`basename $PUBLIC_KEY`
-	KEY=`echo $KEYNAME | sed 's/.key$//g'`
-	echo Importing key :$KEY
-	gpg --import $PUBLIC_KEY
+	KEYNAME=$(basename "$PUBLIC_KEY")
+	KEY=$(echo "$KEYNAME" | sed 's/.key$//g')
+	echo Importing key :"$KEY"
+	gpg --import "$PUBLIC_KEY"
 	#Get fingerprint
-	FINGERPRINT=`gpg --fingerprint $KEY | grep fingerprint | sed 's/ //g' | cut -d"=" -f2`
+	FINGERPRINT=$(gpg --fingerprint "$KEY" | grep fingerprint | sed 's/ //g' | cut -d"=" -f2)
 	#Set ownertrust to 6
-	echo $FINGERPRINT:6: | gpg --import-ownertrust
+	echo "$FINGERPRINT":6: | gpg --import-ownertrust
 done
 
 #Make sure that apt is happy - something was causing a problem and thunar was getting removed - this may have been caused by remastersys later on.
@@ -482,7 +482,7 @@ sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share
 /usr/bin/gtk-update-icon-cache --force /usr/share/icons/Tango
 
 #Configure mount.d to run on 33777
-if [ `grep -c 33777 /etc/default/nfs-kernel-server` = 0 ]
+if [[ $(grep -c 33777 /etc/default/nfs-kernel-server) = 0 ]]
 then
 	sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
 fi
@@ -528,13 +528,13 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/apparmo
 
 #/etc/sysctl.d/10-network-security.conf
 
-if [ $(grep -c "# Ignore ICMP broadcast requests" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Ignore ICMP broadcast requests" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Ignore ICMP broadcast requests
 net.ipv4.icmp_echo_ignore_broadcasts = 1' >> /etc/sysctl.d/10-network-security.conf
 fi
 
-if [ $(grep -c "# Disable source packet routing" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Disable source packet routing" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Disable source packet routing
 net.ipv4.conf.all.accept_source_route = 0
@@ -543,14 +543,14 @@ net.ipv4.conf.default.accept_source_route = 0
 net.ipv6.conf.default.accept_source_route = 0' >> /etc/sysctl.d/10-network-security.conf
 fi
 
-if [ $(grep -c "# Ignore send redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Ignore send redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Ignore send redirects
 net.ipv4.conf.all.send_redirects = 0
 net.ipv4.conf.default.send_redirects = 0 ' >> /etc/sysctl.d/10-network-security.conf
 fi
 
-if [ $(grep -c "# Block SYN attacks" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Block SYN attacks" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Block SYN attacks
 net.ipv4.tcp_max_syn_backlog = 2048
@@ -558,14 +558,14 @@ net.ipv4.tcp_synack_retries = 2
 net.ipv4.tcp_syn_retries = 5' >> /etc/sysctl.d/10-network-security.conf
 fi
 
-if [ $(grep -c "# Log Martians" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Log Martians" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Log Martians
 net.ipv4.conf.all.log_martians = 1
 net.ipv4.icmp_ignore_bogus_error_responses = 1' >> /etc/sysctl.d/10-network-security.conf
 fi
 
-if [ $(grep -c "# Ignore ICMP redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]
+if [[ $(grep -c "# Ignore ICMP redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]]
 then
 	echo '# Ignore ICMP redirects
 net.ipv4.conf.all.accept_redirects = 0
@@ -594,7 +594,7 @@ dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
 function reboot_server {
 #Dont shutdown if running in a chroot since it will reboot the host os.
 ischroot
-[ $? != 0 ] && shutdown -r now
+[ "$?" != 0 ] && shutdown -r now
 }
 
 #Run functions
