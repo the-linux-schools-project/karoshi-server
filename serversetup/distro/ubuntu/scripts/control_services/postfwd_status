@@ -1,5 +1,6 @@
 #!/bin/bash
-if [[ $(pgrep -c postfwd) -gt 0 ]]
+STATUS=$(ps -e | grep -w -c "postfwd")
+if [ "$STATUS" -gt 0 ]
 then
 	exit 0
 else

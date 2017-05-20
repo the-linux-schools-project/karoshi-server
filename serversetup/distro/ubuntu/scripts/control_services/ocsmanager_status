@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c ocsmanager) -gt 0 ]]
+if [[ $(ps -e | grep -w -c ocsmanager) -gt 0 ]]
 then
 	exit 0
 else

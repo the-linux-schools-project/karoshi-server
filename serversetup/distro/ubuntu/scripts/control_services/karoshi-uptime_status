@@ -1,5 +1,6 @@
 #!/bin/bash
-if [[ $(pgrep -c karoshi-uptime) -gt 0 ]]
+UPTIMECOUNT=$(ps -e | grep -c karoshi-uptime)
+if [ "$UPTIMECOUNT" -gt 2 ]
 then
 	exit 0
 else

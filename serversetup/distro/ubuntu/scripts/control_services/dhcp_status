@@ -1,6 +1,6 @@
 #!/bin/bash
 #Using dhcp3-server
-if [[ $(pgrep -c dhcpd) -gt 0 ]]
+if [[ $(ps -e | grep -w -c dhcpd) -gt 0 ]]
 then
 	exit 0
 else

@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c freshclam) -gt 0 ]]
+if [[ $(ps -e | grep -w -c freshclam) -gt 0 ]]
 then
 	exit 0
 else

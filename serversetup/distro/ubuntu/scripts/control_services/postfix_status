@@ -1,13 +1,5 @@
 #!/bin/bash
-if [ `ps -e | grep -c " master"` -gt 0 ]
-then
-	exit 0
-else
-	exit 1
-fi
-
-#!/bin/bash
-if [[ $(pgrep -c master) -gt 0 ]]
+if [[ $(ps -e | grep -c " master") -gt 0 ]]
 then
 	exit 0
 else

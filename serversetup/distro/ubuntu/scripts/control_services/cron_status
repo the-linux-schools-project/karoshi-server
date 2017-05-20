@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -w -c cron) -gt 0 ]]
+if [[ $(ps -e | grep -w -c cron) -gt 0 ]]
 then
 	exit 0
 else

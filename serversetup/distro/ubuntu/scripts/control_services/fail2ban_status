@@ -1,5 +1,6 @@
 #!/bin/bash
-if [[ $(pgrep -c fail2ban-server) -gt 0 ]]
+FAIL2BANCOUNT=$(ps -e | grep -c fail2ban-server)
+if [ "$FAIL2BANCOUNT" -gt 2 ]
 then
 	exit 0
 else

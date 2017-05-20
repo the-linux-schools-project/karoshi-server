@@ -1,7 +1,8 @@
 #!/bin/bash
-if [[ $(pgrep -c xinetd) -gt 0 ]]
+if [ $(ps -e | grep -w -c xinetd) -gt 0 ]
 then
 	exit 0
 else
 	exit 1
 fi
+

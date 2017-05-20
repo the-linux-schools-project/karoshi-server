@@ -1,4 +1,5 @@
 #!/bin/bash
-[[ $(pgrep -c apache2) -gt 0 ]] && exit 0
+[[ $(ps -e | grep -w -c apache2) -gt 0 ]] && exit 0
+[[ $(ps -e | grep -w -c apach) -gt 0 ]] && exit 0
 exit 1
 

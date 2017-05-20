@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c dansguardian) -gt 0 ]]
+if [[ $(ps -e | grep -w -c dansguardian) -gt 0 ]]
 then
 	exit 0
 else

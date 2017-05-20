@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c mysqld) -gt 0 ]]
+if [[ $(ps -e | grep -w -c mysqld) -gt 0 ]]
 then
 	exit 0
 else

@@ -1,7 +1,4 @@
 #!/bin/bash
-if [[ $(pgrep -c memcached) -gt 0 ]]
-then
-	exit 0
-else
-	exit 1
-fi
+[[ $(ps -e | grep -w -c memcached) -gt 0 ]] && exit 0
+exit 1
+

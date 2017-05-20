@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c MailScanner) -gt 0 ]]
+if [[ $(ps -e | grep -c MailScanner) -gt 0 ]]
 then
 	exit 0
 else

@@ -1,5 +1,5 @@
 #!/bin/bash
-[ `ps -e | grep -w -c gitlab-workhors` -gt 0 ] && exit 0
-[ `ps -e | grep -w -c gitlab-logrotat` -gt 0 ] && exit 0
-[ `ps -e | grep -w -c gitlab-unicorn-` -gt 0 ] && exit 0
+[[ $(ps -e | grep -w -c gitlab-workhors) -gt 0 ]] && exit 0
+[[ $(ps -e | grep -w -c gitlab-logrotat) -gt 0 ]] && exit 0
+[[ $(ps -e | grep -w -c gitlab-unicorn-) -gt 0 ]] && exit 0
 exit 1

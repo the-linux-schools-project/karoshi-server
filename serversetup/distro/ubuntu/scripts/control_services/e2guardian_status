@@ -1,5 +1,5 @@
 #!/bin/bash
-if [[ $(pgrep -c e2guardian) -gt 0 ]]
+if [[ $(ps -e | grep -w -c e2guardian) -gt 0 ]]
 then
 	exit 0
 else

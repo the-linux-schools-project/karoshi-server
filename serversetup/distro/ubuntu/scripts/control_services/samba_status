@@ -1,8 +1,8 @@
 #!/bin/bash
 [ ! -f /etc/samba/smb.conf ] && exit 1
 SAMBAVER=samba
-[ $(grep -c ^#karoshi_member_server /etc/samba/smb.conf) -gt 0 ] && SAMBAVER=smbd
-if [[ $(pgrep -c "$SAMBAVER") -gt 0 ]]
+[[ $(grep -c ^#karoshi_member_server /etc/samba/smb.conf) -gt 0 ]] && SAMBAVER=smbd
+if [[ $(ps -e | grep -w -c "$SAMBAVER") -gt 0 ]]
 then
 	exit 0
 else
