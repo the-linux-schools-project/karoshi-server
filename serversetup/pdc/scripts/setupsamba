@@ -691,17 +691,15 @@ RANGE=61
 COUNTER=1
 while [ $COUNTER -lt 16 ]
 do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-while [ ${row[$COUNTER]} = 0 ]
-do
-row[$COUNTER]=$RANDOM
-let "row[$COUNTER] %= $RANGE"
-done
-CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-
-let COUNTER=COUNTER+1
-
+	row[$COUNTER]=$RANDOM
+	let "row[$COUNTER] %= $RANGE"
+	while [ ${row[$COUNTER]} = 0 ]
+	do
+		row[$COUNTER]=$RANDOM
+		let "row[$COUNTER] %= $RANGE"
+	done
+	CHARACTER[$COUNTER]=$(sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet)
+	let COUNTER=COUNTER+1
 done
 PASSWORD=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
 }
@@ -2147,17 +2145,7 @@ then
 fi
 
 #Set permissions on sysvol
-
-if [ -d /mnt-gluster/dc-data/sysvol ]
-then
-	SYSVOLPATH=/mnt-gluster/dc-data/sysvol
-else
-	SYSVOLPATH=/var/lib/samba/sysvol
-fi
-setfacl -Rb "$SYSVOLPATH"
-chown root.itadmin -R "$SYSVOLPATH"
-chmod 0664 -R "$SYSVOLPATH"
-chmod u+X,g+X,o+X -R "$SYSVOLPATH"
+#samba-tool ntacl sysvolreset
 
 if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
 then 

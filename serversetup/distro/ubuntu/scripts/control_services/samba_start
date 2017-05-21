@@ -1,14 +1,15 @@
 #!/bin/bash
 service samba4 start 2>&1
-if [ "$?" != 0 ]
-then
-	exit
-fi
 
 #Check to see if this is a pdc or adc in which case we want to wait until samba4 is up and runnning on all of the required ports
-if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
+if [ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]
 then
-	PORTS="88 135 137 138 139 389 445 464 636 3268" #The major ports that samba4 uses 
+	if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
+	then
+		PORTS="88 135 137 138 139 389 445 464 636 1024 1025 3268" #The major ports that samba4 uses 
+	else
+		PORTS="53 88 135 137 138 139 389 445 464 636 1024 1025 3268" #The major ports that samba4 uses minus dns since this is now being handled by bind
+	fi
 
 	for PORT in $PORTS
 	do
@@ -27,7 +28,16 @@ then
 			fi
 		done	
 	done
-	#All ports checked samba4 should now be ready for use
-	sleep 1
+	#All ports checked samba4 should now be ready for use - but let's make sure we can connect to port 389
+	source /opt/karoshi/server_network/domain_information/domain_name
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+	COUNTER=0
+	while [ "$COUNTER" -le 60 ]
+	do
+		sleep 1
+		ldapsearch -x -w "$LDAPPASS" -b "$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" "$LDAPBASE" 1>/dev/null 2>/dev/null
+		[ $? = 0 ] && break
+		let COUNTER="$COUNTER"+1
+	done
 fi
 exit

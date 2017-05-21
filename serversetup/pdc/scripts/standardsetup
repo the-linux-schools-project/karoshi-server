@@ -18,6 +18,9 @@ KAROSHILOG=/opt/karoshi/serversetup/install_log
 #Set timezone in php.ini
 [ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone
 
+#Setup uptime data for the server
+/opt/karoshi/serversetup/all/scripts/setup_uptime
+
 function checkstatus {
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 101 ]
@@ -86,9 +89,6 @@ function do_setup {
 }
 
 do_setup | yad --title $"Main Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
-
-#Setup uptime data for the server
-/opt/karoshi/serversetup/all/scripts/setup_uptime
 
 #Setup minidlna if this is a home server.
 if [ $INSTALL_TYPE = home ]
