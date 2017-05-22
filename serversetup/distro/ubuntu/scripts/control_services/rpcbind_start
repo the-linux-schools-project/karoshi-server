@@ -1,2 +1,3 @@
 #!/bin/bash
+systemctl umask rpcbind
 service rpcbind start
