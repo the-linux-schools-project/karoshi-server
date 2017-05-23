@@ -1,3 +1,6 @@
 #!/bin/bash
-systemctl umask rpcbind
+if [[ $(ps --no-headers -o comm 1) = systemd ]]
+then
+	systemctl unmask "rpcbind"
+fi
 service rpcbind start

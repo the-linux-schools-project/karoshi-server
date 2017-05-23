@@ -1,3 +1,6 @@
 #!/bin/bash
-systemctl mask rpcbind
+if [[ $(ps --no-headers -o comm 1) = systemd ]]
+then
+	systemctl mask "rpcbind"
+fi
 service rpcbind stop

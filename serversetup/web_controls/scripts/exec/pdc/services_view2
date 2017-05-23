@@ -164,7 +164,7 @@ then
 	fi
 
 	#Start or stop the service
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE\_$ACTION"
+	"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"$ACTION"
 	redirect
 fi
 
