@@ -54,11 +54,6 @@ then
 	if [ "$UBUNTUVER" = 16.04 ]
 	then
 		update-rc.d "$SERVICE" remove defaults 2>/dev/null
-		#Check if we have systemd
-		if [[ $(ps --no-headers -o comm 1) = systemd ]]
-		then
-			systemctl mask "$SERVICE"
-		fi
 	else
 		for RUNLEVEL in rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d rcS.d
 		do
@@ -77,11 +72,6 @@ if [ "$ACTION" = on ]
 then
 	if [ "$UBUNTUVER" = 16.04 ]
 	then
-		#Check if we have systemd
-		if [[ $(ps --no-headers -o comm 1) = systemd ]]
-		then
-			systemctl unmask "$SERVICE"
-		fi
 		update-rc.d "$SERVICE" defaults
 	else
 		for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
