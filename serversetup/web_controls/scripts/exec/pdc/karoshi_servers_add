@@ -580,8 +580,6 @@ then
 		[ -L /var/lib/samba/dfs/$SHAREPATH ] && rm -f /var/lib/samba/dfs/$SHAREPATH
 		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/$SHAREPATH
 	done
-	#Edit init.d script to wait for gluster
-	sed -i 's%$network $local_fs $remote_fs%$network $local_fs $remote_fs mount-gluster-volumes%g' /etc/init.d/set-sysvol/permissions
 	fi
 fi
 

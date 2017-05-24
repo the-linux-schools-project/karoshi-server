@@ -106,8 +106,11 @@ fi
 DNS_FORWARDER=$(grep forwarder /etc/samba/smb.conf | cut -d"=" -f2 | tr -cd 0-9.)
 
 #Create a folder for bind to log to
-mkdir /var/log/named
-chown bind /var/log/named
+if [ ! -d /var/log/named ]
+then
+	mkdir /var/log/named
+	chown bind /var/log/named
+fi
 
 #Create /etc/bind/named.conf.options with dns forwarder and dns keytab
 echo 'logging {
