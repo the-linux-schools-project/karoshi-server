@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/file_manager_cgi
 then
-	echo `date`: file_manager - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/file_manager_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $file_manager_cgi'check' ]
+if [ "$MD5SUM"'check' != "$file_manager_cgi"'check' ]
 then
-	echo `date`: file_manager - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,51 +45,51 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: file_manager - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%')
 #echo $DATA"<br>"
 if [ -z "$DATA" ]
 then
-	echo `date`: file_manager - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MOBILE=`echo "$DATA" | cut -s -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
-LOCATION=`echo "$DATA" | cut -s -d: -f8`
-FILENAME=`echo "$DATA" | cut -s -d: -f9`
-ACTION=`echo "$DATA" | cut -s -d: -f10`
-PERMISSIONS=`echo "$DATA" | cut -s -d: -f11`
-ITEMMOVE=`echo "$DATA" | cut -s -d: -f14 | sed "s/_/Z%%%%%Z/g"`
-NEWFOLDER=`echo "$DATA" | cut -s -d: -f15`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+MOBILE=$(echo "$DATA" | cut -s -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f6)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f7)
+LOCATION=$(echo "$DATA" | cut -s -d: -f8)
+FILENAME=$(echo "$DATA" | cut -s -d: -f9)
+ACTION=$(echo "$DATA" | cut -s -d: -f10)
+PERMISSIONS=$(echo "$DATA" | cut -s -d: -f11)
+ITEMMOVE=$(echo "$DATA" | cut -s -d: -f14 | sed "s/_/Z%%%%%Z/g")
+NEWFOLDER=$(echo "$DATA" | cut -s -d: -f15)
 
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
 then
-	echo `date`: file_manager - Not called by file_manager.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - Not called by file_manager.cgi >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: file_manager - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - Blank remote user >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: file_manager - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - Blank remote tcpip address >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -108,20 +108,20 @@ then
 	ACTION=notset
 fi
 
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ] && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ] && [ $ACTION != ADDACLPERMS ] && [ $ACTION != REALLYADDACLPERMS ]
+if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ] && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ]
 then
-	echo `date`: file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]
 then
-	echo `date`: file_manager - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): file_manager - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 #icons
 if [ "$MOBILE" = no ]
@@ -219,7 +219,7 @@ LOCATION_LIST2=( /opt/karoshi/logs /opt/karoshi/web_management /var/www/cgi-bin_
 
 function check_recursive {
 ENTER=yes
-[ `echo $LOCATION_LIST | grep -c -w "$FILE"` -gt 0 ] && ENTER=no
+[ $(echo "$LOCATION_LIST" | grep -c -w "$FILE") -gt 0 ] && ENTER=no
 COUNTER=0
 LOCATIONLIST2COUNT=${#LOCATION_LIST2[@]}
 while [ $COUNTER -lt $LOCATIONLIST2COUNT ]
@@ -231,8 +231,8 @@ done
 }
 
 function getlastlocation {
-LOCATIONFOLDER=`basename "$LOCATION"`
-LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER$//g" | sed "s/_/Z%%%%%Z/g"`
+LOCATIONFOLDER=$(basename "$LOCATION")
+LASTLOCATION=$(echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER$//g" | sed "s/_/Z%%%%%Z/g")
 }
 
 
@@ -241,9 +241,9 @@ function show_directory {
 if [ ! -z "$LOCATION" ]
 then
 	convert_special_chars
-	LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
+	LOCATION=$(echo "$LOCATION" | sed 's/+/ /g')
 	getlastlocation
-	LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+	LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 fi
 
 SHOWMOVE=no
@@ -372,7 +372,7 @@ echo '</tr></thead><tbody>'
 #[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
 
 #Log Browse Actions
-echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 LINECOLOUR=$LINECOLOUR1
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -653,7 +653,7 @@ SEARCH=`echo "$SEARCH" |  sed 's/%2F/\//g' | sed 's/+/ /g' | sed 's/%21/!/g' | s
 function really_delete_item {
 if [ -z "$LOCATION" ]
 then
-	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
@@ -665,7 +665,7 @@ else
 convert_special_chars
 LOCATIONFOLDER=`basename "$LOCATION"`
 LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER//g"`
-echo `date`: file_manager - deleting "$LOCATION" from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - deleting "$LOCATION" from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 rm -f -R "$LOCATION"
@@ -734,7 +734,7 @@ function really_set_perms {
 
 if [ -z "$LOCATION" ]
 then
-	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
@@ -771,7 +771,7 @@ SETEXECRECURSIVE="no"
 
 OCTALPERMS=`echo $USERDIGIT$GROUPDIGIT$OTHERDIGIT`
 convert_special_chars
-echo `date`: file_manager - setting ownership of "$LOCATION" to $OWNER $GROUP from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - setting ownership of "$LOCATION" to $OWNER $GROUP from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #change ownership
 [ $SETRECURSIVE = -R ] && SETRECURSIVE2=-R
 if [ $SERVERNAME = `hostname-fqdn` ]
@@ -799,7 +799,7 @@ fi
 
 
 #Change file permissions
-echo `date`: file_manager - setting permissions of "$LOCATION" to $OCTALPERMS from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - setting permissions of "$LOCATION" to $OCTALPERMS from $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #Apply permissions
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -1315,7 +1315,7 @@ convert_special_chars
 convert_special_chars2
 ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
 
-echo `date`: file_manager - moving "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - moving "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 EXISTCHECK=go
@@ -1386,7 +1386,7 @@ convert_special_chars2
 ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
 
 #Copy item
-echo `date`: file_manager - copying "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - copying "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 EXISTCHECK=go
@@ -1523,7 +1523,7 @@ NEWNAME="$ITEMMOVE"
 ITEMMOVE=""
 
 #Rename the item
-echo `date`: file_manager - renaming "$LOCATION" to "$NEWNAME" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - renaming "$LOCATION" to "$NEWNAME" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
 	if [ -e "$LOCATION" ]
@@ -1626,33 +1626,33 @@ fi
 }
 
 function really_edit_item {
-TEXTCONTENT=`echo "$DATA" | cut -s -d: -f17`
+TEXTCONTENT=$(echo "$DATA" | cut -s -d: -f17)
 convert_special_chars
 #echo location is "$LOCATION"'<br>'
 convert_special_chars3
 #echo text content is "$TEXTCONTENT"'<br>'
 
-echo `date`: file_manager - editing "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): file_manager - editing "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ $SERVERNAME = $(hostname-fqdn) ]
 then
 	if [ -f "$LOCATION" ]
 	then
-	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "$LOCATION"
-	#replace speech marks
-	sed -i 's/%22/"/g' "$LOCATION"
-	#replace tabs
-	sed -i 's/%09/\t/g' "$LOCATION"
-	#Replace quotation marks
-	sed -i "s/%27/'/g" "$LOCATION"
-	#Replace `
-	sed -i "s/%60/\`/g" "$LOCATION"
-	#Replace back slash
-	sed -i "s/%5C/\\\/g" "$LOCATION"
+		echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "$LOCATION"
+		#replace speech marks
+		sed -i 's/%22/"/g' "$LOCATION"
+		#replace tabs
+		sed -i 's/%09/\t/g' "$LOCATION"
+		#Replace quotation marks
+		sed -i "s/%27/'/g" "$LOCATION"
+		#Replace `
+		sed -i "s/%60/\`/g" "$LOCATION"
+		#Replace back slash
+		sed -i "s/%5C/\\\/g" "$LOCATION"
 	fi
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != $(hostname-fqdn) ] || [ "$SERVERTYPE" = federated ]
 then
 	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
 	#replace speech marks
@@ -1666,15 +1666,14 @@ then
 	#Replace back slash
 	sed -i "s/%5C/\\\/g" "/opt/karoshi/.tempdata/file_edit.$$"
 	#cat file back to correct SERVERNAME
-	LOCATION2=`echo $LOCATION | sed 's/ /\\\ /g'`
+	LOCATION2=$(echo "$LOCATION" | sed 's/ /\\\ /g')
 	cat /opt/karoshi/.tempdata/file_edit.$$ | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME 'cat - > '$LOCATION2''
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - editing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 	'
-	rm -f /opt/karoshi/.tempdata/file_edit.$$
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	echo -e "$TEXTCONTENT" | sed 's/%0D%0A/\n/g' > "/opt/karoshi/.tempdata/file_edit.$$"
 	#replace speech marks
@@ -1696,12 +1695,35 @@ then
 	cat /opt/karoshi/.tempdata/file_edit.'$$' | ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''cat - > '$LOCATION2''\''
 	rm -f /opt/karoshi/.tempdata/file_edit.'$$'
 	'
-	rm -f /opt/karoshi/.tempdata/file_edit.$$
 fi
 
+#Check if we are editing a ppd file and copy it to the netlogon share for linux clients
+if [ $(echo "$LOCATION" | grep -c /etc/cups/ppd) -gt 0 ]
+then
+	PPDFILE=$(basename "$LOCATION")
+	if [ -f /opt/karoshi/server_network/printserver ]
+	then
+		PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
+		if [ "$SERVERNAME" = $(hostname-fqdn) ]
+		then
+			cp -f "$LOCATION" /opt/karoshi/.tempdata/file_edit."$$"
+		fi
 
-LOCATIONITEM=`basename "$LOCATION"`
-LOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONITEM//g"`
+		if [ "$PRINTSERVER" = $(hostname-fqdn) ]
+		then
+			cp /opt/karoshi/.tempdata/file_edit."$$" /var/lib/samba/netlogon/linuxclient/printer_drivers/"$PPDFILE"
+		fi
+		if [ "$PRINTSERVER" = network ] && [ "$PRINTSERVER" != $(hostname-fqdn) ] || [ "$PRINTSERVER" = federated ]
+		then
+			scp /opt/karoshi/.tempdata/file_edit."$$" root@"$PRINTSERVER":/var/lib/samba/netlogon/linuxclient/printer_drivers/"$PPDFILE"
+		fi
+	fi
+fi
+
+[ -f /opt/karoshi/.tempdata/file_edit."$$" ] && rm -f rm -f /opt/karoshi/.tempdata/file_edit."$$"
+
+LOCATIONITEM=$(basename "$LOCATION")
+LOCATION=$(echo "$LOCATION" | sed "s/\/$LOCATIONITEM//g")
 #Go to current directory
 show_directory
 }
@@ -1709,13 +1731,13 @@ show_directory
 function edit_item {
 convert_special_chars
 getlastlocation
-LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 echo $"Edit" $LOCATION'<br><br>'
 
 #Get data from text file
-echo `date`: file_manager - viewing "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): file_manager - viewing $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 EDITERRORMSG=$"This is not an editable file."
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ $SERVERNAME = $(hostname-fqdn) ]
 then
 	EDITCHECK=ok
 	#Check that file is not in a banned edit path
@@ -1729,7 +1751,7 @@ then
 	done
 
 	FILETYPEDATA=`file "$LOCATION"`
-	if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+	if [ $(echo "$FILETYPEDATA" | grep -c ASCII) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PPD) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c Bourne-Again) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PHP) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c XML) -gt 0 ] && [ $EDITCHECK = ok ]
 	then
 		echo '
 	<input name="_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Save"'">
@@ -1759,7 +1781,7 @@ fi
 done
 
 FILETYPEDATA=`file "'$LOCATION'"`
-if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+if [ $(echo "$FILETYPEDATA" | grep -c ASCII) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PPD) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c Bourne-Again) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PHP) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c XML) -gt 0 ] && [ $EDITCHECK = ok ]
 then
 echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
 [ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - viewing "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -1785,7 +1807,7 @@ EDITERRORMSG="'$"Files in this folder are not allowed to be edited."'"
 fi
 done
 FILETYPEDATA=`file "'$LOCATION'"`
-if [ `echo "$FILETYPEDATA" | grep -c ASCII` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c Bourne-Again` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c PHP` -gt 0 ] || [ `echo "$FILETYPEDATA" | grep -c XML` -gt 0 ] && [ $EDITCHECK = ok ]
+if [ $(echo "$FILETYPEDATA" | grep -c ASCII) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PPD) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c Bourne-Again) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c PHP) -gt 0 ] || [ $(echo "$FILETYPEDATA" | grep -c XML) -gt 0 ] && [ $EDITCHECK = ok ]
 then
 echo "<input type=\"image\" src=\"/images/submenus/file/go.gif\" name=\"_ACTION_REALLYEDIT_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_\" value=\"\"><a href=\"javascript:history.go(-1)\"> <img src=\"/images/submenus/file/back.gif\" alt=\"back\" border=\"0\"></a><br><br><textarea cols=\"95\" rows=\"28\" name=\"_TEXTDATA_\">"
 echo "`cat "'$LOCATION'" | sed "s/&/&amp/g"`</textarea>"
@@ -1812,7 +1834,7 @@ ITEMMOVE=""
 LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
 
 #Create new folder
-echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
@@ -1894,7 +1916,7 @@ then
 	ITEMMOVE=""
 	LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
 	#Create new folder
-	echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	if [ $SERVERNAME = `hostname-fqdn` ]
 	then
@@ -2038,7 +2060,7 @@ echo '<button class="button" name="_GoBack_" value="_ACTION_ENTER_SERVERTYPE_'$S
 function really_restore_item {
 if [ -z "$LOCATION" ]
 then
-	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: file_manager - blank location by "for" $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 #Restore the item
@@ -2079,7 +2101,7 @@ RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
 LOCATION=`echo "$LOCATION" | sed "s/Z%%%%%Z/_/g"`
 RESTOREPATH=`echo "$RESTOREPATH" | sed "s/Z%%%%%Z/_/g"`
 
-echo `date`: file_manager - restoring "$LOCATIONFOLDER" from $SERVERNAME to $RESTORESERVER $RESTOREPATH by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: file_manager - restoring "$LOCATIONFOLDER" from $SERVERNAME to $RESTORESERVER $RESTOREPATH by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbody>
 <tr><td style="width: 180px;">'$"Restore"'</td><td>'$LOCATIONFOLDER'</td></tr>
@@ -2140,7 +2162,7 @@ echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 </tbody></table><br>'
 
 #Do the search and show the results
-echo `date`: "file_manager - searching for $SEARCH at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "file_manager - searching for $SEARCH at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 RAWSEARCHDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 for BACKUPARCHIVE in $(ls -1 "'$BACKUPARCHIVEPATH'")
@@ -2192,7 +2214,7 @@ ACLOWNER=`echo "$DATA" | cut -s -d: -f18`
 ACLGROUP=`echo "$DATA" | cut -s -d: -f19`
 convert_special_chars
 getlastlocation
-echo `date`: "file_manager - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: "file_manager - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
 if [ $SERVERNAME = $(hostname-fqdn) ]
@@ -2265,7 +2287,7 @@ do
 
 	if [ ! -z $ACLGROUP ]
 	then
-		echo `date`: "file_manager - adding $ACLOWNER: $ACLPERMISSIONS on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: "file_manager - adding $ACLOWNER: $ACLPERMISSIONS on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 		if [ $SERVERNAME = $(hostname-fqdn) ]
 		then
@@ -2273,8 +2295,8 @@ do
 			if [ $(getfacl --omit-header --skip-base -p -d "$LOCATION" | wc -l) = 0 ]
 			then
 				#This location currently has no acls set so remove all file permissions before the acls are set.
-				echo `date`: "file_manager - no ACLS have been set on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-				echo `date`: "file_manager - setting owner and group to root and permissions to 0000 on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: "file_manager - no ACLS have been set on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				echo `date`: "file_manager - setting owner and group to root and permissions to 0000 on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				chown root.root -R "$LOCATION"
 				chmod 0000 -R "$LOCATION"
 			fi
@@ -2313,7 +2335,7 @@ do
 
 
 	else
-		echo `date`: "file_manager - $ACLOWNER does not exist as a user or a group by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE	
+		echo `date`: "file_manager - $ACLOWNER does not exist as a user or a group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"	
 	fi
 done
 #Reload the page to show the new permissions
