@@ -35,80 +35,62 @@
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail - SMS Alerts"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail - SMS Alerts"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\.%_:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\.%_:\-')
 #########################
 #Assign data to variables
 #########################
-END_POINT=9
+END_POINT=15
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign NAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=NAME
+get_data
+NAME="$DATAENTRY"
+
 #Assign EMAILTO
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMAILTOcheck ]
-then
-let COUNTER=$COUNTER+1
-EMAILTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=EMAILTO
+get_data
+EMAILTO="$DATAENTRY"
+
 #Assign EMAILFROM
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = EMAILFROMcheck ]
-then
-let COUNTER=$COUNTER+1
-EMAILFROM=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=EMAILFROM
+get_data
+EMAILFROM="$DATAENTRY"
+
 #Assign MAILSERVER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MAILSERVERcheck ]
-then
-let COUNTER=$COUNTER+1
-MAILSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=MAILSERVER
+get_data
+MAILSERVER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/monitors_add_email_alert_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -125,62 +107,60 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that NAME is not blank
-if [ $NAME'null' = null ]
+if [ -z "$NAME" ]
 then
-MESSAGE=$"You have not entered in a valid E-Mail address to send the alert to."
-show_status
+	MESSAGE=$"You have not entered in a valid E-Mail address to send the alert to."
+	show_status
 fi
 #Check to see that EMAILTO is not blank
-if [ $EMAILTO'null' = null ]
+if [ -z "$EMAILTO" ]
 then
-MESSAGE=$"You have not entered in a valid E-Mail address to send the alert to."
-show_status
+	MESSAGE=$"You have not entered in a valid E-Mail address to send the alert to."
+	show_status
 fi
 #Check to see that EMAILFROM is not blank
-if [ $EMAILFROM'null' = null ]
+if [ -z "$EMAILFROM" ]
 then
-MESSAGE=$"You have not entered in a valid E-Mail address sender."
-show_status
+	MESSAGE=$"You have not entered in a valid E-Mail address sender."
+	show_status
 fi
 #Check that MAILSERVER is not blank
-if [ $MAILSERVER'null' = null ]
+if [ -z "$MAILSERVER" ]
 then
-MESSAGE=$"You have not entered in a valid E-Mail server."
-show_status
+	MESSAGE=$"You have not entered in a valid E-Mail server."
+	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_add_email_alert.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/monitors_add_email_alert.cgi | cut -d' ' -f1)
 #Add alert information
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILTO:$EMAILFROM:$MAILSERVER:$NAME" | sudo -H /opt/karoshi/web_controls/exec/monitors_add_email_alert
-EXEC_STATUS=`echo $?`
-
-if [ $EXEC_STATUS = 101 ]
+if [ "$?" = 101 ]
 then
-MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
-show_status
+	MESSAGE=$"There was a problem with this action." $"Please check the karoshi web administration logs for more details."
+	show_status
 fi
 completed
 exit
