@@ -108,7 +108,7 @@ then
 	fi
 fi
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 net rpc rights grant -U Administrator%$LDAPPASS "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
@@ -137,10 +137,10 @@ then
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 	'
-	[ `echo $?` = 101 ] && exit 101
+	[ $? = 101 ] && exit 101
 else
 	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
-	[ `echo $?` = 101 ] && exit 101
+	[ $? = 101 ] && exit 101
 fi
 
 ####################
@@ -166,215 +166,25 @@ cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
 
 sed -i 's/PRINTERCTRL=no/PRINTERCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
-########################
-#Printer Accounting
-########################
 if [ -f /opt/karoshi/server_network/printserver ]
 then
-	USE_EMAIL=no
-	PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
-	if [ -f /opt/karoshi/server_network/emailserver ]
-	then
-		EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-		EMAILSERVERTCPIP=`grep $EMAILSERVER /etc/hosts | sed -n 1,1p | cut -f1`  
-		EMAILDOMAIN=`sed -n 1,1p /opt/karoshi/server_network/emaildomain`
-		USE_EMAIL=yes
-	fi
 
+	PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 
-	#Create default quota limits
-
-	#Create quota folder
-	if [ ! -d /opt/karoshi/server_network/printer_accounting/quotas ]
-	then
-		mkdir -p /opt/karoshi/server_network/printer_accounting/quotas
-		chown lp.sys /opt/karoshi/server_network/printer_accounting/quotas
-		chmod 0775 /opt/karoshi/server_network/printer_accounting/quotas
-	fi
-
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/print_quota ] && echo 400 > /opt/karoshi/server_network/printer_accounting/quotas/print_quota
-
-	COUNTER=2002
-	ENDYEAR=2050
-	while [ $COUNTER -le $ENDYEAR ]
-	do
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/yr$COUNTER"_"group_quota ] && echo 200 > /opt/karoshi/server_network/printer_accounting/quotas/yr$COUNTER"_"group_quota
-		let COUNTER=$COUNTER+1
-	done
-
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/itadmin_group_quota ] && echo 3000 > /opt/karoshi/server_network/printer_accounting/quotas/itadmin_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff_group_quota ] && echo 500 > /opt/karoshi/server_network/printer_accounting/quotas/staff_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff2_group_quota ] && echo 500 > /opt/karoshi/server_network/printer_accounting/quotas/staff2_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff3_group_quota ] && echo 500 > /opt/karoshi/server_network/printer_accounting/quotas/staff3_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff4_group_quota ] && echo 500 > /opt/karoshi/server_network/printer_accounting/quotas/staff4_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/officestaff_group_quota ] && echo 500 > /opt/karoshi/server_network/printer_accounting/quotas/officestaff_group_quota
-	[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota
-
-
-	if [ $PRINTSERVER = `hostname-fqdn` ]
+	if [ "$PRINTSERVER" = $(hostname-fqdn) ]
 	then
 
 		cp -f "/opt/karoshi/serversetup/modules/printserver/printer_info" /opt/karoshi/"useful scripts/"
-
-		#Need to have perl libnet-snmp-perl and snmp installed
-		UPDATEAPT=yes
-		which snmpkey 1>/dev/null
-		if [ `echo $?` != 0 ]
-		then
-			if [ $UPDATEAPT = yes ]
-			then
-				apt-get update
-				UPDATEAPT=no
-			fi
-			apt-get install -y libnet-snmp-perl
-		fi
-
-
-		which snmpget 1>/dev/null
-		if [ `echo $?` != 0 ]
-		then
-			if [ $UPDATEAPT = yes ]
-			then
-				apt-get update
-				UPDATEAPT=no
-			fi
-			apt-get install -y snmp
-		fi
-
-		#Copy quosnmp
-		[ ! -d /etc/quosnmp ] && mkdir -p /etc/quosnmp
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp /usr/lib/cups/backend
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp-util /usr/local/sbin
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/lib/Quosnmp.pm /usr/share/perl5/
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/etc/quosnmp.conf /etc/quosnmp
-
-		chown root:root /usr/lib/cups/backend/quosnmp
-		chmod 700 /usr/lib/cups/backend/quosnmp
-
-		#Create accounting log folder
-		if [ ! -d /opt/karoshi/server_network/printer_accounting/accounting ]
-		then
-		mkdir -p /opt/karoshi/server_network/printer_accounting/accounting
-		chown lp.sys /opt/karoshi/server_network/printer_accounting/accounting
-		chmod 0770 /opt/karoshi/server_network/printer_accounting/accounting
-		fi
 
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null 2>/dev/null
 		sleep 1
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
 
-		#Enable e-mail notifications for over quota users
-		if [ $USE_EMAIL = yes ]
-		then
-			sed -i "s/CHANGE_THIS_SMTP_SERVER/$EMAILSERVERTCPIP/g" /etc/quosnmp/quosnmp.conf
-			sed -i "s/OVER_QUOTA_NOTIFY = 0/OVER_QUOTA_NOTIFY = 2/g" /etc/quosnmp/quosnmp.conf
-			if [ `grep -c ^"[EMAIL_LIST]" /etc/quosnmp/quosnmp.conf` = 0 ]
-			then
-				echo "[EMAIL_LIST]" >> /etc/quosnmp/quosnmp.conf
-				echo "*":$EMAILDOMAIN >> /etc/quosnmp/quosnmp.conf
-			fi
-		fi
-
-		#Schedule printer_accounting
-		echo 0 1 "*" "*" "*" /opt/karoshi/serversetup/modules/printserver/printer_accounting > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/printer_accounting.cron
-		#######################
-		#Refresh cronjobs
-		#######################
-		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-
 	else
 		scp -r /opt/karoshi/serversetup/modules/printserver/ root@$PRINTSERVER:"/opt/karoshi/serversetup/modules/"
 		scp "/opt/karoshi/serversetup/modules/printserver/printer_info" root@$PRINTSERVER:"/opt/karoshi/useful\ scripts/"
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
-		#Need to have perl libnet-snmp-perl and snmp installed
-		UPDATEAPT=yes
-		which snmpkey 1>/dev/null
-		if [ `echo $?` != 0 ]
-		then
-			if [ $UPDATEAPT = yes ]
-			then
-				apt-get update
-				UPDATEAPT=no
-			fi
-			apt-get install -y libnet-snmp-perl
-		fi
-
-
-		which snmpget 1>/dev/null
-		if [ `echo $?` != 0 ]
-		then
-			if [ $UPDATEAPT = yes ]
-			then
-				apt-get update
-				UPDATEAPT=no
-			fi
-			apt-get install -y snmp
-		fi
-
-		#Copy quosnmp
-		[ ! -d /etc/quosnmp ] && mkdir -p /etc/quosnmp
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp /usr/lib/cups/backend
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/bin/quosnmp-util /usr/local/sbin
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/lib/Quosnmp.pm /usr/share/perl5/
-		cp -f /opt/karoshi/serversetup/modules/printserver/quosnmp/etc/quosnmp.conf /etc/quosnmp
-
-		chown root:root /usr/lib/cups/backend/quosnmp
-		chmod 700 /usr/lib/cups/backend/quosnmp
-
-		#Create quota folder
-		if [ ! -d /opt/karoshi/server_network/printer_accounting/quotas ]
-		then
-			mkdir -p /opt/karoshi/server_network/printer_accounting/quotas
-			chown lp.sys /opt/karoshi/server_network/printer_accounting/quotas
-			chmod 0775 /opt/karoshi/server_network/printer_accounting/quotas
-		fi
-
-		#Create default quota limits
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/print_quota ] && echo 200 > /opt/karoshi/server_network/printer_accounting/quotas/print_quota
-
-		COUNTER=2002
-		ENDYEAR=2050
-		while [ $COUNTER -le $ENDYEAR ]
-		do
-			[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/yr$COUNTER"_"group_quota ] && echo 100 > /opt/karoshi/server_network/printer_accounting/quotas/yr$COUNTER"_"group_quota
-			let COUNTER=$COUNTER+1
-		done
-
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/itadmin_group_quota ] && echo 3000 > /opt/karoshi/server_network/printer_accounting/quotas/itadmin_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/staff_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff2_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/staff2_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff3_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/staff3_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/staff4_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/staff4_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/officestaff_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/officestaff_group_quota
-		[ ! -f /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota ] && echo 300 > /opt/karoshi/server_network/printer_accounting/quotas/tech_group_quota
-
-		#Create accounting log folder
-		if [ ! -d /opt/karoshi/server_network/printer_accounting/accounting ]
-		then
-			mkdir -p /opt/karoshi/server_network/printer_accounting/accounting
-			chown lp.sys /opt/karoshi/server_network/printer_accounting/accounting
-			chmod 0770 /opt/karoshi/server_network/printer_accounting/accounting
-		fi
-
-		if [ '$USE_EMAIL' = yes ]
-		then
-			sed -i "s/CHANGE_THIS_SMTP_SERVER/'$EMAILSERVERTCPIP'/g" /etc/quosnmp/quosnmp.conf
-			sed -i "s/OVER_QUOTA_NOTIFY = 0/OVER_QUOTA_NOTIFY = 2/g" /etc/quosnmp/quosnmp.conf
-			if [ `grep -c ^"[EMAIL_LIST]" /etc/quosnmp/quosnmp.conf` = 0 ]
-			then
-				echo ^"[EMAIL_LIST]" >> /etc/quosnmp/quosnmp.conf
-				echo "*":'$EMAILDOMAIN' >> /etc/quosnmp/quosnmp.conf
-			fi
-		fi
-
-		#Schedule printer_accounting
-		echo 0 1 "*" "*" "*" /opt/karoshi/serversetup/modules/printserver/printer_accounting > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/printer_accounting.cron
-		#######################
-		#Refresh cronjobs
-		#######################
-		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop
 		sleep 1

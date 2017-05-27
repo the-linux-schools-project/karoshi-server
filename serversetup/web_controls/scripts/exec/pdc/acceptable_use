@@ -23,35 +23,35 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/acceptable_use_cgi
 then
-	echo `date`: acceptable_use - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/acceptable_use_cgi
-MD5SUM1=`md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1`
+MD5SUM1=$(md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM1" ] && MD5SUM1=not_set
-if [ $MD5SUM1'check' != $acceptable_use_cgi'check' ]
+if [ "$MD5SUM1"'check' != "$acceptable_use_cgi"'check' ]
 then
-	echo `date`: acceptable_use - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
 then
-	echo `date`: acceptable_use - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/acceptable_use.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM2" ] && MD5SUM=not_set
-if [ $MD5SUM2'check' != $acceptable_use_cgi'check' ]
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/acceptable_use.cgi | cut -d' ' -f1)
+[ -z "$MD5SUM2" ] && MD5SUM2=not_set
+if [ "$MD5SUM2"'check' != "$acceptable_use_cgi"'check' ]
 then
-	echo `date`: acceptable_use - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -59,53 +59,53 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: acceptable_use - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-,'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-,')
 if [ -z "$DATA" ]
 then
-	echo `date`: acceptable_use - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-GRACETIME=`echo "$DATA" | cut -s -d: -f5`
-USERNAMES=`echo "$DATA" | cut -s -d: -f6`
-GROUP=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+GRACETIME=$(echo "$DATA" | cut -s -d: -f5)
+USERNAMES=$(echo "$DATA" | cut -s -d: -f6)
+GROUP=$(echo "$DATA" | cut -s -d: -f7)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM1'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM1"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: acceptable_use - Not called by acceptable_use.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Not called by acceptable_use.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: acceptable_use - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: acceptable_use - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: acceptable_use - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $ACTION = resetstatus ]
+if [ "$ACTION" = resetstatus ]
 then
 	#Check to see if grace time has been disabled
 	GRACE_TIME=yes
@@ -113,53 +113,54 @@ then
 	if [ "$GRACE_TIME" = yes ]
 	then
 		[ -z "$GROUP" ] && GROUP=allusers
-		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9`
+		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACE_TIMER=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9)
 		[ -z "$GRACE_TIMER" ] && GRACE_TIMER=14
 
-		echo `date`: "acceptable_use - reseting acceptable use status for $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		if [ $GROUP = allusers ]
+		echo "$(date): acceptable_use - reseting acceptable use status for $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		if [ "$GROUP" = allusers ]
 		then
 			SEARCH="/home/users/"
 		else
 			SEARCH="/$GROUP/"
 		fi
 		#Reset acceptable use for all users.
-		for USERNAME in `getent passwd | grep "$SEARCH" | cut -d: -f1`
+		for USERNAME in $(getent passwd | grep "$SEARCH" | cut -d: -f1)
 		do
-			echo "$GRACE_TIMER,$REMOTE_USER,`date +%d-%m-%Y`" > /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME"
+			echo "$GRACE_TIMER,$REMOTE_USER,$(date +%d-%m-%Y)" > /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME"
 		done
 	fi
 	#Generate page warning
 	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add acceptable_use_authorisations /cgi-bin/admin/acceptable_use.cgi $"Users have yet to sign an acceptable use policy." 1
 fi
 
-if [ $ACTION = disableac ]
+if [ "$ACTION" = disableac ]
 then
-	echo `date`: acceptable_use - disabling acceptable use by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - disabling acceptable use by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	touch /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 fi
 
-if [ $ACTION = enableac ]
+if [ "$ACTION" = enableac ]
 then
-	echo `date`: acceptable_use - enabling acceptable use by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - enabling acceptable use by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time_disabled
 fi
 
-if [ $ACTION = setgracetime ]
+if [ "$ACTION" = setgracetime ]
 then
-	echo `date`: acceptable_use - setting gracetime to $GRACETIME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): acceptable_use - setting gracetime to $GRACETIME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [ ! -d /opt/karoshi/server_network/acceptable_use_authorisations/pending ]
 	then
 		mkdir -p /opt/karoshi/server_network/acceptable_use_authorisations/pending
 		chmod 0750 -R /opt/karoshi/server_network/acceptable_use_authorisations/
 		chown -R root.apache_karoshi /opt/karoshi/server_network/acceptable_use_authorisations/
 	fi
-	echo $GRACETIME > /opt/karoshi/server_network/acceptable_use_authorisations/grace_time
+	echo "$GRACETIME" > /opt/karoshi/server_network/acceptable_use_authorisations/grace_time
 fi
 
-if [ $ACTION = approve ]
+if [ "$ACTION" = approve ]
 then
-	USERNAMES=`echo $USERNAMES | sed 's/,/ /g'`
+	USERNAMES="${USERNAMES//./ }"
+
 	if [ ! -f /opt/karoshi/server_network/acceptable_use_authorisations/approved_users ]
 	then
 		touch /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
@@ -168,25 +169,25 @@ then
 	fi
 	for APROVEUSER in $USERNAMES
 	do
-		echo `date`: acceptable_use - approving $APROVEUSER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): acceptable_use - approving $APROVEUSER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		#Get creation data
-		PENDING_USER_DATA=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER`
-		USER_CREATOR=`echo $PENDING_USER_DATA | cut -d, -f2`
-		CREATION_DATE=`echo $PENDING_USER_DATA | cut -d, -f3`
+		PENDING_USER_DATA=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$APROVEUSER")
+		USER_CREATOR=$(echo "$PENDING_USER_DATA" | cut -d, -f2)
+		CREATION_DATE=$(echo "$PENDING_USER_DATA" | cut -d, -f3)
 
-		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$APROVEUSER
-		echo ''$"Approving"' '$APROVEUSER'<br>'
-		samba-tool user enable $APROVEUSER 1>/dev/null
+		[ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$APROVEUSER" ] && rm -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$APROVEUSER"
+		echo '<ul><li>'$"Approving"' '"$APROVEUSER"'</li></ul>'
+		samba-tool user enable "$APROVEUSER" 1>/dev/null
 
 		#Get the primary group of the user
 
-		PRI_GROUP=`id -g -n $APROVEUSER`
+		PRI_GROUP=$(id -g -n "$APROVEUSER")
 
 		#Add to the approved list
-		[ `grep -c -w $APROVEUSER /opt/karoshi/server_network/acceptable_use_authorisations/approved_users` = 0 ] && echo $APROVEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$REMOTE_USER,`date +%d-%m-%Y` >> /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
+		[[ $(grep -c -w "$APROVEUSER" /opt/karoshi/server_network/acceptable_use_authorisations/approved_users) = 0 ]] && echo "$APROVEUSER,$CREATION_DATE,$PRI_GROUP,$USER_CREATOR,$REMOTE_USER,$(date +%d-%m-%Y)" >> /opt/karoshi/server_network/acceptable_use_authorisations/approved_users
 	done
 
 	#Check warning messages
-	[ `ls -1 /opt/karoshi/server_network/acceptable_use_authorisations/pending | wc -l` -lt 1 ] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
+	[[ $(ls -1 /opt/karoshi/server_network/acceptable_use_authorisations/pending | wc -l) -lt 1 ]] && /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete acceptable_use_authorisations
 fi
 exit

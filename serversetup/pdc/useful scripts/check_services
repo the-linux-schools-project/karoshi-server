@@ -1,5 +1,5 @@
 #!/bin/bash
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 source /opt/karoshi/serversetup/variables/distro
 HTMLPATH1=/var/www/html/karoshi_network_status_temp.html
 HTMLPATH2=/var/www/html/karoshi_network_status.html
@@ -113,14 +113,14 @@ then
 fi
 
 #Home areas
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
+if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/fileserver ]
 then
 	if [ $SAMBA = 0 ]
 	then
 		STATUS=ok
 	else
 		STATUS=fail
-		SERVERNAMESHORT=`echo $SERVERNAME | cut -d. -f1`
+		SERVERNAMESHORT=$(echo "$SERVERNAME" | cut -d. -f1)
 		OFFLINEHOMES="$OFFLINEHOMES $SERVERNAMESHORT"
 	fi
 	SERVICENAME="Home Areas"
@@ -131,16 +131,16 @@ fi
 
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-	SERVERNAME=`basename $SERVERS`
+	SERVERNAME=$(basename "$SERVERS")
 	EMAILSERVER=no
 	PROXYSERVER=no
 	PRINTSERVER=no
 	DSERVICES=cron
 
-	[ $SERVERNAME = $HOSTNAME ] && DSERVICES=cron,apache2_karoshi
+	[ "$SERVERNAME" = "$HOSTNAME" ] && DSERVICES=cron,apache2_karoshi
 
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,bind,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,bind,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
 	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql

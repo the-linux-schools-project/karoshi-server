@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -48,72 +48,55 @@ echo '
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"E-Mail - SMS Alerts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"E-Mail - SMS Alerts"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\.%_:\-' | sed 's/%40/@/g'`
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\.%_:\-' | sed 's/%40/@/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign NAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=NAME
+get_data
+NAME="$DATAENTRY"
+
 #Assign EMAILTO
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EMAILTOcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		EMAILTO=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=EMAILTO
+get_data
+EMAILTO="$DATAENTRY"
+
 #Assign EMAILFROM
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EMAILFROMcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		EMAILFROM=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-		fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=EMAILFROM
+get_data
+EMAILFROM="$DATAENTRY"
+
 #Assign MAILSERVER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MAILSERVERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MAILSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MAILSERVER
+get_data
+MAILSERVER="$DATAENTRY"
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -136,25 +119,25 @@ then
 	<tr>
         <td style="width: 180px;">
 '$"Contact Name"'</td>
-        <td><input tabindex= "1" name="_NAME_" value="'$NAME'" size="20" type="text"></td><td>
+        <td><input tabindex= "1" name="_NAME_" value="'"$NAME"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a short name for this E-Mail alert."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"Send E-Mail to"'</td>
-        <td><input tabindex= "1" name="_EMAILTO_" value="'$EMAILTO'" size="20" type="text"></td><td>
+        <td><input tabindex= "1" name="_EMAILTO_" value="'"$EMAILTO"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address you want the alert sent to."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail from"'</td>
-        <td><input tabindex= "2" name="_EMAILFROM_" value="'$EMAILFROM'" size="20" type="text"></td><td>
+        <td><input tabindex= "2" name="_EMAILFROM_" value="'"$EMAILFROM"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address of the sender."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail Server"'</td>
-        <td><input tabindex= "3" name="_MAILSERVER_" value="'$MAILSERVER'" size="20" type="text"></td><td>
+        <td><input tabindex= "3" name="_MAILSERVER_" value="'"$MAILSERVER"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the address of the mail server that you want to send the email to."'</span></a>
       </td></tr>
     </tbody>

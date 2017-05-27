@@ -2,7 +2,7 @@
 
 
 INSTALLPATH=/opt/savapage
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -49,7 +49,7 @@ do
 done
 
 #Get the latest savapage version
-LATESTVER=`lynx -dump https://www.savapage.org/download/installer/ | grep "x64.bin" | sed -n 1,1p | cut -d- -f3`
+LATESTVER=$(lynx -dump https://www.savapage.org/download/installer/ | grep "x64.bin" | sed -n 1,1p | cut -d- -f3)
 SAVABINARY=savapage-setup-"$LATESTVER"-linux-x64.bin
 
 #Create savapage user

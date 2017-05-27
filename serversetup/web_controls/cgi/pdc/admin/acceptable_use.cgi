@@ -178,8 +178,8 @@ then
 
 	#Get users to approve
 	DATANAME=USERNAME
-	get_data
 	GET_TO_END="yes"
+	get_data
 	USERNAMES="${DATAENTRY//_ACTION_approve_USERNAME_/,}"
 	GET_TO_END=""
 fi

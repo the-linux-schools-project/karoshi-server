@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SERVICE=`echo "$1" | tr -cd 'A-Za-z0-9\-'`
-ACTION=`echo "$2" | tr -cd 'A-Za-z'`
+SERVICE=$(echo "$1" | tr -cd 'A-Za-z0-9\-')
+ACTION=$(echo "$2" | tr -cd 'A-Za-z')
 
 function show_usage {
 echo -e "set_username usage\nservicename on/off\n" 
