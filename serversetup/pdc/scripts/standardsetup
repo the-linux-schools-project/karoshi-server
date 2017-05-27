@@ -16,19 +16,19 @@ BASEINSTALLPATH3=/opt/karoshi/serversetup/all/scripts
 KAROSHILOG=/opt/karoshi/serversetup/install_log
 
 #Set timezone in php.ini
-[ -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/set_php_timezone
+[ -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/set_php_timezone ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/set_php_timezone
 
 #Setup uptime data for the server
 /opt/karoshi/serversetup/all/scripts/setup_uptime
 
 function checkstatus {
-EXITSTATUS=`echo $?`
-if [ $EXITSTATUS = 101 ]
+EXITSTATUS="$?"
+if [ "$EXITSTATUS" = 101 ]
 then
-	yad --title $"Main Server Setup" $VERSION --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --timeout-indicator=bottom --no-buttons 2>/dev/null
+	yad --title $"Karoshi Server" "$VERSION" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --text=''$"The standard setup has not completed correctly."'' --timeout=3 --timeout-indicator=bottom --no-buttons 2>/dev/null
 	exit
 fi
-if [ $EXITSTATUS = 103 ]
+if [ "$EXITSTATUS" = 103 ]
 then
 	exit 103
 fi
@@ -88,10 +88,10 @@ function do_setup {
 	killall yad
 }
 
-do_setup | yad --title $"Main Server Setup" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
+do_setup | yad --title $"Karoshi Server" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --geometry=400x100+0+10 --no-buttons --text $"Main Server Setup""\n\n\n$STATUS" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --progress 2>/dev/null
 
 #Setup minidlna if this is a home server.
-if [ $INSTALL_TYPE = home ]
+if [ "$INSTALL_TYPE" = home ]
 then
 	/opt/karoshi/serversetup/modules/minidlna/setupminidlna
 fi

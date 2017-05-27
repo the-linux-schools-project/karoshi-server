@@ -501,7 +501,7 @@ fi
 #Sort out authentication for the server
 
 echo `date`: karoshi_servers_add - configuring authentication "for" $SSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$AUTHENTICATION:$ZONE" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$AUTHENTICATION:$ZONE:$TCPIPNUMBER" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 if [ $? != 0 ]
 then
 	echo `date`: karoshi_servers_add - configure_authentication failure "for" $SERVER authtype $AUTHENTICATION zone $ZONE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

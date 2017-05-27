@@ -37,6 +37,7 @@ REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 AUTHTYPE=`echo "$DATA" | cut -s -d: -f5`
 ZONE=`echo "$DATA" | cut -s -d: -f6`
+TCPIPNUMBER=`echo "$DATA" | cut -s -d: -f7`
 
 if [ -z "$REMOTE_USER" ]
 then
@@ -182,6 +183,8 @@ echo -e "# Global parameters
 	ldap server require strong auth = No
 	server signing = auto
 	allow insecure wide links = yes
+	bind interfaces only = yes
+	interfaces = 127.0.0.1 '"$TCPIPNUMBER"'
 " > /etc/samba/smb.conf
 
 if [ '$ZONE' = internal ]
