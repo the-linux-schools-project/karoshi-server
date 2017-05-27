@@ -32,16 +32,15 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -50,11 +49,10 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Let's Encrypt SSL Certificates"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
-  <script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>'$"Let's Encrypt SSL Certificates"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
+<script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 {
@@ -85,7 +83,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -112,78 +110,48 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-#Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
-	TABLECLASS=standard
-	WIDTH=180
-	HEIGHT=20
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	TABLECLASS=mobilestandard
-	WIDTH=160
-	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/ssl_lets_encrypt.cgi" name="selectservers" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -199,30 +167,30 @@ fi
 if [ -z "$SERVERNAME" ]
 then 
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE all $"Choose"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Choose"
 else
 	#Show any assigned aliases for the server.
 	#Show alias choice
 	source /opt/karoshi/server_network/domain_information/domain_name
-	if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+	if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
 	then
 		#Show any custom aliases that have been assigned
 		echo "<ul><li>$SERVERNAME" - $"The following aliases have been assigned to this server and will be added in the SSL certificate.""</li></ul>"
-		for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/$SERVERNAME)
+		for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
 		do
 			echo "<ul><li>$CUSTOM_ALIAS.$REALM</li></ul>"
-			ALIASLIST=$(echo $ALIASLIST,$CUSTOM_ALIAS.$REALM)
+			ALIASLIST="$ALIASLIST,$CUSTOM_ALIAS.$REALM"
 		done
 		ALIASLIST=$(echo "$ALIASLIST" | sed 's/^,//g')
 		ACTION=addcert
-		MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1`
+		MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1)
 		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIASLIST:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_lets_encrypt
 	else
 		echo "<ul><li>$SERVERNAME: This server has not been set up as a web server and has no aliases</li></ul>"	
 	fi
 fi
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit
