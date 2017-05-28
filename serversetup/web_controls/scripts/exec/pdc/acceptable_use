@@ -159,7 +159,7 @@ fi
 
 if [ "$ACTION" = approve ]
 then
-	USERNAMES="${USERNAMES//./ }"
+	USERNAMES="${USERNAMES//,/ }"
 
 	if [ ! -f /opt/karoshi/server_network/acceptable_use_authorisations/approved_users ]
 	then

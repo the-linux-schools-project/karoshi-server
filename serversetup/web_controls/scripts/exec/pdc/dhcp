@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
 then
-	echo `date`: dhcp - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dhcp - No admin MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dhcp_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dhcp_cgi"'check' ]
 then
-	echo `date`: dhcp - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,95 +45,95 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-echo `date`: dhcp - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\+\-'`
-if [ -z "$DATA" ]
-then
-	echo `date`: dhcp - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-NEWDOMAINNAMESERVER=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g' | sed 's/+/ /g;'`
-NEWNETBIOSSERVER=`echo "$DATA" | cut -s -d: -f5 | sed 's/%2C/,/g' | sed 's/+/ /g;'`
-NEWROUTER=`echo "$DATA" | cut -s -d: -f6`
-NEWSUBNET=`echo "$DATA" | cut -s -d: -f7`
-NEWSUBNETMASK=`echo "$DATA" | cut -s -d: -f8`
-NEWSTARTADDRESS=`echo "$DATA" | cut -s -d: -f9`
-NEWENDADDRESS=`echo "$DATA" | cut -s -d: -f10`
-NEWDEFAULTLEASETIME=`echo "$DATA" | cut -s -d: -f11`
-NEWMAXLEASETIME=`echo "$DATA" | cut -s -d: -f12`
-SECONDARYSERVER=`echo "$DATA" | cut -s -d: -f13`
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\+\-')
+if [ -z "$DATA" ]
+then
+	echo "$(date): dhcp - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+NEWDOMAINNAMESERVER=$(echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g' | sed 's/+/ /g;')
+NEWNETBIOSSERVER=$(echo "$DATA" | cut -s -d: -f5 | sed 's/%2C/,/g' | sed 's/+/ /g;')
+NEWROUTER=$(echo "$DATA" | cut -s -d: -f6)
+NEWSUBNET=$(echo "$DATA" | cut -s -d: -f7)
+NEWSUBNETMASK=$(echo "$DATA" | cut -s -d: -f8)
+NEWSTARTADDRESS=$(echo "$DATA" | cut -s -d: -f9)
+NEWENDADDRESS=$(echo "$DATA" | cut -s -d: -f10)
+NEWDEFAULTLEASETIME=$(echo "$DATA" | cut -s -d: -f11)
+NEWMAXLEASETIME=$(echo "$DATA" | cut -s -d: -f12)
+SECONDARYSERVER=$(echo "$DATA" | cut -s -d: -f13)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: dhcp - Not called by dhcp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Not called by dhcp.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dhcp - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dhcp - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$NEWDOMAINNAMESERVER" ]
 then
-	echo `date`: dhcp - Blank domain server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank domain server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWNETBIOSSERVER" ]
 then
-	echo `date`: dhcp - Blank netbios server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank netbios server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWROUTER" ]
 then
-	echo `date`: dhcp - Blank router by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank router by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWSUBNET" ]
 then
-	echo `date`: dhcp - Blank subnet by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank subnet by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWSUBNETMASK" ]
 then
-	echo `date`: dhcp - Blank subnet mask by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank subnet mask by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWSTARTADDRESS" ]
 then
-	echo `date`: dhcp - Blank range 1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank range 1 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWENDADDRESS" ]
 then
-echo `date`: dhcp - Blank range 2 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): dhcp - Blank range 2 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 if [ -z "$NEWDEFAULTLEASETIME" ]
 then
-	echo `date`: dhcp - Blank default lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank default lease time by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$NEWMAXLEASETIME" ]
 then
-	echo `date`: dhcp - Blank max lease time by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp - Blank max lease time by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -142,8 +142,8 @@ fi
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #########################
@@ -170,15 +170,15 @@ then
 	chmod 0640 /opt/karoshi/server_network/dhcp/dhcp_extra_settings
 fi
 
-echo DOMAINNAMESERVER=$NEWDOMAINNAMESERVER > /opt/karoshi/server_network/dhcp/dhcp_settings
-echo NETBIOSSERVER=$NEWNETBIOSSERVER >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo ROUTER=$NEWROUTER >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo SUBNET=$NEWSUBNET >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo SUBNETMASK=$NEWSUBNETMASK >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo STARTADDRESS=$NEWSTARTADDRESS >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo ENDADDRESS=$NEWENDADDRESS >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo DEFAULTLEASETIME=$NEWDEFAULTLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_settings
-echo MAXLEASETIME=$NEWMAXLEASETIME >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo DOMAINNAMESERVER="$NEWDOMAINNAMESERVER" > /opt/karoshi/server_network/dhcp/dhcp_settings
+echo NETBIOSSERVER="$NEWNETBIOSSERVER" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo ROUTER="$NEWROUTER" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo SUBNET="$NEWSUBNET" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo SUBNETMASK="$NEWSUBNETMASK" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo STARTADDRESS="$NEWSTARTADDRESS" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo ENDADDRESS="$NEWENDADDRESS" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo DEFAULTLEASETIME="$NEWDEFAULTLEASETIME" >> /opt/karoshi/server_network/dhcp/dhcp_settings
+echo MAXLEASETIME="$NEWMAXLEASETIME" >> /opt/karoshi/server_network/dhcp/dhcp_settings
 
 source /opt/karoshi/server_network/dhcp/dhcp_settings
 source /opt/karoshi/serversetup/variables/distro
@@ -187,9 +187,9 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Disable dhcp on all additional domain controllers
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
 then
-	for DSERVER in `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers`
+	for DSERVER in $(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers)
 	do
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$DSERVER" '
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
 		#Stop DHCP on boot
@@ -202,14 +202,14 @@ fi
 if [ ! -z "$SECONDARYSERVER" ]
 then
 	#Get ip addresses of the primary and secondary dhcp servers
-	PRIMARYSERVERIP=`net lookup $HOSTNAME`
-	SECONDARYSERVERIP=`net lookup "$SECONDARYSERVER"`
+	PRIMARYSERVERIP=$(net lookup "$HOSTNAME")
+	SECONDARYSERVERIP=$(net lookup "$SECONDARYSERVER")
 	#Create /etc/dhcp/dhcpd_primary.conf
 	echo 'failover peer "failover-partner" { 
         primary;
-        address '$PRIMARYSERVERIP';
+        address '"$PRIMARYSERVERIP"';
         port 647;
-        peer address '$SECONDARYSERVERIP'; 
+        peer address '"$SECONDARYSERVERIP"'; 
         peer port 647;
         max-response-delay 60;
         max-unacked-updates 10;
@@ -222,9 +222,9 @@ then
 	#Create /etc/dhcp/dhcpd_secondary.conf
 	echo 'failover peer "failover-partner" {
         secondary;
-        address '$SECONDARYSERVERIP';
+        address '"$SECONDARYSERVERIP"';
         port 647;
-        peer address '$PRIMARYSERVERIP';
+        peer address '"$PRIMARYSERVERIP"';
         peer port 647;
         max-response-delay 60;
         max-unacked-updates 10;
@@ -235,61 +235,61 @@ fi
 
 #Create dhcpd.conf
 DHCPCONFPATH=/etc/dhcp/dhcpd.conf
-echo 'authoritative;' > $DHCPCONFPATH
-echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
-echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
-echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
-echo '	option domain-name "'$REALM'";' >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
+echo 'authoritative;' > "$DHCPCONFPATH"
+echo '	option domain-name-servers '"$NEWDOMAINNAMESERVER"';' >> "$DHCPCONFPATH"
+echo '	option routers '"$NEWROUTER"';' >> "$DHCPCONFPATH"
+echo '	option subnet-mask '"$NEWSUBNETMASK"';' >> "$DHCPCONFPATH"
+echo '	option domain-name "'"$REALM"'";' >> "$DHCPCONFPATH"
+echo >> "$DHCPCONFPATH"
 
 #Add include for dhcp failover
-[ ! -z "$SECONDARYSERVER" ] && echo 'include "/etc/dhcp/dhcpd_primary.conf";'  >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
+[ ! -z "$SECONDARYSERVER" ] && echo 'include "/etc/dhcp/dhcpd_primary.conf";'  >> "$DHCPCONFPATH"
+echo >>" $DHCPCONFPATH"
 
-echo 'subnet '$NEWSUBNET' netmask '$NEWSUBNETMASK' {' >> $DHCPCONFPATH
-echo '	option netbios-name-servers '$NEWNETBIOSSERVER';' >> $DHCPCONFPATH
-echo '	option netbios-node-type 8;' >> $DHCPCONFPATH
-echo '	option domain-name-servers '$NEWDOMAINNAMESERVER';' >> $DHCPCONFPATH
-echo '	option routers '$NEWROUTER';' >> $DHCPCONFPATH
-echo '	option subnet-mask '$NEWSUBNETMASK';' >> $DHCPCONFPATH
+echo 'subnet '"$NEWSUBNET"' netmask '"$NEWSUBNETMASK"' {' >> "$DHCPCONFPATH"
+echo '	option netbios-name-servers '"$NEWNETBIOSSERVER"';' >> "$DHCPCONFPATH"
+echo '	option netbios-node-type 8;' >> "$DHCPCONFPATH"
+echo '	option domain-name-servers '"$NEWDOMAINNAMESERVER"';' >> "$DHCPCONFPATH"
+echo '	option routers '"$NEWROUTER"';' >> "$DHCPCONFPATH"
+echo '	option subnet-mask '"$NEWSUBNETMASK"';' >> "$DHCPCONFPATH"
 
 #Add in failover options
 if [ ! -z "$SECONDARYSERVER" ]
 then
 	echo '	pool {
 		failover peer "failover-partner";
-		range '$NEWSTARTADDRESS' '$NEWENDADDRESS';
+		range '"$NEWSTARTADDRESS"' '"$NEWENDADDRESS"';
        }
 ' >> $DHCPCONFPATH
 else
-	echo '	range '$NEWSTARTADDRESS' '$NEWENDADDRESS';' >> $DHCPCONFPATH
+	echo '	range '"$NEWSTARTADDRESS"' '"$NEWENDADDRESS"';' >> "$DHCPCONFPATH"
 fi
 
-echo '	default-lease-time '$NEWDEFAULTLEASETIME';' >> $DHCPCONFPATH
-echo '	max-lease-time '$NEWMAXLEASETIME';' >> $DHCPCONFPATH
-echo '}' >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
-echo >> $DHCPCONFPATH
+echo '	default-lease-time '"$NEWDEFAULTLEASETIME"';' >> "$DHCPCONFPATH"
+echo '	max-lease-time '"$NEWMAXLEASETIME"';' >> "$DHCPCONFPATH"
+echo '}' >> "$DHCPCONFPATH"
+echo >> "$DHCPCONFPATH"
+echo >> "$DHCPCONFPATH"
 
 if [ ! -z "$SECONDARYSERVER" ]
 then
-	DHCP_PASS=`openssl rand -hex 16`
+	DHCP_PASS=$(openssl rand -hex 16)
 	echo 'omapi-port 7911;
 omapi-key omapi_key;
 
 key omapi_key {
      algorithm hmac-md5;
-     secret '$DHCP_PASS';
+     secret '"$DHCP_PASS"';
 }
 
-' >> $DHCPCONFPATH
+' >> "$DHCPCONFPATH"
 fi
 
 #Include reservations and client boot config files
 touch /etc/dhcp/dhcpd_reservations.conf
 touch /etc/dhcp/dhcpd_client_boot.conf
-echo 'include "/etc/dhcp/dhcpd_reservations.conf";'  >> $DHCPCONFPATH
-echo 'include "/etc/dhcp/dhcpd_client_boot.conf";'  >> $DHCPCONFPATH
+echo 'include "/etc/dhcp/dhcpd_reservations.conf";'  >> "$DHCPCONFPATH"
+echo 'include "/etc/dhcp/dhcpd_client_boot.conf";'  >> "$DHCPCONFPATH"
 
 #Configure failover dhcp between servers
 if [ ! -z "$SECONDARYSERVER" ]
@@ -297,25 +297,25 @@ then
 
 	#Check that required ports are open in shorewall on the primary server
 	RESTARTSHOREWALL=no
-	if [ `grep -c DHCP-failover /etc/shorewall/rules` = 0 ]
+	if [[ $(grep -c DHCP-failover /etc/shorewall/rules) = 0 ]]
 	then
 		RESTARTSHOREWALL=yes
-		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
 		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'647'	'-'#'DHCP-failover /etc/shorewall/rules
 		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	fi
-	if [ `grep -c DHCP-OMAPI-failover /etc/shorewall/rules` = 0 ]
+	if [[ $(grep -c DHCP-OMAPI-failover /etc/shorewall/rules) = 0 ]]
 	then
 		RESTARTSHOREWALL=yes
-		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'7911'	'-'#'DHCP-OMAPI-failover /etc/shorewall/rules
-		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'c'\ACCEPT'	'net'	'fw'	'tcp'	'7911'	'-'#'DHCP-OMAPI-failover /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 	fi
 
 	if [ "$RESTARTSHOREWALL" = yes ]
 	then
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 	fi
 
 	#Copy dhcp config files to the secondary server
@@ -323,8 +323,8 @@ then
 	scp /etc/dhcp/dhcpd.conf root@"$SECONDARYSERVER":/etc/dhcp
 	scp /etc/dhcp/dhcpd_client_boot.conf root@"$SECONDARYSERVER":/etc/dhcp
 	scp /etc/dhcp/dhcpd_reservations.conf root@"$SECONDARYSERVER":/etc/dhcp
-	echo `date`: dhcp - $SECONDARYSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SECONDARYSERVER '
+	echo "$(date): dhcp - $SECONDARYSERVER - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SECONDARYSERVER" '
 	source /opt/karoshi/serversetup/variables/distro
 	RESTARTSHOREWALL=no
 	if [ `grep -c DHCP-failover /etc/shorewall/rules` = 0 ]
@@ -351,36 +351,36 @@ then
 	#Modify dhcp.conf to point to dhcp.conf_secondary
 	sed -i "s/primary/secondary/g" /etc/dhcp/dhcpd.conf
 	#Restart DHCP on the secondary server
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_start 1>/dev/null
 
 	#Start DHCP on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/dhcp
 	'
 
 fi
 
 #Restart DHCP
-echo `date`: dhcp - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_start 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ $? != 0 ] && exit 101
+echo "$(date): dhcp - $HOSTNAME - restarting dhcp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_stop 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_start 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+[ "$?" != 0 ] && exit 101
 #Start DHCP on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dhcp
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/dhcp
 
 #Add role information
-echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/dhcpserver
+echo $"DHCP Server""<br>" > "/opt/karoshi/server_network/servers/$(hostname-fqdn)/dhcpserver"
 [ -d /opt/karoshi/server_network/dhcp_servers ] && rm -f -R /opt/karoshi/server_network/dhcp_servers
 if [ ! -z "$SECONDARYSERVER" ]
 then
-	echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/$SECONDARYSERVER/dhcpserver
+	echo $"DHCP Server""<br>" > /opt/karoshi/server_network/servers/"$SECONDARYSERVER"/dhcpserver
 	
 	mkdir /opt/karoshi/server_network/dhcp_servers
-	echo `hostname-fqdn` > /opt/karoshi/server_network/dhcp_servers/`hostname-fqdn`
-	echo $SECONDARYSERVER > /opt/karoshi/server_network/dhcp_servers/$SECONDARYSERVER
+	hostname-fqdn > "/opt/karoshi/server_network/dhcp_servers/$(hostname-fqdn)"
+	echo "$SECONDARYSERVER" > /opt/karoshi/server_network/dhcp_servers/"$SECONDARYSERVER"
 fi
 
-echo `hostname-fqdn` > /opt/karoshi/server_network/dhcpserver
+hostname-fqdn > /opt/karoshi/server_network/dhcpserver
 sed -i 's/DHCPCTRL=no/DHCPCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 exit

@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_radius_cgi
 then
-	echo `date`: module_radius - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_radius_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_radius.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_radius.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_radius_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_radius_cgi"'check' ]
 then
-	echo `date`: module_radius - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,56 +46,54 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_radius - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_radius - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-echo `date`: module_radius - Not called by module_radius.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): module_radius - Not called by module_radius.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_radius - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_radius - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_radius - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_radius - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
 
-TEXTDOMAIN=karoshi-server
+echo "$(date): module_radius - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-echo `date`: module_radius - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check to see if this is the first time this module has been set up.
 if [ -f /opt/karoshi/server_network/radius_server ]
@@ -108,17 +106,17 @@ fi
 #Create ssl certificate
 if [ ! -d /etc/ssl/radius ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/radiussslcert
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REALM:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/radiussslcert
 fi
 
 #Create keytab for radius
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:radius:radius:$SERVERNAME:freerad:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Check that winbindd_priv group exists
 	getent group winbindd_priv freerad 1>/dev/null
-	if [ $? != 0 ]
+	if [ "$?" != 0 ]
 	then
 		groupadd winbindd_priv freerad
 	fi
@@ -130,28 +128,28 @@ then
 	#Make sure all software is installed
 	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
 
-	if [ $COPYCLIENTS = no ]
+	if [ "$COPYCLIENTS" = no ]
 	then	
 		#Clear any sample clients
 		echo > /etc/freeradius/clients.conf
 	fi
 
 	#Start service
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_start
 	#Start on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/radius
 	###########################
 	#Open shorewall ports
 	###########################
 	RESTART_SHOREWALL=no
-	MODCHECK=`grep -c -w \#Radius /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#Radius /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo ''$SHOREWALLMSG - udp 1812,1813'<br><br>'
-		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'1812,1813'	'-'#'Radius /etc/shorewall/rules
-		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		echo ''$"Opening ports"' - udp 1812,1813<br><br>'
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'c''ACCEPT	net	fw	udp	1812,1813	-#Radius' /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 	fi
 
 	######################
@@ -160,25 +158,25 @@ then
 	if [ $RESTART_SHOREWALL = yes ]
 	then
 		echo $"Restarting Shorewall"'<br><br>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
 		echo '<br>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
 		echo '<br><br>'
 	fi
 else
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radius root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radius root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 
 	#Copy in ssl radius cert
-	scp -p -r /etc/ssl/radius root@$SERVERNAME:/etc/ssl/
+	scp -p -r /etc/ssl/radius root@"$SERVERNAME":/etc/ssl/
 
 	#Copy in existing acccess point information
 	if [ "$COPYCLIENTS" = yes ]
 	then	
-		scp /etc/freeradius/clients.conf root@$SERVERNAME:/etc/freeradius/ 1> /dev/null
+		scp /etc/freeradius/clients.conf root@"$SERVERNAME":/etc/freeradius/ 1> /dev/null
 	fi
 
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	source /opt/karoshi/serversetup/variables/distro
 
 	#Make sure all software is installed
@@ -200,7 +198,7 @@ else
 	usermod -a -G winbindd_priv freerad
 	chown root:winbindd_priv /var/lib/samba/winbindd_privileged
 
-	if [ '$COPYCLIENTS' = no ]
+	if [ '"$COPYCLIENTS"' = no ]
 	then	
 		#Clear any sample clients
 		echo > /etc/freeradius/clients.conf
@@ -218,7 +216,7 @@ else
 	if [ $MODCHECK = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo ''$SHOREWALLMSG - udp 1812,1813"<br><br>"
+		echo '$"Opening ports"' - udp 1812,1813"<br><br>"
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1812,1813"	"-"#"Radius /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -227,24 +225,24 @@ else
 	######################
 	#Restart shorewall
 	######################
-	if [ $RESTART_SHOREWALL = yes ]
+	if [ "$RESTART_SHOREWALL" = yes ]
 	then
 		echo $"Restarting Shorewall""<br><br>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
 		echo "<br>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
 		echo "<br><br>"
 	fi
 	'
 fi
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $"Radius Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver
-echo $SERVERNAME > /opt/karoshi/server_network/radius_server
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo $"Radius Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/radiusserver
+echo "$SERVERNAME" > /opt/karoshi/server_network/radius_server
 sed -i 's/RADIUSCTRL=no/RADIUSCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 [ ! -d /opt/karoshi/server_network/radius_servers ] && mkdir -p /opt/karoshi/server_network/radius_servers
-echo  $SERVERNAME > /opt/karoshi/server_network/radius_servers/$SERVERNAME
+echo  "$SERVERNAME" > /opt/karoshi/server_network/radius_servers/"$SERVERNAME"
 exit
 
 

@@ -37,168 +37,92 @@
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure DHCP"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure DHCP"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\+\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\+\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=30
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign _DOMAINNAMESERVER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DOMAINNAMESERVERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DOMAINNAMESERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DOMAINNAMESERVER
+get_data
+DOMAINNAMESERVER="$DATAENTRY"
 
 #Assign _NETBIOSSERVER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NETBIOSSERVERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NETBIOSSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=NETBIOSSERVER
+get_data
+NETBIOSSERVER="$DATAENTRY"
 
 #Assign _ROUTER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ROUTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ROUTER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ROUTER
+get_data
+ROUTER=$(echo "$DATAENTRY" | tr -cd '0-9.')
 
 #Assign _SUBNET_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SUBNETcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SUBNET=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SUBNET
+get_data
+SUBNET=$(echo "$DATAENTRY" | tr -cd '0-9.')
 
 #Assign _SUBNETMASK_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SUBNETMASKcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SUBNETMASK=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SUBNETMASK
+get_data
+SUBNETMASK=$(echo "$DATAENTRY" | tr -cd '0-9.')
 
 #Assign _STARTADDRESS_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = STARTADDRESScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		STARTADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=STARTADDRESS
+get_data
+STARTADDRESS=$(echo "$DATAENTRY" | tr -cd '0-9.')
 
 #Assign _ENDADDRESS_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ENDADDRESScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ENDADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ENDADDRESS
+get_data
+ENDADDRESS=$(echo "$DATAENTRY" | tr -cd '0-9.')
+
 #Assign _DEFAULTLEASETIME_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DEFAULTLEASETIMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DEFAULTLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DEFAULTLEASETIME
+get_data
+DEFAULTLEASETIME=$(echo "$DATAENTRY" | tr -cd '0-9')
 
 #Assign _MAXLEASETIME_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MAXLEASETIMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MAXLEASETIME=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MAXLEASETIME
+get_data
+MAXLEASETIME=$(echo "$DATAENTRY" | tr -cd '0-9')
 
 #Assign _SECONDARYSERVER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SECONDARYSERVERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SECONDARYSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=SECONDARYSERVER
+get_data
+SECONDARYSERVER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/dhcp_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -208,24 +132,25 @@ exit
 function check_tcpip {
 INPUTCHECK=pass
 #Check dots
-if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+if [[ $(echo "$IPDATA" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]]
 then
 	INPUTCHECK=fail
 fi
 #Check that no number is greater than 255
-HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-if [ $HIGHESTNUMBER -gt 255 ]
+HIGHESTNUMBER=$(echo "$IPDATA" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
+if [ "$HIGHESTNUMBER" -gt 255 ]
 then
 	INPUTCHECK=fail
 fi
 }
 
 function check_address {
-PDCIP=`net lookup $HOSTNAME`
+PDCIP=$(hostname -i | cut -d" " -f1)
+
 #Get netmask
-MASK=`ifconfig | grep $PDCIP | cut -d: -f4`
-ZONEINFO1=`ipcalc -n $PDCIP/$MASK | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
-ZONEINFO2=`ipcalc -n $ADDRESS/$MASK | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+MASK=$(ifconfig | grep "$PDCIP" | cut -d: -f4)
+ZONEINFO1=$(ipcalc -n "$PDCIP"/"$MASK" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
+ZONEINFO2=$(ipcalc -n "$ADDRESS"/"$MASK" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 
 if [[ "$ZONEINFO1" != "$ZONEINFO2" ]]
 then
@@ -237,7 +162,7 @@ fi
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -245,13 +170,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -286,7 +211,7 @@ then
 fi
 IPDATA=$ROUTER
 check_tcpip
-if [ $INPUTCHECK = fail ]
+if [ "$INPUTCHECK" = fail ]
 then
 	MESSAGE=$"Router Error"
 	show_status
@@ -299,7 +224,7 @@ then
 fi
 IPDATA=$SUBNET
 check_tcpip
-if [ $INPUTCHECK = fail ]
+if [ "$INPUTCHECK" = fail ]
 then
 	MESSAGE=$"Subnet Error"
 	show_status
@@ -310,9 +235,9 @@ then
 	MESSAGE=$"Subnet Mask Error"
 	show_status
 fi
-	IPDATA=$SUBNETMASK
-	check_tcpip
-if [ $INPUTCHECK = fail ]
+IPDATA="$SUBNETMASK"
+check_tcpip
+if [ "$INPUTCHECK" = fail ]
 then
 	MESSAGE=$"Subnet Mask Error"
 	show_status
@@ -323,9 +248,9 @@ then
 	MESSAGE=$"Range Error"
 	show_status
 fi
-IPDATA=$STARTADDRESS
+IPDATA="$STARTADDRESS"
 check_tcpip
-if [ $INPUTCHECK = fail ]
+if [ "$INPUTCHECK" = fail ]
 then
 	MESSAGE=$"Range Error"
 	show_status
@@ -336,20 +261,20 @@ then
 	MESSAGE=$"Range Error"
 	show_status
 fi
-IPDATA=$ENDADDRESS
+IPDATA="$ENDADDRESS"
 check_tcpip
-if [ $INPUTCHECK = fail ]
+if [ "$INPUTCHECK" = fail ]
 then
 	MESSAGE=$"Range Error"
 	show_status
 fi
 
 #Check that the start address is in the same range as the server.
-ADDRESS=$STARTADDRESS
+ADDRESS="$STARTADDRESS"
 check_address
 
 #Check that the end address is in the same range as the server.
-ADDRESS=$ENDADDRESS
+ADDRESS="$ENDADDRESS"
 check_address
 
 #Check to see that DEFAULTLEASETIME is not blank
@@ -360,13 +285,13 @@ then
 fi
 
 #Check to see that MAXLEASETIME is not blank
-if [ $MAXLEASETIME'null' = null ]
+if [ -z "$MAXLEASETIME" ]
 then
 	MESSAGE=$"Lease Time Error"
 	show_status
 fi
 
-if [ $DEFAULTLEASETIME -gt $MAXLEASETIME ]
+if [ "$DEFAULTLEASETIME" -gt "$MAXLEASETIME" ]
 then
 	MESSAGE=$"The default lease time cannot be greater than the maximum lease time."
 	show_status
@@ -376,7 +301,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><div class="sectiontitle">'$"Configure DHCP"'</div><br>'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARYSERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
 MESSAGE=$"The DHCP changes have been applied."
 show_status

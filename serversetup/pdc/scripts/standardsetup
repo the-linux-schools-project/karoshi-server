@@ -4,9 +4,9 @@ source /opt/karoshi/serversetup/variables/choice
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/language
 
-INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
 #baseinstallpdc

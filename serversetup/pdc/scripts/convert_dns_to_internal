@@ -2,10 +2,13 @@
 source /opt/karoshi/serversetup/variables/distro
 
 #Stop samba4
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 
 #Stop bind
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
+
+#Set bind not to start on boot
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/bind
 
 #Disable bind9 from starting on boot
 update-rc.d bind9 remove defaults
@@ -17,5 +20,5 @@ sed -i '/server services = -dns/d' /etc/samba/smb.conf
 samba_upgradedns --dns-backend=SAMBA_INTERNAL
 
 #Start samba4
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 

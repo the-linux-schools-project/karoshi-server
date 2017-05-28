@@ -27,7 +27,7 @@ source /opt/karoshi/serversetup/variables/distro
 
 #Check if bind is installed
 which named 1>/dev/null
-if [ $? != 0 ]
+if [ "$?" != 0 ]
 then
 	echo Updating repostitories
 	apt-get update
@@ -38,24 +38,24 @@ fi
 
 #Bail out if bind is not installed
 which named 1>/dev/null
-if [ $? != 0 ]
+if [ "$?" != 0 ]
 then
 	echo Bind is not installed...exiting now.
 fi
 
 #Set bind to start on boot
-update-rc.d bind9 defaults
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/bind
 
 #hwclock --systohc
 
 #Get ubuntu version
 UBUNTUVER=xenial
-if [ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]
+if [[ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]]
 then
 	UBUNTUVER=trusty
 fi
 
-if [ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]
+if [[ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]]
 then
 	UBUNTUVER=precise
 fi
@@ -76,19 +76,19 @@ echo 'dlz "AD DNS Zone" {
 ' > /etc/bind/samba_dns.conf
 
 #Add in the correct line for the version of Bind installed
-if [ $UBUNTUVER = precise ]
+if [ "$UBUNTUVER" = precise ]
 then
 	echo '    #Added by Karoshi for BIND 9.8
     database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9.so";' >> /etc/bind/samba_dns.conf
 fi
 
-if [ $UBUNTUVER = trusty ]
+if [ "$UBUNTUVER" = trusty ]
 then
 	echo '    #Added by Karoshi for BIND 9.9
     database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_9.so";' >> /etc/bind/samba_dns.conf
 fi
 
-if [ $UBUNTUVER = xenial ]
+if [ "$UBUNTUVER" = xenial ]
 then
 	echo '    #Added by Karoshi for BIND 9.10
     database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";' >> /etc/bind/samba_dns.conf
@@ -97,7 +97,7 @@ fi
 echo '};' >> /etc/bind/samba_dns.conf
 
 #Modify /etc/bind/named.conf to include samba_dns.conf
-if [ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]
+if [[ $(grep -c "/etc/bind/samba_dns.conf" /etc/bind/named.conf) = 0 ]]
 then
 	echo 'include "/etc/bind/samba_dns.conf";' >> /etc/bind/named.conf
 fi
@@ -233,7 +233,7 @@ options {
 	// the all-0 placeholder.
 
 	forwarders {
-	 	'$DNS_FORWARDER';
+	 	'"$DNS_FORWARDER"';
 	 };
 
 	//========================================================================
@@ -263,16 +263,16 @@ sed -i 's%#include <local/usr.sbin.named>%include <local/usr.sbin.named>%g' /etc
 service apparmor restart
 
 #Stop samba4
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 
 #Modify smb.conf to disable internal dns
-if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]
+if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]]
 then
 	sed -i '/ldap server require strong auth/a \\tserver services = -dns' /etc/samba/smb.conf
 fi
 
 #Modify smb.conf to remove dns round robin parameter which is not a valid parameter in unpatched samba versions
-if [ $(grep -c "dns round robin = yes" /etc/samba/smb.conf) = 0 ]
+if [[ $(grep -c "dns round robin = yes" /etc/samba/smb.conf) = 0 ]]
 then
 	sed -i '/dns round robin = yes/d' /etc/samba/smb.conf
 fi
@@ -285,9 +285,9 @@ chown root:bind /var/lib/samba/private/dns.keytab
 chmod 640 /var/lib/samba/private/dns.keytab
 
 #Restart bind
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/bind_start 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_start 1>/dev/null 2>/dev/null
 #Start samba4
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 

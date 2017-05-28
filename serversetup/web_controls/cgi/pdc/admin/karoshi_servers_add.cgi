@@ -35,13 +35,13 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Server"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
@@ -90,7 +90,7 @@ echo '<div id="actionbox3">'
 ############################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/karoshi_servers_add_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -109,104 +109,62 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/__/_ _/g'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
-
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=13
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign TCPIPNUMBER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TCPIPNUMBERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TCPIPNUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=TCPIPNUMBER
+get_data
+TCPIPNUMBER=$(echo "$DATAENTRY" | tr -cd '0-9.')
 
 #Assign password1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
 
 #Assign password2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
 
 #Assign authentication
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = AUTHENTICATIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		AUTHENTICATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=AUTHENTICATION
+get_data
+AUTHENTICATION="$DATAENTRY"
 
 #Assign ZONE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ZONEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ZONE
+get_data
+ZONE="$DATAENTRY"
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -220,7 +178,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -279,11 +237,11 @@ function get_data {
 #Send data back to form and ask for tcpip number
 echo '
 <body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post" name="form">
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<input name="_PASSWORD1_" value="'$PASSWORD1'" type="hidden">
-<input name="_PASSWORD2_" value="'$PASSWORD2'" type="hidden">
-<input name="_AUTHENTICATION_" value="'$AUTHENTICATION'" type="hidden">
-<input name="_ZONE_" value="'$ZONE'" type="hidden">
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
+<input name="_PASSWORD1_" value="'"$PASSWORD1"'" type="hidden">
+<input name="_PASSWORD2_" value="'"$PASSWORD2"'" type="hidden">
+<input name="_AUTHENTICATION_" value="'"$AUTHENTICATION"'" type="hidden">
+<input name="_ZONE_" value="'"$ZONE"'" type="hidden">
 </form>
 <SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
@@ -299,8 +257,8 @@ exit
 #If tcpip is blank check to see that we know the tcpip number
 if [ -z "$TCPIPNUMBER" ]
 then
-	host -r -t A $SERVERNAME 1>/dev/null
-	[ $? != 0 ] && get_data
+	host -r -t A "$SERVERNAME" 1>/dev/null
+	[ "$?" != 0 ] && get_data
 fi
 
 if [ -z "$TCPIPNUMBER" ]
@@ -309,31 +267,31 @@ then
 	#Check that the tcpip number has been entered correctly
 	########################
 	#Check dots
-	[ `echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ] && get_data
+	[[ $(echo "$TCPIPNUMBER" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]] && get_data
 
 	#Check that no number is greater than 255
-	HIGHESTNUMBER=`echo $TCPIPNUMBER | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-	[ $HIGHESTNUMBER -gt 255 ] && get_data
+	HIGHESTNUMBER=$(echo "$TCPIPNUMBER" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
+	[ "$HIGHESTNUMBER" -gt 255 ] && get_data
 fi
 
 #Check to see that this is not the tcpip number of the main server.
-MAINSERVERIP=`net lookup $HOSTNAME`
+MAINSERVERIP=$(hostname -i | cut -d" " -f1)
 if [ "$MAINSERVERIP" = "$TCPIPNUMBER" ]
 then
 	MESSAGE=$"You have entered in the same TCPIP address as the main server."
 	show_status
 fi
 
-echo '<div id="titlebox"><div class="sectiontitle">'$"Add Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div id="titlebox"><div class="sectiontitle">'$"Add Server"' - '"$SERVERNAME"'</div><br></div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add
-EXEC_STATUS=$?
+EXEC_STATUS="$?"
 
-MESSAGE=`echo $SERVERNAME - $"ssh has been enabled."`
-if [ $EXEC_STATUS = 101 ]
+MESSAGE=''"$SERVERNAME"' - '$"ssh has been enabled."''
+if [ "$EXEC_STATUS" = 101 ]
 then
-	MESSAGE=`echo $SERVERNAME - $"There was a problem enabling ssh for this server. Please check the web administration logs."`
+	MESSAGE=''"$SERVERNAME"' - '$"There was a problem enabling ssh for this server. Please check the web administration logs."''
 	show_status
 fi
 test_connections

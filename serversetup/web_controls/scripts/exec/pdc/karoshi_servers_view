@@ -24,74 +24,76 @@
 #
 #Website: http://www.karoshi.org.uk
 #Language
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_view_cgi
 then
-	echo `date`: karoshi_servers_view - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_view_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_view.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_view.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $karoshi_servers_view_cgi'check' ]
+if [ "$MD5SUM"'check' != "$karoshi_servers_view_cgi"'check' ]
 then
-	echo `date`: karoshi_servers_view - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 1 ]
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
+if [ -z "$DATA" ]
 then
-	echo `date`: karoshi_servers_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: karoshi_servers_view - Not called by karoshi_servers_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - Not called by karoshi_servers_view.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: karoshi_servers_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: karoshi_servers_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: karoshi_servers_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_view - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice" ] && source "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice"
+export TEXTDOMAIN=karoshi-server
 
 
-echo `date`: karoshi_servers_view - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): karoshi_servers_view - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Check for ssh enabled servers
 
 [ ! -d /opt/karoshi/server_network/servers ] && exit 102
-SSHCOUNT=`ls -1 /opt/karoshi/server_network/servers | wc -l`
-[ $SSHCOUNT = 0 ] && exit 102
+SSHCOUNT=$(ls -1 /opt/karoshi/server_network/servers | wc -l)
+[ "$SSHCOUNT" = 0 ] && exit 102
 
 SERVERSSHSTATUS=$"SSH failure for this server."
 SERVERBACKUPSSHSTATUS=$"A server has not been configured for this server to backup to."
@@ -104,7 +106,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td><div class="sectiontitle">'$"My Servers"' '$SHORTNAME'</div></td>
+<td><div class="sectiontitle">'$"My Servers"' '"$SHORTNAME"'</div></td>
 <td style="vertical-align: top;">
 <form action="karoshi_servers_add_fm.cgi" method="post">
 <button class="button" name="_AddServer_" value="_">
@@ -121,21 +123,21 @@ SERVERBACKUPSSHSTATUS=$"A server has not been configured for this server to back
 SERVERICON=/images/warnings/server_fail.png
 SERVERBACKUPICON=/images/warnings/server_no_config.png
 SERVERICON2=/images/warnings/server_remove.png
-SERVERSHORT=`echo $SERVER | cut -d"." -f1`
-SERVERIP=`net lookup $SERVER`
+SERVERSHORT=$(echo "$SERVER" | cut -d"." -f1)
+SERVERIP=$(net lookup "$SERVER")
 
-if [ $SERVER != `hostname-fqdn` ]
+if [[ "$SERVER" != $(hostname-fqdn) ]]
 then
-	VERSIONINFO=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
+	VERSIONINFO=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=2 "$SERVER" '
 	lsb_release -a 2>/dev/null
 	')
-	SSHSTATUS=$?
+	SSHSTATUS="$?"
 else
 	VERSIONINFO=$(lsb_release -a 2>/dev/null)
 	SSHSTATUS=0
 fi
 
-if [ $SSHSTATUS = 0 ]
+if [ "$SSHSTATUS" = 0 ]
 then
 	SERVERSSHSTATUS=$"SSH is working for this server."
 	SERVERICON=/images/warnings/server_ok.png
@@ -144,15 +146,15 @@ fi
 #Get the Karoshi version for the server
 KAROSHIVER=$(/opt/karoshi/web_controls/get_version "$VERSIONINFO")
 
-echo '<tr><td style="vertical-align: top;">'$SERVER'</td><td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'$KAROSHIVER'</td><td style="vertical-align: top;">'
-[ -d /opt/karoshi/server_network/servers/$SERVER ] &&  cat /opt/karoshi/server_network/servers/$SERVER/*
+echo '<tr><td style="vertical-align: top;">'"$SERVER"'</td><td style="vertical-align: top;">'"$ZONE"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'"$KAROSHIVER"'</td><td style="vertical-align: top;">'
+[ -d /opt/karoshi/server_network/servers/"$SERVER" ] &&  cat /opt/karoshi/server_network/servers/"$SERVER"/*
 echo '</td><td style="vertical-align: top;">'
-if [ $SSHSTATUS = 0 ] || [ $SERVER = `hostname-fqdn` ]
+if [ "$SSHSTATUS" = 0 ] || [[ "$SERVER" = $(hostname-fqdn) ]]
 then
 	echo '<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
-	<button class="info" name="_AddRole_" value="_SERVERNAME_'$SERVER'_">
-	<img src="'$SERVERICON'" alt="'$"Add a role to this server."'">
-	<span>'$SERVERSHORT' - '$"Add a role to this server."'</span>
+	<button class="info" name="_AddRole_" value="_SERVERNAME_'"$SERVER"'_">
+	<img src="'"$SERVERICON"'" alt="'$"Add a role to this server."'">
+	<span>'"$SERVERSHORT"' - '$"Add a role to this server."'</span>
 	</button>
 	</form>
 	</td>
@@ -163,21 +165,21 @@ fi
 
 echo '<td style="vertical-align: top;">
 <form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
-<button class="info" name="___RemoveRole___" value="___SERVERNAME___'$SERVER'___">
-<img src="'$SERVERICON2'" alt="'$"Remove a role from this server."'">
-<span>'$SERVERSHORT' - '$"Remove a role from this server."'</span>
+<button class="info" name="___RemoveRole___" value="___SERVERNAME___'"$SERVER"'___">
+<img src="'"$SERVERICON2"'" alt="'$"Remove a role from this server."'">
+<span>'"$SERVERSHORT"' - '$"Remove a role from this server."'</span>
 </button>
 </form></td>'
 
 
 echo '<td style="vertical-align: top;">'
 
-if [ $SERVER != `hostname-fqdn` ]
+if [[ "$SERVER" != $(hostname-fqdn) ]]
 then
 	echo '<form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-	<button class="info infocenter" name="_AddServer_" value="_SERVERNAME_'$SERVERSHORT'_">
-	<img src="'$SERVERICON'" alt="'$SERVERSHORT - $SERVERSSHSTATUS'">
-	<span>'$SERVERSHORT - $SERVERSSHSTATUS'</span>
+	<button class="info infocenter" name="_AddServer_" value="_SERVERNAME_'"$SERVERSHORT"'_">
+	<img src="'"$SERVERICON"'" alt="'"$SERVERSHORT" - "$SERVERSSHSTATUS"'">
+	<span>'"$SERVERSHORT" - "$SERVERSSHSTATUS"'</span>
 	</button>
 	</form>'
 fi
@@ -185,38 +187,38 @@ fi
 echo '</td><td style="vertical-align: top;">'
 
 #Check backup server status if one has been assigned
-if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver ]
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER"/backupserver ]
 then
-	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
-	BSERVERSHORT=`echo $BACKUPSERVER | cut -d. -f1`
+	BACKUPSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER"/backupserver)
+	BSERVERSHORT=$(echo "$BACKUPSERVER" | cut -d. -f1)
 	SERVERBACKUPICON=/images/warnings/server_fail.png
-	SERVERBACKUPSSHSTATUS=`echo $"Backup Server" - $BSERVERSHORT. $"SSH failure for this backup server."`
+	SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '"$BSERVERSHORT"'. '$"SSH failure for this backup server."''
 
-	if [ $SERVER != `hostname-fqdn` ]
+	if [[ "$SERVER" != $(hostname-fqdn) ]]
 	then
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 $SERVER '
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '$BACKUPSERVER' ls 1>/dev/null
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 "$SERVER" '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 '"$BACKUPSERVER"' ls 1>/dev/null
 	SSHBACKUPSTATUS=`echo $?`
 	exit $SSHBACKUPSTATUS
 	'
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 $BACKUPSERVER ls 1>/dev/null
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=2 -o ConnectTimeout=2 "$BACKUPSERVER" ls 1>/dev/null
 	fi
 
-	SSHBACKUPSTATUS=`echo $?`
-	if [ $SSHBACKUPSTATUS = 0 ]
+	SSHBACKUPSTATUS="$?"
+	if [ "$SSHBACKUPSTATUS" = 0 ]
 	then
-		SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '$BSERVERSHORT'.<br><br>'$"SSH is working for this backup server."''
+		SERVERBACKUPSSHSTATUS=''$"Backup Server"' - '"$BSERVERSHORT"'.<br><br>'$"SSH is working for this backup server."''
 		SERVERBACKUPICON=/images/warnings/server_ok.png
 	fi
 fi
 
-if [ $SSHSTATUS = 0 ]
+if [ "$SSHSTATUS" = 0 ]
 then
 	echo '<form action="/cgi-bin/admin/backup_assign_fm.cgi" method="post">
-	<button class="info infoleft" name="_AssignBackup_" value="_SERVERNAME_'$SERVER'_">
-	<img src="'$SERVERBACKUPICON'" alt="'$SERVERBACKUPSSHSTATUS'">
-	<span>'$SERVERBACKUPSSHSTATUS'</span>
+	<button class="info infoleft" name="_AssignBackup_" value="_SERVERNAME_'"$SERVER"'_">
+	<img src="'"$SERVERBACKUPICON"'" alt="'"$SERVERBACKUPSSHSTATUS"'">
+	<span>'"$SERVERBACKUPSSHSTATUS"'</span>
 	</button>
 	</form>'
 fi
@@ -225,8 +227,7 @@ echo '</td></tr>'
 
 #Show main server
 MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_controller/ | sed -n 1,1p )
-SERVER=$MAINSERVER
-FILLCOLOUR=green
+SERVER="$MAINSERVER"
 ZONE=$"Internal"
 show_servers
 
@@ -234,15 +235,14 @@ show_servers
 
 if [ -d /opt/karoshi/server_network/zones/internal/servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/zones/internal/servers/ | wc -l) -gt 0 ]]
 	then
-		FILLCOLOUR=green
 		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/servers)
 		ADCLIST=""
 		[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 			then
 				show_servers
 			fi
@@ -250,7 +250,7 @@ then
 
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]]
 			then
 				show_servers
 			fi
@@ -261,16 +261,15 @@ fi
 #Show servers in the dmz zone
 if [ -d /opt/karoshi/server_network/zones/dmz/servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/zones/dmz/servers/ | wc -l) -gt 0 ]]
 	then
-		FILLCOLOUR=orange
 		ZONE=$"DMZ"
 		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/servers)
 		ADCLIST=""
 		[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/)
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 			then
 				show_servers
 			fi
@@ -278,7 +277,7 @@ then
 
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]]
 			then
 				show_servers
 			fi
@@ -289,14 +288,13 @@ fi
 #Show servers in the external zone
 if [ -d /opt/karoshi/server_network/zones/external/servers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/zones/external/servers/ | wc -l) -gt 0 ]]
 	then
-		FILLCOLOUR=red
 		ZONE=$"External"
 		for SERVER in /opt/karoshi/server_network/zones/external/servers/*
 		do
-			SERVER=`basename $SERVER`
-			[ $SERVER != $MAINSERVER ] && show_servers
+			SERVER=$(basename "$SERVER")
+			[ "$SERVER" != "$MAINSERVER" ] && show_servers
 		done
 
 		SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/external/servers)
@@ -304,7 +302,7 @@ then
 		[ -d /opt/karoshi/server_network/zones/external/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/external/additional_domain_controllers/)
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 			then
 				show_servers
 			fi
@@ -312,7 +310,7 @@ then
 
 		for SERVER in $SERVERLIST
 		do
-			if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+			if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]]
 			then
 				show_servers
 			fi
@@ -326,7 +324,7 @@ echo '</tbody></table>'
 #Show federated servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l) -gt 0 ]]
 	then
 
 		for FEDERATED_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
@@ -337,83 +335,83 @@ then
 			SERVERBACKUPICON=/images/warnings/server_no_config.png
 			SERVERICON2=/images/warnings/server_remove.png
 
-			FEDERATED_SERVER=`basename $FEDERATED_SERVERS`
-			SERVERIP=`net lookup $FEDERATED_SERVER`
+			FEDERATED_SERVER=$(basename "$FEDERATED_SERVERS")
+			SERVERIP=$(net lookup "$FEDERATED_SERVER")
 
-			if [ -f /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info ]
+			if [ -f /opt/karoshi/server_network/federated_ldap_servers/"$FEDERATED_SERVER"/info ]
 			then
 				LOCATION_NAME=""
-				source /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/info
+				source /opt/karoshi/server_network/federated_ldap_servers/"$FEDERATED_SERVER"/info
 				LOCATION_NAME="- $LOCATION_NAME"
 			fi
 
 			echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr>
-			<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$ADDSERVERICON'"><span>'$"Federated Servers"' '$LOCATION_NAME'</span></a></td>
-			<td style="vertical-align: top;"><b>'$"Federated Servers"' '$LOCATION_NAME'</b></td>
+			<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'"$ADDSERVERICON"'"><span>'$"Federated Servers"' '"$LOCATION_NAME"'</span></a></td>
+			<td style="vertical-align: top;"><b>'$"Federated Servers"' '"$LOCATION_NAME"'</b></td>
 			</tr></tbody></table>'
 
 			echo '<table class="standard" style="text-align: left;" ><tbody>'
 			echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr>'
 
 
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATED_SERVER ls 1>/dev/null
-			SSHSTATUS=`echo $?`
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=2  "$FEDERATED_SERVER" ls 1>/dev/null
+			SSHSTATUS="$?"
 
-			if [ $SSHSTATUS = 0 ]
+			if [ "$SSHSTATUS" = 0 ]
 			then
 				SERVERSSHSTATUS=$"SSH is working for this server."
 				SERVERICON=/images/warnings/server_ok.png
 
-				echo '<tr><td style="vertical-align: top;">'$FEDERATED_SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+				echo '<tr><td style="vertical-align: top;">'"$FEDERATED_SERVER"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'
 				#Show role information for the federated server
-				[ -d /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER ] &&  cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/*
+				[ -d "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER" ] &&  cat "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/*"
 
 				echo '</td><td></td>
 			<td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
-			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$FEDERATED_SERVER' - '$"Remove a role from this server."'</span></a></form></td><td style="vertical-align: top;">
-			<a href="https://'$SERVERIP':50001" target="_blank"><img src="'$SERVERICON'" border="0"></a></td></tr>'
+			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON2"'" value="'"$SERVER"'"><span>'"$FEDERATED_SERVER"' - '$"Remove a role from this server."'</span></a></form></td><td style="vertical-align: top;">
+			<a href="https://'"$SERVERIP"':50001" target="_blank"><img src="'"$SERVERICON"'" border="0"></a></td></tr>'
 
 			else
-				echo '<tr><td style="vertical-align: top;">'$FEDERATED_SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'$"Federated Server"'</td><td></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
-			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON2'" value="'$SERVER'"><span>'$FEDERATED_SERVER' - '$"Remove a role from this server."'</span></a></form></td><td><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
-			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'$FEDERATED_SERVER'_" type="image" class="images" src="'$SERVERICON'" value="'$FEDERATED_SERVER'"><span>'$FEDERATED_SERVER - $SERVERSSHSTATUS'</span></a>
+				echo '<tr><td style="vertical-align: top;">'"$FEDERATED_SERVER"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'$"Federated Server"'</td><td></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
+			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON2"'" value="'"$SERVER"'"><span>'"$FEDERATED_SERVER"' - '$"Remove a role from this server."'</span></a></form></td><td><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
+			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON"'" value="'"$FEDERATED_SERVER"'"><span>'"$FEDERATED_SERVER" - "$SERVERSSHSTATUS"'</span></a>
 			</form></td></tr>'
 			fi
 
 			#Show the status of federated slave servers
-			for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/*
+			for FEDERATED_SLAVE_SERVERS in /opt/karoshi/server_network/federated_ldap_servers/"$FEDERATED_SERVER"/servers/*
 			do
 				SLAVESSHSTATUS=1
-				FEDERATED_SLAVE_SERVER=`basename $FEDERATED_SLAVE_SERVERS`
-				SERVERIP=`cat /etc/hosts | grep -w $FEDERATED_SLAVE_SERVER | cut -f1`
-				if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ] && [ $SSHSTATUS = 0 ]
+				FEDERATED_SLAVE_SERVER=$(basename "$FEDERATED_SLAVE_SERVERS")
+				SERVERIP=$(grep -w "$FEDERATED_SLAVE_SERVER" /etc/hosts | cut -f1)
+				if [ "$FEDERATED_SLAVE_SERVER" != "$FEDERATED_SERVER" ] && [ "$SSHSTATUS" = 0 ]
 				then
 
-					ssh -x -o PasswordAuthentication=no $FEDERATED_SERVER '
-					ssh -o PasswordAuthentication=no -o ConnectTimeout=2  '$FEDERATED_SLAVE_SERVER' ls 1>/dev/null
+					ssh -x -o PasswordAuthentication=no "$FEDERATED_SERVER" '
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=2  '"$FEDERATED_SLAVE_SERVER"' ls 1>/dev/null
 					SLAVESSHSTATUS=`echo $?`
 					exit $SLAVESSHSTATUS
 					'
-					SLAVESSHSTATUS=`echo $?`
+					SLAVESSHSTATUS="$?"
 				fi
 
 				SERVERSSHSTATUS=$"SSH failure for this server."
 				SERVERICON=/images/warnings/server_fail.png
-				if [ $SLAVESSHSTATUS = 0 ]
+				if [ "$SLAVESSHSTATUS" = 0 ]
 				then
 					SERVERSSHSTATUS=$"SSH is working for this server."
 					SERVERICON=/images/warnings/server_ok.png
 				fi
-				if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
+				if [ "$FEDERATED_SLAVE_SERVER" != "$FEDERATED_SERVER" ]
 				then
-					echo '<tr><td style="vertical-align: top;">'$FEDERATED_SLAVE_SERVER'</td><td style="vertical-align: top;">'$SERVERIP'</td><td style="vertical-align: top;">'
+					echo '<tr><td style="vertical-align: top;">'"$FEDERATED_SLAVE_SERVER"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'
 
 					#Show role information for the federated server
-					[ -d /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER ] &&  cat /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/*
+					[ -d "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER" ] &&  cat "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SLAVE_SERVER/*"
 
 					echo '</td><td></td>
 					<td></td>
-					<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'$SERVERICON'"><span>'$FEDERATED_SLAVE_SERVER' - '$SERVERSSHSTATUS'</span></a></td></tr>'
+					<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="'"$SERVERICON"'"><span>'"$FEDERATED_SLAVE_SERVER"' - '"$SERVERSSHSTATUS"'</span></a></td></tr>'
 				fi
 			done
 			echo '</tbody></table>'
@@ -424,19 +422,19 @@ fi
 #Show windows servers
 if [ -d /opt/karoshi/server_network/windows_servers ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/windows_servers/* | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/windows_servers/* | wc -l) -gt 0 ]]
 	then
-		echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/windows_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'$ADDSERVERICON'" value="ADDSERVER"><span>'$"Add a Windows Server to the network."'</span></a></form></td><td style="vertical-align: top; width: 140px;"><b>'$"Windows Servers"'</b></td></tr></tbody></table>'
+		echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/windows_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'"$ADDSERVERICON"'" value="ADDSERVER"><span>'$"Add a Windows Server to the network."'</span></a></form></td><td style="vertical-align: top; width: 140px;"><b>'$"Windows Servers"'</b></td></tr></tbody></table>'
 
 		echo '<table class="standard" style="text-align: left;" ><tbody>'
 		echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td></tr>'
 
 		for WINDOWS_SERVERS in /opt/karoshi/server_network/windows_servers/*
 		do
-			WINDOWS_SERVER=`basename $WINDOWS_SERVERS`
-			[ -f /opt/karoshi/server_network/windows_servers/$WINDOWS_SERVER/role ] && ROLE=`cat /opt/karoshi/server_network/windows_servers/$WINDOWS_SERVER/role`
-			[ -f /opt/karoshi/server_network/windows_servers/$WINDOWS_SERVER/tcpip ] && TCPIP=`cat /opt/karoshi/server_network/windows_servers/$WINDOWS_SERVER/tcpip`
-			echo '<tr><td>'$WINDOWS_SERVER'</td><td>'$TCPIP'</td><td>'$ROLE'</td></tr>'
+			WINDOWS_SERVER=$(basename "$WINDOWS_SERVERS")
+			[ -f /opt/karoshi/server_network/windows_servers/"$WINDOWS_SERVER"/role ] && ROLE=$(cat /opt/karoshi/server_network/windows_servers/"$WINDOWS_SERVER"/role)
+			[ -f /opt/karoshi/server_network/windows_servers/"$WINDOWS_SERVER"/tcpip ] && TCPIP=$(cat /opt/karoshi/server_network/windows_servers/"$WINDOWS_SERVER"/tcpip)
+			echo '<tr><td>'"$WINDOWS_SERVER"'</td><td>'"$TCPIP"'</td><td>'"$ROLE"'</td></tr>'
 		done
 		echo '</tbody></table>'
 	fi

@@ -11,12 +11,12 @@ fi
 INSTALL_TYPE=adcrestore
 if [ -f /opt/karoshi/server_network/install_type ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 fi
 
 [ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
 
-RESTOREPATH=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --file-selection  --title=''$"Setup"' '$"Samba"'' --width 800 --height 600 --wrap --text '<span font_weight="bold" foreground="red">Restore Configuration Data</span>\n\nThis will restore critical configuration data from a Karoshi configuration backup that you have saved onto a backup media.\n\n\n'  2>/dev/null`
+RESTOREPATH=$(yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --file-selection  --title=''$"Setup"' '$"Samba"'' --width 800 --height 600 --wrap --text '<span font_weight="bold" foreground="red">Restore Configuration Data</span>\n\nThis will restore critical configuration data from a Karoshi configuration backup that you have saved onto a backup media.\n\n\n'  2>/dev/null)
 
 SERVER_NETWORK=opt/karoshi/server_network
 DFS=var/lib/samba/dfs
@@ -24,7 +24,7 @@ NETLOGON=var/lib/samba/netlogon
 MOVE_GLUSTER=no
 
 #Check restore list for gluster
-if [ $(tar -ztvf "$RESTOREPATH" | grep -c "mnt-gluster/dc-data") -gt 0 ]
+if [[ $(tar -ztvf "$RESTOREPATH" | grep -c "mnt-gluster/dc-data") -gt 0 ]]
 then
 	SERVER_NETWORK=mnt-gluster/dc-data/server_network
 	DFS=mnt-gluster/dc-data/dfs
@@ -41,7 +41,7 @@ RESTORELIST="etc/cups etc/e2guardian etc/dhcp etc/postfix etc/mdadm etc/samba/ex
 if [ ! -z "$RESTOREPATH" ]
 then
 
-	if [ $MOVE_GLUSTER = yes ]
+	if [ "$MOVE_GLUSTER" = yes ]
 	then
 		#Create gluster folder to restore to 
 		[ ! -d /mnt-gluster/dc-data/ ] && mkdir -p /mnt-gluster/dc-data/
@@ -50,8 +50,8 @@ then
 	#Attempt to restore the data from the archive
 	for RESTOREFILE in $RESTORELIST
 	do
-		tar -xvzf $RESTOREPATH -C / $RESTOREFILE
-		[ $? != 0 ] && yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --title=''$"Setup"' '$"Samba"'' --width 300 --height 100 --text '/'$RESTOREFILE' - '$"There was a problem restoring this data"'' --button=Ok
+		tar -xvzf "$RESTOREPATH" -C / "$RESTOREFILE"
+		[ "$?" != 0 ] && yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png"  --title=''$"Setup"' '$"Samba"'' --width 300 --height 100 --text '/'"$RESTOREFILE"' - '$"There was a problem restoring this data"'' --button=Ok
 	done
 
 	#Extract samba private and sysvol
@@ -63,7 +63,7 @@ then
 	find /var/lib/samba/private/ -type f -name '*.ldb.bak' -print0 | while read -d $'\0' f ; do mv "$f" "${f%.bak}" ; done
 
 	#Move directoriees back from gluster volume folder and tidy up.
-	if [ $MOVE_GLUSTER = yes ]
+	if [ "$MOVE_GLUSTER" = yes ]
 	then
 		mv -f /mnt-gluster/dc-data/dfs /var/lib/samba/
 		mv -f /mnt-gluster/dc-data/netlogon /var/lib/samba/
