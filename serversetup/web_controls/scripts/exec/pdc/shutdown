@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,124 +31,120 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/shutdown_cgi
 then
-	echo `date`: shutdown - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/shutdown_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $shutdown_cgi'check' ]
+if [ "$MD5SUM"'check' != "$shutdown_cgi"'check' ]
 then
-	echo `date`: shutdown - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: shutdown - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: shutdown - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
-SHUTDOWN_OPTION=`echo "$DATA" | cut -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -d: -f3)
+SHUTDOWN_OPTION=$(echo "$DATA" | cut -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f6)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f7)
+MOBILE=$(echo "$DATA" | cut -s -d: -f8)
 
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: shutdown - Not called by shutdown.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Not called by shutdown.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: shutdown - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: shutdown - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SHUTDOWN_OPTION" ]
 then
-	echo `date`: shutdown - No shutdown option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - No shutdown option by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ] && [ $SHUTDOWN_OPTION != wakeonlan ]
+if [ "$SHUTDOWN_OPTION" != shutdown ] && [ "$SHUTDOWN_OPTION" != reboot ] && [ "$SHUTDOWN_OPTION" != wakeonlan ]
 then
-	echo `date`: shutdown - Incorrect shutdown option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): shutdown - Incorrect shutdown option by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: shutdown - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: shutdown - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: shutdown - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): shutdown - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: shutdown - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): shutdown - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: shutdown $SHUTDOWN_OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): shutdown $SHUTDOWN_OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
-
-
-TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 #Remove web warning
 
-if [ -f /opt/karoshi/web_controls/warnings/messages/reboot_$SERVERNAME ]
+if [ -f /opt/karoshi/web_controls/warnings/messages/reboot_"$SERVERNAME" ]
 then
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete reboot_$SERVERNAME
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete reboot_"$SERVERNAME"
 fi
 
 ########################
 #Shutdown server action
 ########################
-if [ $SHUTDOWN_OPTION = shutdown ]
+if [ "$SHUTDOWN_OPTION" = shutdown ]
 then
 	SHUTDOWN_OPTION=-h
 	ACTIONMSG2=$"Shutdown in progress"
-elif [ $SHUTDOWN_OPTION = reboot ]
+elif [ "$SHUTDOWN_OPTION" = reboot ]
 then
 	SHUTDOWN_OPTION=-r
 	ACTIONMSG2=$"Reboot in progress"
@@ -162,50 +158,49 @@ echo '<table class="tablesorter" style="text-align: left;" ><thead>
 }
 
 function tablerow {
-echo '<tr><td style="vertical-align: top;">'$KAROSHISERVER'</td><td style="vertical-align: top;">'$ACTIONMSG2'</td></tr>'
+echo '<tr><td style="vertical-align: top;">'"$KAROSHISERVER"'</td><td style="vertical-align: top;">'"$ACTIONMSG2"'</td></tr>'
 }
 
 function endtable {
 echo '</tbody></table>'
 }
 
-ICON1=/images/warnings/server_fail.png
 source /opt/karoshi/server_network/domain_information/domain_name
 #Shutdown this server
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-	KAROSHISERVER=$SERVERNAME
+	KAROSHISERVER="$SERVERNAME"
 	tabletop
 	tablerow
 	endtable
 	sleep 1
-	if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+	if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 	then
-		shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
+		shutdown "$SHUTDOWN_OPTION" now 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" &
 	fi
 fi
 
 #Shutdown other server
-if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != allservers ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ "$SERVERNAME" != allservers ]
 then
-	KAROSHISERVER=$SERVERNAME
-	if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	KAROSHISERVER="$SERVERNAME"
+	if [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
 	then
 
-		if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+		if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 		then		
-			ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 			shutdown '$SHUTDOWN_OPTION' now &
-			' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		else
 			#Send wakeon lan packet to the server
-			SERVERNAME2=$(echo $SERVERNAME | cut -d. -f1)
-			if [ -f /opt/karoshi/server_network/mac_addresses/$SERVERNAME2 ]
+			SERVERNAME2=$(echo "$SERVERNAME" | cut -d. -f1)
+			if [ -f /opt/karoshi/server_network/mac_addresses/"$SERVERNAME2" ]
 			then
-				MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/$SERVERNAME2 | cut -d" " -f1)
+				MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/"$SERVERNAME2" | cut -d" " -f1)
 				ACTIONMSG2="$ACTIONMSG2 $MAC_ADDR"
-				echo `date`: "Sending wakeonlan packet for $SERVERNAME with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo "$(date): Sending wakeonlan packet for $SERVERNAME with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				wakeonlan "$MAC_ADDR" 1>/dev/null
 			fi
 		fi
@@ -214,14 +209,14 @@ then
 		endtable
 	fi
 	#Shutdown federated slave server
-	if [ $SERVERTYPE = federatedslave ]
+	if [ "$SERVERTYPE" = federatedslave ]
 	then
 		tabletop
 		tablerow
 		endtable
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERMASTER '
-		echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+		echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
 		shutdown '$SHUTDOWN_OPTION' now &
 		'\''
 		'
@@ -229,27 +224,29 @@ then
 fi
 
 #Shutdown all servers
-if [ $SERVERNAME = allservers ]
+if [ "$SERVERNAME" = allservers ]
 then
 	SERVERCOUNTER=0
 	tabletop
-	if [ `ls -1 /opt/karoshi/server_network/servers  | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/servers  | wc -l) -gt 0 ]]
 	then
 		for KAROSHISERVER in $(ls -1 /opt/karoshi/server_network/servers)
 		do
-			if [ "$KAROSHISERVER" != `hostname-fqdn` ]
+			if [[ "$KAROSHISERVER" != $(hostname-fqdn) ]]
 			then
-				let SERVERCOUNTER=$SERVERCOUNTER+1
-				if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+				let SERVERCOUNTER="$SERVERCOUNTER"+1
+				if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 				then
-					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $KAROSHISERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$KAROSHISERVER" '
+					shutdown '"$SHUTDOWN_OPTION"' now &
+					' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				else
-					KAROSHISERVER2=$(echo $KAROSHISERVER| cut -d. -f1)
-					if [ -f /opt/karoshi/server_network/mac_addresses/$KAROSHISERVER2 ]
+					KAROSHISERVER2=$(echo "$KAROSHISERVER"| cut -d. -f1)
+					if [ -f /opt/karoshi/server_network/mac_addresses/"$KAROSHISERVER2" ]
 					then
-						MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/$KAROSHISERVER2 | cut -d" " -f1)
+						MAC_ADDR=$(sed -n 1,1p /opt/karoshi/server_network/mac_addresses/"$KAROSHISERVER2" | cut -d" " -f1)
 						ACTIONMSG2="$ACTIONMSG2 $MAC_ADDR"
-						echo `date`: "Sending wakeonlan packet for $KAROSHISERVER with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+						echo "$(date): Sending wakeonlan packet for $KAROSHISERVER with mac address $MAC_ADDR - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 						wakeonlan "$MAC_ADDR" 1>/dev/null
 					fi
 				fi
@@ -260,48 +257,51 @@ then
 
 	if [ -d /opt/karoshi/server_network/federated_ldap_servers ]
 	then
-		if [ `ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l` -gt 0 ]
+		if  [[ $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/ | wc -l) -gt 0 ]]
 		then
 			for FEDERATED_SERVER in $(ls -1 /opt/karoshi/server_network/federated_ldap_servers)
 			do
-				for FEDERATED_SLAVE_SERVER in $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers)
+				for FEDERATED_SLAVE_SERVER in $(ls -1 /opt/karoshi/server_network/federated_ldap_servers/"$FEDERATED_SERVER"/servers)
 				do
 					#Shutdown all federated slave servers
-					if [ $FEDERATED_SLAVE_SERVER != $FEDERATED_SERVER ]
+					if [ "$FEDERATED_SLAVE_SERVER" != "$FEDERATED_SERVER" ]
 					then
-						let SERVERCOUNTER=$SERVERCOUNTER+1
-						KAROSHISERVER=$FEDERATED_SLAVE_SERVER
+						let SERVERCOUNTER="$SERVERCOUNTER"+1
+						KAROSHISERVER="$FEDERATED_SLAVE_SERVER"
 						tablerow
-						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@$FEDERATED_SERVER '
-						echo `date`: shutdown \(federated mode\) '$SHUTDOWN_OPTION' '$SERVERNAME' - by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '$FEDERATED_SLAVE_SERVER' '\''
-						shutdown '$SHUTDOWN_OPTION' now &
+						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@"$FEDERATED_SERVER" '
+						echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$FEDERATED_SLAVE_SERVER"' '\''
+						shutdown '"$SHUTDOWN_OPTION"' now &
 						'\''
 						'
 					fi
 				done
 				#Shutdown all federated servers
-				let SERVERCOUNTER=$SERVERCOUNTER+1
-				KAROSHISERVER=$FEDERATED_SERVER
+				let SERVERCOUNTER="$SERVERCOUNTER"+1
+				KAROSHISERVER="$FEDERATED_SERVER"
 				tablerow
-				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATED_SERVER 'shutdown '$SHUTDOWN_OPTION' now &' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATED_SERVER" 'shutdown '"$SHUTDOWN_OPTION"' now &' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			done
 		fi
 	fi
 
 	#Wait if other servers are shutting down first
-	if [ $SHUTDOWN_OPTION = "-h" ] || [ $SHUTDOWN_OPTION = "-r" ]
+	if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 	then
-		if [ $SERVERCOUNTER -gt 0 ]
+		if [ "$SERVERCOUNTER" -gt 0 ]
 		then
 			sleep 8
 		fi
 		KAROSHISERVER=$(hostname-fqdn)
 
 		tablerow
-		shutdown $SHUTDOWN_OPTION now 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE &
 	fi
 	endtable
+	if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
+	then
+		shutdown "$SHUTDOWN_OPTION" now 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" &	
+	fi
 fi
 exit
 

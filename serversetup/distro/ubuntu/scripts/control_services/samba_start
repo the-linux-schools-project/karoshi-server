@@ -32,12 +32,11 @@ then
 	source /opt/karoshi/server_network/domain_information/domain_name
 	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	COUNTER=0
-	while [ "$COUNTER" -le 60 ]
+	while [ $(ldapsearch -x -w "$LDAPPASS" -b "$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" CN=Users | grep -c ^dn:) = 0 ]
 	do
 		sleep 1
-		ldapsearch -x -w "$LDAPPASS" -b "$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" "$LDAPBASE" 1>/dev/null 2>/dev/null
-		[ $? = 0 ] && break
 		let COUNTER="$COUNTER"+1
+		[ "$COUNTER" = 60 ] && break
 	done
 fi
 exit

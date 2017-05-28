@@ -109,7 +109,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 source /opt/karoshi/serversetup/variables/distro
 
 function restart_samba {
-echo "<ul><li>"'$SERVERNAME'.'$REALM' - '$"Restarting Samba"'"</li></ul>"
+echo "<ul><li>"'$SERVERNAME' - '$"Restarting Samba"'"</li></ul>"
 #Stop samba
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 sleep 5
@@ -134,7 +134,7 @@ echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 MODCHECK=`grep -c -w '$RULESET' /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-	echo "<ul><li>'$SERVERNAME'.'$REALM' - '$"Adding shorewall ports"'</li></ul>tcp '$TCPPORTS'<br>udp '$UDPPORTS'<br><br>"
+	echo "<ul><li>'$SERVERNAME' - '$"Adding shorewall ports"'</li></ul>tcp '$TCPPORTS'<br>udp '$UDPPORTS'<br><br>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'$TCPPORTS'"	"-"#"'$RULESET'-tcp /etc/shorewall/rules
 	echo ACCEPT"	"net"	"fw"	"udp"	"'$UDPPORTS'"	"-"#"'$RULESET'-udp >> /etc/shorewall/rules
@@ -145,7 +145,7 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-echo "<ul><li>'$SERVERNAME'.'$REALM' - '$"Join Domain"'</li></ul>"
+echo "<ul><li>'$SERVERNAME' - '$"Join Domain"'</li></ul>"
 
 #Join the domain
 if [ '$AUTHTYPE' = adc ] || [ '$AUTHTYPE' = rodc ]

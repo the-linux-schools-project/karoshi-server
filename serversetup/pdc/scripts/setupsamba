@@ -153,15 +153,14 @@ echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
 #Get domain name
 ###############################
 function getREALM {
-echo `date`: "Asking the user for the new domain name" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text ''$"Please enter your fully qualifed domain name."'\n'$"This could be the same as your web address."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
+echo "(date): Asking the user for the new domain name" >> /opt/karoshi/serversetup/install_log
+DATA=$(yad --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 500 --wrap --text ''$"Please enter your fully qualifed domain name."'\n'$"This could be the same as your web address."'\n\n<span font_weight="bold" foreground="blue">'$"Example"'</span>\n
 <span font_weight="bold">'$"Domain"'</span> : testdomain.example.com\n
-<span font_weight="bold">'$"Site Name"'</span> : Example Institute of Technology\n
-<span font_weight="bold">'$"Short Name"'</span> : EIT\n\n'"$DOMAINERRORMSG"'' --field=$"Domain" --field=$"Site Name" --field=$"Short Site Name" --button="gtk-ok" 2>/dev/null`
+' --field=$"Domain" --button="gtk-ok" 2>/dev/null)
 
-WEBADDRESS=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
-LONGNAME=`echo $DATA | cut -d"|" -f2 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
-SHORTNAME=`echo $DATA | cut -d"|" -f3 | tr -cd 'A-Za-z0-9.: /' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g'`
+WEBADDRESS=$(echo "$DATA" | cut -d"|" -f1 | tr -cd 'A-Za-z0-9.:/' | tr 'A-Z' 'a-z' | sed 's/^https:\/\///' | sed 's/^http:\/\///' | sed 's/^www.//g')
+LONGNAME="$WEBADDRESS"
+SHORTNAME=$(echo "$LONGNAME" | cut -d. -f1)
 }
 
 

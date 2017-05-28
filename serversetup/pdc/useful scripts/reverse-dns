@@ -72,7 +72,10 @@ case $op in
 add)
 	if [ $zoneExists -ne 0 ]; then
 		samba-tool dns zonecreate localhost $zoneName -U Administrator --password="$pass"
-		service samba4 restart
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start
 		#Wait for port 135 on localhost to be available
 		while ! (exec 6<>/dev/tcp/127.0.0.1/135) &>/dev/null; do
 			sleep 1

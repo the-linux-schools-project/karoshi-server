@@ -153,8 +153,8 @@ then
 		echo '<ul><li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>'
 
 		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
-		sed -i "$LINENUM"'c'\ACCEPT'	net	fw	tcp	"$PORTS"	-#Gluster-tcp' /etc/shorewall/rules
-		echo 'ACCEPT'	'net	fw	udp	'"$PORTS"'	-#Gluster-udp' >> /etc/shorewall/rules
+		sed -i "$LINENUM"'c'\ACCEPT'	net	fw	tcp	'"$PORTS"'	-#Gluster-tcp' /etc/shorewall/rules
+		echo 'ACCEPT	net	fw	udp	'"$PORTS"'	-#Gluster-udp' >> /etc/shorewall/rules
 		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
@@ -180,7 +180,7 @@ else
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/releaseports
 
 	#Open ports on firewall
-	if [ `grep -c "Gluster-tcp" /etc/shorewall/rules` = 0 ]
+	if [ $(grep -c "Gluster-tcp" /etc/shorewall/rules) = 0 ]
 	then
 		echo "<ul><li>'"$SERVER"' - '$"Opening ports for glusterfs"'</li></ul>"
 
@@ -364,7 +364,7 @@ then
 	then
 		#Create glusterfs volume
 		echo '<ul><li>'"$FIRSTSERVER"' - '$"Creating GlusterFS volume"' - '"$VOLUME"'</li></ul>'
-		gluster volume create "$VOLUME" "$TYPE" "$COUNTER" "$GLUSTERCLUSTER" force 1>/dev/null 
+		gluster volume create "$VOLUME" "$TYPE" "$COUNTER" $GLUSTERCLUSTER force 1>/dev/null 
 		if [ "$?" != 0 ]
 		then
 			echo '<ul><li>'$"There was a problem creating the volume"' - '"$VOLUME"'</li></ul>'
@@ -384,7 +384,7 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FIRSTSERVER" '
 		#Create glusterfs volume
 		echo "<ul><li>'"$FIRSTSERVER"' - '$"Creating GlusterFS volume"' - '"$VOLUME"'</li></ul>"
-		gluster volume create '"$VOLUME"' '"$TYPE"' '"$COUNTER"' '"$GLUSTERCLUSTER"' force 1>/dev/null 
+		gluster volume create '"$VOLUME"' '"$TYPE"' '"$COUNTER"' '$GLUSTERCLUSTER' force 1>/dev/null 
 		if [ "$?" != 0 ]
 		then
 			echo "<li>'$"There was a problem creating the volume"' - '"$VOLUME"'</li></ul>"
@@ -478,7 +478,7 @@ fi
 
 function removebrick {
 #Get current number of bricks in the volume
-BRICKCOUNT=$(ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/ | wc -l)
+BRICKCOUNT=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/ | wc -l)
 let BRICKCOUNT="$BRICKCOUNT"-1
 
 #Remove gluster brick from the volume
@@ -496,7 +496,7 @@ fi
 
 if [ "$ACTION" = removeserver ]
 then
-	SERVER=$SERVERLIST
+	SERVER="$SERVERLIST"
 	#Remove server from all gluster volumes
 	for VOLUME in $(ls -1 /opt/karoshi/server_network/gluster-volumes/)
 	do
