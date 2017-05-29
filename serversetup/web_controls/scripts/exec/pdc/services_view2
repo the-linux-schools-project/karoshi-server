@@ -31,7 +31,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
 then
-	echo "$(date): services_view2 - No MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/services_view2_cgi
@@ -39,7 +39,7 @@ MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f
 [ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ "$MD5SUM"'check' != "$services_view2_cgi"'check' ]
 then
-	echo "$(date): services_view2 - Incorrect MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
@@ -48,14 +48,14 @@ fi
 numArgs=$#
 if [ "$numArgs" != 0 ]
 then
-	echo "$(date): services_view2 - incorrect number of arguments" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
 DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo "$(date): services_view2 - no data" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
@@ -76,56 +76,54 @@ fi
 
 SERVERNAME=${SERVERNAME//showallservers/}
 
-
-
 ########################
 #Check data
 ########################
 if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo "$(date): services_view2 - Not called by services_view2.cgi" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Not called by services_view2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo "$(date): services_view2 - Blank remote user" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo "$(date): services_view2 - Blank remote tcpip address" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo "$date): services_view2 - Blank server by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$date): services_view2 - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo "$(date): services_view2 - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVICE" ]
 then
-	echo "$(date): services_view2 - Blank service by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - Blank service by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo "$(date): services_view2 - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$(date): services_view2 - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo "$(date): services_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "$(date): services_view2 $SERVERNAME $SERVICE $ACTION - by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): services_view2 $SERVERNAME $SERVICE $ACTION - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ############################
 #Language

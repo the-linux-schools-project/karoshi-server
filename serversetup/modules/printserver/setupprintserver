@@ -24,97 +24,93 @@
 ########################
 #Get variables
 ########################
-LOG_DATE=`date +%F`
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: setupprintserver - incorrect number of arguments."<br>"
+	echo "$(date): setupprintserver - incorrect number of arguments.<br>"
 	exit 101
 fi
 read -t 3 DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-/')
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-LDAPPASS=`echo "$DATA" | cut -s -d: -f4`
-PDCSERVER=`echo "$DATA" | cut -s -d: -f5`
-PDCIP=`echo "$DATA" | cut -s -d: -f6`
-SAMBADOMAIN=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+#REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+LDAPPASS=$(echo "$DATA" | cut -s -d: -f4)
+PDCSERVER=$(echo "$DATA" | cut -s -d: -f5)
+PDCIP=$(echo "$DATA" | cut -s -d: -f6)
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: setupprintserver - Blank remote user."<br>"
+	echo "$(date): setupprintserver - Blank remote user.<br>"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: setupprintserver - Blank remote tcpip address."<br>"
+	echo "$(date): setupprintserver - Blank remote tcpip address.<br>"
 	exit 101
 fi
 
 if [ -z "$PDCSERVER" ]
 then
-	echo `date`: setupprintserver - Blank PDC."<br>"
+	echo "$(date): setupprintserver - Blank PDC.<br>"
 	exit 101
 fi
-if [ $PDCSERVER != `hostname-fqdn` ]
+if [[ "$PDCSERVER" != $(hostname-fqdn) ]]
 then
 	if [ -z "$LDAPPASS" ]
 	then
-		echo `date`: setupprintserver - Blank root password."<br>"
+		echo "$(date): setupprintserver - Blank root password.<br>"
 		exit 101
 	fi
 fi
 
 if [ -z "$PDCIP" ]
 then
-	echo `date`: setupprintserver - Blank TCPIP."<br>"
+	echo "$(date): setupprintserver - Blank TCPIP.<br>"
 	exit 101
 fi
 
-if [ $PDCSERVER != `hostname-fqdn` ]
+if [[ "$PDCSERVER" != $(hostname-fqdn) ]]
 then
 	#Check to see that we can ping the PDC
-	ping -c 2 $PDCIP 1>/dev/null
-	if [[ $? != 0 ]]
+	ping -c 2 "$PDCIP" 1>/dev/null
+	if [[ "$?" != 0 ]]
 	then
-		echo `date` : setupprintserver - $"The main server cannot be contacted."."<br>"
+		echo "$(date) : setupprintserver -" $"The main server cannot be contacted."".<br>"
 		exit 101
 	fi
 fi
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
-
-SAMBADOMAINCAPS=`echo $SAMBADOMAIN | tr 'a-z' 'A-Z'`
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #############################
 #Ensure that samba and cups are running on boot
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/cups
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/cups
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/samba
 
 ######################
 #Setup Samba
 ######################
 
-if [ `grep -c "All Printers" /etc/samba/smb.conf` = 0 ]
+if [[ $(grep -c "All Printers" /etc/samba/smb.conf) = 0 ]]
 then
 	#Backup smb.conf
-	cp /etc/samba/smb.conf /etc/samba/smb.$$.conf
+	cp /etc/samba/smb.conf /etc/samba/smb."$$".conf
 
 	###########################
 	#Modify samba to add in printing
 	###########################
 
-	GLOBALLINE=`cat /etc/samba/smb.conf | grep -n global | cut -d: -f1`
-	let GLOBALLINE=$GLOBALLINE+1
+	GLOBALLINE=$(grep -n global /etc/samba/smb.conf | cut -d: -f1)
+	let GLOBALLINE="$GLOBALLINE"+1
 
-	sed -i ''$GLOBALLINE' i \\tload printers = yes\n\tcups options = raw\n\tprintcap name = cups' /etc/samba/smb.conf
+	sed -i ''"$GLOBALLINE"' i \\tload printers = yes\n\tcups options = raw\n\tprintcap name = cups' /etc/samba/smb.conf
 	sed -i 's/printing = bsd/printing = cups/g' /etc/samba/smb.conf
 
 	echo >> /etc/samba/smb.conf
@@ -144,9 +140,9 @@ then
 	chown root:itadmin /var/lib/samba/printers
 
 	#Restart samba
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
 fi
 
 ########################
@@ -154,15 +150,15 @@ fi
 ########################
 sleep 1
 ROOTUSER=Administrator
-[ `grep -c "#karoshi_member_server" /etc/samba/smb.conf` -gt 0 ] && ROOTUSER=root
+[[ $(grep -c "#karoshi_member_server" /etc/samba/smb.conf) -gt 0 ]] && ROOTUSER=root
 
 
 echo "<ul><li>Setting printer admin rights</li></ul>"
 for (( c=1; c<=10; c++ ))
 do
 	#Keep trying until samba responds after its restart
-	net rpc rights grant "itadmin" SePrintOperatorPrivilege -U $ROOTUSER%"$LDAPPASS" 1>/dev/null
-	[ $? = 0 ] && break
+	net rpc rights grant "itadmin" SePrintOperatorPrivilege -U "$ROOTUSER"%"$LDAPPASS" 1>/dev/null
+	[ "$?" = 0 ] && break
 	sleep 1
 done
 
@@ -184,7 +180,7 @@ done
 #fi
 
 #Make sure that lpstat can see usernames
-if [ `grep -c "JobPrivateAccess all" /etc/cups/cupsd.conf` = 0 ]
+if [[ $(grep -c "JobPrivateAccess all" /etc/cups/cupsd.conf) = 0 ]]
 then
 	sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
 	sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
@@ -214,20 +210,20 @@ cp -f /opt/karoshi/serversetup/modules/printserver/testprint.ps /usr/share/cups/
 #Make sure that cups and samba are running
 #################################
 
-CUPSSTATUS=`ps -e | grep -c $CUPSVER`
+CUPSSTATUS=$(ps -e | grep -c "$CUPSVER")
 
-if [ $CUPSSTATUS = 0 ]
+if [ "$CUPSSTATUS" = 0 ]
 then
 	echo '<ul><li>'$"Starting Cups"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_start 1>/dev/null
 fi
 
-SAMBASTATUS=`ps -e | grep -c $SMBVER`
+SAMBASTATUS=$(ps -e | grep -c "$SMBVER")
 
-if [ $SAMBASTATUS = 0 ]
+if [ "$SAMBASTATUS" = 0 ]
 then
 	echo '<ul><li>'$"Starting Samba"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
 fi
 
 #Setup savapage

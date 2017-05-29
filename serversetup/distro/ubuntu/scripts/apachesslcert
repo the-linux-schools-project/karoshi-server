@@ -1,98 +1,98 @@
 #!/bin/bash
 #apache2config
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Assign variables
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-exit 101
+	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-SERVER=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+SERVER=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: apachesslcert - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): apachesslcert - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: apachesslcert - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): apachesslcert - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVER" ]
 then
-	echo `date`: apachesslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): apachesslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$ACTION" ]
 then
-	echo `date`: apachesslcert - Blank action from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): apachesslcert - Blank action from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 function create_cert {
-echo `date`: apachesslcert - creating a certificate "for" "*."$REALM from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): apachesslcert - creating a certificate for *.$REALM from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 source /etc/default/locale
-COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-STATE=`cat /etc/timezone | cut -d/ -f1`
-CITY=`cat /etc/timezone | cut -d/ -f2`
-NAME=$HOSTNAME
-LOCALNAME=$ALIAS
-SERVERNAME=$ALIAS
-EMAILADDRESS=administrator@$REALM
+COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+STATE=$(cat /etc/timezone | cut -d/ -f1)
+CITY=$(cat /etc/timezone | cut -d/ -f2)
+NAME="$HOSTNAME"
+LOCALNAME="$ALIAS"
+SERVERNAME="$ALIAS"
+EMAILADDRESS="administrator@$REALM"
 
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 #Revoke the existing certificate.
-[ -d /etc/ssl/apache/$REALM.pem ] && openssl ca -revoke $REALM.pem -passin pass:$LDAPPASS
+[ -d /etc/ssl/apache/"$REALM".pem ] && openssl ca -revoke "$REALM".pem -passin pass:"$LDAPPASS"
 
 #Clear existing keys
 [ ! -d /etc/ssl/apache ] && mkdir /etc/ssl/apache
-[ -f /etc/ssl/apache/$REALM.key ] && rm -f /etc/ssl/apache/$REALM.key
-[ -f /etc/ssl/apache/$REALM.pem ] && rm -f /etc/ssl/apache/$REALM.pem
-[ -f /etc/ssl/apache/$REALM.req ] && rm -f /etc/ssl/apache/$REALM.req
+[ -f /etc/ssl/apache/"$REALM".key ] && rm -f /etc/ssl/apache/"$REALM".key
+[ -f /etc/ssl/apache/"$REALM".pem ] && rm -f /etc/ssl/apache/"$REALM".pem
+[ -f /etc/ssl/apache/"$REALM".req ] && rm -f /etc/ssl/apache/"$REALM".req
 
 cd /etc/ssl/apache
 #Create host certificate
 echo '<ul><li>'$"Creating an SSL certificate"'</li></ul>'
 echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n""*."$REALM"\n""*."$REALM"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout $REALM.key -nodes -out $REALM.req
 
-chmod 0600 /etc/ssl/apache/$REALM.key
-chmod 0600 /etc/ssl/apache/$REALM.req
+chmod 0600 /etc/ssl/apache/"$REALM".key
+chmod 0600 /etc/ssl/apache/"$REALM".req
 
 #Create client pem
-openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out $REALM.pem -infiles $REALM.req 
+openssl ca -passin pass:"$LDAPPASS" -days 3650 -batch -out "$REALM".pem -infiles "$REALM".req 
 
-chmod 0600 /etc/ssl/apache/$REALM.pem
+chmod 0600 /etc/ssl/apache/"$REALM".pem
 }
 
 function enable_cert {
-if [ $SERVER = `hostname-fqdn` ]
+if [ "$SERVER" = $(hostname-fqdn) ]
 then
 
 	#Copy in config files
 	cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
-	SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+	SSLCertificateFileline=$(grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1)
 	sed -i $SSLCertificateFileline'c'\ssl_certificate" "/etc/ssl/apache2/$REALM.pem";" /etc/nginx/sites-available/default
 
-	SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
+	SSLCertificateKeyFileline=$(grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1)
 	sed -i $SSLCertificateKeyFileline'c'\ssl_certificate_key" "/etc/ssl/apache2/$REALM.key";" /etc/nginx/sites-available/default
 
 	#Make sure that ssl is enabled
@@ -133,8 +133,8 @@ else
 	[ ! -d /etc/ssl/apache ] && mkdir -p /etc/ssl/apache
 	'
 	#Copy certificates to the correct server
-	scp /etc/ssl/apache/$REALM.key root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	scp /etc/ssl/apache/$REALM.pem root@$SERVER:"/etc/ssl/apache/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	scp /etc/ssl/apache/$REALM.key root@$SERVER:"/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/apache/$REALM.pem root@$SERVER:"/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
 
@@ -183,18 +183,18 @@ fi
 }
 
 #Create a key if it doesnt exist
-[ ! -f /etc/ssl/apache/$REALM.key ] && create_cert
+[ ! -f /etc/ssl/apache/"$REALM".key ] && create_cert
 
 #Enable certificate
-[ $ACTION = enablecert ] && enable_cert
+[ "$ACTION" = enablecert ] && enable_cert
 
 #Create new cert
-if [ $ACTION = newcert ]
+if [ "$ACTION" = newcert ]
 then
 	create_cert
 	for SERVERS in /opt/karoshi/server_network/servers/*
 	do
-		SERVER=`basename $SERVERS`
+		SERVER=$(basename "$SERVERS")
 		echo "<ul><li>$SERVER - $ENABLESSLCERTMSG</li></ul>"
 		enable_cert
 	done

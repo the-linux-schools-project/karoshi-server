@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_printserver_cgi
 then
-	echo `date`: module_printserver - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_printserver_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_printserver.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_printserver.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_printserver_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_printserver_cgi"'check' ]
 then
-	echo `date`: module_printserver - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,63 +46,63 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_printserver - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_printserver - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [[ $REMOTE_MD5'check' != $MD5SUM'check' ]]
+if [[ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]]
 then
-	echo `date`: module_printserver - Not called by module_printserver.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - Not called by module_printserver.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$REMOTE_USER" ]]
 then
-	echo `date`: module_printserver - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$REMOTE_ADDR" ]]
 then
-	echo `date`: module_printserver - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$SERVERNAME" ]]
 then
-	echo `date`: module_printserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_printserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_printserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_printserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Check that this server has been setup with the correct authentication
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:members:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-	if [ $? = 101 ]
+	if [ "$?" = 101 ]
 	then
 		echo $"This server does not have the correct authentication set up on it.""<br><br>"
-		echo `date`: module_fileserver - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): module_fileserver - $SERVERNAME does not have the correct authentication for this module by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		sleep 2
 		exit 101
 	fi
@@ -110,37 +110,37 @@ fi
 
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
-net rpc rights grant -U Administrator%$LDAPPASS "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
+net rpc rights grant -U Administrator%"$LDAPPASS" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
 
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/printserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/modules/printserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
 
 	#Copy in avahi daemon controls
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_reload root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_reload root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_start root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ 1> /dev/null
 fi
 
 #Create keytab for cups
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:cups:cups:$SERVERNAME:root:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
-PDCIP=`net lookup $HOSTNAME`
-if [ $SERVERNAME != `hostname-fqdn` ]
+PDCIP=$(net lookup "$HOSTNAME")
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:"' | /opt/karoshi/serversetup/modules/printserver/setupprintserver
 	'
-	[ $? = 101 ] && exit 101
+	[ "$?" = 101 ] && exit 101
 else
-	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN: | /opt/karoshi/serversetup/modules/printserver/setupprintserver
-	[ $? = 101 ] && exit 101
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPPASS:$HOSTNAME:$PDCIP:$SAMBADOMAIN:" | /opt/karoshi/serversetup/modules/printserver/setupprintserver
+	[ "$?" = 101 ] && exit 101
 fi
 
 ####################
@@ -148,20 +148,21 @@ fi
 ####################
 #Modifying logonform.kix for correct server
 
-KIXLINENUMBER=`grep -n printserver= /var/lib/samba/netlogon/logonform.kix | cut -d: -f1`
+KIXLINENUMBER=$(grep -n printserver= /var/lib/samba/netlogon/logonform.kix | cut -d: -f1)
 #Use short names for windows
-SERVERNAME2=$(echo $SERVERNAME | cut -d"." -f1)
-[ ! -z "$KIXLINENUMBER" ] && sed -i $KIXLINENUMBER'c''$printserver'=\"$SERVERNAME2\" /var/lib/samba/netlogon/logonform.kix
+SERVERNAME2=$(echo "$SERVERNAME" | cut -d"." -f1)
+[ ! -z "$KIXLINENUMBER" ] && sed -i "$KIXLINENUMBER"'c$printserver="'"$SERVERNAME2"'"' /var/lib/samba/netlogon/logonform.kix
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $"Print Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/printserver
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo $"Print Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/printserver
 [ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 
-SHORTSERVERNAME=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
-echo $SHORTSERVERNAME > /var/lib/samba/netlogon/domain_information/print_server
-echo $SERVERNAME > /opt/karoshi/server_network/printserver
+SHORTSERVERNAME=${SERVERNAME//.$REALM/}
+
+echo "$SHORTSERVERNAME" > /var/lib/samba/netlogon/domain_information/print_server
+echo "$SERVERNAME" > /opt/karoshi/server_network/printserver
 cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
 
 sed -i 's/PRINTERCTRL=no/PRINTERCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
@@ -171,24 +172,24 @@ then
 
 	PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 
-	if [ "$PRINTSERVER" = $(hostname-fqdn) ]
+	if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
 	then
 
 		cp -f "/opt/karoshi/serversetup/modules/printserver/printer_info" /opt/karoshi/"useful scripts/"
 
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop 1>/dev/null 2>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_stop 1>/dev/null 2>/dev/null
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_start 1>/dev/null
 
 	else
-		scp -r /opt/karoshi/serversetup/modules/printserver/ root@$PRINTSERVER:"/opt/karoshi/serversetup/modules/"
-		scp "/opt/karoshi/serversetup/modules/printserver/printer_info" root@$PRINTSERVER:"/opt/karoshi/useful\ scripts/"
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $PRINTSERVER '
+		scp -r /opt/karoshi/serversetup/modules/printserver/ root@"$PRINTSERVER:/opt/karoshi/serversetup/modules/"
+		scp "/opt/karoshi/serversetup/modules/printserver/printer_info" root@"$PRINTSERVER:/opt/karoshi/useful\ scripts/"
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$PRINTSERVER" '
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/cups_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_start
 		'
 	fi
 fi
@@ -199,16 +200,13 @@ fi
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVERNAME"
 fi
 
 ###########################
 #Show completed message
 ###########################
-echo '<br><b>'$COMPLETEDMSG'</b>'
-###########################
-#Show completed message
-###########################
-echo '<br>'$"Printer queues can be added"' <a href="/cgi-bin/admin/printers_add_fm.cgi" target="_blank"><b>here</b></a>.<br>'
+echo '<br><b>'"$COMPLETEDMSG"'</b>'
+
 exit
 
