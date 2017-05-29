@@ -35,27 +35,20 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Web Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-#GROUP=`echo $DATA | cut -d'_' -f3`
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Web Management"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 
 function show_status {
 
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
-echo 'window.location = "update_karoshi_upload_fm.cgi"'
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -63,7 +56,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -71,13 +64,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -89,19 +82,16 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
-else
-	DIV_ID=actionbox2
 fi
 
 echo '<div id="actionbox3"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<table class="standard" style="text-align: left;">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
@@ -110,26 +100,26 @@ else
 	echo '<div class="sectiontitle">'$"Update Web Management"'</div><br></div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1)
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CSVMD5:$CSVFILE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_karoshi_upload
-PATCHSTATUS=`echo $?`
-if [ $PATCHSTATUS = 101 ]
+PATCHSTATUS="$?"
+if [ "$PATCHSTATUS" = 101 ]
 then
-	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	MESSAGE=$"There was a problem with this action." $"Please check the karoshi web administration logs for more details."
 	show_status
 fi
-if [ $PATCHSTATUS = 102 ]
+if [ "$PATCHSTATUS" = 102 ]
 then
 	MESSAGE=$"The patch file did not have a .sh file extension."
 	show_status
 fi
-if [ $PATCHSTATUS = 103 ]
+if [ "$PATCHSTATUS" = 103 ]
 then
 	MESSAGE=$"The signature file did not have a .sig file extension."
 	show_status
 fi
-if [ $PATCHSTATUS = 104 ]
+if [ "$PATCHSTATUS" = 104 ]
 then
 	MESSAGE=$"The patch file did not verify correctly."
 	show_status

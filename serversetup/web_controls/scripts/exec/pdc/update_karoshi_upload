@@ -23,23 +23,23 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_karoshi_upload_cgi
 then
-	echo `date`: update_karoshi_upload - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_karoshi_upload2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1)
 
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $update_karoshi_upload2_cgi'check' ]
+if [ "$MD5SUM"'check' != "$update_karoshi_upload2_cgi"'check' ]
 then
-	echo `date`: update_karoshi_upload - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -47,50 +47,50 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: update_karoshi_upload - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: update_karoshi_upload - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: update_karoshi_upload - Not called by update_karoshi_upload2.cgi  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - Not called by update_karoshi_upload2.cgi"  >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: update_karoshi_upload - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: update_karoshi_upload - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] 
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: update_karoshi_upload - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ ! -d /var/www/karoshi/karoshi_patches ]
 then
-	echo `date`: update_karoshi_upload - no upload folder by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - no upload folder by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -99,8 +99,8 @@ fi
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 [ ! -d /opt/karoshi/updates ] && mkdir -p /opt/karoshi/updates
@@ -110,17 +110,17 @@ TEXTDOMAIN=karoshi-server
 cd /var/www/karoshi/karoshi_patches
 
 
-PATCHNAME=`ls *.sh | sed -n 1,1p | tr -cd 'A-Za-z0-9\._:\-'`
-SIGNAME=`ls *.sig | sed -n 1,1p | tr -cd 'A-Za-z0-9\._:\-'`
+PATCHNAME=$(ls *.sh | sed -n 1,1p | tr -cd 'A-Za-z0-9\._:\-')
+SIGNAME=$(ls *.sig | sed -n 1,1p | tr -cd 'A-Za-z0-9\._:\-')
 
 if [ -z "$PATCHNAME" ]
 then
-	echo `date`: update_karoshi_upload - the patchname has not been assigned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - the patchname has not been assigned by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 102
 fi
 if [ -z "$SIGNAME" ]
 then
-	echo `date`: update_karoshi_upload - the signature name has not been assigned by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - the signature name has not been assigned by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 103
 fi
 
@@ -133,31 +133,31 @@ rm -f -R /var/www/karoshi/karoshi_patches/
 #Make sure that files are there
 if [ ! -f /opt/karoshi/updates/"$PATCHNAME" ]
 then
-	echo `date`: update_karoshi_upload - the patch file was not uploaded correctly by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - the patch file was not uploaded correctly by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 102
 fi
 
 if [ ! -f /opt/karoshi/updates/"$SIGNAME" ]
 then
-	echo `date`: update_karoshi_upload - the signature "file" was not uploaded correctly by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - the signature file was not uploaded correctly by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 103
 fi
 
 #Verify patch
-gpg /opt/karoshi/updates/"$SIGNAME" 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-GPGSTATUS=$?
+gpg /opt/karoshi/updates/"$SIGNAME" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+GPGSTATUS="$?"
 #echo checking /opt/karoshi/updates/"$SIGNAME"
 #echo status is $GPGSTATUS
-if [ $GPGSTATUS = 0 ]
+if [ "$GPGSTATUS" = 0 ]
 then
-	echo `date`: update_karoshi_upload - applying "$PATCHNAME" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi_upload - applying $PATCHNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	chmod 0700 /opt/karoshi/updates/"$PATCHNAME"
 	echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 	/opt/karoshi/updates/"$PATCHNAME"
 	echo '</pre>'
 	#Add this patchname to the completed jobs list
 	[ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
-	echo '<tr><td>'$PATCHNAME'<\td><td>'$HOSTNAME'<\td><td>'`date`'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/$PATCHNAME
+	echo '<tr><td>'"$PATCHNAME"'<\td><td>'"$HOSTNAME"'<\td><td>'"$(date)"'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/"$PATCHNAME"
 else
 	echo $"This patch has not got a correct GPG signature."
 	exit 104

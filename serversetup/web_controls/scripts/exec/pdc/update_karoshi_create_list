@@ -1,6 +1,4 @@
 #!/bin/bash
-LOG_DATE=`date +%F`
-
 ALL_APPLIED=yes
 source /opt/karoshi/serversetup/variables/version
 source /opt/karoshi/serversetup/variables/updatesource
@@ -18,21 +16,21 @@ COUNTER3=0
 APPLYFLAG=no
 #Check to see if updates have been applied
 [ ! -f /opt/karoshi/updates/updatelist ] && exit
-UPDATELIST_LENGTH=`cat /opt/karoshi/updates/updatelist | wc -l`
+UPDATELIST_LENGTH=$(wc -l < /opt/karoshi/updates/updatelist)
 while [ "$COUNTER" -le "$UPDATELIST_LENGTH" ]
 do
-	DATA="`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist`"
-	PATCHNAME=`echo "$DATA" | cut -f1`
-	MD5SUM=`echo "$DATA" | cut -f2`
-	SERVERS=`echo "$DATA" | cut -f3`
-	DESCRIPTION=`echo "$DATA" | cut -f4`
+	DATA=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist)
+	PATCHNAME=$(echo "$DATA" | cut -f1)
+	MD5SUM=$(echo "$DATA" | cut -f2)
+	#SERVERS=$(echo "$DATA" | cut -f3)
+	DESCRIPTION=$(echo "$DATA" | cut -f4)
 	APPLYALLPATCHBTN='<input name="_PATCHNAME_applyallpatches_" type="submit" class="button" value="'$"Apply all Patches"'">'
 	#Check if patch has been applied
-	if [ -f /opt/karoshi/logs/karoshi_updates/$PATCHNAME ]
+	if [ -f /opt/karoshi/logs/karoshi_updates/"$PATCHNAME" ]
 	then
-		echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all.html
-		echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all_mobile.html
-		let COUNTER2=$COUNTER2+1
+		echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_applied.png"></td><td><a class="info infowide" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td>'"$MD5SUM"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all.html
+		echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all_mobile.html
+		let COUNTER2="$COUNTER2"+1
 	else
 		ALL_APPLIED=no
 
@@ -43,40 +41,40 @@ do
 				APPLYALLPATCHBTN=""
 			fi
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td>
-			<td>'$MD5SUM'</td>
-			<td><input name="_PATCHNAME_'$PATCHNAME'_" type="submit" class="button" value="'$"Apply Patch"'">
-			'$APPLYALLPATCHBTN'
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info infowide" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td>
+			<td>'"$MD5SUM"'</td>
+			<td><input name="_PATCHNAME_'"$PATCHNAME"'_" type="submit" class="button" value="'$"Apply Patch"'">
+			'"$APPLYALLPATCHBTN"'
 			</td></tr>' >> /opt/karoshi/updates/updatelist_all.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td>
-			<td><input name="_PATCHNAME_'$PATCHNAME'_" type="submit" class="button" value="'$"Apply Patch"'">
-			'$APPLYALLPATCHBTN'
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td>
+			<td><input name="_PATCHNAME_'"$PATCHNAME"'_" type="submit" class="button" value="'$"Apply Patch"'">
+			'"$APPLYALLPATCHBTN"'
 			</td></tr>'  >> /opt/karoshi/updates/updatelist_all_mobile.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td>
-			<td><input name="_PATCHNAME_'$PATCHNAME'_" type="submit" class="button" value="'$"Apply Patch"'">
-			'$APPLYALLPATCHBTN'
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info infowide" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td>'"$MD5SUM"'</td>
+			<td><input name="_PATCHNAME_'"$PATCHNAME"'_" type="submit" class="button" value="'$"Apply Patch"'">
+			'"$APPLYALLPATCHBTN"'
 			</td></tr>' >> /opt/karoshi/updates/updatelist.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td>
-			<td><input name="_PATCHNAME_'$PATCHNAME'_" type="submit" class="button" value="'$"Apply Patch"'">
-			'$APPLYALLPATCHBTN'
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td>
+			<td><input name="_PATCHNAME_'"$PATCHNAME"'_" type="submit" class="button" value="'$"Apply Patch"'">
+			'"$APPLYALLPATCHBTN"'
 			</td></tr>' >> /opt/karoshi/updates/updatelist_mobile.html
 
 			APPLYFLAG=yes
 		else
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all.html
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info infowide" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td>'"$MD5SUM"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all_mobile.html
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_all_mobile.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td>'$MD5SUM'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist.html
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info infowide" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td>'"$MD5SUM"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist.html
 
-			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$DESCRIPTION'</span></a></td><td>'$PATCHNAME'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_mobile.html
+			echo '<tr><td><img style="border: 0px solid ; width: 16px; height: 16px;" alt="" src="/images/warnings/karoshi_update_not_applied.png"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'"$DESCRIPTION"'</span></a></td><td>'"$PATCHNAME"'</td><td></td></tr>' >> /opt/karoshi/updates/updatelist_mobile.html
 
 		fi
-		let COUNTER2=$COUNTER2+1
-		let COUNTER3=$COUNTER3+1
+		let COUNTER2="$COUNTER2"+1
+		let COUNTER3="$COUNTER3"+1
 	fi
 
 	let COUNTER="$COUNTER"+1

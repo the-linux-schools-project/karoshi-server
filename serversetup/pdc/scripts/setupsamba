@@ -2061,7 +2061,7 @@ then
 			fi
 			if [ "$SHARENAME" = multimedia ]
 			then
-				NETGROUPS="adults,teenagers,children"
+				NETGROUPS="parents,teenagers,children"
 				SHAREPATH="/home/multimedia"
 				GROUPPERMS="7,7,5"
 				MASK="0770"
