@@ -28,10 +28,10 @@
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ########################
 #Ensure htaccess is enabled
@@ -41,17 +41,17 @@ TEXTDOMAIN=karoshi-server
 ###########################
 #make sure that mysql and apache are running
 ###########################
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-APACHESTATUS=`ps -e | grep -c $APACHEVER`
-if [ $MYSQLSTATUS = 0 ]
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+if [ "$?" != 0 ]
 then
 	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_start 1>/dev/null
 fi
-if [ $APACHESTATUS = 0 ]
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_status
+if [ "$?" != 0 ]
 then
 	echo '<ul><li>'$"Starting Apache"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
 fi
 
 
@@ -59,11 +59,11 @@ fi
 #Create joomla mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating the joomla database in mysql"'</li></ul>'
-WBPASS=`openssl rand -hex 16`
+WBPASS=$(openssl rand -hex 16)
 #####################
 #Create secret key
 #####################
-SECRETKEY=`openssl rand -hex 16`
+SECRETKEY=$(openssl rand -hex 16)
 
 #############################
 #Make sure that we know the root mysql password
@@ -71,22 +71,21 @@ SECRETKEY=`openssl rand -hex 16`
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
 ########################
 #Drop joomla database if exists, create a new one and pipe in the data
 ########################
-mysqladmin -f --password=$MYSQLPASS drop joomla 1>/dev/null 2>/dev/null
-mysqladmin --password=$MYSQLPASS create joomla 1>/dev/null
-CONNECT_STATUS=$?
-mysql --password=$MYSQLPASS joomla < /opt/karoshi/serversetup/modules/joomla/joomla.sql
+mysqladmin -f --password="$MYSQLPASS" drop joomla 1>/dev/null 2>/dev/null
+mysqladmin --password="$MYSQLPASS" create joomla 1>/dev/null
+mysql --password="$MYSQLPASS" joomla < /opt/karoshi/serversetup/modules/joomla/joomla.sql
 
 #Create joomla_user in mysql
-echo DROP USER "'"joomla_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/wbperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
-echo CREATE USER "'"joomla_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo "DROP USER 'joomla_user'@'localhost';" > /opt/karoshi/.tempdata/wbperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/wbperms.sql
+echo "CREATE USER 'joomla_user'@'localhost'  IDENTIFIED BY '$WBPASS';" > /opt/karoshi/.tempdata/wbperms.sql
 #Grant mysql permissions to joomla
-echo GRANT ALL PRIVILEGES ON joomla.\* TO "'"joomla_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
+echo "GRANT ALL PRIVILEGES ON joomla.* TO 'joomla_user'@'localhost';" >> /opt/karoshi/.tempdata/wbperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/wbperms.sql
 #rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################
 #Extract joomla
@@ -109,64 +108,64 @@ echo '<ul><li>'$"Setting permissions"'</li></ul>'
 #chmod 0660 -R /var/www/html/joomla/cache
 #chmod u+X,g+X -R /var/www/html/joomla/cache
 
-chown -R $APACHEUSER.$APACHEUSER /var/www/html/joomla
+chown -R "$APACHEUSER.$APACHEUSER" /var/www/html/joomla
 chmod -R 0640 /var/www/html/joomla
 chmod -R u+X,g+X /var/www/html/joomla 
 ######################
 #Modyfying configuration.php for joomla website
 ######################
-PASSWORDLINENO=`grep -n '$'password /var/www/html/joomla/configuration.php | cut -d: -f1`
-sed -i $PASSWORDLINENO'c'\public' ''$password'' '=' '"'"$WBPASS"'"';' /var/www/html/joomla/configuration.php
+PASSWORDLINENO=$(grep -n '$password' /var/www/html/joomla/configuration.php | cut -d: -f1)
+sed -i "$PASSWORDLINENO"'cpublic $password = '"'$WBPASS';" /var/www/html/joomla/configuration.php
 
-SECRETKEYLINENO=`grep -n '$'secret /var/www/html/joomla/configuration.php | cut -d: -f1`
-sed -i $SECRETKEYLINENO'c'\public' ''$secret'' '=' '"'"$SECRETKEY"'"';' /var/www/html/joomla/configuration.php
+SECRETKEYLINENO=$(grep -n '$secret' /var/www/html/joomla/configuration.php | cut -d: -f1)
+sed -i "$SECRETKEYLINENO"'cpublic $secret = '"'$SECRETKEY';" /var/www/html/joomla/configuration.php
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+MODCHECK=$(grep -c -w 80 /etc/shorewall/rules)
+MODCHECK2=$(grep -c -w 443 /etc/shorewall/rules)
 
 MOD_SHOREWALL=no
-if [ $MODCHECK = 0 ]
+if [ "$MODCHECK" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80"
 fi
 
-if [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="443"
 fi
 
-if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK" = 0 ] && [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80,443"
 fi
 
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'Web-Services /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	'"$PORTS"'	-#Web-Services' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
 ######################
 #Restart shorewall
 ######################
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
 	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
 
 exit
 

@@ -27,12 +27,12 @@
 [ ! -e /opt/karoshi/.tempdata/mysqlpasswordstatus ] || rm -f /opt/karoshi/.tempdata/mysqlpasswordstatus
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
-INSTALL_TYPE=$1
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
+INSTALL_TYPE="$1"
 
 if [ -z "$INSTALL_TYPE" ]
 then
@@ -46,18 +46,18 @@ fi
 ###########################
 #make sure that mysql and apache are running
 ###########################
-MYSQLSTATUS=`ps -e | grep -c $MYSQLDVER`
-APACHESTATUS=`ps -e | grep -c $APACHEVER`
-
-if [ $MYSQLSTATUS = 0 ]
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+if [ "$?" != 0 ]
 then
 	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_start 1>/dev/null
 fi
-if [ $APACHESTATUS = 0 ]
+
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_status
+if [ "$?" != 0 ]
 then
 	echo '<ul><li>'$"Starting Apache"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
 fi
 
 
@@ -65,7 +65,7 @@ fi
 #Create kanboard mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating the kanboard database in mysql"'</li></ul>'
-WBPASS=`openssl rand -hex 16`
+WBPASS=$(openssl rand -hex 16)
 
 #############################
 #Make sure that we know the root mysql password
@@ -73,22 +73,22 @@ WBPASS=`openssl rand -hex 16`
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
 ########################
 #Drop kanboard database if exists, create a new one and pipe in the data
 ########################
-mysqladmin -f --password=$MYSQLPASS drop kanboard 1>/dev/null 2>/dev/null
-mysqladmin --password=$MYSQLPASS create kanboard 1>/dev/null
-CONNECT_STATUS=`echo $?`
+mysqladmin -f --password="$MYSQLPASS" drop kanboard 1>/dev/null 2>/dev/null
+mysqladmin --password="$MYSQLPASS" create kanboard 1>/dev/null
+
 #mysql --password=$MYSQLPASS kanboard < /opt/karoshi/serversetup/modules/kanboard/kanboard.sql
 
 #Create kanboard_user in mysql
-echo DROP USER "'"kanboard_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/wbperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
-echo CREATE USER "'"kanboard_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$WBPASS"'"';' > /opt/karoshi/.tempdata/wbperms.sql
+echo "DROP USER 'kanboard_user'@'localhost';" > /opt/karoshi/.tempdata/wbperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/wbperms.sql
+echo "CREATE USER 'kanboard_user'@'localhost'  IDENTIFIED BY '$WBPASS';" > /opt/karoshi/.tempdata/wbperms.sql
 #Grant mysql permissions to kanboard
-echo GRANT ALL PRIVILEGES ON kanboard.\* TO "'"kanboard_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/wbperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/wbperms.sql
+echo "GRANT ALL PRIVILEGES ON kanboard.* TO 'kanboard_user'@'localhost';" >> /opt/karoshi/.tempdata/wbperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/wbperms.sql
 rm -f /opt/karoshi/.tempdata/wbperms.sql
 ##########################
 #Extract kanboard
@@ -99,7 +99,7 @@ tar -xzf /opt/karoshi/serversetup/modules/kanboard/kanboard.tar.gz
 
 echo '<ul><li>'$"Setting permissions for the kanboard data folder"'</li></ul>'
 
-chown -R root.$APACHEUSER /var/www/html/kanboard
+chown -R root."$APACHEUSER" /var/www/html/kanboard
 chmod -R 0640 /var/www/html/kanboard
 chmod -R u+X,g+X /var/www/html/kanboard
 chmod 0770 /var/www/html/kanboard/data
@@ -110,12 +110,12 @@ chmod 0770 /var/www/html/kanboard/data
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2`
+[[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]] && LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2)
 
 #CHANGE THIS - needs to point at the correct server.
-sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /var/www/html/kanboard/config.php
-sed -i 's/CHANGETHISLDAPPATH/'$LDAPBASE'/g' /var/www/html/kanboard/config.php
-sed -i 's/CHANGETHISPASS/'$WBPASS'/g' /var/www/html/kanboard/config.php
+sed -i 's/CHANGETHISSERVER/'"$LDAPSERVER"'/g' /var/www/html/kanboard/config.php
+sed -i 's/CHANGETHISLDAPPATH/'"$LDAPBASE"'/g' /var/www/html/kanboard/config.php
+sed -i 's/CHANGETHISPASS/'"$WBPASS"'/g' /var/www/html/kanboard/config.php
 
 if [ "$INSTALL_TYPE" = home ]
 then
@@ -125,50 +125,50 @@ fi
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+MODCHECK=$(grep -c -w 80 /etc/shorewall/rules)
+MODCHECK2=$(grep -c -w 443 /etc/shorewall/rules)
 
 MOD_SHOREWALL=no
-if [ $MODCHECK = 0 ]
+if [ "$MODCHECK" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80"
 fi
 
-if [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="443"
 fi
 
-if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK" = 0 ] && [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80,443"
 fi
 
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'Web-Services /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	'"$PORTS"'	-#Web-Services' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
 ######################
 #Restart shorewall
 ######################
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
 	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #############################
 #Ensure that apache and mysql are running on boot
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
 
 exit
 

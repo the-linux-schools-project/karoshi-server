@@ -17,6 +17,7 @@ REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 SERVER=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f4)
+FORCE=$(echo "$DATA" | cut -s -d: -f5)
 
 if [ -z "$REMOTE_USER" ]
 then
@@ -40,18 +41,49 @@ then
 	exit 101
 fi
 
+if [ -z "$FORCE" ]
+then
+	FORCE=no
+fi
+
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
+
+#Check to see if the server already has been set uo for SSL
+if [ "$FORCE" = no ]
+then
+	CONFIGCHECK=no
+	if [[ "$SERVER" = $(hostname-fqdn) ]]
+	then
+		if [ -f /etc/apache2/sites-enabled/default-ssl ]
+		then
+			CONFIGCHECK=yes
+		fi
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+		if [ -f /etc/apache2/sites-enabled/default-ssl ]
+		then
+			exit 105
+		fi
+		'
+		[ "$?" = 105 ] && CONFIGCHECK=yes
+	fi
+	if [ "$CONFIGCHECK" = yes ]
+	then
+		echo "$(date): apachesslcert - $SERVER has already been configured for an SSL certificate" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		exit
+	fi
+fi
 
 function create_cert {
 echo "$(date): apachesslcert - creating a certificate for *.$REALM from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 source /etc/default/locale
 COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
-STATE=$(cat /etc/timezone | cut -d/ -f1)
-CITY=$(cat /etc/timezone | cut -d/ -f2)
+STATE=$(cut -d/ -f1 < /etc/timezone)
+CITY=$(cut -d/ -f2 < /etc/timezone)
 NAME="$HOSTNAME"
-LOCALNAME="$ALIAS"
-SERVERNAME="$ALIAS"
+#LOCALNAME="$ALIAS"
+#SERVERNAME="$ALIAS"
 EMAILADDRESS="administrator@$REALM"
 
 rm -f /etc/ssl/root-ca/index.txt
@@ -71,7 +103,7 @@ LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 cd /etc/ssl/apache
 #Create host certificate
 echo '<ul><li>'$"Creating an SSL certificate"'</li></ul>'
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n""*."$REALM"\n""*."$REALM"\n"$EMAILADDRESS"\n"webserver"\n" | openssl req -newkey rsa:8192 -days 3650 -keyout $REALM.key -nodes -out $REALM.req
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n*.$REALM\n*.$REALM\n$EMAILADDRESS\nwebserver\n" | openssl req -newkey rsa:8192 -days 3650 -keyout "$REALM".key -nodes -out "$REALM".req
 
 chmod 0600 /etc/ssl/apache/"$REALM".key
 chmod 0600 /etc/ssl/apache/"$REALM".req
@@ -83,44 +115,43 @@ chmod 0600 /etc/ssl/apache/"$REALM".pem
 }
 
 function enable_cert {
-if [ "$SERVER" = $(hostname-fqdn) ]
+if [[ "$SERVER" = $(hostname-fqdn) ]]
 then
-
 	#Copy in config files
 	cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
 	SSLCertificateFileline=$(grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1)
-	sed -i $SSLCertificateFileline'c'\ssl_certificate" "/etc/ssl/apache2/$REALM.pem";" /etc/nginx/sites-available/default
+	sed -i "$SSLCertificateFileline"'c\ssl_certificate /etc/ssl/apache2/'"$REALM"'.pem;' /etc/nginx/sites-available/default
 
 	SSLCertificateKeyFileline=$(grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1)
-	sed -i $SSLCertificateKeyFileline'c'\ssl_certificate_key" "/etc/ssl/apache2/$REALM.key";" /etc/nginx/sites-available/default
+	sed -i "$SSLCertificateKeyFileline"'cssl_certificate_key /etc/ssl/apache2/'"$REALM"'.key;' /etc/nginx/sites-available/default
 
 	#Make sure that ssl is enabled
 	a2enmod ssl 1>/dev/null
 	#Copy in ssl config file
 	[ ! -e /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 	#Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
-	if [ `grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf` -gt 0 ]
+	if [[ $(grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf) -gt 0 ]]
 	then
 		[ ! -e /etc/apache2/sites-enabled/default-ssl.conf ] && ln -s /etc/apache2/sites-enabled/default-ssl /etc/apache2/sites-enabled/default-ssl.conf
 	fi
 
 	#Point config file at the correct certificate
-	SSLCertificateFileline=`grep -n SSLCertificateFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateFileline'c'\SSLCertificateFile" "/etc/ssl/apache/$REALM.pem /etc/apache2/sites-enabled/default-ssl
+	SSLCertificateFileline=$(grep -n SSLCertificateFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1)
+	sed -i "$SSLCertificateFileline"'cSSLCertificateFile /etc/ssl/apache/'"$REALM"'.pem' /etc/apache2/sites-enabled/default-ssl
 	#Point config file at the correct certificate
-	SSLCertificateKeyFileline=`grep -n SSLCertificateKeyFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateKeyFileline'c'\SSLCertificateKeyFile" "/etc/ssl/apache/$REALM.key /etc/apache2/sites-enabled/default-ssl
+	SSLCertificateKeyFileline=$(grep -n SSLCertificateKeyFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1)
+	sed -i "$SSLCertificateKeyFileline"'cSSLCertificateKeyFile /etc/ssl/apache/'"$REALM"'.key' /etc/apache2/sites-enabled/default-ssl
 
 	#Check which web server
-	if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
+	if [[ $(ls /etc/rc2.d | grep -c nginx) -gt 0 ]]
 	then
 		echo "<ul><li>"Restarting nginx to apply the ssl certificate"</li></ul>"
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start 1>/dev/null
 	fi
 
-	if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
+	if [[ $(ls /etc/rc2.d | grep -c apache2) -gt 0 ]]
 	then
 		echo "<ul><li>"Restarting apache to apply the ssl certificate"</li></ul>"
 		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
@@ -129,22 +160,22 @@ then
 
 else
 	#Make sure /etc/ssl/apache exists on the remote server
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	[ ! -d /etc/ssl/apache ] && mkdir -p /etc/ssl/apache
 	'
 	#Copy certificates to the correct server
-	scp /etc/ssl/apache/$REALM.key root@$SERVER:"/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	scp /etc/ssl/apache/$REALM.pem root@$SERVER:"/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/apache/"$REALM".key root@"$SERVER:/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/apache/"$REALM".pem root@"$SERVER:/etc/ssl/apache/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 
 	#Copy in config files
 	cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-available
 
 	SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'$REALM'.pem /etc/nginx/sites-available/default
+	sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'"$REALM"'.pem /etc/nginx/sites-available/default
 	SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'$REALM'.key /etc/nginx/sites-available/default
+	sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'"$REALM"'.key /etc/nginx/sites-available/default
 
 	#Make sure that ssl is enabled
 	a2enmod ssl 1>/dev/null
@@ -159,10 +190,10 @@ else
 
 	#Point config file at the correct certificate
 	SSLCertificateFileline=`grep -n SSLCertificateFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateFileline"c"\SSLCertificateFile" "/etc/ssl/apache/'$REALM'.pem /etc/apache2/sites-enabled/default-ssl
+	sed -i $SSLCertificateFileline"c"\SSLCertificateFile" "/etc/ssl/apache/'"$REALM"'.pem /etc/apache2/sites-enabled/default-ssl
 	#Point config file at the correct certificate
 	SSLCertificateKeyFileline=`grep -n SSLCertificateKeyFile /etc/apache2/sites-enabled/default-ssl | grep -v "#" | cut -d: -f1`
-	sed -i $SSLCertificateKeyFileline"c"\SSLCertificateKeyFile" "/etc/ssl/apache/'$REALM'.key /etc/apache2/sites-enabled/default-ssl
+	sed -i $SSLCertificateKeyFileline"c"\SSLCertificateKeyFile" "/etc/ssl/apache/'"$REALM"'.key /etc/apache2/sites-enabled/default-ssl
 
 	#Check which web server
 	if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
