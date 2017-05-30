@@ -30,9 +30,8 @@ then
 	done
 	#All ports checked samba4 should now be ready for use - but let's make sure we can connect to port 389
 	source /opt/karoshi/server_network/domain_information/domain_name
-	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	COUNTER=0
-	while [ $(ldapsearch -x -w "$LDAPPASS" -b "$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" CN=Users | grep -c ^dn:) = 0 ]
+	while [ $(ldapsearch -x -b "$LDAPBASE" CN=Users | grep -c ^dn:) = 0 ]
 	do
 		sleep 1
 		let COUNTER="$COUNTER"+1

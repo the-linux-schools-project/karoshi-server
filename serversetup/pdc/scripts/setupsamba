@@ -540,9 +540,6 @@ then
 	ldap server require strong auth = No
 	server signing = auto
 	allow insecure wide links = yes
-	bind interfaces only = yes
-	interfaces = 127.0.0.1 '"$SERVERIP"'
-
 
 [dfs]
 	path = /var/lib/samba/dfs
