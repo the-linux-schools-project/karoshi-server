@@ -28,23 +28,23 @@
 #This will configure dnsmasq for all additional servers in the internal and dmz zones that are not additional domain controllers.
 #dnsmasq will be configured to point at all domain controllers for failover.
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 source /opt/karoshi/server_network/domain_information/domain_name
 
 SERVER=$(echo "$1" | tr -cd "0-9.A-Za-z")
 [ -z "$SERVER" ] && SERVER=all
 
 function configure_server {
-if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/$SERVERNAME ] && [ -f /opt/karoshi/server_network/zones/"$ZONE"/servers/"$SERVERNAME" ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ ! -f "/opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/$SERVERNAME" ] && [ -f "/opt/karoshi/server_network/zones/$ZONE/servers/$SERVERNAME" ]
 	then
-		echo `date`: configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST  >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		echo "$(date): configure_dnsmasq - configuring $SERVERNAME to use $DNSIPLIST"  >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		source /opt/karoshi/serversetup/variables/distro
 		#Make sure that dnsmasq is installed
 		which dnsmasq 1> /dev/null
 		if [ $? != 0 ]
 		then
-			echo "<ul><li>'$SERVERNAME' installing dnsmasq</li></ul>"
+			echo "<ul><li>'"$SERVERNAME"' installing dnsmasq</li></ul>"
 			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 			apt-get update
 			apt-get install -y dnsmasq
@@ -60,27 +60,24 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zone
 				echo resolv-file=/etc/resolv.karoshi.conf >> /etc/dnsmasq.conf
 			fi
 			#Create /etc/resolv.karoshi.conf
-			echo domain '$REALM' > /etc/resolv.karoshi.conf
-			for DNSENTRY in '$DNSIPLIST'
+			echo domain '"$REALM"' > /etc/resolv.karoshi.conf
+			for DNSENTRY in '"$DNSIPLIST"'
 			do
 				echo nameserver $DNSENTRY >> /etc/resolv.karoshi.conf					
 			done
-			echo domain '$REALM' > /etc/resolv.conf
+			echo domain '"$REALM"' > /etc/resolv.conf
 			echo nameserver 127.0.0.1 >> /etc/resolv.conf
 			#Make sure that dnsmasq is set to start on boot
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/dnsmasq
-			echo "<ul><li>'$SERVERNAME' - '$"restarting"' dnsmasq</li></ul>"
+			echo "<ul><li>'"$SERVERNAME"' - '$"restarting"' dnsmasq</li></ul>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_stop 1>/dev/null
 			sleep 1
-			echo "<br>"
 			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq_start 1>/dev/null
-			echo "<br>"
-
 		fi
 		'
 		#Add in a flag for dnsmasq service
-		[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-		echo > /opt/karoshi/server_network/servers/$SERVERNAME/dnsmasq
+		[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+		echo > /opt/karoshi/server_network/servers/"$SERVERNAME"/dnsmasq
 	fi
 }
 
@@ -88,33 +85,33 @@ if [ $SERVERNAME != `hostname-fqdn` ] && [ ! -f /opt/karoshi/server_network/zone
 for ZONE in internal dmz
 do
 	DNSIPLIST=""
-	if [ -d /opt/karoshi/server_network/zones/$ZONE/ ]
+	if [ -d /opt/karoshi/server_network/zones/"$ZONE"/ ]
 	then
 		if [ $ZONE = internal ]
 		then
-			DNSSERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/`"
+			DNSSERVERLIST="$(hostname-fqdn) $([ -d /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/)"
 		else
-			if [ -d /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/ ]
+			if [ -d /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/ ]
 			then
-				DNSSERVERLIST="`ls -1 /opt/karoshi/server_network/zones/$ZONE/additional_domain_controllers/`"
+				DNSSERVERLIST="$(ls -1 /opt/karoshi/server_network/zones/"$ZONE"/additional_domain_controllers/)"
 			else
-				DNSSERVERLIST=`hostname-fqdn`
+				DNSSERVERLIST=$(hostname-fqdn)
 			fi
 		fi
 		#Create an ip list of servers
 		for DNSSERVER in $DNSSERVERLIST
 		do
-			DNSIP=`net lookup "$DNSSERVER"`
+			DNSIP=$(net lookup "$DNSSERVER")
 			DNSIPLIST="$DNSIPLIST $DNSIP"
 
 		done
-		DNSIPLIST=`echo $DNSIPLIST | sed 's/^ //g'`
+		DNSIPLIST=$(echo "$DNSIPLIST" | sed 's/^ //g')
 
 		#Create list of DNS servers for the clients to use
-		[ "$ZONE" = internal ] && echo $DNSIPLIST | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers
+		[ "$ZONE" = internal ] && echo "$DNSIPLIST" | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers
 		if [ "$SERVER" = all ]
 		then 
-			for SERVERNAME in `ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/`
+			for SERVERNAME in $(ls -1 /opt/karoshi/server_network/zones/"$ZONE"/servers/)
 			do
 				configure_server
 			done

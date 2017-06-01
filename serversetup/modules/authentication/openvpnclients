@@ -16,7 +16,7 @@ do
 		#Check that tunnel is up
 		[ $(ifconfig | grep -c ^tun) = 0 ] && exit 105
 		#Make sure that the firewall rules are up for the tunnel
-		/opt/karoshi/useful\ scripts/configure_vpn_rules
+		"/opt/karoshi/useful scripts/configure_vpn_rules"
 		'
 		TUNNELSTATUS="$?"
 		#Start up ssh tunnel
@@ -42,7 +42,7 @@ do
 				sleep 1
 				let COUNTER="$COUNTER"+1
 			done
-			"/opt/karoshi/useful\ scripts/configure_vpn_rules"
+			"/opt/karoshi/useful scripts/configure_vpn_rules"
 			exit
 			'
 			if [ "$?" = 0 ]
