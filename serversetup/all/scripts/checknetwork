@@ -24,7 +24,7 @@
 #Website: http://www.karoshi.org.uk
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 
-SERVERTYPE=$1
+SERVERTYPE="$1"
 
 if [ -z "$SERVERTYPE" ]
 then
@@ -42,7 +42,7 @@ fi
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
 function inputwarning {
@@ -51,9 +51,9 @@ yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/sma
 
 function getcardlist {
 #Get network card list
-NICARRAY=( `ls /sys/class/net | sed 's/lo//g'` )
-NIC_COUNT=${#NICARRAY[@]}
-if [ $NIC_COUNT = 0 ]
+NICARRAY=( $(ls /sys/class/net | sed 's/lo//g') )
+NIC_COUNT="${#NICARRAY[@]}"
+if [ "$NIC_COUNT" = 0 ]
 then
 	ERRORMSG="$"No network cards have been detected.""
 	inputwarning
@@ -66,13 +66,13 @@ fi
 function show_nic_choice {
 YADNICS=""
 COUNTER=0
-while [ $COUNTER -lt $NIC_COUNT ] 
+while [ "$COUNTER" -lt "$NIC_COUNT" ] 
 do
-	YADNICS="$YADNICS `echo --field=${NICARRAY[$COUNTER]}:chk`" 
-	let COUNTER=$COUNTER+1
+	YADNICS="$YADNICS --field=${NICARRAY[$COUNTER]}:chk"
+	let COUNTER="$COUNTER"+1
 done
 
-CARDCHOICE=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."'\n '$YADNICS'' --button=OK`
+CARDCHOICE=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."'\n '"$YADNICS"'' --button=OK)
 
 #Check which cards have been selected
 
@@ -80,18 +80,18 @@ COUNTER=0
 COUNTER2=1
 SCARDCOUNT=0
 CARDSELECTION=""
-while [ $COUNTER -lt $NIC_COUNT ] 
+while [ $COUNTER -lt "$NIC_COUNT" ] 
 do
-	if [ `echo $CARDCHOICE | cut -d"|" -f $COUNTER2 | grep -c TRUE` = 1 ]
+	if [[ $(echo "$CARDCHOICE" | cut -d"|" -f "$COUNTER2" | grep -c TRUE) = 1 ]]
 	then
 		CARDSELECTION="$CARDSELECTION,${NICARRAY[$COUNTER]}"
 		let SCARDCOUNT=$SCARDCOUNT+1
 	fi
-	let COUNTER=$COUNTER+1
-	let COUNTER2=$COUNTER2+1
+	let COUNTER="$COUNTER"+1
+	let COUNTER2="$COUNTER2"+1
 
 done
-CARDSELECTION=`echo $CARDSELECTION | sed 's/^,//g'`
+CARDSELECTION=$(echo "$CARDSELECTION" | sed 's/^,//g')
 }
 
 function checkcardselection {
@@ -122,21 +122,21 @@ then
 	fi
 fi
 
-if [ $SCARDCOUNT -gt 1 ]
+if [ "$SCARDCOUNT" -gt 1 ]
 then
 	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text '<span font_weight="bold">'$"Bond Mode Options"'</span>\n\n<span font_weight="bold" foreground="red">*</span> '$"Requires Network switch configuration"'\n\n0: balance-rr <span font_weight="bold" foreground="red">*</span>\n1: active-backup\n4: 802.3ad <span font_weight="bold" foreground="red">*</span>\n5:balance-tlb\n6: balance-alb\n' --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4!mode5!mode6' --button="gtk-ok"`
 else
-	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null`
+	DATA=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null)
 fi
 
-NAMECUSTOM=`echo $DATA | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr 'A-Z' 'a-z'`
-TCPIPCUSTOM=`echo $DATA | cut -d"|" -f2 | tr -cd '0-9./n'`
-NETMASKCUSTOM=`echo $DATA | cut -d"|" -f3 | tr -cd '0-9./n'`
-NAMESERVERCUSTOM=`echo $DATA | cut -d"|" -f4 | tr -cd '0-9./n'`
-GATEWAYCUSTOM=`echo $DATA | cut -d"|" -f5 | tr -cd '0-9./n'`
-if [ $SCARDCOUNT -gt 1 ]
+NAMECUSTOM=$(echo "$DATA" | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr "[:upper:]" "[:lower:]")
+TCPIPCUSTOM=$(echo "$DATA" | cut -d"|" -f2 | tr -cd '0-9./n')
+NETMASKCUSTOM=$(echo "$DATA" | cut -d"|" -f3 | tr -cd '0-9./n')
+NAMESERVERCUSTOM=$(echo "$DATA" | cut -d"|" -f4 | tr -cd '0-9./n')
+GATEWAYCUSTOM=$(echo "$DATA" | cut -d"|" -f5 | tr -cd '0-9./n')
+if [ "$SCARDCOUNT" -gt 1 ]
 then
-	BONDMODE=`echo $DATA | cut -d"|" -f6 | tr -cd 'a-z0-9./n'`
+	BONDMODE=$(echo "$DATA" | cut -d"|" -f6 | tr -cd 'a-z0-9./n')
 else
 	BONDMODE=notset
 fi
@@ -145,12 +145,12 @@ fi
 
 function confirmchoice {
 BONDMSG=""
-[ $SCARDCOUNT -gt 1 ] && BONDMSG='<span font_weight="bold">\nBond Mode</span>\t'$BONDMODE''
-DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n\n<span font_weight="bold">'$"Server name"'</span>\t'$NAMECUSTOM'\n\n<span font_weight="bold">'$"TCPIP"'</span>\t\t'$TCPIPCUSTOM'\n\n<span font_weight="bold">'$"Netmask"'</span>\t\t'$NETMASKCUSTOM'\n\n<span font_weight="bold">'$"DNS Server"'</span>\t'$NAMESERVERCUSTOM'\n\n<span font_weight="bold">'$"Gateway"'</span>\t\t'$GATEWAYCUSTOM'\n\n<span font_weight="bold">'$"Card selection"'</span>\t'$CARDSELECTION''"$BONDMSG"'\n\n' 2>/dev/null`
-CHOICE=$?
-[ $CHOICE = 0 ] && CHOICE=commit
-[ $CHOICE = 1 ] && CHOICE=configure
+[ "$SCARDCOUNT" -gt 1 ] && BONDMSG='<span font_weight="bold">\nBond Mode</span>\t'"$BONDMODE"''
+DATA=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
+    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n\n<span font_weight="bold">'$"Server name"'</span>\t'"$NAMECUSTOM"'\n\n<span font_weight="bold">'$"TCPIP"'</span>\t\t'"$TCPIPCUSTOM"'\n\n<span font_weight="bold">'$"Netmask"'</span>\t\t'"$NETMASKCUSTOM"'\n\n<span font_weight="bold">'$"DNS Server"'</span>\t'"$NAMESERVERCUSTOM"'\n\n<span font_weight="bold">'$"Gateway"'</span>\t\t'"$GATEWAYCUSTOM"'\n\n<span font_weight="bold">'$"Card selection"'</span>\t'"$CARDSELECTION"''"$BONDMSG"'\n\n' 2>/dev/null)
+CHOICE="$?"
+[ "$CHOICE" = 0 ] && CHOICE=commit
+[ "$CHOICE" = 1 ] && CHOICE=configure
 }
 
 function check_tcpip {
@@ -158,14 +158,14 @@ INPUTCHECK=ok
 #Check dots
 if [ ! -z "$IPDATA" ]
 then
-	if [ `echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	if [[ $(echo "$IPDATA" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]]
 	then
 		GETSETTINGS=yes
 		INPUTCHECK=fail
 	fi
 	#Check that no number is greater than 255
-	HIGHESTNUMBER=`echo $IPDATA | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-	if [ $HIGHESTNUMBER -gt 255 ]
+	HIGHESTNUMBER=$(echo "$IPDATA" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
+	if [ "$HIGHESTNUMBER" -gt 255 ]
 	then
 		GETSETTINGS=yes
 		INPUTCHECK=fail
@@ -178,8 +178,8 @@ fi
 
 function check_gateway {
 INPUTCHECK=ok
-ZONEINFO1=`ipcalc -n $TCPIPCUSTOM/$NETMASKCUSTOM | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
-ZONEINFO2=`ipcalc -n $GATEWAYCUSTOM/$NETMASKCUSTOM | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+ZONEINFO1=$(ipcalc -n "$TCPIPCUSTOM"/"$NETMASKCUSTOM" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
+ZONEINFO2=$(ipcalc -n "$GATEWAYCUSTOM"/"$NETMASKCUSTOM" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 
 if [[ "$ZONEINFO1" != "$ZONEINFO2" ]]
 then
@@ -189,26 +189,26 @@ fi
 }
 
 CHOICE=configure
-while [ $CHOICE = configure ]
+while [ "$CHOICE" = configure ]
 do
 
 	getcardlist
-	if [ $NIC_COUNT -gt 1 ]
+	if [ "$NIC_COUNT" -gt 1 ]
 	then
 		SHOW_NICKS=yes
-		while [ $SHOW_NICKS = yes ]
+		while [ "$SHOW_NICKS" = yes ]
 		do
 			show_nic_choice
 			checkcardselection
 		done
 	else
 		SCARDCOUNT=1
-		CARDSELECTION=${NICARRAY[0]}
+		CARDSELECTION="${NICARRAY[0]}"
 	fi
 
 	INPUTCHECK=getsettings
 	GETSETTINGS=yes
-	while [ $GETSETTINGS = yes ]
+	while [ "$GETSETTINGS" = yes ]
 	do
 		GETSETTINGS=no
 		getnetworksettings
@@ -229,29 +229,29 @@ do
 			INPUTCHECK=ok
 			IPDATA=$TCPIPCUSTOM
 			check_tcpip
-			[ $INPUTCHECK = fail ] && TCPIPCUSTOM=""
-			IPDATA=$NETMASKCUSTOM
+			[ "$INPUTCHECK" = fail ] && TCPIPCUSTOM=""
+			IPDATA="$NETMASKCUSTOM"
 			check_tcpip
-			[ $INPUTCHECK = fail ] && NETMASKCUSTOM=""
-			IPDATA=$NAMESERVERCUSTOM
+			[ "$INPUTCHECK" = fail ] && NETMASKCUSTOM=""
+			IPDATA="$NAMESERVERCUSTOM"
 			check_tcpip
-			[ $INPUTCHECK = fail ] && NAMESERVERCUSTOM=""
-			IPDATA=$GATEWAYCUSTOM
+			[ "$INPUTCHECK" = fail ] && NAMESERVERCUSTOM=""
+			IPDATA="$GATEWAYCUSTOM"
 			check_tcpip
 			[ $INPUTCHECK = fail ] && GATEWAYCUSTOM=""
 			#Check that the gateway is in the same range as the server ip.
-			if [ $GETSETTINGS = no ]
+			if [ "$GETSETTINGS" = no ]
 			then
 				check_gateway
-				[ $INPUTCHECK = fail ] && GATEWAYCUSTOM=""
+				[ "$INPUTCHECK" = fail ] && GATEWAYCUSTOM=""
 			fi
-			if [ $GETSETTINGS = yes ]
+			if [ "$GETSETTINGS" = yes ]
 			then
 				ERRORMSG=$"Incorrect network setting have been entered."
 				inputwarning
 			fi
 		fi
-		if [ $SCARDCOUNT -gt 1 ]
+		if [ "$SCARDCOUNT" -gt 1 ]
 		then
 			#Check that a bond mode has been selected
 			if [ -z "$BONDMODE" ] 
@@ -272,7 +272,7 @@ done
 
 touch /opt/karoshi/.tempdata/network_set
 
-if [ $SERVERTYPE = pdc ]
+if [ "$SERVERTYPE" = pdc ]
 then
 	#Create script to update arp table on boot
 	#ln -s /opt/karoshi/serversetup/pdc/"useful scripts"/update_server_arp /etc/rc2.d/S99update_server_arp
@@ -281,9 +281,9 @@ then
 	then
 		mkdir -p /var/lib/samba/netlogon/domain_information/
 	fi
-	echo $TCPIPCUSTOM | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers	
+	echo "$TCPIPCUSTOM" | sed 's/ /\n/g' > /var/lib/samba/netlogon/domain_information/dns_servers	
 fi
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/configurenetwork $NAMECUSTOM $TCPIPCUSTOM $NETMASKCUSTOM $NAMESERVERCUSTOM $GATEWAYCUSTOM $SERVERTYPE $CARDSELECTION $BONDMODE
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/configurenetwork "$NAMECUSTOM" "$TCPIPCUSTOM" "$NETMASKCUSTOM" "$NAMESERVERCUSTOM" "$GATEWAYCUSTOM" "$SERVERTYPE" "$CARDSELECTION" "$BONDMODE"
 exit 103
 

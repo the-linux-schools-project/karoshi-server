@@ -100,7 +100,7 @@ LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 if [ "$AUTHTYPE" = adc ] || [ "$AUTHTYPE" = rodc ]
 then
-	echo "<ul><li>$(hostname-fqdn) - "'$"Converting DNS to use internal dns"</li></ul>'
+	echo "<ul><li>$(hostname-fqdn) - "$"Converting DNS to use internal dns""</li></ul>"
 	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_internal 1>/dev/null
 fi
 

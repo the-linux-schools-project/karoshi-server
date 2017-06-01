@@ -21,39 +21,39 @@
 #
 #Website: http://www.linuxschools.com
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: setupopenvpn - incorrect number of arguments."<br>"
+	echo "$(date): setupopenvpn - incorrect number of arguments.<br>"
 	exit 101
 fi
 read -t 3 DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-/')
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: setupopenvpn - Blank remote user."<br>"
-	echo `date`: setupopenvpn - Blank remote user from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): setupopenvpn - Blank remote user.<br>"
+	echo "$(date): setupopenvpn - Blank remote user from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 2
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: setupopenvpn - Blank remote tcpip address."<br>"
-	echo `date`: setupopenvpn - Blank remote tcpip address by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): setupopenvpn - Blank remote tcpip address.<br>"
+	echo "$(date): setupopenvpn - Blank remote tcpip address by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 2
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: setupopenvpn - Blank servername."<br>"
-	echo `date`: setupopenvpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): setupopenvpn - Blank servername.<br>"
+	echo "$(date): setupopenvpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 2
 	exit 101
 fi
@@ -63,29 +63,29 @@ source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get realm information
-HOSTNAMEFQDN=$HOSTNAME.$REALM
-REALM2=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+HOSTNAMEFQDN="$HOSTNAME.$REALM"
+REALM2=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 if [ -f /etc/hostname-fqdn ]
 then
-cat /etc/hostname-fqdn
+	cat /etc/hostname-fqdn
 else
-exit 101
+	exit 101
 fi
-'`
+')
 
-REALM2=`echo $REALM2 | sed 's/^'$SERVERNAME'.//g'`
+REALM2=$(echo "$REALM2" | sed 's/^'"$SERVERNAME"'.//g')
 
 [ $? = 101 ] && exit 101
 
 
-SERVERNAME=`echo $SERVERNAME.$REALM2`
+SERVERNAME="$SERVERNAME.$REALM2"
 
 function get_tunnel_details {
-[ ! -d /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME
+[ ! -d /opt/karoshi/server_network/vpn_tunnels/clients/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/vpn_tunnels/clients/"$SERVERNAME"
 #Get ip address to use for the tunnel
 
-MAINSERVERIP=`net lookup $HOSTNAMEFQDN`
-SERVERNAMEIP=`net lookup $SERVERNAME`
+MAINSERVERIP=$(net lookup "$HOSTNAMEFQDN")
+SERVERNAMEIP=$(net lookup "$SERVERNAME")
 TUNNELIP1=10.8.1.0
 TUNNELIP_SERVER=10.8.1.1
 
@@ -95,75 +95,75 @@ then
 	echo 10.8.1.2 > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
 fi
 
-if [ -f /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip ]
+if [ -f /opt/karoshi/server_network/vpn_tunnels/clients/"$SERVERNAME"/tunnel_ip ]
 then
-	TUNNELIP_CLIENT=`cat /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip`
+	TUNNELIP_CLIENT=$(cat /opt/karoshi/server_network/vpn_tunnels/clients/"$SERVERNAME"/tunnel_ip)
 else
-	TUNNELIP_CLIENT=`cat /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip`
-	echo $TUNNELIP_CLIENT > /opt/karoshi/server_network/vpn_tunnels/clients/$SERVERNAME/tunnel_ip
+	TUNNELIP_CLIENT=$(cat /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip)
+	echo "$TUNNELIP_CLIENT" > /opt/karoshi/server_network/vpn_tunnels/clients/"$SERVERNAME"/tunnel_ip
 	#Update next tunnel ip
-	FORTH_NUM=`echo $TUNNELIP_CLIENT | cut -d. -f4`
-	let FORTH_NUM=$FORTH_NUM+1
-	echo 10.8.1.$FORTH_NUM > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
+	FORTH_NUM=$(echo "$TUNNELIP_CLIENT" | cut -d. -f4)
+	let FORTH_NUM="$FORTH_NUM"+1
+	echo 10.8.1."$FORTH_NUM" > /opt/karoshi/server_network/vpn_tunnels/next_tunnel_ip
 fi
 }
 
 function configure_shorewall {
 #Configure shorewall to use the tunnel inteface on the vpn server
 MODCHECK=0
-if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
+if [[ $(grep -c -w tun+ /etc/shorewall/interfaces) = 0 ]]
 then
 	#Configure shorewall for tunnel
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
-	sed -i $LINENUM"c"\net"	"tun+"	"detect /etc/shorewall/interfaces
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
+	LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1)
+	sed -i "$LINENUM""cnet	tun+	detect" /etc/shorewall/interfaces
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/interfaces
 	MODCHECK=1
 fi
 
-if [ `grep -c -w VPN-Tunnel /etc/shorewall/rules` = 0 ]
+if [[ $(grep -c -w VPN-Tunnel /etc/shorewall/rules) = 0 ]]
 then
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1194"	"-"#"VPN-Tunnel /etc/shorewall/rules
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM""cACCEPT	net	fw	udp	1194	-#VPN-Tunnel" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	MODCHECK=1
 fi
 
-if [ $MODCHECK = 1 ]
+if [ "$MODCHECK" = 1 ]
 then
 	#Restart shorewall
-	echo "<ul><li>"$HOSTNAME - $"Restarting shorewall""</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo "<ul><li>$HOSTNAME - "$"Restarting shorewall""</li></ul>"
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Configure shorewall to use the tunnel inteface on the vpn client
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 MODCHECK=0
 source /opt/karoshi/serversetup/variables/distro
 #Configure shorewall for tun+
-if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
+if [[ $(grep -c -w tun+ /etc/shorewall/interfaces) = 0 ]]
 then
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1`
-	sed -i $LINENUM"c"\net"	"tun+"	"detect /etc/shorewall/interfaces
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
+	LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/interfaces | cut -d: -f1)
+	sed -i "$LINENUM""cnet	tun+	detect" /etc/shorewall/interfaces
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/interfaces
 	MODCHECK=1
 fi
 
 if [ $MODCHECK = 1 ]
 then
 	#Restart shorewall
-	echo "<ul><li>"$HOSTNAME - '$"Restarting shorewall"'"</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	echo "<ul><li>$HOSTNAME - "'$"Restarting shorewall"'"</li></ul>"
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 '
 }
 
 #Squirt data into cert generators
 function pipe_data {
-echo -e ""US"\n"Karoshi"\n"Karoshi"\n"Karoshi"\n"$SERVER"\n"$SERVER"\n"$SERVER"\n"$SERVER@$REALM"\n"$OPENVPNPASS"\n"Karoshi"\n"
+echo -e "US\nKaroshi\nKaroshi\nKaroshi\n$SERVER\n$SERVER\n$SERVER\n$SERVER@$REALM\n$OPENVPNPASS\nKaroshi\n"
 sleep 1
-echo -e ""y"\n"y"\n"
+echo -e "y\ny\n"
 }
 
 function create_secret {
@@ -173,25 +173,12 @@ if [ ! -f /etc/openvpn/openvpn.secret ]
 then
 	touch /etc/openvpn/openvpn.secret
 	chmod 0600 /etc/openvpn/openvpn.secret
-	RANGE=61
-	COUNTER=1
-	while [ $COUNTER -lt 16 ]
-	do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-		while [ ${row[$COUNTER]} = 0 ]
-		do
-		row[$COUNTER]=$RANDOM
-		let "row[$COUNTER] %= $RANGE"
-		done
-		CHARACTER[$COUNTER]=`sed -n ${row[$COUNTER]},1p /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet`
-		let COUNTER=COUNTER+1
-	done
-	OPENVPNPASS=`echo ${CHARACTER[@]:0} | sed 's/ //g'`
-	echo $OPENVPNPASS > /etc/openvpn/openvpn.secret
+	OPENVPNPASS=$(openssl rand -hex 16)
+	echo "$OPENVPNPASS" > /etc/openvpn/openvpn.secret
+else
+	#Get openvpn password
+	OPENVPNPASS=$(sed -n 1,1p /etc/openvpn/openvpn.secret)
 fi
-#Get openvpn password
-OPENVPNPASS=`sed -n 1,1p /etc/openvpn/openvpn.secret`
 }
 
 function configure_openvpn_server {
@@ -217,18 +204,18 @@ cd /etc/openvpn/easy-rsa
 source vars 1>/dev/null 2>/dev/null
 
 #Generate master certificate authority and key
-if [ ! -f /etc/openvpn/$HOSTNAMEFQDN.key ] || [ ! -f /etc/openvpn/$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/ca_$HOSTNAMEFQDN.crt ] || [ ! -f /etc/openvpn/dh2048.pem ]
+if [ ! -f /etc/openvpn/"$HOSTNAMEFQDN".key ] || [ ! -f /etc/openvpn/"$HOSTNAMEFQDN".crt ] || [ ! -f /etc/openvpn/ca_"$HOSTNAMEFQDN".crt ] || [ ! -f /etc/openvpn/dh2048.pem ]
 then
 	echo '<ul><li>'$"Generating certificate authority and key"'</li></ul>'
 
 	./clean-all
-	echo -e ""US"\n"Karoshi"\n"Karoshi"\n"Karoshi"\n"$HOSTNAME"\n"$HOSTNAME"\n"$HOSTNAME@$REALM"\n" | ./build-ca 1>/dev/null 2>/dev/null
+	echo -e "US\nKaroshi\nKaroshi\nKaroshi\n$HOSTNAME\n$HOSTNAME\n$HOSTNAME@$REALM\n" | ./build-ca 1>/dev/null 2>/dev/null
 
 	#Build Server Certificates
 	echo '<ul><li>'$"Generating certificate and private key"'</li></ul>'
 	sleep 1
-	SERVER=$HOSTNAMEFQDN
-	pipe_data | ./build-key-server $HOSTNAMEFQDN 1>/dev/null 2>/dev/null
+	SERVER="$HOSTNAMEFQDN"
+	pipe_data | ./build-key-server "$HOSTNAMEFQDN" 1>/dev/null 2>/dev/null
 
 	#Generate Diffie Hellmam parameters
 	echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time"'</li></ul>'
@@ -237,13 +224,13 @@ then
 
 	#Copy keys to /etc/openvpn
 	echo '<ul><li>/etc/openvpn - '$"Copying keys"'</li></ul>'
-	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.key /etc/openvpn/
-	cp /etc/openvpn/easy-rsa/keys/$HOSTNAMEFQDN.crt /etc/openvpn/
-	cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_$HOSTNAMEFQDN.crt
+	cp /etc/openvpn/easy-rsa/keys/"$HOSTNAMEFQDN".key /etc/openvpn/
+	cp /etc/openvpn/easy-rsa/keys/"$HOSTNAMEFQDN".crt /etc/openvpn/
+	cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca_"$HOSTNAMEFQDN".crt
 	cp /etc/openvpn/easy-rsa/keys/dh2048.pem /etc/openvpn/
 
-	chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.key
-	chmod 0400 /etc/openvpn/$HOSTNAMEFQDN.crt
+	chmod 0400 /etc/openvpn/"$HOSTNAMEFQDN".key
+	chmod 0400 /etc/openvpn/"$HOSTNAMEFQDN".crt
 
 fi
 
@@ -258,59 +245,59 @@ then
 	sed -i "s/cert server.crt//g" /etc/openvpn/server.conf
 	sed -i "s/key server.key  # This file should be kept secret//g" /etc/openvpn/server.conf
 
-	[ `grep -c "^cert $HOSTNAMEFQDN.crt" /etc/openvpn/server.conf` = 0 ] && echo cert $HOSTNAMEFQDN.crt >> /etc/openvpn/server.conf
-	[ `grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAMEFQDN.key >> /etc/openvpn/server.conf
+	[[ $(grep -c "^cert $HOSTNAMEFQDN.crt" /etc/openvpn/server.conf) = 0 ]] && echo cert "$HOSTNAMEFQDN".crt >> /etc/openvpn/server.conf
+	[[ $(grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf) = 0 ]] && echo key "$HOSTNAMEFQDN".key >> /etc/openvpn/server.conf
 
-	[ `grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf` = 0 ] && echo key $HOSTNAMEFQDN.key >> /etc/openvpn/server.conf
+	[[ $(grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf) = 0 ]] && echo key "$HOSTNAMEFQDN".key >> /etc/openvpn/server.conf
 
 	sed -i "s/ca ca.crt/ca ca_$HOSTNAMEFQDN.crt/g" /etc/openvpn/server.conf
 
-	[ `grep -c "client-config-dir ccd"` = 0 ] && echo client-config-dir ccd >> /etc/openvpn/server.conf
+	[[ $(grep -c "client-config-dir ccd") = 0 ]] && echo client-config-dir ccd >> /etc/openvpn/server.conf
 fi
 
 #Create custom client config
 [ ! -d /etc/openvpn/ccd ] && mkdir /etc/openvpn/ccd
-echo ifconfig-push $TUNNELIP_CLIENT $TUNNELIP1 > /etc/openvpn/ccd/$SERVERNAME
+echo ifconfig-push "$TUNNELIP_CLIENT" "$TUNNELIP1" > /etc/openvpn/ccd/"$SERVERNAME"
 
 #Restart service
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
 #Make sure service runs on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
 
 }
 
 function configure_openvpn_client {
 
 #Create client certificates
-echo '<ul><li>'$SERVERNAME' - '$"Generating client certificate"'</li></ul>'
-SERVER=$SERVERNAME
-pipe_data | ./build-key $SERVERNAME 1>/dev/null 2>/dev/null
+echo '<ul><li>'"$SERVERNAME"' - '$"Generating client certificate"'</li></ul>'
+SERVER="$SERVERNAME"
+pipe_data | ./build-key "$SERVERNAME" 1>/dev/null 2>/dev/null
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 [ ! -d /etc/openvpn ] && mkdir -p /etc/openvpn
 cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/
 
 #Delete existing cerificates
-[ -f /etc/openvpn/easy-rsa/keys/'$SERVERNAME'.crt ] && rm -f /etc/openvpn/easy-rsa/keys/'$SERVERNAME'.crt
-[ -f /etc/openvpn/easy-rsa/keys/'$SERVERNAME'.key ] && rm -f /etc/openvpn/easy-rsa/keys/'$SERVERNAME'.key
-[ -f /etc/openvpn/easy-rsa/keys/ca_'$SERVERNAME'.crt ] && rm -f /etc/openvpn/easy-rsa/keys/ca_'$SERVERNAME'.crt
+[ -f /etc/openvpn/easy-rsa/keys/'"$SERVERNAME"'.crt ] && rm -f /etc/openvpn/easy-rsa/keys/'"$SERVERNAME"'.crt
+[ -f /etc/openvpn/easy-rsa/keys/'"$SERVERNAME"'.key ] && rm -f /etc/openvpn/easy-rsa/keys/'"$SERVERNAME"'.key
+[ -f /etc/openvpn/easy-rsa/keys/ca_'"$SERVERNAME"'.crt ] && rm -f /etc/openvpn/easy-rsa/keys/ca_'"$SERVERNAME"'.crt
 '
 #Copy in new certificates
 
-scp /etc/openvpn/ca_$HOSTNAMEFQDN.crt root@$SERVERNAME:"/etc/openvpn/ca_$HOSTNAMEFQDN.crt"
-scp /etc/openvpn/easy-rsa/keys/$SERVERNAME.crt root@$SERVERNAME:"/etc/openvpn/"
-scp /etc/openvpn/easy-rsa/keys/$SERVERNAME.key root@$SERVERNAME:"/etc/openvpn/"
+scp /etc/openvpn/ca_"$HOSTNAMEFQDN".crt root@"$SERVERNAME:/etc/openvpn/ca_$HOSTNAMEFQDN.crt"
+scp /etc/openvpn/easy-rsa/keys/"$SERVERNAME".crt root@"$SERVERNAME:/etc/openvpn/"
+scp /etc/openvpn/easy-rsa/keys/"$SERVERNAME".key root@"$SERVERNAME:/etc/openvpn/"
 
 #Delete keys from the vpn server
-rm -f /etc/openvpn/easy-rsa/keys/$SERVERNAME.crt
-rm -f /etc/openvpn/easy-rsa/keys/$SERVERNAME.key
+rm -f /etc/openvpn/easy-rsa/keys/"$SERVERNAME".crt
+rm -f /etc/openvpn/easy-rsa/keys/"$SERVERNAME".key
 open_firewall_port
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 
-chmod 0400 /etc/openvpn/'$SERVERNAME'.crt
-chmod 0400 /etc/openvpn/'$SERVERNAME'.key
+chmod 0400 /etc/openvpn/'"$SERVERNAME"'.crt
+chmod 0400 /etc/openvpn/'"$SERVERNAME"'.key
 
 #Create client config file
 source /opt/karoshi/serversetup/variables/distro
@@ -325,42 +312,42 @@ sed -i "s/cert client.crt//g" /etc/openvpn/client.conf
 sed -i "s/key client.key//g" /etc/openvpn/client.conf
 sed -i "s/^nobind//g" /etc/openvpn/client.conf
 
-[ `grep -c "^ca ca_'$HOSTNAMEFQDN'.crt" /etc/openvpn/client.conf` = 0 ] && echo ca ca_'$HOSTNAMEFQDN'.crt >> /etc/openvpn/client.conf
-[ `grep -c "^cert '$SERVERNAME'.crt" /etc/openvpn/client.conf` = 0 ] && echo cert '$SERVERNAME'.crt >> /etc/openvpn/client.conf
-[ `grep -c "^key '$SERVERNAME'.key" /etc/openvpn/client.conf` = 0 ] && echo key '$SERVERNAME'.key >> /etc/openvpn/client.conf
-[ `grep -c "^remote '$MAINSERVERIP' 1194" /etc/openvpn/client.conf` = 0 ] && echo remote '$MAINSERVERIP' 1194 >> /etc/openvpn/client.conf
+[ `grep -c "^ca ca_'"$HOSTNAMEFQDN"'.crt" /etc/openvpn/client.conf` = 0 ] && echo ca ca_'"$HOSTNAMEFQDN"'.crt >> /etc/openvpn/client.conf
+[ `grep -c "^cert '"$SERVERNAME"'.crt" /etc/openvpn/client.conf` = 0 ] && echo cert '"$SERVERNAME"'.crt >> /etc/openvpn/client.conf
+[ `grep -c "^key '"$SERVERNAME"'.key" /etc/openvpn/client.conf` = 0 ] && echo key '"$SERVERNAME"'.key >> /etc/openvpn/client.conf
+[ `grep -c "^remote '"$MAINSERVERIP"' 1194" /etc/openvpn/client.conf` = 0 ] && echo remote '"$MAINSERVERIP"' 1194 >> /etc/openvpn/client.conf
 
 #Add entries to /etc/hosts
-if [ `grep -c '$SERVERNAME' /etc/hosts` = 0 ]
+if [ `grep -c '"$SERVERNAME"' /etc/hosts` = 0 ]
 then
-	echo '$SERVERNAMEIP'"	"'$SERVERNAME'"	"$HOSTNAME >> /etc/hosts
+	echo '"$SERVERNAMEIP"'"	"'"$SERVERNAME"'"	"$HOSTNAME >> /etc/hosts
 fi
 
 #Restart openvpn client
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop 1>/dev/null
 sleep 2
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
 #Make sure service runs on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
 
 sleep 2
 
 #Check that tunnel is up - this can take some time
 COUNTER=1
-while [ $COUNTER -lt 20 ]
+while [ "$COUNTER" -lt 20 ]
 do
-	echo "<ul><li>"'$SERVERNAME' - '$"checking openvpn tunnnel"' - $COUNTER"</li></ul>"
-	[ `ifconfig | grep -c tun'$TUNVAL'` -gt 0 ] && break
+	echo "<ul><li>"'"$SERVERNAME"' - '$"checking openvpn tunnnel"' - "$COUNTER</li></ul>"
+	[ $(ifconfig | grep -c tun'"$TUNVAL"') -gt 0 ] && break
 	sleep 1
 
-	if [ $COUNTER = 8 ]
+	if [ "$COUNTER" = 8 ]
 	then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
 	fi
 
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
-[ `ifconfig | grep -c tun'$TUNVAL'` = 0 ] && exit 105
+[ $(ifconfig | grep -c tun'"$TUNVAL"') = 0 ] && exit 105
 
 #Check that tunnel is connected
 #ping -c1 10.8.0.1 1>/dev/null
@@ -371,10 +358,10 @@ done
 #Create firewall script
 
 echo -e "#!/bin/bash
-MY_REAL_IP='$SERVERNAMEIP'
-PDC_REAL_IP='$MAINSERVERIP'
-MY_VPN_IP='$TUNNELIP_CLIENT'
-PDC_VPN_IP='$TUNNELIP_SERVER'
+MY_REAL_IP='"$SERVERNAMEIP"'
+PDC_REAL_IP='"$MAINSERVERIP"'
+MY_VPN_IP='"$TUNNELIP_CLIENT"'
+PDC_VPN_IP='"$TUNNELIP_SERVER"'
 
 iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -C OUTPUT -d \$PDC_REAL_IP -j DNAT --to-destination \$PDC_VPN_IP 2>/dev/null && exit 0
 
@@ -401,20 +388,20 @@ sleep 2
 
 function open_firewall_port {
 echo "<ul><li>"$"UDP hole punching port" 1194"</li></ul>"
-nmap -P0 -sU -p1194 -g1194 $SERVERNAME 1>/dev/null 2>/dev/null
+nmap -P0 -sU -p1194 -g1194 "$SERVERNAME" 1>/dev/null 2>/dev/null
 }
 
 function add_role_info {
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir /opt/karoshi/server_network/servers/$SERVERNAME
-echo OpenVPN server"<br>" > /opt/karoshi/server_network/servers/$HOSTNAMEFQDN/openvpn
-echo OpenVPN client"<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo OpenVPN server"<br>" > /opt/karoshi/server_network/servers/"$HOSTNAMEFQDN"/openvpn
+echo OpenVPN client"<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/openvpn
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
 }
 
 function schedule_cron {
 echo "<ul><li>"$"Scheduling vpn checking""</li></ul>"
-[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
-echo '*'/5 '*' '*' '*' '*' /opt/karoshi/serversetup/modules/authentication/openvpnclients > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/openvpnclients.cron
+[ -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ] || mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
+echo '*/5 * * * *' /opt/karoshi/serversetup/modules/authentication/openvpnclients > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/openvpnclients.cron"
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 echo '<br><br>'
 }

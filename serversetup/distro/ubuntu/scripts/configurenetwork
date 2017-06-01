@@ -47,41 +47,46 @@ locale 1>/dev/null
 
 
 function dnscheck {
-#Check that we can contact dns
-sleep 1
 
-#Check a few times since some cards take a while to be online.
-
-PINGCOUNTER=0
-while [ "$PINGCOUNTER" -lt 5 ]
-do
-	echo "$(date): Pinging $NAMESERVER" >> /opt/karoshi/serversetup/install_log
-	ping -c 1 "$NAMESERVER"
-	PINGCHECK="$?"
-	[ $PINGCHECK = 0 ] && break
-	sleep 1
-	let PINGCOUNTER="$PINGCOUNTER"+1
-done
-
-
-#Check that the dns actually works
-echo "$(date): Looking up $NAMESERVER" >> /opt/karoshi/serversetup/install_log
-host -W 3 www.google.com "$NAMESERVER" 1> /dev/null
-LOOKUPCHECK="$?"
-
-[ "$PINGCHECK" != 0 ] && echo "$(date): The dns server could not be contacted on $NAMESERVER." >> /opt/karoshi/serversetup/install_log
-[ "$LOOKUPCHECK" != 0 ] && echo "$(date): The dns server could not resolve dns on $NAMESERVER when testing www.google.com" >> /opt/karoshi/serversetup/install_log
-
-if [ "$PINGCHECK" != 0 ] || [ "$LOOKUPCHECK" != 0 ]
+#Don't check dns if it is 8.8.8.8 or 208.67.222.123
+if [ "$NAMESERVER" != 8.8.8.8 ] && [ "$NAMESERVER" != 208.67.222.123 ]
 then
-	#Show warning message
-	yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --timeout-indicator=bottom --text=''$"The dns server could not be contacted on"': '"$NAMESERVER"'\n\n'$"The DNS has been changed to 8.8.8.8."' '$"The performance of this server will be affected if it cannot contact a dns server."'' --no-buttons
-	#Change DNS if default is not available
-	NAMESERVER=8.8.8.8
-	echo "$(date): The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
-	sed -i 's/dns-nameservers '"$NAMESERVER"'/dns-nameservers 8.8.8.8/g' /etc/network/interfaces
-	echo nameserver "$NAMESERVER" > /etc/resolv.conf
-	echo timeout:1 >> /etc/resolv.conf
+	#Check that we can contact dns
+	sleep 1
+
+	#Check a few times since some cards take a while to be online.
+
+	PINGCOUNTER=0
+	while [ "$PINGCOUNTER" -lt 5 ]
+	do
+		echo "$(date): Pinging $NAMESERVER" >> /opt/karoshi/serversetup/install_log
+		ping -c 1 "$NAMESERVER"
+		PINGCHECK="$?"
+		[ $PINGCHECK = 0 ] && break
+		sleep 1
+		let PINGCOUNTER="$PINGCOUNTER"+1
+	done
+
+
+	#Check that the dns actually works
+	echo "$(date): Looking up $NAMESERVER" >> /opt/karoshi/serversetup/install_log
+	host -W 4 www.google.com "$NAMESERVER" 1> /dev/null
+	LOOKUPCHECK="$?"
+
+	[ "$PINGCHECK" != 0 ] && echo "$(date): The dns server could not be contacted on $NAMESERVER." >> /opt/karoshi/serversetup/install_log
+	[ "$LOOKUPCHECK" != 0 ] && echo "$(date): The dns server could not resolve dns on $NAMESERVER when testing www.google.com" >> /opt/karoshi/serversetup/install_log
+
+	if [ "$PINGCHECK" != 0 ] || [ "$LOOKUPCHECK" != 0 ]
+	then
+		#Show warning message
+		yad --title $"Configure Network" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=8 --timeout-indicator=bottom --text=''$"The dns server could not be contacted on"': '"$NAMESERVER"'\n\n'$"The DNS has been changed to 8.8.8.8."' '$"The performance of this server will be affected if it cannot contact a dns server."'' --no-buttons
+		#Change DNS if default is not available
+		NAMESERVER=8.8.8.8
+		echo "$(date): The dns server has been changed to $NAMESERVER." >> /opt/karoshi/serversetup/install_log
+		sed -i 's/dns-nameservers '"$NAMESERVER"'/dns-nameservers 8.8.8.8/g' /etc/network/interfaces
+		echo nameserver "$NAMESERVER" > /etc/resolv.conf
+		echo timeout:1 >> /etc/resolv.conf
+	fi
 fi
 }
 
