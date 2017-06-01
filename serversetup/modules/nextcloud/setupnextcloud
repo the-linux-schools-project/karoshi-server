@@ -26,40 +26,39 @@
 ########################
 #Get variables
 ########################
-LOG_DATE=`date +%F`
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: setupnextcloud - incorrect number of arguments"<br>"
+	echo "$(date): setupnextcloud - incorrect number of arguments<br>"
 	exit 101
 fi
 read -t 3 DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-/')
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f5`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+#REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+ALIAS=$(echo "$DATA" | cut -s -d: -f5)
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: setupnextcloud - Blank remote user"<br>"
+	echo "$(date): setupnextcloud - Blank remote user<br>"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: setupnextcloud - Blank remote tcpip address"<br>"
+	echo "$(date): setupnextcloud - Blank remote tcpip address<br>"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: setupnextcloud - Blank servername"<br>"
+	echo "$(date): setupnextcloud - Blank servername<br>"
 	exit 101
 fi
 if [ -z "$ALIAS" ]
 then
-	echo `date`: setupnextcloud - Blank alias"<br>"
+	echo "$(date): setupnextcloud - Blank alias<br>"
 	exit 101
 fi
 
@@ -67,17 +66,17 @@ fi
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+if [[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]]
 then
-	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2`
+	LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | sed -n 1,1p | cut -d"=" -f2)
 fi
 
 #Extract archive
@@ -135,7 +134,7 @@ fi
 
 
 #Allow htaccess for nextcloud
-if [ `grep -c "#nextcloud" /etc/apache2/sites-enabled/default-ssl` = 0 ]
+if [[ $(grep -c "#nextcloud" /etc/apache2/sites-enabled/default-ssl) = 0 ]]
 then
 	#Remove last lines
 	sed -i 's/^<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
@@ -150,7 +149,7 @@ then
 	echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
 fi
 
-if [ `grep -c "Collabora-Online" /etc/apache2/sites-enabled/default-ssl` = 0 ]
+if [[ $(grep -c "Collabora-Online" /etc/apache2/sites-enabled/default-ssl) = 0 ]]
 then
 	#Remove last lines
 	sed -i 's/^<\/VirtualHost>//g' /etc/apache2/sites-enabled/default-ssl
@@ -202,15 +201,15 @@ a2enmod proxy_http 1>/dev/null
 
 #Restart apache2
 echo '<ul><li>'$"Restarting Apache"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
 #####################
 #Create nextcloud mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating mysql database for Nextcloud"'</li></ul>'
-CLOUDPASS=`openssl rand -hex 16`
-CLOUDID=`openssl rand -hex 16`
+CLOUDPASS=$(openssl rand -hex 16)
+CLOUDID=$(openssl rand -hex 16)
 
 #############################
 #Make sure that we know the root mysql password
@@ -219,47 +218,47 @@ CLOUDID=`openssl rand -hex 16`
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 
 #Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
 
 #############################
 #create and pipe in the database
 #############################
-mysqladmin -f --password=$MYSQLPASS drop nextcloud 1>/dev/null 2>/dev/null
+mysqladmin -f --password="$MYSQLPASS" drop nextcloud 1>/dev/null 2>/dev/null
 sleep 1
-mysqladmin --password=$MYSQLPASS create nextcloud 1>/dev/null
+mysqladmin --password="$MYSQLPASS" create nextcloud 1>/dev/null
 sleep 1
 
 #Create moodule_user in mysql
-echo DROP USER "'"nextcloud_user"'"@"'"localhost"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
-echo CREATE USER "'"nextcloud_user"'"@"'"localhost"'"  IDENTIFIED BY "'"$CLOUDPASS"'"';' > /opt/karoshi/.tempdata/mysqlperms.sql
+echo "DROP USER 'nextcloud_user'@'localhost';" > /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/mysqlperms.sql
+echo "CREATE USER 'nextcloud_user'@'localhost'  IDENTIFIED BY '$CLOUDPASS';" > /opt/karoshi/.tempdata/mysqlperms.sql
 #Grant mysql permissions to nextcloud
-echo GRANT ALL PRIVILEGES ON nextcloud.\* TO "'"nextcloud_user"'"@"'"localhost"'"';' >> /opt/karoshi/.tempdata/mysqlperms.sql
-echo ALTER DATABASE nextcloud DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci';' >> /opt/karoshi/.tempdata/mysqlperms.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/mysqlperms.sql
+echo "GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud_user'@'localhost';" >> /opt/karoshi/.tempdata/mysqlperms.sql
+echo 'ALTER DATABASE nextcloud DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;' >> /opt/karoshi/.tempdata/mysqlperms.sql
+mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/mysqlperms.sql
 rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 #Modify config.php with the correct password.
-sed -i 's/CHANGETHISPASS/'$CLOUDPASS'/g' /var/www/html/nextcloud/config/config.php
-sed -i 's/CHANGETHISID/'$CLOUDID'/g' /var/www/html/nextcloud/config/config.php
-sed -i 's/CHANGETHISREALM/'$ALIAS'.'$REALM'/g' /var/www/html/nextcloud/config/config.php
+sed -i 's/CHANGETHISPASS/'"$CLOUDPASS"'/g' /var/www/html/nextcloud/config/config.php
+sed -i 's/CHANGETHISID/'"$CLOUDID"'/g' /var/www/html/nextcloud/config/config.php
+sed -i 's/CHANGETHISREALM/'"$ALIAS"'.'"$REALM"'/g' /var/www/html/nextcloud/config/config.php
 
 #Make a backup of nextcloud.sql
 cp /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql /opt/karoshi/serversetup/modules/nextcloud/nextcloud_original.sql
 
 #Edit nextcloud.sql with the correct realm information
-sed -i 's@CHANGETHISLDAPBASE@'$LDAPBASE'@g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
+sed -i 's@CHANGETHISLDAPBASE@'"$LDAPBASE"'@g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 
 #Edit nextcloud.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
 if [ "$LDAPSERVER" != 127.0.0.1 ]
 then
-	sed -i 's/127.0.0.1/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
+	sed -i 's/127.0.0.1/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 fi
 #Change the realm for collabora
-sed -i 's%https://CHANGETHISREALM%https://'$ALIAS'.'$REALM'%g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
+sed -i 's%https://CHANGETHISREALM%https://'"$ALIAS"'.'"$REALM"'%g' /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 
 #Pipe in database
-mysql --password=$MYSQLPASS nextcloud < /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
+mysql --password="$MYSQLPASS" nextcloud < /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 
 #Restore original nextcloud.sql
 rm -f /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
@@ -307,69 +306,62 @@ REALM2=$(echo $REALM | sed 's%\.%\\\\\.%g')
 
 #Run collabora
 echo '<ul><li>'$"Starting Collabora"'</li></ul>'
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='$ALIAS'\\.'$REALM2'' --dns=172.17.0.1 --restart always --cap-add MKNOD collabora/code 1> /dev/null
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --dns=172.17.0.1 --restart always --cap-add MKNOD collabora/code 1> /dev/null
 
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################
 
-MODCHECK=`grep -c -w 443 /etc/shorewall/rules`
-
-#####################################
-#Ensure that apache ports are open in shorewall
-#####################################
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
 
 MOD_SHOREWALL=no
-if [ $(grep -c "#Web-Services" /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c "#Web-Services" /etc/shorewall/rules) = 0 ]]
 then 
 	MOD_SHOREWALL=yes
 	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 80,443</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'Web-Services /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	80,443	-#Web-Services' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
-if [ $(grep -c docker0 /etc/shorewall/interfaces) = 0 ]
+if [[ $(grep -c docker0 /etc/shorewall/interfaces) = 0 ]]
 then
 	MOD_SHOREWALL=yes
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/interfaces | cut -d: -f1`
-	sed -i $LINENUM'c'\net'	'docker0'	'detect /etc/shorewall/interfaces
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/interfaces | cut -d: -f1)
+	sed -i "$LINENUM"'cnet	docker0	detect' /etc/shorewall/interfaces
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/interfaces
 
 fi
 
-if [ $(grep -c Collabora-Online /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c Collabora-Online /etc/shorewall/rules) = 0 ]]
 then
 	MOD_SHOREWALL=yes
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'9980'	'-'#'Collabora-Online /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	9980	-#Collabora-Online' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
 #Make sure we can get to dns which may as well be from the server we are running on since we either have samba4 or dnsmasq
-if [ $(grep -c -w 53 /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c -w 53 /etc/shorewall/rules) = 0 ]]
 then
 	MOD_SHOREWALL=yes
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'53'	'-'#'dnsmasq-tcp /etc/shorewall/rules
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'udp'	'53'	'-'#'dnsmasq-udp /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules	
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	53	-#dnsmasq-tcp' /etc/shorewall/rules
+	echo 'ACCEPT	net	fw	udp	53	-#dnsmasq-udp' >> /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules	
 fi
 
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
 	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$"Nextcloud has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/nextcloud" target="_blank">'$ALIAS.$REALM'/nextcloud</a>'
+echo '<br>'$"Nextcloud has been installed and can be accessed from" - '<a href="https://'"$ALIAS.$REALM"'/nextcloud" target="_blank">'"$ALIAS.$REALM"'/nextcloud</a>'
 echo '<br>'$"username":admin - $"password": admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please change the admin password immediately."'</p><br>'
 exit

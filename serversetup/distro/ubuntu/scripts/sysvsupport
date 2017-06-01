@@ -130,7 +130,7 @@ fi
 
 #Get rid of any upstart and systemd configurations
 
-for service in cups bind9 clamav-daemon mysql postgresql smbd nmbd squid ssh tftpd-hpa xinetd dovecot vsftpd nfs-server rpcbind portmap memcached isc-dhcp-server glusterfs monitorix freeradius samba shorewall dnsmasq windbind openvpn nfs-kernel-server statd nginx
+for service in cups bind9 clamav-daemon mysql postgresql smbd nmbd squid ssh tftpd-hpa xinetd dovecot vsftpd nfs-server rpcbind portmap memcached isc-dhcp-server glusterfs monitorix freeradius samba shorewall dnsmasq windbind openvpn nfs-kernel-server statd nginx minidlna
 do
 	#Upstart
 	#Make sure no scripts have been added to /etc/init for upstart.

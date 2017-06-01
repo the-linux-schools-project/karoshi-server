@@ -28,14 +28,5 @@ then
 			fi
 		done	
 	done
-	#All ports checked samba4 should now be ready for use - but let's make sure we can connect to port 389
-	source /opt/karoshi/server_network/domain_information/domain_name
-	COUNTER=0
-	while [ $(ldapsearch -x -b "$LDAPBASE" CN=Users | grep -c ^dn:) = 0 ]
-	do
-		sleep 1
-		let COUNTER="$COUNTER"+1
-		[ "$COUNTER" = 60 ] && break
-	done
 fi
 exit
