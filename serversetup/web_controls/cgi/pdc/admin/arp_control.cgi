@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT"` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>'$"ARP Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"ARP Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -90,58 +90,45 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\/*%+"-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\/*%+"-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/QUADUNDERSCORE/_/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
-#Assign ACTION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign DEVICE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DEVICEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DEVICE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/UNDERSCORE/_/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DEVICE
+get_data
+DEVICE="${DATAENTRY//UNDERSCORE/_}"
 
 #Assign MACADDR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MACADDRcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MACADDR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=MACADDR
+get_data
+MACADDR="$DATAENTRY"
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/arp_control.cgi";
 </script></div></body></html>'
 exit
@@ -169,14 +156,14 @@ then
 
 	#Check that tcpip number is correct
 	#Check that we have 4 dots
-	if [ `echo $DEVICE | sed 's/\./\n /g'  | sed /^$/d | wc -l` != 4 ]
+	if [[ $(echo "$DEVICE" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]]
 	then
 		MESSAGE=$"The TCPIP number is not corrrect."
 		show_status
 	fi
 	#Check that no number is greater than 255
-	HIGHESTNUMBER=`echo $DEVICE | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p`
-	if [ $HIGHESTNUMBER -gt 255 ]
+	HIGHESTNUMBER=$(echo "$DEVICE" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
+	if [ "$HIGHESTNUMBER" -gt 255 ]
 	then
 		MESSAGE=$"The TCPIP number is not corrrect."
 		show_status
@@ -184,8 +171,9 @@ then
 
 	#Check that the mac address is correct
 	#Check that we have 6 sets of data
-	MACADDR2=$(echo $MACADDR | sed 's/%3A/:/g')
-	if [ `echo "$MACADDR2" | sed 's/:/\n/g' | wc -l` != 6 ]
+	MACADDR2="${MACADDR//%3A/:}"
+
+	if [[ $(echo "$MACADDR2" | sed 's/:/\n/g' | wc -l) != 6 ]]
 	then
 		echo "count is:"
 		echo "$MACADDR2" | sed 's/:/\n/g' | wc -l
@@ -194,9 +182,9 @@ then
 		show_status	
 	fi
 	#Check max chars
-	for LINEDATA in `echo "$MACADDR2" | sed 's/:/\n/g'`
+	for LINEDATA in ${MACADDR2//:/ }
 	do
-		if [ `echo "$LINEDATA" | wc -L` != 2 ]
+		if [[ $(echo "$LINEDATA" | wc -L) != 2 ]]
 		then
 			MESSAGE=''$"You have not entered in a valid mac address2."''
 			show_status
@@ -205,7 +193,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -215,23 +203,23 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"ARP Controls"'</span>'
-	if [ $SERVERNAME != notset ]
+	if [ "$SERVERNAME" != notset ]
 	then
 		echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Select Server"'</a>'
 	else
 		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 	fi
 	echo '</div></div>
-	<div id="'$DIV_ID'">
+	<div id="'"$DIV_ID"'">
 	'
 
 	else
-		echo '<div id="'$DIV_ID'"><div id="titlebox">
+		echo '<div id="'"$DIV_ID"'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
 	<td style="height:30px;"><div class="sectiontitle">'$"ARP Control"'</div></td>
@@ -246,10 +234,10 @@ fi
 
 echo '<form action="/cgi-bin/admin/arp_control.cgi" method="post">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$DEVICE:$MACADDR" | sudo -H /opt/karoshi/web_controls/exec/arp_control
 
 echo '</form>'
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

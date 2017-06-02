@@ -31,11 +31,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -44,8 +44,8 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign Backup Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign Backup Server"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -59,31 +59,35 @@ $(document).ready(function()
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign SERVERNAME
-
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVERNAME
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -107,7 +111,7 @@ then
 	show_status
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers | wc -l` = 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/backup_servers/servers | wc -l) = 0 ]]
 then
 	MESSAGE=$"No backup servers have been configured."
 	show_status
@@ -119,24 +123,24 @@ fi
 echo '<form action="/cgi-bin/admin/backup_assign.cgi" method="post">
 <div id="actionbox">
 
-<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Assign Backup Server" - $SERVERNAME'</div></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to backup to."'</span></a></td></tr></tbody></table><br>
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Assign Backup Server"' - '"$SERVERNAME"'</div></td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to backup to."'</span></a></td></tr></tbody></table><br>
 
-<input name="_SERVER_" value="'$SERVERNAME'" type="hidden">
+<input name="_SERVER_" value="'"$SERVERNAME"'" type="hidden">
 '
 
-if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME ]
+if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME" ]
 then
-CURRENTBSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backupserver`
+CURRENTBSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver)
 
 echo '<br><br><table class="standard" style="text-align: left;" >
 <tbody>
-<tr><td style="width: 200px; vertical-align: top; text-align: left;">'$"Current backup server"'</td><td style="width: 200px; vertical-align: top; text-align: left;">'$CURRENTBSERVER'</td><td style="vertical-align: top; text-align: left;">
+<tr><td style="width: 200px; vertical-align: top; text-align: left;">'$"Current backup server"'</td><td style="width: 200px; vertical-align: top; text-align: left;">'"$CURRENTBSERVER"'</td><td style="vertical-align: top; text-align: left;">
 <input name="_SERVERNAME_removebackupoption_" type="submit" class="button" value="'$"Un-assign"'">
 </td></tr></tbody></table><br><br>'
 fi
 
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE backupservers $"Select server" backupserver $SERVERNAME
+/opt/karoshi/web_controls/show_servers "$MOBILE" backupservers $"Select server" backupserver "$SERVERNAME"
 
 echo '</div></form></div></body></html>'
 exit

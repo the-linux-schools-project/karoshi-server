@@ -30,16 +30,15 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
 
-SERVERICON="/images/submenus/system/computer.png"
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/web_controls/version
 ############################
@@ -51,7 +50,7 @@ echo '
 
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Apply SSL Certificate"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Apply SSL Certificate"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -71,12 +70,12 @@ echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectserver
   <br><table  id="myTable" class="tablesorter" style="text-align: left;" >
     <thead>
 <tr><th style="width: 180px;"><b>Server</b></th><th style="width: 300px;"><b>Alias</b></th><th></th></tr></thead><tbody>
-<tr><td>'$HOSTNAME'</td><td>manage.'$REALM'</td><td style="width: 90px; vertical-align: top; text-align: left;">
-<button class="button" name="_ApplyCert_" value="_SERVER_'$HOSTNAME'_">
+<tr><td>'"$HOSTNAME"'</td><td>manage.'"$REALM"'</td><td style="width: 90px; vertical-align: top; text-align: left;">
+<button class="button" name="_ApplyCert_" value="_SERVER_'"$HOSTNAME"'_">
 '$"Apply Certificate"'
 </button>
 </td></tr>
-<tr><td>'$"All Web Servers"'</td><td>*.'$REALM'</td>
+<tr><td>'$"All Web Servers"'</td><td>*.'"$REALM"'</td>
 <td style="vertical-align: top; text-align: left;">
 <button class="button" name="_ApplyCertAllServers_" value="_SERVER_allwebservers_">
 '$"Apply Certificate"'

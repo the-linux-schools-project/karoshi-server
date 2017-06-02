@@ -37,11 +37,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,8 +52,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Warning Messages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Warning Messages"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -82,13 +82,13 @@ echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Warni
 if [ -f /opt/karoshi/web_controls/warnings/summary.txt ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 450px;"><b>'$"Description"'</b></th><th><b>Check</b></th></tr></thead><tbody>'
-	for WARNING_FILE in `ls /opt/karoshi/web_controls/warnings/raw_messages/`
+	for WARNING_FILE in $(ls /opt/karoshi/web_controls/warnings/raw_messages/)
 	do
-		DATA=`cat /opt/karoshi/web_controls/warnings/raw_messages/"$WARNING_FILE"`
-		LINK=`echo "$DATA" | cut -d"," -f1`
-		DESCRIPTION=`echo "$DATA" | cut -d"," -f2`
-		echo '<tr><td>'$DESCRIPTION'</td><td>
-		<a class="simbutton" href="'$LINK'">'$"Check"'</a>
+		DATA=$(cat /opt/karoshi/web_controls/warnings/raw_messages/"$WARNING_FILE")
+		LINK=$(echo "$DATA" | cut -d"," -f1)
+		DESCRIPTION=$(echo "$DATA" | cut -d"," -f2)
+		echo '<tr><td>'"$DESCRIPTION"'</td><td>
+		<a class="simbutton" href="'"$LINK"'">'$"Check"'</a>
 		</td></tr>'
 	done
 	echo '<tr><td>'$"Clear all warning messages"'</td><td>
