@@ -962,6 +962,9 @@ add: gidnumber
 gidnumber: $GIDNUMBER
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS
 
+
+#Create flag file for windows users to be created with roaming profiles by default
+echo roaming > /opt/karoshi/server_network/clients/windows_profile_types/"$NEWGROUP"
 }
 
 ##############################
@@ -971,6 +974,9 @@ function makefoldersandgroups {
 if [ "$INSTALL_TYPE" != adcrestore ] && [ "$INSTALL_TYPE" != archiverestore ]
 then
 	echo `date`: "Making folders and groups" >> /opt/karoshi/serversetup/install_log
+
+	#Create falg folder for windows user profile types
+	[ ! -d /opt/karoshi/server_network/clients/windows_profile_types ] && mkdir -p /opt/karoshi/server_network/clients/windows_profile_types
 
 	#Make Groups
 	if [ "$INSTALL_TYPE" != home ]
@@ -1550,6 +1556,9 @@ then
 	echo $"Extracting Windows 10 Profile"
 	tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V5.tar.gz -C /home/applications/profiles/
 fi
+
+#We dont have a windows 10 aniversary mandatory profile so make an empty folder for it
+[ ! -d /home/applications/profiles/defaultprofile.V6 ] && mkdir -p /home/applications/profiles/defaultprofile.V6
 
 #Copy in windows icons
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile/Desktop/

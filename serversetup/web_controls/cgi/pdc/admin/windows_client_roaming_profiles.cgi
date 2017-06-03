@@ -29,19 +29,15 @@ MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=200
-	HEIGHT1=17
-	HEIGHT2=26
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=120
 	WIDTH2=160
-	HEIGHT1=30
-	HEIGHT2=35
 fi
 
 ############################
@@ -50,9 +46,8 @@ fi
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
-NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
@@ -60,7 +55,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Roaming Profiles"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Windows Roaming Profiles"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -75,7 +70,7 @@ $(document).ready(function()
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 '
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -102,95 +97,56 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=17
-#Assign USERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
 
 #Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=GROUP
+get_data
+GROUP="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign EXCEPTIONLIST
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=EXCEPTIONLIST
+get_data
+EXCEPTIONLIST="$DATAENTRY"
 
 #Assign MODCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MODCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MODCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MODCODE
+get_data
+MODCODE="$DATAENTRY"
 
 #Assign FORMCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=FORMCODE
+get_data
+FORMCODE="$DATAENTRY"
 
 if [ -z "$ACTION" ]
 then
@@ -198,7 +154,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -207,10 +163,10 @@ fi
 
 echo '<form name="profileform" action="/cgi-bin/admin/windows_client_roaming_profiles.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -239,7 +195,7 @@ fi
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/windows_client_roaming_profiles.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -248,7 +204,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -262,7 +218,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -284,14 +240,14 @@ then
 	then
 		#Check to see if the user exists
 		getent passwd "$USERNAME" 1>/dev/null 
-		if [ $? != 0 ]
+		if [ "$?" != 0 ]
 		then
 			MESSAGE=$"This user does not exist."
 			show_status
 		fi
 
 		#Check that the username is not for a system account
-		if [ $(id -u "$USERNAME") -lt 500 ]
+		if [[ $(id -u "$USERNAME") -lt 500 ]]
 		then
 			MESSAGE=$"You cannot use a roaming profile with a system account."
 			show_status
@@ -333,7 +289,7 @@ fi
 
 if [ "$ACTION" = roaming ] || [ "$ACTION" = mandatory ] || [ "$ACTION" = status ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1)
 	#Enable roaming profile
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$EXCEPTIONLIST:$ACTION:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/windows_client_roaming_profiles
 fi
@@ -341,39 +297,38 @@ fi
 #Show menu options for the page
 if [ "$ACTION" = showmenu ]
 then
-	MOD_CODE=`echo ${RANDOM:0:3}`
-	echo '<input name="_FORMCODE_" value="'$MOD_CODE'" type="hidden"><table class="'$TABLECLASS'" style="text-align: left; left: 232px;" >
+	MOD_CODE="${RANDOM:0:3}"
+	echo '<input name="_FORMCODE_" value="'"$MOD_CODE"'" type="hidden"><table class="'"$TABLECLASS"'" style="text-align: left; left: 232px;" >
     <tbody>
-<tr><td style="width: '$WIDTH1'px;">'$"Option"'</td><td>
-<select name="_ACTION_" style="width: '$WIDTH2'px;">
-<option label="blank"></option>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Option"'</td><td>
+<select name="_ACTION_" style="width: '"$WIDTH2"'px;">
+<option value="status">'$"View Status"'</option>
 <option value="mandatory">'$"Mandatory Profile"'</option>
 <option value="roaming">'$"Roaming Profile"'</option>
-<option value="status">'$"View Status"'</option>
 </select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the profile action you want to carry out."'</span></a>
 </td></tr>
 <tr><td>
 '$"Primary Group"'</td><td>'
-	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '"$WIDTH2"'px;">/g'
 	echo '</td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"All users in the group you select will be affected by the action you choose from this menu." $"Leave this blank if you want to enter in a username."'</span></a>
 </td></tr>
 <tr><td>
 '$"Username"'
 </td><td>
-<input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px;" size="20" type="text">
+<input tabindex= "1" name="_USERNAME_" style="width: '"$WIDTH2"'px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or leave this blank if you want to choose an entire group."'</span></a>
 </td></tr>
 <tr><td>
 '$"Exceptions"'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: '$WIDTH2'px;" size="20" type="text">
+<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: '"$WIDTH2"'px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any user accounts that you do not want to modify separated by spaces."'</span></a>
 </td></tr>
-<tr><td style="height:50px; vertical-align: bottom">'$"Modify Code"'</td><td style="vertical-align: bottom; text-align: left;"><b>'$MOD_CODE'</b></td><td></td></tr>
+<tr><td style="height:50px; vertical-align: bottom">'$"Modify Code"'</td><td style="vertical-align: bottom; text-align: left;"><b>'"$MOD_CODE"'</b></td><td></td></tr>
 <tr><td>'$"Confirm"'</td><td style="vertical-align: top; text-align: left;"><input name="_MODCODE_" maxlength="3" size="3" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the code displayed on the page to confirm this action."'</span></a>
 </td></tr>

@@ -241,8 +241,19 @@ SURNAME=$(echo "$SURNAME" | tr '[:upper:]' '[:lower:]')
 FIRST_CHAR=$(echo "${SURNAME:0:1}" | tr '[:lower:]' '[:upper:]' )
 SURNAME="$FIRST_CHAR${SURNAME:1}"
 
+#Check if we are using a mandatory or roaming profile for windows clients for this group
+#Flag file exists and use raoming - no flag file and use mandatory
+if [ -f /opt/karoshi/server_network/clients/windows_profile_types/"$PRIMARYGROUP" ]
+then
+	#Using a roaming profile
+	PROFILEPATH='applications\profiles\roaming_profiles\'"$PRIMARYGROUP"'\'"$NEWUSERNAME"''
+else
+	#Using a mandatory profile
+	PROFILEPATH='applications\\profiles\\'"$PRIMARYGROUP"''
+fi
+
 #Add user to samba4 ldap
-samba-tool user add "$NEWUSERNAME" --userou='OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People' --profile-path=%LOGONSERVER%\\applications\\profiles\\"$PRIMARYGROUP"  --script-path="logon.bat $PRIMARYGROUP" --home-directory='\\'"$SERVER"'\'"$NEWUSERNAME" --surname="$SURNAME" --given-name="$FIRSTNAME" --use-username-as-cn  --random-password --mail-address="$NEWUSERNAME@$REALM" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool user add "$NEWUSERNAME" --userou='OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People' --profile-path=%LOGONSERVER%\\"$PROFILEPATH"  --script-path="logon.bat $PRIMARYGROUP" --home-directory='\\'"$SERVER"'\'"$NEWUSERNAME" --surname="$SURNAME" --given-name="$FIRSTNAME" --use-username-as-cn  --random-password --mail-address="$NEWUSERNAME@$REALM" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #samba-tool user add $NEWUSERNAME --userou='CN='$PRIMARYGROUP',CN='$SUBUNIT',CN=Users' --home-drive=G --script-path='\\'$HOSTNAME'\'netlogon'\'logon.bat --home-directory='\\'$SERVER'\'$NEWUSERNAME --surname=$SURNAME --given-name=$FIRSTNAME --use-username-as-cn  --random-password --mail-address=$NEWUSERNAME@$EMAILDOMAIN 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 
@@ -392,6 +403,37 @@ fi
 
 #Get userid
 USERID=$(getent passwd "$NEWUSERNAME" | cut -d: -f3)
+
+
+#Create the windows roaming profile folders for the user if needed.
+if [ -f /opt/karoshi/server_network/clients/windows_profile_types/"$PRIMARYGROUP" ]
+then
+	#Make the parent directory for the roaming profiles
+	[ ! -d /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP" ] && mkdir -p /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP"
+
+	#Create new profile folders for the user
+	#Windows XP
+	cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
+	chown -c -R "$NEWUSERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME" 1>/dev/null
+	chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
+	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
+
+	#All other windows versions
+	for DEFAULT_ROAMING_PROFILE in $(ls -1 /home/applications/profiles | grep ^default_roaming_profile.)
+	do
+		PROFILE_VERSION=$(echo "$DEFAULT_ROAMING_PROFILE" | cut -d"." -f2)
+		if [ ! -d /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION" ]
+		then
+			if [ -d /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" ]
+			then
+				cp -R /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
+				chown -c -R "$NEWUSERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION" 1>/dev/null
+				chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
+				chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
+			fi
+		fi
+	done
+fi
 
 
 if [[ "$SERVER" = $(hostname-fqdn) ]] || [[ $(echo "$SERVER" | cut -d. -f2-) = $(hostname-fqdn) ]]

@@ -23,49 +23,49 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_roaming_profiles_cgi
 then
-	echo `date`: windows_client_roaming_profiles - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_roaming_profiles_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $windows_client_roaming_profiles_cgi'check' ]
+if [ "$MD5SUM"'check' != "$windows_client_roaming_profiles_cgi"'check' ]
 then
-	echo `date`: windows_client_roaming_profiles - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: windows_client_roaming_profiles - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+')
 if [ -z "$DATA" ]
 then
-	echo `date`: windows_client_roaming_profiles - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-USERNAME=`echo "$DATA" | cut -s -d: -f4`
-PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
-EXCEPTIONLIST=`echo "$DATA" | cut -s -d: -f6`
-ACTION=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+USERNAME=$(echo "$DATA" | cut -s -d: -f4)
+PRIMARYGROUP=$(echo "$DATA" | cut -s -d: -f5)
+EXCEPTIONLIST=$(echo "$DATA" | cut -s -d: -f6)
+ACTION=$(echo "$DATA" | cut -s -d: -f7)
+MOBILE=$(echo "$DATA" | cut -s -d: -f8)
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	WIDTH1=180
 	WIDTH2=180
@@ -85,91 +85,91 @@ fi
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: windows_client_roaming_profiles - Not called by windows_client_roaming_profiles.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - Not called by windows_client_roaming_profiles.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: windows_client_roaming_profiles - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: windows_client_roaming_profiles - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_roaming_profiles - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 function convert_to_roaming {
 
-echo `date`: windows_client_roaming_profiles - roaming profile enabled "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<ul><li>'$USERNAME' - '$"converting to a roaming profile"'</li></ul>'
-#make the parent directory for the roaming profiles
-[ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP ] && mkdir -p /home/applications/profiles/roaming_profiles/$PRIMARYGROUP
+echo "$(date): windows_client_roaming_profiles - roaming profile enabled for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo '<ul><li>'"$USERNAME"' - '$"converting to a roaming profile"'</li></ul>'
+#Make the parent directory for the roaming profiles
+[ ! -d /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP" ] && mkdir -p /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP"
 
 #Create new profile folders for the user
 #Windows XP
-cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
-chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME 1>/dev/null
-chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
-chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME
+cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
+chown -c -R "$USERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME" 1>/dev/null
+chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
+chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
 
 #All other windows versions
 for DEFAULT_ROAMING_PROFILE in $(ls -1 /home/applications/profiles | grep ^default_roaming_profile.)
 do
-	PROFILE_VERSION=$(echo $DEFAULT_ROAMING_PROFILE | cut -d"." -f2)
-	if [ ! -d /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION ]
+	PROFILE_VERSION=$(echo "$DEFAULT_ROAMING_PROFILE" | cut -d"." -f2)
+	if [ ! -d /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION" ]
 	then
-		if [ -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ]
+		if [ -d /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" ]
 		then
-			cp -R /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
-			chown -c -R $USERNAME:itadmin /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION 1>/dev/null
-			chmod 0660 -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
-			chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION
+			cp -R /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
+			chown -c -R "$USERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION" 1>/dev/null
+			chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
+			chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
 		fi
 	fi
 done
 
 #Set new profile path for the user
-echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+echo -e 'dn: CN='"$USERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,'"$LDAPBASE"'
 changetype: modify
 replace: profilePath
-profilePath: %LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'$PRIMARYGROUP'\\'$USERNAME'
--' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+profilePath: %LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'"$PRIMARYGROUP"'\\'"$USERNAME"'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 }
 
 function convert_to_mandatory {
-echo `date`: windows_client_roaming_profiles - mandatory profile enabled "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<ul><li>'$USERNAME' - '$"converting to a mandatory profile"'</li></ul>'
+echo "$(date): windows_client_roaming_profiles - mandatory profile enabled for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo '<ul><li>'"$USERNAME"' - '$"converting to a mandatory profile"'</li></ul>'
 #Leave any existing roaming profiles in place just in case you want to change your mind and just change the profile path in ldap
 
 #Set new profile path for the user
-echo -e 'dn: CN='$USERNAME',OU='$PRIMARYGROUP',OU='$SUBUNIT',OU=People,'$LDAPBASE'
+echo -e 'dn: CN='"$USERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,'"$LDAPBASE"'
 changetype: modify
 replace: profilePath
-profilePath: %LOGONSERVER%\\applications\\profiles\\'$PRIMARYGROUP'
--' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+profilePath: %LOGONSERVER%\\applications\\profiles\\'"$PRIMARYGROUP"'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 }
 
 function show_profile_status {
 #Lookup profile path in ldap and check if it is mandatory or roaming
-if [ $(ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep profilePath: | grep -c roaming_profile) = 0 ]
+if [[ $(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep profilePath: | grep -c roaming_profile) = 0 ]]
 then
 	PROFILESTATUS=$"mandatory"
-	ICON=$ICON_MANDATORY
+	ICON="$ICON_MANDATORY"
 	PROFILE_ACTION=roaming
 else
 	PROFILESTATUS=$"roaming"
-	ICON=$ICON_ROAMING
+	ICON="$ICON_ROAMING"
 	PROFILE_ACTION=mandatory
 fi
-echo '<tr><td>'$USERNAME'</td><td>'$PROFILESTATUS'</td><td>
-	<button class="'$BUTTONCLASS'" name="_ChangeStatus_" value="_ACTION_'$PROFILE_ACTION'_USERNAME_'$USERNAME'_FORMCODE_111_MODCODE_111_">
-	<img src="'$ICON'" alt="'$"Profile Status"'">
-	<span>'$USERNAME'<br>'$PROFILESTATUS'</span>
+echo '<tr><td>'"$USERNAME"'</td><td>'"$PROFILESTATUS"'</td><td>
+	<button class="'"$BUTTONCLASS"'" name="_ChangeStatus_" value="_ACTION_'"$PROFILE_ACTION"'_USERNAME_'"$USERNAME"'_FORMCODE_111_MODCODE_111_">
+	<img src="'"$ICON"'" alt="'$"Profile Status"'">
+	<span>'"$USERNAME"'<br>'"$PROFILESTATUS"'</span>
 	</button>
 </td></tr>'
 }
@@ -186,27 +186,40 @@ then
 		CONVERT_FUNCTION=show_profile_status
 		#Create table
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '$WIDTH1'px;">'$"Username"'</th><th style="width: '$WIDTH2'px;">'$"Profile Status"'</th><th style="width: '$WIDTH3'px;"></th></tr></thead><tbody>'
+		<tr><th style="width: '"$WIDTH1"'px;">'$"Username"'</th><th style="width: '"$WIDTH2"'px;">'$"Profile Status"'</th><th style="width: '"$WIDTH3"'px;"></th></tr></thead><tbody>'
 	fi
 	#Get samba 4 database password
-	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 	source /opt/karoshi/server_network/domain_information/domain_name
 
 	if [ ! -z "$PRIMARYGROUP" ]
 	then
+		#Sort out flag file for any new users that are created
+		#Sort out flag file for any new users that are created
+		if [ "$ACTION" = roaming ] && [ "$CONVERT_FUNCTION" != show_profile_status ]
+		then
+			[ ! -d /opt/karoshi/server_network/clients/windows_profile_types ] && mkdir -p /opt/karoshi/server_network/clients/windows_profile_types
+			echo "creating flag file<br>"
+			echo "$ACTION" > /opt/karoshi/server_network/clients/windows_profile_types/"$PRIMARYGROUP"
+		elif [ "$ACTION" = mandatory ] && [ "$CONVERT_FUNCTION" != show_profile_status ]
+		then
+			echo "removing flag file<br>"
+			[ -f /opt/karoshi/server_network/clients/windows_profile_types/"$PRIMARYGROUP" ] && rm -f /opt/karoshi/server_network/clients/windows_profile_types/"$PRIMARYGROUP"
+		fi
+
 		source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 		#Get a list of all the users in the group
 		for USERNAME in $(getent passwd | grep "$HOMEPATH"/ | cut -d: -f1)
 		do
-			if [ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]
+			if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 			then
 				$CONVERT_FUNCTION
 			fi
 		done
 	else
-		PRIMARYGROUP=$(id -g -n $USERNAME)
-		source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+		PRIMARYGROUP=$(id -g -n "$USERNAME")
+		source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 		$CONVERT_FUNCTION
 	fi
 	#Reload the page
@@ -216,9 +229,9 @@ then
 		#Show status
 		if [ ! -z "$PRIMARYGROUP" ]
 		then
-			echo '<input name="_GROUP_" value="'$PRIMARYGROUP'" type="hidden">'
+			echo '<input name="_GROUP_" value="'"$PRIMARYGROUP"'" type="hidden">'
 		else
-			echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
+			echo '<input name="_USERNAME_" value="'"$USERNAME"'" type="hidden">'
 		fi
 		echo '<input name="_ACTION_" value="status" type="hidden"><script>document.profileform.submit();</script>'
 	else

@@ -33,111 +33,76 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete User"'</title><meta http-equiv="REFRESH" content="0; URL=delete_user_fm.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete User"'</title><meta http-equiv="REFRESH" content="0; URL=delete_user_fm.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=9
-#Assign username
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
+
 
 #Assign SHUTDOWNCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-#Assign FORMCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SHUTDOWNCODE
+get_data
+SHUTDOWNCODE="$DATAENTRY"
 
-#Assign _VIEWIMAGE_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = VIEWIMAGEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		VIEWIMAGE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign FORMCODE
+DATANAME=FORMCODE
+get_data
+FORMCODE="$DATAENTRY"
+
+
+#Assign VIEWIMAGE
+DATANAME=VIEWIMAGE
+get_data
+VIEWIMAGE="$DATAENTRY"
 
 #Assign REQUESTFILE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = REQUESTFILEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		REQUESTFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=REQUESTFILE
+get_data
+REQUESTFILE="$DATAENTRY"
 
 #Assign ARCHIVE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ARCHIVEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ARCHIVE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ARCHIVE
+get_data
+ARCHIVE="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -145,7 +110,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -153,13 +118,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -175,19 +140,18 @@ then
 fi
 #Check to see that the user exists
 getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS != 0 ]
+if [ "$?" != 0 ]
 then
 	MESSAGE=$"This user does not exist."
 	show_status
 fi
 
 #Check view image tick box
-if [ $VIEWIMAGE'check' = yescheck ]
+if [ "$VIEWIMAGE"'check' = yescheck ]
 then
 	echo '<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/delete_user_fm.cgi" method="post" name="form">'
-	echo '<input name="_USERNAME_" value="'$USERNAME'" type="hidden">'
-	echo '<input name="_DOMAINPASSWORD_" value="'$DOMAINPASSWORD'" type="hidden"></form>'
+	echo '<input name="_USERNAME_" value="'"$USERNAME"'" type="hidden">'
+	echo '<input name="_DOMAINPASSWORD_" value="'"$DOMAINPASSWORD"'" type="hidden"></form>'
 
 	echo '<SCRIPT LANGUAGE="JavaScript">
 function submitForm(){
@@ -198,42 +162,42 @@ exit
 fi
 
 #Check to see that SHUTDOWNCODE is not blank
-if [ $SHUTDOWNCODE'null' = null ]
+if [ -z "$SHUTDOWNCODE" ]
 then
 	MESSAGE=$"The delete code must not be blank."
 	show_status
 fi
 #Check to see that FORMCODE is not blank
-if [ $FORMCODE'null' = null ]
+if [ -z "$FORMCODE" ]
 then
 	MESSAGE=$"The form code must not be blank."
 	show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
-if [ $FORMCODE != $SHUTDOWNCODE ]
+if [ "$FORMCODE" != "$SHUTDOWNCODE" ]
 then
 	MESSAGE=$"Incorrect delete code."
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 105 ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
+EXEC_STATUS="$?"
+if [ "$EXEC_STATUS" = 105 ]
 then
-MESSAGE=`echo $"A server required for this action was offline." $"Please check the karoshi web administration logs for more details."`
-show_status
+	MESSAGE=''$"A server required for this action was offline."' '$"Please check the karoshi web administration logs for more details."''
+	show_status
 fi
-if [ $EXEC_STATUS = 102 ]
+if [ "$EXEC_STATUS" = 102 ]
 then
-MESSAGE=$"Incorrect domain password."
-show_status
+	MESSAGE=$"Incorrect domain password."
+	show_status
 fi
-if [ $EXEC_STATUS = 0 ]
+if [ "$EXEC_STATUS" = 0 ]
 then
-MESSAGE=`echo $USERNAME: $"Deleted"`
+	MESSAGE=$USERNAME: $"Deleted"
 else
-MESSAGE=`echo $USERNAME: $"The user was not deleted."`
+	MESSAGE=$USERNAME: $"The user was not deleted."
 fi
 show_status
 
