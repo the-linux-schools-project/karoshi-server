@@ -1,11 +1,4 @@
 #!/bin/bash
-
-#Get correct guest group depending on the samba version
-
-YEAR=`date +%Y`
-let STARTYEAR=$YEAR-11
-let ENDYEAR=$YEAR+2
-
 source /opt/karoshi/web_controls/group_dropdown_def
 echo '
         <select name="_GROUP_" style="width: 200px;">
@@ -14,14 +7,15 @@ echo '
 #Show all groups in group_information
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
-	GROUPNAME=`basename $GROUPNAMES`
-	GROUPNAME2=`echo $GROUPNAME | sed 's/-/HYPHEN/g'`
-	UPPERGROUPNAME=${GROUPNAME2^^}
+	GROUPNAME=$(basename "$GROUPNAMES")
+	GROUPNAME2=${GROUPNAME//-/HYPHEN}
+	UPPERGROUPNAME="${GROUPNAME2^^}"
 	LABEL=${!UPPERGROUPNAME:+ : ${!UPPERGROUPNAME}}
-	if [ $GROUPNAME != profilemanagement ]
+	if [ "$GROUPNAME" != profilemanagement ]
 	then
-		echo '<option value="'$GROUPNAME'">'$GROUPNAME"$LABEL"'</option>'
+		echo '<option value="'"$GROUPNAME"'">'"$GROUPNAME""$LABEL"'</option>'
 	fi
 done
+
 echo '</select>'
 exit

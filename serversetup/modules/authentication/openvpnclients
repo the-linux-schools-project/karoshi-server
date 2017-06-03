@@ -22,6 +22,15 @@ do
 		#Start up ssh tunnel
 		if [ "$TUNNELSTATUS" = 105 ]
 		then
+			#Make sure that openvpn is running on the main server
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/openvpn_status
+			if [ "$?" != 0 ]
+			then
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start
+			fi
+
 			#echo $VPNCLIENT starting vpn tunnel
 			echo "$(date): vpnclients - $VPNCLIENT starting vpn tunnel" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			#UDP hole punch
@@ -48,6 +57,8 @@ do
 			if [ "$?" = 0 ]
 			then
 				echo "$(date): vpnclients - $VPNCLIENT vpn tunnel online" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				#Remove web management warning
+				/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete vpnclient_warning_"$SERVER"
 			else
 				echo "$(date): vpnclients - $VPNCLIENT vpn tunnel offline" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				#Add web management warning
