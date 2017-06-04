@@ -275,7 +275,7 @@ samba-tool group addmembers "$PRIMARYGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt
 #Add user to any additional groups
 if [ ! -z "$USERSGROUPS" ]
 then
-	for USERSGROUP in ${USERSGROUPS/:/}
+	for USERSGROUP in ${USERSGROUPS//:/ }
 	do
 		echo "$(date): add_user - adding $NEWUSERNAME to $USERSGROUP" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		samba-tool group addmembers "$USERSGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -286,7 +286,7 @@ fi
 #Add user to supplementary groups
 if [ ! -z "$SECONDARYGROUP" ]
 then
-	SECONDARYGROUP="${SECONDARYGROUP/,/}"
+	SECONDARYGROUP="${SECONDARYGROUP//,/ }"
 	for EXTRAGROUP in $SECONDARYGROUP
 	do
 		samba-tool group addmembers "$EXTRAGROUP" "$NEWUSERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
