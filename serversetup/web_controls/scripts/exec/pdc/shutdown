@@ -191,7 +191,7 @@ then
 		then		
 			ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-			shutdown '$SHUTDOWN_OPTION' now &
+			nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
 			' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		else
 			#Send wakeon lan packet to the server
@@ -217,7 +217,7 @@ then
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
 		echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
-		shutdown '$SHUTDOWN_OPTION' now &
+		nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
 		'\''
 		'
 	fi
@@ -238,7 +238,7 @@ then
 				if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 				then
 					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$KAROSHISERVER" '
-					shutdown '"$SHUTDOWN_OPTION"' now &
+					nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
 					' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				else
 					KAROSHISERVER2=$(echo "$KAROSHISERVER"| cut -d. -f1)
@@ -272,7 +272,7 @@ then
 						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@"$FEDERATED_SERVER" '
 						echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$FEDERATED_SLAVE_SERVER"' '\''
-						shutdown '"$SHUTDOWN_OPTION"' now &
+						nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
 						'\''
 						'
 					fi
