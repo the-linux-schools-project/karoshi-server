@@ -72,7 +72,7 @@ do
 	let COUNTER="$COUNTER"+1
 done
 
-CARDCHOICE=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."'\n '"$YADNICS"'' --button=OK)
+CARDCHOICE=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --form --text=''$"Multiple network cards have been detected."' '$"Select the network card that you want to configure."'\n\n'$"Choose multiple cards if you want to bond the cards together."'\n '$YADNICS'' --button=OK)
 
 #Check which cards have been selected
 

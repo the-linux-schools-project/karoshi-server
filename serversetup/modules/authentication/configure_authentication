@@ -588,6 +588,7 @@ echo fudge 127.127.1.0 stratum 15 >> /etc/ntp.conf
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_stop 1>/dev/null
 sleep 1
+ntpdate '"$NTPSERVER"'
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_start 1>/dev/null
 '
 }
@@ -622,6 +623,12 @@ configure_hosts
 #Configure /etc/resolv.conf
 echo "$(date): configure_authentication - configuring /etc/resolv.conf for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 configure_resolvconf
+#Configure NTP
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ "$ZONE" != external ]
+then
+	echo "$(date): configure_authentication - configuring ntp for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	configure_ntp
+fi
 #Configure samba4
 if [ "$AUTHTYPE" = adc ] || [ "$AUTHTYPE" = rodc ] || [ "$AUTHTYPE" = member ]
 then
@@ -634,11 +641,7 @@ then
 	echo "$(date): configure_authentication - configuring nslcd for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	configure_nslcd
 fi
-if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ "$ZONE" != external ]
-then
-	echo "$(date): configure_authentication - configuring ntp for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	configure_ntp
-fi
+
 echo "$(date): configure_authentication - completed for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Add server zone info
