@@ -628,9 +628,7 @@ then
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	#Restart shorewall
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-	echo "<br>"
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
-	echo "<br><br>"
 fi
 '
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement

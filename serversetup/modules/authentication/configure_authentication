@@ -127,13 +127,11 @@ then
 	mount -t tmpfs tmpfs /run/lock -o remount,size=50M
 fi
 
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-
 #Check firewall rules for adc, rodc and domain member
 MODCHECK=$(grep -c -w '"$RULESET"' /etc/shorewall/rules)
 if [ "$MODCHECK" = 0 ]
 then
-	echo "<ul><li>'"$SERVERNAME"' - '$"Adding shorewall ports"'</li></ul>tcp '"$TCPPORTS"'<br>udp '"$UDPPORTS"'<br><br>"
+	echo "<ul><li>'"$SERVERNAME"' - '$"Adding shorewall ports"' tcp '"$TCPPORTS"'</li></ul><ul><li>'"$SERVERNAME"' - '$"Adding shorewall ports"' udp '"$UDPPORTS"'</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"'"$TCPPORTS"'"	"-"#"'"$RULESET"'-tcp /etc/shorewall/rules
 	echo ACCEPT"	"net"	"fw"	"udp"	"'"$UDPPORTS"'"	"-"#"'"$RULESET"'-udp >> /etc/shorewall/rules
@@ -152,15 +150,15 @@ then
 	[ -f /usr/local/sbin/samba_disabled ] && mv /usr/local/sbin/samba_disabled /usr/local/sbin/samba
 	[ -f /etc/samba/smb.conf ] && rm -f /etc/samba/smb.conf
 	[ -d /var/lib/samba/private ] && rm -f -R /var/lib/samba/private
-
+	echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 	samba-tool domain join '"$SAMBADOMAIN"' '"$JOINTYPE"' --server='"$HOSTNAME"'.'"$REALM"'  --username=Administrator --password='"$LDAPPASS"' --realm='"$REALM"' 2>&1
 	JOINDOMAINSTATUS=$?
+	echo "</pre>"
 	if [ "$JOINDOMAINSTATUS" != 0 ]
 	then
 		echo '$"There was a problem with joining the domain."'"<br><br>"
 		exit 101
 	fi
-	echo "</pre><br><br>"
 
 	#Get forwarding dns server
 	DNSFORWARD=$(grep dns-nameservers /etc/network/interfaces | cut -d" " -f2 | sed -n 1,1p)
@@ -549,12 +547,12 @@ then
 		UDPPORTS=53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268
 	fi
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	echo "<ul><li>"Checking to see that '"$PORTSCANIP"' can be contacted on ports: '"$PORTCHECK"'"</li></ul>"
+	echo "<ul><li>Checking to see that "'"$PORTSCANIP"'" can be contacted on ports: "'"$PORTCHECK"'"</li></ul>"
 	for PORT in $(echo '"$PORTCHECK"' | sed "s/,/ /g")
 	do
-	echo '$"Port"': $PORT - '$"Server"': '"$PORTSCANIP"'"<br>"
-	nc -zv -w5 '"$PORTSCANIP"' "$PORT"
-	[ $? != 0 ] && exit "$PORT"
+		echo "<ul><li>"'$"Port"': $PORT - '$"Server"': '"$PORTSCANIP"'"</li></ul>"
+		nc -zv -w5 '"$PORTSCANIP"' "$PORT"
+		[ $? != 0 ] && exit "$PORT"
 	done
 	exit 0
 	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -566,7 +564,6 @@ then
 		sleep 4
 		exit "$EXITCHECK"
 	fi
-	echo '<br><br>'
 fi
 }
 
@@ -588,7 +585,7 @@ echo fudge 127.127.1.0 stratum 15 >> /etc/ntp.conf
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_stop 1>/dev/null
 sleep 1
-ntpdate '"$NTPSERVER"'
+ntpdate '"$NTPSERVER"' 1>/dev/null
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_start 1>/dev/null
 '
 }
