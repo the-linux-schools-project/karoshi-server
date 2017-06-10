@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_web_cgi
 then
-	echo `date`: module_web - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_web_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_web_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_web_cgi"'check' ]
 then
-	echo `date`: module_web - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,345 +45,345 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_web - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/UNDERSCORE/_/g'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/UNDERSCORE/_/g')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_web - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-WEBSERVER=`echo "$DATA" | cut -s -d: -f4`
-WEBDB=`echo "$DATA" | cut -s -d: -f5`
-WEBDBUSER=`echo "$DATA" | cut -s -d: -f6`
-WEBDBPASS=`echo "$DATA" | cut -s -d: -f7`
-MYSQLPORT=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+WEBSERVER=$(echo "$DATA" | cut -s -d: -f4)
+WEBDB=$(echo "$DATA" | cut -s -d: -f5)
+WEBDBUSER=$(echo "$DATA" | cut -s -d: -f6)
+WEBDBPASS=$(echo "$DATA" | cut -s -d: -f7)
+MYSQLPORT=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: module_web - Not called by module_web.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - Not called by module_web.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_web - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_web - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$WEBSERVER" ]
 then
-	echo `date`: module_web - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: module_web - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_web - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_web on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_web on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Check to see if we need to create a database
 
 if [ ! -z "$WEBDB" ] && [ ! -z "$WEBDBUSER" ] && [ ! -z "$WEBDBPASS" ]
 then
-	if [ $WEBDB != mysql ]
+	if [ "$WEBDB" != mysql ]
 	then
-		echo `date`: module_web - creating database $WEBDB "for" $WEBDBUSER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): module_web - creating database $WEBDB for $WEBDBUSER on $WEBSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		CREATEDB=yes
 	else
 		CREATEDB=no
 	fi
 fi
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
 
 ##########################
 #Make sure that apache and mysql are running
 ##########################
 echo '<ul><li>'$"Making sure that apache and mysql are running"'</li></ul>'
-if [ $WEBSERVER = `hostname-fqdn` ]
+if [[ "$WEBSERVER" = $(hostname-fqdn) ]]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_start
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/vsftpd_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/vsftpd_start
 
-#############################
-#Ensure that apache and mysql are running on boot
-#############################
-echo "<ul><li>"$"Setting apache and mysql to start on boot""</li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
+	#############################
+	#Ensure that apache and mysql are running on boot
+	#############################
+	echo "<ul><li>"$"Setting apache and mysql to start on boot""</li></ul>"
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/vsftpd
 
 else
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-source /opt/karoshi/serversetup/variables/distro
+	ssh -x -o PasswordAuthentication=no "$WEBSERVER" '
+	source /opt/karoshi/serversetup/variables/distro
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mysql_start
 
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_status
-[ $? != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/vsftpd_status
+	[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/vsftpd_start
 
-#############################
-#Ensure that apache and mysql are running on boot
-#############################
-echo "<ul><li>"'$"Setting apache and mysql to start on boot"'"</li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-'
+	#############################
+	#Ensure that apache and mysql are running on boot
+	#############################
+	echo "<ul><li>"'$"Setting apache and mysql to start on boot"'"</li></ul>"
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/apache
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/mysql
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/vsftpd
+	'
 fi
 
 
 echo '<ul><li>'$"Checking shorewall ports"'</li></ul>'
-if [ $WEBSERVER = `hostname-fqdn` ]
+if [[ "$WEBSERVER" = $(hostname-fqdn) ]]
 then
-#####################################
-#Ensure that apache ports are open in shorewall
-#####################################
+	#####################################
+	#Ensure that apache ports are open in shorewall
+	#####################################
 
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
-MODCHECK3=`grep -c -w \#ftp_rule /etc/shorewall/rules`
-
-
-MOD_SHOREWALL=no
-ADD_APACHE_RULE=no
-ADD_FTP_RULE=no
-if [ $MODCHECK = 0 ]
-then
-	MOD_SHOREWALL=yes
-	ADD_APACHE_RULE=yes
-	PORTS="80"
-fi
-
-if [ $MODCHECK2 = 0 ]
-then
-	MOD_SHOREWALL=yes
-	ADD_APACHE_RULE=yes
-	PORTS="443"
-fi
-
-if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
-then
-	MOD_SHOREWALL=yes
-	ADD_APACHE_RULE=yes
-	PORTS="80,443"
-fi
-
-if [ $MODCHECK3 = 0 ]
-then
-	MOD_SHOREWALL=yes
-	ADD_FTP_RULE=yes
-fi
-
-if [ $ADD_APACHE_RULE = yes ]
-then
-	echo '<ul><li>'$"Opening ports 80 and 443"'</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'$PORTS'	'-'#'apache_webserver_rule /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
-
-if [ $ADD_FTP_RULE = yes ]
-then
-	echo '<ul><li>'$"Opening ports 20 and 21"'</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'20,21'	'-'#'ftp_rule /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
+	MODCHECK=$(grep -c -w 80 /etc/shorewall/rules)
+	MODCHECK2=$(grep -c -w 443 /etc/shorewall/rules)
+	MODCHECK3=$(grep -c -w \#ftp_rule /etc/shorewall/rules)
 
 
-if [ ! -z "$MYSQLPORT" ]
-then
-	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` = 0 ]
+	MOD_SHOREWALL=no
+	ADD_APACHE_RULE=no
+	ADD_FTP_RULE=no
+	if [ "$MODCHECK" = 0 ]
 	then
-		echo '<ul><li>'$"Opening port 3306"'</li></ul>'
-		LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'3306'	'-'#'mysql_rule /etc/shorewall/rules
-		echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 		MOD_SHOREWALL=yes
+		ADD_APACHE_RULE=yes
+		PORTS="80"
 	fi
+
+	if [ "$MODCHECK2" = 0 ]
+	then
+		MOD_SHOREWALL=yes
+		ADD_APACHE_RULE=yes
+		PORTS="443"
+	fi
+
+	if [ "$MODCHECK" = 0 ] && [ "$MODCHECK2" = 0 ]
+	then
+		MOD_SHOREWALL=yes
+		ADD_APACHE_RULE=yes
+		PORTS="80,443"
+	fi
+
+	if [ "$MODCHECK3" = 0 ]
+	then
+		MOD_SHOREWALL=yes
+		ADD_FTP_RULE=yes
+	fi
+
+	if [ "$ADD_APACHE_RULE" = yes ]
+	then
+		echo '<ul><li>'$"Opening ports 80 and 443"'</li></ul>'
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'cACCEPT	net	fw	tcp	'"$PORTS"'	-#'apache_webserver_rule /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	fi
+
+	if [ "$ADD_FTP_RULE" = yes ]
+	then
+		echo '<ul><li>'$"Opening ports 20 and 21"'</li></ul>'
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'cACCEPT	net	fw	tcp	20,21	-#'ftp_rule /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	fi
+
+
+	if [ ! -z "$MYSQLPORT" ]
+	then
+		if [[ $(grep -c -w \#mysql_rule /etc/shorewall/rules) = 0 ]]
+		then
+			echo '<ul><li>'$"Opening port 3306"'</li></ul>'
+			LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+			sed -i "$LINENUM"'cACCEPT	net	fw	tcp	3306	-#'mysql_rule /etc/shorewall/rules
+			echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+			MOD_SHOREWALL=yes
+		fi
+	else
+		if [[ $(grep -c -w \#mysql_rule /etc/shorewall/rules) -gt 0 ]]
+		then
+			echo '<ul><li>'$"Closing port 3306"'</li></ul>'
+			LINENUM=$(grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+			MOD_SHOREWALL=yes
+		fi
+	fi
+
+	if [ "$MOD_SHOREWALL" = yes ]
+	then
+		echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+
 else
-	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` -gt 0 ]
-	then
-		echo '<ul><li>'$"Closing port 3306"'</li></ul>'
-		LINENUM=`grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1`
-		sed -i "$LINENUM"d /etc/shorewall/rules
-		MOD_SHOREWALL=yes
-	fi
-fi
-
-if [ $MOD_SHOREWALL = yes ]
-then
-	echo '<ul><li>'$"Restarting shorewall"'</li></ul>'
+	ssh -x -o PasswordAuthentication=no "$WEBSERVER" '
+	#####################################
+	#Ensure that apache ports are open in shorewall
+	#####################################
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
 
-else
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-#####################################
-#Ensure that apache ports are open in shorewall
-#####################################
-source /opt/karoshi/serversetup/variables/distro
+	MODCHECK=$(grep -c -w 80 /etc/shorewall/rules)
+	MODCHECK2=$(grep -c -w 443 /etc/shorewall/rules)
+	MODCHECK3=$(grep -c -w \#ftp_rule /etc/shorewall/rules)
 
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
-MODCHECK3=`grep -c -w \#ftp_rule /etc/shorewall/rules`
-
-MOD_SHOREWALL=no
-ADD_APACHE_RULE=no
-ADD_FTP_RULE=no
+	MOD_SHOREWALL=no
+	ADD_APACHE_RULE=no
+	ADD_FTP_RULE=no
 
 
-if [ $MODCHECK = 0 ]
-then
-	ADD_APACHE_RULE=yes
-	MOD_SHOREWALL=yes
-	PORTS="80"
-fi
-
-if [ $MODCHECK2 = 0 ]
-then
-	ADD_APACHE_RULE=yes
-	MOD_SHOREWALL=yes
-	PORTS="443"
-fi
-
-if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
-then
-	ADD_APACHE_RULE=yes
-	MOD_SHOREWALL=yes
-	PORTS="80,443"
-fi
-
-if [ $MODCHECK3 = 0 ]
-then
-	MOD_SHOREWALL=yes
-	ADD_FTP_RULE=yes
-fi
-
-
-if [ $ADD_APACHE_RULE = yes ]
-then
-	echo "<ul><li>"'$"Opening ports 80 and 443"'"</li></ul>"
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apache_webserver_rule /etc/shorewall/rules
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
-
-if [ $ADD_FTP_RULE = yes ]
-then
-	echo "<ul><li>"'$"Opening ports 20 and 21"'"</li></ul>"
-	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"20,21"	"-"#"ftp_rule /etc/shorewall/rules
-	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-fi
-
-if [ ! -z "'$MYSQLPORT'" ]
-then
-	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` = 0 ]
+	if [ "$MODCHECK" = 0 ]
 	then
-		echo "<ul><li>"'$"Opening port 3306"'"</li></ul>"
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"3306"	"-"#"mysql_rule /etc/shorewall/rules
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		ADD_APACHE_RULE=yes
 		MOD_SHOREWALL=yes
+		PORTS="80"
 	fi
-else
-	if [ `grep -c -w \#mysql_rule /etc/shorewall/rules` -gt 0 ]
-	then
-		echo "<ul><li>"'$"Closing port 3306"'"</li></ul>"
-		LINENUM=`grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1`
-		sed -i "$LINENUM"d /etc/shorewall/rules
-		MOD_SHOREWALL=yes
-	fi
-fi
 
-if [ $MOD_SHOREWALL = yes ]
-then
-	echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
-fi
-'
+	if [ "$MODCHECK2" = 0 ]
+	then
+		ADD_APACHE_RULE=yes
+		MOD_SHOREWALL=yes
+		PORTS="443"
+	fi
+
+	if [ "$MODCHECK" = 0 ] && [ "$MODCHECK2" = 0 ]
+	then
+		ADD_APACHE_RULE=yes
+		MOD_SHOREWALL=yes
+		PORTS="80,443"
+	fi
+
+	if [ "$MODCHECK3" = 0 ]
+	then
+		MOD_SHOREWALL=yes
+		ADD_FTP_RULE=yes
+	fi
+
+
+	if [ "$ADD_APACHE_RULE" = yes ]
+	then
+		echo "<ul><li>"'$"Opening ports 80 and 443"'"</li></ul>"
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i $LINENUM"c"\ACCEPT"	net	fw	tcp	$PORTS	-#"apache_webserver_rule /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	fi
+
+	if [ "$ADD_FTP_RULE" = yes ]
+	then
+		echo "<ul><li>"'$"Opening ports 20 and 21"'"</li></ul>"
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i $LINENUM"c"\ACCEPT	net	fw	tcp	20,21	-#"ftp_rule /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	fi
+
+	if [ ! -z "'"$MYSQLPORT"'" ]
+	then
+		if [ $(grep -c -w \#mysql_rule /etc/shorewall/rules) = 0 ]
+		then
+			echo "<ul><li>"'$"Opening port 3306"'"</li></ul>"
+			LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+			sed -i $LINENUM"c"\ACCEPT	net	fw	tcp	3306	-#"mysql_rule /etc/shorewall/rules
+			echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+			MOD_SHOREWALL=yes
+		fi
+	else
+		if [ $(grep -c -w \#mysql_rule /etc/shorewall/rules) -gt 0 ]
+		then
+			echo "<ul><li>"'$"Closing port 3306"'"</li></ul>"
+			LINENUM=$(grep -n "mysql_rule" /etc/shorewall/rules | cut -d: -f1)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+			MOD_SHOREWALL=yes
+		fi
+	fi
+
+	if [ "$MOD_SHOREWALL" = yes ]
+	then
+		echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+	'
 fi
 
 #########################
 #Create mysql database
 #########################
-if [ $CREATEDB = yes ]
+if [ "$CREATEDB" = yes ]
 then
-echo '<ul><li>'$"Creating Database" $WEBDB username $WEBDBUSER'</li></ul>'
-if [ $WEBSERVER = `hostname-fqdn` ]
-then
-#Make sure that we know the root mysql password
-/opt/karoshi/serversetup/all/'useful scripts'/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
-mysqladmin --password=$MYSQLPASS create $WEBDB
-sleep 1
-echo GRANT ALL PRIVILEGES ON $WEBDB.\* TO \'$WEBDBUSER\'@\'localhost\' IDENTIFIED BY \'$WEBDBPASS\'\; > /opt/karoshi/.tempdata/perms$$.sql
-echo ALTER DATABASE $WEBDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci';' >> /opt/karoshi/.tempdata/perms$$.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/perms$$.sql
-rm -f /opt/karoshi/.tempdata/perms$$.sql
+	echo '<ul><li>'$"Creating Database" "$WEBDB" username "$WEBDBUSER"'</li></ul>'
+	if [[ "$WEBSERVER" = $(hostname-fqdn) ]]
+	then
+		#Make sure that we know the root mysql password
+		/opt/karoshi/serversetup/all/'useful scripts'/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
+		mysqladmin --password="$MYSQLPASS" create "$WEBDB"
+		sleep 1
+		echo "GRANT ALL PRIVILEGES ON $WEBDB.* TO '$WEBDBUSER'@'localhost' IDENTIFIED BY '$WEBDBPASS';" > /opt/karoshi/.tempdata/perms"$$".sql
+		echo "ALTER DATABASE $WEBDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;" >> /opt/karoshi/.tempdata/perms"$$".sql
+		mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/perms"$$".sql
+		rm -f /opt/karoshi/.tempdata/perms"$$".sql
 
-else
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-#Make sure that we know the root mysql password
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
-mysqladmin --password=$MYSQLPASS create '$WEBDB'
-sleep 1
-echo GRANT ALL PRIVILEGES ON '$WEBDB'.\* TO "'"'$WEBDBUSER'"'"@"'"localhost"'" IDENTIFIED BY "'"'$WEBDBPASS'"'"\; > /opt/karoshi/.tempdata/perms$$.sql
-echo ALTER DATABASE '$WEBDB' DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci\; >> /opt/karoshi/.tempdata/perms$$.sql
-mysql --password=$MYSQLPASS < /opt/karoshi/.tempdata/perms$$.sql
-rm -f /opt/karoshi/.tempdata/perms$$.sql
-'
-fi
+	else
+		ssh -x -o PasswordAuthentication=no "$WEBSERVER" '
+		#Make sure that we know the root mysql password
+		/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
+		#Get root mysql password
+		MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+		mysqladmin --password=$MYSQLPASS create '"$WEBDB"'
+		sleep 1
+		echo "GRANT ALL PRIVILEGES ON '"'$WEBDB'"'.* TO '"'$WEBDBUSER'"'@localhost IDENTIFIED BY '"'$WEBDBPASS'"';" > /opt/karoshi/.tempdata/perms$$.sql
+		echo "ALTER DATABASE '"$WEBDB"' DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;" >> /opt/karoshi/.tempdata/perms$$.sql
+		mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/perms$$.sql
+		rm -f /opt/karoshi/.tempdata/perms$$.sql
+		'
+	fi
 fi
 
 #########################
 #Add role information
 #########################
-[ ! -d /opt/karoshi/server_network/servers/$WEBSERVER ] && mkdir -p /opt/karoshi/server_network/servers/$WEBSERVER
-echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$WEBSERVER/apacheserver
-[ -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role
+[ ! -d /opt/karoshi/server_network/servers/"$WEBSERVER" ] && mkdir -p /opt/karoshi/server_network/servers/"$WEBSERVER"
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/"$WEBSERVER"/apacheserver
+[ -f /opt/karoshi/server_network/servers/"$WEBSERVER"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$WEBSERVER"/no_role
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
-echo $WEBSERVER > /opt/karoshi/server_network/webservers/$WEBSERVER
+echo "$WEBSERVER" > /opt/karoshi/server_network/webservers/"$WEBSERVER"
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 exit
 
