@@ -63,10 +63,11 @@ REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -d: -f2)
 REMOTE_MD5=$(echo "$DATA" | cut -d: -f3)
 SHUTDOWN_OPTION=$(echo "$DATA" | cut -d: -f4)
-SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
-SERVERTYPE=$(echo "$DATA" | cut -s -d: -f6)
-SERVERMASTER=$(echo "$DATA" | cut -s -d: -f7)
-MOBILE=$(echo "$DATA" | cut -s -d: -f8)
+FORCE=$(echo "$DATA" | cut -d: -f5)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f6)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f7)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f8)
+#MOBILE=$(echo "$DATA" | cut -s -d: -f9)
 
 
 ########################
@@ -115,13 +116,19 @@ then
 		exit 101
 	fi
 fi
+
+if [ -z "$FORCE" ]
+then
+	FORCE=no
+fi
+
 if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	echo "$(date): shutdown - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "$(date): shutdown $SHUTDOWN_OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): shutdown $SHUTDOWN_OPTION $SERVERNAME force $FORCE - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ############################
 #Language
@@ -176,7 +183,13 @@ then
 	sleep 1
 	if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 	then
-		shutdown "$SHUTDOWN_OPTION" now 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" &
+		if [ "$FORCE" = yes ]
+		then
+			[ "$SHUTDOWN_OPTION" = "-h" ] && halt -f
+			[ "$SHUTDOWN_OPTION" = "-r" ] && reboot -f
+		else
+			shutdown "$SHUTDOWN_OPTION" now 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" &
+		fi
 	fi
 fi
 
@@ -191,7 +204,14 @@ then
 		then		
 			ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-			nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+
+			if [ "'"$FORCE"'" = yes ]
+			then
+				[ "'"$SHUTDOWN_OPTION"'" = "-h" ] && halt -f
+				[ "'"$SHUTDOWN_OPTION"'" = "-r" ] && reboot -f
+			else
+				nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+			fi
 			' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		else
 			#Send wakeon lan packet to the server
@@ -217,7 +237,13 @@ then
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
 		echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
-		nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+		if [ "'"$FORCE"'" = yes ]
+		then
+			[ "'"$SHUTDOWN_OPTION"'" = "-h" ] && halt -f
+			[ "'"$SHUTDOWN_OPTION"'" = "-r" ] && reboot -f
+		else
+			nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+		fi
 		'\''
 		'
 	fi
@@ -238,7 +264,13 @@ then
 				if [ "$SHUTDOWN_OPTION" = "-h" ] || [ "$SHUTDOWN_OPTION" = "-r" ]
 				then
 					ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$KAROSHISERVER" '
-					nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+					if [ "'"$FORCE"'" = yes ]
+					then
+						[ "'"$SHUTDOWN_OPTION"'" = "-h" ] && halt -f
+						[ "'"$SHUTDOWN_OPTION"'" = "-r" ] && reboot -f
+					else
+						nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+					fi
 					' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				else
 					KAROSHISERVER2=$(echo "$KAROSHISERVER"| cut -d. -f1)
@@ -272,7 +304,13 @@ then
 						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 root@"$FEDERATED_SERVER" '
 						echo `date`: shutdown \(federated mode\) '"$SHUTDOWN_OPTION"' '"$SERVERNAME"' - by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 						ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 '"$FEDERATED_SLAVE_SERVER"' '\''
-						nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+						if [ "'"$FORCE"'" = yes ]
+						then
+							[ "'"$SHUTDOWN_OPTION"'" = "-h" ] && halt -f
+							[ "'"$SHUTDOWN_OPTION"'" = "-r" ] && reboot -f
+						else
+							nohup shutdown '"$SHUTDOWN_OPTION"' now &>/dev/null & exit
+						fi
 						'\''
 						'
 					fi

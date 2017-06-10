@@ -40,15 +40,15 @@ source /opt/karoshi/web_controls/version
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Shutdown-Reboot Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Shutdown-Reboot Server"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -60,7 +60,7 @@ $(document).ready(function()
 </script>
 '
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -85,99 +85,65 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
-#Assign SHUTDOWN_OPTION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SHUTDOWNcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SHUTDOWN_OPTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SHUTDOWN_OPTION
+DATANAME=SHUTDOWN_OPTION
+get_data
+SHUTDOWN_OPTION="$DATAENTRY"
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERMASTER
+get_data
+SERVERMASTER="$DATAENTRY"
 
 #Assign SHUTDOWNCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SHUTDOWNCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SHUTDOWNCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SHUTDOWNCODE
+get_data
+SHUTDOWNCODE="$DATAENTRY"
 
 #Assign FORMCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=FORMCODE
+get_data
+FORMCODE="$DATAENTRY"
+
+#Assign FORCE
+DATANAME=FORCE
+get_data
+FORCE="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/shutdown_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -186,7 +152,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -200,7 +166,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -216,7 +182,7 @@ then
 fi
 
 #Only allow shutdown and reboot.
-if [ $SHUTDOWN_OPTION != shutdown ] && [ $SHUTDOWN_OPTION != reboot ] && [ $SHUTDOWN_OPTION != wakeonlan ]
+if [ "$SHUTDOWN_OPTION" != shutdown ] && [ "$SHUTDOWN_OPTION" != reboot ] && [ "$SHUTDOWN_OPTION" != wakeonlan ]
 then
 	MESSAGE=$"You must only choose shutdown or reboot."
 	show_status
@@ -248,14 +214,14 @@ then
 	show_status
 fi
 #Make sure that FORMCODE and SHUTDOWNCODE matches
-if [ $FORMCODE != $SHUTDOWNCODE ]
+if [ "$FORMCODE" != "$SHUTDOWNCODE" ]
 then
 	MESSAGE=$"Incorrect shutdown code."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	#Generate navigation bar
@@ -264,25 +230,24 @@ else
 	DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Shutdown-Reboot Server"'</span>
-<a href="/cgi-bin/admin/shutdown_fm.cgi">'$SERVERNAME'</a>
+<a href="/cgi-bin/admin/shutdown_fm.cgi">'"$SERVERNAME"'</a>
 </div></div><div id="mobileactionbox">'
 else
 	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
 #Shutdown server
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHUTDOWN_OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/shutdown
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 102 ]
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHUTDOWN_OPTION:$FORCE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/shutdown
+if [ "$?" = 102 ]
 then
 	MESSAGE=$"The form code must not be blank."
 	show_status

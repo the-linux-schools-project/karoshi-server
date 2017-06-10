@@ -32,16 +32,16 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
+SHUTDOWN_CODE="${RANDOM:0:3}"
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,8 +52,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Shutdown-Reboot Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Shutdown-Reboot Server"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
   <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -85,7 +85,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -109,13 +109,12 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=180
-	HEIGHT=20
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -123,15 +122,14 @@ else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
 	WIDTH=160
-	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/shutdown.cgi" name="selectservers" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -142,7 +140,7 @@ else
 echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br></div><div id="infobox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: '$WIDTH'px;">'$"Shutdown"'</td>
@@ -160,20 +158,25 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
         <td></td>
       </tr>
 <tr><td>'$"Shutdown Code"'</td>
-        <td style="vertical-align: top; text-align: left;"><b>'$SHUTDOWN_CODE'</b></td>
+        <td style="vertical-align: top; text-align: left;"><b>'"$SHUTDOWN_CODE"'</b></td>
         <td></td>
       </tr>
 <tr><td>'$"Confirm"'</td>
         <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td><td>
-<a class="'$TOOLTIPCLASS'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
-</td></tr></tbody></table><br>
-<input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">
+<a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
+</td></tr>
+<tr><td>'$"Force"'</td>
+<td style="vertical-align: top; text-align: left;"><input type="checkbox" name="_FORCE_" value="yes"></td><td>
+<a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force your server to shutdown or reboot."' '$"This is the equivalent of pressing the reset button."'</span></a>
+</td></tr>
+</tbody></table><br>
+<input name="_FORMCODE_" value="'"$SHUTDOWN_CODE"'" type="hidden">
 '
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all $"Submit"
+/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Submit"
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit
