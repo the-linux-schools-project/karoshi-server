@@ -77,7 +77,7 @@ CREATE TABLE `oc_activity` (
 
 LOCK TABLES `oc_activity` WRITE;
 /*!40000 ALTER TABLE `oc_activity` DISABLE KEYS */;
-INSERT INTO `oc_activity` VALUES (1,1497011838,30,'calendar','system','system','dav','calendar_add_self','[\"system\",\"Contact birthdays\"]','','[]','','','calendar',1);
+INSERT INTO `oc_activity` VALUES (1,1497074828,30,'calendar','system','system','dav','calendar_add_self','[\"system\",\"Contact birthdays\"]','','[]','','','calendar',1);
 /*!40000 ALTER TABLE `oc_activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,7 +211,7 @@ CREATE TABLE `oc_admin_settings` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `admin_settings_class` (`class`),
   KEY `admin_settings_section` (`section`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,7 +220,7 @@ CREATE TABLE `oc_admin_settings` (
 
 LOCK TABLES `oc_admin_settings` WRITE;
 /*!40000 ALTER TABLE `oc_admin_settings` DISABLE KEYS */;
-INSERT INTO `oc_admin_settings` VALUES (1,'OCA\\Theming\\Settings\\Admin','theming',5),(2,'OCA\\UpdateNotification\\Controller\\AdminController','server',1),(3,'OCA\\Survey_Client\\Settings\\AdminSettings','survey_client',50),(4,'OCA\\Files\\Settings\\Admin','additional',5),(5,'OCA\\Federation\\Settings\\Admin','sharing',30),(6,'OCA\\ServerInfo\\Settings\\AdminSettings','serverinfo',0),(7,'OCA\\Password_Policy\\Settings','security',50),(8,'OCA\\FederatedFileSharing\\Settings\\Admin','sharing',20),(9,'OCA\\OAuth2\\Settings\\Admin','security',0),(10,'OCA\\ShareByMail\\Settings\\Admin','sharing',40),(11,'OCA\\LogReader\\Settings\\Admin','logging',90),(12,'OCA\\Activity\\Settings\\Admin','activity',55),(13,'OCA\\NextcloudAnnouncements\\Settings\\Admin','additional',30),(14,'OCA\\SystemTags\\Settings\\Admin','workflow',70),(15,'OCA\\BruteForceSettings\\Settings\\IPWhitelist','security',50),(16,'OCA\\Files_External\\Settings\\Admin','externalstorages',40),(17,'OCA\\User_LDAP\\Settings\\Admin','ldap',5),(18,'OCA\\Richdocuments\\Settings\\Admin','richdocuments',0),(20,'OCA\\Drawio\\AdminSettings','server',60);
+INSERT INTO `oc_admin_settings` VALUES (1,'OCA\\FederatedFileSharing\\Settings\\Admin','sharing',20),(2,'OCA\\Activity\\Settings\\Admin','activity',55),(3,'OCA\\Password_Policy\\Settings','security',50),(4,'OCA\\SystemTags\\Settings\\Admin','workflow',70),(5,'OCA\\LogReader\\Settings\\Admin','logging',90),(6,'OCA\\ShareByMail\\Settings\\Admin','sharing',40),(7,'OCA\\NextcloudAnnouncements\\Settings\\Admin','additional',30),(8,'OCA\\Theming\\Settings\\Admin','theming',5),(9,'OCA\\ServerInfo\\Settings\\AdminSettings','serverinfo',0),(10,'OCA\\UpdateNotification\\Controller\\AdminController','server',1),(11,'OCA\\Survey_Client\\Settings\\AdminSettings','survey_client',50),(12,'OCA\\OAuth2\\Settings\\Admin','security',0),(13,'OCA\\Files\\Settings\\Admin','additional',5),(14,'OCA\\Federation\\Settings\\Admin','sharing',30),(15,'OCA\\BruteForceSettings\\Settings\\IPWhitelist','security',50),(16,'OCA\\Files_External\\Settings\\Admin','externalstorages',40),(17,'OCA\\User_LDAP\\Settings\\Admin','ldap',5),(18,'OCA\\Richdocuments\\Settings\\Admin','richdocuments',0);
 /*!40000 ALTER TABLE `oc_admin_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,7 +247,7 @@ CREATE TABLE `oc_appconfig` (
 
 LOCK TABLES `oc_appconfig` WRITE;
 /*!40000 ALTER TABLE `oc_appconfig` DISABLE KEYS */;
-INSERT INTO `oc_appconfig` VALUES ('activity','enabled','yes'),('activity','installed_version','2.5.2'),('activity','types','filesystem'),('backgroundjob','lastjob','10'),('bookmarks','enabled','yes'),('bookmarks','installed_version','0.10.0'),('bookmarks','types',''),('bruteforcesettings','enabled','yes'),('bruteforcesettings','installed_version','1.0.2'),('bruteforcesettings','types',''),('calendar','enabled','yes'),('calendar','installed_version','1.5.3'),('calendar','types',''),('comments','enabled','yes'),('comments','installed_version','1.2.0'),('comments','types','logging'),('core','installed.bundles','[\"CoreBundle\"]'),('core','installedat','1497011141.6814'),('core','lastcron','1497017536'),('core','lastupdateResult','[]'),('core','lastupdatedat','1497015780'),('core','oc.integritycheck.checker','[]'),('core','public_files','files_sharing/public.php'),('core','public_webdav','dav/appinfo/v1/publicwebdav.php'),('core','scss.variables','3566bc1e0f55c1f422c50b3255478fd7'),('core','vendor','nextcloud'),('dav','enabled','yes'),('dav','installed_version','1.3.0'),('dav','types','filesystem'),('deck','enabled','yes'),('deck','installed_version','0.1.4'),('deck','types',''),('drawio','enabled','yes'),('drawio','installed_version','0.8.8'),('drawio','types','filesystem'),('federatedfilesharing','enabled','yes'),('federatedfilesharing','installed_version','1.2.0'),('federatedfilesharing','types',''),('federation','enabled','yes'),('federation','installed_version','1.2.0'),('federation','types','authentication'),('files','cronjob_scan_files','500'),('files','enabled','yes'),('files','installed_version','1.7.2'),('files','types','filesystem'),('files_external','enabled','yes'),('files_external','installed_version','1.3.0'),('files_external','types','filesystem'),('files_pdfviewer','enabled','yes'),('files_pdfviewer','installed_version','1.1.1'),('files_pdfviewer','ocsid','166049'),('files_pdfviewer','types',''),('files_reader','enabled','yes'),('files_reader','installed_version','1.0.4'),('files_reader','types','filesystem'),('files_sharing','enabled','yes'),('files_sharing','installed_version','1.4.0'),('files_sharing','types','filesystem'),('files_texteditor','enabled','yes'),('files_texteditor','installed_version','2.4.1'),('files_texteditor','ocsid','166051'),('files_texteditor','types',''),('files_trashbin','enabled','yes'),('files_trashbin','installed_version','1.2.0'),('files_trashbin','types','filesystem'),('files_versions','enabled','yes'),('files_versions','installed_version','1.5.0'),('files_versions','types','filesystem'),('files_videoplayer','enabled','yes'),('files_videoplayer','installed_version','1.1.0'),('files_videoplayer','types',''),('firstrunwizard','enabled','yes'),('firstrunwizard','installed_version','2.1'),('firstrunwizard','types','logging'),('gallery','enabled','yes'),('gallery','installed_version','17.0.0'),('gallery','types',''),('logreader','enabled','yes'),('logreader','installed_version','2.0.0'),('logreader','ocsid','170871'),('logreader','types',''),('lookup_server_connector','enabled','yes'),('lookup_server_connector','installed_version','1.0.0'),('lookup_server_connector','types','authentication'),('nextcloud_announcements','enabled','yes'),('nextcloud_announcements','installed_version','1.1'),('nextcloud_announcements','pub_date','Sat, 10 Dec 2016 00:00:00 +0100'),('nextcloud_announcements','types','logging'),('notes','enabled','yes'),('notes','installed_version','2.2.0'),('notes','types',''),('notifications','enabled','yes'),('notifications','installed_version','2.0.0'),('notifications','types','logging'),('oauth2','enabled','yes'),('oauth2','installed_version','1.0.5'),('oauth2','types','authentication'),('password_policy','enabled','yes'),('password_policy','installed_version','1.2.2'),('password_policy','types',''),('provisioning_api','enabled','yes'),('provisioning_api','installed_version','1.2.0'),('provisioning_api','types','prevent_group_restriction'),('richdocuments','enabled','yes'),('richdocuments','installed_version','1.12.32'),('richdocuments','types','prevent_group_restriction'),('richdocuments','wopi_url','https://CHANGETHISREALM'),('serverinfo','enabled','yes'),('serverinfo','installed_version','1.2.0'),('serverinfo','types',''),('sharebymail','enabled','yes'),('sharebymail','installed_version','1.2.0'),('sharebymail','types','filesystem'),('spreed','enabled','no'),('spreed','installed_version','2.0.1'),('spreed','types','prevent_group_restriction'),('survey_client','enabled','yes'),('survey_client','installed_version','1.0.0'),('survey_client','types',''),('systemtags','enabled','yes'),('systemtags','installed_version','1.2.0'),('systemtags','types','logging'),('tasks','enabled','yes'),('tasks','installed_version','0.9.5'),('tasks','types',''),('theming','enabled','yes'),('theming','installed_version','1.3.0'),('theming','types','logging'),('twofactor_backupcodes','enabled','yes'),('twofactor_backupcodes','installed_version','1.1.1'),('twofactor_backupcodes','types',''),('updatenotification','enabled','yes'),('updatenotification','installed_version','1.2.0'),('updatenotification','types',''),('user_ldap','cleanUpJobOffset','0'),('user_ldap','enabled','yes'),('user_ldap','has_memberof_filter_support','1'),('user_ldap','home_folder_naming_rule',''),('user_ldap','installed_version','1.2.1'),('user_ldap','last_jpegPhoto_lookup','0'),('user_ldap','ldap_agent_password',''),('user_ldap','ldap_attributes_for_group_search',''),('user_ldap','ldap_attributes_for_user_search',''),('user_ldap','ldap_backup_host',''),('user_ldap','ldap_backup_port',''),('user_ldap','ldap_base','OU=People,CHANGETHISLDAPBASE'),('user_ldap','ldap_base_groups','OU=People,DC=constellations,DC=com'),('user_ldap','ldap_base_users','OU=People,DC=constellations,DC=com'),('user_ldap','ldap_cache_ttl','600'),('user_ldap','ldap_configuration_active','1'),('user_ldap','ldap_default_ppolicy_dn',''),('user_ldap','ldap_display_name','displayName'),('user_ldap','ldap_dn',''),('user_ldap','ldap_dynamic_group_member_url',''),('user_ldap','ldap_email_attr',''),('user_ldap','ldap_experienced_admin','0'),('user_ldap','ldap_expert_username_attr','sAMAccountName'),('user_ldap','ldap_expert_uuid_group_attr',''),('user_ldap','ldap_expert_uuid_user_attr',''),('user_ldap','ldap_gid_number','gidNumber'),('user_ldap','ldap_group_display_name','cn'),('user_ldap','ldap_group_filter',''),('user_ldap','ldap_group_filter_mode','0'),('user_ldap','ldap_group_member_assoc_attribute','uniqueMember'),('user_ldap','ldap_groupfilter_groups',''),('user_ldap','ldap_groupfilter_objectclass',''),('user_ldap','ldap_host','127.0.0.1'),('user_ldap','ldap_login_filter','(&(&(|(objectclass=person)))(samaccountname=%uid))'),('user_ldap','ldap_login_filter_mode','0'),('user_ldap','ldap_loginfilter_attributes',''),('user_ldap','ldap_loginfilter_email','0'),('user_ldap','ldap_loginfilter_username','1'),('user_ldap','ldap_nested_groups','0'),('user_ldap','ldap_override_main_server',''),('user_ldap','ldap_paging_size','500'),('user_ldap','ldap_port','389'),('user_ldap','ldap_quota_attr',''),('user_ldap','ldap_quota_def',''),('user_ldap','ldap_tls','0'),('user_ldap','ldap_turn_off_cert_check','0'),('user_ldap','ldap_turn_on_pwd_change','0'),('user_ldap','ldap_user_display_name_2',''),('user_ldap','ldap_user_filter_mode','0'),('user_ldap','ldap_userfilter_groups',''),('user_ldap','ldap_userfilter_objectclass','person\nposixAccount'),('user_ldap','ldap_userlist_filter','(&(|(objectclass=person)(objectclass=posixAccount)))'),('user_ldap','types','authentication'),('user_ldap','use_memberof_to_detect_membership','1'),('workflowengine','enabled','yes'),('workflowengine','installed_version','1.2.0'),('workflowengine','types','filesystem');
+INSERT INTO `oc_appconfig` VALUES ('activity','enabled','yes'),('activity','installed_version','2.5.2'),('activity','types','filesystem'),('backgroundjob','lastjob','10'),('bruteforcesettings','enabled','yes'),('bruteforcesettings','installed_version','1.0.2'),('bruteforcesettings','types',''),('comments','enabled','yes'),('comments','installed_version','1.2.0'),('comments','types','logging'),('core','installed.bundles','[\"CoreBundle\"]'),('core','installedat','1497074451.3496'),('core','lastcron','1497075931'),('core','lastupdatedat','1497074451.3573'),('core','oc.integritycheck.checker','[]'),('core','public_files','files_sharing/public.php'),('core','public_webdav','dav/appinfo/v1/publicwebdav.php'),('core','scss.variables','3566bc1e0f55c1f422c50b3255478fd7'),('core','vendor','nextcloud'),('dav','enabled','yes'),('dav','installed_version','1.3.0'),('dav','types','filesystem'),('federatedfilesharing','enabled','yes'),('federatedfilesharing','installed_version','1.2.0'),('federatedfilesharing','types',''),('federation','enabled','yes'),('federation','installed_version','1.2.0'),('federation','types','authentication'),('files','enabled','yes'),('files','installed_version','1.7.2'),('files','types','filesystem'),('files_external','enabled','yes'),('files_external','installed_version','1.3.0'),('files_external','types','filesystem'),('files_pdfviewer','enabled','yes'),('files_pdfviewer','installed_version','1.1.1'),('files_pdfviewer','ocsid','166049'),('files_pdfviewer','types',''),('files_reader','enabled','yes'),('files_reader','installed_version','1.0.4'),('files_reader','types','filesystem'),('files_sharing','enabled','yes'),('files_sharing','installed_version','1.4.0'),('files_sharing','types','filesystem'),('files_texteditor','enabled','yes'),('files_texteditor','installed_version','2.4.1'),('files_texteditor','ocsid','166051'),('files_texteditor','types',''),('files_trashbin','enabled','yes'),('files_trashbin','installed_version','1.2.0'),('files_trashbin','types','filesystem'),('files_versions','enabled','yes'),('files_versions','installed_version','1.5.0'),('files_versions','types','filesystem'),('files_videoplayer','enabled','yes'),('files_videoplayer','installed_version','1.1.0'),('files_videoplayer','types',''),('firstrunwizard','enabled','yes'),('firstrunwizard','installed_version','2.1'),('firstrunwizard','types','logging'),('gallery','enabled','yes'),('gallery','installed_version','17.0.0'),('gallery','types',''),('logreader','enabled','yes'),('logreader','installed_version','2.0.0'),('logreader','ocsid','170871'),('logreader','types',''),('lookup_server_connector','enabled','yes'),('lookup_server_connector','installed_version','1.0.0'),('lookup_server_connector','types','authentication'),('nextcloud_announcements','enabled','yes'),('nextcloud_announcements','installed_version','1.1'),('nextcloud_announcements','pub_date','Sat, 10 Dec 2016 00:00:00 +0100'),('nextcloud_announcements','types','logging'),('notes','enabled','yes'),('notes','installed_version','2.2.0'),('notes','types',''),('notifications','enabled','yes'),('notifications','installed_version','2.0.0'),('notifications','types','logging'),('oauth2','enabled','yes'),('oauth2','installed_version','1.0.5'),('oauth2','types','authentication'),('password_policy','enabled','yes'),('password_policy','installed_version','1.2.2'),('password_policy','types',''),('provisioning_api','enabled','yes'),('provisioning_api','installed_version','1.2.0'),('provisioning_api','types','prevent_group_restriction'),('richdocuments','enabled','yes'),('richdocuments','installed_version','1.12.32'),('richdocuments','types','prevent_group_restriction'),('richdocuments','wopi_url','https://CHANGETHISREALM'),('serverinfo','enabled','yes'),('serverinfo','installed_version','1.2.0'),('serverinfo','types',''),('sharebymail','enabled','yes'),('sharebymail','installed_version','1.2.0'),('sharebymail','types','filesystem'),('survey_client','enabled','yes'),('survey_client','installed_version','1.0.0'),('survey_client','types',''),('systemtags','enabled','yes'),('systemtags','installed_version','1.2.0'),('systemtags','types','logging'),('tasks','enabled','yes'),('tasks','installed_version','0.9.5'),('tasks','types',''),('theming','enabled','yes'),('theming','installed_version','1.3.0'),('theming','types','logging'),('twofactor_backupcodes','enabled','yes'),('twofactor_backupcodes','installed_version','1.1.1'),('twofactor_backupcodes','types',''),('updatenotification','enabled','yes'),('updatenotification','installed_version','1.2.0'),('updatenotification','types',''),('user_ldap','enabled','yes'),('user_ldap','has_memberof_filter_support','0'),('user_ldap','home_folder_naming_rule',''),('user_ldap','installed_version','1.2.1'),('user_ldap','last_jpegPhoto_lookup','0'),('user_ldap','ldap_agent_password',''),('user_ldap','ldap_attributes_for_group_search',''),('user_ldap','ldap_attributes_for_user_search',''),('user_ldap','ldap_backup_host',''),('user_ldap','ldap_backup_port',''),('user_ldap','ldap_base','OU=People,CHANGETHISLDAPBASE'),('user_ldap','ldap_base_groups','OU=People,CHANGETHISLDAPBASE'),('user_ldap','ldap_base_users','OU=People,CHANGETHISLDAPBASE'),('user_ldap','ldap_cache_ttl','600'),('user_ldap','ldap_configuration_active','1'),('user_ldap','ldap_default_ppolicy_dn',''),('user_ldap','ldap_display_name','displayName'),('user_ldap','ldap_dn',''),('user_ldap','ldap_dynamic_group_member_url',''),('user_ldap','ldap_email_attr',''),('user_ldap','ldap_experienced_admin','0'),('user_ldap','ldap_expert_username_attr','sAMAccountName'),('user_ldap','ldap_expert_uuid_group_attr',''),('user_ldap','ldap_expert_uuid_user_attr',''),('user_ldap','ldap_gid_number','gidNumber'),('user_ldap','ldap_group_display_name','cn'),('user_ldap','ldap_group_filter','(&(|(objectclass=posixGroup)))'),('user_ldap','ldap_group_filter_mode','0'),('user_ldap','ldap_group_member_assoc_attribute','uniqueMember'),('user_ldap','ldap_groupfilter_groups',''),('user_ldap','ldap_groupfilter_objectclass','posixGroup'),('user_ldap','ldap_host','127.0.0.1'),('user_ldap','ldap_login_filter','(&(|(objectclass=posixAccount))(samaccountname=%uid))'),('user_ldap','ldap_login_filter_mode','0'),('user_ldap','ldap_loginfilter_attributes',''),('user_ldap','ldap_loginfilter_email','0'),('user_ldap','ldap_loginfilter_username','1'),('user_ldap','ldap_nested_groups','0'),('user_ldap','ldap_override_main_server',''),('user_ldap','ldap_paging_size','500'),('user_ldap','ldap_port','389'),('user_ldap','ldap_quota_attr',''),('user_ldap','ldap_quota_def',''),('user_ldap','ldap_tls','0'),('user_ldap','ldap_turn_off_cert_check','0'),('user_ldap','ldap_turn_on_pwd_change','0'),('user_ldap','ldap_user_display_name_2',''),('user_ldap','ldap_user_filter_mode','0'),('user_ldap','ldap_userfilter_groups',''),('user_ldap','ldap_userfilter_objectclass','posixAccount'),('user_ldap','ldap_userlist_filter','(|(objectclass=posixAccount))'),('user_ldap','types','authentication'),('user_ldap','use_memberof_to_detect_membership','1'),('workflowengine','enabled','yes'),('workflowengine','installed_version','1.2.0'),('workflowengine','types','filesystem');
 /*!40000 ALTER TABLE `oc_appconfig` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -283,59 +283,6 @@ CREATE TABLE `oc_authtoken` (
 LOCK TABLES `oc_authtoken` WRITE;
 /*!40000 ALTER TABLE `oc_authtoken` DISABLE KEYS */;
 /*!40000 ALTER TABLE `oc_authtoken` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_bookmarks`
---
-
-DROP TABLE IF EXISTS `oc_bookmarks`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_bookmarks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(4096) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `title` varchar(4096) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `user_id` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `description` varchar(4096) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `public` smallint(6) DEFAULT '0',
-  `added` int(10) unsigned DEFAULT '0',
-  `lastmodified` int(10) unsigned DEFAULT '0',
-  `clickcount` int(10) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_bookmarks`
---
-
-LOCK TABLES `oc_bookmarks` WRITE;
-/*!40000 ALTER TABLE `oc_bookmarks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_bookmarks` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_bookmarks_tags`
---
-
-DROP TABLE IF EXISTS `oc_bookmarks_tags`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_bookmarks_tags` (
-  `bookmark_id` bigint(20) DEFAULT NULL,
-  `tag` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  UNIQUE KEY `bookmark_tag` (`bookmark_id`,`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_bookmarks_tags`
---
-
-LOCK TABLES `oc_bookmarks_tags` WRITE;
-/*!40000 ALTER TABLE `oc_bookmarks_tags` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_bookmarks_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -551,7 +498,7 @@ CREATE TABLE `oc_cards` (
 
 LOCK TABLES `oc_cards` WRITE;
 /*!40000 ALTER TABLE `oc_cards` DISABLE KEYS */;
-INSERT INTO `oc_cards` VALUES (1,1,'BEGIN:VCARD\r\nVERSION:3.0\r\nPRODID:-//Sabre//Sabre VObject 4.1.2//EN\r\nUID:admin\r\nFN:admin\r\nN:admin;;;;\r\nCLOUD:admin@www.constellations.com/nextcloud\r\nEND:VCARD\r\n','Database:admin.vcf',1497011838,'ededc66b442a55c9138b6b13e0ed938b',159);
+INSERT INTO `oc_cards` VALUES (1,1,'BEGIN:VCARD\r\nVERSION:3.0\r\nPRODID:-//Sabre//Sabre VObject 4.1.2//EN\r\nUID:admin\r\nFN:admin\r\nN:admin;;;;\r\nCLOUD:admin@www.constellations.com/nextcloud\r\nEND:VCARD\r\n','Database:admin.vcf',1497074828,'ededc66b442a55c9138b6b13e0ed938b',159);
 /*!40000 ALTER TABLE `oc_cards` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -703,203 +650,6 @@ LOCK TABLES `oc_dav_shares` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `oc_deck_assigned_labels`
---
-
-DROP TABLE IF EXISTS `oc_deck_assigned_labels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_assigned_labels` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `label_id` int(11) NOT NULL DEFAULT '0',
-  `card_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `deck_assigned_labels_label_id_index` (`label_id`),
-  KEY `deck_assigned_labels_card_id_index` (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_assigned_labels`
---
-
-LOCK TABLES `oc_deck_assigned_labels` WRITE;
-/*!40000 ALTER TABLE `oc_deck_assigned_labels` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_assigned_labels` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_attachment`
---
-
-DROP TABLE IF EXISTS `oc_deck_attachment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_attachment` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_bin NOT NULL,
-  `card_id` bigint(20) NOT NULL,
-  `type` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `data` longtext COLLATE utf8mb4_bin,
-  `last_modified` bigint(20) unsigned DEFAULT '0',
-  `created_at` bigint(20) unsigned DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_attachment`
---
-
-LOCK TABLES `oc_deck_attachment` WRITE;
-/*!40000 ALTER TABLE `oc_deck_attachment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_attachment` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_board_acl`
---
-
-DROP TABLE IF EXISTS `oc_deck_board_acl`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_board_acl` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `board_id` bigint(20) NOT NULL,
-  `type` int(11) NOT NULL,
-  `participant` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `permission_edit` tinyint(1) DEFAULT '0',
-  `permission_share` tinyint(1) DEFAULT '0',
-  `permission_manage` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UNIQ_F8F31A55D6E16D85A29A910A8F856BFF` (`board_id`,`type`,`participant`),
-  KEY `deck_board_acl_board_id_index` (`board_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_board_acl`
---
-
-LOCK TABLES `oc_deck_board_acl` WRITE;
-/*!40000 ALTER TABLE `oc_deck_board_acl` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_board_acl` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_boards`
---
-
-DROP TABLE IF EXISTS `oc_deck_boards`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_boards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_bin NOT NULL,
-  `owner` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `color` varchar(6) COLLATE utf8mb4_bin DEFAULT NULL,
-  `archived` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_boards`
---
-
-LOCK TABLES `oc_deck_boards` WRITE;
-/*!40000 ALTER TABLE `oc_deck_boards` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_boards` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_cards`
---
-
-DROP TABLE IF EXISTS `oc_deck_cards`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_cards` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_bin NOT NULL,
-  `description` longtext COLLATE utf8mb4_bin,
-  `stack_id` bigint(20) NOT NULL,
-  `type` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'plain',
-  `last_modified` bigint(20) unsigned DEFAULT '0',
-  `created_at` bigint(20) unsigned DEFAULT '0',
-  `owner` varchar(64) COLLATE utf8mb4_bin NOT NULL,
-  `order` bigint(20) DEFAULT NULL,
-  `archived` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `deck_cards_stack_id_index` (`stack_id`),
-  KEY `deck_cards_order_index` (`order`),
-  KEY `deck_cards_archived_index` (`archived`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_cards`
---
-
-LOCK TABLES `oc_deck_cards` WRITE;
-/*!40000 ALTER TABLE `oc_deck_cards` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_cards` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_labels`
---
-
-DROP TABLE IF EXISTS `oc_deck_labels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_labels` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-  `color` varchar(6) COLLATE utf8mb4_bin DEFAULT NULL,
-  `board_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `deck_labels_board_id_index` (`board_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_labels`
---
-
-LOCK TABLES `oc_deck_labels` WRITE;
-/*!40000 ALTER TABLE `oc_deck_labels` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_labels` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_deck_stacks`
---
-
-DROP TABLE IF EXISTS `oc_deck_stacks`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_deck_stacks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8mb4_bin NOT NULL,
-  `board_id` bigint(20) NOT NULL,
-  `order` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `deck_stacks_board_id_index` (`board_id`),
-  KEY `deck_stacks_order_index` (`order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_deck_stacks`
---
-
-LOCK TABLES `oc_deck_stacks` WRITE;
-/*!40000 ALTER TABLE `oc_deck_stacks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_deck_stacks` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `oc_external_applicable`
 --
 
@@ -1046,7 +796,7 @@ CREATE TABLE `oc_file_locks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `lock_key_index` (`key`),
   KEY `lock_ttl_index` (`ttl`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1055,7 +805,7 @@ CREATE TABLE `oc_file_locks` (
 
 LOCK TABLES `oc_file_locks` WRITE;
 /*!40000 ALTER TABLE `oc_file_locks` DISABLE KEYS */;
-INSERT INTO `oc_file_locks` VALUES (5,0,'files/38f1a462ac005ca53e80d2b991446fcc',1497021042),(6,0,'files/94d6e57f87a95ab97190ea200c471d58',1497021042),(7,0,'files/76287b2f29364703dfd1d9b543a9b4ea',1497021042),(8,0,'files/6003c26f820e7dfb8cf1349b1eee4192',1497021042),(9,0,'files/169ecf9ce9d92154b2d8f3bb3ae0a844',1497021042),(10,0,'files/8d808264268ae2fe9bc1ba387ea3d422',1497021042),(11,0,'files/4462d021359874962ce01e459811fd2f',1497021042),(12,0,'files/3fc6c5255194229c8fe7207c019f799d',1497021042),(13,0,'files/96de6c364514d73c48c4d1bb07cb500e',1497021042),(14,0,'files/f9b7ca3604813ca018716be621bb7909',1497021042),(15,0,'files/ee32bae6d3c598e340831969e79c6340',1497021042),(16,0,'files/3e0af14d5271af42865bdaa6a9b668ef',1497021042),(17,0,'files/11c6efefe7042583d9bc33a4020aeb62',1497021042),(18,0,'files/6868cf08f134e4ecd9c67e38641df516',1497021042),(19,0,'files/2b472e2132c1f0e68c63cc5652e1ecff',1497021042),(20,0,'files/7107b3afb9d25db8c4c2c58e71e8c0ac',1497021042),(21,0,'files/b2e4494a9b232ace38f0844901b5b4ba',1497021042),(22,0,'files/228a47e1c54e7c56e1df5be52615f554',1497021042),(23,0,'files/aeb66e606de35cf9f9a90a92affda4ea',1497021043),(24,0,'files/ccd5867b110c51fe9b9df5956b9f22dd',1497021043),(25,0,'files/45e5e4c8b19c96fc636c08cac20d67ff',1497021043),(26,0,'files/c2a592af53bcc32c877c55c3397f3520',1497021043),(27,0,'files/90a7deb8600fbfa23023022e5837929d',1497021043),(28,0,'files/8526746e8561ee494303fe5516868760',1497021043),(29,0,'files/e0ab5ae5038b2e8094771d158b3ff28f',1497021043),(30,0,'files/bb166a694622fcc1e912d40218e27fb6',1497021043),(31,0,'files/c951a56970345a6ef9485b44b958d96a',1497021043),(32,0,'files/62106b3c9c93cb6201616390d72d6c18',1497021043),(33,0,'files/f69ef922556068be6b410fdad929dbf3',1497021043),(34,0,'files/05ca4d2ebc744e27d3816f5927324151',1497021043),(35,0,'files/ae5fa984d8d64b5bf0cacdab2950c08b',1497021043),(36,0,'files/1a5e469fc6e0f5606d5214ae00f09e4b',1497021043),(37,0,'files/0ac839f5f56bf15ef6734de860656114',1497021043),(38,0,'files/af3d1cd190ca4bbdf43f6129da9bd90f',1497021043),(39,0,'files/dbdfbd901dcc1fe63971eb6f304c1ffb',1497021043),(40,0,'files/74166daef647b6b8b80bb306691fccb1',1497021043),(41,0,'files/5c7f1675da37cffa2909ddfc424b34df',1497021043),(42,0,'files/1a3c3f93ca79c2ca62845777b136b4fe',1497021043),(43,0,'files/f77be4599c82c8f9c4a6a222705284a9',1497021043),(44,0,'files/488f4074bf8bbafabcfe2531b2de081e',1497021043),(45,0,'files/117734283db6fc2b7df28542840a143d',1497021043),(46,0,'files/d7639b8862753bb00bd95fcc197824ae',1497021043),(47,0,'files/e0bd635c6d81d13841803ca8d11167a0',1497021043),(48,0,'files/b6e959f26bf3ca22766f78c502f6bd4c',1497021043),(49,0,'files/219681c0c1f76776bca5080643ef5bbc',1497021043),(50,0,'files/9714630514ffd94bf0173dac5216fc01',1497021043);
+INSERT INTO `oc_file_locks` VALUES (1,0,'files/468c740695b998c9b920835b3af18225',1497078064),(2,0,'files/3ef927705e35f104f5c8825610e550db',1497078078),(3,0,'files/b6ef755cfc70b5eb94f5d3aad8ba833d',1497078064),(4,0,'files/bc76dde1a029b9698a1164dc9d6f4422',1497078078);
 /*!40000 ALTER TABLE `oc_file_locks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1089,7 +839,7 @@ CREATE TABLE `oc_filecache` (
   KEY `fs_storage_mimetype` (`storage`,`mimetype`),
   KEY `fs_storage_mimepart` (`storage`,`mimepart`),
   KEY `fs_storage_size` (`storage`,`size`,`fileid`)
-) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1098,7 +848,7 @@ CREATE TABLE `oc_filecache` (
 
 LOCK TABLES `oc_filecache` WRITE;
 /*!40000 ALTER TABLE `oc_filecache` DISABLE KEYS */;
-INSERT INTO `oc_filecache` VALUES (1,1,'','d41d8cd98f00b204e9800998ecf8427e',-1,'',2,1,-1,1497017535,1497011203,0,0,'593aacbf8c1ec',23,''),(2,1,'appdata_octzcc66adb8','cc07fa4e97329332eff86064716c8276',1,'appdata_octzcc66adb8',2,1,2385168,1497017535,1497012008,0,0,'593aacbf8c1ec',31,''),(3,1,'appdata_octzcc66adb8/appstore','edf79733597b088282733d50f0255a5f',2,'appstore',2,1,297360,1497015621,1497011203,0,0,'593aa5453ce64',31,''),(4,1,'appdata_octzcc66adb8/appstore/apps.json','3d4c5b91dff0ceab92630bc93bbffd86',3,'apps.json',4,3,264827,1497015621,1497015621,0,0,'eec4552fa9662d590c81cca17f31ca81',27,''),(5,1,'appdata_octzcc66adb8/preview','dde34861366aceeeb313275e2b201260',2,'preview',2,1,0,1497011144,1497011144,0,0,'593a93c900a48',31,''),(6,2,'','d41d8cd98f00b204e9800998ecf8427e',-1,'',2,1,6823068,1497011148,1497011148,0,0,'593a93ccb194b',23,''),(7,2,'files','45b963397aa40d4a0063e0d85e4fe7a1',6,'files',2,1,6823068,1497011148,1497011148,0,0,'593a93ccb194b',31,''),(8,2,'files/Photos','d01bb67e7b71dd49fd06bad922f521c9',7,'Photos',2,1,2360011,1497011148,1497011148,0,0,'593a93cc6106d',31,''),(9,2,'files/Photos/Hummingbird.jpg','e077463269c404ae0f6f8ea7f2d7a326',8,'Hummingbird.jpg',6,5,585219,1497011148,1497011148,0,0,'0074ab5c85e9e1ad36722f5bd3086c72',27,''),(10,2,'files/Photos/Nut.jpg','aa8daeb975e1d39412954fd5cd41adb4',8,'Nut.jpg',6,5,955026,1497011148,1497011148,0,0,'e01d3d9fe5fb9b5415a68052f18b6c9c',27,''),(11,2,'files/Photos/Coast.jpg','a6fe87299d78b207e9b7aba0f0cb8a0a',8,'Coast.jpg',6,5,819766,1497011148,1497011148,0,0,'3e3656544aee17d45dbeaf78360b9b53',27,''),(12,2,'files/Documents','0ad78ba05b6961d92f7970b2b3922eca',7,'Documents',2,1,78496,1497011148,1497011148,0,0,'593a93cc8b7af',31,''),(13,2,'files/Documents/About.txt','9da7b739e7a65d74793b2881da521169',12,'About.txt',8,7,1074,1497011148,1497011148,0,0,'2b4a21d1855a38a6e0bd64692175b5cc',27,''),(14,2,'files/Documents/About.odt','b2ee7d56df9f34a0195d4b611376e885',12,'About.odt',9,3,77422,1497011148,1497011148,0,0,'4150e78de88e6a46bb233fa525eafa40',27,''),(15,2,'files/Nextcloud.mp4','77a79c09b93e57cba23c11eb0e6048a6',7,'Nextcloud.mp4',11,10,462413,1497011148,1497011148,0,0,'d0bb565b6b1e6ebe9ad660893917e1fd',27,''),(16,2,'files/Nextcloud Manual.pdf','2bc58a43566a8edde804a4a97a9c7469',7,'Nextcloud Manual.pdf',12,3,3922148,1497011148,1497011148,0,0,'2e14dee66d120fec9765cdf3d8a3ccd0',27,''),(17,1,'appdata_octzcc66adb8/avatar','bab988a16c60f060b3c3890dfcd0acf0',2,'avatar',2,1,0,1497011168,1497011168,0,0,'593a93e08aff5',31,''),(18,1,'appdata_octzcc66adb8/avatar/admin','ece9ccdaa1700008df8055bae518c4cb',17,'admin',2,1,0,1497011168,1497011168,0,0,'593a93e08632b',31,''),(19,1,'appdata_octzcc66adb8/js','961977a55286d920a5afccd3ff9553d6',2,'js',2,1,1982162,1497017535,1497011171,0,0,'593aacbf8c1ec',31,''),(20,1,'appdata_octzcc66adb8/js/core','ba7d2c05e3516710a4d7d85283aaee14',19,'core',2,1,343719,1497017535,1497017535,0,0,'593aacbf8c1ec',31,''),(21,1,'appdata_octzcc66adb8/js/core/merged-template-prepend.js','57b47d76e88128f19b83129e815475d7',20,'merged-template-prepend.js',13,3,142144,1497011168,1497011168,0,0,'7423b075a319f9c469909b7fbfa6aa4b',27,''),(22,1,'appdata_octzcc66adb8/js/core/merged-template-prepend.js.deps','492292c54f00f96e6b9987912e5a4fe9',20,'merged-template-prepend.js.deps',14,3,1146,1497011168,1497011168,0,0,'ef312ea89651a54632ecba3bb34c5d27',27,''),(23,1,'appdata_octzcc66adb8/js/core/merged-template-prepend.js.gzip','099867b4e917fab78f2819120a451e64',20,'merged-template-prepend.js.gzip',15,3,39023,1497011168,1497011168,0,0,'f20e466fae17d541bd75e669a95c7da8',27,''),(24,1,'appdata_octzcc66adb8/js/core/merged-share-backend.js','539bb7c60d6032e32fb76f5c94e6695d',20,'merged-share-backend.js',13,3,104522,1497011169,1497011169,0,0,'ab5fb8aa72c2259d543ba64c509ce73b',27,''),(25,1,'appdata_octzcc66adb8/js/core/merged-share-backend.js.deps','d62838fcd4338e01a40e7d629ce26abe',20,'merged-share-backend.js.deps',14,3,752,1497011169,1497011169,0,0,'ce8f42196e75964666671413db9f91a3',27,''),(26,1,'appdata_octzcc66adb8/js/core/merged-share-backend.js.gzip','1d4e2c470607a6b71a0c4908942dd567',20,'merged-share-backend.js.gzip',15,3,22508,1497011169,1497011169,0,0,'3934b2e373d1ce1394bbd1e42f7a5afe',27,''),(27,1,'appdata_octzcc66adb8/js/notifications','4cc18bb438d3c69bc81e752f9720f0d2',19,'notifications',2,1,25514,1497011169,1497011169,0,0,'593a93e14e4b4',31,''),(28,1,'appdata_octzcc66adb8/js/notifications/merged.js','09741fca6916abb1ce7698e9d767b71e',27,'merged.js',13,3,20114,1497011169,1497011169,0,0,'a3b1197d69ecf55e12ab4189b90574fa',27,''),(29,1,'appdata_octzcc66adb8/js/notifications/merged.js.deps','097f640ccc813550d041b8de9c8d6735',27,'merged.js.deps',14,3,330,1497011169,1497011169,0,0,'49b4524794613261a2b8baeeed97d497',27,''),(30,1,'appdata_octzcc66adb8/js/notifications/merged.js.gzip','43c420791423827b5454e7e53e10294f',27,'merged.js.gzip',15,3,5070,1497011169,1497011169,0,0,'67489d130f9de45c1496afbf55852b52',27,''),(31,1,'appdata_octzcc66adb8/js/files','33e77b8557f88d9b48f3854c80cb155c',19,'files',2,1,398160,1497011169,1497011169,0,0,'593a93e198590',31,''),(32,1,'appdata_octzcc66adb8/js/files/merged-index.js','dff27f940958e70a80feb0a145fb7e98',31,'merged-index.js',13,3,319781,1497011169,1497011169,0,0,'769b2175ef3295584ea2a9df3b7870d2',27,''),(33,1,'appdata_octzcc66adb8/js/files/merged-index.js.deps','a1afc001f2f9219739b90191433f665a',31,'merged-index.js.deps',14,3,2125,1497011169,1497011169,0,0,'9fa5e93008564e6de1d5895f6eed7020',27,''),(34,1,'appdata_octzcc66adb8/js/files/merged-index.js.gzip','bf98387be0e19ca900c4fa04167f887a',31,'merged-index.js.gzip',15,3,76254,1497011169,1497011169,0,0,'0ad81d3a43efa6eac91b900eb75e5b51',27,''),(35,1,'appdata_octzcc66adb8/js/activity','0a816d9523776a40fb3798891fa28f9f',19,'activity',2,1,20399,1497011169,1497011169,0,0,'593a93e1c7177',31,''),(36,1,'appdata_octzcc66adb8/js/activity/activity-sidebar.js','867461b8c32dea0f453db2321631bfa7',35,'activity-sidebar.js',13,3,15755,1497011169,1497011169,0,0,'2e3a5d31d1d21c11c64cac0b5b012a05',27,''),(37,1,'appdata_octzcc66adb8/js/activity/activity-sidebar.js.deps','1cf3b183486f2562bb44f2dc62e1231f',35,'activity-sidebar.js.deps',14,3,494,1497011169,1497011169,0,0,'10d6674917526f29a07a64f43fb45963',27,''),(38,1,'appdata_octzcc66adb8/js/activity/activity-sidebar.js.gzip','18987698eab93a23a297359de2449200',35,'activity-sidebar.js.gzip',15,3,4150,1497011169,1497011169,0,0,'302d2a8933184afbf022d99ce8b5d88d',27,''),(39,1,'appdata_octzcc66adb8/js/comments','8c6b06d187c4b4066f143e942e23b11b',19,'comments',2,1,36996,1497011170,1497011169,0,0,'593a93e2097c5',31,''),(40,1,'appdata_octzcc66adb8/js/comments/merged.js','d41d96ab18edd582d0a5aa282319e222',39,'merged.js',13,3,28929,1497011169,1497011169,0,0,'af537cf779147d7b00a7151db75cf1a3',27,''),(41,1,'appdata_octzcc66adb8/js/comments/merged.js.deps','c6e85f401c9d086efb462f55ec1bbfa1',39,'merged.js.deps',14,3,635,1497011169,1497011169,0,0,'728d9a8fdcdf86de9a742500aa0f24cf',27,''),(42,1,'appdata_octzcc66adb8/js/comments/merged.js.gzip','1efa34bdd2c2a3ddf111d606cc1213b5',39,'merged.js.gzip',15,3,7432,1497011170,1497011170,0,0,'af637c0f55e938fd514af6e50dec8ce9',27,''),(43,1,'appdata_octzcc66adb8/js/files_sharing','f7238012f712db1e92036f1d369fd10a',19,'files_sharing',2,1,20226,1497011170,1497011170,0,0,'593a93e23dbdf',31,''),(44,1,'appdata_octzcc66adb8/js/files_sharing/additionalScripts.js','de8082bff7ecb76737364c8cb17abd6d',43,'additionalScripts.js',13,3,15161,1497011170,1497011170,0,0,'b43871a6b8e295f81b92337a5362d88d',27,''),(45,1,'appdata_octzcc66adb8/js/files_sharing/additionalScripts.js.deps','6e19b56b391729a7658e8a30cc7a8145',43,'additionalScripts.js.deps',14,3,340,1497011170,1497011170,0,0,'358429fe1849e345bad1a8778d0aead7',27,''),(46,1,'appdata_octzcc66adb8/js/files_sharing/additionalScripts.js.gzip','564bcbb63d38d4efefe7a5b65d18d3fe',43,'additionalScripts.js.gzip',15,3,4725,1497011170,1497011170,0,0,'697d0568fdf1d86c7d375eff93e3e5d6',27,''),(47,1,'appdata_octzcc66adb8/js/files_texteditor','8d8458f5a32a9f5cf8eca6f55fc6df6d',19,'files_texteditor',2,1,820097,1497011170,1497011170,0,0,'593a93e294736',31,''),(48,1,'appdata_octzcc66adb8/js/files_texteditor/merged.js','e8d7b504c351b9f74b5c0ec1e8d0a4c3',47,'merged.js',13,3,681977,1497011170,1497011170,0,0,'159fd4cb49d61eab0019b6bbacc14f9e',27,''),(49,1,'appdata_octzcc66adb8/js/files_texteditor/merged.js.deps','6e85808f275b4653924b3a646dbf0b6d',47,'merged.js.deps',14,3,370,1497011170,1497011170,0,0,'5f29036f359f67f89c65896911b32719',27,''),(50,1,'appdata_octzcc66adb8/js/files_texteditor/merged.js.gzip','d4280b3e41d37a52732043c0d492961c',47,'merged.js.gzip',15,3,137750,1497011170,1497011170,0,0,'2cd742d672f1ac59b24517bf48b198eb',27,''),(51,1,'appdata_octzcc66adb8/js/files_versions','03881a1ca402f57a9a7933f8a8e4bf37',19,'files_versions',2,1,16725,1497011170,1497011170,0,0,'593a93e2c3c31',31,''),(52,1,'appdata_octzcc66adb8/js/files_versions/merged.js','57de2ba4e046ca56e85727499bbd57ce',51,'merged.js',13,3,12719,1497011170,1497011170,0,0,'4460b4dbfacbb71277d6495d4d8ff99f',27,''),(53,1,'appdata_octzcc66adb8/js/files_versions/merged.js.deps','a3f31c173deb98f5e02310d3bc489602',51,'merged.js.deps',14,3,424,1497011170,1497011170,0,0,'6943aeb82aed958893e8a35d53b36594',27,''),(54,1,'appdata_octzcc66adb8/js/files_versions/merged.js.gzip','b508b99f7699b8d71a6df01f42d10f5f',51,'merged.js.gzip',15,3,3582,1497011170,1497011170,0,0,'d2df3d4e2bb06e18b1bf8acdbe735a8a',27,''),(55,1,'appdata_octzcc66adb8/js/gallery','adc5b6a433cc7bd915ab8c2f20451246',19,'gallery',2,1,280677,1497011171,1497011170,0,0,'593a93e324876',31,''),(56,1,'appdata_octzcc66adb8/js/gallery/scripts-for-file-app.js','57ddd43bfb1e1da6ce84b7923382b6f1',55,'scripts-for-file-app.js',13,3,225356,1497011171,1497011171,0,0,'1e74d4dc04c46601603850f8537d9852',27,''),(57,1,'appdata_octzcc66adb8/js/gallery/scripts-for-file-app.js.deps','07ba7e165b57b22a7fa11581923bd868',55,'scripts-for-file-app.js.deps',14,3,856,1497011171,1497011171,0,0,'a09ee1c3c9dcc2ea1a1a5841221b69db',27,''),(58,1,'appdata_octzcc66adb8/js/gallery/scripts-for-file-app.js.gzip','d6f916d310af4dfae496ffdc8463f363',55,'scripts-for-file-app.js.gzip',15,3,54465,1497011171,1497011171,0,0,'4a23281334960912feee4e8066ffddac',27,''),(59,1,'appdata_octzcc66adb8/js/core/merged.js','066ceec796c6300bb70818b7d3153b4c',20,'merged.js',13,3,20224,1497011171,1497011171,0,0,'136e5255688c756401aece0f081244d9',27,''),(60,1,'appdata_octzcc66adb8/js/core/merged.js.deps','df28aba9898c1947009c5e6db410fe5b',20,'merged.js.deps',14,3,508,1497011171,1497011171,0,0,'34d382db008ed29b888a625ac0ad63cd',27,''),(61,1,'appdata_octzcc66adb8/js/core/merged.js.gzip','2a97ce206f4e398a403e169d34584aa1',20,'merged.js.gzip',15,3,5365,1497011171,1497011171,0,0,'db3b0e12dee530bc705930fa55521be2',27,''),(62,1,'appdata_octzcc66adb8/js/systemtags','fa6977ad875faf78052ebc2dcaedc3ca',19,'systemtags',2,1,19649,1497011171,1497011171,0,0,'593a93e396da2',31,''),(63,1,'appdata_octzcc66adb8/js/systemtags/merged.js','6a5faea00dd422c38e16417170a7d47f',62,'merged.js',13,3,14902,1497011171,1497011171,0,0,'b46092edb982e48f9b8e4efc8b990ed1',27,''),(64,1,'appdata_octzcc66adb8/js/systemtags/merged.js.deps','53bd0d97ef168c8afc8d24c7b0407b87',62,'merged.js.deps',14,3,399,1497011171,1497011171,0,0,'77c879146e395cd4d6448a20e66735e7',27,''),(65,1,'appdata_octzcc66adb8/js/systemtags/merged.js.gzip','09145feabbded049188b58dd8976e7f5',62,'merged.js.gzip',15,3,4348,1497011171,1497011171,0,0,'2c1b5781be88f5330d7e231fd7f39276',27,''),(66,1,'appdata_octzcc66adb8/css','01c0c30169856fe07e9e3c3d7f4b143a',2,'css',2,1,103529,1497012090,1497011177,0,0,'593a977a48538',31,''),(67,1,'appdata_octzcc66adb8/css/core','7f692f721e85895e98e49260589fd7d3',66,'core',2,1,95937,1497012088,1497012088,0,0,'593a977856887',31,''),(68,1,'appdata_octzcc66adb8/theming','c8e8812d80ef2f531024f06d8a5d9652',2,'theming',2,1,2117,1497011183,1497011182,0,0,'593a93ef4f547',31,''),(71,1,'appdata_octzcc66adb8/css/core/server.css.gzip','27e45555d07578f6d50eaa7e690c5dc4',67,'server.css.gzip',15,3,13409,1497012088,1497012088,0,0,'7bc8be125d11d14c5a549632da7f5eef',27,''),(74,1,'appdata_octzcc66adb8/css/core/share.css.gzip','70f4764a9dd48d3c6239c06513c05abd',67,'share.css.gzip',15,3,994,1497012088,1497012088,0,0,'312b8db1eb8044ae7999fbd25797b232',27,''),(75,1,'appdata_octzcc66adb8/css/files','6d1ebc654e1ce30421f04572cfc9ed5b',66,'files',2,1,4283,1497012084,1497012084,0,0,'593a9774c8deb',31,''),(78,1,'appdata_octzcc66adb8/css/files/merged.css.gzip','1975dd85b288bb4309031c0b53d96f54',75,'merged.css.gzip',15,3,4283,1497011174,1497011174,0,0,'c6f4d090c81c54640bd37bbc93e7c572',27,''),(79,1,'appdata_octzcc66adb8/css/files_sharing','a3d6f76210e64bac57eda6e5a9205d63',66,'files_sharing',2,1,878,1497012084,1497012084,0,0,'593a9774dc1f2',31,''),(82,1,'appdata_octzcc66adb8/css/files_sharing/mergedAdditionalStyles.css.gzip','965ffec1d4dc955ae5c160471942a656',79,'mergedAdditionalStyles.css.gzip',15,3,878,1497011175,1497011175,0,0,'01e609744192c7c7419e2981427b7749',27,''),(83,1,'appdata_octzcc66adb8/css/files_texteditor','3035b1610c882c7aad9d14f84f90369b',66,'files_texteditor',2,1,1184,1497012084,1497012084,0,0,'593a9774eea50',31,''),(86,1,'appdata_octzcc66adb8/css/files_texteditor/merged.css.gzip','12d5c704841458cc247d04eef3c07c95',83,'merged.css.gzip',15,3,1184,1497011175,1497011175,0,0,'28b190daafa7211ca24e46eb0efd83e7',27,''),(89,1,'appdata_octzcc66adb8/css/core/systemtags.css.gzip','b4ef2bf731e2cc663144271173300e06',67,'systemtags.css.gzip',15,3,389,1497011175,1497011175,0,0,'06eed61fdd4e3d9ff83e2323c4ac2748',27,''),(90,1,'appdata_octzcc66adb8/css/theming','d7163d8d49124770872c2b0e1b0ccb6d',66,'theming',2,1,1247,1497012090,1497012090,0,0,'593a977a48538',31,''),(93,1,'appdata_octzcc66adb8/css/theming/theming.css.gzip','a727a8a9b2e20c860471cf2e07687814',90,'theming.css.gzip',15,3,313,1497012090,1497012090,0,0,'c3fc4966a818225a5923ca40684cb9bb',27,''),(94,1,'appdata_octzcc66adb8/theming/0','08125e0aefca96a8d76c886d56becda0',68,'0',2,1,2117,1497011183,1497011183,0,0,'593a93ef4f547',31,''),(95,1,'appdata_octzcc66adb8/theming/0/icon-core-filetypes_folder.svg','b622b10a421799a7e4b1be2fb9862fa7',94,'icon-core-filetypes_folder.svg',17,5,254,1497011182,1497011182,0,0,'1934d84574d1d5b863bae9ebcac38bbc',27,''),(96,1,'appdata_octzcc66adb8/theming/0/icon-core-filetypes_video.svg','15917711b36a9f37d82445889bb868ca',94,'icon-core-filetypes_video.svg',17,5,328,1497011183,1497011183,0,0,'5141a7aad95aebfc82b3ebe410575e57',27,''),(97,1,'appdata_octzcc66adb8/theming/0/icon-core-filetypes_application-pdf.svg','4aae32db4dfe808313dab6c86c718af0',94,'icon-core-filetypes_application-pdf.svg',17,5,1535,1497011183,1497011183,0,0,'9891ef69f601ea32ffa013049faf3bc6',27,''),(98,1,'appdata_octzcc66adb8/appstore/categories.json','7ae02f360bcc19db588bf0f354bffc51',3,'categories.json',4,3,32533,1497015621,1497015621,0,0,'8c0545b2c272385271becb8138785443',27,''),(99,1,'files_external','c270928b685e7946199afdfb898d27ea',1,'files_external',2,1,0,1497011203,1497011203,0,0,'593a94036e746',31,''),(100,1,'appdata_octzcc66adb8/richdocuments','21c4bff10ef8c6fe719385358da74ff8',2,'richdocuments',2,1,0,1497012008,1497012008,0,0,'593a9728c398e',31,''),(101,1,'appdata_octzcc66adb8/richdocuments/richdocuments','7079eb2749f8b182057ae9e955b7f14d',100,'richdocuments',2,1,0,1497012008,1497012008,0,0,'593a9728c019d',31,''),(102,1,'appdata_octzcc66adb8/css/core/server.css','fe232c6d0046f01d08757eb6ddb445ec',67,'server.css',16,7,77314,1497012087,1497012087,0,0,'6f014f0ee58f5d48022d99961c08ff38',27,''),(103,1,'appdata_octzcc66adb8/css/core/server.css.deps','c33ed9c7dd1a413d2792b0939ca0c0c8',67,'server.css.deps',14,3,850,1497012088,1497012088,0,0,'30fccfb0f5a02cc6d0f3debfa3ca571c',27,''),(104,1,'appdata_octzcc66adb8/css/core/share.css','8e26de9c1e8d8a16fdf60ead5db78faa',67,'share.css',16,7,2848,1497012088,1497012088,0,0,'0afd04745416898164815fc4f0e878f5',27,''),(105,1,'appdata_octzcc66adb8/css/core/share.css.deps','0a109896a40d6d311141640e4e5b1460',67,'share.css.deps',14,3,133,1497012088,1497012088,0,0,'10826c0ef8dfea141f4c824174fdfc06',27,''),(106,1,'appdata_octzcc66adb8/css/theming/theming.css','dd257982758cb4a94c1288970b2f190f',90,'theming.css',16,7,790,1497012090,1497012090,0,0,'9fa91ea33f8ec7386e7c7ba22ee7a983',27,''),(107,1,'appdata_octzcc66adb8/css/theming/theming.css.deps','85c2d7e9634fafd4037be6bd6a589251',90,'theming.css.deps',14,3,144,1497012090,1497012090,0,0,'63c2a8c2c23b4857ea41834363567823',27,''),(108,1,'appdata_octzcc66adb8/js/core/merged-login.js','fcccdd09b95b7b9bd3286a387d70a42e',20,'merged-login.js',13,3,5389,1497017535,1497017535,0,0,'459cfb60a947ef05b6ff8bafac84cc5d',27,''),(109,1,'appdata_octzcc66adb8/js/core/merged-login.js.deps','d412ddb4875501891814c49083101168',20,'merged-login.js.deps',14,3,271,1497017535,1497017535,0,0,'8effc41afcb31460ae566b07a26576f7',27,''),(110,1,'appdata_octzcc66adb8/js/core/merged-login.js.gzip','9d083f05ff3fc2b05182abb141ef5b56',20,'merged-login.js.gzip',15,3,1867,1497017535,1497017535,0,0,'2fcddf423f4f4d7ae821342485482aac',27,'');
+INSERT INTO `oc_filecache` VALUES (1,1,'','d41d8cd98f00b204e9800998ecf8427e',-1,'',2,1,-1,1497075930,1497074478,0,0,'593b90da5c1ac',23,''),(2,1,'appdata_ocodxjl8m9zm','af28c0efe18fdfef2e06334b355ac0c3',1,'appdata_ocodxjl8m9zm',2,1,2414872,1497075930,1497074926,0,0,'593b90da5c1ac',31,''),(3,1,'appdata_ocodxjl8m9zm/appstore','13f6fffdda1e7869da5e8defd4388455',2,'appstore',2,1,297568,1497075912,1497074510,0,0,'593b90c856e92',31,''),(4,1,'appdata_ocodxjl8m9zm/appstore/apps.json','31d77b83f9ae89a75bcd5ba7601b4073',3,'apps.json',4,3,265035,1497075912,1497075912,0,0,'0acf91d4492ea240f6ef034390f5c80a',27,''),(5,1,'appdata_ocodxjl8m9zm/preview','e2b08cfb1dca6e3be51c9dbc05efd711',2,'preview',2,1,0,1497074452,1497074452,0,0,'593b8b1432920',31,''),(6,2,'','d41d8cd98f00b204e9800998ecf8427e',-1,'',2,1,6823068,1497074453,1497074453,0,0,'593b8b158adab',23,''),(7,2,'files','45b963397aa40d4a0063e0d85e4fe7a1',6,'files',2,1,6823068,1497074453,1497074453,0,0,'593b8b158adab',31,''),(8,2,'files/Nextcloud.mp4','77a79c09b93e57cba23c11eb0e6048a6',7,'Nextcloud.mp4',6,5,462413,1497074453,1497074453,0,0,'ee76fd244d6d96c2643fd0471ec079a3',27,''),(9,2,'files/Nextcloud Manual.pdf','2bc58a43566a8edde804a4a97a9c7469',7,'Nextcloud Manual.pdf',7,3,3922148,1497074453,1497074453,0,0,'9c26dac40150d7f017831573768845ea',27,''),(10,2,'files/Photos','d01bb67e7b71dd49fd06bad922f521c9',7,'Photos',2,1,2360011,1497074453,1497074453,0,0,'593b8b1578a41',31,''),(11,2,'files/Photos/Nut.jpg','aa8daeb975e1d39412954fd5cd41adb4',10,'Nut.jpg',9,8,955026,1497074453,1497074453,0,0,'b1619da0f6d425288960b707ca0c13f0',27,''),(12,2,'files/Photos/Coast.jpg','a6fe87299d78b207e9b7aba0f0cb8a0a',10,'Coast.jpg',9,8,819766,1497074453,1497074453,0,0,'c539e8fcb7aa699da1812143b44ee05a',27,''),(13,2,'files/Photos/Hummingbird.jpg','e077463269c404ae0f6f8ea7f2d7a326',10,'Hummingbird.jpg',9,8,585219,1497074453,1497074453,0,0,'60b51fdebcc25944d49dbe60877d4ad9',27,''),(14,2,'files/Documents','0ad78ba05b6961d92f7970b2b3922eca',7,'Documents',2,1,78496,1497074453,1497074453,0,0,'593b8b158adab',31,''),(15,2,'files/Documents/About.odt','b2ee7d56df9f34a0195d4b611376e885',14,'About.odt',10,3,77422,1497074453,1497074453,0,0,'1eecc1b90f3edb37bc5c5f1569ab2bec',27,''),(16,2,'files/Documents/About.txt','9da7b739e7a65d74793b2881da521169',14,'About.txt',12,11,1074,1497074453,1497074453,0,0,'a896adca31a8ee83790d719b50867a36',27,''),(17,1,'appdata_ocodxjl8m9zm/avatar','2550859f0f997571133517a9d5a8aff4',2,'avatar',2,1,0,1497074455,1497074455,0,0,'593b8b17c9b68',31,''),(18,1,'appdata_ocodxjl8m9zm/avatar/admin','ae9f573ef95031e3427b926e7c68d743',17,'admin',2,1,0,1497074455,1497074455,0,0,'593b8b17c7e33',31,''),(19,1,'appdata_ocodxjl8m9zm/js','b5be92c25d77cf1222d9f90df8abb942',2,'js',2,1,1982162,1497075930,1497074457,0,0,'593b90da5c1ac',31,''),(20,1,'appdata_ocodxjl8m9zm/js/core','15ec51c9de49fcccc4bcc58051750f6c',19,'core',2,1,343719,1497075930,1497075930,0,0,'593b90da5c1ac',31,''),(21,1,'appdata_ocodxjl8m9zm/js/core/merged-template-prepend.js','45a94153084e313d7f06575df59ff660',20,'merged-template-prepend.js',13,3,142144,1497074455,1497074455,0,0,'8e6cc39f7e0962c4a189d7993cc82d62',27,''),(22,1,'appdata_ocodxjl8m9zm/js/core/merged-template-prepend.js.deps','d7404b1f0bf6c8ca1506b3f65ad6c33c',20,'merged-template-prepend.js.deps',14,3,1146,1497074455,1497074455,0,0,'16554de800530912c1a31cd577dd3b82',27,''),(23,1,'appdata_ocodxjl8m9zm/js/core/merged-template-prepend.js.gzip','bfc6435a164159e869f8bcc3dbcfc245',20,'merged-template-prepend.js.gzip',15,3,39023,1497074455,1497074455,0,0,'78efb7f5b9ae4a00310a6c5a4f65b04e',27,''),(24,1,'appdata_ocodxjl8m9zm/js/core/merged-share-backend.js','73a9986212d0bed04bb429ae82ed1e4b',20,'merged-share-backend.js',13,3,104522,1497074456,1497074456,0,0,'af04b93fcb54dd72177c7af0a7bed0d8',27,''),(25,1,'appdata_ocodxjl8m9zm/js/core/merged-share-backend.js.deps','79093b9b8e23efe1d43624e15b8c4910',20,'merged-share-backend.js.deps',14,3,752,1497074456,1497074456,0,0,'19e923272ae1a1b7e7af160597af91bb',27,''),(26,1,'appdata_ocodxjl8m9zm/js/core/merged-share-backend.js.gzip','ef1f137ce626b99d9c92dc8781054846',20,'merged-share-backend.js.gzip',15,3,22508,1497074456,1497074456,0,0,'560eaa45554adaa4c2cbf6b815d6d0b7',27,''),(27,1,'appdata_ocodxjl8m9zm/js/notifications','38070b0809a974cb284107cc1d62beb4',19,'notifications',2,1,25514,1497074456,1497074456,0,0,'593b8b184781e',31,''),(28,1,'appdata_ocodxjl8m9zm/js/notifications/merged.js','bb548eae525d91fe93177c2ed446e69e',27,'merged.js',13,3,20114,1497074456,1497074456,0,0,'0fed4578044d442f5d8ce453053481bd',27,''),(29,1,'appdata_ocodxjl8m9zm/js/notifications/merged.js.deps','0fb4382c59586c54e4cd013d381c95b8',27,'merged.js.deps',14,3,330,1497074456,1497074456,0,0,'9e217119d8c3d18a373f2f27866f4485',27,''),(30,1,'appdata_ocodxjl8m9zm/js/notifications/merged.js.gzip','4d7b919e31c315211167cfc4581eb693',27,'merged.js.gzip',15,3,5070,1497074456,1497074456,0,0,'4dd24adc29b3b8d7ab4c7b93f4553f0a',27,''),(31,1,'appdata_ocodxjl8m9zm/js/files','a7fa0d0186a47dbd52df2d8f131d1115',19,'files',2,1,398160,1497074456,1497074456,0,0,'593b8b1870572',31,''),(32,1,'appdata_ocodxjl8m9zm/js/files/merged-index.js','8a9eb608fdcee6a035e977013bb5f2c1',31,'merged-index.js',13,3,319781,1497074456,1497074456,0,0,'0733fa64b45fd1fe226b3752354a8c03',27,''),(33,1,'appdata_ocodxjl8m9zm/js/files/merged-index.js.deps','1999a5de76b47fd7fc833fbeecb9bf47',31,'merged-index.js.deps',14,3,2125,1497074456,1497074456,0,0,'5408701ff7bf9a3ffd50ba567a6547ca',27,''),(34,1,'appdata_ocodxjl8m9zm/js/files/merged-index.js.gzip','ee5d7e98f2845a627c459faa57cdcf0a',31,'merged-index.js.gzip',15,3,76254,1497074456,1497074456,0,0,'3980d6d0066f32179e0b3ff6ad920087',27,''),(35,1,'appdata_ocodxjl8m9zm/js/activity','8a68d70f11ac024771dd1ea5a8e12a5c',19,'activity',2,1,20399,1497074456,1497074456,0,0,'593b8b1888bfd',31,''),(36,1,'appdata_ocodxjl8m9zm/js/activity/activity-sidebar.js','115614c9c63f1be034bc8ac55d3b5f61',35,'activity-sidebar.js',13,3,15755,1497074456,1497074456,0,0,'5c6ea08b1b981d8d11c647e38b0dc842',27,''),(37,1,'appdata_ocodxjl8m9zm/js/activity/activity-sidebar.js.deps','0604d6a3bb01b7a9ceea1c732cde5f57',35,'activity-sidebar.js.deps',14,3,494,1497074456,1497074456,0,0,'8c623c7f13243441f4348eed5b5fcb5c',27,''),(38,1,'appdata_ocodxjl8m9zm/js/activity/activity-sidebar.js.gzip','1bf96c12bf1a5a16eb6252341e3d8273',35,'activity-sidebar.js.gzip',15,3,4150,1497074456,1497074456,0,0,'702ef9fba485232c1151dd69b308e380',27,''),(39,1,'appdata_ocodxjl8m9zm/js/comments','ed7c2bf1b87c78dee976f363c469fb1f',19,'comments',2,1,36996,1497074456,1497074456,0,0,'593b8b18a2303',31,''),(40,1,'appdata_ocodxjl8m9zm/js/comments/merged.js','a3cfc504e9a15f857169c4a467ef5ab0',39,'merged.js',13,3,28929,1497074456,1497074456,0,0,'dde0c699486af072084800af9827c618',27,''),(41,1,'appdata_ocodxjl8m9zm/js/comments/merged.js.deps','0afc98eb1ad7129c3dfeea07da84914e',39,'merged.js.deps',14,3,635,1497074456,1497074456,0,0,'49d06f0f4bb27cba9af504db3b53bbd3',27,''),(42,1,'appdata_ocodxjl8m9zm/js/comments/merged.js.gzip','149ba55a2ab0af81446d032488e08723',39,'merged.js.gzip',15,3,7432,1497074456,1497074456,0,0,'4719779dc0944a055719aceca0b39ec7',27,''),(43,1,'appdata_ocodxjl8m9zm/js/files_sharing','fd0126d6edb2eb6271a578a1e444dded',19,'files_sharing',2,1,20226,1497074456,1497074456,0,0,'593b8b18ba7ae',31,''),(44,1,'appdata_ocodxjl8m9zm/js/files_sharing/additionalScripts.js','59e5ffcffec01e6dae21b7bb12abacea',43,'additionalScripts.js',13,3,15161,1497074456,1497074456,0,0,'1ea093394a504ca2fa3e86a33e462e98',27,''),(45,1,'appdata_ocodxjl8m9zm/js/files_sharing/additionalScripts.js.deps','51a51398bcd28a494d0a1c5a5904a97d',43,'additionalScripts.js.deps',14,3,340,1497074456,1497074456,0,0,'2c03610b7f11b85ee04ff472eb881d6f',27,''),(46,1,'appdata_ocodxjl8m9zm/js/files_sharing/additionalScripts.js.gzip','5aa57465d14139ad4e74d0de5d509cd7',43,'additionalScripts.js.gzip',15,3,4725,1497074456,1497074456,0,0,'04d09c2a4a4bc2d859ebe509c8284780',27,''),(47,1,'appdata_ocodxjl8m9zm/js/files_texteditor','49ec1cc3261cfe576cf9bdbaac849469',19,'files_texteditor',2,1,820097,1497074456,1497074456,0,0,'593b8b18ecd9b',31,''),(48,1,'appdata_ocodxjl8m9zm/js/files_texteditor/merged.js','34cf9c40438c3177ee57a95f01672cff',47,'merged.js',13,3,681977,1497074456,1497074456,0,0,'c37cd1c3830cad1b41692f995bada09f',27,''),(49,1,'appdata_ocodxjl8m9zm/js/files_texteditor/merged.js.deps','04b124150ffffc36cfea62e7fceaa043',47,'merged.js.deps',14,3,370,1497074456,1497074456,0,0,'edc8b89096f8789f5db25a7f12330749',27,''),(50,1,'appdata_ocodxjl8m9zm/js/files_texteditor/merged.js.gzip','e86e98b67c487f49fa469c014158c3b6',47,'merged.js.gzip',15,3,137750,1497074456,1497074456,0,0,'9217ebb40a5313a3d6a6de4975f4c9bd',27,''),(51,1,'appdata_ocodxjl8m9zm/js/files_versions','060c654bff518e2984884d51cfd5bfc2',19,'files_versions',2,1,16725,1497074457,1497074457,0,0,'593b8b19139c1',31,''),(52,1,'appdata_ocodxjl8m9zm/js/files_versions/merged.js','a52dbdd5cdf827bc6c3ae8ee3e1916da',51,'merged.js',13,3,12719,1497074457,1497074457,0,0,'6db4d53ad7f41376aa816233064c66b0',27,''),(53,1,'appdata_ocodxjl8m9zm/js/files_versions/merged.js.deps','82194777580a9ff2aa32f9b3a43df766',51,'merged.js.deps',14,3,424,1497074457,1497074457,0,0,'dda1c91104a49ca43448ce029816393e',27,''),(54,1,'appdata_ocodxjl8m9zm/js/files_versions/merged.js.gzip','ab092dd428d4e8812d058402269582df',51,'merged.js.gzip',15,3,3582,1497074457,1497074457,0,0,'92279f9be00b43c77d3b0d42a9caa743',27,''),(55,1,'appdata_ocodxjl8m9zm/js/gallery','27f4d8de45f26c08ba1faef43e480e48',19,'gallery',2,1,280677,1497074457,1497074457,0,0,'593b8b19327d8',31,''),(56,1,'appdata_ocodxjl8m9zm/js/gallery/scripts-for-file-app.js','ab67c88d44046739434437465fe71af5',55,'scripts-for-file-app.js',13,3,225356,1497074457,1497074457,0,0,'223f15d81624a8e7095bd88baa635e44',27,''),(57,1,'appdata_ocodxjl8m9zm/js/gallery/scripts-for-file-app.js.deps','0e85e8fc0bebf931edebd94cb2f27cd1',55,'scripts-for-file-app.js.deps',14,3,856,1497074457,1497074457,0,0,'88b99ebe7160162e28b03b4b66d25588',27,''),(58,1,'appdata_ocodxjl8m9zm/js/gallery/scripts-for-file-app.js.gzip','d676c72c2798e404c46e4156a1df6f56',55,'scripts-for-file-app.js.gzip',15,3,54465,1497074457,1497074457,0,0,'2db0ee37f8bf29a6d3ebf9f424ba8c11',27,''),(59,1,'appdata_ocodxjl8m9zm/js/core/merged.js','31eb454f9fa80ba1a7603f3a91493c02',20,'merged.js',13,3,20224,1497074457,1497074457,0,0,'c5821dfd2e5a970a460bf99dc7034624',27,''),(60,1,'appdata_ocodxjl8m9zm/js/core/merged.js.deps','3289506c1992d2541e3867aa2596b6da',20,'merged.js.deps',14,3,508,1497074457,1497074457,0,0,'d75673023c13e9989fdb803379083675',27,''),(61,1,'appdata_ocodxjl8m9zm/js/core/merged.js.gzip','d04f319c85302e5ef89d672f589c33b5',20,'merged.js.gzip',15,3,5365,1497074457,1497074457,0,0,'78cea943ec3d18d9456ada47f40172ab',27,''),(62,1,'appdata_ocodxjl8m9zm/js/systemtags','ef33fdc3ed52957c2c855a9446a620d1',19,'systemtags',2,1,19649,1497074457,1497074457,0,0,'593b8b195d4d1',31,''),(63,1,'appdata_ocodxjl8m9zm/js/systemtags/merged.js','765b62ecae0527096455cdd1baa85129',62,'merged.js',13,3,14902,1497074457,1497074457,0,0,'44640a7f4439308d035136c2bf5d204a',27,''),(64,1,'appdata_ocodxjl8m9zm/js/systemtags/merged.js.deps','a9da170131dde08a8f88f1b9bfd48f46',62,'merged.js.deps',14,3,399,1497074457,1497074457,0,0,'06851c091044d826f36c66cdfcd9104d',27,''),(65,1,'appdata_ocodxjl8m9zm/js/systemtags/merged.js.gzip','1ee4687d4619ed9b89adfa1e8b1a6443',62,'merged.js.gzip',15,3,4348,1497074457,1497074457,0,0,'49f450a3263508f397ffb1097c82188d',27,''),(66,1,'appdata_ocodxjl8m9zm/css','da11e512d782a7e0ae43d5555c2a2d2f',2,'css',2,1,133025,1497074462,1497074462,0,0,'593b8b1e27ff4',31,''),(67,1,'appdata_ocodxjl8m9zm/css/core','9553d40e3b982cab8a1785768284c6fd',66,'core',2,1,97490,1497074460,1497074460,0,0,'593b8b1ca1e04',31,''),(68,1,'appdata_ocodxjl8m9zm/theming','16dba59ed234d8929bb71b7dc1380687',2,'theming',2,1,2117,1497074466,1497074465,0,0,'593b8b22362a4',31,''),(69,1,'appdata_ocodxjl8m9zm/css/core/server.css','1c85f585acc7a1e87e50ff3b1a59b433',67,'server.css',16,11,77314,1497074459,1497074459,0,0,'6ad2529f2364880f09934ec506f94d45',27,''),(70,1,'appdata_ocodxjl8m9zm/css/core/server.css.deps','c95b953de16f6cebcc215e6b0a6534a4',67,'server.css.deps',14,3,850,1497074459,1497074459,0,0,'4e520222016118f2a22dc357c85cc46a',27,''),(71,1,'appdata_ocodxjl8m9zm/css/core/server.css.gzip','853bb24be275bee95508bd1ac1e0172b',67,'server.css.gzip',15,3,13409,1497074459,1497074459,0,0,'b953059b218d35d06d59731a1c1f13a7',27,''),(72,1,'appdata_ocodxjl8m9zm/css/core/share.css','3386eed89b6691f2575f18af3ee32f61',67,'share.css',16,11,2848,1497074459,1497074459,0,0,'b3b00ea62c99af6f87837defe95c2a05',27,''),(73,1,'appdata_ocodxjl8m9zm/css/core/share.css.deps','086a8469d19ecee4f094a68f43b96889',67,'share.css.deps',14,3,133,1497074459,1497074459,0,0,'a342cd8bea9f69a4949f00168c9c4da5',27,''),(74,1,'appdata_ocodxjl8m9zm/css/core/share.css.gzip','23ba05f2e06adca4dfc2a10c1c6a8fb4',67,'share.css.gzip',15,3,994,1497074459,1497074459,0,0,'b9be933cd43a3eaecac539ccc462a3b9',27,''),(75,1,'appdata_ocodxjl8m9zm/css/files','9af9f883e4748b18ce0cd9883f514b87',66,'files',2,1,24966,1497074460,1497074460,0,0,'593b8b1c42c9c',31,''),(76,1,'appdata_ocodxjl8m9zm/css/files/merged.css','f1444c43b271a0193e21178f95500896',75,'merged.css',16,11,20250,1497074460,1497074460,0,0,'4b4cc62a6443d389823acb84db18b65f',27,''),(77,1,'appdata_ocodxjl8m9zm/css/files/merged.css.deps','6e0453f3c37f356175250a1376088fd1',75,'merged.css.deps',14,3,433,1497074460,1497074460,0,0,'f1e1a173649acb6156ad169a720178b1',27,''),(78,1,'appdata_ocodxjl8m9zm/css/files/merged.css.gzip','cf490948a62deabfa71ba165979dae51',75,'merged.css.gzip',15,3,4283,1497074460,1497074460,0,0,'f665908f545a4ca36fe4e4c683d36067',27,''),(79,1,'appdata_ocodxjl8m9zm/css/files_sharing','7744fa8c03b60f6f43773ee5623bdd6f',66,'files_sharing',2,1,3945,1497074460,1497074460,0,0,'593b8b1c6187d',31,''),(80,1,'appdata_ocodxjl8m9zm/css/files_sharing/mergedAdditionalStyles.css','63e8e7ece4590d1de3dcf4fb67a96fcd',79,'mergedAdditionalStyles.css',16,11,2727,1497074460,1497074460,0,0,'156b2018a9a682740832cf95dcf29b77',27,''),(81,1,'appdata_ocodxjl8m9zm/css/files_sharing/mergedAdditionalStyles.css.deps','22ce29def05a980a49309b34df988c92',79,'mergedAdditionalStyles.css.deps',14,3,340,1497074460,1497074460,0,0,'b719f4e30db80f25f10e4caddfe4f3af',27,''),(82,1,'appdata_ocodxjl8m9zm/css/files_sharing/mergedAdditionalStyles.css.gzip','f9457adc8b5b8cbfd0414272fed2facc',79,'mergedAdditionalStyles.css.gzip',15,3,878,1497074460,1497074460,0,0,'c6fb5ece6e005cd46eeeba1d15f2b028',27,''),(83,1,'appdata_ocodxjl8m9zm/css/files_texteditor','f604bbd421e1b8d0f3a62ccecd41869d',66,'files_texteditor',2,1,5377,1497074460,1497074460,0,0,'593b8b1c826c2',31,''),(84,1,'appdata_ocodxjl8m9zm/css/files_texteditor/merged.css','010f9a499b02f208c3ed743fde9aeab0',83,'merged.css',16,11,3774,1497074460,1497074460,0,0,'66caf5dd1b76993600bbeea6f578a169',27,''),(85,1,'appdata_ocodxjl8m9zm/css/files_texteditor/merged.css.deps','3366fd96cea3aa77a4178c65dd72d8f5',83,'merged.css.deps',14,3,419,1497074460,1497074460,0,0,'8ea5a638eaee5febf361e8a06241cde1',27,''),(86,1,'appdata_ocodxjl8m9zm/css/files_texteditor/merged.css.gzip','4da6060a35c77d512207c2e7b08cdfae',83,'merged.css.gzip',15,3,1184,1497074460,1497074460,0,0,'ca10985394f7bb6db6d1440ac3eff0c8',27,''),(87,1,'appdata_ocodxjl8m9zm/css/core/systemtags.css','755ed54f58990f210a863ce49c10cff4',67,'systemtags.css',16,11,1415,1497074460,1497074460,0,0,'e23fa533be71a5de3ba6b2a4213e114d',27,''),(88,1,'appdata_ocodxjl8m9zm/css/core/systemtags.css.deps','ad3afbad08d5fdf5cc1bab967d960b31',67,'systemtags.css.deps',14,3,138,1497074460,1497074460,0,0,'e438dc6dfb48499cee6b6fa5ebeb1a34',27,''),(89,1,'appdata_ocodxjl8m9zm/css/core/systemtags.css.gzip','fe05f988c5c17c5c81c07fdddf23764d',67,'systemtags.css.gzip',15,3,389,1497074460,1497074460,0,0,'03cef305259788b070f3fb016985b26b',27,''),(90,1,'appdata_ocodxjl8m9zm/css/theming','6c1f5cfc17b38608533be293516aacd7',66,'theming',2,1,1247,1497074462,1497074462,0,0,'593b8b1e27ff4',31,''),(91,1,'appdata_ocodxjl8m9zm/css/theming/theming.css','41bada8ebbfff4c836ba99771ef1902e',90,'theming.css',16,11,790,1497074462,1497074462,0,0,'8d7c8bebd294039d137aa09ba0c0d970',27,''),(92,1,'appdata_ocodxjl8m9zm/css/theming/theming.css.deps','eb8311da36b80c26b54f42c690367516',90,'theming.css.deps',14,3,144,1497074462,1497074462,0,0,'0305e87b30d7c0dd84203e77789fa2d4',27,''),(93,1,'appdata_ocodxjl8m9zm/css/theming/theming.css.gzip','ce7272a8e544bf3ef3927e09e9cdec8f',90,'theming.css.gzip',15,3,313,1497074462,1497074462,0,0,'48e3d6e8d042d8ddbcad4400ca04caf1',27,''),(94,1,'appdata_ocodxjl8m9zm/theming/0','c4fd072e5e869dd05c8f8c42083db935',68,'0',2,1,2117,1497074466,1497074466,0,0,'593b8b22362a4',31,''),(95,1,'appdata_ocodxjl8m9zm/theming/0/icon-core-filetypes_folder.svg','f06ca289a56995fda3c9b74f4877c60c',94,'icon-core-filetypes_folder.svg',17,8,254,1497074465,1497074465,0,0,'8338c7a5edcdcab73f1c245291e3af9a',27,''),(96,1,'appdata_ocodxjl8m9zm/theming/0/icon-core-filetypes_video.svg','5d695dd5262faee78d43afd18510b012',94,'icon-core-filetypes_video.svg',17,8,328,1497074465,1497074465,0,0,'0d146f90a5f2e527e670a645d27f5cae',27,''),(97,1,'appdata_ocodxjl8m9zm/theming/0/icon-core-filetypes_application-pdf.svg','cd78f9bdfe32bc05f2e7cc397add296a',94,'icon-core-filetypes_application-pdf.svg',17,8,1535,1497074466,1497074466,0,0,'50c89a3acbae65d13cc5f637d9927ee2',27,''),(98,1,'files_external','c270928b685e7946199afdfb898d27ea',1,'files_external',2,1,0,1497074478,1497074478,0,0,'593b8b2e684b6',31,''),(99,1,'appdata_ocodxjl8m9zm/appstore/categories.json','6f576af292a22fbf4378e6e40d93ff96',3,'categories.json',4,3,32533,1497074511,1497074511,0,0,'0098080687626184f9dbc3d3d05b7d1a',27,''),(100,1,'appdata_ocodxjl8m9zm/richdocuments','9346c20e7049d192f1c0c21990153933',2,'richdocuments',2,1,0,1497074926,1497074926,0,0,'593b8ceec6d52',31,''),(101,1,'appdata_ocodxjl8m9zm/richdocuments/richdocuments','74136bbec942e1a2f9cf447e872eb6ab',100,'richdocuments',2,1,0,1497074926,1497074926,0,0,'593b8ceec58b4',31,''),(102,1,'appdata_ocodxjl8m9zm/js/core/merged-login.js','e7c272ad7c4ba9f80c06736bfd729adc',20,'merged-login.js',13,3,5389,1497075930,1497075930,0,0,'0378b1935fa2eea8f772d619dc15e438',27,''),(103,1,'appdata_ocodxjl8m9zm/js/core/merged-login.js.deps','b2d30e7fda641dea0e2fd3c80b6a356b',20,'merged-login.js.deps',14,3,271,1497075930,1497075930,0,0,'004ca08f6fab61f3e83a50e1c81da500',27,''),(104,1,'appdata_ocodxjl8m9zm/js/core/merged-login.js.gzip','356ad6cf015dd63528515cbeac831479',20,'merged-login.js.gzip',15,3,1867,1497075930,1497075930,0,0,'132fd3f134cd846bcc030176b9b2af6d',27,'');
 /*!40000 ALTER TABLE `oc_filecache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1284,7 +1034,7 @@ CREATE TABLE `oc_jobs` (
 
 LOCK TABLES `oc_jobs` WRITE;
 /*!40000 ALTER TABLE `oc_jobs` DISABLE KEYS */;
-INSERT INTO `oc_jobs` VALUES (1,'OCA\\Files_Versions\\BackgroundJob\\ExpireVersions','null',1497015807,1497015807,0,0),(2,'OCA\\Files_Sharing\\DeleteOrphanedSharesJob','null',1497015960,1497015960,0,0),(3,'OCA\\Files_Sharing\\ExpireSharesJob','null',1497011297,1497016771,0,0),(4,'OCA\\UpdateNotification\\Notification\\BackgroundJob','null',1497011773,1497017075,0,2),(6,'OCA\\DAV\\CardDAV\\SyncJob','null',1497011838,1497017090,0,0),(7,'OCA\\Files\\BackgroundJob\\ScanFiles','null',1497017441,1497017441,0,2),(8,'OCA\\Files\\BackgroundJob\\DeleteOrphanedItems','null',1497017523,1497017522,0,0),(9,'OCA\\Files\\BackgroundJob\\CleanupFileLocks','null',1497017527,1497017527,0,0),(10,'OCA\\Federation\\SyncJob','null',1497015606,1497017536,0,0),(11,'OCA\\Files_Trashbin\\BackgroundJob\\ExpireTrash','null',1497015620,1497015620,0,0),(12,'OCA\\Activity\\BackgroundJob\\EmailNotification','null',1497015625,1497015625,0,0),(13,'OCA\\Activity\\BackgroundJob\\ExpireActivities','null',1497015782,1497015782,0,0),(14,'OCA\\NextcloudAnnouncements\\Cron\\Crawler','null',1497015785,1497015785,0,2),(15,'\\OC\\Authentication\\Token\\DefaultTokenCleanupJob','null',1497015792,1497015792,0,0),(17,'OCA\\User_LDAP\\Jobs\\UpdateGroups','null',1497015969,1497015969,0,0),(18,'OCA\\User_LDAP\\Jobs\\CleanUp','null',1497016763,1497016763,0,0);
+INSERT INTO `oc_jobs` VALUES (1,'OCA\\Activity\\BackgroundJob\\EmailNotification','null',1497074464,1497074464,0,0),(2,'OCA\\Activity\\BackgroundJob\\ExpireActivities','null',1497074477,1497074477,0,0),(3,'OCA\\Files_Trashbin\\BackgroundJob\\ExpireTrash','null',1497074510,1497074510,0,0),(4,'OCA\\DAV\\CardDAV\\SyncJob','null',1497074828,1497074828,0,0),(5,'OCA\\NextcloudAnnouncements\\Cron\\Crawler','null',1497074834,1497074834,0,1),(6,'OCA\\Files_Versions\\BackgroundJob\\ExpireVersions','null',1497075018,1497075018,0,0),(7,'OCA\\UpdateNotification\\Notification\\BackgroundJob','null',1497075912,1497075911,0,0),(9,'OCA\\Files_Sharing\\DeleteOrphanedSharesJob','null',1497075926,1497075926,0,0),(10,'OCA\\Files_Sharing\\ExpireSharesJob','null',1497075931,1497075931,0,0),(11,'OCA\\Files\\BackgroundJob\\ScanFiles','null',0,1497074452,0,0),(12,'OCA\\Files\\BackgroundJob\\DeleteOrphanedItems','null',0,1497074452,0,0),(13,'OCA\\Files\\BackgroundJob\\CleanupFileLocks','null',0,1497074452,0,0),(14,'OCA\\Federation\\SyncJob','null',0,1497074452,0,0),(15,'\\OC\\Authentication\\Token\\DefaultTokenCleanupJob','null',0,1497074453,0,0),(16,'OCA\\FirstRunWizard\\Notification\\BackgroundJob','{\"uid\":\"admin\"}',0,1497074455,0,0),(17,'OCA\\User_LDAP\\Jobs\\UpdateGroups','null',0,1497074538,0,0),(18,'OCA\\User_LDAP\\Jobs\\CleanUp','null',0,1497074538,0,0);
 /*!40000 ALTER TABLE `oc_jobs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1358,7 +1108,6 @@ CREATE TABLE `oc_ldap_user_mapping` (
 
 LOCK TABLES `oc_ldap_user_mapping` WRITE;
 /*!40000 ALTER TABLE `oc_ldap_user_mapping` DISABLE KEYS */;
-INSERT INTO `oc_ldap_user_mapping` VALUES ('cn=exam1,ou=exams,ou=other,ou=people,dc=constellations,dc=com','exam1','5FC79BED-1BB5-4616-9377-A03BF2D227AB'),('cn=exam2,ou=exams,ou=other,ou=people,dc=constellations,dc=com','exam2','70D8B173-63B1-4CD1-86BC-DE5DB3495898'),('cn=exam3,ou=exams,ou=other,ou=people,dc=constellations,dc=com','exam3','3138ACBC-3168-4DF4-8003-700C2962D709'),('cn=exam4,ou=exams,ou=other,ou=people,dc=constellations,dc=com','exam4','E8D2A365-F1C7-4F6B-B089-C289CF4AF70D'),('cn=exam5,ou=exams,ou=other,ou=people,dc=constellations,dc=com','exam5','F5FE513C-08C8-46DD-9517-CBDA70AE1D6F'),('cn=guest1,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest1','F2189C45-4403-46D5-8309-598FE34ED7DB'),('cn=guest10,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest10','33952766-1307-4046-BED6-0A164103FF6A'),('cn=guest2,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest2','B2979F51-0A25-4CCD-9848-DE6113898C47'),('cn=guest3,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest3','B7D07A03-F0FD-489D-A339-037A454DC81E'),('cn=guest4,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest4','AAFDD98A-6FEA-4AD0-B535-6BB2A36548CD'),('cn=guest5,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest5','5EDD2BF0-5410-4B98-9759-F9D5255071E8'),('cn=guest6,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest6','404B3DF1-00B3-44B8-9AFA-AAC426F8F8A7'),('cn=guest7,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest7','E6C15BA1-9DAF-4D9A-B374-93786FE09F99'),('cn=guest8,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest8','429F8C72-9D03-4FDD-B53C-749E2E13CDF4'),('cn=guest9,ou=guestusers,ou=other,ou=people,dc=constellations,dc=com','guest9','DA6651DA-E7CE-453C-A17E-C53322F01DA7'),('cn=ismith,ou=staff,ou=personnel,ou=people,dc=constellations,dc=com','ismith','ED66F05E-6B14-4D80-B5B1-802AA33A2E77'),('cn=jjones,ou=staff,ou=personnel,ou=people,dc=constellations,dc=com','jjones','4AD7B379-D0FA-4ED0-A1E9-5A8150522DC9'),('cn=profileuser,ou=other,ou=people,dc=constellations,dc=com','profileuser','53994F0F-BCF0-4FFC-B099-11391C1AE82C'),('cn=sysadmin,ou=itadmin,ou=personnel,ou=people,dc=constellations,dc=com','sysadmin','971BF1AC-5F48-401B-B653-7BF833649CCF'),('cn=tech1,ou=tech,ou=personnel,ou=people,dc=constellations,dc=com','tech1','766B6AEB-5BF9-446D-ACEE-815E1BE52463'),('cn=tech2,ou=tech,ou=personnel,ou=people,dc=constellations,dc=com','tech2','2A22818E-3C4D-4CF1-802D-D6D3C2DFCB35'),('cn=tech3,ou=tech,ou=personnel,ou=people,dc=constellations,dc=com','tech3','F4C8C638-6C45-4E76-A940-7AE326F360D2'),('cn=tech4,ou=tech,ou=personnel,ou=people,dc=constellations,dc=com','tech4','BB2CA7E7-4DF6-4E1B-AA3A-01D8600B987B');
 /*!40000 ALTER TABLE `oc_ldap_user_mapping` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1383,7 +1132,7 @@ CREATE TABLE `oc_mimetypes` (
 
 LOCK TABLES `oc_mimetypes` WRITE;
 /*!40000 ALTER TABLE `oc_mimetypes` DISABLE KEYS */;
-INSERT INTO `oc_mimetypes` VALUES (3,'application'),(13,'application/javascript'),(4,'application/json'),(14,'application/octet-stream'),(12,'application/pdf'),(9,'application/vnd.oasis.opendocument.text'),(15,'application/x-gzip'),(1,'httpd'),(2,'httpd/unix-directory'),(5,'image'),(6,'image/jpeg'),(17,'image/svg+xml'),(7,'text'),(16,'text/css'),(8,'text/plain'),(10,'video'),(11,'video/mp4');
+INSERT INTO `oc_mimetypes` VALUES (3,'application'),(13,'application/javascript'),(4,'application/json'),(14,'application/octet-stream'),(7,'application/pdf'),(10,'application/vnd.oasis.opendocument.text'),(15,'application/x-gzip'),(1,'httpd'),(2,'httpd/unix-directory'),(8,'image'),(9,'image/jpeg'),(17,'image/svg+xml'),(11,'text'),(16,'text/css'),(12,'text/plain'),(5,'video'),(6,'video/mp4');
 /*!40000 ALTER TABLE `oc_mimetypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1446,7 +1195,7 @@ CREATE TABLE `oc_notifications` (
   KEY `oc_notifications_user` (`user`),
   KEY `oc_notifications_timestamp` (`timestamp`),
   KEY `oc_notifications_object` (`object_type`,`object_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1455,7 +1204,7 @@ CREATE TABLE `oc_notifications` (
 
 LOCK TABLES `oc_notifications` WRITE;
 /*!40000 ALTER TABLE `oc_notifications` DISABLE KEYS */;
-INSERT INTO `oc_notifications` VALUES (1,'survey_client','admin',1497011784,'dummy','23','updated','[]','','[]','','','[{\"label\":\"enable\",\"link\":\"http:\\/\\/www.constellations.com\\/nextcloud\\/ocs\\/v2.php\\/apps\\/survey_client\\/api\\/v1\\/monthly\",\"type\":\"POST\",\"primary\":true},{\"label\":\"disable\",\"link\":\"http:\\/\\/www.constellations.com\\/nextcloud\\/ocs\\/v2.php\\/apps\\/survey_client\\/api\\/v1\\/monthly\",\"type\":\"DELETE\",\"primary\":false}]'),(2,'firstrunwizard','admin',1497015802,'user','admin','profile','[]','','[]','','','[]');
+INSERT INTO `oc_notifications` VALUES (1,'survey_client','admin',1497075920,'dummy','23','updated','[]','','[]','','','[{\"label\":\"enable\",\"link\":\"https:\\/\\/www.constellations.com\\/nextcloud\\/ocs\\/v2.php\\/apps\\/survey_client\\/api\\/v1\\/monthly\",\"type\":\"POST\",\"primary\":true},{\"label\":\"disable\",\"link\":\"https:\\/\\/www.constellations.com\\/nextcloud\\/ocs\\/v2.php\\/apps\\/survey_client\\/api\\/v1\\/monthly\",\"type\":\"DELETE\",\"primary\":false}]');
 /*!40000 ALTER TABLE `oc_notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1564,7 +1313,7 @@ CREATE TABLE `oc_preferences` (
 
 LOCK TABLES `oc_preferences` WRITE;
 /*!40000 ALTER TABLE `oc_preferences` DISABLE KEYS */;
-INSERT INTO `oc_preferences` VALUES ('admin','core','lang','en'),('admin','files_external','config_version','0.5.0'),('admin','firstrunwizard','show','0'),('admin','login','lastLogin','1497011147'),('exam1','files_external','config_version','0.5.0'),('exam1','user_ldap','displayName','Exam 1'),('exam1','user_ldap','homePath',''),('exam1','user_ldap','lastFeatureRefresh','1497017442'),('exam1','user_ldap','uid','exam1'),('exam2','files_external','config_version','0.5.0'),('exam2','user_ldap','displayName','Exam 2'),('exam2','user_ldap','homePath',''),('exam2','user_ldap','lastFeatureRefresh','1497017442'),('exam2','user_ldap','uid','exam2'),('exam3','files_external','config_version','0.5.0'),('exam3','user_ldap','displayName','Exam 3'),('exam3','user_ldap','homePath',''),('exam3','user_ldap','lastFeatureRefresh','1497017442'),('exam3','user_ldap','uid','exam3'),('exam4','files_external','config_version','0.5.0'),('exam4','user_ldap','displayName','Exam 4'),('exam4','user_ldap','homePath',''),('exam4','user_ldap','lastFeatureRefresh','1497017442'),('exam4','user_ldap','uid','exam4'),('exam5','files_external','config_version','0.5.0'),('exam5','user_ldap','displayName','Exam 5'),('exam5','user_ldap','homePath',''),('exam5','user_ldap','lastFeatureRefresh','1497017442'),('exam5','user_ldap','uid','exam5'),('guest1','files_external','config_version','0.5.0'),('guest1','user_ldap','displayName','Guest 1'),('guest1','user_ldap','homePath',''),('guest1','user_ldap','lastFeatureRefresh','1497017442'),('guest1','user_ldap','uid','guest1'),('guest10','files_external','config_version','0.5.0'),('guest10','user_ldap','displayName','Guest 10'),('guest10','user_ldap','homePath',''),('guest10','user_ldap','lastFeatureRefresh','1497017442'),('guest10','user_ldap','uid','guest10'),('guest2','files_external','config_version','0.5.0'),('guest2','user_ldap','displayName','Guest 2'),('guest2','user_ldap','homePath',''),('guest2','user_ldap','lastFeatureRefresh','1497017442'),('guest2','user_ldap','uid','guest2'),('guest3','files_external','config_version','0.5.0'),('guest3','user_ldap','displayName','Guest 3'),('guest3','user_ldap','homePath',''),('guest3','user_ldap','lastFeatureRefresh','1497017442'),('guest3','user_ldap','uid','guest3'),('guest4','files_external','config_version','0.5.0'),('guest4','user_ldap','displayName','Guest 4'),('guest4','user_ldap','homePath',''),('guest4','user_ldap','lastFeatureRefresh','1497017442'),('guest4','user_ldap','uid','guest4'),('guest5','files_external','config_version','0.5.0'),('guest5','user_ldap','displayName','Guest 5'),('guest5','user_ldap','homePath',''),('guest5','user_ldap','lastFeatureRefresh','1497017442'),('guest5','user_ldap','uid','guest5'),('guest6','files_external','config_version','0.5.0'),('guest6','user_ldap','displayName','Guest 6'),('guest6','user_ldap','homePath',''),('guest6','user_ldap','lastFeatureRefresh','1497017442'),('guest6','user_ldap','uid','guest6'),('guest7','files_external','config_version','0.5.0'),('guest7','user_ldap','displayName','Guest 7'),('guest7','user_ldap','homePath',''),('guest7','user_ldap','lastFeatureRefresh','1497017442'),('guest7','user_ldap','uid','guest7'),('guest8','files_external','config_version','0.5.0'),('guest8','user_ldap','displayName','Guest 8'),('guest8','user_ldap','homePath',''),('guest8','user_ldap','lastFeatureRefresh','1497017442'),('guest8','user_ldap','uid','guest8'),('guest9','files_external','config_version','0.5.0'),('guest9','user_ldap','displayName','Guest 9'),('guest9','user_ldap','homePath',''),('guest9','user_ldap','lastFeatureRefresh','1497017442'),('guest9','user_ldap','uid','guest9'),('ismith','files_external','config_version','0.5.0'),('ismith','user_ldap','displayName','Ian Smith'),('ismith','user_ldap','homePath',''),('ismith','user_ldap','lastFeatureRefresh','1497017442'),('ismith','user_ldap','uid','ismith'),('jjones','files_external','config_version','0.5.0'),('jjones','user_ldap','displayName','John Jones'),('jjones','user_ldap','homePath',''),('jjones','user_ldap','lastFeatureRefresh','1497017442'),('jjones','user_ldap','uid','jjones'),('profileuser','files_external','config_version','0.5.0'),('profileuser','user_ldap','displayName','Profile User'),('profileuser','user_ldap','homePath',''),('profileuser','user_ldap','lastFeatureRefresh','1497017442'),('profileuser','user_ldap','uid','profileuser'),('sysadmin','files_external','config_version','0.5.0'),('sysadmin','user_ldap','displayName','Sysadmin User'),('sysadmin','user_ldap','homePath',''),('sysadmin','user_ldap','lastFeatureRefresh','1497017442'),('sysadmin','user_ldap','uid','sysadmin'),('tech1','files_external','config_version','0.5.0'),('tech1','user_ldap','displayName','Tech 1'),('tech1','user_ldap','homePath',''),('tech1','user_ldap','lastFeatureRefresh','1497017442'),('tech1','user_ldap','uid','tech1'),('tech2','files_external','config_version','0.5.0'),('tech2','user_ldap','displayName','Tech 2'),('tech2','user_ldap','homePath',''),('tech2','user_ldap','lastFeatureRefresh','1497017442'),('tech2','user_ldap','uid','tech2'),('tech3','files_external','config_version','0.5.0'),('tech3','user_ldap','displayName','Tech 3'),('tech3','user_ldap','homePath',''),('tech3','user_ldap','lastFeatureRefresh','1497017442'),('tech3','user_ldap','uid','tech3'),('tech4','files_external','config_version','0.5.0'),('tech4','user_ldap','displayName','Tech 4'),('tech4','user_ldap','homePath',''),('tech4','user_ldap','lastFeatureRefresh','1497017442'),('tech4','user_ldap','uid','tech4');
+INSERT INTO `oc_preferences` VALUES ('admin','core','lang','en'),('admin','files_external','config_version','0.5.0'),('admin','firstrunwizard','show','0'),('admin','login','lastLogin','1497074453');
 /*!40000 ALTER TABLE `oc_preferences` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1849,83 +1598,6 @@ LOCK TABLES `oc_share_external` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `oc_spreedme_messages`
---
-
-DROP TABLE IF EXISTS `oc_spreedme_messages`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_spreedme_messages` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sender` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `recipient` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `sessionId` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-  `object` longtext COLLATE utf8mb4_bin NOT NULL,
-  `timestamp` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_spreedme_messages`
---
-
-LOCK TABLES `oc_spreedme_messages` WRITE;
-/*!40000 ALTER TABLE `oc_spreedme_messages` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_spreedme_messages` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_spreedme_room_participants`
---
-
-DROP TABLE IF EXISTS `oc_spreedme_room_participants`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_spreedme_room_participants` (
-  `userId` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `roomId` int(11) NOT NULL,
-  `lastPing` int(11) NOT NULL,
-  `sessionId` varchar(255) COLLATE utf8mb4_bin NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_spreedme_room_participants`
---
-
-LOCK TABLES `oc_spreedme_room_participants` WRITE;
-/*!40000 ALTER TABLE `oc_spreedme_room_participants` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_spreedme_room_participants` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `oc_spreedme_rooms`
---
-
-DROP TABLE IF EXISTS `oc_spreedme_rooms`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oc_spreedme_rooms` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
-  `token` varchar(32) COLLATE utf8mb4_bin DEFAULT NULL,
-  `type` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `unique_token` (`token`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_spreedme_rooms`
---
-
-LOCK TABLES `oc_spreedme_rooms` WRITE;
-/*!40000 ALTER TABLE `oc_spreedme_rooms` DISABLE KEYS */;
-/*!40000 ALTER TABLE `oc_spreedme_rooms` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `oc_storages`
 --
 
@@ -1939,7 +1611,7 @@ CREATE TABLE `oc_storages` (
   `last_checked` int(11) DEFAULT NULL,
   PRIMARY KEY (`numeric_id`),
   UNIQUE KEY `storages_id_index` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1948,7 +1620,7 @@ CREATE TABLE `oc_storages` (
 
 LOCK TABLES `oc_storages` WRITE;
 /*!40000 ALTER TABLE `oc_storages` DISABLE KEYS */;
-INSERT INTO `oc_storages` VALUES ('local::/home/nextcloud/data/',1,1,NULL),('home::admin',2,1,NULL),('home::exam1',3,1,NULL),('home::exam2',4,1,NULL),('home::exam3',5,1,NULL),('home::exam4',6,1,NULL),('home::exam5',7,1,NULL),('home::guest1',8,1,NULL),('home::guest10',9,1,NULL),('home::guest2',10,1,NULL),('home::guest3',11,1,NULL),('home::guest4',12,1,NULL),('home::guest5',13,1,NULL),('home::guest6',14,1,NULL),('home::guest7',15,1,NULL),('home::guest8',16,1,NULL),('home::guest9',17,1,NULL),('home::ismith',18,1,NULL),('home::jjones',19,1,NULL),('home::profileuser',20,1,NULL),('home::sysadmin',21,1,NULL),('home::tech1',22,1,NULL),('home::tech2',23,1,NULL),('home::tech3',24,1,NULL),('home::tech4',25,1,NULL);
+INSERT INTO `oc_storages` VALUES ('local::/home/nextcloud/data/',1,1,NULL),('home::admin',2,1,NULL);
 /*!40000 ALTER TABLE `oc_storages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2101,7 +1773,7 @@ CREATE TABLE `oc_users` (
 
 LOCK TABLES `oc_users` WRITE;
 /*!40000 ALTER TABLE `oc_users` DISABLE KEYS */;
-INSERT INTO `oc_users` VALUES ('admin',NULL,'1|$2y$10$U4LDR9StQbqMPijYHT.ET.ywIb.0XkdGbhzxCR7xp/UKhc1g.U/Vq');
+INSERT INTO `oc_users` VALUES ('admin',NULL,'1|$2y$10$Ay3fv/ex4rriJtNMGU5W2OnKTYaVNX2PxlsZQLwTXNZbjFEOLy8O6');
 /*!40000 ALTER TABLE `oc_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2167,4 +1839,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-06-09 15:18:58
+-- Dump completed on 2017-06-10  8:30:28

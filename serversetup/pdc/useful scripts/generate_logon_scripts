@@ -155,6 +155,12 @@ echo '#Network home area
 mount -t smbfs "//'"$REALM"'/dfs/homes/$LoggedInUser/" /tmp/$LoggedInUser/home/
 ' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
+#Auth type for nextcloud external storage
+#sessioncredentials - this is the best to use but limits functionality
+#logincredentials - stores encrypted passwords in the nextcloud database
+#AUTH_TYPE=sessioncredentials
+AUTH_TYPE=logincredentials
+
 #Add home path for Nextcloud or Owncloud
 if [ "$CLOUDSTORAGE" = yes ]
 then
@@ -162,7 +168,7 @@ then
 	{
 		"mount_point": "\/home",
 		"storage": "'$STORAGE'",
-		"authentication_type": "password::sessioncredentials",
+		"authentication_type": "password::'"$AUTH_TYPE"'",
 		"configuration": {
 		    "host": "'$REALM'",
 		    "share": "dfs\/homes\/$user",
@@ -189,7 +195,7 @@ then
 	{
 		"mount_point": "\/'"$SHARE"'",
 		"storage": "'$STORAGE'",
-		"authentication_type": "password::sessioncredentials",
+		"authentication_type": "password::'"$AUTH_TYPE"'",
 		"configuration": {
 		    "host": "'$REALM'",
 		    "share": "dfs\/'"$SHARE"'",
