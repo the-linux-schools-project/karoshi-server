@@ -208,6 +208,8 @@ sleep 1
 echo '<ul><li>'$"Creating mysql database for Nextcloud"'</li></ul>'
 CLOUDPASS=$(openssl rand -hex 16)
 CLOUDID=$(openssl rand -hex 16)
+CLOUDSALT=$(openssl rand -hex 15)
+CLOUDSECRET=$(openssl rand -hex 24)
 
 #############################
 #Make sure that we know the root mysql password
@@ -238,6 +240,8 @@ rm -f /opt/karoshi/.tempdata/mysqlperms.sql
 
 #Modify config.php with the correct password.
 sed -i 's/CHANGETHISPASS/'"$CLOUDPASS"'/g' /var/www/html/nextcloud/config/config.php
+sed -i 's/CHANGETHISCLOUDSECRET/'"$CLOUDSECRET"'/g' /var/www/html/nextcloud/config/config.php
+sed -i 's/CHANGETHISCLOUDSALT/'"$CLOUDSALT"'/g' /var/www/html/nextcloud/config/config.php
 sed -i 's/CHANGETHISID/'"$CLOUDID"'/g' /var/www/html/nextcloud/config/config.php
 sed -i 's/CHANGETHISREALM/'"$ALIAS"'.'"$REALM"'/g' /var/www/html/nextcloud/config/config.php
 
@@ -300,11 +304,11 @@ echo '<ul><li>'$"Downloading Collabora"' - '$"This will take some time"'</li></u
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 docker pull collabora/code
 echo '</pre>'
-REALM2=$(echo $REALM | sed 's%\.%\\\\\.%g')
+REALM2=$(echo "$REALM" | sed 's%\.%\\\\\.%g')
 
 #Run collabora
 echo '<ul><li>'$"Starting Collabora"'</li></ul>'
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --dns=172.17.0.1 --restart always --cap-add MKNOD collabora/code 1> /dev/null
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --restart always --cap-add MKNOD collabora/code 1> /dev/null
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -355,6 +359,9 @@ then
 	sleep 1
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
+
+#Restart Docker to load collabora Online
+service docker restart 1>/dev/null
 
 ###########################
 #Show completed message
