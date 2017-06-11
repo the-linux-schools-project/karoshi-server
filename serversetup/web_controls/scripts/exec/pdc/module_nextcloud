@@ -63,6 +63,7 @@ REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
 ALIAS=$(echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g')
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+SERVERIP=$(net lookup "$SERVERNAME")
 ########################
 #Check data
 ########################
@@ -177,7 +178,7 @@ function install_nextcloud {
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	echo "$(date): module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:" | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:$SERVERIP:" | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
 else
 	#Make sure that this server is configured to have dns running - either samba4 or dnsmasq
 	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVERNAME"
@@ -203,7 +204,7 @@ else
 	#Install nextcloud
 	echo "$(date): module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:"' | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:$SERVERIP:"' | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
 '
 fi
 }

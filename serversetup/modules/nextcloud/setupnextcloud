@@ -38,6 +38,7 @@ REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 #REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ALIAS=$(echo "$DATA" | cut -s -d: -f5)
+SERVERIP=$(echo "$DATA" | cut -s -d: -f6)
 
 if [ -z "$REMOTE_USER" ]
 then
@@ -308,7 +309,7 @@ REALM2=$(echo "$REALM" | sed 's%\.%\\\\\.%g')
 
 #Run collabora
 echo '<ul><li>'$"Starting Collabora"'</li></ul>'
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --restart always --cap-add MKNOD collabora/code 1> /dev/null
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --dns="$SERVERIP" --restart always --cap-add MKNOD collabora/code 1> /dev/null
 
 #####################################
 #Ensure that apache ports are open in shorewall
