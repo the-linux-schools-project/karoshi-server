@@ -196,11 +196,11 @@ echo '<div id="'$DIV_ID'">'
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr>
-<td style="vertical-align: top;">
+<td>
 <div class="sectiontitle">'$"User Web Folders"'</div>
 </td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></td>
-<td style="vertical-align: top;">'
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></td>
+<td>'
 [ ! -z "$GROUP" ] && echo '<button class="button" formaction="user_web_folders.cgi" name="ChooseGroup" value="_">
 '$"Choose group"'
 </button>
@@ -226,7 +226,7 @@ then
 	'
 	exit
 fi
-
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/user_web_folders.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
 
 [ $MOBILE = no ] && echo '</div>'
