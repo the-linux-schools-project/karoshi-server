@@ -373,6 +373,9 @@ sed -i 's/^console output/#console output/g' /etc/init/rc.conf
 sed -i 's/^console owner/#console owner/g' /etc/init/rcS.conf
 sed -i 's/^console output/#console output/g' /etc/init/rc-sysinit.conf
 
+#Stop ntpdate from running at boot - this causes problems with the ntp service starting
+[ -f /etc/network/if-up.d/ntpdate ] && rm -f /etc/network/if-up.d/ntpdate
+
 #Make sure there is a printcap file
 touch /etc/printcap
 

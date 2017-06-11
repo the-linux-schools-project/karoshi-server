@@ -330,6 +330,9 @@ echo -e "_________________________________________________\n" >>"/opt/karoshi/lo
 ###########################
 check_config_files
 
+#Stop ntpdate from running at boot - this causes problems with the ntp service starting
+[ -f /etc/network/if-up.d/ntpdate ] && rm -f /etc/network/if-up.d/ntpdate
+
 ##########################
 #Modify mon ping monitor
 ##########################

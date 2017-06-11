@@ -140,7 +140,7 @@ function get_status {
 
 if [ "$SERVERTYPE" = network ]
 then
-	DSERVICES=cron,monitorix
+	DSERVICES=cron,ntp,monitorix
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ] && DSERVICES="$DSERVICES",samba,nslcd
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba,nslcd
@@ -168,7 +168,7 @@ fi
 
 if [ "$SERVERTYPE" = federated ]
 then
-	DSERVICES=cron,monitorix
+	DSERVICES=cron,ntp,monitorix
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",samba
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/1dc ] && DSERVICES="$DSERVICES",samba
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba
@@ -194,7 +194,7 @@ fi
 
 if [ "$SERVERTYPE" = federatedslave ]
 then
-	DSERVICES=cron,monitorix
+	DSERVICES=cron,ntp,monitorix
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",samba
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/1dc ] && DSERVICES="$DSERVICES",samba
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba
@@ -265,17 +265,18 @@ then
 	freshclam=$"Clamav-freshclam"
 	dhcp=$"DHCP server"
 	dovecot=$"Dovecot imap server"
-	icecast=$"Internet Radio Server"
+	icecast=$"Internet radio server"
 	mailscanner=$"E-mail server"
 	memcached=$"Memcache"
 	mon=$"Network monitoring"
-	monitorix=$"System Monitor"
+	monitorix=$"System monitor"
 	mysql=$"Web server database"
-	minidlna=$"MiniDLNA Server"
+	minidlna=$"MiniDLNA server"
 	postgresql=$"SQL database server"
 	nfs=$"Distribution server"
 	nginx=$"Reverse proxy server"
 	nslcd=$"Name service daemon"
+	ntp=$"Network time protocol server"
 	openvpn=$"Open VPN service"
 	portmap=$"Portmap"
 	postfix=$"E-mail server"
@@ -283,7 +284,7 @@ then
 	radius=$"Authentication service"
 	rpcbind=$"Port Mapper"
 	samba=$"File and print server"
-	savapage=$"Libre Print Management"
+	savapage=$"Libre print management"
 	sogo=$"SOGo E-Mail"
 	squid=$"Internet proxy server"
 	squiddebproxy=$"Squid deb proxy"
@@ -291,7 +292,7 @@ then
 	dovecot=$"Dovecot imap server"
 	proftpd=$"FTP server"
 	vsftpd=$"FTP server"
-	glusterfs=$"Distributed FS Server"
+	glusterfs=$"Distributed FS server"
 	dnsmasq=$"Dnsmasq service"
 	xserver=$"X Server"
 
@@ -343,7 +344,7 @@ else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		apache="'$"Web server"'"
 		avahi="'$"Avahi daemon"'"
-		bind="'$"DNS Server"'"
+		bind="'$"DNS server"'"
 		clamd="'$"Clamav daemon"'"
 		cups="'$"Print server"'"
 		cron="'$"Schedular"'"
@@ -351,17 +352,18 @@ else
 		freshclam="'$"Clamav-freshclam"'"
 		dhcp="'$"DHCP server"'"
 		dovecot="'$"Dovecot imap server"'"
-		icecast="'$"Internet Radio Server"'"
+		icecast="'$"Internet radio server"'"
 		mailscanner="'$"E-mail server"'"
 		memcached="'$"Memcache"'"
 		minidlna="'$"MiniDLNA"'"
 		mon="'$"Network monitoring"'"
-		monitorix="'$"System Monitor"'"
+		monitorix="'$"System monitor"'"
 		mysql="'$"Web server database"'"
 		postgresql="'$"SQL database server"'"
 		nfs="'$"Distribution server"'"
 		nginx="'$"Reverse proxy server"'"
 		nslcd="'$"Name service daemon"'"
+		ntp="'$"Network time protocol server"'"
 		openvpn="'$"Open VPN service"'"
 		portmap="'$"Portmap"'"
 		postfix="'$"E-mail server"'"
@@ -369,7 +371,7 @@ else
 		radius="'$"Authentication service"'"
 		rpcbind="'$"Port Mapper"'"
 		samba="'$"File and print server"'"
-		savapage="'$"Libre Print Management"'"
+		savapage="'$"Libre print management"'"
 		sogo="'$"SOGo E-Mail"'"
 		squid="'$"Internet proxy server"'"
 		squiddebproxy="'$"Squid deb proxy"'"
@@ -377,7 +379,7 @@ else
 		dovecot="'$"Dovecot imap server"'"
 		proftpd="'$"FTP server"'"
 		vsftpd="'$"FTP server"'"
-		glusterfs="'$"Distributed FS Server"'"
+		glusterfs="'$"Distributed FS server"'"
 		dnsmasq="'$"Dnsmasq service"'"
 		xserver="'$"X Server"'"
 
