@@ -98,9 +98,9 @@ then
 		echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" uid="1000-5000000" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	fi	
 else
-	if [[ $(grep -c '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" sgrp="'"$GROUPNAME"'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5) = 0 ]]
+	if [[ $(grep -c '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" pgrp="'"$GROUPNAME"'" fstype="cifs" />' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5) = 0 ]]
 	then
-		echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" sgrp="'"$GROUPNAME"'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+		echo '<volume options="sec=ntlmssp,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARE"'" path="dfs/'"$SHARE"'" server="'"$REALM"'" pgrp="'"$GROUPNAME"'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 	fi	
 fi
 }
