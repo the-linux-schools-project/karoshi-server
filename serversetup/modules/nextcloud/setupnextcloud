@@ -364,6 +364,13 @@ fi
 #Restart Docker to load collabora Online
 service docker restart 1>/dev/null
 
+#Get collabora container id
+CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
+
+#Install extra fonts
+echo '<ul><li>'$"Installing extra fonts"'</li></ul>'
+docker exec -it "$CONTAINER_ID" apt-get install ttf-dejavu ttf-mscorefonts-installer ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
+
 ###########################
 #Show completed message
 ###########################
