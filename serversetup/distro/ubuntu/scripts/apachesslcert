@@ -226,7 +226,7 @@ then
 	for SERVERS in /opt/karoshi/server_network/servers/*
 	do
 		SERVER=$(basename "$SERVERS")
-		echo "<ul><li>$SERVER - $ENABLESSLCERTMSG</li></ul>"
+		echo '<ul><li>$SERVER - '$"Enabling Certificate"'</li></ul>'
 		enable_cert
 	done
 fi

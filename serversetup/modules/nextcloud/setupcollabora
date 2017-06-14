@@ -1,0 +1,121 @@
+#!/bin/bash
+
+#Setup collabora-online - this can also be run to remove the existing docker collabora container and install an updated one.
+
+DNSNAME=$(echo "$1" | tr -cd "a-z.")
+SERVERIP=$(echo "$2" | tr -cd "0-9.")
+OUTPUT=$(echo "$3" | tr -cd "a-z")
+
+
+#Check that we have the correct data
+if [ -z "$SERVERIP" ] || [ -z "$DNSNAME" ]
+then
+	echo -e "\nUsage: setupcollabora <DNS Name> <DNS server> <Output style>\n\nDNS Name - enter in the dns name for accessing accessing nextcloud - example mycloud.testing.com\n\nDNS server - This should probably be the TCPIP address of this server\n\nOutput Style - html / normal\n"
+	exit
+fi
+
+[ -z "$OUTPUT" ] && OUTPUT=normal
+
+function show_progress_info {
+if [ "$OUTPUT" = html ]
+then
+	echo '<ul><li>'"$MESSAGE"'</li></ul>'
+else
+	echo -e "\n$MESSAGE\n"
+fi
+}
+
+#Make sure that we have the required software installed.
+MESSAGE=$"Updating repositories"
+show_progress_info
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get update
+[ "$OUTPUT" = html ] && echo '</pre>'
+
+MESSAGE=$"Installing apt-transport-https ca-certificates curl"
+show_progress_info
+
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get install -y apt-transport-https ca-certificates curl
+[ "$OUTPUT" = html ] && echo '</pre>'
+
+MESSAGE=$"Adding Docker Repository"
+show_progress_info
+
+curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
+
+add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
+
+MESSAGE=$"Updating repositories"
+show_progress_info
+
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get update
+[ "$OUTPUT" = html ] && echo '</pre>'
+
+MESSAGE=$"Installing Docker"
+show_progress_info
+
+#Install docker
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+apt-get -y install docker-engine
+[ "$OUTPUT" = html ] && echo '</pre>'
+
+#Test that docker is running correctly
+echo '<ul><li>'$"Checking that Docker is working"'</li></ul>'
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+docker run hello-world
+
+#Check that docker worked
+if [ "$?" != 0 ]
+then
+	MESSAGE=$"There was a problem installing Docker"
+	show_progress_info
+	exit
+fi
+[ "$OUTPUT" = html ] && echo '</pre>'
+
+#Delete the existing collabora container if it exists
+CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
+if [ ! -z "$CONTAINER_ID" ]
+then
+	MESSAGE=$"Deleting the existing Collabora docker container"
+	show_progress_info
+	docker stop "$CONTAINER_ID" 1>/dev/null
+	docker rm "$CONTAINER_ID" 1>/dev/null
+fi
+
+#Get collabora for docker
+MESSAGE=$"Downloading Collabora"' - '$"This will take some time"
+show_progress_info
+
+[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+docker pull collabora/code
+[ "$OUTPUT" = html ] && echo '</pre>'
+DNSNAME=$(echo "$DNSNAME" | sed 's%\.%\\\\\.%g')
+
+#Run collabora
+MESSAGE=$"Starting Collabora"
+show_progress_info
+
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$DNSNAME"'' --dns="$SERVERIP" --restart always --cap-add MKNOD collabora/code 1> /dev/null
+
+#Restart Docker to load collabora Online
+service docker restart 1>/dev/null
+
+#Get collabora container id
+CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
+
+#Install extra fonts
+if [ ! -z "$CONTAINER_ID" ]
+then
+	MESSAGE=$"Installing extra fonts"
+	show_progress_info
+	docker exec -it "$CONTAINER_ID" apt-get -y install ttf-dejavu ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
+	docker exec -it "$CONTAINER_ID" cp -fr /usr/share/fonts /opt/lool/systemplate/usr/share
+	#Restart docker container to activate fonts
+	#docker stop "$CONTAINER_ID" 1>/dev/null
+	#docker start "$CONTAINER_ID" 1>/dev/null
+fi
+

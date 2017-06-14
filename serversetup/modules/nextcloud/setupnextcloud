@@ -267,49 +267,8 @@ mysql --password="$MYSQLPASS" nextcloud < /opt/karoshi/serversetup/modules/nextc
 rm -f /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 mv /opt/karoshi/serversetup/modules/nextcloud/nextcloud_original.sql /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 
-#Setup collabora-online
-echo '<ul><li>'$"Updating repositories"'</li></ul>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get update
-echo '</pre>'
-echo '<ul><li>'$"Installing apt-transport-https ca-certificates curl"'</li></ul>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get install -y apt-transport-https ca-certificates curl
-echo '<ul><li>'$"Adding Docker Repository"'</li></ul>'
-echo '</pre>'
-curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
-
-add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
-echo '<ul><li>'$"Updating repositories"'</li></ul>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get update
-echo '</pre>'
-echo '<ul><li>'$"Installing Docker"'</li></ul>'
-#Install docker
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get -y install docker-engine
-echo '</pre>'
-#Test that docker is running correctly
-echo '<ul><li>'$"Checking that Docker is working"'</li></ul>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-docker run hello-world
-#Check that docker worked
-if [ $? != 0 ]
-then
-	echo '<ul><li>'$"There was a problem installing Docker"'</li></ul>'
-	exit
-fi
-echo '</pre>'
-#Get collabora for docker
-echo '<ul><li>'$"Downloading Collabora"' - '$"This will take some time"'</li></ul>'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-docker pull collabora/code
-echo '</pre>'
-REALM2=$(echo "$REALM" | sed 's%\.%\\\\\.%g')
-
-#Run collabora
-echo '<ul><li>'$"Starting Collabora"'</li></ul>'
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$ALIAS"'\\.'"$REALM2"'' --dns="$SERVERIP" --restart always --cap-add MKNOD collabora/code 1> /dev/null
+#Setup Collabora Online
+/opt/karoshi/serversetup/modules/nextcloud/setupcollabora "$ALIAS.$REALM" "$SERVERIP" html
 
 #####################################
 #Ensure that apache ports are open in shorewall
@@ -360,16 +319,6 @@ then
 	sleep 1
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
-
-#Restart Docker to load collabora Online
-service docker restart 1>/dev/null
-
-#Get collabora container id
-CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
-
-#Install extra fonts
-echo '<ul><li>'$"Installing extra fonts"'</li></ul>'
-docker exec -it "$CONTAINER_ID" apt-get install ttf-dejavu ttf-mscorefonts-installer ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
 
 ###########################
 #Show completed message
