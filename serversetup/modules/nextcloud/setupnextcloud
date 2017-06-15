@@ -71,6 +71,27 @@ export TEXTDOMAIN=karoshi-server
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
 
+#Make sure we have all of the software installed for nextcloud and collabora online
+echo '<ul><li>'$"Adding Docker Repository"'</li></ul>'
+curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
+
+add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+echo '<ul><li>'$"Updating repositories"'</li></ul>'
+apt-get update
+echo '<ul><li>'$"Installing"' php-apcu redis-server php-redis</li></ul>'
+apt-get install -y php-apcu redis-server php-redis
+
+#Install software required for collabora online
+echo '<ul><li>'$"Installing"' apt-transport-https ca-certificates curl</li></ul>'
+apt-get install -y apt-transport-https ca-certificates curl
+
+echo '<ul><li>'$"Installing"' docker</li></ul>'
+apt-get -y install docker-engine
+
+echo '</pre>'
+
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
 if [[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]]

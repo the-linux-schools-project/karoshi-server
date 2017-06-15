@@ -25,42 +25,6 @@ else
 fi
 }
 
-#Make sure that we have the required software installed.
-MESSAGE=$"Updating repositories"
-show_progress_info
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get update
-[ "$OUTPUT" = html ] && echo '</pre>'
-
-MESSAGE=$"Installing apt-transport-https ca-certificates curl"
-show_progress_info
-
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get install -y apt-transport-https ca-certificates curl
-[ "$OUTPUT" = html ] && echo '</pre>'
-
-MESSAGE=$"Adding Docker Repository"
-show_progress_info
-
-curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
-
-add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
-
-MESSAGE=$"Updating repositories"
-show_progress_info
-
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get update
-[ "$OUTPUT" = html ] && echo '</pre>'
-
-MESSAGE=$"Installing Docker"
-show_progress_info
-
-#Install docker
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-apt-get -y install docker-engine
-[ "$OUTPUT" = html ] && echo '</pre>'
-
 #Test that docker is running correctly
 echo '<ul><li>'$"Checking that Docker is working"'</li></ul>'
 [ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
