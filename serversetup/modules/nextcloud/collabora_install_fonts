@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#Install extra fonts into the collabora docker module
+
+OUTPUT=$(echo "$1" | tr -cd "a-z")
+[ -z "$OUTPUT" ] && OUTPUT=normal
+
+function show_progress_info {
+if [ "$OUTPUT" = html ]
+then
+	echo '<ul><li>'"$MESSAGE"'</li></ul>'
+else
+	echo -e "\n$MESSAGE\n"
+fi
+}
+
+#Get collabora container id
+for i in $(seq 20)
+do
+	CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
+	[ ! -z "$CONTAINER_ID" ] && break
+	MESSAGE=$"Waiting for Collabora"
+	show_progress_info
+	sleep 1
+done
+
+#Install extra fonts
+if [ ! -z "$CONTAINER_ID" ]
+then
+	MESSAGE=$"Installing extra fonts"
+	show_progress_info
+	docker exec -it "$CONTAINER_ID" apt-get -y install ttf-dejavu ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
+	docker exec -it "$CONTAINER_ID" cp -fr /usr/share/fonts /opt/lool/systemplate/usr/share
+	#Restart docker container to activate fonts
+	MESSAGE=''$"Restarting docker container"' '"$CONTAINER_ID"''
+	show_progress_info
+	docker stop "$CONTAINER_ID" 1>/dev/null
+	docker start "$CONTAINER_ID" 1>/dev/null
+fi
+
