@@ -29,8 +29,12 @@ if [ ! -z "$CONTAINER_ID" ]
 then
 	MESSAGE=$"Installing extra fonts"
 	show_progress_info
-	docker exec -it "$CONTAINER_ID" apt-get -y install ttf-dejavu ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
-	docker exec -it "$CONTAINER_ID" cp -fr /usr/share/fonts /opt/lool/systemplate/usr/share
+
+	[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	docker exec "$CONTAINER_ID" apt-get -y install ttf-dejavu ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
+	docker exec "$CONTAINER_ID" cp -fr /usr/share/fonts /opt/lool/systemplate/usr/share
+	[ "$OUTPUT" = html ] && echo '</pre>'
+
 	#Restart docker container to activate fonts
 	MESSAGE=''$"Restarting docker container"' '"$CONTAINER_ID"''
 	show_progress_info
