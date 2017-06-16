@@ -164,6 +164,7 @@ then
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/user_web_folders ] && DSERVICES="$DSERVICES",apache
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/glusterfs_server ] && DSERVICES="$DSERVICES",glusterfs
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/dnsmasq ] && DSERVICES="$DSERVICES",dnsmasq
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/nextcloud ] && DSERVICES="$DSERVICES",redis,docker
 fi
 
 if [ "$SERVERTYPE" = federated ]
@@ -190,6 +191,7 @@ then
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/userwebhosting ] && DSERVICES="$DSERVICES",apache,mysql,vsftpd
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/glusterfs_server ] && DSERVICES="$DSERVICES",glusterfs
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/dnsmasq ] && DSERVICES="$DSERVICES",dnsmasq
+	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME/servers/$SERVERNAME"/nextcloud ] && DSERVICES="$DSERVICES",redis,docker
 fi
 
 if [ "$SERVERTYPE" = federatedslave ]
@@ -216,6 +218,7 @@ then
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/userwebhosting ] && DSERVICES="$DSERVICES",apache,mysql,vsftpd
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/glusterfs_server ] && DSERVICES="$DSERVICES",glusterfs
 	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/dnsmasq ] && DSERVICES="$DSERVICES",dnsmasq
+	[ -f "/opt/karoshi/server_network/federated_ldap_servers/$SERVERMASTER/servers/$SERVERNAME"/nextcloud ] && DSERVICES="$DSERVICES",redis,docker
 fi
 
 DSERVICES=$(echo -e "$DSERVICES" | sed "s/,/\n/g")
@@ -236,7 +239,7 @@ done
 DSERVICES="$DSERVICES2"
 
 #List of all services to check
-ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius rpcbind samba savapage sogo squid squiddebproxy vsftpd xserver"
+ALLSERVICES="apache avahi bind clamd cups cron e2guardian freshclam dhcp dnsmasq docker dovecot glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd openvpn postfix postfwd postgresql radius redis rpcbind samba savapage sogo squid squiddebproxy vsftpd xserver"
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	function check_status {
@@ -264,6 +267,7 @@ then
 	e2guardian=$"Internet filtering"
 	freshclam=$"Clamav-freshclam"
 	dhcp=$"DHCP server"
+	docker=$"Docker engine"
 	dovecot=$"Dovecot imap server"
 	icecast=$"Internet radio server"
 	mailscanner=$"E-mail server"
@@ -282,6 +286,7 @@ then
 	postfix=$"E-mail server"
 	postfwd=$"E-mail policy daemon"
 	radius=$"Authentication service"
+	redis=$"Redis server"
 	rpcbind=$"Port Mapper"
 	samba=$"File and print server"
 	savapage=$"Libre print management"
