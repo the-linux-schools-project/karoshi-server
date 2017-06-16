@@ -78,6 +78,10 @@ apt-get update
 echo '<ul><li>'$"Installing"' php-apcu redis-server php-redis</li></ul>'
 apt-get install -y php-apcu redis-server php-redis
 
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/redis
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_status
+[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_start
+
 #Install software required for collabora online
 echo '<ul><li>'$"Installing"' apt-transport-https ca-certificates curl</li></ul>'
 apt-get install -y apt-transport-https ca-certificates curl
@@ -96,6 +100,10 @@ then
 	apt-get -y install docker-engine
 fi
 echo '</pre>'
+
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/docker
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_status
+[ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_start
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
