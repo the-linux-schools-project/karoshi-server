@@ -24,15 +24,42 @@ do
 	sleep 1
 done
 
+#Check that docker networking is up
+for i in $(seq 20)
+do
+	DOCKERIP=$(ifconfig docker0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')
+	ping -c1 "$DOCKERIP" 1>/dev/null
+	[ $? = 0 ] && break
+	MESSAGE=$"Waiting for Docker Collabora network"
+	show_progress_info
+	sleep 1
+done
+
 #Install extra fonts
 if [ ! -z "$CONTAINER_ID" ]
 then
-	MESSAGE=$"Installing extra fonts"
+	MESSAGE=$"Installing extra fonts in the Collabora docker container"
 	show_progress_info
 
 	[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+	#Add multiverse repository
+	docker exec "$CONTAINER_ID" echo deb http://archive.ubuntu.com/ubuntu/ xenial multiverse > /etc/apt/sources.list.d/multiverse.list
+
+	docker exec "$CONTAINER_ID" bash -c "echo 'deb http://archive.ubuntu.com/ubuntu/ xenial multiverse' > /etc/apt/sources.list.d/multiverse.list"
+
+	#Update repositories
+	docker exec "$CONTAINER_ID" apt-get update
+
+	#Install fonts
 	docker exec "$CONTAINER_ID" apt-get -y install ttf-dejavu ttf-freefont fonts-nanum-coding fonts-cantarell ttf-bitstream-vera
 	docker exec "$CONTAINER_ID" cp -fr /usr/share/fonts /opt/lool/systemplate/usr/share
+
+	#Install ttf-mscorefonts-installer
+	docker exec "$CONTAINER_ID" apt-get -y purge ttf-mscorefonts-installer
+	docker exec "$CONTAINER_ID" bash -c "echo 'ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections"
+	docker exec "$CONTAINER_ID" apt-get -y install ttf-mscorefonts-installer
+
 	[ "$OUTPUT" = html ] && echo '</pre>'
 
 	#Restart docker container to activate fonts
