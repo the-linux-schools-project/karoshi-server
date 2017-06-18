@@ -25,42 +25,42 @@
 #aloughlin@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -d "$HOME"/.tempdata ] || mkdir "$HOME"/.tempdata
 
 [ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
 [ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/software
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupshorewall'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupshorewall##############" >> /opt/karoshi/serversetup/install_log
 
 ######################
 #Final Shorewall Install check
 ######################
-if ! test -f /etc/init.d/$SHOREWALLVER
+if ! test -f /etc/init.d/"$SHOREWALLVER"
 then
-echo /etc/init.d/$SHOREWALLVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title ''$"Setup"' '$"Shorewall"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --text='Shorewall - '$"This package is not installed."'' --no-buttons 2>/dev/null
-exit 101
+	echo /etc/init.d/"$SHOREWALLVER" does not exist >> /opt/karoshi/serversetup/install_log
+	yad --title ''$"Setup"' '$"Shorewall"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --text='Shorewall - '$"This package is not installed."'' --no-buttons 2>/dev/null
+	exit 101
 fi
 
 #############################
 #Ensure that shorewall is running on boot
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/shorewall
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/shorewall
 
 #########################
 #Setup and start shorewall
 #########################
-echo `date`: "Configuring shorewall" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Configuring shorewall" >> /opt/karoshi/serversetup/install_log
 cd /etc
 rm -R -f /etc/shorewall
 tar -xvzf /opt/karoshi/serversetup/all/shorewall/shorewall.tar.gz
@@ -73,13 +73,13 @@ cp -f /opt/karoshi/serversetup/pdc/pdcshorewall/rules /etc/shorewall/
 #########################
 #Run distro specific to check if eth0 should be changed
 #########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/shorewallconfig
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/shorewallconfig
 
 #########################
 #Start shorewall
 #########################
-echo `date`: "Restarting shorewall" >> /opt/karoshi/serversetup/install_log
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+echo "$(date): Restarting shorewall" >> /opt/karoshi/serversetup/install_log
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
 exit
 

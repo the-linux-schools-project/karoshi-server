@@ -72,6 +72,9 @@ if [ "$ACTION" = on ]
 then
 	if [ "$UBUNTUVER" = 16.04 ]
 	then
+		#Remove any existing defaults as they will stop the service from being set to start on boot.
+		update-rc.d "$SERVICE" remove defaults 2>/dev/null
+		#Set the service to start on boot
 		update-rc.d "$SERVICE" defaults
 	else
 		for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d

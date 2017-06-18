@@ -199,6 +199,9 @@ else
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/redis root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/docker root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/
 	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/redis root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/
 
 	#Copy in domain information
 	echo "$(date): module_nextcloud - copying domain information to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"

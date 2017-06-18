@@ -77,8 +77,6 @@ echo '<ul><li>'$"Updating repositories"'</li></ul>'
 apt-get update
 echo '<ul><li>'$"Installing"' php-apcu redis-server php-redis</li></ul>'
 apt-get install -y php-apcu redis-server php-redis
-
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/redis
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_status
 [ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_start
 
@@ -97,11 +95,18 @@ then
 	apt-get update
 
 	echo '<ul><li>'$"Installing"' docker</li></ul>'
-	apt-get -y install docker-engine
+	apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--no-triggers" install docker-engine
+
+	#Stop docker as it is has been started with init or systemd
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_stop
+
+	#Sysv support
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/sysvsupport
 fi
 echo '</pre>'
 
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/docker
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/redis
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_status
 [ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_start
 
@@ -225,6 +230,17 @@ ProxyPassReverse    /lool https://127.0.0.1:9980/lool
 	echo "</IfModule>" >> /etc/apache2/sites-enabled/default-ssl
 fi
 
+#Make sure opcache is enabled
+if [ -f /etc/php/7.0/apache2/php.ini ]
+then
+	if [[ $(grep -c ^"opcache.enable=1" /etc/php/7.0/apache2/php.ini) = 0 ]]
+	then
+		cp /etc/php/7.0/apache2/php.ini /etc/php/7.0/apache2/php.ini.$$
+		cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
+	fi
+fi
+
+
 #Enable mod rewrite and headers
 a2enmod rewrite 1>/dev/null
 a2enmod headers 1>/dev/null
@@ -301,13 +317,9 @@ mysql --password="$MYSQLPASS" nextcloud < /opt/karoshi/serversetup/modules/nextc
 rm -f /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 mv /opt/karoshi/serversetup/modules/nextcloud/nextcloud_original.sql /opt/karoshi/serversetup/modules/nextcloud/nextcloud.sql
 
-#Setup Collabora Online
-/opt/karoshi/serversetup/modules/nextcloud/setupcollabora "$ALIAS.$REALM" "$SERVERIP" html
-
 #####################################
 #Ensure that apache ports are open in shorewall
 #####################################
-
 
 MOD_SHOREWALL=no
 if [[ $(grep -c "#Web-Services" /etc/shorewall/rules) = 0 ]]
@@ -354,10 +366,17 @@ then
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
+#Setup Collabora Online
+/opt/karoshi/serversetup/modules/nextcloud/setupcollabora "$ALIAS.$REALM" "$SERVERIP" html
+
+#Install extra fonts in to the Collabora Docker container
+#/opt/karoshi/serversetup/modules/nextcloud/collabora_install_fonts html
+
 ###########################
 #Show completed message
 ###########################
 echo '<br>'$"Nextcloud has been installed and can be accessed from" - '<a href="https://'"$ALIAS.$REALM"'/nextcloud" target="_blank">'"$ALIAS.$REALM"'/nextcloud</a>'
+echo '<br>Run /opt/karoshi/serversetup/modules/nextcloud/collabora_install_fonts for more fonts'
 echo '<br>'$"username":admin - $"password": admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please change the admin password immediately."'</p><br>'
 exit

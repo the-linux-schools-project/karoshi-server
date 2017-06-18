@@ -84,7 +84,7 @@ cgroupfs_mount() {
 
 case "$1" in
 	start)
-		check_init
+		#check_init
 		
 		fail_unless_root
 
@@ -117,7 +117,7 @@ case "$1" in
 		;;
 
 	stop)
-		check_init
+		#check_init
 		fail_unless_root
 		if [ -f "$DOCKER_SSD_PIDFILE" ]; then
 			log_begin_msg "Stopping $DOCKER_DESC: $BASE"
@@ -129,7 +129,7 @@ case "$1" in
 		;;
 
 	restart)
-		check_init
+		#check_init
 		fail_unless_root
 		docker_pid=`cat "$DOCKER_SSD_PIDFILE" 2>/dev/null`
 		[ -n "$docker_pid" ] \
@@ -139,13 +139,13 @@ case "$1" in
 		;;
 
 	force-reload)
-		check_init
+		#check_init
 		fail_unless_root
 		$0 restart
 		;;
 
 	status)
-		check_init
+		#check_init
 		status_of_proc -p "$DOCKER_SSD_PIDFILE" "$DOCKERD" "$DOCKER_DESC"
 		;;
 

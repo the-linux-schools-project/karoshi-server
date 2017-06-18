@@ -25,59 +25,57 @@
 #
 #Website: http://www.karoshi.org.uk
 
-[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -d "$HOME"/.tempdata ] || mkdir "$HOME"/.tempdata
 
 [ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
 [ -e /opt/karoshi/serversetup/variables/distro ] || /opt/karoshi/serversetup/changedistro
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/software
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
-
-NTPSERVERIP=$NTPSERVER
 
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupntp'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupntp##############" >> /opt/karoshi/serversetup/install_log
 
 ######################
 #Final ntp Install check
 ######################
 
-if ! test -f /etc/init.d/$NTPVER
+if ! test -f /etc/init.d/"$NTPVER"
 then
-echo /etc/init.d/$NTPVER does not exist >> /opt/karoshi/serversetup/install_log
-yad --title ''$"Setup"' '$"NTP"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --image=dialog-question --text='NTP - '$"This package is not installed."'' --no-buttons 2>/dev/null
-exit 101
+	echo /etc/init.d/"$NTPVER" does not exist >> /opt/karoshi/serversetup/install_log
+	yad --title ''$"Setup"' '$"NTP"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --image=dialog-question --text='NTP - '$"This package is not installed."'' --no-buttons 2>/dev/null
+	exit 101
 fi
 
 #############################
 #Ensure that NTP is running on boot
 ##############################
-echo `date`: "Setting ntp to run on boot" >> /opt/karoshi/serversetup/install_log
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ntp
+echo "$(date): Setting ntp to run on boot" >> /opt/karoshi/serversetup/install_log
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/ntp
 
 #echo Setting up NTP service to get the time from pool.ntp.org
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_stop 1> /dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_stop 1> /dev/null
 
 #echo Creating ntp configuration file
-echo `date`: "Configuring ntp.conf" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Configuring ntp.conf" >> /opt/karoshi/serversetup/install_log
 rm -f /etc/ntp.conf
 ###############################
 #create ntp.conf
 ###############################
-echo server	127.127.1.0 > /etc/ntp.conf
-echo fudge	127.127.1.0 stratum 10	>> /etc/ntp.conf
-echo server 0.pool.ntp.org >> /etc/ntp.conf
-echo server 1.pool.ntp.org >> /etc/ntp.conf
-echo server 2.pool.ntp.org >> /etc/ntp.conf
-echo server pool.ntp.org >> /etc/ntp.conf
-echo driftfile /etc/ntp/drift >> /etc/ntp.conf
-echo broadcastdelay	0.008 >> /etc/ntp.conf
+echo "server	127.127.1.0
+fudge	127.127.1.0 stratum 10
+server 0.pool.ntp.org
+server 1.pool.ntp.org
+server 2.pool.ntp.org
+server pool.ntp.org
+driftfile /etc/ntp/drift
+broadcastdelay	0.008" > /etc/ntp.conf
 
 #Ensure drift file is created
 if [ ! -d /etc/ntp/ ]
@@ -91,12 +89,7 @@ then
 	chown ntp /etc/ntp/drift
 fi
 
-###############################
-#Do initial time syncronisation
-###############################
-echo `date`: "Doing initial time syncronisation" >> /opt/karoshi/serversetup/install_log
-ntpdate -t 1 $NTPSERVERIP
-echo `date`: "Starting ntp" >> /opt/karoshi/serversetup/install_log
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ntp_start
+echo "$(date): Starting ntp" >> /opt/karoshi/serversetup/install_log
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/ntp_start
 exit
 

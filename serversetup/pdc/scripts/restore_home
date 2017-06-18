@@ -32,26 +32,26 @@
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/years
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
-THISYEAR=`date +%Y`
+THISYEAR=$(date +%Y)
 GUESTACCOUNTS=30
 TECHACCOUNTS=4
 EXAMACCOUNTS=40
 TRAININGACCOUNTS=30
-DAY=`date +%d`
-MONTH=`date +%m`
-LINUXCLIENTVERSION=karoshi4.3
+DAY=$(date +%d)
+MONTH=$(date +%m)
+LINUXCLIENTVERSION=karoshi5.0
 
 #Get install type
 INSTALL_TYPE=education
 if [ -f /opt/karoshi/server_network/install_type ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 fi
 
 echo $"Creating home folders"
@@ -99,12 +99,12 @@ then
 	[ -d /home/users/students ] || mkdir /home/users/students
 	chmod 0755 /home/users/students
 	chown root.root /home/users/students
-	COUNTER=$STARTYEAR
-	while [  $COUNTER -le $ENDYEAR ]; do
-		[ -d /home/users/students/yr$COUNTER ] || mkdir /home/users/students/yr$COUNTER
-		chmod 0750 /home/users/students/yr$COUNTER
-		chown root.yr$COUNTER /home/users/students/yr$COUNTER
-		chown .yr$COUNTER -R /home/users/students/yr$COUNTER
+	COUNTER="$STARTYEAR"
+	while [  $COUNTER -le "$ENDYEAR" ]; do
+		[ -d /home/users/students/yr"$COUNTER" ] || mkdir /home/users/students/yr"$COUNTER"
+		chmod 0750 /home/users/students/yr"$COUNTER"
+		chown root.yr"$COUNTER" /home/users/students/yr"$COUNTER"
+		chown .yr"$COUNTER" -R /home/users/students/yr"$COUNTER"
 		let COUNTER=COUNTER+1
 	done
 fi

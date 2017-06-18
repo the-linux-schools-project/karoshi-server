@@ -23,21 +23,21 @@
 #aloughlin@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -d "$HOME"/.tempdata ] || mkdir "$HOME"/.tempdata
 [ -e /opt/karoshi/serversetup/variables/language ] || /opt/karoshi/serversetup/changelanguage
 
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupkaroshidesktop'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupkaroshidesktop##############" >> /opt/karoshi/serversetup/install_log
 ###########################
 #Detect desktop type
 ###########################
@@ -45,36 +45,36 @@ echo `date`: '##############'setupkaroshidesktop'##############' >> /opt/karoshi
 #Using kde
 DESKTOP_TYPE=kde
 
-if [ `ps -e | grep -c gnome-session` -gt 0 ]
+if [[ $(ps -e | grep -c gnome-session) -gt 0 ]]
 then
-#Using Gnome
-DESKTOP_TYPE=gnome
+	#Using Gnome
+	DESKTOP_TYPE=gnome
 fi
 
-if [ `ps -e | grep -c xfce4` -gt 0 ]
+if [[ $(ps -e | grep -c xfce4) -gt 0 ]]
 then
-#Using Thunar
-DESKTOP_TYPE=xfce4
+	#Using Thunar
+	DESKTOP_TYPE=xfce4
 fi
 
 ######################
 #make sure that kdesu uses su
 ######################
-if [ $DESKTOP_TYPE = kde ]
+if [ "$DESKTOP_TYPE" = kde ]
 then
-KDESUCHECK=`grep -c super-user-command'='su /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals`
-if [ $KDESUCHECK = 0 ]
-then
-echo '['super-user-command']' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
-echo super-user-command'='su >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
-fi
+	KDESUCHECK=$(grep -c 'super-user-command=su' /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals)
+	if [ "$KDESUCHECK" = 0 ]
+	then
+		echo '[super-user-command]' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
+		echo 'super-user-command=su' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
+	fi
 fi
 
 ###########################
 #Stop the karoshi user from logging in by default
 ###########################
-echo `date`: "Stopping auto login for the karoshi user" >> /opt/karoshi/serversetup/install_log
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/default_login
+echo "$(date): Stopping auto login for the karoshi user" >> /opt/karoshi/serversetup/install_log
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/default_login
 [ -d /opt/karoshi/karoshimanagement ] || mkdir /opt/karoshi/karoshimanagement
 
 #####################
@@ -83,34 +83,34 @@ echo `date`: "Stopping auto login for the karoshi user" >> /opt/karoshi/serverse
 echo /opt/karoshi/serversetup/pdc/scripts/setuppdc > /opt/karoshi/karoshimanagement/karoshisetup
 chmod 0700 /opt/karoshi/karoshimanagement/karoshisetup
 
-if [ $DESKTOP_TYPE = kde ]
+if [ "$DESKTOP_TYPE" = kde ]
 then
-echo konqueror --profile filemanagement /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo konqueror --profile filemanagement /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
-if [ $DESKTOP_TYPE = gnome ]
+if [ "$DESKTOP_TYPE" = gnome ]
 then
-echo nautilus /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo nautilus /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
-if [ $DESKTOP_TYPE = xfce4 ]
+if [ "$DESKTOP_TYPE" = xfce4 ]
 then
-echo thunar /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo thunar /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
 ##########################
 #Stop karoshi setup from running on logon
 ##########################
-echo `date`: "Stopping karoshi setup from running at logon" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Stopping karoshi setup from running at logon" >> /opt/karoshi/serversetup/install_log
 [ -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop ] && rm -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop
 #Schedule disk_usage
-echo 0 1 "*" "*" 6 /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/disk_usage_report.cron
+echo "0 1 * * 6" /opt/karoshi/serversetup/all/\"useful scripts\"/disk_usage > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/disk_usage_report.cron"
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 ##########################
 #Copy in icons
 ##########################
-echo `date`: "Copying in icons" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Copying in icons" >> /opt/karoshi/serversetup/install_log
 cp -f /opt/karoshi/serversetup/all/links/adminfilemanager.desktop /opt/karoshi/karoshi_user/Desktop/
 cp -f /opt/karoshi/serversetup/all/links/webmanagement.desktop /opt/karoshi/karoshi_user/Desktop/
 chmod 0700 /opt/karoshi/karoshi_user/Desktop/adminfilemanager.desktop
@@ -123,7 +123,7 @@ chage -M 99999 karoshi
 ##########################
 #Set Karoshi User Permissions
 ##########################
-echo `date`: "Setting karoshi user permissions" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Setting karoshi user permissions" >> /opt/karoshi/serversetup/install_log
 chown -c -R karoshi /opt/karoshi/karoshi_user
 
 chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
@@ -136,24 +136,24 @@ cp -f /opt/karoshi/serversetup/pdc/"useful scripts"/.alphabet /opt/karoshi/"usef
 chmod -R 0700 /opt/karoshi/"useful scripts"
 
 #Import SSL root certificate into firefox
-echo `date`: "Importing ssl root certificate into firefox" >> /opt/karoshi/serversetup/install_log
-FIREFOXPROFILE=`ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default`
+echo "$(date): Importing ssl root certificate into firefox" >> /opt/karoshi/serversetup/install_log
+FIREFOXPROFILE=$(ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default)
 #su karoshi -c 'certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/'$FIREFOXPROFILE''
 
 #Delete existing cert db
-[ -f /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/cert8.db ] && rm -f /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/cert8.db
+[ -f /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"/cert8.db ] && rm -f /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"/cert8.db
 
-certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE
-chown karoshi /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/cert8.db
+certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"
+chown karoshi /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"/cert8.db
 
 
 #Modify web management to point at the domain path instead of 127.0.0.1
-echo `date`: "Modifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Modifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log
 sed -i "s/127.0.0.1/manage.$REALM/g" /opt/karoshi/karoshi_user/Desktop/webmanagement.desktop
 
 #Modify defaullt home page to point at the web management
-echo `date`: "Modifying firefox default home page to point at the web management" >> /opt/karoshi/serversetup/install_log
-sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/$FIREFOXPROFILE/prefs.js
+echo "$(date): Modifying firefox default home page to point at the web management" >> /opt/karoshi/serversetup/install_log
+sed -i "s/http:\/\/www.linuxschools.com/https:\/\/manage.$REALM:50001/g" /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE/"prefs.js
 
 ###########################
 #Display completed message

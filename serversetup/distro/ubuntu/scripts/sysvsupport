@@ -62,9 +62,10 @@
 [ -L /etc/init.d/nginx ] && rm -f /etc/init.d/nginx
 [ -L /etc/init.d/icecast2 ] && rm -f /etc/init.d/icecast2
 [ -L /etc/init.d/avahi-daemon ] && rm -f /etc/init.d/avahi-daemon
+[ -L /etc/init.d/docker ] && rm -f /etc/init.d/docker
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2 /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2_karoshi /etc/init.d/
+[ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2_karoshi ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2_karoshi /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/clamav-freshclam /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/cups /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/e2guardian /etc/init.d/
@@ -92,6 +93,8 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/docker /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/redis-server /etc/init.d/
 if [ ! -f /etc/init.d/glusterfs ]
 then
 	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
@@ -130,7 +133,7 @@ fi
 
 #Get rid of any upstart and systemd configurations
 
-for service in cups bind9 clamav-daemon mysql postgresql smbd nmbd squid ssh tftpd-hpa xinetd dovecot vsftpd nfs-server rpcbind portmap memcached isc-dhcp-server glusterfs monitorix freeradius samba shorewall dnsmasq windbind openvpn nfs-kernel-server statd nginx minidlna
+for service in cups bind9 clamav-daemon mysql postgresql smbd nmbd squid ssh tftpd-hpa xinetd dovecot vsftpd nfs-server rpcbind portmap memcached isc-dhcp-server glusterfs monitorix freeradius samba shorewall dnsmasq windbind openvpn nfs-kernel-server statd nginx minidlna docker redis-server
 do
 	#Upstart
 	#Make sure no scripts have been added to /etc/init for upstart.
