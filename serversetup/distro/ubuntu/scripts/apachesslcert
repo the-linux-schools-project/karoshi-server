@@ -49,7 +49,7 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
-#Check to see if the server already has been set uo for SSL
+#Check to see if the server already has been set up for SSL
 if [ "$FORCE" = no ]
 then
 	CONFIGCHECK=no
