@@ -93,8 +93,8 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/rpcbind /etc/i
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/memcached /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/isc-dhcp-server /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/docker /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/redis-server /etc/init.d/
+[ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/docker ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/docker /etc/init.d/
+[ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/redis-server ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/redis-server /etc/init.d/
 if [ ! -f /etc/init.d/glusterfs ]
 then
 	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/glusterfs /etc/init.d/
@@ -139,14 +139,18 @@ do
 	#Make sure no scripts have been added to /etc/init for upstart.
 	[[ $(ls /etc/init/"$service"* 2>/dev/null | wc -l) -gt 0 ]] && rm -f /etc/init/"$service"*
 
-	#Systemd
-	if [[ $(ls /lib/systemd/system/"$service"* 2>/dev/null | wc -l) -gt 0 ]]
-	then
-		#Disable the systemd service
-		systemctl disable "$service".service
 
-		#Get rid of any systemd configurations	
-		rm -f /lib/systemd/system/"$service"*
+	#Only run this if we are running systemd - or we might disable a sysv service
+	if [ $(ps -e | grep -wc upstart) = 0 ]
+	then
+		if [[ $(ls /lib/systemd/system/"$service"* 2>/dev/null | wc -l) -gt 0 ]]
+		then
+			#Disable the systemd service
+			systemctl disable "$service".service
+
+			#Get rid of any systemd configurations	
+			rm -f /lib/systemd/system/"$service"*
+		fi
 	fi
 done
 exit
