@@ -2,8 +2,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          nfs-kernel-server
-# Required-Start:    $remote_fs nfs-common $rpcbind $time
-# Required-Stop:     $remote_fs nfs-common $rpcbind $time
+# Required-Start:    $remote_fs $rpcbind $time
+# Required-Stop:     $remote_fs $rpcbind $time
 # Should-Start:      $named
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

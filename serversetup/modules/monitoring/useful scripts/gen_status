@@ -26,7 +26,7 @@
 
 #Detect mobile browser
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 [ ! -d /opt/karoshi/server_network/mon ] && mkdir -p /opt/karoshi/server_network/mon
 LAST_CHECKMSG="Last check"
@@ -34,23 +34,23 @@ NEXT_CHECKMSG="Next check"
 DEFCON=5
 
 #Get raw data from mon
-MON_DATA=`monshow --full`
+MON_DATA=$(monshow --full)
 
-MON_DATA_FAILS=`echo -e "$MON_DATA" | grep -w FAIL | sed 's/ * /,/g'`
-MON_DATA_UNTESTED=`echo -e "$MON_DATA" | grep -w untested | sed 's/ * /,/g'`
-MON_DATA_PASSES=`echo -e "$MON_DATA" | grep -v -w FAIL | grep -v -w untested`
+MON_DATA_FAILS=$(echo -e "$MON_DATA" | grep -w FAIL | sed 's/ * /,/g')
+MON_DATA_UNTESTED=$(echo -e "$MON_DATA" | grep -w untested | sed 's/ * /,/g')
+MON_DATA_PASSES=$(echo -e "$MON_DATA" | grep -v -w FAIL | grep -v -w untested)
 
 #Work out basic defcon level
 FAILCOUNT=$(echo -e "$MON_DATA" | grep -c -w FAIL)
-[ $FAILCOUNT -gt 0 ] && DEFCON=4
-[ $FAILCOUNT -gt 1 ] && DEFCON=3
-[ $FAILCOUNT -gt 3 ] && DEFCON=2
-[ $FAILCOUNT -gt 5 ] && DEFCON=1
+[ "$FAILCOUNT" -gt 0 ] && DEFCON=4
+[ "$FAILCOUNT" -gt 1 ] && DEFCON=3
+[ "$FAILCOUNT" -gt 3 ] && DEFCON=2
+[ "$FAILCOUNT" -gt 5 ] && DEFCON=1
 
-echo DEFCON=$DEFCON > /opt/karoshi/server_network/mon/network_status
+echo DEFCON="$DEFCON" > /opt/karoshi/server_network/mon/network_status
 #Get date
 echo -e "$MON_DATA_PASSES" | grep -w time: > /opt/karoshi/server_network/mon/mon_data_temp
-MON_DATA_PASSES=`echo -e "$MON_DATA_PASSES" | sed 's/ * /,/g'`
+MON_DATA_PASSES=$(echo -e "$MON_DATA_PASSES" | sed 's/ * /,/g')
 
 #Get list of all groups
 GROUP_LIST_ARRAY=( `grep -w watch /etc/mon/mon.cf | sed 's/watch//g' | sed 's/\t//g'` )
@@ -59,31 +59,31 @@ GROUP_LIST_COUNT=${#GROUP_LIST_ARRAY[@]}
 #Get list of all failed services
 echo FAILURES >> /opt/karoshi/server_network/mon/mon_data_temp
 COUNTER=0
-while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+while [ "$COUNTER" -lt "$GROUP_LIST_COUNT" ]
 do
-	GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
-	echo -e "$MON_DATA_FAILS" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
-	let COUNTER=$COUNTER+1
+	GROUP_NAME="${GROUP_LIST_ARRAY[$COUNTER]}"
+	echo -e "$MON_DATA_FAILS" | grep -w "$GROUP_NAME" >> /opt/karoshi/server_network/mon/mon_data_temp
+	let COUNTER="$COUNTER"+1
 done
 
 #Get list of all untested services
 echo UNTESTED >> /opt/karoshi/server_network/mon/mon_data_temp
 COUNTER=0
-while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+while [ "$COUNTER" -lt "$GROUP_LIST_COUNT" ]
 do
-	GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
-	echo -e "$MON_DATA_UNTESTED" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
-	let COUNTER=$COUNTER+1
+	GROUP_NAME="${GROUP_LIST_ARRAY[$COUNTER]}"
+	echo -e "$MON_DATA_UNTESTED" | grep -w "$GROUP_NAME" >> /opt/karoshi/server_network/mon/mon_data_temp
+	let COUNTER="$COUNTER"+1
 done
 
 #Get list of all passed services
 echo PASSED >> /opt/karoshi/server_network/mon/mon_data_temp
 COUNTER=0
-while [ $COUNTER -lt $GROUP_LIST_COUNT ]
+while [ "$COUNTER" -lt "$GROUP_LIST_COUNT" ]
 do
-	GROUP_NAME=${GROUP_LIST_ARRAY[$COUNTER]}
-	echo -e "$MON_DATA_PASSES" | grep -w $GROUP_NAME >> /opt/karoshi/server_network/mon/mon_data_temp
-	let COUNTER=$COUNTER+1
+	GROUP_NAME="${GROUP_LIST_ARRAY[$COUNTER]}"
+	echo -e "$MON_DATA_PASSES" | grep -w "$GROUP_NAME" >> /opt/karoshi/server_network/mon/mon_data_temp
+	let COUNTER="$COUNTER"+1
 done
 echo COMPLETED >> /opt/karoshi/server_network/mon/mon_data_temp
 cp -f /opt/karoshi/server_network/mon/mon_data_temp /opt/karoshi/server_network/mon/mon_data
@@ -91,213 +91,210 @@ cp -f /opt/karoshi/server_network/mon/mon_data_temp /opt/karoshi/server_network/
 [ -f /opt/karoshi/server_network/mon/mon_data_html_temp ] && rm -f /opt/karoshi/server_network/mon/mon_data_html_temp 
 [ -f /opt/karoshi/server_network/mon/mon_mobile_data_html_temp ] && rm -f /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
-MONDATA=`cat /opt/karoshi/server_network/mon/mon_data`
-GEN_DATE=`echo -e "$MONDATA" | sed -n 1,1p | cut -d: -f2-`
+MONDATA=$(cat /opt/karoshi/server_network/mon/mon_data)
+GEN_DATE=$(echo -e "$MONDATA" | sed -n 1,1p | cut -d: -f2-)
 
 function set_status {
 ##########################
 #Set status for each monitor type
 ##########################
-SUMMARY_LAST=$SUMMARY
-if [ $SERVICE_NAME = ping ]
+
+if [ "$SERVICE_NAME" = ping ]
 then
-	PING_LAST_CHECK=$LAST_CHECK
-	PING_NEXT_CHECK=$NEXT_CHECK
+	PING_LAST_CHECK="$LAST_CHECK"
+	PING_NEXT_CHECK="$NEXT_CHECK"
 	PINGSTATUS=pass
 	PINGSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		PINGSTATUS=fail
 		PINGSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		PINGSTATUS=untested
 		PINGSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = samba ]
+if [ "$SERVICE_NAME" = samba ]
 then
-	SAMBA_LAST_CHECK=$LAST_CHECK
-	SAMBA_NEXT_CHECK=$NEXT_CHECK
+	SAMBA_LAST_CHECK="$LAST_CHECK"
+	SAMBA_NEXT_CHECK="$NEXT_CHECK"
 	SAMBASTATUS=pass
 	SAMBASTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		SAMBASTATUS=fail 
 		SAMBASTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		SAMBASTATUS=untested
 		SAMBASTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = dns ]
+if [ "$SERVICE_NAME" = dns ]
 then
-	DNS_LAST_CHECK=$LAST_CHECK
-	DNS_NEXT_CHECK=$NEXT_CHECK
+	DNS_LAST_CHECK="$LAST_CHECK"
+	DNS_NEXT_CHECK="$NEXT_CHECK"
 	DNSSTATUS=pass
 	DNSSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		DNSSTATUS=fail
 		DNSSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		DNSSTATUS=untested
 		DNSSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = cups ]
+if [ "$SERVICE_NAME" = cups ]
 then
-	CUPS_LAST_CHECK=$LAST_CHECK
-	CUPS_NEXT_CHECK=$NEXT_CHECK
+	CUPS_LAST_CHECK="$LAST_CHECK"
+	CUPS_NEXT_CHECK="$NEXT_CHECK"
 	CUPSSTATUS=pass
 	CUPSSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		CUPSSTATUS=fail
 		CUPSSTATUS2=$"Fail2"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		CUPSSTATUS=untested
 		CUPSSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = imap ]
+if [ "$SERVICE_NAME" = imap ]
 then
-	IMAP_LAST_CHECK=$LAST_CHECK
-	IMAP_NEXT_CHECK=$NEXT_CHECK
+	IMAP_LAST_CHECK="$LAST_CHECK"
+	IMAP_NEXT_CHECK="$NEXT_CHECK"
 	IMAPSTATUS=pass
 	IMAPSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		IMAPSTATUS=fail
 		IMAPSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		IMAPSTATUS=untested
 		IMAPSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = imaps ]
+if [ "$SERVICE_NAME" = imaps ]
 then
-	IMAPS_LAST_CHECK=$LAST_CHECK
-	IMAPS_NEXT_CHECK=$NEXT_CHECK
+	IMAPS_LAST_CHECK="$LAST_CHECK"
+	IMAPS_NEXT_CHECK="$NEXT_CHECK"
 	IMAPSSTATUS=pass
 	IMAPSSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		IMAPSSTATUS=fail
 		IMAPSSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		IMAPSTATUS=untested
 		IMAPSSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = pop ]
+if [ "$SERVICE_NAME" = pop ]
 then
-	POP3_LAST_CHECK=$LAST_CHECK
-	POP3_NEXT_CHECK=$NEXT_CHECK
+	POP3_LAST_CHECK="$LAST_CHECK"
+	POP3_NEXT_CHECK="$NEXT_CHECK"
 	POP3STATUS=pass
 	POP3STATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		POP3STATUS=fail
 		POP3STATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		POP3STATUS=untested 
 		POP3STATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = pop3s ]
+if [ "$SERVICE_NAME" = pop3s ]
 then
-	POP3S_LAST_CHECK=$LAST_CHECK
-	POP3S_NEXT_CHECK=$NEXT_CHECK
+	POP3S_LAST_CHECK="$LAST_CHECK"
+	POP3S_NEXT_CHECK="$NEXT_CHECK"
 	POP3SSTATUS=pass
 	POP3SSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		POP3SSTATUS=fail
 		POP3SSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		POP3SSTATUS=untested
 		POP3SSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = http ]
+if [ "$SERVICE_NAME" = http ]
 then
-	HTTP_LAST_CHECK=$LAST_CHECK
-	HTTP_NEXT_CHECK=$NEXT_CHECK
+	HTTP_LAST_CHECK="$LAST_CHECK"
+	HTTP_NEXT_CHECK="$NEXT_CHECK"
 	HTTPSTATUS=pass
 	HTTPSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ] 
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]] 
 	then
 		HTTPSTATUS=fail
 		HTTPSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		HTTPSTATUS=untested
 		HTTPSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = https ]
+if [ "$SERVICE_NAME" = https ]
 then
-	HTTPS_LAST_CHECK=$LAST_CHECK
-	HTTPS_NEXT_CHECK=$NEXT_CHECK
+	HTTPS_LAST_CHECK="$LAST_CHECK"
+	HTTPS_NEXT_CHECK="$NEXT_CHECK"
 	HTTPSSTATUS=pass
 	HTTPSSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		HTTPSSTATUS=fail
 		HTTPSSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		HTTPSSTATUS=untested
 		HTTPSSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = smtp ]
+if [ "$SERVICE_NAME" = smtp ]
 then
-	SMPT_LAST_CHECK=$LAST_CHECK
-	SMPT_NEXT_CHECK=$NEXT_CHECK
+	SMTP_LAST_CHECK="$LAST_CHECK"
+	SMTP_NEXT_CHECK="$NEXT_CHECK"
 	SMTPSTATUS=pass
-	SMPTSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		SMTPSTATUS=fail
-		SMPTSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		SMTPSTATUS=untested
-		SMPTSTATUS2=$"Untested"
 	fi
 fi
-if [ $SERVICE_NAME = proxy ]
+if [ "$SERVICE_NAME" = proxy ]
 then
-	DG_LAST_CHECK=$LAST_CHECK
-	DG_NEXT_CHECK=$NEXT_CHECK
+	DG_LAST_CHECK="$LAST_CHECK"
+	DG_NEXT_CHECK="$NEXT_CHECK"
 	DGSTATUS=pass
 	DGSTATUS2=$"Pass"
-	if [ `echo 'check'$STATUS | grep -c FAIL` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c FAIL) -gt 0 ]]
 	then
 		DGSTATUS=fail
 		DGSTATUS2=$"Fail"
 	fi
-	if [ `echo 'check'$STATUS | grep -c untested` -gt 0 ]
+	if [[ $(echo 'check'"$STATUS" | grep -c untested) -gt 0 ]]
 	then
 		DGSTATUS=untested 
 		DGSTATUS2=$"Untested"
@@ -307,150 +304,150 @@ fi
 
 function show_data {
 #Show status
-echo '<tr><td style="vertical-align: top;">'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-<button class="button smallbutton" name="_On_" value="_MONITOR_'$GROUP_NAME'_">
+echo '<tr><td style="vertical-align: top;">'"$GROUP_NAME"'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
+<button class="button smallbutton" name="_On_" value="_MONITOR_'"$GROUP_NAME"'_">
 '$"On"'
 </button>
 </form></td>'  >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
-if [ $PINGSTATUS != not_set ]
+if [ "$PINGSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Ping_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_ping_">
-<img src="/images/warnings/'$ICON'" alt="'$"Ping"'">
-<span><br>Ping '$PINGSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$PING_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$PING_NEXT_CHECK'<br></span>
+<button class="info" name="_Ping_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_ping_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Ping"'">
+<span><br>Ping '"$PINGSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$PING_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$PING_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $SAMBASTATUS != not_set ]
+if [ "$SAMBASTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Samba_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_samba_">
-<img src="/images/warnings/'$ICON'" alt="'$"Samba"'">
-<span><br>SMB '$SAMBASTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$SAMBA_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$SAMBA_NEXT_CHECK'<br></span>
+<button class="info" name="_Samba_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_samba_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Samba"'">
+<span><br>SMB '"$SAMBASTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$SAMBA_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$SAMBA_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $HTTPSTATUS != not_set ]
+if [ "$HTTPSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Http_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_http_">
-<img src="/images/warnings/'$ICON'" alt="'$"Http"'">
-<span><br>HTTP '$HTTPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$HTTP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$HTTP_NEXT_CHECK'<br></span>
+<button class="info" name="_Http_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_http_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Http"'">
+<span><br>HTTP '"$HTTPSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$HTTP_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$HTTP_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $HTTPSSTATUS != not_set ]
+if [ "$HTTPSSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Https_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_https_">
-<img src="/images/warnings/'$ICON'" alt="'$"Https"'">
-<span><br>HTTPS '$HTTPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$HTTPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$HTTPS_NEXT_CHECK'<br></span>
+<button class="info" name="_Https_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_https_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Https"'">
+<span><br>HTTPS '"$HTTPSSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$HTTPS_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$HTTPS_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $POP3STATUS != not_set ]
+if [ "$POP3STATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Pop3_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3_">
-<img src="/images/warnings/'$ICON'" alt="'$"Pop3"'">
-<span><br>POP3 '$POP3STATUS2'<br><br>'$LAST_CHECKMSG'<br>'$POP3_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$POP3_NEXT_CHECK'<br></span>
+<button class="info" name="_Pop3_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_pop3_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Pop3"'">
+<span><br>POP3 '"$POP3STATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$POP3_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$POP3_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $POP3SSTATUS != not_set ]
+if [ "$POP3SSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Pop3s_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_pop3s_">
-<img src="/images/warnings/'$ICON'" alt="'$"Pop3"'">
-<span><br>POP3S '$POP3SSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$POP3S_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$POP3S_NEXT_CHECK'<br></span>
+<button class="info" name="_Pop3s_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_pop3s_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Pop3"'">
+<span><br>POP3S '"$POP3SSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$POP3S_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$POP3S_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $IMAPSTATUS != not_set ]
+if [ "$IMAPSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Imap_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_imap_">
-<img src="/images/warnings/'$ICON'" alt="'$"Imap"'">
-<span><br>IMAP '$IMAPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$IMAP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$IMAP_NEXT_CHECK'<br></span>
+<button class="info" name="_Imap_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_imap_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Imap"'">
+<span><br>IMAP '"$IMAPSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$IMAP_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$IMAP_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $IMAPSSTATUS != not_set ]
+if [ "$IMAPSSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Imaps_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_imaps_">
-<img src="/images/warnings/'$ICON'" alt="'$"Imaps"'">
-<span><br>IMAPS '$IMAPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$IMAPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$IMAPS_NEXT_CHECK'<br></span>
+<button class="info" name="_Imaps_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_imaps_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Imaps"'">
+<span><br>IMAPS '"$IMAPSSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$IMAPS_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$IMAPS_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $SMTPSTATUS != not_set ]
+if [ "$SMTPSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_Smtp_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_smtp_">
-<img src="/images/warnings/'$ICON'" alt="'$"Smtp"'">
-<span><br>SMTP '$SMTPSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$SMTP_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$SMTP_NEXT_CHECK'<br></span>
+<button class="info" name="_Smtp_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_smtp_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Smtp"'">
+<span><br>SMTP '"$SMTPSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$SMTP_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$SMTP_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $DGSTATUS != not_set ]
+if [ "$DGSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info" name="_E2Guardian_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dg_">
-<img src="/images/warnings/'$ICON'" alt="'$"E2Guardian"'">
-<span><br>DG '$DGSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$DG_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$DG_NEXT_CHECK'<br></span>
+<button class="info" name="_E2Guardian_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_dg_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"E2Guardian"'">
+<span><br>DG '"$DGSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$DG_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$DG_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $DNSSTATUS != not_set ]
+if [ "$DNSSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info infoleft" name="_Dns_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_dns_">
-<img src="/images/warnings/'$ICON'" alt="'$"DNS"'">
-<span><br>DNS '$DNSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$DNS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$DNS_NEXT_CHECK'<br></span>
+<button class="info infoleft" name="_Dns_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_dns_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"DNS"'">
+<span><br>DNS '"$DNSSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$DNS_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$DNS_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
 	echo '<td></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 fi
 
-if [ $CUPSSTATUS != not_set ]
+if [ "$CUPSSTATUS" != not_set ]
 then
 	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_view_logs.cgi" name="monitors" method="post">
-<button class="info infoleft" name="_Cups_" value="_GROUPNAME_'$GROUP_NAME'_SERVICE_cups_">
-<img src="/images/warnings/'$ICON'" alt="'$"Cups Printing System"'">
-<span><br>CUPS '$CUPSSTATUS2'<br><br>'$LAST_CHECKMSG'<br>'$CUPS_LAST_CHECK'<br>'$NEXT_CHECKMSG'<br>'$CUPS_NEXT_CHECK'<br></span>
+<button class="info infoleft" name="_Cups_" value="_GROUPNAME_'"$GROUP_NAME"'_SERVICE_cups_">
+<img src="/images/warnings/'"$ICON"'" alt="'$"Cups Printing System"'">
+<span><br>CUPS '"$CUPSSTATUS2"'<br><br>'"$LAST_CHECKMSG"'<br>'"$CUPS_LAST_CHECK"'<br>'"$NEXT_CHECKMSG"'<br>'"$CUPS_NEXT_CHECK"'<br></span>
 </button>
 </form></td>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 else
@@ -459,16 +456,16 @@ fi
 echo "</tr>" >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
 #Mobile view
-echo '<tr><td style="vertical-align: top;">'$GROUP_NAME'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-<button class="button smallbutton" name="_On_" value="_MONITOR_'$GROUP_NAME'_">
+echo '<tr><td style="vertical-align: top;">'"$GROUP_NAME"'</td><td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
+<button class="button smallbutton" name="_On_" value="_MONITOR_'"$GROUP_NAME"'_">
 '$"On"'
 </button>
 </form></td>'  >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 echo '<td style="vertical-align: top;">
-<button class="info" name="_Mobile'$GROUP_NAME'_" value="_GROUPNAME_'$GROUP_NAME'_">
-<img src="/images/warnings/'$ICON2'" alt="'$GROUP_NAME'">
-<span>'$FAILURELIST'</span>
+<button class="info" name="_Mobile'"$GROUP_NAME"'_" value="_GROUPNAME_'"$GROUP_NAME"'_">
+<img src="/images/warnings/'"$ICON2"'" alt="'"$GROUP_NAME"'">
+<span>'"$FAILURELIST"'</span>
 </button>
 </td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 }
@@ -503,53 +500,51 @@ CUPSSTATUS2=$"Not tested"
 reset_status
 
 #Process data file
-LINE_COUNT=`echo -e "$MONDATA" | wc -l`
-let LINE_COUNT=$LINE_COUNT-1
+LINE_COUNT=$(echo -e "$MONDATA" | wc -l)
+let LINE_COUNT="$LINE_COUNT"-1
 COUNTER=3
 COUNTER2=4
 GROUP_NAME="non_set"
-GROUP_NAME_LAST="non_set"
-GROUP_NAME_NO_SPACES="non_set"
 
 ICON=red.gif
 ICON2=redm.gif
-while [ $COUNTER -le $LINE_COUNT ]
+while [ "$COUNTER" -le "$LINE_COUNT" ]
 do
-	LINE_DATA=`echo -e "$MONDATA" | sed -n $COUNTER,$COUNTER'p'`
-	GROUP_NAME=`echo $LINE_DATA | cut -d, -f2`
-	GROUP_NAME_NEXT=`echo -e "$MONDATA" | sed -n $COUNTER2,$COUNTER2'p' | cut -d, -f2`
-	if [ $GROUP_NAME = UNTESTED ]
+	LINE_DATA=$(echo -e "$MONDATA" | sed -n $COUNTER,$COUNTER'p')
+	GROUP_NAME=$(echo "$LINE_DATA" | cut -d, -f2)
+	GROUP_NAME_NEXT=$(echo -e "$MONDATA" | sed -n $COUNTER2,$COUNTER2'p' | cut -d, -f2)
+	if [ "$GROUP_NAME" = UNTESTED ]
 	then
 		ICON=orange.gif
 		ICON2=orangem.gif
 	fi
-	if [ $GROUP_NAME = PASSED ]
+	if [ "$GROUP_NAME" = PASSED ]
 	then
 		ICON=green.gif
 		ICON2=greenm.gif
 	fi
-	SERVICE_NAME=`echo $LINE_DATA | cut -d, -f3`
-	STATUS=`echo $LINE_DATA | cut -d, -f4`
-	LAST_CHECK=`echo $LINE_DATA | cut -d, -f5`
-	NEXT_CHECK=`echo $LINE_DATA | cut -d, -f6`
-	ALERTS=`echo $LINE_DATA | cut -d, -f7`
-	SUMMARY=`echo $LINE_DATA | cut -d, -f8- | sed 's/,/<br>/g'`
+	SERVICE_NAME=$(echo "$LINE_DATA" | cut -d, -f3)
+	STATUS=$(echo "$LINE_DATA" | cut -d, -f4)
+	LAST_CHECK=$(echo "$LINE_DATA" | cut -d, -f5)
+	NEXT_CHECK=$(echo "$LINE_DATA" | cut -d, -f6)
+	#ALERTS=$(echo "$LINE_DATA" | cut -d, -f7)
+	#SUMMARY=$(echo "$LINE_DATA" | cut -d, -f8- | sed 's/,/<br>/g')
 
-	if [ $STATUS = FAIL ]
+	if [ "$STATUS" = FAIL ]
 	then
-		FAILURELIST=`echo "$FAILURELIST $SERVICE_NAME"`
+		FAILURELIST="$FAILURELIST $SERVICE_NAME"
 	else
 		FAILURELIST="All systems online"
 	fi
 	set_status
 
-	if [ $GROUP_NAME != $GROUP_NAME_NEXT ] && [ $GROUP_NAME != UNTESTED ] && [ $GROUP_NAME != PASSED ]
+	if [ "$GROUP_NAME" != "$GROUP_NAME_NEXT" ] && [ "$GROUP_NAME" != UNTESTED ] && [ "$GROUP_NAME" != PASSED ]
 	then
 		show_data
 		reset_status
 	fi
-	let COUNTER=$COUNTER+1
-	let COUNTER2=$COUNTER2+1
+	let COUNTER="$COUNTER"+1
+	let COUNTER2="$COUNTER2"+1
 done
 
 
@@ -558,8 +553,8 @@ echo "</tbody></table><br>$GEN_DATE<br>" >> /opt/karoshi/server_network/mon/mon_
 
 #Add in today's failures to the bottom
 
-TODAY=`date "+%a %b %e" | sed 's/  / /g'`
-EVENTS=`grep -R "$TODAY" /opt/karoshi/server_network/mon/events/* | cut -d: -f2- | sed 's/ /_/g'`
+TODAY=$(date "+%a %b %e" | sed 's/  / /g')
+EVENTS=$(grep -R "$TODAY" /opt/karoshi/server_network/mon/events/* | cut -d: -f2- | sed 's/ /_/g')
 if [ ! -z "$EVENTS" ]
 then
 	echo '<br><div class="row"><b>'$"Network Events"'</b>
@@ -580,19 +575,19 @@ then
 	do
 		COLOUR=#059428
 		MOBILECOLOUR=#007E1E
-		if [ `echo $eventdata | grep -c ^failure_` -gt 0 ]
+		if [[ $(echo "$eventdata" | grep -c ^failure_) -gt 0 ]]
 		then
 			COLOUR=#FF0000
 			MOBILECOLOUR=#FF0000
 		fi
-		HOSTGROUP=`echo $eventdata | cut -d_ -f2`
-		MONITOR=`echo $eventdata | cut -d_ -f3`
-		EVENTTIME=`echo $eventdata | cut -d_ -f8 | sed 's/)//g'`
-		ADDRESSESS=`echo $eventdata | cut -d_ -f9- | sed 's/_/ /g'`
+		HOSTGROUP=$(echo "$eventdata" | cut -d_ -f2)
+		MONITOR=$(echo "$eventdata" | cut -d_ -f3)
+		EVENTTIME=$(echo "$eventdata" | cut -d_ -f8 | sed 's/)//g')
+		ADDRESSESS=$(echo "$eventdata" | cut -d_ -f9- | sed 's/_/ /g')
 
-		echo '<tr><td style="color: '$MOBILECOLOUR';">'$HOSTGROUP'</td><td style="color: '$MOBILECOLOUR';">'$MONITOR'</td><td style="color: '$MOBILECOLOUR';">'$EVENTTIME'</td><td style="color: '$MOBILECOLOUR';">'$ADDRESSESS'</td></tr>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
-		ADDRESSESS=`echo $ADDRESSESS | sed 's/ /<br>/g'`
-		echo '<tr><td style="width: 110px; color: '$MOBILECOLOUR';">'$HOSTGROUP'</td><td style="color: '$MOBILECOLOUR';">'$EVENTTIME'</td></tr><tr><td style="vertical-align:top; color: '$MOBILECOLOUR';">'$MONITOR'</td><td style="color: '$MOBILECOLOUR';">'$ADDRESSESS'</td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+		echo '<tr><td style="color: '"$MOBILECOLOUR"';">'"$HOSTGROUP"'</td><td style="color: '"$MOBILECOLOUR"';">'"$MONITOR"'</td><td style="color: '"$MOBILECOLOUR"';">'"$EVENTTIME"'</td><td style="color: '"$MOBILECOLOUR"';">'"$ADDRESSESS"'</td></tr>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+		ADDRESSESS="${ADDRESSESS// /<br>}"
+		echo '<tr><td style="width: 110px; color: '"$MOBILECOLOUR"';">'"$HOSTGROUP"'</td><td style="color: '"$MOBILECOLOUR"';">'"$EVENTTIME"'</td></tr><tr><td style="vertical-align:top; color: '"$MOBILECOLOUR"';">'"$MONITOR"'</td><td style="color: '"$MOBILECOLOUR"';">'"$ADDRESSESS"'</td></tr>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 	done
 	echo '</tbody></table></div></div>' >> /opt/karoshi/server_network/mon/mon_data_html_temp

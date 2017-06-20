@@ -22,21 +22,21 @@
 #
 #Website: http://www.karoshi.org.uk
 #
-[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
-chmod 0600 -R /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
-chmod u+X -R /opt/karoshi/server_network/cronjobs/`hostname-fqdn`
-echo SHELL=/bin/bash > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
-echo PATH=/sbin:/bin:/usr/sbin:/usr/bin >> /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
-echo MAILTO='"''"' >> /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
-echo HOME=/ >> /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
+[ -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ] || mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
+chmod 0600 -R "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)"
+chmod u+X -R "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)"
+echo SHELL=/bin/bash > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
+echo PATH=/sbin:/bin:/usr/sbin:/usr/bin >> "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
+echo MAILTO='"''"' >> "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
+echo HOME=/ >> "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
 
-CRONSTATUS=$(ls /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/ | wc -l)
+CRONSTATUS=$(ls "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/" | wc -l)
 crontab -r
 if [ "$CRONSTATUS" != 0 ]
 then
-	cat /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/*.cron >> /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
-	crontab /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/masterschedule.cron
+	cat "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/*.cron" >> "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
+	crontab "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/masterschedule.cron"
 	echo Cron Jobs have been updated.
 else
-	echo There are no files in /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs to add to the masterschedule.
+	echo "There are no files in /opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs to add to the masterschedule."
 fi

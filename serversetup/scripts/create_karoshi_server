@@ -3,15 +3,15 @@
 #This script has been developed from the information at https://help.ubuntu.com/community/LiveCDCustomizationFromScratch
 
 KAROSHIVER=karoshi-server-v11.1-amd64
-KAROSHIVERNOCAPS=`echo $KAROSHIVER | tr 'A-Z' 'a-z'`
-BUILDPATH=/home/karoshi/$KAROSHIVERNOCAPS
+KAROSHIVERNOCAPS=$(echo "$KAROSHIVER" | tr '[:upper:]' '[:lower:]')
+BUILDPATH=/home/karoshi/"$KAROSHIVERNOCAPS"
 ARCH=amd64
 RELEASE=xenial
 
 clear
 
 #Exit if this is not the root user
-if [ `id -u` != 0 ]
+if [[ $(id -u) != 0 ]]
 then
 	echo -e "Karoshi Server Remaster Utility\n\nThis script must be run as root."
 	exit
@@ -20,11 +20,11 @@ fi
 echo -e "Karoshi Server Remaster Utility\n"
 
 which unzip 1>/dev/null
-if [ $? != 0 ]
+if [ "$?" != 0 ]
 then
-echo -e "Installing unzip\n"
-sudo apt-get install unzip
-	if [ $? != 0 ]
+	echo -e "Installing unzip\n"
+	sudo apt-get install unzip
+	if [ "$?" != 0 ]
 	then
 		echo -e "There was a problem installing unzip - exiting now."
 		exit
@@ -33,12 +33,12 @@ fi
 
 #Install debootstrap
 which debootstrap 1>/dev/null
-if [ $? != 0 ]
+if [ "$?" != 0 ]
 then
 	echo -e "Installing debootstrap\n"
 	sleep 1
 	apt-get install debootstrap
-	if [ $? != 0 ]
+	if [ "$?" != 0 ]
 	then
 		echo -e "There was a problem installing debootstrap - exiting now."
 		exit
@@ -50,14 +50,14 @@ sleep 1
 
 
 #Create the chroot folder
-if [ -d $BUILDPATH/chroot ]
+if [ -d "$BUILDPATH"/chroot ]
 then
 	echo -e "$BUILDPATH/chroot exits\n\n1: Delete this folder and make the chroot environment\n2: Skip this step\n"
 	read choice
 	case $choice in
 		1)
 		RUNDEBOOSTRAP=yes
-		rm -f -R $BUILDPATH/chroot
+		rm -f -R "$BUILDPATH"/chroot
 		;;
 		2)
 		RUNDEBOOSTRAP=no;;
@@ -67,14 +67,14 @@ else
 	RUNDEBOOSTRAP=yes
 	echo -e "Creating $BUILDPATH/chroot\n"
 	sleep 1	
-	mkdir -p $BUILDPATH/chroot
+	mkdir -p "$BUILDPATH"/chroot
 fi
 
 #Chroot into the folder
 
-cd $BUILDPATH
+cd "$BUILDPATH"
 
-[ $RUNDEBOOSTRAP = yes ] && debootstrap --arch=$ARCH $RELEASE chroot
+[ "$RUNDEBOOSTRAP" = yes ] && debootstrap --arch="$ARCH" "$RELEASE" chroot
 
 echo -e "\nDownload serversetup\n"
 sleep 1
@@ -97,7 +97,7 @@ fi
 
 #Download master.zip and extract to chroot
 
-if [ $getserversetup = yes ]
+if [ "$getserversetup" = yes ]
 then
 	[ -f /tmp/master.zip ] && rm -f /tmp/master.zip
 	cd /tmp
@@ -112,17 +112,17 @@ then
 
 	echo -e "Unziping master.zip to $BUILDPATH/chroot/opt/karoshi\n"
 	sleep 1
-	unzip master.zip  -d $BUILDPATH/chroot/opt/karoshi/
+	unzip master.zip  -d "$BUILDPATH"/chroot/opt/karoshi/
 	if [ $? != 0 ]
 	then
 		echo -e "There was a problem unziping master.zip - exiting now."
 		exit
 	fi
 
-	mv $BUILDPATH/chroot/opt/karoshi/karoshi-server-master/serversetup $BUILDPATH/chroot/opt/karoshi/
-	rm -f -R $BUILDPATH/chroot/opt/karoshi/karoshi-server-master
+	mv "$BUILDPATH"/chroot/opt/karoshi/karoshi-server-master/serversetup "$BUILDPATH"/chroot/opt/karoshi/
+	rm -f -R "$BUILDPATH"/chroot/opt/karoshi/karoshi-server-master
 
-	cd $BUILDPATH
+	cd "$BUILDPATH"
 fi
 
 
@@ -141,7 +141,7 @@ echo -e "Copying /etc/resolv.conf\n"
 cp /etc/resolv.conf chroot/etc/resolv.conf
 
 #Copy in sources.list if only a minimal list is there
-if [ `cat chroot/etc/apt/sources.list | wc -l` -lt 2 ]
+if [[ $(wc -l < chroot/etc/apt/sources.list) -lt 2 ]]
 then
 	#cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
 	cp /etc/apt/sources.list chroot/etc/apt/sources.list
@@ -154,9 +154,9 @@ cp /sbin/initctl /sbin/initctl.$$
 chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
 
 #Copy out karoshi_build.log
-mv chroot/var/log/karoshi_build.log $BUILDPATH/
+mv chroot/var/log/karoshi_build.log "$BUILDPATH"/
 
-umount $BUILDPATH/chroot/dev 
+umount "$BUILDPATH"/chroot/dev 
 
 echo -e "\nCreate ISO image\n"
 
@@ -299,7 +299,8 @@ echo '#define DISKNAME  '$KAROSHIVER'
 cp -f image/README.diskdefines image/casper/
 
 #Recognition as a Ubuntu remix
-KAROSHIVER2=`echo "$KAROSHIVER" | sed 's/-/ /g'`
+KAROSHIVER2=${KAROSHIVER//-/ }
+
 touch image/ubuntu
 mkdir image/.disk
 cd image/.disk
@@ -315,13 +316,13 @@ chmod 0644 image/casper/vmlinuz
 #Calculate MD5
 echo -e "\nCalculating MD5\n"
 sleep 1
-cd $BUILDPATH/image
+cd "$BUILDPATH"/image
 sudo find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
 echo -e "\nCreating the iso image\n"
 sleep 1
 #Create iso image for the live CD
 
-[ -f $BUILDPATH/$KAROSHIVER.iso ] && rm -f $BUILDPATH/$KAROSHIVER.iso
+[ -f "$BUILDPATH/$KAROSHIVER.iso" ] && rm -f "$BUILDPATH/$KAROSHIVER.iso"
 
 sudo mkisofs -r -V "$KAROSHIVER" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$KAROSHIVER.iso .
 cd ..
