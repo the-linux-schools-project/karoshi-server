@@ -324,7 +324,7 @@ then
 
 		#Try and create a certificate
 		echo "<ul><li>'"$SERVERNAME"' - '$"Creating Certificate"'</li></ul>"
-		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif">"
+		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
 		#Check if we already have a certificate
 		if [ -f /etc/letsencrypt/renewal/"$PRIDOMAIN".conf ]
