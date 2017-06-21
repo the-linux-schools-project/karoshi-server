@@ -22,21 +22,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/arp_control_cgi
 then
-	echo `date`: arp_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/arp_control_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $arp_control_cgi'check' ]
+if [ "$MD5SUM"'check' != "$arp_control_cgi"'check' ]
 then
-	echo `date`: arp_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -44,26 +44,26 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: arp_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+/%')
 if [ -z "$DATA" ]
 then
-	echo `date`: arp_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-DEVICE=`echo "$DATA" | cut -s -d: -f5`
-MACADDR=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+#REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+DEVICE=$(echo "$DATA" | cut -s -d: -f5)
+MACADDR=$(echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g')
 
 [ -z "$ACTION" ] && ACTION=view
 
@@ -72,25 +72,25 @@ then
 	#Check data
 	if [ -z "$DEVICE" ]
 	then
-		echo `date`: "arp_control - blank device by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): arp_control - blank device by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		ACTION=view
 	fi
 	if [ -z "$MACADDR" ]
 	then
-		echo `date`: "arp_control - blank mac address by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): arp_control - blank mac address by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		ACTION=view
 	fi
 fi
 
 if [ "$ACTION" = static ]
 then
-	echo `date`: "arp_control - converting $DEVICE with $MACADDR to a static arp by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - converting $DEVICE with $MACADDR to a static arp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	for SERVER in $(ls -1 /opt/karoshi/server_network/servers)
 	do
-		if [ $SERVER = `hostname-fqdn` ]
+		if [[ "$SERVER" = $(hostname-fqdn) ]]
 		then
 			#Add static arp only if it is not this server
-			if [ $(net lookup $SERVER) != $DEVICE ]
+			if [[ $(net lookup "$SERVER") != "$DEVICE" ]]
 			then
 				if [ ! -f /etc/network/if-up.d/static-arp ]
 				then
@@ -103,16 +103,16 @@ then
 			echo "arp -s $DEVICE $MACADDR" >> /etc/network/if-up.d/static-arp
 			fi
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-			if [ $(net lookup '$SERVER') != '$DEVICE' ]
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+			if [ $(net lookup '"$SERVER"') != '"$DEVICE"' ]
 			then
 				if [ ! -f /etc/network/if-up.d/static-arp ]
 				then
 					echo "#!/bin/sh" > /etc/network/if-up.d/static-arp
 					chmod 0755 /etc/network/if-up.d/static-arp
 				fi
-				arp -s "'$DEVICE'" "'$MACADDR'"
-				echo "arp -s '$DEVICE' '$MACADDR'" >> /etc/network/if-up.d/static-arp
+				arp -s "'"$DEVICE"'" "'"$MACADDR"'"
+				echo "arp -s '"$DEVICE"' '"$MACADDR"'" >> /etc/network/if-up.d/static-arp
 			fi
 			'
 		fi
@@ -125,29 +125,29 @@ fi
 
 if [ "$ACTION" = dynamic ]
 then
-	echo `date`: "arp_control - removing $DEVICE with $MACADDR from the static arp list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): arp_control - removing $DEVICE with $MACADDR from the static arp list by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	for SERVER in $(ls -1 /opt/karoshi/server_network/servers)
 	do
-		if [ $SERVER != `hostname-fqdn` ]
+		if [[ "$SERVER" != $(hostname-fqdn) ]]
 		then
 
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-			if [ $(net lookup '$SERVER') != '$DEVICE' ]
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+			if [ $(net lookup '"$SERVER"') != '"$DEVICE"' ]
 			then
-				arp -d "'$DEVICE'"
-				if [ $(grep -c "'$DEVICE' '$MACADDR'" /etc/network/if-up.d/static-arp) -gt 0 ]
+				arp -d "'"$DEVICE"'"
+				if [ $(grep -c "'"$DEVICE"' '"$MACADDR"'" /etc/network/if-up.d/static-arp) -gt 0 ]
 				then
-					sed -i "/'$DEVICE' '$MACADDR'/d" /etc/network/if-up.d/static-arp
+					sed -i "/'"$DEVICE"' '"$MACADDR"'/d" /etc/network/if-up.d/static-arp
 				fi
 			fi
 			'
 		else
 			#Remove static arp
-			if [ $(net lookup $SERVER) != $DEVICE ]
+			if [[ $(net lookup "$SERVER") != "$DEVICE" ]]
 			then
 				arp -d "$DEVICE"
-				if [ $(grep -c "$DEVICE $MACADDR" /etc/network/if-up.d/static-arp) -gt 0 ]
+				if [[ $(grep -c "$DEVICE $MACADDR" /etc/network/if-up.d/static-arp) -gt 0 ]]
 				then
 					#Stop static arp from appearing after a reboot
 					sed -i "/$DEVICE $MACADDR/d" /etc/network/if-up.d/static-arp
@@ -156,7 +156,7 @@ then
 		fi
 	done
 	#Remove data from static_arps for linux clients
-	if [ $(grep -c "$MACADDR $DEVICE" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
+	if [[ $(grep -c "$MACADDR $DEVICE" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]]
 	then
 		sed -i "/$MACADDR $DEVICE/d" /var/lib/samba/netlogon/domain_information/static_arps
 	fi
@@ -175,18 +175,18 @@ then
 	TYPEMSG="Static"
 
 	DNSNAME=$(hostname-fqdn)
-	MAINSERVERIP=$(net lookup $DNSNAME)
+	MAINSERVERIP=$(net lookup "$DNSNAME")
 	MAINSERVERMAC=$(ip link show  | awk '/ether/ {print $2}' | sed -n 1,1p)
 	
 	#We wont be able to see the main server in this list so check if it is in the static_arps file.
 	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
 	then
-		if [ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]
+		if [[ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) -gt 0 ]]
 		then
-			echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
-			<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
-			<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
-			<span>'$DEVICE'<br>'$MSG1'</span>
+			echo '<tr><td>'"$MAINSERVERIP"'</td><td>'"$MAINSERVERMAC"'</td><td>'"$DNSNAME"'</td><td>'"$TYPEMSG"'</td>
+			<td><button class="info" name="____Control____" value="____DEVICE____'"$MAINSERVERIP"'____MACADDR____'"$MAINSERVERMAC"'____ACTION____'"$ACTION"'____">
+			<img src="'"$ICON1"'" alt="'"$DEVICE"'<br>'"$MSG1"'">
+			<span>'"$DEVICE"'<br>'"$MSG1"'</span>
 			</button>'	
 			echo '</td></tr>'
 		fi
@@ -194,15 +194,15 @@ then
 	#Get arp information and show startic arps
 	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d | grep CM)
 	do
-		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
-		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
-		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+		DEVICE=$(echo "$ARP_INFO" | cut -d, -f1)
+		MACADDR=$(echo "$ARP_INFO" | cut -d, -f3)
+		#TYPE=$(echo "$ARP_INFO" | cut -d, -f4)
 		DNSNAME=$(dig -x "$DEVICE" +short)
 
-		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
-		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
-		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
-		<span>'$DEVICE'<br>'$MSG1'</span>
+		echo '<tr><td>'"$DEVICE"'</td><td>'"$MACADDR"'</td><td>'"$DNSNAME"'</td><td>'"$TYPEMSG"'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'"$DEVICE"'____MACADDR____'"$MACADDR"'____ACTION____'"$ACTION"'____">
+		<img src="'"$ICON1"'" alt="'"$DEVICE"'<br>'"$MSG1"'">
+		<span>'"$DEVICE"'<br>'"$MSG1"'</span>
 		</button>'	
 		echo '</td></tr>'
 	done
@@ -216,19 +216,19 @@ then
 	SHOWMAINSERVER=no
 	if [ -f /var/lib/samba/netlogon/domain_information/static_arps ]
 	then
-		if [ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) = 0 ]
+		if [[ $(grep -c -w "$MAINSERVERIP" /var/lib/samba/netlogon/domain_information/static_arps) = 0 ]]
 		then
 			SHOWMAINSERVER=yes
 		fi
 	else
 		SHOWMAINSERVER=yes
 	fi
-	if [ $SHOWMAINSERVER = yes ]
+	if [ "$SHOWMAINSERVER" = yes ]
 	then
-		echo '<tr><td>'$MAINSERVERIP'</td><td>'$MAINSERVERMAC'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
-		<td><button class="info" name="____Control____" value="____DEVICE____'$MAINSERVERIP'____MACADDR____'$MAINSERVERMAC'____ACTION____'$ACTION'____">
-		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
-		<span>'$DEVICE'<br>'$MSG1'</span>
+		echo '<tr><td>'"$MAINSERVERIP"'</td><td>'"$MAINSERVERMAC"'</td><td>'"$DNSNAME"'</td><td>'"$TYPEMSG"'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'"$MAINSERVERIP"'____MACADDR____'"$MAINSERVERMAC"'____ACTION____'"$ACTION"'____">
+		<img src="'"$ICON1"'" alt="'"$DEVICE"'<br>'"$MSG1"'">
+		<span>'"$DEVICE"'<br>'"$MSG1"'</span>
 		</button>'	
 		echo '</td></tr>'
 	fi
@@ -236,15 +236,15 @@ then
 	#Get arp information and show dynamic arps
 	for ARP_INFO in $(arp -n | sed 's/ * /,/g' | sed 1d | grep -v CM | grep -v incomplete)
 	do
-		DEVICE=$(echo $ARP_INFO	| cut -d, -f1)
-		MACADDR=$(echo $ARP_INFO | cut -d, -f3)
-		TYPE=$(echo $ARP_INFO | cut -d, -f4)
+		DEVICE=$(echo "$ARP_INFO" | cut -d, -f1)
+		MACADDR=$(echo "$ARP_INFO" | cut -d, -f3)
+		#TYPE=$(echo "$ARP_INFO" | cut -d, -f4)
 		DNSNAME=$(dig -x "$DEVICE" +short)
 
-		echo '<tr><td>'$DEVICE'</td><td>'$MACADDR'</td><td>'$DNSNAME'</td><td>'$TYPEMSG'</td>
-		<td><button class="info" name="____Control____" value="____DEVICE____'$DEVICE'____MACADDR____'$MACADDR'____ACTION____'$ACTION'____">
-		<img src="'$ICON1'" alt="'$DEVICE'<br>'$MSG1'">
-		<span>'$DEVICE'<br>'$MSG1'</span>
+		echo '<tr><td>'"$DEVICE"'</td><td>'"$MACADDR"'</td><td>'"$DNSNAME"'</td><td>'"$TYPEMSG"'</td>
+		<td><button class="info" name="____Control____" value="____DEVICE____'"$DEVICE"'____MACADDR____'"$MACADDR"'____ACTION____'"$ACTION"'____">
+		<img src="'"$ICON1"'" alt="'"$DEVICE"'<br>'"$MSG1"'">
+		<span>'"$DEVICE"'<br>'"$MSG1"'</span>
 		</button>'	
 		echo '</td></tr>'
 	done

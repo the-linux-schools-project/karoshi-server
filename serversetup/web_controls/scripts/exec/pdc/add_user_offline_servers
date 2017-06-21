@@ -19,246 +19,75 @@
 #
 
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 #Check server is online
 function check_server_online {
 CREATE_STATUS=ok
 SERVERSTATUS=online
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER ls 1>/dev/null
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" ls 1>/dev/null
+SSHSTATUS="$?"
+if [ "$SSHSTATUS" != 0 ]
 then
-SERVERSTATUS=offline
-echo `date`: add_user_offline_servers - $NEWUSERNAME ssh failure on $SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-CREATE_STATUS=fail
+	SERVERSTATUS=offline
+	echo "$(date): add_user_offline_servers - $NEWUSERNAME ssh failure on $SERVER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	CREATE_STATUS=fail
 fi
 }
 
 
 function fileserver {
 check_server_online
-if [ $SERVERSTATUS != online ]
+if [ "$SERVERSTATUS" != online ]
 then
-echo $SERVER is offline
-break
+	echo $SERVER is offline
+	break
 fi
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-if [ ! -d '$HOMEPATH'/'$NEWUSERNAME' ]
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+if [ ! -d '"$HOMEPATH"'/'"$NEWUSERNAME"' ]
 then
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'
-chmod 0700 '$HOMEPATH'/'$NEWUSERNAME'
-chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'
+	mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'
+	chmod 0700 '"$HOMEPATH"'/'"$NEWUSERNAME"'
+	chown '"$NEWUSERNAME"':'"$PRIMARYGROUP"' '"$HOMEPATH"'/'"$NEWUSERNAME"'
 fi
 '
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
+[ "$?" != 0 ] && CREATE_STATUS=fail
 }
 
-#Get ldif data for the user
-function get_ldif_file {
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-touch /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
-chmod 0600 /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" uid=$NEWUSERNAME > /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif
-}
-
-#########################
-#Create missing user accounts on federated servers
-########################
-function federatedldapserver {
-echo `date`: add_user_offline_servers \(federated mode\) - adding $NEWUSERNAME to $SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-check_server_online
-if [ $SERVERSTATUS != online ]
-then
-echo $SERVER is offline
-echo `date`: add_user_offline_servers \(federated mode\) - $SERVER is offline >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-break
-fi
-#Get ldif data for the user
-get_ldif_file
-#Create user on the federated server and on any other neccessary servers in the federated system.
-#Get sid data and replace in ldif file
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-MASTERSID=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"`
-GROUPLIST=`groups $NEWUSERNAME | cut -d: -f2 | sed "s/^ //g" | sed "s/ /,/g" | sed "s/Domain,Admins/Domain Admins/g"`
-#Copy ldif file to the federated server.
-scp /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif root@$SERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-SAMBASID=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"
-')
-if [ `echo $?` != 0 ]
-then
-echo `date`: add_user_offline_servers \(federated mode\) - $SERVER is offline >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo $SERVER is offline
-break
-fi
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-######################
-#Import user to federated ldap server
-######################
-CREATE_STATUS=ok
-getent passwd '$NEWUSERNAME' 1> /dev/null
-if [ `echo $?` != 0 ]
-then
-echo `date`: add_user_offline_servers \(federated mode\) - creating '$NEWUSERNAME', Primary group: '$PRIMARYGROUP' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
-/opt/karoshi/"useful scripts"/createmailfolders
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Modify ldif file with correct samba sid
-sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail ; /opt/karoshi/"useful scripts"/createmailfolders ; cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/ ; cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME' ; chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
-#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
-echo '$NEWUSERNAME','$PRIMARYGROUP' >> /var/lib/samba/netlogon/primarygroups.txt
-fi
-#Add user to the correct groups
-smbldap-usermod -G "'$GROUPLIST'" '$NEWUSERNAME'
-#Create user home area on extra fileserver
-source /opt/karoshi/server_network/group_information/'$PRIMARYGROUP'
-if [ -d /opt/karoshi/server_network/servers/$SERVER ] && [ $SERVER != `hostname-fqdn` ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER  '\''
-if [ ! -d '$HOMEPATH'/'$NEWUSERNAME' ]
-then
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'
-chmod 0700 '$HOMEPATH'/'$NEWUSERNAME'
-chown '$NEWUSERNAME':'$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'"
-fi
-'\''
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
-fi
-
-#Import user to any federated slave ldap servers
-if [ -d /opt/karoshi/server_network/slave_ldap_servers ]
-then
-if [ `ls -1 /opt/karoshi/server_network/slave_ldap_servers/ | wc -l` -gt 0 ]
-then
-for SLAVELDAPSERVERS in /opt/karoshi/server_network/slave_ldap_servers/*
-do
-SLAVELDAPSERVER=`basename $SLAVELDAPSERVERS`
-echo `date`: add_user \(federated mode\) - exporting '$NEWUSERNAME' to $SLAVELDAPSERVER from '$REMOTE_ADDR' by '$REMOTE_USER' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-scp /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif root@$SLAVELDAPSERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -x -o PasswordAuthentication=no $SLAVELDAPSERVER '\''
-if [ ! -d '$HOMEPATH'/'$NEWUSERNAME'/ ]
-then
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-echo /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail ; /opt/karoshi/"useful scripts"/createmailfolders ; cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/ ; cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME' ; chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
-fi
-#Delete ldif file
-#rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-'\'' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
-done
-fi
-fi
-
-#Delete ldif file
-rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-[ $CREATE_STATUS = fail ] && exit 110
-echo
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
-}
-
-
-
-#########################
-#Create missing user accounts on slave ldap servers
-########################
-function slaveldapserver {
-echo `date`: add_user_offline_servers - adding $NEWUSERNAME to $SERVER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-check_server_online
-if [ $SERVERSTATUS != online ]
-then
-echo $SERVER is offline
-echo `date`: add_user_offline_servers - $SERVER is offline >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-break
-fi
-#Get ldif data for the user
-get_ldif_file
-#Create user on the federated server and on any other neccessary servers in the federated system.
-#Get sid data and replace in ldif file
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-MASTERSID=`ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"`
-
-#Copy ldif file to the slave ldap server.
-scp /opt/karoshi/.tempdata/$NEWUSERNAME.$$.ldif root@$SERVER:"/opt/karoshi/.tempdata/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-SAMBASID=$(ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-SAMBADOMAIN=`grep "workgroup ="  /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-ldapsearch -x -w $LDAPPASS -D "cn=admin,dc=karoshi,dc=local" sambaDomainName=$SAMBADOMAIN | grep ^sambaSID | cut -d: -f2 | sed "s/ //g"
-')
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-######################
-#Import user to slave ldap server
-######################
-CREATE_STATUS=ok
-getent passwd '$NEWUSERNAME' 1> /dev/null
-if [ `echo $?` != 0 ]
-then
-[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
-/opt/karoshi/"useful scripts"/createmailfolders
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-#Modify ldif file with correct samba sid
-sed -i "s/'$MASTERSID'/'$SAMBASID'/g" /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-#Import user ldif file to correct sub organisation unit
-ldapadd -x -D "cn=admin,dc=karoshi,dc=local" -w $LDAPPASS -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif 1>/dev/null
-mkdir -p '$HOMEPATH'/'$NEWUSERNAME'/Mail ; /opt/karoshi/\"useful scripts\"/createmailfolders ; cp /opt/karoshi/.tempdata/INBOX.* '$HOMEPATH'/'$NEWUSERNAME'/Mail/ ; cp /opt/karoshi/.tempdata/.mailboxlist '$HOMEPATH'/'$NEWUSERNAME' ; chown -R '$NEWUSERNAME:$PRIMARYGROUP' '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod -R 0600 '$HOMEPATH'/'$NEWUSERNAME'/ ; chmod u+X -R '$HOMEPATH'/'$NEWUSERNAME'/
-t
-fi
-#Delete ldif file
-rm -f /opt/karoshi/.tempdata/'$NEWUSERNAME'.'$$'.ldif
-[ $CREATE_STATUS = fail ] && exit 110
-echo
-' 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ `echo $?` != 0 ] && CREATE_STATUS=fail
-}
 
 #######################
 #Check to see if any users need processing due to servers being offline on user creation.
 #######################
 [ ! /opt/karoshi/server_network/offline_servers ] && exit
-[ `ls -1 /opt/karoshi/server_network/offline_servers | wc -l` = 0 ] && exit 
+[ $(ls -1 /opt/karoshi/server_network/offline_servers | wc -l) = 0 ] && exit 
 for NEWUSERNAMEFILE in /opt/karoshi/server_network/offline_servers/*
 do
-CREATE_STATUS=ok
-NEWUSERNAME=`basename $NEWUSERNAMEFILE`
-echo Processing $NEWUSERNAME
-PRIMARYGROUP=`id -g -n $NEWUSERNAME`
-echo Primary group $PRIMARYGROUP
-SECONDARYGROUP=""
-source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
-GROUPLIST=$SECONDARYGROUP
-echo Homepath $HOMEPATH
-FILE_LENGTH=`cat $NEWUSERNAMEFILE | wc -l`
-COUNTER=1
-while [ $COUNTER -le $FILE_LENGTH ]
-do
-SERVER_DATA=`sed -n $COUNTER,$COUNTER'p' $NEWUSERNAMEFILE`
-SERVER=`echo $SERVER_DATA | cut -d, -f1`
-SERVERTYPE=`echo $SERVER_DATA | cut -d, -f2`
+	CREATE_STATUS=ok
+	NEWUSERNAME=$(basename "$NEWUSERNAMEFILE")
+	echo Processing "$NEWUSERNAME"
+	PRIMARYGROUP=$(id -g -n "$NEWUSERNAME")
+	echo Primary group "$PRIMARYGROUP"
+	SECONDARYGROUP=""
+	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
+	GROUPLIST="$SECONDARYGROUP"
+	echo Homepath "$HOMEPATH"
+	FILE_LENGTH=$(cat "$NEWUSERNAMEFILE" | wc -l)
+	COUNTER=1
+	while [ "$COUNTER" -le "$FILE_LENGTH" ]
+	do
+		SERVER_DATA=$(sed -n "$COUNTER","$COUNTER"'p' "$NEWUSERNAMEFILE")
+		SERVER=$(echo "$SERVER_DATA" | cut -d, -f1)
+		SERVERTYPE=$(echo "$SERVER_DATA" | cut -d, -f2)
 
-[ $SERVERTYPE = federatedldapserver ] && federatedldapserver
-[ $SERVERTYPE = slaveldapserver ] && slaveldapserver
-[ $SERVERTYPE = fileserver ] && fileserver
-[ $CREATE_STATUS = ok ] && sed -i $COUNTER'c'\\" "  /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+		[ "$SERVERTYPE" = fileserver ] && fileserver
+		[ "$CREATE_STATUS" = ok ] && sed -i "$COUNTER"'c'\\" "  /opt/karoshi/server_network/offline_servers/"$NEWUSERNAME"
 
-let COUNTER=$COUNTER+1
-done
-sed -i 's/ //g' /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
-sed -i '/^$/d' /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+		let COUNTER="$COUNTER"+1
+	done
+	sed -i 's/ //g' /opt/karoshi/server_network/offline_servers/"$NEWUSERNAME"
+	sed -i '/^$/d' /opt/karoshi/server_network/offline_servers/"$NEWUSERNAME"
 
-[ `cat /opt/karoshi/server_network/offline_servers/$NEWUSERNAME | wc -l` = 0 ] && rm -f /opt/karoshi/server_network/offline_servers/$NEWUSERNAME
+	[ $(wc -l < /opt/karoshi/server_network/offline_servers/"$NEWUSERNAME") = 0 ] && rm -f /opt/karoshi/server_network/offline_servers/"$NEWUSERNAME"
 done
 exit
 
