@@ -193,6 +193,8 @@ then
 		echo "<ul><li>$SERVERNAME - "$"Creating Certificate""</li></ul>"
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
+		cd /opt/letsencrypt
+
 		#Check if we already have a certificate
 		if [ -f /etc/letsencrypt/renewal/"$PRIDOMAIN".conf ]
 		then
@@ -326,6 +328,8 @@ then
 		echo "<ul><li>'"$SERVERNAME"' - '$"Creating Certificate"'</li></ul>"
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
+		cd /opt/letsencrypt
+
 		#Check if we already have a certificate
 		if [ -f /etc/letsencrypt/renewal/"$PRIDOMAIN".conf ]
 		then
@@ -347,7 +351,7 @@ then
 		#Configure the web server for the letsencrypt certificate
 
 		#Bckup the configuration file
-		echo "<ul><li>'"$SERVERNAME"' - '$"Backing up"' "$CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'"$LOG_DATE"'</li></ul>" 
+		echo "<ul><li>'"$SERVERNAME"' - '$"Backing up"' $CONFIG_ENABLED_PATH/$CONFIG_FILE to $CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'"$LOG_DATE"'</li></ul>" 
 		cp -f "$CONFIG_ENABLED_PATH/$CONFIG_FILE" "$CONFIG_AVAIL_PATH/$CONFIG_FILE-backup-'"$LOG_DATE"'.'"$$"'"
 
 		#Modify default-ssl - assume we are using the karoshi default-ssl
@@ -375,7 +379,7 @@ then
 		let MINUTES=$(($RANDOM%59))
 		let HOURS=$(($RANDOM%24))
 		let DAY=$(($RANDOM%7))
-		echo "$MINUTES" "$HOURS" "*" "*" "$DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/letsencrypt.cron
+		echo "$MINUTES $HOURS * * $DAY" /opt/letsencrypt/letsencrypt-auto renew > /opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/letsencrypt.cron
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 		#Show completed message
 		echo "<ul><li>'"$SERVERNAME"' - '$"The Let's Encrypt certificate has been installed"'</li></ul>"
