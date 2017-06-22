@@ -54,6 +54,11 @@ then
 	MESSAGE=$"Installing extra fonts in the Collabora docker container"
 	show_progress_info
 
+	#Copy in any fonts in /opt/karoshi/serversetup/modules/nextcloud/fonts
+	[ ! -d /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype ] && mkdir -p /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype
+	cp -f -R /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype /usr/share/fonts/
+
+
 	[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 	#Add multiverse repository

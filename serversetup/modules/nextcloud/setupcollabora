@@ -6,6 +6,8 @@ DNSNAME=$(echo "$1" | tr -cd "a-z.")
 SERVERIP=$(echo "$2" | tr -cd "0-9.")
 OUTPUT=$(echo "$3" | tr -cd "a-z")
 
+#Make the fonts folder
+[ ! -d /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype ] && mkdir -p /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype
 
 #Check that we have the correct data
 if [ -z "$SERVERIP" ] || [ -z "$DNSNAME" ]
