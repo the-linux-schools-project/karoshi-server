@@ -56,8 +56,8 @@ then
 
 	#Copy in any fonts in /opt/karoshi/serversetup/modules/nextcloud/fonts
 	[ ! -d /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype ] && mkdir -p /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype
-	cp -f -R /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype /usr/share/fonts/
 
+	docker cp /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype "$CONTAINER_ID":/usr/share/fonts/
 
 	[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
