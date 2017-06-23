@@ -290,6 +290,7 @@ then
 	rpcbind=$"Port Mapper"
 	samba=$"File and print server"
 	savapage=$"Libre print management"
+	ssh=$"SSH server"
 	sogo=$"SOGo E-Mail"
 	squid=$"Internet proxy server"
 	squiddebproxy=$"Squid deb proxy"
@@ -305,6 +306,12 @@ then
 	if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
 	then
 		DSERVICES="$DSERVICES\nbind"
+	fi
+
+	#Check if ssh is enabled for this server
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/remote_ssh ]
+	then
+		DSERVICES="$DSERVICES\nssh"
 	fi
 
 	#Sort suggested service list
