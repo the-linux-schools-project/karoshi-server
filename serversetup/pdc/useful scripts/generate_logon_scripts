@@ -56,9 +56,9 @@ sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/script
 sed -i 's/CHANGETHISDOMAIN/'$REALM'/g' /var/lib/samba/netlogon/mac_client/scripts/install-script.sh
 
 #Get primary group
-function get_pri_group_number {
-GROUPNUM=$(getent group "$GROUPNAME" | cut -d: -f3)
-}
+#function get_pri_group_number {
+#GROUPNUM=$(getent group "$GROUPNAME" | cut -d: -f3)
+#}
 
 function add_drive_map_windows {
 #Set paths to shares
@@ -121,7 +121,7 @@ mount -t smbfs "//'"$SMBSERVER"'/'"$CLIENTPATH1"'" /tmp/$LoggedInUser/'"$SHARE"'
 ' >> /var/lib/samba/netlogon/mac_client/scripts/mount-shares.sh
 
 else
-	get_pri_group_number
+	#get_pri_group_number
 	echo '
 #'"$SHARE"'
 if [ $PrimaryGroup = '"$GROUPNAME"' ]
@@ -208,19 +208,19 @@ then
 		    "filesystem_check_changes": 1,
 		    "enable_sharing": false
 		},
-		"applicable_users": [],' > /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+		"applicable_users": [],' > "/home/$CLOUDSERVERTYPE/import_json/$SHARE-$GROUPNAME.json"
 
 
 	if [ "$GROUPNAME" = all ]
 	then
-		echo '		"applicable_groups": []' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+		echo '		"applicable_groups": []' >> "/home/$CLOUDSERVERTYPE/import_json/$SHARE-$GROUPNAME.json"
 	else
 		echo '		"applicable_groups": [
 		"'"$GROUPNAME"'"
-		]' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+		]' >> "/home/$CLOUDSERVERTYPE/import_json/$SHARE-$GROUPNAME.json"
 	fi
 	echo '	}
-]' >> /home/"$CLOUDSERVERTYPE"/import_json/"$SHARE"-"$GROUPNAME".json
+]' >> "/home/$CLOUDSERVERTYPE/import_json/$SHARE-$GROUPNAME.json"
 fi
 }
 
@@ -292,7 +292,7 @@ then
 						echo '<volume options="sec=krb5,cruid=%(USERUID),dir_mode=0700" mountpoint="~/network/'"$SHARENAME"'" path="'"$LINUXSHAREPATH"'" server="'"$SERVER"'" sgrp="'"$TRUST_GROUP"'" fstype="cifs" />' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
 						#Windows drive maps
 						touch /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
-						[ -z "$DRIVELETTER" ] && DRIVERLETTER='*'
+						[ -z "$DRIVELETTER" ] && DRIVELETTER='*'
 						if [[ $(grep -F -c "$WINSHAREPATH" /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix) = 0 ]]
 						then
 							echo run '"net use '"$DRIVELETTER"' \\'"$SERVER"'\'"$WINSHAREPATH"' /persistent:no" ;Karoshi_auto_generated' >> /var/lib/samba/netlogon/windows_settings/drives/"$TRUST_GROUP".kix
@@ -315,7 +315,7 @@ if [ "$CLOUDSTORAGE" = yes ]
 then
 	CLOUDSERVER=$(sed -n 1,1p /opt/karoshi/server_network/"$CLOUDSERVERTYPE"server)
 
-	if [ "$CLOUDSERVER" = $(hostname-fqdn) ]
+	if [[ "$CLOUDSERVER" = $(hostname-fqdn) ]]
 	then
 		#Get existing external mount ids
 		MOUNTIDS=$(sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:list | cut -d"|" -f2 | tr -cd "0-9\n")
@@ -327,11 +327,11 @@ then
 		#Import the json files into the cloud server
 		for JSONFILE in $(ls -1 /home/"$CLOUDSERVERTYPE"/import_json)
 		do
-			sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:import /home/"$CLOUDSERVERTYPE"/import_json/"$JSONFILE"
+			sudo -u www-data /usr/bin/php /var/www/html/"$CLOUDSERVERTYPE"/occ files_external:import /home/"$CLOUDSERVERTYPE/import_json/$JSONFILE"
 		done
 	else
 		#Copy the json files to the cloud server
-		rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group -o "/home/$CLOUDSERVERTYPE/import_json" "$CLOUDSERVER":/home/"$CLOUDSERVERTYPE"/ 1>/dev/null
+		rsync --timeout=30 --verbose --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group -o "/home/$CLOUDSERVERTYPE/import_json" "$CLOUDSERVER:/home/$CLOUDSERVERTYPE"/ 1>/dev/null
 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$CLOUDSERVER" '
 		#Get existing external mount ids

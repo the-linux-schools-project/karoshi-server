@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT"` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>'$"Firewall Rules"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Firewall Rules"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -89,69 +89,48 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\._:&%\-+' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:&%\-+' | sed 's/___/TRIPLEUNDERSCORE/g' | sed 's/_/UNDERSCORE/g' | sed 's/TRIPLEUNDERSCORE/_/g')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=22
-#Assign SERVER
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVERNAME
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign RULESET
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = RULESETcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		RULESET=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/+/-/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=RULESET
+get_data
+RULESET=$(echo "$DATAENTRY" | sed 's/+/-/g' | sed 's/UNDERSCORE/_/g')
 
 if [ -z "$ACTION" ]
 then
@@ -162,70 +141,34 @@ if [ -z "$SERVERNAME" ]
 then
 	SERVERNAME=notset
 else
-	SERVERNAME2=$(echo $SERVERNAME | cut -d. -f1)
+	SERVERNAME2=$(echo "$SERVERNAME" | cut -d. -f1)
 fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
 then
-	END_POINT=22
+
 	#Assign FIREWALLACTION
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FIREWALLACTIONcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			FIREWALLACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=FIREWALLACTION
+	get_data
+	FIREWALLACTION="$DATAENTRY"
 
 	#Assign PORTS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = PORTScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			PORTS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%3A/-/g' | sed 's/%2C/,/g' | tr -cd "0-9\-," | sed 's/,,/,/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=PORTS
+	get_data
+	PORTS=$(echo "$DATAENTRY" | sed 's/%3A/-/g' | sed 's/%2C/,/g' | tr -cd "0-9\-," | sed 's/,,/,/g')
 
 	#Assign PROTOCOL
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = PROTOCOLcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			PROTOCOL=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%2C/,/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=PROTOCOL
+	get_data
+	PROTOCOL=$(echo "$DATAENTRY" | sed 's/%3A/-/g' | sed 's/%2C/,/g')
 
 	#Assign TCPIP
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=TCPIP
+	get_data
+	TCPIP="$DATAENTRY"
 fi
 
-if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+if [[ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]]
 then
 	SERVERNAME=$(hostname-fqdn)
 	SERVERTYPE=network
@@ -233,23 +176,19 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
-	TABLECLASS=standard
-	WIDTH=180
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=mobileactionbox
-	TABLECLASS=mobilestandard
-	WIDTH=160
 fi
 
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/firewall.cgi";
 </script></div></body></html>'
 exit
@@ -280,7 +219,7 @@ then
 	fi
 	#Check to see that valid ports have been entered.
 
-	for PORT in $(echo $PORTS | sed 's/,/ /g' | sed 's/-/ /g' )
+	for PORT in $(echo "$PORTS" | sed 's/,/ /g' | sed 's/-/ /g' )
 	do
 		#Check that the port is not blank
 		if [ -z "$PORT" ]
@@ -289,12 +228,12 @@ then
 			show_status
 		fi 
 		#Check that the port is within range
-		if [ $PORT -gt 65535 ]
+		if [ "$PORT" -gt 65535 ]
 		then
 			MESSAGE=$"You have entered in a port that is larger than the maximum port number."
 			show_status
 		fi
-		if [ $PORT -le 0 ]
+		if [ "$PORT" -le 0 ]
 		then
 			MESSAGE=$"You cannot have zero as a port number."
 			show_status
@@ -303,13 +242,13 @@ then
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-	SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"Firewall Rules"' '$SERVERNAME2'</span>'
+		<span>'$"Firewall Rules"' '"$SERVERNAME2"'</span>'
 	if [ "$SERVERNAME" != notset ] && [ "$SERVERCOUNT" != 1 ]
 	then
 		echo '<a href="/cgi-bin/admin/firewall.cgi">'$"Select Server"'</a>'
@@ -317,14 +256,14 @@ then
 		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 	fi
 	echo '</div></div>
-	<div id="'$DIV_ID'">
+	<div id="'"$DIV_ID"'">
 	'
 
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
 	<table class="standard" style="text-align: left;" ><tbody>
 	<tr>
-	<td style="height:30px;"><div class="sectiontitle">'$"Firewall Rules"' '$SERVERNAME2'</div></td>
+	<td style="height:30px;"><div class="sectiontitle">'$"Firewall Rules"' '"$SERVERNAME2"'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Firewall Rules"'</span></a></td>'
 
 	if [ "$SERVERNAME" != notset ]
@@ -343,7 +282,7 @@ else
 		echo '
 	<td>
 	<form action="/cgi-bin/admin/firewall.cgi" method="post">
-	<button class="button" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">'$"Add Rule"'</button>
+	<button class="button" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">'$"Add Rule"'</button>
 	</form>
 	</td>
 	'
@@ -353,7 +292,7 @@ else
 		echo '
 	<td>
 	<form action="/cgi-bin/admin/firewall.cgi" method="post">
-	<button class="button" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'___">'$"View Rules"'</button>
+	<button class="button" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">'$"View Rules"'</button>
 	</form>
 	</td>
 	'
@@ -368,13 +307,13 @@ echo '<form action="/cgi-bin/admin/firewall.cgi" method="post">'
 if [ "$SERVERNAME" = notset ]
 then
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Rules" view "" "___"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"View Rules" view "" "___"
 else
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/firewall.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/firewall.cgi | cut -d' ' -f1)
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RULESET:$FIREWALLACTION:$PROTOCOL:$PORTS:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/firewall
 fi
 
 echo '</form>'
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

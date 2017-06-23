@@ -2012,6 +2012,7 @@ then
 			MAP_DRIVE=1
 			if [ "$SHARENAME" = subjects ]
 			then
+				DRIVELETTER='"q"'
 				NETGROUPS="all,staff,officestaff,itadmin"
 				SHAREPATH="/home/subjects"
 				MASK=0755
@@ -2020,6 +2021,7 @@ then
 			fi
 			if [ "$SHARENAME" = sysvol ]
 			then
+				DRIVELETTER='"u"'
 				NETGROUPS="all,itadmin"
 				SHAREPATH="/var/lib/samba/sysvol"
 				MASK=0755
@@ -2027,7 +2029,8 @@ then
 				MAP_DRIVE="0,1"
 			fi
 			if [ "$SHARENAME" = netlogon ]
-			then	
+			then
+				DRIVELETTER='"n"'
 				SHAREPATH="/var/lib/samba/netlogon"
 				MASK="0755"
 				MAP_DRIVE="0,1"
@@ -2036,7 +2039,8 @@ then
 			
 			fi
 			if [ "$SHARENAME" = staffshare ]
-			then	
+			then
+				DRIVELETTER='"s"'
 				NETGROUPS="staff,itadmin,officestaff"
 				SHAREPATH="/home/staffshare"
 				MASK="0770"
@@ -2045,6 +2049,7 @@ then
 			fi
 			if [ "$SHARENAME" = itadminshare ]
 			then
+				DRIVELETTER='"i"'
 				NETGROUPS="itadmin"
 				SHAREPATH="/home/itadminshare"
 				MASK="0770"
@@ -2053,12 +2058,14 @@ then
 			fi
 			if [ "$SHARENAME" = applications ]
 			then
+				DRIVELETTER='"j"'
 				NETGROUPS="itadmin"
 				SHAREPATH="/home/applications"
 				GROUPPERMS="7"
 			fi
 			if [ "$SHARENAME" = officeshare ]
 			then
+				DRIVELETTER='"o"'
 				NETGROUPS="officestaff"
 				SHAREPATH="/home/officeshare"
 				GROUPPERMS="7"
@@ -2067,6 +2074,7 @@ then
 			fi
 			if [ "$SHARENAME" = multimedia ]
 			then
+				DRIVELETTER='"m"'
 				NETGROUPS="parents,teenagers,children"
 				SHAREPATH="/home/multimedia"
 				GROUPPERMS="7,7,5"
@@ -2080,6 +2088,7 @@ then
 			echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+			echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
 			echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
