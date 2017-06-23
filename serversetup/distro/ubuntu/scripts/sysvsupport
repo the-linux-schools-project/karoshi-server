@@ -133,15 +133,28 @@ fi
 
 #Get rid of any upstart and systemd configurations
 
+#Only remove systemd scripts if we are running systemd - or we might disable a sysv service
+DISABLESYSTEMD=no
+#Check to see if we are in a chroot
+if [ $(stat -c %i /) = 2 ]
+then
+	if [ $(ps -e | grep -wc upstart) = 0 ]
+	then
+		DISABLESYSTEMD=yes
+	fi
+else
+	#We are in a chroot so we are building a new Karoshi iso
+	DISABLESYSTEMD=yes
+fi
+
 for service in cups bind9 clamav-daemon mysql postgresql smbd nmbd squid ssh tftpd-hpa xinetd dovecot vsftpd nfs-server rpcbind portmap memcached isc-dhcp-server glusterfs monitorix freeradius samba shorewall dnsmasq windbind openvpn nfs-kernel-server statd nginx minidlna docker redis-server
 do
 	#Upstart
 	#Make sure no scripts have been added to /etc/init for upstart.
 	[[ $(ls /etc/init/"$service"* 2>/dev/null | wc -l) -gt 0 ]] && rm -f /etc/init/"$service"*
 
-
-	#Only run this if we are running systemd - or we might disable a sysv service
-	if [ $(ps -e | grep -wc upstart) = 0 ]
+	#Systemd
+	if [ "$DISABLESYSTEMD" = yes ]
 	then
 		if [[ $(ls /lib/systemd/system/"$service"* 2>/dev/null | wc -l) -gt 0 ]]
 		then
