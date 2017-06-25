@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,8 +45,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Home Folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Home Folders"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -68,7 +68,7 @@ echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="acti
 <td style="height:30px;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
 
 #Check for gluster support
-[ `grep -c dfs /etc/samba/smb.conf` -gt 0 ] && echo '<td>
+[[ $(grep -c dfs /etc/samba/smb.conf) -gt 0 ]] && echo '<td>
 <button class="button" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
 '$"Gluster Volume Control"'
 </button>
@@ -87,33 +87,33 @@ START_LINE=yes
 ICON1=/images/submenus/system/computer.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
-	PRI_GROUP=`basename $PRI_GROUP`
+	PRI_GROUP=$(basename "$PRI_GROUP")
 	unset GLUSTERVOL
-	source /opt/karoshi/server_network/group_information/$PRI_GROUP
+	source /opt/karoshi/server_network/group_information/"$PRI_GROUP"
 
 	#Check for gluster volume
 	[ -z "$GLUSTERVOL" ] && GLUSTERVOL=notset
-	if [ -d /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOL ]
+	if [ -d /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL" ]
 	then
 		ICON1=/images/submenus/system/gluster.png
 	else
 		ICON1=/images/submenus/system/computer.png
 	fi
 
-	if [ $START_LINE = yes ]
+	if [ "$START_LINE" = yes ]
 	then
-		echo '<tr><td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;">
-		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
-		<img src="'$ICON1'" alt="'$"Rename"'">
-		<span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span>
+		echo '<tr><td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//s,/<br>}"'</td><td style="vertical-align: top;">
+		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
+		<img src="'"$ICON1"'" alt="'$"Rename"'">
+		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br>'"${SERVER//s,/<br>}"'</span>
 		</button>
 		</td>'
 		START_LINE=no
 	else
-		echo '<td style="vertical-align: top;">'$PRI_GROUP'</td><td style="vertical-align: top;">'`echo $SERVER | sed 's/,/<br>/g'`'</td><td style="vertical-align: top;">
-		<button class="info infoleft" name="_ChangeServer_" value="_PRIGROUP_'$PRI_GROUP'_SERVER_'$SERVER'_">
-		<img src="'$ICON1'" alt="'$"Rename"'">
-		<span>'$"Change Server"'<br><br>'$PRI_GROUP'<br><br><br>'`echo $SERVER | sed 's/,/<br>/g'`'</span>
+		echo '<td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//s,/<br>}"'</td><td style="vertical-align: top;">
+		<button class="info infoleft" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
+		<img src="'"$ICON1"'" alt="'$"Rename"'">
+		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br><br>'"${SERVER//s,/<br>}"'</span>
 		</button>
 		</td></tr>'
 	START_LINE=yes
