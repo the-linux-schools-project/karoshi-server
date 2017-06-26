@@ -30,15 +30,15 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_add_cgi
 then
-	echo `date`: karoshi_servers_add - No MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_add_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ "$MD5SUM"'check' != "$karoshi_servers_add_cgi"'check' ]
 then
-	echo `date`: karoshi_servers_add - Incorrect MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
@@ -62,7 +62,7 @@ fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
-SERVER=$(echo "$DATA" | cut -s -d: -f4 | tr 'A-Z' 'a-z')
+SERVER=$(echo "$DATA" | cut -s -d: -f4 | tr "[:upper:]" "[:lower:]")
 PASSWORD=$(echo "$DATA" | cut -s -d: -f5)
 TCPIPNUMBER=$(echo "$DATA" | cut -s -d: -f6)
 AUTHENTICATION=$(echo "$DATA" | cut -s -d: -f7)
@@ -71,7 +71,7 @@ ZONE=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
 	echo "$(date): karoshi_servers_add - Not called by karoshi_servers_add.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -123,9 +123,9 @@ then
 fi
 
 #Get ip zone information
-PDCIP=$(net lookup `hostname-fqdn`)
-PDCZONEIP=`ip addr | grep $PDCIP | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
-PDCZONEINFO=`ipcalc -n $PDCZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+PDCIP="$(net lookup $(hostname-fqdn))"
+PDCZONEIP=$(ip addr | grep "$PDCIP" | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p")
+PDCZONEINFO=$(ipcalc -n "$PDCZONEIP" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 
 #Create ssh folder
 [ ! -d /root/.ssh ] && mkdir /root/.ssh
@@ -135,17 +135,17 @@ chmod 0700 /root/.ssh
 #Check to see if keys do not exist
 ########################
 
-if ! test -f $HOME/.ssh/id_ecdsa || ! test -f $HOME/.ssh/id_ecdsa.pub
+if ! test -f "$HOME"/.ssh/id_ecdsa || ! test -f "$HOME"/.ssh/id_ecdsa.pub
 then
-	echo `date`: karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - creating ssh keys by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	echo '<ul><li>'$"Creating server ssh key"' - '$"This will take some time"'</li></ul>'
 	#Check that timeout has been set
-	TIMEOUTSTATUS=`grep -c '#''   'ConnectTimeout' '0 /etc/ssh/ssh_config`
-	[ $TIMEOUTSTATUS != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
+	TIMEOUTSTATUS=$(grep -c '#   ConnectTimeout 0' /etc/ssh/ssh_config)
+	[ "$TIMEOUTSTATUS" != 0 ] && sed -i 's/#   ConnectTimeout 0/ConnectTimeout 4/g' /etc/ssh/ssh_config
 
-	rm -f -R $HOME/.ssh/id_ecdsa
+	rm -f -R "$HOME"/.ssh/id_ecdsa
 	#rm -f -R $HOME/.ssh/id_dsa
-	ssh-keygen -t ecdsa -b 521 -N '' -f $HOME/.ssh/id_ecdsa > /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ssh-keygen -t ecdsa -b 521 -N '' -f "$HOME"/.ssh/id_ecdsa > /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#ssh-keygen -t dsa -N '' -f $HOME/.ssh/id_dsa > /dev/null
 fi
 
@@ -154,8 +154,8 @@ fi
 ############################
 
 #Check that StrictHostkeychecking is set to no
-HOSTKEYSTATUS=`grep -c '#''   'StrictHostKeyChecking' 'ask /etc/ssh/ssh_config`
-[ $HOSTKEYSTATUS != 0 ] && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
+HOSTKEYSTATUS=$(grep -c '#   StrictHostKeyChecking ask' /etc/ssh/ssh_config)
+[ "$HOSTKEYSTATUS" != 0 ] && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
 
 #Delete known hosts to avoid man in the middle warnings on re-installed servers.
 [ -f /root/.ssh/known_hosts ] && rm -f /root/.ssh/known_hosts
@@ -167,7 +167,7 @@ cat /root/.ssh/id_ecdsa.pub > /root/.ssh_servers/authorized_keys2
 #cat /root/.ssh/id_dsa.pub >> /root/.ssh_servers/authorized_keys2
 
 chmod 0600 /root/.ssh_servers/authorized_keys2
-echo `date`: karoshi_servers_add - Enabling ssh connection 'for' $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): karoshi_servers_add - Enabling ssh connection for $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 if [ ! -d /opt/karoshi/server_network ]
 then
@@ -183,54 +183,54 @@ then
 	chown root.apache_karoshi /opt/karoshi/server_network/servers
 fi
 
-if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
+if [ -d /opt/karoshi/server_network/servers/"$SERVER.$REALM" ]
 then
-	echo `date`: karoshi_servers_add - removing known_hosts on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	ssh -x -o PasswordAuthentication=no $SERVER '
-	rm -f -R $HOME/.ssh/known_hosts
+	echo "$(date): karoshi_servers_add - removing known_hosts on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ssh -x -o PasswordAuthentication=no "$SERVER" '
+	rm -f -R "$HOME"/.ssh/known_hosts
 	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Convert any special chars back for the root password.
 
-PASSWORD=`echo $PASSWORD | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
+PASSWORD=$(echo "$PASSWORD" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g')
 
 which sshpass 1>/dev/null
-if [ $? = 0 ]
+if [ "$?" = 0 ]
 then
-	sshpass -p "$PASSWORD" scp /root/.ssh_servers/authorized_keys2 root@$TCPIPNUMBER:/root/.ssh/authorized_keys2 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	sshpass -p "$PASSWORD" scp /root/.ssh_servers/authorized_keys2 root@"$TCPIPNUMBER":/root/.ssh/authorized_keys2 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 else
-	/opt/karoshi/web_controls/exec/activate_ssh $TCPIPNUMBER "$PASSWORD" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	/opt/karoshi/web_controls/exec/activate_ssh "$TCPIPNUMBER" "$PASSWORD" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Check to see that ssh works and set root to only log in with keys
-echo `date`: karoshi_servers_add - checking "ssh" connection to $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+echo "$(date): karoshi_servers_add - checking ssh connection to $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 #Check to see that given servername matches actual servername
-[ '$SERVER' != $HOSTNAME ] && exit 102
+[ '"$SERVER"' != $HOSTNAME ] && exit 102
 #Check that ip addresses match zones
 
-SERVERZONEIP=`ip addr | grep '$TCPIPNUMBER' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p"`
-SERVERZONEINFO=`ipcalc -n $SERVERZONEIP | grep ^Network | sed "s/ * / /g" | cut -d" " -f2`
+SERVERZONEIP=$(ip addr | grep '"$TCPIPNUMBER"' | sed -n "s/[[:space:]]*inet \([^ ]*\).*/\1/p")
+SERVERZONEINFO=$(ipcalc -n "$SERVERZONEIP" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 
-if [ '$ZONE' = internal ]
+if [ '"$ZONE"' = internal ]
 then
-	[ $SERVERZONEINFO != '$PDCZONEINFO' ] && exit 103
+	[ "$SERVERZONEINFO" != '"$PDCZONEINFO"' ] && exit 103
 fi
-if [ '$ZONE' = dmz ] || [ '$ZONE' = external ]
+if [ '"$ZONE"' = dmz ] || [ '"$ZONE"' = external ]
 then
-	[ $SERVERZONEINFO = '$PDCZONEINFO' ] && exit 104
+	[ "$SERVERZONEINFO" = '"$PDCZONEINFO"' ] && exit 104
 fi
 
 sed -i "s/PermitRootLogin Yes/PermitRootLogin without-password/g" /etc/ssh/sshd_config
 [ ! -d /etc/ssl/root-ca ] && mkdir -m 0700 /etc/ssl/root-ca
-mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'$$'
+mv /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.'"$$"'
 cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/openssl.cnf /etc/ssl/
 
 #Add in fqdn
 if [ ! -f /etc/hostname-fqdn ]
 then
-	echo $HOSTNAME.'$REALM' > /etc/hostname-fqdn
+	echo "$HOSTNAME.'"$REALM"'" > /etc/hostname-fqdn
 fi
 
 #Make sure logrotation is correct
@@ -244,73 +244,73 @@ fi
 echo "cat /etc/hostname-fqdn" > /bin/hostname-fqdn
 chmod 0755 /bin/hostname-fqdn
 ' 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-SSHRESULT=$?
+SSHRESULT="$?"
 
 function remove_dns_entry {
 #Remove entry from dns
-echo `date`: karoshi_servers_add - removing dns entry "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-samba-tool dns delete 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): karoshi_servers_add - removing dns entry for $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns delete 127.0.0.1 "$REALM" "$SERVER" A "$TCPIPNUMBER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit 101
 }
 
-if [ $SSHRESULT = 102 ]
+if [ "$SSHRESULT" = 102 ]
 then
 	#Server name does not match
 	echo "<ul><li>$SERVER - this name does not match the hostname of the server you are connecting to.</li></ul>"
-	echo `date`: karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - $SERVER name mismatch with remote server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 3
 	exit 101
 fi
 
-if [ $SSHRESULT = 103 ]
+if [ "$SSHRESULT" = 103 ]
 then
 	#TCPIP zone information is not correct
-	echo '<ul><li>'$SERVER' - '$"network settings for this server show that it should not be in the same zone as the main server."'</li>'
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"Network settings for this server show that it should not be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo '<ul><li>'"$SERVER"' - '$"network settings for this server show that it should not be in the same zone as the main server."'</li>'
+	echo "$(date): karoshi_servers_add - $SERVER: $ZONE "$"Network settings for this server show that it should not be in the same zone as the main server."" by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 3
 	exit 101
 fi
 
-if [ $SSHRESULT = 104 ]
+if [ "$SSHRESULT" = 104 ]
 then
 	#TCPIP zone information is not correct
-	echo '<ul><li>$SERVER - '$"network settings for this server show that it should be in the same zone as the main server."'</li>'
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"network settings for this server show that it should be in the same zone as the main server." by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo '<ul><li>'"$SERVER"' - '$"network settings for this server show that it should be in the same zone as the main server."'</li>'
+	echo "$(date): karoshi_servers_add - $SERVER: $ZONE "$"network settings for this server show that it should be in the same zone as the main server."" by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 3
 	exit 101
 fi
 
-if [ $SSHRESULT != 0 ]
+if [ "$SSHRESULT" != 0 ]
 then
-	echo '<ul><li>'$SERVER' - '$"SSH connection failure"'</li>'
-	echo `date`: karoshi_servers_add - $SERVER: $ZONE $"SSH connection failure" by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo '<ul><li>'"$SERVER"' - '$"SSH connection failure"'</li>'
+	echo "$(date): karoshi_servers_add - $SERVER: $ZONE "$"SSH connection failure"" by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	sleep 3
 	exit 101
 fi
 
 #Check to see if the server is in a different domain.
-echo `date`: "karoshi_servers_add - checking that $SERVER is in the same domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-REALM2=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+echo "$(date): karoshi_servers_add - checking that $SERVER is in the same domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+REALM2=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 if [ -f /etc/hostname-fqdn ]
 then
-cat /etc/hostname-fqdn
+	cat /etc/hostname-fqdn
 else
-echo "notset"
+	echo "notset"
 fi
-'`
+')
 
-REALM2=`echo $REALM2 | sed 's/^'$SERVER'.//g'`
+REALM2=$(echo "$REALM2" | sed 's/^'"$SERVER"'.//g')
 
-if [ $REALM2 != notset ]
+if [ "$REALM2" != notset ]
 then
 	if [ "$REALM2" != "$REALM" ]
 	then
-		REALM=$REALM2
+		REALM="$REALM2"
 		#Make sure that authtype is set to none if this is the case since cannot different realms cannot join together at this point.
-		if [ $AUTHENTICATION != none ]
+		if [ "$AUTHENTICATION" != none ]
 		then
 			echo "<ul><li>$SERVER - this server is in the wrong domain for this authentication type.</li></ul>"
-			echo `date`: "karoshi_servers_add - $SERVER this server is in the wrong domain for this authentication type by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			echo "$(date): karoshi_servers_add - $SERVER this server is in the wrong domain for this authentication type by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			sleep 3
 			exit 101
 		fi
@@ -318,50 +318,50 @@ then
 fi
 
 function create_unique_id {
-SERVERID=`date +%s`.$$
-echo $SERVERID > /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM
-ssh -x -o PasswordAuthentication=no $TCPIPNUMBER '
+SERVERID="$(date +%s).$$"
+echo "$SERVERID" > /opt/karoshi/server_network/server_identifiers/"$SERVER.$REALM"
+ssh -x -o PasswordAuthentication=no "$TCPIPNUMBER" '
 [ ! -d /opt/karoshi/server_network/server_identifiers ] && mkdir -p /opt/karoshi/server_network/server_identifiers
-echo '$SERVERID' > /opt/karoshi/server_network/server_identifiers/'$SERVER.$REALM'
+echo '"$SERVERID"' > /opt/karoshi/server_network/server_identifiers/'"$SERVER.$REALM"'
 '
 }
 
 
 #Check unique identifier
 [ ! -d /opt/karoshi/server_network/server_identifiers ] && mkdir -p /opt/karoshi/server_network/server_identifiers
-if [ ! -f /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM ]
+if [ ! -f /opt/karoshi/server_network/server_identifiers/"$SERVER.$REALM" ]
 then
 	#Create identifier since it doesnt exist
 	create_unique_id
 	else
 	#See if unique identifiers are the same
-	SERVERID1=`sed -n 1,1p /opt/karoshi/server_network/server_identifiers/$SERVER.$REALM`
-	SERVERID2=`ssh -x -o PasswordAuthentication=no $TCPIPNUMBER '
-	if [ -f /opt/karoshi/server_network/server_identifiers/'$SERVER'.'$REALM' ]
+	SERVERID1=$(sed -n 1,1p /opt/karoshi/server_network/server_identifiers/"$SERVER.$REALM")
+	SERVERID2=$(ssh -x -o PasswordAuthentication=no "$TCPIPNUMBER" '
+	if [ -f /opt/karoshi/server_network/server_identifiers/'"$SERVER"'.'"$REALM"' ]
 	then
-	sed -n 1,1p /opt/karoshi/server_network/server_identifiers/'$SERVER'.'$REALM'
+	sed -n 1,1p /opt/karoshi/server_network/server_identifiers/'"$SERVER"'.'"$REALM"'
 	else
 	echo notset
 	fi
-	'`
-	if [ $SERVERID1 != $SERVERID2 ]
+	')
+	if [ "$SERVERID1" != "$SERVERID2" ]
 	then
 		#Show warning that this server has been re-installed and roles will have to be re-added.
-		echo '<ul><li>'$SERVER' - '$"This server has been re-installed"'</li></ul>'
+		echo '<ul><li>'"$SERVER"' - '$"This server has been re-installed"'</li></ul>'
 		echo '<br>'$"You will need to re-install all of the modules for this server."'<br><br>'
 		sleep 4
 		#Modify role information
-		if [ -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
+		if [ -d /opt/karoshi/server_network/servers/"$SERVER.$REALM" ]
 		then
-			for INFOFILES in /opt/karoshi/server_network/servers/$SERVER.$REALM/*
+			for INFOFILES in /opt/karoshi/server_network/servers/"$SERVER.$REALM"/*
 			do
-				INFOFILE=`basename $INFOFILES`
-				if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 1domainmember ] && [ $INFOFILE != 2users-groups ]
+				INFOFILE=$(basename "$INFOFILES")
+				if [ "$INFOFILE" != apacheserver ] && [ "$INFOFILE" != glusterfs_server ] && [ "$INFOFILE" != 1dc ] && [ "$INFOFILE" != 1domainmember ] && [ "$INFOFILE" != 2users-groups ]
 				then
-					if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE` = 0 ]
+					if [[ $(grep -c RE-INSTALL /opt/karoshi/server_network/servers/"$SERVER.$REALM/$INFOFILE") = 0 ]]
 					then
-						sed -i '1i <span class="reinstall">' /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
-						echo 'RE-INSTALL MODULE<br></span>' >> /opt/karoshi/server_network/servers/$SERVER.$REALM/$INFOFILE
+						sed -i '1i <span class="reinstall">' /opt/karoshi/server_network/servers/"$SERVER.$REALM/$INFOFILE"
+						echo 'RE-INSTALL MODULE<br></span>' >> /opt/karoshi/server_network/servers/"$SERVER.$REALM/$INFOFILE"
 					fi
 				fi
 			done
@@ -373,27 +373,27 @@ fi
 ##############################
 #Add entry to dns if needed
 ##############################
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
-echo `date`: karoshi_servers_add - checking "if" $SERVER is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-samba-tool dns query 127.0.0.1 $REALM $SERVER A --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-if [ $? != 0 ]
+echo "$(date): karoshi_servers_add - checking if $SERVER is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$SERVER" A --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
 	#Create zone if it does not exist
-	echo `date`: karoshi_servers_add - checking "if" zone $REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	samba-tool dns zoneinfo 127.0.0.1 $REALM --username=Administrator --password=$LDAPPASS 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	if [ $? != 0 ]
+	echo "$(date): karoshi_servers_add - checking if zone $REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns zoneinfo 127.0.0.1 "$REALM" --username=Administrator --password="$LDAPPASS" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ "$?" != 0 ]
 	then
-		echo `date`: karoshi_servers_add - adding zone $REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		samba-tool dns zonecreate 127.0.0.1 $REALM --username=Administrator --password=$LDAPPASS 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		karoshi_servers_add - restarting samba to activate dns zone by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+		echo "$(date): karoshi_servers_add - adding zone $REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns zonecreate 127.0.0.1 "$REALM" --username=Administrator --password="$LDAPPASS" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$(date): karoshi_servers_add - restarting samba to activate dns zone by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop
 		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start
 	fi
 
-	echo `date`: karoshi_servers_add - adding $SERVER $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	samba-tool dns add 127.0.0.1 $REALM $SERVER A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - adding $SERVER $TCPIPNUMBER to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" "$SERVER" A "$TCPIPNUMBER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Copy in boot controls
@@ -406,17 +406,17 @@ fi
 #scp -o PasswordAuthentication=no "/opt/karoshi/serversetup/all/useful scripts/refreshcronjobs" root@$SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/"
 
 #Copy in cacert.pem
-scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem $TCPIPNUMBER:/etc/ssl/root-ca/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem "$TCPIPNUMBER":/etc/ssl/root-ca/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Copy uptime daemon to server
 #scp -r /opt/karoshi/serversetup/scripts/uptime $TCPIPNUMBER:/opt/karoshi/serversetup/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Copy in update server scripts
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver "$TCPIPNUMBER":/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $TCPIPNUMBER:/opt/karoshi/serversetup/all/samba4/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-echo `date`: karoshi_servers_add - configuring initd scripts and "uptime" on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+echo "$(date): karoshi_servers_add - configuring initd scripts and uptime on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 source /opt/karoshi/serversetup/variables/distro
 #Stop karoshi-uptime if it is already running to apply new version
 if [ -f /etc/init.d/karoshi-uptime ]
@@ -458,7 +458,7 @@ else
 	RULESET=SSH-Access-PDC
 fi
 LINENUM=`grep -n "#$RULESET" /etc/shorewall/rules | cut -d: -f1`
-sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"22"	"-"#"SSH-Access-PDC /etc/shorewall/rules
+sed -i $LINENUM"c"\ACCEPT"	"net:'"$PDCIP"'"	"fw"	"tcp"	"22"	"-"#"SSH-Access-PDC /etc/shorewall/rules
 #Restart shorewall
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 0.5
@@ -466,19 +466,19 @@ sleep 0.5
 ' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Re-enable keys for backup servers
-echo `date`: karoshi_servers_add - re-enabling keys "for" backup servers by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): karoshi_servers_add - re-enabling keys for backup servers by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [ -d /opt/karoshi/server_network/backup_servers/backup_settings ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/backup_servers/backup_settings | wc -l) -gt 0 ]]
 	then
 		for KAROSHI_SERVER in /opt/karoshi/server_network/backup_servers/backup_settings/*
 		do
-			KAROSHI_SERVER=`basename $KAROSHI_SERVER`
-			if [ -f /root/.ssh_servers/authorized_keys$KAROSHI_SERVER ]
+			KAROSHI_SERVER=$(basename "$KAROSHI_SERVER")
+			if [ -f /root/.ssh_servers/authorized_keys"$KAROSHI_SERVER" ]
 			then
-				scp -o PasswordAuthentication=no /root/.ssh_servers/authorized_keys$KAROSHI_SERVER $SERVER:/root/.ssh 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-				ssh -x -o PasswordAuthentication=no $SERVER '
-				cat /root/.ssh/authorized_keys'$KAROSHI_SERVER' >> /root/.ssh/authorized_keys2
+				scp -o PasswordAuthentication=no /root/.ssh_servers/authorized_keys"$KAROSHI_SERVER" "$SERVER":/root/.ssh 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				ssh -x -o PasswordAuthentication=no "$SERVER" '
+				cat /root/.ssh/authorized_keys'"$KAROSHI_SERVER"' >> /root/.ssh/authorized_keys2
 				' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			fi
 		done
@@ -487,80 +487,80 @@ fi
 
 
 #Add in vpn tunnel for adc servers in dmz
-if [ $ZONE = dmz ]
+if [ "$ZONE" = dmz ]
 then
-	if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ]
+	if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ]
 	then
-		echo `date`: karoshi_servers_add - setting up a vpn tunnel "for" $SERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$(date): karoshi_servers_add - setting up a vpn tunnel for $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | /opt/karoshi/serversetup/modules/authentication/setupopenvpn
 	fi
 fi
 
 #Sort out authentication for the server
 
-echo `date`: karoshi_servers_add - configuring authentication "for" $SSERVER by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): karoshi_servers_add - configuring authentication for $SSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$AUTHENTICATION:$ZONE:$TCPIPNUMBER" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 if [ $? != 0 ]
 then
-	echo `date`: karoshi_servers_add - configure_authentication failure "for" $SERVER authtype $AUTHENTICATION zone $ZONE by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): karoshi_servers_add - configure_authentication failure for $SERVER authtype $AUTHENTICATION zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ ! -f /opt/karoshi/server_network/federated_ldap_servers/$SERVER ]
+if [ ! -f /opt/karoshi/server_network/federated_ldap_servers/"$SERVER" ]
 then
-	if [ ! -d /opt/karoshi/server_network/servers/$SERVER.$REALM ]
+	if [ ! -d /opt/karoshi/server_network/servers/"$SERVER.$REALM" ]
 	then
-		mkdir -p /opt/karoshi/server_network/servers/$SERVER.$REALM
-		echo $"No Role" > /opt/karoshi/server_network/servers/$SERVER.$REALM/no_role
+		mkdir -p /opt/karoshi/server_network/servers/"$SERVER.$REALM"
+		echo $"No Role" > /opt/karoshi/server_network/servers/"$SERVER.$REALM"/no_role
 	fi
 fi
 
 #Add in reverse lookup
-[ -z $TCPIPNUMBER ] && TCPIPNUMBER=`net lookup $SERVER`
-SUBNET=`ssh $TCPIPNUMBER '
+[ -z "$TCPIPNUMBER" ] && TCPIPNUMBER=$(net lookup "$SERVER")
+SUBNET=$(ssh "$TCPIPNUMBER" '
 grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
-'`
-echo `date`: karoshi_servers_add - adding in reverse lookup "for" $SERVER to $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIPNUMBER $SUBNET $SERVER.$REALM
+')
+echo "$(date): karoshi_servers_add - adding in reverse lookup for $SERVER to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add "$TCPIPNUMBER" "$SUBNET" "$SERVER.$REALM"
 
 #Configure replication for additional domain controllers
-if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] 
+if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ] 
 then
-	if [ $ZONE = internal ] || [ $ZONE = dmz ]
+	if [ "$ZONE" = internal ] || [ "$ZONE" = dmz ]
 	then
 		#Create gluster volume for dc-data
 		if [ ! -d /opt/karoshi/server_network/gluster-volumes/dc-data/ ]
 		then
 			#Volume does not exist so create one
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME"."$REALM","$SERVER"."$REALM" dc-data create "$REMOTE_USER" "$REMOTE_ADDR"
-			GLUSTERSTATUS=$?
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$HOSTNAME.$REALM,$SERVER.$REALM" dc-data create "$REMOTE_USER" "$REMOTE_ADDR"
+			GLUSTERSTATUS="$?"
 			ACTION=copydata
 		else
 			ACTION=""
 			#Volume exists so either add or restore the server
-			if [ ! -f /opt/karoshi/server_network/gluster-volumes/dc-data/servers/$SERVER.$REALM ]
+			if [ ! -f /opt/karoshi/server_network/gluster-volumes/dc-data/servers/"$SERVER.$REALM" ]
 			then
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM dc-data add "$REMOTE_USER" "$REMOTE_ADDR"
-				GLUSTERSTATUS=$?
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER.$REALM" dc-data add "$REMOTE_USER" "$REMOTE_ADDR"
+				GLUSTERSTATUS="$?"
 			else
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVER.$REALM dc-data restore "$REMOTE_USER" "$REMOTE_ADDR"
-				GLUSTERSTATUS=$?			
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER.$REALM" dc-data restore "$REMOTE_USER" "$REMOTE_ADDR"
+				GLUSTERSTATUS="$?"			
 			fi
 
 		fi
 
-		if [ $GLUSTERSTATUS = 0 ]
+		if [ "$GLUSTERSTATUS" = 0 ]
 		then
 			for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications
 			do
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data "$ACTION"
-				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM "$FOLDER" dc-data
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$(hostname-fqdn)" "$FOLDER" dc-data "$ACTION"
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER.$REALM" "$FOLDER" dc-data
 
 #				#Add in web management data to gluster
 				if [ "$ZONE" = internal ]
 				then
-					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` /opt/karoshi/server_network dc-data copydata
-					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $SERVER.$REALM /opt/karoshi/server_network dc-data
+					/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$(hostname-fqdn)" /opt/karoshi/server_network dc-data copydata
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER.$REALM" /opt/karoshi/server_network dc-data
 				fi
 			done
 		fi
@@ -571,47 +571,47 @@ then
 		for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/dc-data/servers/*
 		do
 			#Use short names for windows
-			GLUSTERSERVER=`basename "$GLUSTERSERVERS" | cut -d"." -f1`
-			DFSPATH=$DFSPATH,$GLUSTERSERVER\\$SHAREPATH
+			GLUSTERSERVER=$(basename "$GLUSTERSERVERS" | cut -d"." -f1)
+			DFSPATH="$DFSPATH,$GLUSTERSERVER\\$SHAREPATH"
 		done
-		DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
-		[ -L /var/lib/samba/dfs/$SHAREPATH ] && rm -f /var/lib/samba/dfs/$SHAREPATH
-		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/$SHAREPATH
+		DFSPATH=$(echo $DFSPATH | sed 's/^,//g')
+		[ -L /var/lib/samba/dfs/"$SHAREPATH" ] && rm -f /var/lib/samba/dfs/"$SHAREPATH"
+		ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$SHAREPATH"
 	done
 	fi
 fi
 
-if [ $ZONE = internal ]
+if [ "$ZONE" = internal ]
 then
-#Add in mac address entry for static arp table
-MAC_ADDRESS=`ssh -x -o PasswordAuthentication=no $TCPIPNUMBER '
-ip addr | grep -B1 '$TCPIPNUMBER' | sed -n 1p | sed "s/ * / /g" | cut -d" " -f3
-'`
+	#Add in mac address entry for static arp table
+	MAC_ADDRESS=$(ssh -x -o PasswordAuthentication=no "$TCPIPNUMBER" '
+	ip addr | grep -B1 '"$TCPIPNUMBER"' | sed -n 1p | sed "s/ * / /g" | cut -d" " -f3
+	')
 
-[ ! -d /opt/karoshi/server_network/mac_addresses ] && mkdir -p /opt/karoshi/server_network/mac_addresses
-echo $MAC_ADDRESS $TCPIPNUMBER > /opt/karoshi/server_network/mac_addresses/$SERVER
+	[ ! -d /opt/karoshi/server_network/mac_addresses ] && mkdir -p /opt/karoshi/server_network/mac_addresses
+	echo "$MAC_ADDRESS $TCPIPNUMBER" > /opt/karoshi/server_network/mac_addresses/"$SERVER"
 
-#Create static_arps file
-cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
-fi
+	#Create static_arps file
+	cat /opt/karoshi/server_network/mac_addresses/* > /var/lib/samba/netlogon/domain_information/static_arps
+	fi
 
-#Reschedule updates if they have already been scheduled
-if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron ]
-then
+	#Reschedule updates if they have already been scheduled
+	if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/"$SERVER.$REALM".cron ]
+	then
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
-[ ! -d /opt/karoshi/server_network/cronjobs/'$SERVER'.'$REALM'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVER'.'$REALM'/jobs
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
+	[ ! -d /opt/karoshi/server_network/cronjobs/'"$SERVER"'.'"$REALM"'/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/'"$SERVER"'.'"$REALM"'/jobs
+	'
 
-scp -o PasswordAuthentication=no /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER.$REALM.cron $SERVER.$REALM:/opt/karoshi/server_network/cronjobs/$SERVER.$REALM/jobs/updateserver.cron 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp -o PasswordAuthentication=no /opt/karoshi/server_network/upgrade_schedules/servers/"$SERVER.$REALM".cron "$SERVER.$REALM:/opt/karoshi/server_network/cronjobs/$SERVER.$REALM"/jobs/updateserver.cron 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+	'
 fi
 
 #Configure monitorix
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $TCPIPNUMBER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 source /opt/karoshi/serversetup/variables/distro
 /opt/karoshi/serversetup/modules/monitoring/monitorix/setupmonitorix
 
@@ -622,7 +622,7 @@ if [ $MODCHECK = 0 ]
 then
 	echo "<ul><li>"'$"The following extra ports are being allowed"' - tcp 50005"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM"c"\ACCEPT"	"net:'$PDCIP'"	"fw"	"tcp"	"50005"	"-"#"Monitorix /etc/shorewall/rules
+	sed -i $LINENUM"cACCEPT	net:'"$PDCIP"'	fw	tcp	50005	-#"Monitorix /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	#Restart shorewall
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
@@ -632,9 +632,9 @@ fi
 /opt/karoshi/serversetup/web_controls/scripts/monitorixwebmanagement
 
 #Add in network share declarations for additional domain controllers
-if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] 
+if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ] 
 then
-	[ ! -d /opt/karoshi/server_network/network_shares/$SERVER.$REALM ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVER.$REALM
+	[ ! -d /opt/karoshi/server_network/network_shares/"$SERVER.$REALM" ] && mkdir -p /opt/karoshi/server_network/network_shares/"$SERVER.$REALM"
 
 	for SHARENAME in applications sysvol netlogon
 	do
@@ -671,36 +671,36 @@ then
 			MAP_DRIVE=0
 		fi
 
-		echo SERVER='"'"$SERVER.$REALM"'"' > /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
-		echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME
+		echo SERVER=''"$SERVER.$REALM"'
+SHAREPATH='"$SHAREPATH"'
+USERLIST='"$NETUSERS"'
+GROUPLIST='"$NETGROUPS"'
+GROUPPERMS='"$GROUPPERMS"'
+MAP_DRIVE='"$MAP_DRIVE"'
+SERVERTYPE='"network"'
+SERVERMASTER='""'
+MASK='"$MASK"'"' > "/opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME"
 	done
 
 	#Re-create logon scripts to add in additional servers
 	/opt/karoshi/serversetup/pdc/"useful scripts"/generate_logon_scripts
 fi
 
-if [ $AUTHENTICATION = adc ] || [ $AUTHENTICATION = rodc ] || [ $AUTHENTICATION = member ] 
+if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ] || [ "$AUTHENTICATION" = member ] 
 then
-	if [ $ZONE = internal ]
+	if [ "$ZONE" = internal ]
 	then
 		#Add in fileserver flag if the server is in the internal zone.
-		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/$SERVER.$REALM/fileserver
+		echo $"File Server""<br>" > /opt/karoshi/server_network/servers/"$SERVER.$REALM"/fileserver
 	fi
 fi
 
 #Configure a backup server if one has been declared
-if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER.$REALM/backupserver ]
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER.$REALM"/backupserver ]
 then
 	#Get the name of the backup server that has been assigned
-	BACKUPSERVER=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER"."$REALM"/backupserver)
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1`
+	BACKUPSERVER=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER.$REALM"/backupserver)
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1)
 	#Sort out the ssh key for the backup server
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
 fi
@@ -708,7 +708,7 @@ fi
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVER"."$REALM"
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVER.$REALM"
 fi
 
 if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ]
@@ -720,6 +720,6 @@ then
 
 else
 	#Configure dnsmasq for the server
-	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVER"."$REALM"
+	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVER.$REALM"
 fi
 exit
