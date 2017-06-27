@@ -23,22 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-FAILED_SERVER=no
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/gluster_control_cgi
 then
-	echo `date`: gluster_control - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/gluster_control_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1)
 [[ -z "$MD5SUM" ]] && MD5SUM=not_set
-if [[ $MD5SUM'check' != $gluster_control_cgi'check' ]]
+if [[ "$MD5SUM"'check' != "$gluster_control_cgi"'check' ]]
 then
-	echo `date`: gluster_control - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,56 +45,56 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [[ $numArgs != 0 ]]
+if [[ "$numArgs" != 0 ]]
 then
-	echo `date`: gluster_control - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [[ -z "$DATA" ]]
 then
-	echo `date`: gluster_control - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-VOLUME=`echo "$DATA" | cut -s -d: -f5 | tr 'A-Z' 'a-z'`
-SERVER=`echo "$DATA" | cut -s -d: -f6`
-SERVERS=`echo "$DATA" | cut -s -d: -f7`
-FOLDER=`echo "$DATA" | cut -s -d: -f8 | sed 's/%2F/\//g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+VOLUME=$(echo "$DATA" | cut -s -d: -f5 | tr '[:upper:]' '[:lower:]')
+SERVER=$(echo "$DATA" | cut -s -d: -f6)
+SERVERS=$(echo "$DATA" | cut -s -d: -f7)
+FOLDER=$(echo "$DATA" | cut -s -d: -f8 | sed 's/%2F/\//g')
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: gluster_control - Not called by gluster_control.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - Not called by gluster_control.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
-	then
-	echo `date`: gluster_control - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+then
+	echo "$(date): gluster_control - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: gluster_control - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: gluster_control - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ "$ACTION" = reallycreate ]
 then
 	if [ -z "$VOLUME" ]
 	then
-		echo `date`: gluster_control - Blank volume by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): gluster_control - Blank volume by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -103,16 +102,13 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 WIDTH1=200
 WIDTH2=200
 WIDTH3=180
 TABLECLASS=standard
-ICON1=/images/submenus/system/disabled.png
-ICON2=/images/submenus/system/enabled.png
 #echo volume is $VOLUME action is $ACTION"<br>"
 
 [ ! -d /opt/karoshi/server_network/gluster-volumes/ ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/
@@ -132,44 +128,44 @@ then
 	exit	
 fi
 
-if [ $ACTION = reallyremovefolder ]
+if [ "$ACTION" = reallyremovefolder ]
 then
-	echo `date`: gluster_control - deleting $FOLDER from $VOLUME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): gluster_control - deleting $FOLDER from $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	#Get the first server on the list and remove the folder.
-	SERVER=`ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/ | sed -n 1,1p`
-	FOLDERSHORT=`basename $FOLDER`
+	SERVER=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/ | sed -n 1,1p)
+	FOLDERSHORT=$(basename "$FOLDER")
 	
-	if [ "$SERVER" = `hostname-fqdn` ]
+	if [ "$SERVER" = "$(hostname-fqdn)" ]
 	then
-		[ -d /mnt-gluster/"$VOLUME"/"$FOLDERSHORT" ] && rm -f -R /mnt-gluster/"$VOLUME"/"$FOLDERSHORT" 
+		[ -d /mnt-gluster/"$VOLUME/$FOLDERSHORT" ] && rm -f -R /mnt-gluster/"$VOLUME/$FOLDERSHORT" 
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-		[ -d /mnt-gluster/"'$VOLUME'"/"'$FOLDERSHORT'" ] && rm -f -R /mnt-gluster/"'$VOLUME'"/"'$FOLDERSHORT'" 
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+		[ -d /mnt-gluster/"'"$VOLUME"'"/"'"$FOLDERSHORT"'" ] && rm -f -R /mnt-gluster/"'"$VOLUME"'"/"'"$FOLDERSHORT"'" 
 		'
 	fi
 
 	#Remove symlinks
-	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	for GLUSTERSERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 	do
-		if [ "$GLUSTERSERVER" = `hostname-fqdn` ]
+		if [ "$GLUSTERSERVER" = "$(hostname-fqdn)" ]
 		then
 			[ -L "$FOLDER" ] && rm -f "$FOLDER"
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $GLUSTERSERVER '
-			[ -L "'$FOLDER'" ] && rm -f "'$FOLDER'"		
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$GLUSTERSERVER" '
+			[ -L "'"$FOLDER"'" ] && rm -f "'"$FOLDER"'"		
 			'
 		fi	
 	done
 
 	#Remove folder data
-	FOLDER2=`echo $FOLDER | sed 's/\//-/g'`
-	[ -f /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/"$FOLDER2" ] && rm -f /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/"$FOLDER2"
+	FOLDER2=$(echo "$FOLDER" | sed 's/\//-/g')
+	[ -f "/opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/$FOLDER2" ] && rm -f "/opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/$FOLDER2"
 
 	#Remove dfs symlink
 	if [ -L /var/lib/samba/dfs/"$FOLDERSHORT" ]
 	then
-		echo `date`: gluster_control - deleting dfs symlink "for" $FOLDER from $VOLUME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): gluster_control - deleting dfs symlink for $FOLDER from $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
 	fi
 	reloadpage
@@ -178,8 +174,8 @@ fi
 
 if [ "$ACTION" = confirmremovefolder ]
 then
-	echo '<input type="hidden" name="_FOLDER_" value="'$FOLDER'"><input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " ><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
-<tr><td><b>'$"Folder"'</b></td><td>'$FOLDER'</td></tr></tbody></table><br>
+	echo '<input type="hidden" name="_FOLDER_" value="'"$FOLDER"'"><input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+<tr><td><b>'$"Folder"'</b></td><td>'"$FOLDER"'</td></tr></tbody></table><br>
 '$"This will delete all of the data in the folder."' '$"Are you sure that you want to delete this folder?"'
 <br><br><input name="_ACTION_reallyremovefolder_" value="'$"Submit"'" class="button" type="submit"> <input name="_ACTION_view_" value="'$"Cancel"'" class="button" type="submit">
 '
@@ -191,19 +187,19 @@ then
 	#Show a list of folders to remove from the gluster volume.
 	if [ -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders ]
 	then
-		if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l` -gt 0 ]
+		if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l) -gt 0 ]]
 		then
-			echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><table class="'$TABLECLASS'" style="text-align: left; " ><tbody><tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+			echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'"$VOLUME"'</td></tr>
 <tr><td style="vertical-align: top; height: 20px;"></td></tr>
 <tr><td><b>'$"Folder"'</b></td><td><b>'$"Delete"'</b></td></tr>'
 
 			for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
 			do
-				FOLDER=`basename $FOLDERS | sed 's/-/\//g'`
-				echo '<tr><td>'$FOLDER'</td><td>
-				<button class="info" name="_RemoveFolder_" value="_ACTION_confirmremovefolder_FOLDER_'$FOLDER'_">
+				FOLDER=$(basename "$FOLDERS" | sed 's/-/\//g')
+				echo '<tr><td>'"$FOLDER"'</td><td>
+				<button class="info" name="_RemoveFolder_" value="_ACTION_confirmremovefolder_FOLDER_'"$FOLDER"'_">
 				<img src="/images/submenus/file/delete.png" alt="'$"Remove Folder"'">
-				<span>Delete<br>'$FOLDER'</span>
+				<span>Delete<br>'"$FOLDER"'</span>
 				</button>
 				</td></tr>'
 			done
@@ -218,29 +214,29 @@ fi
 if [ "$ACTION" = reallyaddfolder ]
 then
 
-	FOLDERSHORT=`basename $FOLDER`
+	FOLDERSHORT=$(basename "$FOLDER")
 
 	#Create dfs symlink if the folder is a samba share path.
 
-	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	for GLUSTERSERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 	do
 		#Use short names for windows
-		GLUSTERSERVER=$(echo $GLUSTERSERVER | cut -d"." -f1)
+		GLUSTERSERVER=$(echo "$GLUSTERSERVER" | cut -d"." -f1)
 		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$FOLDERSHORT"
 	done
-	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
+	DFSPATH=$(echo "$DFSPATH" | sed 's/^,//g')
 
 	[ -L /var/lib/samba/dfs/"$FOLDERSHORT" ] && rm -f /var/lib/samba/dfs/"$FOLDERSHORT"
 	ln -s msdfs:"$DFSPATH" /var/lib/samba/dfs/"$FOLDERSHORT"
 
 	#Copy data to another server if the gluster volume is on remote servers.
-	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	for GLUSTERSERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 	do
 		DFSPATH="$DFSPATH,$GLUSTERSERVER\\$FOLDERSHORT"
 
 	done
-	DFSPATH=`echo $DFSPATH | sed 's/^,//g'`
-	if [ `echo $DFSPATH | grep -c "$SERVER"` = 0 ]
+	DFSPATH=$(echo "$DFSPATH" | sed 's/^,//g')
+	if [ $(echo "$DFSPATH" | grep -c "$SERVER") = 0 ]
 	then
 		#Server is not in the volume so copy the data into the gluster volume after it has been created
 		COPYAFTER=yes
@@ -249,129 +245,127 @@ then
 		COPYAFTER=no
 	fi
 
-	for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+	for GLUSTERSERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 	do
 		COPYDATA=""
-		[ $GLUSTERSERVER = $SERVER ] && COPYDATA=copydata
+		[ "$GLUSTERSERVER" = "$SERVER" ] && COPYDATA=copydata
 		/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$GLUSTERSERVER" "$FOLDER" "$VOLUME" "$COPYDATA"
 	done
 
-	if [ $COPYAFTER = yes ]
+	if [ "$COPYAFTER" = yes ]
 	then
-		FOLDERBASE=`echo $FOLDER | sed "s/\/$FOLDERSHORT//g"` 
-		echo '<ul><li>'$SERVER' - '$"Copying data to"' '$GLUSTERSERVER' '$FOLDERBASE'</li>'
+		FOLDERBASE=$(echo "$FOLDER" | sed "s/\/$FOLDERSHORT//g")
+		echo '<ul><li>'"$SERVER"' - '$"Copying data to"' '"$GLUSTERSERVER"' '"$FOLDERBASE"'</li>'
 
-	
-	
-		if [ "$SERVER" = `hostname-fqdn` ]
+		if [ "$SERVER" = "$(hostname-fqdn)" ]
 		then
-			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		fi
 
-		if [ "$GLUSTERSERVER" = `hostname-fqdn` ]
+		if [ "$GLUSTERSERVER" = "$(hostname-fqdn)" ]
 		then
-			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group root@$GLUSTERSERVER:/"$FOLDER" "$FOLDERBASE"/ 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group root@"$GLUSTERSERVER:/$FOLDER" "$FOLDERBASE"/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		fi
 	
-		if [ "$SERVER" != `hostname-fqdn` ] && [ "$GLUSTERSERVER" != `hostname-fqdn` ]
+		if [ "$SERVER" != "$(hostname-fqdn)" ] && [ "$GLUSTERSERVER" != "$(hostname-fqdn)" ]
 		then
 			#Mount /home as sshfs on both servers
-			[ ! -d /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT
-			[ ! -d /opt/karoshi/mount/$SERVER/$FOLDERSHORT ] && mkdir -p /opt/karoshi/mount/$SERVER/$FOLDERSHORT
-			sshfs root@$GLUSTERSERVER/:/$FOLDERBASE /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			sshfs root@$SERVER:/$FOLDERBASE /opt/karoshi/mount/$SERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			[ ! -d "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" ] && mkdir -p "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT"
+			[ ! -d "/opt/karoshi/mount/$SERVER/$FOLDERSHORT" ] && mkdir -p "/opt/karoshi/mount/$SERVER/$FOLDERSHORT"
+			sshfs root@"$GLUSTERSERVER"/:/"$FOLDERBASE" "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			sshfs root@"$SERVER":/"$FOLDERBASE" "/opt/karoshi/mount/$SERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-			rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group /opt/karoshi/mount/$SERVER/$FOLDERSHORT/$FOLDERSHORT /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "/opt/karoshi/mount/$SERVER/$FOLDERSHORT/$FOLDERSHORT" "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		
 			#Unmount sshfs shares
-			fusermount -u /opt/karoshi/mount/$GLUSTERSERVER/$FOLDERBASE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			fusermount -u /opt/karoshi/mount/$SERVER/$FOLDERBASE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			fusermount -u "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERBASE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			fusermount -u "/opt/karoshi/mount/$SERVER/$FOLDERBASE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	
 		fi
 	fi
 
 	#Add in a samba share if the folder is in /home and a share already exists for this folder on the server that the data is currently on.
 	ADDSMBSHARE=no
-	if [ "$SERVER" = `hostname-fqdn` ]
+	if [ "$SERVER" = "$(hostname-fqdn)" ]
 	then
 		#Check if the path is in smb.conf or there is an include file
-		if [ `grep -c $FOLDER /etc/samba/smb.conf` -gt 0 ] || [ -f /etc/samba/extra_network_shares/$SERVER/"$FOLDERSHORT".conf ]
+		if [[ $(grep -c "$FOLDER" /etc/samba/smb.conf) -gt 0 ]] || [ -f "/etc/samba/extra_network_shares/$SERVER/$FOLDERSHORT.conf" ]
 		then
 			ADDSMBSHARE=yes
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 		#Check if the path is in smb.conf or there is an include file
-		if [ `grep -c '$FOLDER' /etc/samba/smb.conf` -gt 0 ] || [ -f /etc/samba/extra_network_shares/'$SERVER'/"'$FOLDERSHORT'".conf ]
+		if [ $(grep -c '"$FOLDER"' /etc/samba/smb.conf) -gt 0 ] || [ -f /etc/samba/extra_network_shares/'"$SERVER"'/"'"$FOLDERSHORT"'".conf ]
 		then
 			exit 102
 		fi
 		'
-		[ $? = 102 ] && ADDSMBSHARE=yes	
+		[ "$?" = 102 ] && ADDSMBSHARE=yes	
 	fi
 
 	if [ "$ADDSMBSHARE" = yes ]
 	then
 		SHARENAME="$FOLDERSHORT"
-		[ $FOLDER = /home/itadminshare ] && SHARENAME=itadmin
-		for GLUSTERSERVER in `ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/`
+		[ "$FOLDER" = /home/itadminshare ] && SHARENAME=itadmin
+		for GLUSTERSERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 		do
 			if [ "$GLUSTERSERVER" != "$SERVER" ]
 			then
-				echo "gluster_control - adding an smb share for $FOLDERSHORT on $GLUSTERSERVER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-				if [ $GLUSTERSERVER = `hostname-fqdn` ]
+				echo "gluster_control - adding an smb share for $FOLDERSHORT on $GLUSTERSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				if [ "$GLUSTERSERVER" = "$(hostname-fqdn)" ]
 				then
 					#Add data to custom smb.conf
-					[ ! -d /etc/samba/extra_network_shares/$GLUSTERSERVER ] && mkdir -p /etc/samba/extra_network_shares/$GLUSTERSERVER
-					echo "[$SHARENAME]" > /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
-					echo "	path = \"/home/$FOLDERSHORT\"" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
-					echo "	invalid users = root" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
-					echo "	read only = No" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
-					echo "	browseable = Yes" >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
-					echo >> /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf
+					[ ! -d /etc/samba/extra_network_shares/"$GLUSTERSERVER" ] && mkdir -p /etc/samba/extra_network_shares/"$GLUSTERSERVER"
+					echo "[$SHARENAME]" > "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
+					echo "	path = \"/home/$FOLDERSHORT\"" >> "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
+					echo "	invalid users = root" >> "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
+					echo "	read only = No" >> "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
+					echo "	browseable = Yes" >> "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
+					echo >> "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf"
 
 					#Add include line to smb.conf
-					if [ `grep -c "$GLUSTERSERVER"/"$SHARENAME".conf /etc/samba/smb.conf` = 0 ]
+					if [[ $(grep -c "$GLUSTERSERVER/$SHARENAME.conf" /etc/samba/smb.conf) = 0 ]]
 					then
 						echo  >> /etc/samba/smb.conf
-						echo include = /etc/samba/extra_network_shares/$GLUSTERSERVER/"$SHARENAME".conf >> /etc/samba/smb.conf
+						echo include = "/etc/samba/extra_network_shares/$GLUSTERSERVER/$SHARENAME.conf" >> /etc/samba/smb.conf
 					fi
 					#Restart samba
 					source /opt/karoshi/serversetup/variables/distro
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 					sleep 1
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 				else
-					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $GLUSTERSERVER '
+					ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$GLUSTERSERVER" '
 					#Add data to custom smb.conf
-					[ ! -d /etc/samba/extra_network_shares/'$GLUSTERSERVER' ] && mkdir -p /etc/samba/extra_network_shares/'$GLUSTERSERVER'
-					echo "['$SHARENAME']" > /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
-					echo "	path = \"/home/'$FOLDERSHORT'\"" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
-					echo "	invalid users = root" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
-					echo "	read only = No" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
-					echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
-					echo >> /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf
+					[ ! -d /etc/samba/extra_network_shares/'"$GLUSTERSERVER"' ] && mkdir -p /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'
+					echo "['"$SHARENAME"']" > /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf
+					echo "	path = \"/home/'"$FOLDERSHORT"'\"" >> /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'$SHARENAME'".conf
+					echo "	invalid users = root" >> /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf
+					echo "	read only = No" >> /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf
+					echo "	browseable = Yes" >> /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf
+					echo >> /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf
 
 					#Add include line to smb.conf
-					if [ `grep -c "'$GLUSTERSERVER'"/"'$SHARENAME'".conf /etc/samba/smb.conf` = 0 ]
+					if [ `grep -c "'"$GLUSTERSERVER"'"/"'"$SHARENAME"'".conf /etc/samba/smb.conf` = 0 ]
 					then
 						echo  >> /etc/samba/smb.conf
-						echo include = /etc/samba/extra_network_shares/'$GLUSTERSERVER'/"'$SHARENAME'".conf >> /etc/samba/smb.conf
+						echo include = /etc/samba/extra_network_shares/'"$GLUSTERSERVER"'/"'"$SHARENAME"'".conf >> /etc/samba/smb.conf
 					fi
 					#Restart samba
 					source /opt/karoshi/serversetup/variables/distro
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 					sleep 1
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
 					'
 				fi
 				#Add in data file for the share.
-				[ ! -d /opt/karoshi/server_network/network_shares/$GLUSTERSERVER ] && mkdir -p /opt/karoshi/server_network/network_shares/$GLUSTERSERVER
+				[ ! -d /opt/karoshi/server_network/network_shares/"$GLUSTERSERVER" ] && mkdir -p /opt/karoshi/server_network/network_shares/"$GLUSTERSERVER"
 
 				#Copy in share data from the existing server and edit.
-				cp /opt/karoshi/server_network/network_shares/$SERVER/"$SHARENAME" /opt/karoshi/server_network/network_shares/$GLUSTERSERVER
-				sed -i 's/MAP_DRIVE="1"/MAP_DRIVE="0"/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
-				sed -i 's/'$SERVER'/'$GLUSTERSERVER'/g' /opt/karoshi/server_network/network_shares/$GLUSTERSERVER/"$SHARENAME"
+				cp "/opt/karoshi/server_network/network_shares/$SERVER/$SHARENAME" /opt/karoshi/server_network/network_shares/"$GLUSTERSERVER"
+				sed -i 's/MAP_DRIVE="1"/MAP_DRIVE="0"/g' "/opt/karoshi/server_network/network_shares/$GLUSTERSERVER/$SHARENAME"
+				sed -i 's/'"$SERVER"'/'"$GLUSTERSERVER"'/g' "/opt/karoshi/server_network/network_shares/$GLUSTERSERVER/$SHARENAME"
 			fi
 		done
 	fi
@@ -379,24 +373,24 @@ then
 fi
 
 #Get folder path to add to a volume
-if [ $ACTION = addfolder ]
+if [ "$ACTION" = addfolder ]
 then
-	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'$TABLECLASS'" style="text-align: left; " ><tbody>
-<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '$WIDTH2'px; vertical-align: top;">'$VOLUME'</td></tr>'
+	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
+<tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH2"'px; vertical-align: top;">'"$VOLUME"'</td></tr>'
 	if [ ! -z "$SERVER" ]
 	then
-		echo '<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'$FOLDER'" style="width: 200px;" size="20" type="text"></td>
+		echo '<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'"$FOLDER"'" style="width: 200px;" size="20" type="text"></td>
 <td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
 <tr><td></td><td><select name="_FOLDERLIST_" style="width: 200px;" size="1" onchange="document.combobox._FOLDER_.value = document.combobox._FOLDERLIST_.options[document.combobox._FOLDERLIST_.selectedIndex].value;document.combobox._FOLDERLIST_.value=&#39;&#39;">
 <option value=""></option>'
-	for SHARES in /opt/karoshi/server_network/network_shares/$SERVER/*
+	for SHARES in /opt/karoshi/server_network/network_shares/"$SERVER"/*
 	do
-		SHARE=`basename $SHARES`
+		SHARE=$(basename "$SHARES")
 		if [ "$SHARE" != dfs ] && [ "$SHARE" != netlogon ] && [ "$SHARE" != sysvol ] && [ "$SHARE" != applications ]
 		then
-			SHAREPATH=`grep "SHAREPATH=" /opt/karoshi/server_network/network_shares/$SERVER/"$SHARE" | cut -d"=" -f2 | sed 's/"//g'`
-			echo '<option value="'$SHAREPATH'">'$SHAREPATH'</option>'
+			SHAREPATH=$(grep "SHAREPATH=" "/opt/karoshi/server_network/network_shares/$SERVER/$SHARE" | cut -d"=" -f2 | sed 's/"//g')
+			echo '<option value="'"$SHAREPATH"'">'"$SHAREPATH"'</option>'
 		fi
 	done
 	echo '</select></td></tr>'
@@ -404,7 +398,7 @@ then
 
 	if [ ! -z "$SERVER" ]
 	then
-		echo '<tr><td style="vertical-align: top; height: 30px;"><b>'$"Server data source"'</b></td><td style="vertical-align: top; height: 30px;">'$SERVER'</td></tr>'
+		echo '<tr><td style="vertical-align: top; height: 30px;"><b>'$"Server data source"'</b></td><td style="vertical-align: top; height: 30px;">'"$SERVER"'</td></tr>'
 	else
 		echo '<tr><td style="vertical-align: top; height: 30px;"></td><td style="vertical-align: top; height: 30px;"></td></tr>'
 	fi
@@ -413,17 +407,17 @@ echo '</tbody></table>'
 echo '<br>'
 	#Show a list of servers to choose from.
 	MOBILE=no
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Select Server" addfolder | sed 's/SERVERNAME/SERVER/g'
-	[ ! -z "$SERVER" ] && echo '<br><input type="hidden" name="_SERVER_" value="'$SERVER'"><input name="_ACTION_reallyaddfolder_" value="'$"Submit"'" class="button" type="submit">'
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Select Server" addfolder | sed 's/SERVERNAME/SERVER/g'
+	[ ! -z "$SERVER" ] && echo '<br><input type="hidden" name="_SERVER_" value="'"$SERVER"'"><input name="_ACTION_reallyaddfolder_" value="'$"Submit"'" class="button" type="submit">'
 fi
 
 #Create a gluster volume
 if [ "$ACTION" = reallycreate ]
 then
-	SERVERS=`echo $SERVERS | sed 's/%2C/,/g'`
-	echo `date`: gluster_control - Creating gluster volume "$VOLUME" on "$SERVERS" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	SERVERS=$(echo "$SERVERS" | sed 's/%2C/,/g')
+	echo "$(date): gluster_control - Creating gluster volume $VOLUME on $SERVERS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-		if [ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME" ]
 		then
 			#Volume does not exist so create one
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVERS" "$VOLUME" create "$REMOTE_USER" "$REMOTE_ADDR"
@@ -444,39 +438,39 @@ then
 
 	if [ ! -z "$SERVER" ]
 	then
-		if [ `echo "$SERVERS" | grep -c "$SERVER"` = 0 ]
+		if [[ $(echo "$SERVERS" | grep -c "$SERVER") = 0 ]]
 		then
-			SERVERS=`echo "$SERVERS","$SERVER" | sed 's/%2C/,/g' | sed 's/^,//g'`
+			SERVERS=$(echo "$SERVERS,$SERVER" | sed 's/%2C/,/g' | sed 's/^,//g')
 		else
-			SERVERS=`echo "$SERVERS","$SERVER" | sed 's/'$SERVER'//g' | sed 's/%2C/,/g' | sed 's/^,//g'`
+			SERVERS=$(echo "$SERVERS,$SERVER" | sed 's/'"$SERVER"'//g' | sed 's/%2C/,/g' | sed 's/^,//g')
 		fi
 	
 	fi
-	SERVERS=`echo $SERVERS | sed 's/,,/,/g' | sed 's/,$//g'`
+	SERVERS=$(echo "$SERVERS" | sed 's/,,/,/g' | sed 's/,$//g')
 	
 	#Create a volume name for the server
-	GLUSTERDATA=`ls -1 /opt/karoshi/server_network//gluster-volumes/ | tr -cd "0-9\n"`
+	GLUSTERDATA=$(ls -1 /opt/karoshi/server_network//gluster-volumes/ | tr -cd "0-9\n")
 	COUNTER=1
 	GLUSTERCOUNT=0
-	while [ $GLUSTERCOUNT = 0 ]
+	while [ "$GLUSTERCOUNT" = 0 ]
 	do
-		[ `echo $GLUSTERDATA | grep -c -w $COUNTER` = 0 ] && GLUSTERCOUNT=$COUNTER
-		let COUNTER=$COUNTER+1
+		[[ $(echo "$GLUSTERDATA" | grep -c -w "$COUNTER") = 0 ]] && GLUSTERCOUNT="$COUNTER"
+		let COUNTER="$COUNTER"+1
 	done	
-	VOLUME=glustervol$GLUSTERCOUNT
+	VOLUME="glustervol$GLUSTERCOUNT"
 	#Show tick box of servers from zones to use
-	echo '<input type="hidden" name="_VOLUME_" value="'$VOLUME'"><input type="hidden" name="_SERVERS_" value="'$SERVERS'"><br><table class="'$TABLECLASS'" style="text-align: left; " ><tbody>
+	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><input type="hidden" name="_SERVERS_" value="'"$SERVERS"'"><br><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
 <tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;">'$VOLUME'
 </td></tr>'
 
 	if [ ! -z "$SERVERS" ]
 	then
 		echo '<tr><td style="vertical-align: top; height: 40px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
-		for CHOSENSERVER in `echo $SERVERS | sed 's/,/ /g'`
+		for CHOSENSERVER in $(echo "$SERVERS" | sed 's/,/ /g')
 		do
-			echo $CHOSENSERVER"<br>"
+			echo "$CHOSENSERVER<br>"
 		done
-		[ `echo "$SERVERS" | grep -c ","` = 0 ] && echo $"Choose an extra server to create the Gluster volume on."
+		[[ $(echo "$SERVERS" | grep -c ",") = 0 ]] && echo $"Choose an extra server to create the Gluster volume on."
 		echo '</td></tr>'
 	else
 		echo '<tr><td></td><td style="vertical-align: top; height: 40px;">'$"Choose the servers that you want to add to the gluster volume."'<br>'$"You can have more than one gluster volume per server."'</td></tr>'
@@ -485,11 +479,11 @@ then
 echo '</tbody></table><br>'
 
 	MOBILE=no
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Add Server" create | sed 's/SERVERNAME/SERVER/g'
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Add Server" create | sed 's/SERVERNAME/SERVER/g'
 
 	if [ ! -z "$SERVERS" ]
 	then
-		if [ `echo "$SERVERS" | grep -c ","` -gt 0 ]
+		if [[ $(echo "$SERVERS" | grep -c ",") -gt 0 ]]
 		then
 			echo '<br><br><input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
 		fi
@@ -499,30 +493,30 @@ fi
 #Show all gluster volumes
 if [ "$ACTION" = view ] 
 then
-	if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/ | wc -l) -gt 0 ]]
 	then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
 		<thead>
-		<tr><th style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '$WIDTH2'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Folders"'</b></th><th style="width: '$WIDTH3'px; vertical-align: top;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '"$WIDTH2"'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '"$WIDTH3"'px; vertical-align: top;"><b>'$"Folders"'</b></th><th style="width: '"$WIDTH3"'px; vertical-align: top;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 		do
 			#Get data
-			VOLUME=`basename $VOLUMES`
+			VOLUME=$(basename "$VOLUMES")
 			#Storage bricks
-			SERVERS=`ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/servers/`
-			echo '<tr><td style="vertical-align: top;">'$VOLUME'</td><td style="vertical-align: top;">'
-			for SERVER in `echo $SERVERS`
+			SERVERS=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
+			echo '<tr><td style="vertical-align: top;">'"$VOLUME"'</td><td style="vertical-align: top;">'
+			for SERVER in $(echo "$SERVERS")
 			do
-				echo $SERVER'<br>'
+				echo "$SERVER<br>"
 			done
 			echo '</td><td style="vertical-align: top;">'
-			if [ `ls -1 /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/ | wc -l` -gt 0 ]
+			if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/ | wc -l) -gt 0 ]]
 			then
-			for FOLDER in /opt/karoshi/server_network/gluster-volumes/$VOLUME/folders/-*
+			for FOLDER in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/-*
 				do
-					FOLDER=`basename "$FOLDER"`
-					FOLDER=`echo "$FOLDER" | sed 's/-/\//g'`
-					echo "$FOLDER"'<br>'
+					FOLDER=$(basename "$FOLDER")
+					FOLDER=$(echo "$FOLDER" | sed 's/-/\//g')
+					echo "$FOLDER<br>"
 				done
 			else
 				echo $"No folders have been assigned."
@@ -531,12 +525,12 @@ then
 			if [ "$VOLUME" != dc-data ]
 			then
 				echo '
-				<button class="info" name="_AddFolder_" value="_ACTION_addfolder_VOLUME_'$VOLUME'_">
+				<button class="info" name="_AddFolder_" value="_ACTION_addfolder_VOLUME_'"$VOLUME"'_">
 				<img src="/images/submenus/system/gluster_add_folder.png" alt="'$"Add folder"'">
 				<span>'$"Add folder"'</span>
 				</button>
 
-				<button class="info" name="_RemoveFolder_" value="_ACTION_removefolder_VOLUME_'$VOLUME'_">
+				<button class="info" name="_RemoveFolder_" value="_ACTION_removefolder_VOLUME_'"$VOLUME"'_">
 				<img src="/images/submenus/system/gluster_remove_folder.png" alt="'$"Remove folder"'">
 				<span>'$"Remove folder"'</span>
 				</button>

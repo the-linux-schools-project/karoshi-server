@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 
 ########################
@@ -31,71 +31,71 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_cgi
 then
-	echo `date`: backup_configure - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_configure_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $backup_configure_cgi'check' ]
+if [ "$MD5SUM"'check' != "$backup_configure_cgi"'check' ]
 then
-	echo `date`: backup_configure - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: backup_configure - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: backup_configure - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-ACTION=`echo "$DATA" | cut -s -d: -f5`
-BACKUPNAME=`echo "$DATA" | cut -s -d: -f6`
-BACKUPFOLDER=`echo "$DATA" | cut -s -d: -f7 | sed 's/%2F/\//g'`
-DURATION=`echo "$DATA" | cut -s -d: -f8 | tr -cd '0-9'`
-BACKUPSERVER=`echo "$DATA" | cut -s -d: -f9`
-BACKUPSTATUS=`echo "$DATA" | cut -s -d: -f10`
-HOURS=`echo "$DATA" | cut -s -d: -f11`
-MINUTES=`echo "$DATA" | cut -s -d: -f12`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+ACTION=$(echo "$DATA" | cut -s -d: -f5)
+BACKUPNAME=$(echo "$DATA" | cut -s -d: -f6)
+BACKUPFOLDER=$(echo "$DATA" | cut -s -d: -f7 | sed 's/%2F/\//g')
+DURATION=$(echo "$DATA" | cut -s -d: -f8 | tr -cd '0-9')
+BACKUPSERVER=$(echo "$DATA" | cut -s -d: -f9)
+BACKUPSTATUS=$(echo "$DATA" | cut -s -d: -f10)
+HOURS=$(echo "$DATA" | cut -s -d: -f11)
+MINUTES=$(echo "$DATA" | cut -s -d: -f12)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: backup_configure - Not called by backup_configure.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Not called by backup_configure.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: backup_configure - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: backup_configure - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: backup_configure - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: backup_configure - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -103,7 +103,7 @@ if [ "$ACTION" = delete ]
 then
 	if [ -z "$BACKUPNAME" ]
 	then
-		echo `date`: backup_configure - Blank backupname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): backup_configure - Blank backupname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -112,7 +112,7 @@ if [ "$ACTION" = assignbackupserver ]
 then
 	if [ -z "$BACKUPSERVER" ]
 	then
-		echo `date`: backup_configure - Blank backupserver by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): backup_configure - Blank backupserver by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi	
 fi
@@ -121,37 +121,37 @@ if [ "$ACTION" = setbackupstatus ]
 then
 	if [ -z "$BACKUPSTATUS" ]
 	then
-		echo `date`: backup_configure - Blank backupstatus by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): backup_configure - Blank backupstatus by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi	
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: backup_configure - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_configure - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-LOG_DATE=`echo $YEAR-$MONTH-$DAY`
+LOG_DATE="$YEAR-$MONTH-$DAY"
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 ICON1=/images/submenus/file/edit.png
 ICON2=/images/submenus/file/delete.png
 
 
 function copy_data {
-if [ "$SERVERNAME" != $(hostname-fqdn) ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/
 	'
-	rsync -a --delete /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME root@$SERVERNAME:"/opt/karoshi/server_network/backup_servers/backup_settings/"
-	rsync -a --delete /opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
+	rsync -a --delete /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME" root@"$SERVERNAME:/opt/karoshi/server_network/backup_servers/backup_settings/"
+	rsync -a --delete /opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers root@"$SERVERNAME:/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
 fi
 }
 
@@ -160,10 +160,10 @@ if [ "$ACTION" = setbackupstatus ]
 then
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/stop_backup ]
 	then
-		echo `date`": backup_configure - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		echo "$(date): backup_configure - enabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 		rm -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/stop_backup
 	else
-		echo `date`": backup_configure - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		echo "$(date): backup_configure - disabling $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 		touch /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/stop_backup
 	
 	fi
@@ -174,7 +174,7 @@ fi
 #Set the backup server
 if [ "$ACTION" = assignbackupserver ]
 then
-	echo `date`: "backup_configure - setting backup server to $BACKUPSERVER for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): backup_configure - setting backup server to $BACKUPSERVER for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 	echo "$BACKUPSERVER" > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver
 	copy_data
 	ACTION=view
@@ -183,14 +183,14 @@ fi
 if [ "$ACTION" = reallyedit ]
 then
 	#Delete any existing data for this entry
-	if [ `grep -c ,"$BACKUPNAME", /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders` != 0 ]
+	if [[ $(grep -c ,"$BACKUPNAME", /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) != 0 ]]
 	then
-		sed -i '/,'$BACKUPNAME',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+		sed -i '/,'"$BACKUPNAME"',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 	fi
 	#Append backup data to the file
-	echo "$BACKUPFOLDER","$BACKUPNAME","$DURATION" >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+	echo "$BACKUPFOLDER,$BACKUPNAME,$DURATION" >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 	#Sort the file
-	sort --field-separator=',' -k 2 /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders.$$
+	sort --field-separator=',' -k 2 /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME/backup_folders.$$"
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders.$$ ]
 	then
 		rm /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
@@ -205,17 +205,17 @@ then
 	if [ "$ACTION" = edit ]
 	then 
 		#Show details for the backup entry
-		BACKUPDATA=`grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders`
-		BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1`
-		BACKUPNAME=`echo "$BACKUPDATA" | cut -d, -f2`
-		DURATION=`echo "$BACKUPDATA" | cut -d, -f3`
+		BACKUPDATA=$(grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders)
+		BACKUPFOLDER=$(echo "$BACKUPDATA" | cut -d, -f1)
+		BACKUPNAME=$(echo "$BACKUPDATA" | cut -d, -f2)
+		DURATION=$(echo "$BACKUPDATA" | cut -d, -f3)
 	fi
 
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">'
+	<input type="hidden" name="____SERVERNAME____" value="'"$SERVERNAME"'">'
 	if [ "$ACTION" = edit ]
 	then
-		echo '<input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">'
+		echo '<input type="hidden" name="____BACKUPNAME____" value="'"$BACKUPNAME"'">'
 	fi
 	echo '<input type="hidden" name="____ACTION____" value="reallyedit">
 	<table class="standard" style="text-align: left;" >
@@ -228,8 +228,8 @@ then
 		echo '<input tabindex= "1" name="____BACKUPNAME____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"The name for this backup folder."'</span></a></td>'
 	fi
 	echo '</td></tr>
-	<tr><td><b>'$"Backup Folder"'</b></td><td><input tabindex= "1" value="'$BACKUPFOLDER'" name="____BACKUPFOLDER____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"The full path to the folder that you want to backup."'</span></a></td></tr>
-	<tr><td><b>'$"Days Tracked"'</b></td><td><input tabindex= "2" value="'$DURATION'" name="____DURATION____" style="width: 50px;" size="5" type="text"></td>
+	<tr><td><b>'$"Backup Folder"'</b></td><td><input tabindex= "1" value="'"$BACKUPFOLDER"'" name="____BACKUPFOLDER____" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"The full path to the folder that you want to backup."'</span></a></td></tr>
+	<tr><td><b>'$"Days Tracked"'</b></td><td><input tabindex= "2" value="'"$DURATION"'" name="____DURATION____" style="width: 50px;" size="5" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of days that changes to files are kept for before deleting the oldest version."'</span></a></td></tr>
 	</tbody></table><br>
 	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
@@ -239,26 +239,26 @@ fi
 if [ "$ACTION" = delete ]
 then
 	#Get data for this backup
-	BACKUPDATA=`grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders`
-	BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
-	DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
+	BACKUPDATA=$(grep ",$BACKUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders)
+	BACKUPFOLDER=$(echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g')
+	DURATION=$(echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g')
 
 	echo '<table class="tablesorter" style="text-align: left;" >
     	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th><b>'$"Days Tracked"'</b></th></tr></thead><tbody>
-	<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td></tr>
+	<tr><td>'"$BACKUPNAME"'</td><td>'"$BACKUPFOLDER"'</td><td>'"$DURATION"'</td></tr>
 	</tbody></table><br>
 	<table class="standard" style="text-align: left;" >
 	<tr><td>
-	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'$BACKUPNAME'">
-	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="reallydelete"><input type="hidden" name="____BACKUPNAME____" value="'"$BACKUPNAME"'">
+	<input type="hidden" name="____SERVERNAME____" value="'"$SERVERNAME"'">
 	<input value="'$"Delete"'" class="button" type="submit"></form></td><td>
-	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
+	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input type="hidden" name="____ACTION____" value="view"><input type="hidden" name="____SERVERNAME____" value="'"$SERVERNAME"'"><input value="'$"Cancel"'" class="button" type="submit"></form></td></tr></tbody></table>'
 fi
 
 if [ "$ACTION" = reallydelete ]
 then
 	#Delete the matching line from backup_folders
-	sed -i '/,'$BACKUPNAME',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+	sed -i '/,'"$BACKUPNAME"',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 	copy_data
 	ACTION=view
 fi
@@ -267,23 +267,23 @@ if [ "$ACTION" = reallyschedule ]
 then
 	if [ ! -z "$HOURS" ] && [ ! -z "$MINUTES" ]
 	then
-		echo `date`: "backup_configure - scheduling $SERVERNAME to backup at $HOURS:$MINUTES by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-		echo $HOURS:$MINUTES > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime
+		echo "$(date): backup_configure - scheduling $SERVERNAME to backup at $HOURS:$MINUTES by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		echo "$HOURS:$MINUTES" > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime
 		#Schedule a cron jon
-		if [ "$SERVERNAME" = $(hostname-fqdn) ]
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
 			echo "$MINUTES" "$HOURS" '*' '*' 1-5 /opt/karoshi/serversetup/all/\"useful scripts\"/backup_servers/backup_servers > /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/backup_server.cron
 			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 		else
-			ssh -x -o PasswordAuthentication=no $SERVERNAME '
-			echo "'$MINUTES'" "'$HOURS'" "*" "*" 1-5 /opt/karoshi/serversetup/all/\"useful scripts\"/backup_servers/backup_servers > /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs/backup_server.cron
+			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+			echo "'"$MINUTES"'" "'"$HOURS"'" "*" "*" 1-5 /opt/karoshi/serversetup/all/\"useful scripts\"/backup_servers/backup_servers > /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs/backup_server.cron
 			/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 			'
 		fi
 	else
-		echo `date`: "backup_configure - scheduling $SERVERNAME to auto backup by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+		echo "$(date): backup_configure - scheduling $SERVERNAME to auto backup by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 		[ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime ] && rm -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime
-		if [ "$SERVERNAME" = $(hostname-fqdn) ]
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
 			if [ -f /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/backup_server.cron ]
 			then
@@ -291,10 +291,10 @@ then
 				/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 			fi
 		else
-			ssh -x -o PasswordAuthentication=no $SERVERNAME '
-			if [ -f /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs/backup_server.cron ]
+			ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+			if [ -f /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs/backup_server.cron ]
 			then
-				rm -f /opt/karoshi/server_network/cronjobs/"'$SERVERNAME'"/jobs/backup_server.cron
+				rm -f /opt/karoshi/server_network/cronjobs/"'"$SERVERNAME"'"/jobs/backup_server.cron
 				/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 			fi
 			'
@@ -311,7 +311,7 @@ then
 	#Get backup server name
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver ]
 	then
-		BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver`
+		BACKUPSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver)
 	fi
 
 	#Get Backup server time if it has already been set
@@ -324,30 +324,30 @@ then
 	fi
 
 	function gen_dropdown {
-        for i in $(seq 0 $end);
+        for i in $(seq 0 "$end");
         do
-		if [ $i -lt 10 ]
+		if [ "$i" -lt 10 ]
 		then
 			time=0$i
 		else
 			time=$i
 		fi
-                echo '<option value="'$time'">'$time'</option>'
+                echo '<option value="'"$time"'">'"$time"'</option>'
         done
 	}
 
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input type="hidden" name="____SERVERNAME____" value="'$SERVERNAME'">
+	<input type="hidden" name="____SERVERNAME____" value="'"$SERVERNAME"'">
 	<input type="hidden" name="____ACTION____" value="reallyschedule">
 	<table class="standard" style="text-align: left;" >
-    	<tbody><tr><td style="width: 180px;">'$"Backup Server"'</td><td>'$BACKUPSERVER'</td></tr>
+    	<tbody><tr><td style="width: 180px;">'$"Backup Server"'</td><td>'"$BACKUPSERVER"'</td></tr>
 	<td style="width: 180px;">'$"Backup Time"'</td><td><select name="____HOURS____">'
 
-	[ ! -z "$HOURS" ] &&  echo '<option value="'$HOURS'" selected>'$HOURS'</option><option value="" label="blank"> </option><option disabled>--</option>'
+	[ ! -z "$HOURS" ] &&  echo '<option value="'"$HOURS"'" selected>'"$HOURS"'</option><option value="" label="blank"> </option><option disabled>--</option>'
 	end=23
 	gen_dropdown
 	echo '</select> : <select name="____MINUTES____">'
-	[ ! -z "$MINUTES" ] &&  echo '<option value="'$MINUTES'" selected>'$MINUTES'</option><option value="" label="blank"> </option><option disabled>--</option>'
+	[ ! -z "$MINUTES" ] &&  echo '<option value="'"$MINUTES"'" selected>'"$MINUTES"'</option><option value="" label="blank"> </option><option disabled>--</option>'
 	end=59
 	gen_dropdown
 	echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave the time blank to auto schedule."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit">'
@@ -358,17 +358,17 @@ then
 	#Get backup server name
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver ]
 	then
-		BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver`
+		BACKUPSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver)
 	fi
 	
 	#Get backup status
 	BACKUPSTATUS=$"Enabled"
 	BACKUPSTATUS2=disable
-	BACKUP_ICON=/images/submenus/system/backup_enabled.png
-	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/stop_backup ]
+	#BACKUP_ICON=/images/submenus/system/backup_enabled.png
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/stop_backup ]
 	then
 		BACKUPSTATUS=$"Disabled"
-		BACKUP_ICON=/images/submenus/system/backup_disabled.png
+		#BACKUP_ICON=/images/submenus/system/backup_disabled.png
 		BACKUPSTATUS2=enable
 	fi
 
@@ -376,11 +376,11 @@ then
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime ]
 	then
 		BACKUPTIME=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backuptime)
-		BACKUPTIMEMSG=''$BACKUPTIME''
+		BACKUPTIMEMSG="$BACKUPTIME"
 	else
-		BACKUPTIME=$(sed -n 1,1p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/backup_servers_master.cron | cut -d" " -f1-2)
-		BACKUPTIME_MINS=`echo $BACKUPTIME | cut -d" " -f1`
-		BACKUPTIME_HOURS=`echo $BACKUPTIME | cut -d" " -f2`
+		BACKUPTIME=$(sed -n 1,1p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/backup_servers_master.cron" | cut -d" " -f1-2)
+		BACKUPTIME_MINS=$(echo "$BACKUPTIME" | cut -d" " -f1)
+		BACKUPTIME_HOURS=$(echo "$BACKUPTIME" | cut -d" " -f2)
 		#Correct if minutes only has one zero
 		[ "$BACKUPTIME_MINS" = 0 ] && BACKUPTIME_MINS="00"
 		BACKUPTIMEMSG=''$"All servers backed up in turn starting at"' '$BACKUPTIME_HOURS':'$BACKUPTIME_MINS''	
@@ -388,41 +388,41 @@ then
 
 	#Show backup server and backup status
 	echo '<table class="standard" style="text-align: left;" >
-	<tr><td style="width: 100px;"><b>'$"Backup Server"'</b></td><td style="width: 510px;">'$BACKUPSERVER'</td><td>
+	<tr><td style="width: 100px;"><b>'$"Backup Server"'</b></td><td style="width: 510px;">'"$BACKUPSERVER"'</td><td>
 	<form action="/cgi-bin/admin/backup_assign_fm.cgi" name="testform" method="post">
-	<input name="_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Change Server"'"></form>
+	<input name="_SERVERNAME_'"$SERVERNAME"'_" type="submit" class="button" value="'$"Change Server"'"></form>
 	</td></tr>
-	<tr><td><b>'$"Backup Time"'</b></td><td>'$BACKUPTIMEMSG'</td><td>
+	<tr><td><b>'$"Backup Time"'</b></td><td>'"$BACKUPTIMEMSG"'</td><td>
 	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____SERVERNAME____'$SERVERNAME'____ACTION____schedule____" type="submit" class="button" value="'$"Change Time"'"></form>
+	<input name="____SERVERNAME____'"$SERVERNAME"'____ACTION____schedule____" type="submit" class="button" value="'$"Change Time"'"></form>
 	</td></tr>
-	<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td></td><td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input name="____SERVERNAME____'$SERVERNAME'____ACTION____setbackupstatus____BACKUPSTATUS____'$BACKUPSTATUS2'____" type="submit" class="button" value="'$BACKUPSTATUS'"></form></td></tr>
+	<tr><td style="vertical-align:top"><b>'$"Backup Status"'</b></td><td></td><td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><input name="____SERVERNAME____'"$SERVERNAME"'____ACTION____setbackupstatus____BACKUPSTATUS____'"$BACKUPSTATUS2"'____" type="submit" class="button" value="'$BACKUPSTATUS'"></form></td></tr>
 	<tr><td style="height:20px"></td><td></td><td></td></tr>
 	<tr><td></td><td></td><td>
 	<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Folder"'"></form>
+	<input name="____ACTION____add____SERVERNAME____'"$SERVERNAME"'____" type="submit" class="button" value="'$"Add Folder"'"></form>
 	</td>
 	</tbody></table>'
 	
 	#Show all folders that are set to be backed up.
 	echo '<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
     	<thead><tr><th style="width: 200px;"><b>'$"Backup Name"'</b></th><th style="width: 220px;"><b>'$"Backup Folder"'</b></th><th style="width: 80px;"><b>'$"Days"'</b></th><th style="width: 80px;"><b>'$"Edit"'</b></th><th style="width: 80px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
-	for BACKUPDATA in `cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g'`
+	for BACKUPDATA in $(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders | sed 's/ /REPLACESPACE/g')
 	do
-		BACKUPFOLDER=`echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g'`
-		BACKUPNAME=`echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g'`
-		DURATION=`echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g'`
-		echo '<tr><td>'$BACKUPNAME'</td><td>'$BACKUPFOLDER'</td><td>'$DURATION'</td>
+		BACKUPFOLDER=$(echo "$BACKUPDATA" | cut -d, -f1 | sed 's/REPLACESPACE/ /g')
+		BACKUPNAME=$(echo "$BACKUPDATA" | cut -d, -f2 | sed 's/REPLACESPACE/ /g')
+		DURATION=$(echo "$BACKUPDATA" | cut -d, -f3 | sed 's/REPLACESPACE/ /g')
+		echo '<tr><td>'"$BACKUPNAME"'</td><td>'"$BACKUPFOLDER"'</td><td>'"$DURATION"'</td>
 		<td>
-			<button class="info" name="____DoEdit____" value="____ACTION____edit____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
-			<img src="'$ICON1'" alt="'$"Edit"'">
-			<span>'$"Edit"'<br>'$BACKUPNAME'</span>
+			<button class="info" name="____DoEdit____" value="____ACTION____edit____SERVERNAME____'"$SERVERNAME"'____BACKUPNAME____'"$BACKUPNAME"'____">
+			<img src="'"$ICON1"'" alt="'$"Edit"'">
+			<span>'$"Edit"'<br>'"$BACKUPNAME"'</span>
 			</button>
 		</td>
 		<td>
-			<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'$SERVERNAME'____BACKUPNAME____'$BACKUPNAME'____">
-			<img src="'$ICON2'" alt="'$"Delete"'">
-			<span>'$"Delete"'<br>'$BACKUPNAME'</span>
+			<button class="info" name="____DoDelete____" value="____ACTION____delete____SERVERNAME____'"$SERVERNAME"'____BACKUPNAME____'"$BACKUPNAME"'____">
+			<img src="'"$ICON2"'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'"$BACKUPNAME"'</span>
 			</button>
 		</td></tr>'
 	done

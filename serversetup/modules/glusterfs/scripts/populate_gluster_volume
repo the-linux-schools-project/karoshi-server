@@ -21,8 +21,6 @@
 #
 #Website: http://www.karoshi.org.uk
 
-
-LOG_DATE=`date +%F`
 MOUNTBASE=/mnt-gluster
 GLUSTERBASE=/home/gluster-volumes
 
@@ -57,7 +55,7 @@ fi
 [ -z "$ACTION" ] && ACTION=notset
 
 #Exit if a gluster folder does not exist for the volume.
-if [ "$SERVER" = `hostname-fqdn` ]
+if [ "$SERVER" = "$(hostname-fqdn)" ]
 then
 	if [ ! -d "$GLUSTERBASE"/"$GLUSTERVOL" ]
 	then
@@ -66,24 +64,24 @@ then
 		exit 101	
 	fi
 else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-	if [ ! -d '$GLUSTERBASE'/'$GLUSTERVOL' ]
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	if [ ! -d '"$GLUSTERBASE"'/'"$GLUSTERVOL"' ]
 	then
-		echo "'$GLUSTERBASE'"/"'$GLUSTERVOL'" - This folder does not exist"<br>"
+		echo "'"$GLUSTERBASE"'"/"'"$GLUSTERVOL"'" - This folder does not exist"<br>"
 		sleep 3
 		exit 101	
 	fi	
 	'
-	[ $? = 101 ] && exit 101
+	[ "$?" = 101 ] && exit 101
 fi
 
 
-FOLDER_SHORT=`basename "$FOLDER"`
-FOLDERPATH=$(echo $FOLDER | sed 's%/'$FOLDER_SHORT'$%%g')
+FOLDER_SHORT=$(basename "$FOLDER")
+FOLDERPATH=$(echo "$FOLDER" | sed 's%/'"$FOLDER_SHORT"'$%%g')
 
 #Copy in data to the gluster volume or create an empty folder
-echo "<ul><li>"$SERVER - $"Copying" $FOLDER"</li></ul>"
-if [ "$SERVER" = `hostname-fqdn` ]
+echo "<ul><li>$SERVER - "$"Copying"" $FOLDER</li></ul>"
+if [ "$SERVER" = "$(hostname-fqdn)" ]
 then
 	if [ "$ACTION" = copydata ]
 	then
@@ -94,23 +92,23 @@ then
 			echo '</pre>'
 		fi
 	fi
-	[ ! -d "$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" ] && mkdir -p /"$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT"
+	[ ! -d "$MOUNTBASE/$GLUSTERVOL/$FOLDER_SHORT" ] && mkdir -p "/$MOUNTBASE/$GLUSTERVOL/$FOLDER_SHORT"
 else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-	if [ "'$ACTION'" = copydata ]
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	if [ "'"$ACTION"'" = copydata ]
 	then
-		if [ ! -L "'$FOLDER'" ]
+		if [ ! -L "'"$FOLDER"'" ]
 		then
 			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'$FOLDER'" "'$MOUNTBASE'"/"'$GLUSTERVOL'"
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'"$FOLDER"'" "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"
 		echo "</pre>"
 		fi
 	fi
-	[ ! -d "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" ] && mkdir -p "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'"
+	[ ! -d "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'" ] && mkdir -p "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'"
 	'
 fi
 
-if [ "$SERVER" = `hostname-fqdn` ]
+if [ "$SERVER" = "$(hostname-fqdn)" ]
 then
 	if [ ! -L "$FOLDER" ]
 	then
@@ -119,23 +117,23 @@ then
 		#Move existing folder
 		[ -d "$FOLDER" ] && mv "$FOLDER" "$FOLDER".pregluster.$$
 		#Symlink folder
-		ln -s "$MOUNTBASE"/"$GLUSTERVOL"/"$FOLDER_SHORT" "$FOLDER"
+		ln -s "$MOUNTBASE/$GLUSTERVOL/$FOLDER_SHORT" "$FOLDER"
 	fi
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
-	if [ ! -L "'$FOLDER'" ]
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	if [ ! -L "'"$FOLDER"'" ]
 	then
 		#Create parent folder if it does not exist
-		[ ! -d "'$FOLDERPATH'" ] && mkdir -p "'$FOLDERPATH'"
+		[ ! -d "'"$FOLDERPATH"'" ] && mkdir -p "'"$FOLDERPATH"'"
 		#Move existing folder
-		[ -d "'$FOLDER'" ] && mv "'$FOLDER'" "'$FOLDER'".pregluster.'$$'
+		[ -d "'"$FOLDER"'" ] && mv "'"$FOLDER"'" "'"$FOLDER"'".pregluster.'"$$"'
 		#Symlink folder
-		ln -s "'$MOUNTBASE'"/"'$GLUSTERVOL'"/"'$FOLDER_SHORT'" "'$FOLDER'"
+		ln -s "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'" "'"$FOLDER"'"
 	fi
 '
 fi
 
 #Add in flag files
 [ ! -d /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders/
-FOLDERFLAG=`echo "$FOLDER" | sed 's/\//-/g'`
-touch /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL"/folders/"$FOLDERFLAG"
+FOLDERFLAG=$(echo "$FOLDER" | sed 's/\//-/g')
+touch /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL/folders/$FOLDERFLAG"
