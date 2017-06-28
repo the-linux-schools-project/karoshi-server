@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Gluster Volume Control"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Gluster Volume Control"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -64,7 +64,7 @@ $(document).ready(function()
 );
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -85,89 +85,57 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+*'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+*')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=24
-#Assign VOLUME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = VOLUMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		VOLUME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign VOLUME
+DATANAME=VOLUME
+get_data
+VOLUME="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign SERVER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVER
+get_data
+SERVER="$DATAENTRY"
 
 #Assign SERVERS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERS
+get_data
+SERVERS="$DATAENTRY"
 
 #Assign FOLDER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FOLDERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
-
+DATANAME=FOLDER
+get_data
+FOLDER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/gluster_control.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -178,23 +146,23 @@ exit
 
 ACTION2=create
 ACTIONMSG=$"Create Gluster Volume"
-if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ]  
+if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ] || [ "$ACTION" = deleteglustervolume ] 
 then
-ACTION2=view
-ACTIONMSG=$"View Gluster Volumes"
+	ACTION2=view
+	ACTIONMSG=$"View Gluster Volumes"
 fi
 #########################
 #Check data
 #########################
 TITLE="View Volumes"
-[ $ACTION = create ] && TITLE=$"Create Volume"
-[ $ACTION = reallycreate ] && TITLE=$"Creating Volume"
-[ $ACTION = addfolder ] && TITLE=$"Add Folder"
-[ $ACTION = reallyaddfolder ] && TITLE=$"Ading Folder"
-[ $ACTION = assignshare ] && TITLE=$"Assign Network Share"
-[ $ACTION = removefolder ] && TITLE=$"Remove Folder"
+[ "$ACTION" = create ] && TITLE=$"Create Volume"
+[ "$ACTION" = reallycreate ] && TITLE=$"Creating Volume"
+[ "$ACTION" = addfolder ] && TITLE=$"Add Folder"
+[ "$ACTION" = reallyaddfolder ] && TITLE=$"Ading Folder"
+[ "$ACTION" = assignshare ] && TITLE=$"Assign Network Share"
+[ "$ACTION" = removefolder ] && TITLE=$"Remove Folder"
 
-if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ] && [ "$ACTION" != confirmremovefolder ]
+if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ] && [ "$ACTION" != confirmremovefolder ] && [ "$ACTION" != deleteglustervolume ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -212,7 +180,7 @@ then
 		MESSAGE=$"You have not chosen any servers."
 		show_status
 	fi
-	if [ `echo $SERVERS | sed 's/%2C/,/g' | grep -c ","` = 0 ]
+	if [[ $(echo "$SERVERS" | sed 's/%2C/,/g' | grep -c ",") = 0 ]]
 	then
 		MESSAGE=$"You have to choose at least two servers to create a distributed volume."
 		show_status
@@ -240,7 +208,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -252,15 +220,14 @@ fi
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-	echo '<div style="float: center" id="my_menu" class="sdmenu"><div class="expanded"><span>'$"Gluster Controls"' '$SERVER2'</span></div></div><div id="'$DIV_ID'">
-'
+	echo '<div style="float: center" id="my_menu" class="sdmenu"><div class="expanded"><span>'$"Gluster Controls"' '"$SERVER2"'</span></div></div><div id="'"$DIV_ID"'">'
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
 <form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">Gluster - '$TITLE'</div></td>
-<td><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></td>
+<tr><td><div class="sectiontitle">Gluster - '"$TITLE"'</div></td>
+<td><input name="_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ACTIONMSG"'"></td>
 <td>
 <button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">
 '$"Home Folders"'
@@ -275,11 +242,11 @@ else
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$VOLUME:$SERVER:$SERVERS:$FOLDER:" | sudo -H /opt/karoshi/web_controls/exec/gluster_control
 echo '</form>'
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></div></body></html>'
 exit

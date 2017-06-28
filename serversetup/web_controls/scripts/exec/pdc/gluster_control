@@ -108,6 +108,8 @@ export TEXTDOMAIN=karoshi-server
 WIDTH1=200
 WIDTH2=200
 WIDTH3=180
+WIDTH4=250
+WIDTH5=80
 TABLECLASS=standard
 #echo volume is $VOLUME action is $ACTION"<br>"
 
@@ -174,7 +176,7 @@ fi
 
 if [ "$ACTION" = confirmremovefolder ]
 then
-	echo '<input type="hidden" name="_FOLDER_" value="'"$FOLDER"'"><input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'$VOLUME'</td></tr>
+	echo '<input type="hidden" name="_FOLDER_" value="'"$FOLDER"'"><input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'"$VOLUME"'</td></tr>
 <tr><td><b>'$"Folder"'</b></td><td>'"$FOLDER"'</td></tr></tbody></table><br>
 '$"This will delete all of the data in the folder."' '$"Are you sure that you want to delete this folder?"'
 <br><br><input name="_ACTION_reallyremovefolder_" value="'$"Submit"'" class="button" type="submit"> <input name="_ACTION_view_" value="'$"Cancel"'" class="button" type="submit">
@@ -189,9 +191,9 @@ then
 	then
 		if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l) -gt 0 ]]
 		then
-			echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'"$VOLUME"'</td></tr>
-<tr><td style="vertical-align: top; height: 20px;"></td></tr>
-<tr><td><b>'$"Folder"'</b></td><td><b>'$"Delete"'</b></td></tr>'
+			echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'">
+			<table class="tablesorter"><tbody><td style="width: '"$WIDTH4"'px;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH5"'px;">'"$VOLUME"'</td></tr></tbody></table>
+			<table id="myTable" class="tablesorter"><thead><tr><th style="width: '"$WIDTH4"'px;"><b>'$"Folder"'</b></th><th style="width: '"$WIDTH5"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 			for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
 			do
@@ -236,7 +238,7 @@ then
 
 	done
 	DFSPATH=$(echo "$DFSPATH" | sed 's/^,//g')
-	if [ $(echo "$DFSPATH" | grep -c "$SERVER") = 0 ]
+	if [[ $(echo "$DFSPATH" | grep -c "$SERVER") = 0 ]]
 	then
 		#Server is not in the volume so copy the data into the gluster volume after it has been created
 		COPYAFTER=yes
@@ -259,7 +261,7 @@ then
 
 		if [ "$SERVER" = "$(hostname-fqdn)" ]
 		then
-			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@$GLUSTERSERVER:/"$FOLDERBASE"/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			rsync --timeout=30 --keep-dirlinks --dirs --recursive --links --compress --times --perms --acls --owner --group "$FOLDER" root@"$GLUSTERSERVER:/$FOLDERBASE"/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		fi
 
 		if [ "$GLUSTERSERVER" = "$(hostname-fqdn)" ]
@@ -272,8 +274,8 @@ then
 			#Mount /home as sshfs on both servers
 			[ ! -d "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" ] && mkdir -p "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT"
 			[ ! -d "/opt/karoshi/mount/$SERVER/$FOLDERSHORT" ] && mkdir -p "/opt/karoshi/mount/$SERVER/$FOLDERSHORT"
-			sshfs root@"$GLUSTERSERVER"/:/"$FOLDERBASE" "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-			sshfs root@"$SERVER":/"$FOLDERBASE" "/opt/karoshi/mount/$SERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			sshfs root@"$GLUSTERSERVER/:/$FOLDERBASE" "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			sshfs root@"$SERVER:/$FOLDERBASE" "/opt/karoshi/mount/$SERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 			rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "/opt/karoshi/mount/$SERVER/$FOLDERSHORT/$FOLDERSHORT" "/opt/karoshi/mount/$GLUSTERSERVER/$FOLDERSHORT" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		
@@ -414,7 +416,7 @@ fi
 #Create a gluster volume
 if [ "$ACTION" = reallycreate ]
 then
-	SERVERS=$(echo "$SERVERS" | sed 's/%2C/,/g')
+	SERVERS="${SERVERS//%2C/,}"
 	echo "$(date): gluster_control - Creating gluster volume $VOLUME on $SERVERS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 		if [ ! -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME" ]
@@ -466,7 +468,7 @@ then
 	if [ ! -z "$SERVERS" ]
 	then
 		echo '<tr><td style="vertical-align: top; height: 40px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
-		for CHOSENSERVER in $(echo "$SERVERS" | sed 's/,/ /g')
+		for CHOSENSERVER in ${SERVERS//,/ }
 		do
 			echo "$CHOSENSERVER<br>"
 		done
@@ -490,6 +492,34 @@ echo '</tbody></table><br>'
 	fi
 fi
 
+if [ "$ACTION" = deleteglustervolume ]
+then
+	echo "$(date): gluster_control - deleting volume $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+	#Delete the volume from the servers
+	for SERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
+	do
+		if [ "$SERVER" = "$(hostname-fqdn)" ]
+		then
+			echo -e "y\n" | gluster volume stop "$VOLUME" 1>/dev/null
+			echo -e "y\n" | gluster volume delete "$VOLUME" 1>/dev/null
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+			echo -e "y\n" | gluster volume stop '"$VOLUME"' 1>/dev/null
+			echo -e "y\n" | gluster volume delete '"$VOLUME"' 1>/dev/null
+			exit "$?"
+			'		
+		fi
+		[ "$?" = 0 ] && break
+	done
+
+	#Delete gluster information
+	rm -f -R /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/
+	
+	#Reload gluster view
+	reloadpage
+fi
+
 #Show all gluster volumes
 if [ "$ACTION" = view ] 
 then
@@ -505,17 +535,19 @@ then
 			#Storage bricks
 			SERVERS=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
 			echo '<tr><td style="vertical-align: top;">'"$VOLUME"'</td><td style="vertical-align: top;">'
-			for SERVER in $(echo "$SERVERS")
+			for SERVER in $SERVERS
 			do
 				echo "$SERVER<br>"
 			done
 			echo '</td><td style="vertical-align: top;">'
+			FOLDERCOUNT=0
 			if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/ | wc -l) -gt 0 ]]
 			then
 			for FOLDER in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/-*
 				do
+					let FOLDERCOUNT="$FOLDERCOUNT"+1
 					FOLDER=$(basename "$FOLDER")
-					FOLDER=$(echo "$FOLDER" | sed 's/-/\//g')
+					FOLDER="${FOLDER//-/\/}"
 					echo "$FOLDER<br>"
 				done
 			else
@@ -535,11 +567,19 @@ then
 				<span>'$"Remove folder"'</span>
 				</button>
 
-				<button class="info" name="_RemoveFolder_" value="_ACTION_assignhomefolders_">
+				<button class="info" name="_AssignHomeFolders_" value="_ACTION_assignhomefolders_">
 				<img src="/images/submenus/system/gluster_assign_home_folders.png" alt="'$"Assign Home Folders"'">
 				<span>'$"Assign Home Folders"'</span>
 				</button>
 				'
+				if [ "$FOLDERCOUNT" = 0 ]
+				then
+					echo '<button class="info" name="_RemoveGlusterVolume_" value="_ACTION_deleteglustervolume_VOLUME_'"$VOLUME"'_">
+					<img src="/images/submenus/system/delete.png" alt="'$"Delete Gluster Volume"'">
+					<span>'$"Delete Gluster Volume"'</span>
+					</button>
+					'
+				fi
 			fi
 			echo '</td></tr>'
 		done
@@ -548,5 +588,4 @@ then
 		echo $"No Gluster volumes have been created."
 	fi
 fi
-
 
