@@ -146,7 +146,7 @@ exit
 
 ACTION2=create
 ACTIONMSG=$"Create Gluster Volume"
-if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ] || [ "$ACTION" = deleteglustervolume ] 
+if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ] || [ "$ACTION" = deleteglustervolume ] || [ "$ACTION" = status ] 
 then
 	ACTION2=view
 	ACTIONMSG=$"View Gluster Volumes"
@@ -162,7 +162,7 @@ TITLE="View Volumes"
 [ "$ACTION" = assignshare ] && TITLE=$"Assign Network Share"
 [ "$ACTION" = removefolder ] && TITLE=$"Remove Folder"
 
-if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ] && [ "$ACTION" != confirmremovefolder ] && [ "$ACTION" != deleteglustervolume ]
+if [ "$ACTION" != create ] && [ "$ACTION" != reallycreate ] && [ "$ACTION" != restore ] && [ "$ACTION" != view ] && [ "$ACTION" != addfolder ] && [ "$ACTION" != reallyaddfolder ] && [ "$ACTION" != assignhomefolders ] && [ "$ACTION" != removefolder ] && [ "$ACTION" != reallyremovefolder ] && [ "$ACTION" != confirmremovefolder ] && [ "$ACTION" != deleteglustervolume ] && [ "$ACTION" != status ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status

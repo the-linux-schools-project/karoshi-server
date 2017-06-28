@@ -107,7 +107,7 @@ export TEXTDOMAIN=karoshi-server
 
 WIDTH1=200
 WIDTH2=200
-WIDTH3=180
+WIDTH3=230
 WIDTH4=250
 WIDTH5=80
 TABLECLASS=standard
@@ -176,7 +176,7 @@ fi
 
 if [ "$ACTION" = confirmremovefolder ]
 then
-	echo '<input type="hidden" name="_FOLDER_" value="'"$FOLDER"'"><input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td>'"$VOLUME"'</td></tr>
+	echo '<input type="hidden" name="_FOLDER_" value="'"$FOLDER"'"><input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody><tr><td style="width: '"$WIDTH1"'px;"><b>'$"Volume"'</b></td><td>'"$VOLUME"'</td></tr>
 <tr><td><b>'$"Folder"'</b></td><td>'"$FOLDER"'</td></tr></tbody></table><br>
 '$"This will delete all of the data in the folder."' '$"Are you sure that you want to delete this folder?"'
 <br><br><input name="_ACTION_reallyremovefolder_" value="'$"Submit"'" class="button" type="submit"> <input name="_ACTION_view_" value="'$"Cancel"'" class="button" type="submit">
@@ -378,10 +378,10 @@ fi
 if [ "$ACTION" = addfolder ]
 then
 	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><p><img height="16" width="16" alt="Warning" src="/images/warnings/warning.png"> '$"IMPORTANT - Please ensure that users are not logged in to ensure that data is not lost."'</p><br><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
-<tr><td style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH2"'px; vertical-align: top;">'"$VOLUME"'</td></tr>'
+<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH2"'px;">'"$VOLUME"'</td></tr>'
 	if [ ! -z "$SERVER" ]
 	then
-		echo '<tr><td><b>'$"Folder Path"'</b></td><td style="vertical-align: top;"><input tabindex= "1" name="_FOLDER_" value="'"$FOLDER"'" style="width: 200px;" size="20" type="text"></td>
+		echo '<tr><td><b>'$"Folder Path"'</b></td><td><input tabindex= "1" name="_FOLDER_" value="'"$FOLDER"'" style="width: 200px;" size="20" type="text"></td>
 <td style="vertical-align: middle; text-align: left;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the full path that you want to add to the gluster volume."'</span></a></td>
 </tr>
 <tr><td></td><td><select name="_FOLDERLIST_" style="width: 200px;" size="1" onchange="document.combobox._FOLDER_.value = document.combobox._FOLDERLIST_.options[document.combobox._FOLDERLIST_.selectedIndex].value;document.combobox._FOLDERLIST_.value=&#39;&#39;">
@@ -400,9 +400,9 @@ then
 
 	if [ ! -z "$SERVER" ]
 	then
-		echo '<tr><td style="vertical-align: top; height: 30px;"><b>'$"Server data source"'</b></td><td style="vertical-align: top; height: 30px;">'"$SERVER"'</td></tr>'
+		echo '<tr><td style="height: 30px;"><b>'$"Server data source"'</b></td><td style="height: 30px;">'"$SERVER"'</td></tr>'
 	else
-		echo '<tr><td style="vertical-align: top; height: 30px;"></td><td style="vertical-align: top; height: 30px;"></td></tr>'
+		echo '<tr><td style="height: 30px;"></td><td style="height: 30px;"></td></tr>'
 	fi
 echo '</tbody></table>'
 [ -z "$SERVER" ] && echo ''$"Choose the server that the data is currently on."'<br>'
@@ -462,12 +462,12 @@ then
 	VOLUME="glustervol$GLUSTERCOUNT"
 	#Show tick box of servers from zones to use
 	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><input type="hidden" name="_SERVERS_" value="'"$SERVERS"'"><br><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
-<tr><td style="width: '$WIDTH1'px; vertical-align: top;"><b>'$"Volume Name"'</b></td><td style="vertical-align: top;">'$VOLUME'
+<tr><td style="width: '$WIDTH1'px;"><b>'$"Volume Name"'</b></td><td>'$VOLUME'
 </td></tr>'
 
 	if [ ! -z "$SERVERS" ]
 	then
-		echo '<tr><td style="vertical-align: top; height: 40px;"><b>'$"Servers"'</b></td><td style="vertical-align: top;">'
+		echo '<tr><td style="height: 40px;"><b>'$"Servers"'</b></td><td>'
 		for CHOSENSERVER in ${SERVERS//,/ }
 		do
 			echo "$CHOSENSERVER<br>"
@@ -475,7 +475,7 @@ then
 		[[ $(echo "$SERVERS" | grep -c ",") = 0 ]] && echo $"Choose an extra server to create the Gluster volume on."
 		echo '</td></tr>'
 	else
-		echo '<tr><td></td><td style="vertical-align: top; height: 40px;">'$"Choose the servers that you want to add to the gluster volume."'<br>'$"You can have more than one gluster volume per server."'</td></tr>'
+		echo '<tr><td></td><td style="height: 40px;">'$"Choose the servers that you want to add to the gluster volume."'<br>'$"You can have more than one gluster volume per server."'</td></tr>'
 	fi
 
 echo '</tbody></table><br>'
@@ -520,6 +520,40 @@ then
 	reloadpage
 fi
 
+#Show gluster status
+if [ "$ACTION" = status ] 
+then
+
+	for SERVER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
+	do
+		#Show status of each brick
+		if [ "$SERVER" = "$(hostname-fqdn)" ]
+		then
+			if [ -d /home/gluster-volumes/"$VOLUME" ]
+			then
+				GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail)
+				BRICKSTATUS=ok
+				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
+				echo "$GLUSTERVOLINFO" | sed "s/$/<br>/g"
+			else
+				echo "Brick offline<br>"
+			fi
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+			if [ -d /home/gluster-volumes/"'$VOLUME'" ]
+			then
+				GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail)
+				BRICKSTATUS=ok
+				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
+				echo "$GLUSTERVOLINFO" | sed "s/$/<br>/g"
+			else
+				echo "Brick offline<br>"
+			fi
+			'
+		fi
+	done
+fi
+
 #Show all gluster volumes
 if [ "$ACTION" = view ] 
 then
@@ -527,19 +561,19 @@ then
 	then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
 		<thead>
-		<tr><th style="width: '"$WIDTH1"'px; vertical-align: top;"><b>'$"Volume"'</b></th><th style="width: '"$WIDTH2"'px; vertical-align: top;"><b>'$"Servers"'</b></th><th style="width: '"$WIDTH3"'px; vertical-align: top;"><b>'$"Folders"'</b></th><th style="width: '"$WIDTH3"'px; vertical-align: top;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Volume"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Servers"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Folders"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 		do
 			#Get data
 			VOLUME=$(basename "$VOLUMES")
 			#Storage bricks
 			SERVERS=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers/)
-			echo '<tr><td style="vertical-align: top;">'"$VOLUME"'</td><td style="vertical-align: top;">'
+			echo '<tr><td>'"$VOLUME"'</td><td>'
 			for SERVER in $SERVERS
 			do
 				echo "$SERVER<br>"
 			done
-			echo '</td><td style="vertical-align: top;">'
+			echo '</td><td>'
 			FOLDERCOUNT=0
 			if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/ | wc -l) -gt 0 ]]
 			then
@@ -553,7 +587,11 @@ then
 			else
 				echo $"No folders have been assigned."
 			fi
-			echo '</td><td style="vertical-align: top;">'
+			echo '</td><td>
+			<button class="info" name="_Status_" value="_ACTION_status_VOLUME_'"$VOLUME"'_">
+			<img src="/images/submenus/system/view_logs.png" alt="'$"Gluster Volume Status"'">
+			<span>'$"Status"'</span>
+			</button>'
 			if [ "$VOLUME" != dc-data ]
 			then
 				echo '
