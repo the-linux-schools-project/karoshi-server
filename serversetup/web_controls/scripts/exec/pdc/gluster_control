@@ -530,30 +530,35 @@ then
 		#Show status of each brick
 		if [ "$SERVER" = "$(hostname-fqdn)" ]
 		then
-			if [ -d /home/gluster-volumes/"$VOLUME" ]
+			BRICKSTATUS=ok
+			GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail)
+			[ "$?" != 0 ] && BRICKSTATUS=fail
+			echo "<table style=\"width:800px\" class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
+			if [ "$BRICKSTATUS" = ok ]
 			then
-				GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail | sed "/^ /d")
-				BRICKSTATUS=ok
-				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
-				echo "<table style=\"width:800px\" class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
-				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
-				echo "</tbody></table>"
+				echo "$GLUSTERVOLINFO" | sed "/^ /d" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
 			else
-				echo "Brick offline<br>"
+				echo '<tr><td style="width:150px">'"$SERVER"'</td><td style="text-align:right"><b style="color:red;">'$"Brick missing"'</b> <button class="button" name="_RestoreBrick_" value="_ACTION_restorebrick_VOLUME_'"$VOLUME"'_server_'"$SERVER"'_">
+				'$"Restore Brick"'
+				</button></td></tr>'
 			fi
+			echo "</tbody></table>"
 		else
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
-			if [ -d /home/gluster-volumes/"'$VOLUME'" ]
+			BRICKSTATUS=ok
+			GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail)
+			[ "$?" != 0 ] && BRICKSTATUS=fail
+			echo "<table style=\"width:800px\"  class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
+			if [ "$BRICKSTATUS" = ok ]
 			then
-				GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail | sed "/^ /d")
-				BRICKSTATUS=ok
-				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
-				echo "<table style=\"width:800px\"  class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
 				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
-				echo "</tbody></table>"
 			else
-				echo "Brick offline<br>"
+				echo "<tr><td style=\"width:150px\">'"$SERVER"'</td><td style=\"text-align:right\"><b style=\"color:red;\">'$"Brick missing"'</b> <button class=\"button\" name=\"_RestoreBrick_\" value=\"_ACTION_restorebrick_VOLUME_'"$VOLUME"'_server_'"$SERVER"'_\">
+				'$"Restore Brick"'
+				</button></td></tr>"
+
 			fi
+			echo "</tbody></table>"
 			'
 		fi
 	done

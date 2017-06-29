@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,114 +31,111 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
 then
-	echo `date`: backup_essentials - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $backup_essentials_cgi'check' ]
+if [ "$MD5SUM"'check' != "$backup_essentials_cgi"'check' ]
 then
-	echo `date`: backup_essentials - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: backup_essentials - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: backup_essentials - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
-MOBILE=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f5)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f6)
+#MOBILE=$(echo "$DATA" | cut -s -d: -f7)
 
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-echo `date`: backup_essentials - Not called by backup_essentials.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): backup_essentials - Not called by backup_essentials.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: backup_essentials - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: backup_essentials - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: backup_essentials - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: backup_essentials - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: backup_essentials - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): backup_essentials - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: backup_essentials - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_essentials - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: backup_essentials backing up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): backup_essentials backing up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
-
-TABLECLASS=standard
-[ "$MOBILE" = yes ] && TABLECLASS=mobilestandard
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 #Backup samba4 ready to add to the archive
 /opt/karoshi/serversetup/all/"useful scripts"/backup_servers/samba_backup
 SAMBA_BACKUP_FOLDER=$(date +%Y-%m-%d)
 SAMBA_ARCHIVE_DATE=$(date +%d%m%y)
 #Copy samba backup folder to today
-cp -f -R /var/lib/samba/samba_backup/$SAMBA_BACKUP_FOLDER/ /var/lib/samba/samba_backup/pdc_backup
+cp -f -R /var/lib/samba/samba_backup/"$SAMBA_BACKUP_FOLDER"/ /var/lib/samba/samba_backup/pdc_backup
 #Rename the archives
-mv /var/lib/samba/samba_backup/pdc_backup/samba4_private.$SAMBA_ARCHIVE_DATE.tar.bz2 /var/lib/samba/samba_backup/pdc_backup/samba4_private.tar.bz2
-mv /var/lib/samba/samba_backup/pdc_backup/sysvol.$SAMBA_ARCHIVE_DATE.tar.bz2 /var/lib/samba/samba_backup/pdc_backup/sysvol.tar.bz2
+mv /var/lib/samba/samba_backup/pdc_backup/samba4_private."$SAMBA_ARCHIVE_DATE".tar.bz2 /var/lib/samba/samba_backup/pdc_backup/samba4_private.tar.bz2
+mv /var/lib/samba/samba_backup/pdc_backup/sysvol."$SAMBA_ARCHIVE_DATE".tar.bz2 /var/lib/samba/samba_backup/pdc_backup/sysvol.tar.bz2
 
 #Create some network information for the main server
 [ ! -d /opt/karoshi/server_network/network_information ] && mkdir /opt/karoshi/server_network/network_information
 
-THISIP=`net lookup $(hostname-fqdn)`
-echo NAMECUSTOM=$HOSTNAME > /opt/karoshi/server_network/network_information/pdc
-echo TCPIPCUSTOM=$THISIP >> /opt/karoshi/server_network/network_information/pdc
+THISIP="$(net lookup $(hostname-fqdn))"
+echo "NAMECUSTOM=$HOSTNAME" > /opt/karoshi/server_network/network_information/pdc
+echo "TCPIPCUSTOM=$THISIP" >> /opt/karoshi/server_network/network_information/pdc
 
 #Make sure we have an extra shares folder for samba
 [ ! -d /etc/samba/extra_network_shares ] && mkdir -p /etc/samba/extra_network_shares
@@ -176,9 +173,9 @@ fi
 
 BASE_BACKUP_PATH=/opt/karoshi/backup
 BACKUP_PATH="$BASE_BACKUP_PATH"/"$SERVERNAME"
-SERVERNAME_SHORT=`echo "$SERVERNAME" | cut -d. -f1`
+SERVERNAME_SHORT=$(echo "$SERVERNAME" | cut -d. -f1)
 
-if [ "$SERVERNAME" = `hostname-fqdn` ]
+if [ "$SERVERNAME" = "$(hostname-fqdn)" ]
 then
 	if [ ! -d "$BASE_BACKUP_PATH" ]
 	then
@@ -193,31 +190,31 @@ then
 	fi
 
 	#Delete existing archive
-	[ -f $BACKUP_PATH/restore ] && rm -f $BACKUP_PATH/karoshi_backup-$LOG_DATE.tar.gz
+	[ -f "$BACKUP_PATH"/restore ] && rm -f "$BACKUP_PATH/karoshi_backup-$LOG_DATE.tar.gz"
 
 	#Create encrypted tar archive for the backup
-	tar czvf $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz $BACKUPFOLDERS 1>/dev/null
-	chmod 0600 $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
+	tar czvf "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz" "$BACKUPFOLDERS" 1>/dev/null
+	chmod 0600 "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz"
 else
-	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '	
-	if [ ! -d "'$BASE_BACKUP_PATH'" ]
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '	
+	if [ ! -d "'"$BASE_BACKUP_PATH"'" ]
 	then
-		mkdir -p "'$BASE_BACKUP_PATH'"
-		chmod 0700 "'$BASE_BACKUP_PATH'"
+		mkdir -p "'"$BASE_BACKUP_PATH"'"
+		chmod 0700 "'"$BASE_BACKUP_PATH"'"
 	fi
 
-	if [ ! -d "'$BACKUP_PATH'" ]
+	if [ ! -d "'"$BACKUP_PATH"'" ]
 	then
-		mkdir -p "'$BACKUP_PATH'"
-		chmod 0700 "'$BACKUP_PATH'"
+		mkdir -p "'"$BACKUP_PATH"'"
+		chmod 0700 "'"$BACKUP_PATH"'"
 	fi
 
 	#Delete existing archive
-	[ -f '$BACKUP_PATH'/restore ] && rm -f '$BACKUP_PATH'/karoshi_backup-'$LOG_DATE'.tar.gz
+	[ -f '"$BACKUP_PATH"'/restore ] && rm -f '"$BACKUP_PATH"'/karoshi_backup-'"$LOG_DATE"'.tar.gz
 
 	#Create encrypted tar archive for the backup
-	tar czvf '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz '$BACKUPFOLDERS' 1>/dev/null
-	chmod 0600 '$BACKUP_PATH'/karoshi-backup-'$SERVERNAME_SHORT'-'$LOG_DATE'.tar.gz
+	tar czvf '"$BACKUP_PATH"'/karoshi-backup-'"$SERVERNAME_SHORT"'-'"$LOG_DATE"'.tar.gz '"$BACKUPFOLDERS"' 1>/dev/null
+	chmod 0600 '"$BACKUP_PATH"'/karoshi-backup-'"$SERVERNAME_SHORT"'-'"$LOG_DATE"'.tar.gz
 	'
 fi
 
@@ -235,23 +232,23 @@ ErrorDocument 401 /cgi-bin/access_denied.cgi
 ErrorDocument 403 /cgi-bin/access_forbidden.cgi
 AuthName "Karoshi Web Control"
 AuthUserFile /opt/karoshi/web_controls/web_access_admin
-require user '$REMOTE_USER'' > /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/.htaccess
+require user '"$REMOTE_USER"'' > /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/.htaccess
 
 
 #Copy in archive
-if [ "$SERVERNAME" = `hostname-fqdn` ]
+if [ "$SERVERNAME" = "$(hostname-fqdn)" ]
 then
-	cp -f $BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+	cp -f "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz" /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
 else
-	scp root@$SERVERNAME:$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
+	scp root@"$SERVERNAME:$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz" /var/www/html_karoshi/admin/backup_"$REMOTE_USER"
 fi
 
-chown root:apache_karoshi /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
-chmod 0750 /var/www/html_karoshi/admin/backup_"$REMOTE_USER"/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz
+chown root:apache_karoshi "/var/www/html_karoshi/admin/backup_$REMOTE_USER/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz"
+chmod 0750 "/var/www/html_karoshi/admin/backup_$REMOTE_USER/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz"
 
 #Redirect to the backup folder
 echo '<SCRIPT language="Javascript">
-window.location = "/admin/backup_'$REMOTE_USER'/karoshi-backup-'$SERVERNAME_SHORT-$LOG_DATE'.tar.gz";
+window.location = "/admin/backup_'"$REMOTE_USER"'/karoshi-backup-'"$SERVERNAME_SHORT-$LOG_DATE"'.tar.gz";
 </script>'
 
 #Delete /var/lib/samba/samba_backup/pdc_backup - its only created for the backup archive.

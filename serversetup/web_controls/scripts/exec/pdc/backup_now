@@ -23,72 +23,72 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_now_cgi
 then
-	echo `date`: backup_now - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_now_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $backup_now_cgi'check' ]
+if [ "$MD5SUM"'check' != "$backup_now_cgi"'check' ]
 then
-	echo `date`: backup_now - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: backup_now - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: backup_now - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-KAROSHI_SERVER=`echo "$DATA" | cut -s -d: -f4 `
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+KAROSHI_SERVER=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: backup_now - Not called by backup_now.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - Not called by backup_now.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: backup_now - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: backup_now - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$KAROSHI_SERVER" ]
 then
-	echo `date`: backup_now - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - Blank server" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: backup_now - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_now - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -96,14 +96,14 @@ fi
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 [ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
 
 function backup_pdc {
 #Make sure a backup is not already running before starting
-if [ $(ps aux | grep rsync | grep -c $KAROSHI_SERVER) = 0 ]
+if [[ $(ps aux | grep rsync | grep -c "$KAROSHI_SERVER") = 0 ]]
 then
 	EVENTFILE=backup-$(date +%F-%H:%M:%S)
 	[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
@@ -113,30 +113,30 @@ fi
 
 function backup_other_servers {
 #Copy in configuration file
-ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+ssh -x -o PasswordAuthentication=no "$KAROSHI_SERVER" '
 [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/
 [ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
 '
 
-echo "<br>"Copying backup configuration data to $KAROSHI_SERVER"<br>"
-scp -r /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER root@$KAROSHI_SERVER:"/opt/karoshi/server_network/backup_servers/backup_settings/"
+echo "<br>Copying backup configuration data to $KAROSHI_SERVER<br>"
+scp -r /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER" root@"$KAROSHI_SERVER:/opt/karoshi/server_network/backup_servers/backup_settings/"
 
 #Copy in backup script
-echo Copying backup backup script to $KAROSHI_SERVER"<br>"
-scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@$KAROSHI_SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
+echo "Copying backup backup script to $KAROSHI_SERVER<br>"
+scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@"$KAROSHI_SERVER:/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
 
-ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+ssh -x -o PasswordAuthentication=no "$KAROSHI_SERVER" '
 EVENTFILE=backup-$(date +%F-%H:%M:%S)
-[ ! -d /opt/karoshi/logs/backup_servers/'$LOG_DATE' ] && mkdir -p /opt/karoshi/logs/backup_servers/'$LOG_DATE'
+[ ! -d /opt/karoshi/logs/backup_servers/'"$LOG_DATE"' ] && mkdir -p /opt/karoshi/logs/backup_servers/'"$LOG_DATE"'
 nohup bash -c "/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/backup_servers 1>> /opt/karoshi/logs/events/$EVENTFILE 2>> /opt/karoshi/logs/events/$EVENTFILE&"
-' 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+' 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 }
 
-echo ''$KAROSHI_SERVER': '$"Backing up now"' - '$"Check the events log to see when the backup is completed."'<br>'
-echo `date`: backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo ''"$KAROSHI_SERVER"': '$"Backing up now"' - '$"Check the events log to see when the backup is completed."'<br>'
+echo "$(date): backup_now - $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $KAROSHI_SERVER = `hostname-fqdn` ]
+if [ "$KAROSHI_SERVER" = "$(hostname-fqdn)" ]
 then
 	backup_pdc
 else
@@ -146,7 +146,7 @@ fi
 
 echo '<br><br><form name="myform" action="backup_now_fm.cgi" method="post">
 <button class="button" name="_ViewServers_" value="_">'$"Back"'</button>
-<button class="button" formtarget="_blank" formaction="view_logs.cgi" name="_EventLogs_" value="_SERVERNAME_'$KAROSHI_SERVER'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_viewlist_">
+<button class="button" formtarget="_blank" formaction="view_logs.cgi" name="_EventLogs_" value="_SERVERNAME_'"$KAROSHI_SERVER"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_viewlist_">
 '$"Event Logs"'
 </button>
 </form>'
