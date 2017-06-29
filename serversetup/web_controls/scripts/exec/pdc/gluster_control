@@ -570,6 +570,7 @@ if [ "$ACTION" = restorebrick ]
 then
 	echo "$(date): gluster_control - restoring brick for $SERVER on volume $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER" "$VOLUME" restore "$REMOTE_USER" "$REMOTE_ADDR"
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER" "$FOLDER" dc-data
 	reloadpage
 fi
 
