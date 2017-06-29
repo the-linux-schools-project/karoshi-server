@@ -105,11 +105,12 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
-WIDTH1=200
-WIDTH2=200
-WIDTH3=230
-WIDTH4=250
-WIDTH5=80
+WIDTH1=100
+WIDTH2=250
+WIDTH3=250
+WIDTH4=105
+WIDTH5=250
+WIDTH6=80
 TABLECLASS=standard
 #echo volume is $VOLUME action is $ACTION"<br>"
 
@@ -192,8 +193,8 @@ then
 		if [[ $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders | wc -l) -gt 0 ]]
 		then
 			echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'">
-			<table class="tablesorter"><tbody><td style="width: '"$WIDTH4"'px;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH5"'px;">'"$VOLUME"'</td></tr></tbody></table>
-			<table id="myTable" class="tablesorter"><thead><tr><th style="width: '"$WIDTH4"'px;"><b>'$"Folder"'</b></th><th style="width: '"$WIDTH5"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+			<table class="tablesorter"><tbody><td style="width: '"$WIDTH5"'px;"><b>'$"Volume"'</b></td><td style="width: '"$WIDTH6"'px;">'"$VOLUME"'</td></tr></tbody></table>
+			<table id="myTable" class="tablesorter"><thead><tr><th style="width: '"$WIDTH5"'px;"><b>'$"Folder"'</b></th><th style="width: '"$WIDTH6"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 			for FOLDERS in /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/*
 			do
@@ -531,10 +532,12 @@ then
 		then
 			if [ -d /home/gluster-volumes/"$VOLUME" ]
 			then
-				GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail)
+				GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail | sed "/^ /d")
 				BRICKSTATUS=ok
 				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
-				echo "$GLUSTERVOLINFO" | sed "s/$/<br>/g"
+				echo "<table style=\"width:800px\" class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
+				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
+				echo "</tbody></table>"
 			else
 				echo "Brick offline<br>"
 			fi
@@ -542,10 +545,12 @@ then
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 			if [ -d /home/gluster-volumes/"'$VOLUME'" ]
 			then
-				GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail)
+				GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail | sed "/^ /d")
 				BRICKSTATUS=ok
 				[ $(echo "$GLUSTERVOLINFO" | grep Online | grep -c "Y") = 0 ] && BRICKSTATUS=fail
-				echo "$GLUSTERVOLINFO" | sed "s/$/<br>/g"
+				echo "<table style=\"width:800px\"  class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
+				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
+				echo "</tbody></table>"
 			else
 				echo "Brick offline<br>"
 			fi
@@ -561,7 +566,7 @@ then
 	then
 		echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
 		<thead>
-		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Volume"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Servers"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Folders"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Volume"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Servers"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Folders"'</b></th><th style="width: '"$WIDTH4"'px;"><b>'$"Actions"'</b></th></tr></thead><tbody>'
 		for VOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 		do
 			#Get data
@@ -588,35 +593,27 @@ then
 				echo $"No folders have been assigned."
 			fi
 			echo '</td><td>
-			<button class="info" name="_Status_" value="_ACTION_status_VOLUME_'"$VOLUME"'_">
-			<img src="/images/submenus/system/view_logs.png" alt="'$"Gluster Volume Status"'">
-			<span>'$"Status"'</span>
-			</button>'
+			<button class="button" name="_Status_" value="_ACTION_status_VOLUME_'"$VOLUME"'_">
+			'$"Volume Status"'
+			</button><br>'
 			if [ "$VOLUME" != dc-data ]
 			then
 				echo '
-				<button class="info" name="_AddFolder_" value="_ACTION_addfolder_VOLUME_'"$VOLUME"'_">
-				<img src="/images/submenus/system/gluster_add_folder.png" alt="'$"Add folder"'">
-				<span>'$"Add folder"'</span>
-				</button>
-
-				<button class="info" name="_RemoveFolder_" value="_ACTION_removefolder_VOLUME_'"$VOLUME"'_">
-				<img src="/images/submenus/system/gluster_remove_folder.png" alt="'$"Remove folder"'">
-				<span>'$"Remove folder"'</span>
-				</button>
-
-				<button class="info" name="_AssignHomeFolders_" value="_ACTION_assignhomefolders_">
-				<img src="/images/submenus/system/gluster_assign_home_folders.png" alt="'$"Assign Home Folders"'">
-				<span>'$"Assign Home Folders"'</span>
-				</button>
+				<button class="button" name="_AddFolder_" value="_ACTION_addfolder_VOLUME_'"$VOLUME"'_">
+				'$"Add folder"'
+				</button><br>
+				<button class="button" name="_RemoveFolder_" value="_ACTION_removefolder_VOLUME_'"$VOLUME"'_">
+				'$"Remove folder"'
+				</button><br>
+				<button class="button" name="_AssignHomeFolders_" value="_ACTION_assignhomefolders_">
+				'$"Home Folders"'
+				</button><br>
 				'
 				if [ "$FOLDERCOUNT" = 0 ]
 				then
-					echo '<button class="info" name="_RemoveGlusterVolume_" value="_ACTION_deleteglustervolume_VOLUME_'"$VOLUME"'_">
-					<img src="/images/submenus/system/delete.png" alt="'$"Delete Gluster Volume"'">
-					<span>'$"Delete Gluster Volume"'</span>
-					</button>
-					'
+					echo '<button class="button" name="_DeleteGlusterVolume_" value="_ACTION_deleteglustervolume_VOLUME_'"$VOLUME"'_">
+					'$"Delete Volume"'
+					</button>'
 				fi
 			fi
 			echo '</td></tr>'
