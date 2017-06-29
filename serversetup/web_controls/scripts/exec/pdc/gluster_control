@@ -521,6 +521,8 @@ then
 	reloadpage
 fi
 
+
+
 #Show gluster status
 if [ "$ACTION" = status ] 
 then
@@ -553,7 +555,7 @@ then
 			then
 				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
 			else
-				echo "<tr><td style=\"width:150px\">'"$SERVER"'</td><td style=\"text-align:right\"><b style=\"color:red;\">'$"Brick missing"'</b> <button class=\"button\" name=\"_RestoreBrick_\" value=\"_ACTION_restorebrick_VOLUME_'"$VOLUME"'_server_'"$SERVER"'_\">
+				echo "<tr><td style=\"width:150px\">'"$SERVER"'</td><td style=\"text-align:right\"><b style=\"color:red;\">'$"Brick missing"'</b> <button class=\"button\" name=\"_RestoreBrick_\" value=\"_ACTION_restorebrick_VOLUME_'"$VOLUME"'_SERVER_'"$SERVER"'_\">
 				'$"Restore Brick"'
 				</button></td></tr>"
 
@@ -562,6 +564,13 @@ then
 			'
 		fi
 	done
+fi
+
+if [ "$ACTION" = restorebrick ] 
+then
+	echo "$(date): gluster_control - restoring brick for $SERVER on volume $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER" "$VOLUME" restore "$REMOTE_USER" "$REMOTE_ADDR"
+	reloadpage
 fi
 
 #Show all gluster volumes
