@@ -689,22 +689,19 @@ fi
 #Restore any gluster volume data if this is a server that is being re-installed and it had a gluster volume
 if [ -d /opt/karoshi/server_network/gluster-volumes/ ]
 then
-	for GLUSTERSEARCH in $(find /opt/karoshi/server_network/gluster-volumes/ -name "$SERVER.$REALM")
+	for GLUSTERSEARCH in $(find /opt/karoshi/server_network/gluster-volumes/ -name "$SERVER.$REALM" | sort --unique)
 	do
 		GLUSTERVOLUME=$(echo "$GLUSTERSEARCH" | cut -d"/" -f6)
 		if [ "$GLUSTERVOLUME" != dc-data ]
 		then
-			echo $GLUSTERVOLUME
-		#Restore the gluster volume
-		/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER.$REALM" "$GLUSTERVOLUME" restore "$REMOTE_USER" "$REMOTE_ADDR"
-		#Restore the folders on the gluster volume
-
-		for FOLDER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/folders/)
-		do
-			FOLDER=$(echo "$FOLDER" | sed 's/-/\//g')
-			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER.$REALM" "$FOLDER" "$GLUSTERVOLUME"
-		done
-			
+			#Restore the gluster volume
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER.$REALM" "$GLUSTERVOLUME" restore "$REMOTE_USER" "$REMOTE_ADDR"
+			#Restore the folders on the gluster volume
+			for FOLDER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/folders/)
+			do
+				FOLDER=$(echo "$FOLDER" | sed 's/-/\//g')
+				/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER.$REALM" "$FOLDER" "$GLUSTERVOLUME"
+			done
 		fi
 	done
 fi
