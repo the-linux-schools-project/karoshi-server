@@ -533,7 +533,7 @@ then
 		if [ "$SERVER" = "$(hostname-fqdn)" ]
 		then
 			BRICKSTATUS=ok
-			GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM":/home/gluster-volumes/"$VOLUME" detail)
+			GLUSTERVOLINFO=$(gluster volume status "$VOLUME" "$SERVER.$REALM:/home/gluster-volumes/$VOLUME" detail)
 			[ "$?" != 0 ] && BRICKSTATUS=fail
 			echo "<table style=\"width:800px\" class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
 			if [ "$BRICKSTATUS" = ok ]
@@ -548,12 +548,12 @@ then
 		else
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 			BRICKSTATUS=ok
-			GLUSTERVOLINFO=$(gluster volume status "'$VOLUME'" "'$SERVER'.'$REALM'":/home/gluster-volumes/"'$VOLUME'" detail)
+			GLUSTERVOLINFO=$(gluster volume status "'"$VOLUME"'" "'"$SERVER"'.'"$REALM"'":/home/gluster-volumes/"'"$VOLUME"'" detail)
 			[ "$?" != 0 ] && BRICKSTATUS=fail
 			echo "<table style=\"width:800px\"  class=\"tablesorter\" style=\"text-align: left; \" ><tbody>"
 			if [ "$BRICKSTATUS" = ok ]
 			then
-				echo "$GLUSTERVOLINFO" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
+				echo "$GLUSTERVOLINFO" | sed "/^ /d" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
 			else
 				echo "<tr><td style=\"width:150px\">'"$SERVER"'</td><td style=\"text-align:right\"><b style=\"color:red;\">'$"Brick missing"'</b> <button class=\"button\" name=\"_RestoreBrick_\" value=\"_ACTION_restorebrick_VOLUME_'"$VOLUME"'_SERVER_'"$SERVER"'_\">
 				'$"Restore Brick"'
@@ -570,7 +570,15 @@ if [ "$ACTION" = restorebrick ]
 then
 	echo "$(date): gluster_control - restoring brick for $SERVER on volume $VOLUME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster "$SERVER" "$VOLUME" restore "$REMOTE_USER" "$REMOTE_ADDR"
-	/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER" "$FOLDER" dc-data
+
+	if [ "$?" = 0 ]
+	then
+		for FOLDER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders/)
+		do
+			FOLDER=$(echo "$FOLDER" | sed 's/-/\//g')
+			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume "$SERVER" "$FOLDER" "$VOLUME"
+		done
+	fi
 	reloadpage
 fi
 

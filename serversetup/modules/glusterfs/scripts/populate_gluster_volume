@@ -31,7 +31,7 @@ ACTION=$4
 
 
 function usage {
-echo -e "populate_gluster_volume usage:\n\npopulate_gluster_volume server folder glustervolume action (copypdata or blank)\n"
+echo -e "populate_gluster_volume usage:\n\npopulate_gluster_volume server folder glustervolume action (copydata or blank)\n"
 }
 
 if [ -z "$SERVER" ]
@@ -80,13 +80,13 @@ FOLDER_SHORT=$(basename "$FOLDER")
 FOLDERPATH=$(echo "$FOLDER" | sed 's%/'"$FOLDER_SHORT"'$%%g')
 
 #Copy in data to the gluster volume or create an empty folder
-echo "<ul><li>$SERVER - "$"Copying"" $FOLDER</li></ul>"
 if [ "$SERVER" = "$(hostname-fqdn)" ]
 then
 	if [ "$ACTION" = copydata ]
 	then
 		if [ ! -L "$FOLDER" ]
 		then
+			echo "<ul><li>$SERVER - "$"Copying"" $FOLDER</li></ul>"
 			echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" "$MOUNTBASE"/"$GLUSTERVOL"
 			echo '</pre>'
@@ -99,9 +99,10 @@ else
 	then
 		if [ ! -L "'"$FOLDER"'" ]
 		then
+			echo "<ul><li>'"$SERVER"' - "'$"Copying"'" '"$FOLDER"'</li></ul>"
 			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'"$FOLDER"'" "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"
-		echo "</pre>"
+			echo "</pre>"
 		fi
 	fi
 	[ ! -d "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'" ] && mkdir -p "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'"
