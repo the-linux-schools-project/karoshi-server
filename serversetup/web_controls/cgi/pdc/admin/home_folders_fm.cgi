@@ -102,18 +102,18 @@ do
 
 	if [ "$START_LINE" = yes ]
 	then
-		echo '<tr><td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//s,/<br>}"'</td><td style="vertical-align: top;">
+		echo '<tr><td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//,/<br>}"'</td><td style="vertical-align: top;">
 		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
 		<img src="'"$ICON1"'" alt="'$"Rename"'">
-		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br>'"${SERVER//s,/<br>}"'</span>
+		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br>'"${SERVER//,/<br>}"'</span>
 		</button>
 		</td>'
 		START_LINE=no
 	else
-		echo '<td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//s,/<br>}"'</td><td style="vertical-align: top;">
+		echo '<td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//,/<br>}"'</td><td style="vertical-align: top;">
 		<button class="info infoleft" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
 		<img src="'"$ICON1"'" alt="'$"Rename"'">
-		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br><br>'"${SERVER//s,/<br>}"'</span>
+		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br><br>'"${SERVER//,/<br>}"'</span>
 		</button>
 		</td></tr>'
 	START_LINE=yes

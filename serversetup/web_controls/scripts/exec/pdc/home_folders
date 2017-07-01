@@ -133,8 +133,8 @@ then
 		exit 101	
 	fi
 	GLUSTERVOL="$NEWSERVER"
-	GLUSTERSERVERS=$(ls -1 /opt/karoshi/server_network/gluster-volumes/"$NEWSERVER"/servers)
-	GLUSTERSERVERS="${GLUSTERSERVERS// /,}"
+	GLUSTERSERVERS=$(ls -m /opt/karoshi/server_network/gluster-volumes/"$NEWSERVER"/servers)
+	GLUSTERSERVERS="${GLUSTERSERVERS// /}"
 fi
 
 ###########################

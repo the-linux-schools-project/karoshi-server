@@ -671,15 +671,15 @@ then
 			MAP_DRIVE=0
 		fi
 
-		echo SERVER=''"$SERVER.$REALM"'
-SHAREPATH='"$SHAREPATH"'
-USERLIST='"$NETUSERS"'
-GROUPLIST='"$NETGROUPS"'
-GROUPPERMS='"$GROUPPERMS"'
-MAP_DRIVE='"$MAP_DRIVE"'
-SERVERTYPE='"network"'
-SERVERMASTER='""'
-MASK='"$MASK"'"' > "/opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME"
+		echo 'SERVER="'"$SERVER.$REALM"'"
+SHAREPATH="'"$SHAREPATH"'"
+USERLIST="'"$NETUSERS"'"
+GROUPLIST="'"$NETGROUPS"'"
+GROUPPERMS="'"$GROUPPERMS"'"
+MAP_DRIVE="'"$MAP_DRIVE"'"
+SERVERTYPE="network"
+SERVERMASTER=""
+MASK="'"$MASK"'"' > "/opt/karoshi/server_network/network_shares/$SERVER.$REALM/$SHARENAME"
 	done
 
 	#Re-create logon scripts to add in additional servers
