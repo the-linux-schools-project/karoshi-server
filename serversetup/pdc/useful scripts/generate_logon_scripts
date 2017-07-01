@@ -258,7 +258,11 @@ do
 				#Mac
 				add_drive_map_mac
 				#Nextcloud or Owncloud
-				add_drive_cloudstorage
+				#Don't add shares for sysvol and netlogon
+				if [ "$SHARE" != sysvol ] && [ "$SHARE" != netlogon ]
+				then
+					add_drive_cloudstorage
+				fi
 			fi
 
 		done
