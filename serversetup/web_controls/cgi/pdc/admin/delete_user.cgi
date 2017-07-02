@@ -101,10 +101,10 @@ get_data
 ARCHIVE="$DATAENTRY"
 
 function show_status {
-echo '<SCRIPT language="Javascript">'
-echo 'alert("'"$MESSAGE"'")';
-echo '</script>'
-echo "</div></body></html>"
+echo '<SCRIPT language="Javascript">
+alert("'"$MESSAGE"'");
+</script>
+</div></body></html>'
 exit
 }
 #########################
@@ -179,7 +179,7 @@ then
 	MESSAGE=$"Incorrect delete code."
 	show_status
 fi
-
+PRIMARYGROUP=$(id -G -n "$USERNAME" | cut -d' ' -f1)
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
 EXEC_STATUS="$?"
@@ -195,9 +195,10 @@ then
 fi
 if [ "$EXEC_STATUS" = 0 ]
 then
-	MESSAGE=$USERNAME: $"Deleted"
+	MESSAGE="$USERNAME: "$"This account has been deleted."
+	[ "$ARCHIVE" = yes ] && MESSAGE="$MESSAGE\n\n"$"Archive path"" : /home/users/archive/$PRIMARYGROUP/$USERNAME"
 else
-	MESSAGE=$USERNAME: $"The user was not deleted."
+	MESSAGE="$USERNAME: "$"The user was not deleted."
 fi
 show_status
 

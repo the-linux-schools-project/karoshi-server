@@ -40,7 +40,7 @@ export TEXTDOMAIN=karoshi-server
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change a Username"'</title><meta http-equiv="REFRESH" content="0; URL=change_username_fm.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change a Username"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -176,10 +176,16 @@ fi
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_username.cgi | cut -d' ' -f1)
 #Change username
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$FIRSTNAME:$SURNAME:" | sudo -H /opt/karoshi/web_controls/exec/change_username
-if [ "$?" = 0 ]
+if [ "$?" != 0 ]
 then
-	MESSAGE=''$"Username changed"': "'"$USERNAME"'" - "'"$NEWUSERNAME"'"'
-else
 	MESSAGE=''$"There was a problem changing the username."' '"$USERNAME"''
+	show_status
 fi
-show_status
+echo '
+<form action="show_user_info.cgi" method="post">
+<input type="hidden" name="_USERNAME_" value="'"$NEWUSERNAME"'">
+<input type="hidden" name="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_" value="">
+</form>
+<SCRIPT LANGUAGE="JavaScript">document.forms[0].submit();</SCRIPT>
+</div></body></html>
+'

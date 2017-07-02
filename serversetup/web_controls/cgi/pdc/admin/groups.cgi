@@ -622,7 +622,7 @@ then
 			echo ''"$GROUPTYPE"'</td>'
 			if [ "$MOBILE" = no ]
 			then
-				echo '<td>'"$SUBUNIT"'</td><td style="display:inline-block;">'
+				echo '<td>'"$SUBUNIT"'</td><td>'
 				if [ "$GTYPE" = primary ]
 				then
 					SECONDARYGROUP=${SECONDARYGROUP//,/ }

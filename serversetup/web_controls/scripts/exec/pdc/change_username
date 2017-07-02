@@ -140,21 +140,7 @@ fi
 #Change the username
 ########################
 echo "$(date): change_username - Changing username for $CURRENT_USERNAME to $NEW_USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#Get current path for user
-CURRENTPATH=$(getent passwd "$CURRENT_USERNAME" | cut -d: -f6)
-#Get new path for user
-COUNTER=10
-while [ $COUNTER -ge 1 ]
-do
-	PARENTPATH=$(echo "$CURRENTPATH" | cut -d/ -f"$COUNTER")
-	if [ -z "$PARENTPATH" ]
-	then
-		let COUNTER="$COUNTER"-1
-		PARENTPATH=$(echo "$CURRENTPATH" | cut -d/ -f1-"$COUNTER")
-		break
-	fi
-	let COUNTER="$COUNTER"-1
-done
+
 #Get primary group for user
 PRIMARYGROUP=$(id -g -n "$CURRENT_USERNAME")
 #Get userid
@@ -202,24 +188,37 @@ deleteoldrdn: 1
 newsuperior: OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 -" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
+
+#Lookup profile path in ldap and check if it is mandatory or roaming
+if [[ $(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$NEW_USERNAME" | grep profilePath: | grep -c roaming_profile) -gt 0 ]]
+then
+	#Set new profile path for the user
+echo -e 'dn: CN='"$NEW_USERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,'"$LDAPBASE"'
+changetype: modify
+replace: profilePath
+profilePath: %LOGONSERVER%\\applications\\profiles\\roaming_profiles\\'"$PRIMARYGROUP"'\\'"$NEW_USERNAME"'
+-' | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+fi
+
 #########################
 #Move files to new area
 #########################
-if [ -d "$CURRENTPATH" ]
+if [ -d "$HOMEPATH/$CURRENT_USERNAME" ]
 then
-	mv "$CURRENTPATH" "$PARENTPATH"/"$NEW_USERNAME"
-	chmod 0600 -R "$PARENTPATH"/"$NEW_USERNAME"
-	chmod u+X -R "$PARENTPATH"/"$NEW_USERNAME"
-	chown "$USERID":"$PRIMARYGROUP" -R "$PARENTPATH"/"$NEW_USERNAME"
+	mv "$HOMEPATH/$CURRENT_USERNAME" "$HOMEPATH"/"$NEW_USERNAME"
+	chmod 0600 -R "$HOMEPATH"/"$NEW_USERNAME"
+	chmod u+X -R "$HOMEPATH"/"$NEW_USERNAME"
+	chown "$USERID":"$PRIMARYGROUP" -R "$HOMEPATH"/"$NEW_USERNAME"
 	CHANGE_PASS_STATUS="$?"
 fi
 if [[ "$SERVER" != $(hostname-fqdn) ]]
 then
 	ssh -x -o PasswordAuthentication=no "$SERVER" '
-	mv '"$CURRENTPATH"' '"$PARENTPATH"/"$NEW_USERNAME"'
-	chmod 0600 -R '"$PARENTPATH"''/''"$NEW_USERNAME"'
-	chmod u+X -R '"$PARENTPATH"''/''"$NEW_USERNAME"'
-	chown -R '"$USERID"':'"$PRIMARYGROUP"' '"$PARENTPATH"''/''"$NEW_USERNAME"''
+	mv '"$HOMEPATH/$CURRENT_USERNAME"' '"$HOMEPATH/$NEW_USERNAME"'
+	chmod 0600 -R '"$HOMEPATH/$NEW_USERNAME"'
+	chmod u+X -R '"$HOMEPATH/$NEW_USERNAME"'
+	chown -R '"$USERID"':'"$PRIMARYGROUP"' '"$HOMEPATH/$NEW_USERNAME"''
 fi
 #########################
 #Move mail
@@ -232,18 +231,18 @@ then
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		if [ -d /home/users/email/'"$CURRENT_USERNAME"' ]
 		then
-		mv /home/users/email/'"$CURRENT_USERNAME"' /home/users/email/'"$NEW_USERNAME"'
-		chown '"$USERID"' -R /home/users/email/'"$NEW_USERNAME"'
+			mv /home/users/email/'"$CURRENT_USERNAME"' /home/users/email/'"$NEW_USERNAME"'
+			chown '"$USERID"' -R /home/users/email/'"$NEW_USERNAME"'
 		fi
-		if [ -d '"$CURRENTPATH"' ]
+		if [ -d '"$HOMEPATH/$CURRENT_USERNAME"' ]
 		then
-		mv '"$CURRENTPATH"' '"$PARENTPATH"/"$NEW_USERNAME"'
-		chmod 0600 -R '"$PARENTPATH"''/''"$NEW_USERNAME"'
-		chmod u+X -R '"$PARENTPATH"''/''"$NEW_USERNAME"'
-		chown -R '"$USERID"':'"$PRIMARYGROUP"' '"$PARENTPATH"''/''"$NEW_USERNAME"'
+			mv '"$HOMEPATH/$CURRENT_USERNAME"' '"$HOMEPATH/$NEW_USERNAME"'
+			chmod 0600 -R '"$HOMEPATH/$NEW_USERNAME"'
+			chmod u+X -R '"$HOMEPATH/$NEW_USERNAME"'
+			chown -R '"$USERID"':'"$PRIMARYGROUP"' '"$HOMEPATH/$NEW_USERNAME"'
 		fi
 		'
-		else
+	else
 		if [ -d /home/users/email/"$CURRENT_USERNAME" ]
 		then
 			mv /home/users/email/"$CURRENT_USERNAME" /home/users/email/"$NEW_USERNAME"

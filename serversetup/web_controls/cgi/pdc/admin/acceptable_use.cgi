@@ -40,8 +40,8 @@ then
 else
 	TOOLTIPCLASS="info infoleft"
 	TABLECLASS=standard
-	WIDTH1=200
-	WIDTH2=175
+	WIDTH1=215
+	WIDTH2=210
 	WIDTH3=75
 	WIDTH4=150
 fi
@@ -248,7 +248,7 @@ then
 fi
 #Show acceptable use options for admin staff.
 
-echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Status"'</td><td style="width: '"$WIDTH2"'px;">
 <button class="info" name="_Status_" value="_ACTION_'"$ACTION2"'_">
 <img src="'"$ICON"'" alt="'"$GRACETIMESTATUSMSG"'">
