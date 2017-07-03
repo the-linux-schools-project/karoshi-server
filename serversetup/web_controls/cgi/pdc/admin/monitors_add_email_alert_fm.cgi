@@ -105,11 +105,11 @@ if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
 	echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
 <table class="standard" style="text-align: left;" >
-<tbody><tr><td style="vertical-align: top; width: 130px;"><b>'$"E-Mail - SMS Alerts"'</b></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
-<td style="vertical-align: top;">
+<tbody><tr><td><b>'$"E-Mail - SMS Alerts"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
+<td>
 <a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
 </td>
-<td style="vertical-align: top;">
+<td>
 <a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
 </td>
 </tr></tbody></table>
