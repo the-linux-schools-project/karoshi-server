@@ -370,6 +370,9 @@ function install_sogo {
 
 function configure_system {
 
+#Configure MariaDB
+cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/
+
 #Hide console messages
 sed -i 's/^console output/#console output/g' /etc/init/rc.conf
 sed -i 's/^console owner/#console owner/g' /etc/init/rcS.conf
