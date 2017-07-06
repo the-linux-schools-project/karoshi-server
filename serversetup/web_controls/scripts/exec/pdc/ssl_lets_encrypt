@@ -109,7 +109,7 @@ then
 	exit 101
 fi
 
-echo "$(date):ssl_lets_encrypt - setting up a certificate on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date):ssl_lets_encrypt - setting up a certificate for $ALIASLIST on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
