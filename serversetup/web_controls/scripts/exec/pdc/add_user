@@ -249,7 +249,7 @@ then
 	PROFILEPATH='applications\profiles\roaming_profiles\'"$PRIMARYGROUP"'\'"$NEWUSERNAME"''
 else
 	#Using a mandatory profile
-	PROFILEPATH='applications\\profiles\\'"$PRIMARYGROUP"''
+	PROFILEPATH='applications\profiles\'"$PRIMARYGROUP"''
 fi
 
 #Add user to samba4 ldap
