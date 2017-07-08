@@ -169,7 +169,7 @@ fi
 
 ICON1=/images/warnings/server.png
 
-echo '<div id="actionbox"><b>'$"Remove Server Role"' - '"$SERVERNAME"'</b><br><br>'
+echo '<div id="actionbox"><div class="sectiontitle">'$"Remove Server Role"' - '"$SERVERNAME"'</div><br><br>'
 
 if [ "$ACTION" = reallyremove ]
 then
@@ -374,7 +374,11 @@ then
 
 	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/"$SERVERNAME" ]
 	then
-		echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'$"Remove Server"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___REMOVESERVER___" type="image" class="images" src="'"$ICON1"'" value=""><span>'$"Removes all designations for this server."'</span></a></td></tr>'
+		echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;"><b>'$"Remove Server"'</b></td><td style="vertical-align: top; width: 600px;"></td><td style="vertical-align: top;">
+		<button class="button" name="___RemoveServer___" value="___MODULE___REMOVESERVER__">
+		'$"Remove"'
+		</button>
+		</td></tr>'
 	fi
 	echo '</tbody></table><br></form>'
 fi

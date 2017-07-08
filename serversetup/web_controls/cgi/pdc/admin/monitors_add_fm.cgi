@@ -127,7 +127,7 @@ done
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">
+echo '<div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$"Add Monitors"'</div></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
 <td>
@@ -343,12 +343,12 @@ then
 	<input type="checkbox" name="_MONITORTYPES_" '$DNS' value="dns"> dns
 	</td>
 	</tr>
-	</tbody></table><br>
+	</tbody></table><br><br>
 	  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> <input type="button" class="button" onclick="SetAllCheckBoxes('\'selectmonitors\'', '\'_MONITORTYPES_\'', true);" value="'$"Select all"'">
 	'
 else
 	echo $"A monitoring server has not been added to the network."
 fi
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit
 

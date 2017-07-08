@@ -670,29 +670,61 @@ fi
 #Unflags this server from using radius.
 ##########################
 
-if [ $MODULE = radiusserver ]
+if [ "$MODULE" = radiusserver ]
 then
-	echo "<ul><li>"$SERVERNAME: $"Removing Radius server""</li></ul>"
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	echo "<ul><li>$SERVERNAME: "$"Removing Radius server""</li></ul>"
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Stop radius
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop
 		#Stop radius from running on boot
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/radius 2>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/radius 2>/dev/null
+
+		MODCHECK=$(grep -c "#Radius" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=$(grep -n "#Radius" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+		fi
+
+		#Restart shorewall
+		if [ "$RESTART_SHOREWALL" = yes ]
+		then
+			echo '<ul><li>'$"Restarting"' shorewall</li></ul>'
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+		fi
 	else
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		#Stop radius
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop
 		#Stop radius server from running on boot
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/radius 2>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/radius 2>/dev/null
+
+		MODCHECK=$(grep -c "#Radius" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
+		then
+			RESTART_SHOREWALL=yes
+			LINENUM=$(grep -n "#Radius" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+		fi
+
+		#Restart shorewall
+		if [ "$RESTART_SHOREWALL" = yes ]
+		then
+			echo "<ul><li>'$"Restarting"' shorewall</li></ul>"
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+		fi
 		'
 	fi
 	#Unflag server
-	echo "<ul><li>"$SERVERNAME: $"Radius Server" - $"Designation removed""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiussserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/radiussserver
-	[ -f /opt/karoshi/server_network/radius_servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/radius_servers/$SERVERNAME
+	echo "<ul><li>$SERVERNAME: "$"Radius Server" - $"Designation removed""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/radiusserver ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/radiusserver
+	[ -f /opt/karoshi/server_network/radius_servers/"$SERVERNAME" ] && rm -f /opt/karoshi/server_network/radius_servers/"$SERVERNAME"
 	completed
 fi
 
@@ -702,24 +734,25 @@ fi
 #Unflags this server from using joomla. Deletes all joomla files and the joomla database.
 ##########################
 
-if [ $MODULE = remote_ssh ]
+if [ "$MODULE" = remote_ssh ]
 then
 	echo "<ul><li>"$SERVERNAME: $"Removing ssh access.""</li></ul>"
 	#Change firewall rules to stop ssh access
-	MODCHECK=`grep -c pdc_ssh_rule /etc/shorewall/rules`
+	MODCHECK=$(grep -c pdc_ssh_rule /etc/shorewall/rules)
 	if [ $MODCHECK != 0 ]
 	then
-		LINENUM=`grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM'd' /etc/shorewall/rules
+		LINENUM=$(grep -n '#pdc_ssh_rule' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"d /etc/shorewall/rules
+		echo '<ul><li>'$"Restarting"' shorewall</li></ul>'
 		#Restart shorewall
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
 		sleep 0.5
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
 	fi
 	#Unflag server
-	echo "<ul><li>"$SERVERNAME: $"Remote SSH Access" - $"Designation removed""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh
+	echo "<ul><li>$SERVERNAME: "$"Remote SSH Access"" - "$"Designation removed""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/remote_ssh ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/remote_ssh
 	completed
 fi
 
@@ -1169,10 +1202,10 @@ fi
 #squid
 #Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server.
 ##########################
-if [ $MODULE = squid ]
+if [ "$MODULE" = squid ]
 then
 	echo "<ul><li>"$SERVERNAME: $"Removing Squid""</li></ul>"
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Stop squid and dansguardian
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
@@ -1191,25 +1224,52 @@ then
 
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
+		MODCHECK=$(grep -c "#Squid-Proxy" /etc/shorewall/rules)
+		if [ "$MODCHECK" != 0 ]
+		then
+			LINENUM=$(grep -n "#Squid-Proxy" /etc/shorewall/rules | cut -d: -f1)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+			#Restart shorewall
+			echo '<ul><li>'"$SERVERNAME"' - '$"Restarting"' shorewall</li></ul>'
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
+		fi
 	else
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		#Stop squid and dansguardian
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squid_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/e2guardian_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squid
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/e2guardian
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/squiddebproxy
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/squid_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/e2guardian_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/squiddebproxy_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/squid
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/e2guardian
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/squiddebproxy
 
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_dansguardian.cron
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/restart_e2guardian.cron
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_gen.cron
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/internet_log_compress.cron
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/dgupdatefilterlist.cron
-		[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/archive_internet_logs.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/restart_dansguardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/restart_dansguardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/restart_e2guardian.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/restart_e2guardian.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/internet_log_gen.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/internet_log_gen.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/internet_log_compress.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/internet_log_compress.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/dgupdatefilterlist.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/dgupdatefilterlist.cron
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/archive_internet_logs.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/archive_internet_logs.cron
 
 		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+
+
+		MODCHECK=$(grep -c "#Squid-Proxy" /etc/shorewall/rules)
+		if [ "$MODCHECK" != 0 ]
+		then
+			LINENUM=$(grep -n "#Squid-Proxy" /etc/shorewall/rules | cut -d: -f1)
+			sed -i "$LINENUM"d /etc/shorewall/rules
+			#Restart shorewall
+			echo "<ul><li>'"$SERVERNAME"' - '$"Restarting"' shorewall</li></ul>"
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
+			sleep 0.5
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
+		fi
+
 	'
 	fi
 	#Unflag server
@@ -1232,36 +1292,35 @@ fi
 #monitoring
 #Unflags this server as a monitor server. Stops mon from running.
 ##########################
-if [ $MODULE = monitoring ]
+if [ "$MODULE" = monitoring ]
 then
-echo "<ul><li>"$SERVERNAME: $"Removing Mon""</li></ul>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-#Stop mon
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mon
+	echo "<ul><li>"$SERVERNAME: $"Removing Mon""</li></ul>"
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+	then
+		#Stop mon
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/mon
 
-[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
+		[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 
-[ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/gen_status.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		[ -f /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs/gen_status.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+	else
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/mon
 
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/mon
+		[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
 
-[ -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop ] && rm -f /opt/karoshi/karoshi_user/Desktop/Monitoring.desktop
-
-[ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/gen_status.cron
-/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+		[ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/gen_status.cron ] && rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/gen_status.cron
+		/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 '
 fi
 #Unflag server
 echo "<ul><li>"$SERVERNAME: $"Monitor Server" - $"Designation removed""</li></ul>"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/monitoring ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/monitoring
 [ -f /opt/karoshi/server_network/monitoringserver ] && rm -f /opt/karoshi/server_network/monitoringserver
 
 #Remove mon entry from the web management
