@@ -367,12 +367,12 @@ then
 				[ -d "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER" ] &&  cat "/opt/karoshi/server_network/federated_ldap_servers/$FEDERATED_SERVER/servers/$FEDERATED_SERVER/*"
 
 				echo '</td><td></td>
-			<td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
+			<td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
 			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON2"'" value="'"$SERVER"'"><span>'"$FEDERATED_SERVER"' - '$"Remove a role from this server."'</span></a></form></td><td style="vertical-align: top;">
 			<a href="https://'"$SERVERIP"':50001" target="_blank"><img src="'"$SERVERICON"'" border="0"></a></td></tr>'
 
 			else
-				echo '<tr><td style="vertical-align: top;">'"$FEDERATED_SERVER"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'$"Federated Server"'</td><td></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role_fm.cgi" method="post">
+				echo '<tr><td style="vertical-align: top;">'"$FEDERATED_SERVER"'</td><td style="vertical-align: top;">'"$SERVERIP"'</td><td style="vertical-align: top;">'$"Federated Server"'</td><td></td><td style="vertical-align: top;"><form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
 			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON2"'" value="'"$SERVER"'"><span>'"$FEDERATED_SERVER"' - '$"Remove a role from this server."'</span></a></form></td><td><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post">
 			<a class="info" href="javascript:void(0)"><input name="_SERVERNAME_'"$FEDERATED_SERVER"'_" type="image" class="images" src="'"$SERVERICON"'" value="'"$FEDERATED_SERVER"'"><span>'"$FEDERATED_SERVER" - "$SERVERSSHSTATUS"'</span></a>
 			</form></td></tr>'

@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_remove_role_cgi
 then
-	echo `date`: karoshi_servers_remove_role - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: karoshi_servers_remove_role - No admin MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_remove_role_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $karoshi_servers_remove_role_cgi'check' ]
+if [ "$MD5SUM"'check' != "$karoshi_servers_remove_role_cgi"'check' ]
 then
-	echo `date`: karoshi_servers_remove_role - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,56 +45,56 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: karoshi_servers_remove_role - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: karoshi_servers_remove_role - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-MODULE=`echo "$DATA" | cut -s -d: -f5 | sed 's/%2B/+/g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+MODULE=$(echo "$DATA" | cut -s -d: -f5 | sed 's/%2B/+/g')
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: karoshi_servers_remove_role - Not called by karoshi_servers_remove_role.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Not called by karoshi_servers_remove_role.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: karoshi_servers_remove_role - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: karoshi_servers_remove_role - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: karoshi_servers_remove_role - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$MODULE" ]
 then
-	echo `date`: karoshi_servers_remove_role - Blank module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - Blank module by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: karoshi_servers_remove_role - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): karoshi_servers_remove_role - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -103,27 +103,27 @@ fi
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
-echo `date`: karoshi_servers_remove_role - removing $MODULE on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): karoshi_servers_remove_role - removing $MODULE on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 function completed {
 ################################
 #Show completed message
 ################################
-if [ $MODULE != REMOVESERVER ] && [ $MODULE != federated_server ]
+if [ "$MODULE" != REMOVESERVER ] && [ "$MODULE" != federated_server ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/servers/$SERVERNAME/ | wc -l` = 0 ]
+	if [ $(ls -1 /opt/karoshi/server_network/servers/"$SERVERNAME"/ | wc -l) = 0 ]
 	then
-		[ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && echo No Role > /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+		[ ! -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && echo No Role > /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
 	fi
 fi
 
-echo "<ul><li>"$SERVERNAME: $"The module has been removed.""</li></ul>"
+echo "<ul><li>$SERVERNAME: "$"The module has been removed.""</li></ul>"
 sleep 5
 exit
 }
@@ -132,12 +132,12 @@ exit
 #apachereverseproxyserver
 #Unflags this server as an Apache reverse proxy server. Disables proxy module and restarts apache.
 ##########################
-if [ $MODULE = apachereverseproxyserver ]
+if [ "$MODULE" = apachereverseproxyserver ]
 then
 	#Remove any listed reverse proxies
 	[  -d /opt/karoshi/server_network/reverseproxy/sites ] && rm -f /opt/karoshi/server_network/reverseproxy/sites
 
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		APACHECONFIG=/etc/httpd/conf/httpd.conf
 		APACHEPATH=/etc/httpd
@@ -148,11 +148,11 @@ then
 		fi
 		echo > $APACHEPATH/conf/reverseproxyrules.conf
 		#Restart apache
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop
 		sleep 0.5
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start
 	else
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	APACHECONFIG=/etc/httpd/conf/httpd.conf
 	APACHEPATH=/etc/httpd
 	if [ -f /etc/apache2/apache2.conf ]
@@ -163,14 +163,14 @@ then
 	echo > $APACHEPATH/conf/reverseproxyrules.conf
 	#Restart apache
 	source /opt/karoshi/serversetup/variables/distro
-	source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop
+	source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop
 	sleep 0.5
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start
 	'
 	fi
-	echo "<ul><li>"$SERVERNAME: $"Reverse Proxy Server" - $"Designation removed.""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apachereverseproxyserver
+	echo "<ul><li>$SERVERNAME: "$"Reverse Proxy Server" - $"Designation removed.""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apachereverseproxyserver ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apachereverseproxyserver
 	completed
 fi
 
@@ -178,10 +178,10 @@ fi
 #apacheserver
 #Unflags this server as an Apache server.
 ##########################
-if [ $MODULE = apacheserver ]
+if [ "$MODULE" = apacheserver ]
 then
-	echo "<ul><li>"$SERVERNAME: $"Web Server" - $"Designation removed.""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
+	echo "<ul><li>$SERVERNAME: "$"Web Server"" - "$"Designation removed.""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver
 	completed
 fi
 
@@ -189,125 +189,125 @@ fi
 #Distributionserver
 #Unflags this server as a distributionserver.
 ##########################
-if [ $MODULE = distributionserver ]
+if [ "$MODULE" = distributionserver ]
 then
 
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		source /opt/karoshi/serversetup/variables/distro
 
 		#Close shorewall ports
 		RESTART_SHOREWALL=no
-		MODCHECK=`grep -c "#tftp_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#tftp_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK "-gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#nfs_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#nfs_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#portmap_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#portmap_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#mountd_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#mountd_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
 		#Restart shorewall
-		if [ $RESTART_SHOREWALL = yes ]
+		if [ "$RESTART_SHOREWALL" = yes ]
 		then
 			echo '<ul><li>'$"Restarting"' shorewall</li></ul>'
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
 			echo "<br>"
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 			echo "<br><br>"
 		fi
 
 		#Stop services
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/tftpd_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/rpcbind_stop 1>/dev/null
 
 
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/tftpd
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/rpcbind
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/nfs
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/tftpd
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/rpcbind
 	else
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		source /opt/karoshi/serversetup/variables/distro
 
 		#Close shorewall ports
 		RESTART_SHOREWALL=no
-		MODCHECK=`grep -c "#tftp_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#tftp_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#tftp_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#nfs_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#nfs_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#nfs_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#portmap_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#portmap_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#portmap_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
-		MODCHECK=`grep -c "#mountd_server_rule" /etc/shorewall/rules`
-		if [ $MODCHECK -gt 0 ]
+		MODCHECK=$(grep -c "#mountd_server_rule" /etc/shorewall/rules)
+		if [ "$MODCHECK" -gt 0 ]
 		then
 			RESTART_SHOREWALL=yes
-			LINENUM=`grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p`
-			sed -i $LINENUM"d" /etc/shorewall/rules
+			LINENUM=$(grep -n "#mountd_server_rule" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+			sed -i "$LINENUM"d /etc/shorewall/rules
 		fi
 
 		#Restart shorewall
-		if [ $RESTART_SHOREWALL = yes ]
+		if [ "$RESTART_SHOREWALL" = yes ]
 		then
 			echo "<ul><li>'$"Restarting"' shorewall</li></ul>"
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 		fi
 
 		#Stop services
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/tftpd_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/tftpd_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/rpcbind_stop 1>/dev/null
 
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/nfs
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/tftpd
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/rpcbind
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/nfs
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/tftpd
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/rpcbind
 		'
 	fi
 
-	echo "<li>"$SERVERNAME: $"Distribution Server" - $"Designation removed.""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
+	echo "<li>$SERVERNAME: "$"Distribution Server"" - "$"Designation removed.""</li></ul>"
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver
 	completed
 fi
 
@@ -363,7 +363,7 @@ then
 				rm -f $BACKUP_CLIENTS
 				echo '<ul><li>'$BACKUP_CLIENT': '$"Backup disabled"'</li></ul>'
 
-				echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: karoshi_servers_remove_role - $BACKUP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			done
 		fi
 	fi
@@ -396,17 +396,92 @@ fi
 
 
 ##########################
-#dhcp_server
+#dhcpserver
 #Unflags this server as a DHCP server. Stops the dhcp service from running on this server.
 ##########################
-if [ $MODULE = dhcp_server ]
+if [ "$MODULE" = dhcpserver ]
 then
-	echo "<ul><li>"$SERVERNAME: $"DHCP Server" - $"Designation removed.""</li></ul>"
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcp_server
-	[ -f /opt/karoshi/server_network/dhcp_server ] && rm -f /opt/karoshi/server_network/dhcp_server
-	#Stop dhcpd
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dhcp_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/dhcp
+	
+
+	[ -f /opt/karoshi/server_network/dhcpserver ] && rm -f /opt/karoshi/server_network/dhcpserver
+	[ -d /opt/karoshi/server_network/dhcp_servers ] && rm -f -R /opt/karoshi/server_network/dhcp_servers
+
+	#Remove DHCP from any domain controllers
+	for SERVER in $(ls -1 /opt/karoshi/server_network/servers)
+	do
+		if [ -f /opt/karoshi/server_network/servers/"$SERVER"/dhcpserver ]
+		then
+			echo "<ul><li>$SERVER: "$"DHCP Server"" - "$"Designation removed.""</li></ul>"
+			rm -f /opt/karoshi/server_network/servers/"$SERVER"/dhcpserver
+	
+			if [ "$SERVER" = $(hostname-fqdn) ]
+			then
+				#Stop dhcpd
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_stop 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/dhcp
+
+				#Remove any firewall rules for DHCP failover
+				RESTART_SHOREWALL=no
+				MODCHECK=$(grep -c "#DHCP-failover" /etc/shorewall/rules)
+				if [ "$MODCHECK" -gt 0 ]
+				then
+					RESTART_SHOREWALL=yes
+					LINENUM=$(grep -n "#DHCP-failover" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+					sed -i "$LINENUM"d /etc/shorewall/rules
+				fi
+				MODCHECK=$(grep -c "#DHCP-OMAPI-failover" /etc/shorewall/rules)
+				if [ "$MODCHECK" -gt 0 ]
+				then
+					RESTART_SHOREWALL=yes
+					LINENUM=$(grep -n "#DHCP-OMAPI-failover" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+					sed -i "$LINENUM"d /etc/shorewall/rules
+				fi
+
+				#Restart shorewall
+				if [ "$RESTART_SHOREWALL" = yes ]
+				then
+					echo '<ul><li>'"$SERVER"' - '$"Restarting"' shorewall</li></ul>'
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+				fi
+			else
+				ssh -x -o PasswordAuthentication=no "$SERVER" '
+				#Stop dhcpd
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/dhcp_stop 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/dhcp
+
+				#Remove any firewall rules for DHCP failover
+				RESTART_SHOREWALL=no
+				MODCHECK=$(grep -c "#DHCP-failover" /etc/shorewall/rules)
+				if [ "$MODCHECK" -gt 0 ]
+				then
+					RESTART_SHOREWALL=yes
+					LINENUM=$(grep -n "#DHCP-failover" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+					sed -i "$LINENUM"d /etc/shorewall/rules
+				fi
+				MODCHECK=$(grep -c "#DHCP-OMAPI-failover" /etc/shorewall/rules)
+				if [ "$MODCHECK" -gt 0 ]
+				then
+					RESTART_SHOREWALL=yes
+					LINENUM=$(grep -n "#DHCP-OMAPI-failover" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+					sed -i "$LINENUM"d /etc/shorewall/rules
+				fi
+
+				#Restart shorewall
+				if [ "$RESTART_SHOREWALL" = yes ]
+				then
+					echo "<ul><li>'"$SERVER"' - '$"Restarting"' shorewall</li></ul>"
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+
+				fi
+				'
+			fi
+		fi
+	done
+
+
 	#Remove dhcp item from the web management menu
 	sed -i 's/DHCPCTRL=yes/DHCPCTRL=no/g' /opt/karoshi/web_controls/generate_navbar_admin
 	completed
@@ -648,6 +723,41 @@ then
 	completed
 fi
 
+##########################
+#minidlnaserver
+#Unflags this server as a minidlna server.
+##########################
+if [ "$MODULE" = minidlnaserver ]
+then
+	rm -f /opt/karoshi/server_network/servers/"$SERVER"/minidlnaserver
+
+	MODCHECK=$(grep -c "#Minidlna-tcp" /etc/shorewall/rules)
+	if [ "$MODCHECK" -gt 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		LINENUM=$(grep -n "#Minidlna-tcp" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+		sed -i "$LINENUM"d /etc/shorewall/rules
+	fi
+
+	MODCHECK=$(grep -c "#Minidlna-udp" /etc/shorewall/rules)
+	if [ "$MODCHECK" -gt 0 ]
+	then
+		RESTART_SHOREWALL=yes
+		LINENUM=$(grep -n "#Minidlna-udp" /etc/shorewall/rules | cut -d: -f1 | sed -n 1,1p)
+		sed -i "$LINENUM"d /etc/shorewall/rules
+	fi
+
+	#Restart shorewall
+	if [ "$RESTART_SHOREWALL" = yes ]
+	then
+		echo '<ul><li>'"$SERVER"' - '$"Restarting"' shorewall</li></ul>'
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/minidlna_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/minidlna 2>/dev/null		
+fi
 
 ##########################
 #moodleserver
@@ -1221,12 +1331,12 @@ then
 		[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
 		[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
 		#Delete alias from dns
-		samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 
 	#Remove entry from dns
 	TCPIPNUMBER=`net lookup $SERVERNAME`
-	samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	#Change group information
 	for GROUPFILES in /opt/karoshi/server_network/group_information/*
@@ -1255,7 +1365,7 @@ then
 				BACKUP_CLIENT=`echo $BACKUP_CLIENTS | cut -d/ -f7`
 				rm -f $BACKUP_CLIENTS
 				echo '<ul><li>'$BACKUP_CLIENT': '$"Backup disabled"'</li></ul>'
-				echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: karoshi_servers_remove_role - $"Back"UP_CLIENT backup disabled by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			done
 		fi
 	fi

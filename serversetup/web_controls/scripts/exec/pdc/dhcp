@@ -244,7 +244,7 @@ echo >> "$DHCPCONFPATH"
 
 #Add include for dhcp failover
 [ ! -z "$SECONDARYSERVER" ] && echo 'include "/etc/dhcp/dhcpd_primary.conf";'  >> "$DHCPCONFPATH"
-echo >>" $DHCPCONFPATH"
+echo >> "$DHCPCONFPATH"
 
 echo 'subnet '"$NEWSUBNET"' netmask '"$NEWSUBNETMASK"' {' >> "$DHCPCONFPATH"
 echo '	option netbios-name-servers '"$NEWNETBIOSSERVER"';' >> "$DHCPCONFPATH"
