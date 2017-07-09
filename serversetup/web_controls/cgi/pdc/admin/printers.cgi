@@ -170,6 +170,7 @@ exit
 }
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
+PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
 
@@ -197,18 +198,19 @@ else
 <td><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
 <input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'"></form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
-<input name="VIEWASSIGNED" type="submit" class="button" value="'$"View Assigned Printers"'"></form></td>'
+<input name="VIEWASSIGNED" type="submit" class="button" value="'$"View Assigned Printers"'"></form></td>
+<td style="vertical-align: top;"><form action="/cgi-bin/admin/file_manager.cgi" name="printers" method="post">
+<input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_" type="submit" class="button" value="'$"Edit PPD"'"></form></td>'
 
-if [ -f /opt/karoshi/server_network/printserver ]
+
+if [ -f /opt/karoshi/server_network/servers/"$PRINTSERVER"/savapage ]
 then
-	PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
-	echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/file_manager.cgi" name="printers" method="post">
-	<input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_" type="submit" class="button" value="'$"Edit PPD"'"></form></td>'
-fi
-echo '<td style="vertical-align: top;">
+	echo '<td style="vertical-align: top;">
 <a href="http://savapage:8631/admin" target="_blank"><input class="button" type="button" name="" value="Savapage"></a>
-</td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+</td>'
+fi
+
+echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
 <input name="ADDLOCATION" type="submit" class="button" value="'$"Locations"'"></form></td>
 '
 

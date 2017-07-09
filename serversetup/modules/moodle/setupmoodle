@@ -129,9 +129,9 @@ fi
 #####################
 echo '<ul><li>'$"Creating the moodle database in mysql"'</li></ul>'
 
-MOODLEPASS=$(openssl rand -hex 16)
+MOODLEPASS=$(openssl rand -hex 20 | base64 | head -c 35)
 #Create moodle badge hash
-BADGEHASH=$(openssl rand -hex 16)
+BADGEHASH=$(openssl rand -hex 20 | base64 | head -c 35)
 
 #############################
 #Make sure that we know the root mysql password

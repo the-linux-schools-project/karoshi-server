@@ -197,7 +197,7 @@ case "$ROLE_FILE" in
 	distributionserver)
 	ROLE_NAME=$"Distribution Server"
 	ROLE_NAME_STATUS=set
-	CONSEQUENCES=$"Unflags this server as a distribution server."
+	CONSEQUENCES=$"Unflags this server as a distribution server. Stops nfs and tftpd service from running on this server."
 	;;
 	homeaccess)
 	ROLE_NAME=$"Home Access Server"

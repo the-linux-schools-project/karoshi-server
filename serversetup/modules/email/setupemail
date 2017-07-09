@@ -347,7 +347,7 @@ chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
 [ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
 
 #Create watermark secret
-MAILSCANNER_SECRET=$(openssl rand -hex 16)
+MAILSCANNER_SECRET=$(openssl rand -hex 20 | base64 | head -c 35)
 sed -i "s/MAILSCANNER_SECRET/$MAILSCANNER_SECRET/g" /etc/MailScanner/MailScanner.conf
 
 #Set organisation name

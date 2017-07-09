@@ -63,10 +63,10 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%')
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody><tr>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td><div class="sectiontitle">'$"Change Home Server"'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a>
-</td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table>'
+</td><td><a href="home_folders_fm.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Home Folders"'"></a></td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table>'
 
 
 #########################
@@ -189,12 +189,12 @@ echo '<p><img height="16" width="16" alt="Warning" src="/images/warnings/warning
 <tr><td>'$"Primary Group"'</td><td>'"$PRIGROUP"'</td></tr>
 <tr><td>'$"Copy Home Areas"'</td><td><input name="_COPYHOMEAREAS_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy any existing user home areas to the new server. This could take some time if there are a large amount of files to transfer."'</span></a></td></tr>
 <tr><td style="height:50px"><b>'$"New Server"'</b></td></tr>
-</tbody></table>'
+</tbody></table></div><div id="infobox">'
 
 #Show list of file servers.
 MOBILE=no
 /opt/karoshi/web_controls/show_servers "$MOBILE" fileservers $"Select Server" notset "$SERVER"
 
-echo '</form></div></div></body></html>'
+echo '</form></div></div></div></body></html>'
 exit
 

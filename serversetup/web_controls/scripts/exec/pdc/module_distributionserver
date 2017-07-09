@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_distributionserver_cgi
 then
-	echo `date`: module_distributionserver - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - No MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_distributionserver_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_distributionserver_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_distributionserver_cgi"'check' ]
 then
-	echo `date`: module_distributionserver - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - Incorrect MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,48 +46,48 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_distributionserver - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - incorrect number of arguments" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_distributionserver - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - no data" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: module_distributionserver - Not called by module_distributionserver.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - Not called by module_distributionserver.cgi" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_distributionserver - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - Blank remote user" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_distributionserver - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - Blank remote tcpip address" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_distributionserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_distributionserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_distributionserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_distributionserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Copy in language files
 #Copy in module
@@ -98,8 +98,8 @@ echo `date`: module_distributionserver - Setting up $SERVERNAME by $REMOTE_USER 
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Make sure the folders exist
 
@@ -118,14 +118,14 @@ then
 fi
 
 
-DISTROSERVERIP=`net lookup $SERVERNAME`
+DISTROSERVERIP=$(net lookup "$SERVERNAME")
 source /opt/karoshi/serversetup/variables/distro
 ##########################
 #Make sure software is installed
 ##########################
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/distributionserver/software
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/distributionserver/software
 
 	#########################
 	#Configure tftpboot
@@ -142,20 +142,20 @@ then
 	echo TFTP_USERNAME=\"tftp\" >> /etc/default/tftpd-hpa
 	echo TFTP_DIRECTORY=\"/home/tftpboot\" >> /etc/default/tftpd-hpa
 	echo TFTP_ADDRESS=\"0.0.0.0:69\" >> /etc/default/tftpd-hpa
-	echo TFTP_OPTIONS=\"--secure\" >> /etc/default/tftpd-hpa
+	echo TFTP_OPTIONS=\"-4 --secure\" >> /etc/default/tftpd-hpa
 
 	#Extract all netboot variants
 	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
 	do
-		DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
-		mkdir -p /home/tftpboot/$DISTROVERSION
-		tar -xvzf /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot-$DISTROVERSION.tar.gz -C /home/tftpboot/$DISTROVERSION 1>/dev/null
+		DISTROVERSION=$(basename "$DISTROVERSIONS" | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
+		mkdir -p /home/tftpboot/"$DISTROVERSION"
+		tar -xvzf /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot-"$DISTROVERSION".tar.gz -C /home/tftpboot/"$DISTROVERSION" 1>/dev/null
 
 		#Copy in splash
-		cp -f /opt/karoshi/serversetup/modules/distributionserver/tftpboot/splash.png /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/
+		cp -f /opt/karoshi/serversetup/modules/distributionserver/tftpboot/splash.png /home/tftpboot/"$DISTROVERSION"/ubuntu-installer/amd64/boot-screens/
 
 		#Remove message that would appear at the bottom of the screen.
-		sed -i "s/Press ENTER to boot or TAB to edit a menu entry//g" /home/tftpboot/$DISTROVERSION/ubuntu-installer/amd64/boot-screens/stdmenu.cfg
+		sed -i "s/Press ENTER to boot or TAB to edit a menu entry//g" /home/tftpboot/"$DISTROVERSION"/ubuntu-installer/amd64/boot-screens/stdmenu.cfg
 	done
 
 	echo "<ul><li>"Restarting tftpd"</li></ul>"
@@ -178,7 +178,7 @@ then
 
 	#Modify /etc/exports
 	touch /etc/exports
-	if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
+	if [ $(grep -c /home/distributions/linux_distro /etc/exports) = 0 ]
 	then
 		echo '<ul><li>'$"Modifying"' /etc/exports</li></ul>'
 		echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
@@ -192,70 +192,70 @@ then
 	#Open shorewall ports
 	###########################
 	RESTART_SHOREWALL=no
-	MODCHECK=`grep -c -w \#tftp_server_rule /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#tftp_server_rule /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
 		echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 69</li></ul>'
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"69"	"-"#"tftp_server_rule /etc/shorewall/rules
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM""cACCEPT	net	fw	udp	69	-#tftp_server_rule" /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	fi
 
-	MODCHECK=`grep -c -w \#nfs_server_rule /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#nfs_server_rule /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
 		echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 2049</li></ul>'
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"2049"	"-"#"nfs_server_rule /etc/shorewall/rules
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM""cACCEPT	net	fw	tcp	2049	-#nfs_server_rule" /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	fi
 
-	MODCHECK=`grep -c -w \#portmap_server_rule /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#portmap_server_rule /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
 		echo "<ul><li>$SHOREWALLMSG - tcp 111</li></ul>"
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"111"	"-"#"portmap_server_rule /etc/shorewall/rules
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM""cACCEPT	net	fw	tcp	111	-#portmap_server_rule" /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	fi
 
-	MODCHECK=`grep -c -w \#mountd_server_rule /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#mountd_server_rule /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
 		echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 33777</li></ul>'
-		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
-		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"33777"	"-"#"mountd_server_rule /etc/shorewall/rules
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM""cACCEPT	net	fw	tcp	33777	-#mountd_server_rule" /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 	fi
 
 	######################
 	#Restart shorewall
 	######################
-	if [ $RESTART_SHOREWALL = yes ]
+	if [ "$RESTART_SHOREWALL" = yes ]
 	then
 		echo '<ul><li>'$"Restarting"' shorewall</li></ul>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 	fi
 
 	#Ensure services start on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/nfs
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/tftpd
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/rpcbind
 else
 
 	#Copy in distro module
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 	#Remove existing module
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	rm -f -R /opt/karoshi/serversetup/modules/distributionserver
 	'
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/distributionserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/modules/distributionserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
 
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
@@ -299,9 +299,9 @@ else
 
 	echo "<ul><li>"Restarting tftpd"</li></ul>"
 
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/tftpd_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/tftpd_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/tftpd_start 1>/dev/null
 
 	#Start portmap
 	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_start 1>/dev/null
@@ -318,15 +318,15 @@ else
 
 	#Modify /etc/exports
 	touch /etc/exports
-	if [ `grep -c /home/distributions/linux_distro /etc/exports` = 0 ]
+	if [ $(grep -c /home/distributions/linux_distro /etc/exports) = 0 ]
 	then
 		echo "<ul><li>"Modifying /etc/exports"</li></ul>"
 		echo "/home/distributions/linux_distro *(fsid=0,insecure,no_root_squash,sync,ro,no_subtree_check)" >> /etc/exports
 	fi
 	echo "<ul><li>"Restarting nfs"</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nfs_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nfs_start 1>/dev/null
 
 	###########################
 	#Open shorewall ports
@@ -378,23 +378,23 @@ else
 	if [ $RESTART_SHOREWALL = yes ]
 	then
 		echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 	fi
 
 	#Ensure services start on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nfs
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/tftpd
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/rpcbind
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/nfs
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/tftpd
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/rpcbind
 
 	'
 fi
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $"Distribution Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $SERVERNAME > /opt/karoshi/server_network/distribution_server
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo $"Distribution Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo "$SERVERNAME" > /opt/karoshi/server_network/distribution_server
 
 sed -i 's/DISTROCTRL=no/DISTROCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 

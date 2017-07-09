@@ -362,7 +362,8 @@ then
 	ICON2=/images/submenus/user/web_folder_disabled.png
 	WIDTH1=180
 	WIDTH2=200
-	WIDTH3=80
+	WIDTH3=120
+	WIDTH4=388
 	TABLECLASS=standard
 else
 	ICON1=/images/submenus/user/web_folder_enabledm.png
@@ -370,6 +371,7 @@ else
 	WIDTH1=120
 	WIDTH2=80
 	WIDTH3=80
+	WIDTH4=200
 	TABLECLASS=mobilestandard
 fi
 
@@ -380,15 +382,15 @@ else
 	SERVER2="$SERVER"
 fi
 
-echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Server"'</b></td><td style="width: '"$WIDTH2"'px;">'"$SERVER2"'</td><td>
+echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Server"'</b></td><td style="width: '"$WIDTH2"'px;">'"$SERVER2"'</td><td style="width: '"$WIDTH3"'px;">
 '
 
 if [ ! -f /opt/karoshi/server_network/servers/"$SERVER"/user_web_folders ]
 then
-	echo '<input name="_GROUP_'"$GROUP"'_ACTION_enablehosting_USERNAME_none_" type="submit" class="button" value="'$"Start user hosting"'">'
+	echo '<input name="_GROUP_'"$GROUP"'_ACTION_enablehosting_USERNAME_none_" type="submit" class="button" value="'$"Start hosting"'">'
 else
-	echo '<input name="_GROUP_'"$GROUP"'_ACTION_disablehosting_USERNAME_none_" type="submit" class="button" value="'$"Stop user hosting"'">'
+	echo '<input name="_GROUP_'"$GROUP"'_ACTION_disablehosting_USERNAME_none_" type="submit" class="button" value="'$"Stop hosting"'">'
 fi
 
 #Show global options
@@ -403,7 +405,7 @@ echo '</td></tr><tr><td><b>'$"Primary Group"'</b></td><td>'"$GROUP"'</td><td>
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Username"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+<tr><th style="width: '"$WIDTH4"'px;"><b>'$"Username"'</b></th><th style="width: '"$WIDTH3"'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
 
 if [[ "$SERVER" = $(hostname-fqdn) ]]
 then

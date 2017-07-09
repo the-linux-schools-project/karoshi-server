@@ -146,15 +146,13 @@ exit
 if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
-	echo '<div id="'"$DIV_ID"'">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 else
 	TABLECLASS=mobilestandard
 fi
-
-echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">'
 
 #Check data
 if [ "$ACTION" = reallyadd ]
@@ -213,7 +211,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 fi
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: middle;"><b>'"$TITLETXT"'</b></td>
 <td style="vertical-align: top;">
 <button class="button" name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
@@ -221,12 +219,20 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 </button>
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a>
-</td></tr></tbody></table><br>
+</td></tr></tbody></table></form><br>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
+
+echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 '
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_points.cgi | cut -d' ' -f1)
 #View access points
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$SHORTNAME:$SECRETKEY:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_points
 
-echo '</form></div></div></body></html>'
+echo '</form></div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></body></html>'
 exit

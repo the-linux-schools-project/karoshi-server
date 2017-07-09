@@ -31,7 +31,7 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign2_cgi
 then
-	echo `date`: printers_ppd_assign - No MD5Checksum "for" printers_ppd_assign2 >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - No MD5Checksum "for" printers_ppd_assign2 >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign2_cgi
@@ -39,7 +39,7 @@ MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d'
 [ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ $MD5SUM'check' != $printers_ppd_assign2_cgi'check' ]
 then
-	echo `date`: printers_ppd_assign - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Incorrect MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
@@ -48,7 +48,7 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-	echo `date`: printers_ppd_assign - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - incorrect number of arguments >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -64,38 +64,38 @@ PRINTERPPD=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f7 | sed 's/%2F/\
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-	echo `date`: printers_ppd_assign - Not called by printers_ppd_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Not called by printers_ppd_assign.cgi >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: printers_ppd_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank remote user >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: printers_ppd_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank remote tcpip address >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check to see that PRINTERNAME is not blank
 if [ -z "$PRINTERNAME" ]
 then
-	echo `date`: printers_ppd_assign - Blank Printername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank Printername by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check to see that PRINTERPPD is not blank
 if [ -z "$PRINTERPPD" ]
 then
-	echo `date`: printers_ppd_assign - Blank printerppd by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank printerppd by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check to see that COLOUR is not blank
 if [ -z "$COLOUR" ]
 then
-	echo `date`: printers_ppd_assign - Blank colour option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank colour option by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit 101
 fi
 
@@ -109,13 +109,13 @@ fi
 #Check to see that PAGESIZE is not blank
 if [ -z "$PAGESIZE" ]
 then
-	echo `date`: printers_ppd_assign - Blank page size by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - Blank page size by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
-	echo `date`: printers_ppd_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -124,7 +124,7 @@ fi
 ####################
 if [ ! -f /opt/karoshi/server_network/printserver ]
 then
-	echo `date`: printers_ppd_assign - no printer server has been set up. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_assign - no printer server has been set up. >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver | sed 's/ //g'`
@@ -132,8 +132,8 @@ PRINTERSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver | sed 's/ //g
 ####################
 #add ppd file to printer
 ####################
-echo `date`: printers_ppd_assign - Adding ppd file to $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $PRINTERSERVER != `hostname-fqdn` ]
+echo "$(date): printers_ppd_assign - Adding ppd file to $PRINTERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [[ "$PRINTERSERVER" != $(hostname-fqdn) ]]
 then
 	ssh -x -o PasswordAuthentication=no $PRINTERSERVER '
 	if [ -f '$PRINTERPPD' ]
@@ -156,19 +156,19 @@ then
 	chmod 0644 /etc/cups/ppd/'$PRINTERNAME'.ppd
 	[ ! -d /var/lib/samba/netlogon/linuxclient/printer_drivers/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/printer_drivers/
 	#Generate avahi config
-	rm -f /etc/avahi/services/AirPrint-*
-	cd /etc/avahi/services
-	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] &&/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
+	#rm -f /etc/avahi/services/AirPrint-*
+	#cd /etc/avahi/services
+	#[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] &&/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	#source /opt/karoshi/serversetup/variables/distro
+	#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 	' 2>&1
-scp root@$PRINTERSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
+	scp root@$PRINTERSERVER:"/etc/cups/ppd/$PRINTERNAME.ppd" /var/lib/samba/netlogon/linuxclient/printer_drivers/
 else
 	if [ -f $PRINTERPPD ]
 	then
-		lpadmin -p $PRINTERNAME -P $PRINTERPPD 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		lpadmin -p $PRINTERNAME -P $PRINTERPPD 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	else
-		lpadmin -p $PRINTERNAME -P $PRINTERPPD.gz 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		lpadmin -p $PRINTERNAME -P $PRINTERPPD.gz 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 	#Change default paper size to selected
 	#DefaultPageSize: Letter
@@ -184,10 +184,10 @@ else
 	chmod 0644 /etc/cups/ppd/$PRINTERNAME.ppd
 	cp -f /etc/cups/ppd/$PRINTERNAME.ppd /var/lib/samba/netlogon/linuxclient/printer_drivers/
 	#Generate avahi config
-	rm -f /etc/avahi/services/AirPrint-*
-	cd /etc/avahi/services
-	[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] && /opt/karoshi/serversetup/modules/printserver/airprint-generate.py
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
+	#rm -f /etc/avahi/services/AirPrint-*
+	#cd /etc/avahi/services
+	#[ -f /opt/karoshi/serversetup/modules/printserver/airprint-generate.py ] && /opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+	#source /opt/karoshi/serversetup/variables/distro
+	#/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload 1>/dev/null
 fi
 exit

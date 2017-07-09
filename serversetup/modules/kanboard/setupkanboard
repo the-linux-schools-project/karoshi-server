@@ -65,7 +65,7 @@ fi
 #Create kanboard mysql password for the new database
 #####################
 echo '<ul><li>'$"Creating the kanboard database in mysql"'</li></ul>'
-WBPASS=$(openssl rand -hex 16)
+WBPASS=$(openssl rand -hex 20 | base64 | head -c 35)
 
 #############################
 #Make sure that we know the root mysql password

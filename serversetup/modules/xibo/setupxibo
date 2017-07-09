@@ -86,7 +86,7 @@ TEXTDOMAIN=karoshi-server
 #####################
 echo '<ul><li>'$"Creating the Xibo database in mysql"'</li></ul>'
 
-xiboPASS=`openssl rand -hex 16`
+xiboPASS=$(openssl rand -hex 20 | base64 | head -c 35)
 
 #############################
 #Make sure that we know the root mysql password

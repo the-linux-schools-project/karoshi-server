@@ -30,7 +30,7 @@ done
 
 if [ ! -f /etc/mysql.secret ]
 then
-	RANDPASS=$(openssl rand -hex 16)
+	RANDPASS=$(openssl rand -hex 20 | base64 | head -c 35)
 	touch /etc/mysql.secret
 	chmod 0600 /etc/mysql.secret
 	chown root.root /etc/mysql.secret
@@ -40,8 +40,8 @@ fi
 ######################
 #Check that mysql is running
 ######################
-mysqladmin ping 2>/dev/null
-[ $? != 0 ] && start_mysql
+mysqladmin ping 1>/dev/null 2>/dev/null
+[ "$?" != 0 ] && start_mysql
 ######################
 #Check that we can connect with the root password
 ######################

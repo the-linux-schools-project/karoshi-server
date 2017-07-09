@@ -306,7 +306,7 @@ then
 		'
 	fi
 
-	echo "<li>$SERVERNAME: "$"Distribution Server"" - "$"Designation removed.""</li></ul>"
+	echo "<ul><li>$SERVERNAME: "$"Distribution Server"" - "$"Designation removed.""</li></ul>"
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver
 	completed
 fi
@@ -1356,7 +1356,7 @@ fi
 
 if [ $MODULE = REMOVESERVER ]
 then
-	echo "<ul><li>"$SERVERNAME: $"Removing Server""</li></ul>"
+	echo "<ul><li>$SERVERNAME: "$"Removing Server""</li></ul>"
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 	source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -1364,7 +1364,7 @@ then
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster $SERVERNAME all removeserver "$REMOTE_USER" "$REMOTE_ADDR"
 
 	#Check to see if this is a domain controller
-	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ]
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ]
 	then
 		#Demote from dc role in samba4
 		#ssh -x -o PasswordAuthentication=no $SERVERNAME '
@@ -1373,34 +1373,34 @@ then
 		#'
 		#Remove all dns entries for the domain controller
 		SERVERNAMESHORT=$(echo $SERVERNAME | cut -d. -f1)
-		samba-tool domain demote --remove-other-dead-server=$SERVERNAMESHORT
+		samba-tool domain demote --remove-other-dead-server="$SERVERNAMESHORT"
 	fi
 
 	#Remove zone information
-	[ -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/internal/servers/$SERVERNAME
-	[ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/$SERVERNAME
-	[ -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME ] && rm -f /opt/karoshi/server_network/zones/external/servers/$SERVERNAME
+	[ -f /opt/karoshi/server_network/zones/internal/servers/"$SERVERNAME" ] && rm -f /opt/karoshi/server_network/zones/internal/servers/"$SERVERNAME"
+	[ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVERNAME" ] && rm -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVERNAME"
+	[ -f /opt/karoshi/server_network/zones/external/servers/"$SERVERNAME" ] && rm -f /opt/karoshi/server_network/zones/external/servers/"$SERVERNAME"
 
 	#Remove alias information
-	if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+	if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
 	then
-		ALIAS=`sed -n 1,1p /opt/karoshi/server_network/aliases/$SERVERNAME`
-		rm -f /opt/karoshi/server_network/aliases/$SERVERNAME
-		[ -f /etc/ssl/apache/$ALIAS.key ] && rm -f /etc/ssl/apache/$ALIAS.key
-		[ -f /etc/ssl/apache/$ALIAS.pem ] && rm -f /etc/ssl/apache/$ALIAS.pem
-		[ -f /etc/ssl/apache/$ALIAS.req ] && rm -f /etc/ssl/apache/$ALIAS.req
+		ALIAS=$(sed -n 1,1p /opt/karoshi/server_network/aliases/"$SERVERNAME")
+		rm -f /opt/karoshi/server_network/aliases/"$SERVERNAME"
+		[ -f /etc/ssl/apache/"$ALIAS".key ] && rm -f /etc/ssl/apache/"$ALIAS".key
+		[ -f /etc/ssl/apache/"$ALIAS".pem ] && rm -f /etc/ssl/apache/"$ALIAS".pem
+		[ -f /etc/ssl/apache/"$ALIAS".req ] && rm -f /etc/ssl/apache/"$ALIAS".req
 		#Delete alias from dns
-		samba-tool dns delete 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME.$REALM --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns delete 127.0.0.1 "$REALM" "$ALIAS" CNAME "$SERVERNAME.$REALM" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 
 	#Remove entry from dns
-	TCPIPNUMBER=`net lookup $SERVERNAME`
-	samba-tool dns delete 127.0.0.1 $REALM $SERVERNAME A $TCPIPNUMBER --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	TCPIPNUMBER=$(net lookup "$SERVERNAME")
+	[ ! -z "$TCPIPNUMBER" ] && samba-tool dns delete 127.0.0.1 "$REALM" "$SERVERNAME" A "$TCPIPNUMBER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	#Change group information
 	for GROUPFILES in /opt/karoshi/server_network/group_information/*
 	do
-		GROUPFILE=`basename $GROUPFILES`
+		GROUPFILE=$(basename "$GROUPFILES")
 		sed -i 's/'$SERVERNAME'/'$HOSTNAME.$REALM'/g' /opt/karoshi/server_network/group_information/$GROUPFILE
 	done
 	#Change drive mapping

@@ -84,7 +84,7 @@ fi
 #####################
 echo '<ul><li>'$"Creating the xerte database in mysql"'</li></ul>'
 
-XERTEPASS=`openssl rand -hex 16`
+XERTEPASS=$(openssl rand -hex 20 | base64 | head -c 35)
 
 #############################
 #Make sure that we know the root mysql password
@@ -92,7 +92,7 @@ XERTEPASS=`openssl rand -hex 16`
 
 /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
 #Get root mysql password
-MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
+MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
 
 #############################
 #create and pipe in the database

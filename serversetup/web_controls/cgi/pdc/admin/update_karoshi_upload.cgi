@@ -331,7 +331,7 @@ __END_OF_HTML_CODE__
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 			<TITLE>Upload Completed</TITLE><meta http-equiv="REFRESH" content="0; URL=/cgi-bin/admin/update_karoshi_upload2.cgi">
 		</HEAD>
-		<BODY style="color: rgb(0, 0, 0); background-color: rgb(0, 0, 0);">
+		<BODY style="color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);">
 		<H1>Upload Completed</H1>
 		<P>
 		You uploaded <B>$FILES_UPLOADED</B> files totalling <B>$TOTAL_BYTES</B> total bytes.  Individual
