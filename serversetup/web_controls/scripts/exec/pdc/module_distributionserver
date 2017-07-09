@@ -281,7 +281,7 @@ else
 	echo TFTP_USERNAME=\"tftp\" >> /etc/default/tftpd-hpa
 	echo TFTP_DIRECTORY=\"/home/tftpboot\" >> /etc/default/tftpd-hpa
 	echo TFTP_ADDRESS=\"0.0.0.0:69\" >> /etc/default/tftpd-hpa
-	echo TFTP_OPTIONS=\"--secure\" >> /etc/default/tftpd-hpa
+	echo TFTP_OPTIONS=\"-4 --secure\" >> /etc/default/tftpd-hpa
 
 	#Extract all netboot variants
 	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz)
