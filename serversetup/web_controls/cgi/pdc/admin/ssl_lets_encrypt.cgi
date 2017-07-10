@@ -175,7 +175,7 @@ else
 	if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
 	then
 		#Show any custom aliases that have been assigned
-		echo "<ul><li>$SERVERNAME" - $"The following aliases have been assigned to this server and will be added in the SSL certificate.""</li></ul>"
+		echo "<ul><li>$SERVERNAME" - $"Creating an SSl certificate for the following domain entries""</li></ul>"
 		for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
 		do
 			echo "<ul><li>$CUSTOM_ALIAS.$REALM</li></ul>"

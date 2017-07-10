@@ -298,7 +298,7 @@ do
 		do
 		SLAVESERVER=$(basename "$SLAVESERVERS")
 		SLAVESERVER_SHORT=$(echo "$SLAVESERVER" | cut -d"." -f1)
-		#Chech ups status
+		#Check ups status
 		if [[ "$SLAVESERVER" = $(hostname-fqdn) ]]
 		then
 			UPS_SERVER=$(sed -n 1,1p /etc/nut/upsmon.conf | cut -d" " -f2)
@@ -313,7 +313,7 @@ do
 			SLAVESTATUS="$?"
 		fi
 
-		STATUSICON=battery_on_battery.png
+		STATUSICON=battery_no_power
 		STATUS2="Warning"
 		if [ "$SLAVESTATUS" = 0 ]
 		then
