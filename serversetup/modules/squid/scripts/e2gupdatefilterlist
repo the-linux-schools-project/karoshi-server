@@ -25,24 +25,24 @@ touch /etc/e2guardian/lists/filtergroupslist
 
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
-FILTERGROUP=`basename $FILTERGROUPS`
-FILTERNUMBER=`echo $FILTERGROUP | tr -cd "0-9"`
-if [ $FILTERGROUP != f1 ]
-then
-	#Check to see if any groups have been assigned to this filtergroup.
-	if [ -d /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups ] 
+	FILTERGROUP=$(basename "$FILTERGROUPS")
+	FILTERNUMBER=$(echo "$FILTERGROUP" | tr -cd "0-9")
+	if [ "$FILTERGROUP" != f1 ]
 	then
-		for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERGROUP/assigned_groups/*
-		do
-			ASSIGNEDGROUP=`basename $ASSIGNEDGROUPS`
-			#Modify the assigned group if it is an anomaly.
-			[ "$ASSIGNEDGROUP" = itadmin ] && ASSIGNEDGROUP=itadminstaff
-			[ "$ASSIGNEDGROUP" = tech ] && ASSIGNEDGROUP=techstaff
-			#Get all of the members of the group and update filtergroups file
-			getent passwd | grep /$ASSIGNEDGROUP/ | cut -d: -f1 | sed "s/$/=filter$FILTERNUMBER/g" >> /etc/e2guardian/lists/filtergroupslist
-		done
+		#Check to see if any groups have been assigned to this filtergroup.
+		if [ -d /etc/e2guardian/lists/filtergroups/"$FILTERGROUP"/assigned_groups ] 
+		then
+			for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/"$FILTERGROUP"/assigned_groups/*
+			do
+				ASSIGNEDGROUP=$(basename "$ASSIGNEDGROUPS")
+				#Modify the assigned group if it is an anomaly.
+				[ "$ASSIGNEDGROUP" = itadmin ] && ASSIGNEDGROUP=itadminstaff
+				[ "$ASSIGNEDGROUP" = tech ] && ASSIGNEDGROUP=techstaff
+				#Get all of the members of the group and update filtergroups file
+				getent passwd | grep /"$ASSIGNEDGROUP"/ | cut -d: -f1 | sed "s/$/=filter$FILTERNUMBER/g" >> /etc/e2guardian/lists/filtergroupslist
+			done
+		fi
 	fi
-fi
 done
 
 #Create stafflist for squid

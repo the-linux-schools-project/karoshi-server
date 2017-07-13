@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_squid_cgi
 then
-	echo `date`: module_squid - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_squid_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_squid_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_squid_cgi"'check' ]
 then
-	echo `date`: module_squid - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,93 +46,87 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_squid - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-echo `date`: module_squid - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: module_squid - Not called by module_squid.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - Not called by module_squid.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_squid - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_squid - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_squid - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_squid - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 SYNC_CONFIG=no
 [ -f /opt/karoshi/server_network/proxyserver ] && SYNC_CONFIG=yes
 
-echo `date`: "module_squid - Setting up $SERVERNAME sync configuruation $SYNC_CONFIG by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_squid - Setting up $SERVERNAME sync configuruation $SYNC_CONFIG by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ########################
 #Language
 ########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
 
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	#Check that this server has been setup with the correct authentication
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-	if [ $? = 101 ]
+	if [ "$?" = 101 ]
 	then
 		echo $"This server does not have the correct authentication set up on it.""<br><br>"
-		echo `date`: module_squid - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): module_squid - $SERVERNAME does not have the correct authentication for this module by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
-echo '<div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>'
+echo '<div class="sectiontitle">'$"Setup Internet Proxy Server"' - '"$SERVERNAME"'</div><br>'
 
 #Enable SSL for apache
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-[ `echo $?` != 0 ] && exit 101 
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
+[ "$?" != 0 ] && exit 101 
 
 #Check to see if we can allow more than one proxy server if the main server can shuffle dns entries.
-PROXY_LOADBALANCE=no
-[ `grep -c "dns round robin = yes" /etc/samba/smb.conf` -gt 0 ] && PROXY_LOADBALANCE=yes
 
-#Allow more than one proxy server if the main server can shuffle dns entries.
-if [ "$PROXY_LOADBALANCE" = yes ]
-then
-	[ ! -d /opt/karoshi/server_network/proxyservers ] && mkdir -p /opt/karoshi/server_network/proxyservers
-	[ ! -d /var/lib/samba/netlogon/domain_information/proxy_servers ] && mkdir -p /var/lib/samba/netlogon/domain_information/proxy_servers
-	echo $SERVERNAME > /opt/karoshi/server_network/proxyservers/$SERVERNAME
-	echo $SERVERNAME > /var/lib/samba/netlogon/domain_information/proxy_servers/$SERVERNAME
-fi
+[ ! -d /opt/karoshi/server_network/proxyservers ] && mkdir -p /opt/karoshi/server_network/proxyservers
+[ ! -d /var/lib/samba/netlogon/domain_information/proxy_servers ] && mkdir -p /var/lib/samba/netlogon/domain_information/proxy_servers
+echo "$SERVERNAME" > /opt/karoshi/server_network/proxyservers/"$SERVERNAME"
+echo "$SERVERNAME" > /var/lib/samba/netlogon/domain_information/proxy_servers/"$SERVERNAME"
+
 
 #Create dns entries for proxy.realm
 /opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries
@@ -145,20 +139,18 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:proxy:proxy.$REALM:prox
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 #Merge proxy keytab into squid keytab
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	echo -e "rkt /etc/keytabs/proxy.keytab\nwkt /etc/keytabs/squid.keytab\nexit" | ktutil 1> /dev/null
 else
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	echo -e "rkt /etc/keytabs/proxy.keytab\nwkt /etc/keytabs/squid.keytab\nexit" | ktutil 1> /dev/null
 	'
 fi
 
-PDCIP=`net lookup $HOSTNAME`
-LDAPSTATUS=notset
+PDCIP=$(net lookup "$HOSTNAME")
 
-
-if [ "$SERVERNAME" != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	#Sync e2guardian information to an additional server
 	if [ "$SYNC_CONFIG" = yes ]
@@ -168,7 +160,7 @@ then
 
 	#Copy in module
 	echo '<ul><li>'$"Copying module"'</li></ul>'
-	scp -p -r /opt/karoshi/serversetup/modules/squid root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/modules/squid root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
 	#Copy in fail2ban files
 	#scp -p -r /opt/karoshi/serversetup/all/fail2ban root@$SERVERNAME:/opt/karoshi/serversetup/all/ 1> /dev/null
 
@@ -176,20 +168,20 @@ then
 	#Run module
 	#########################
 
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:' | /opt/karoshi/serversetup/modules/squid/setupsquid
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:"' | /opt/karoshi/serversetup/modules/squid/setupsquid
 	'
-	[ $? = 101 ] && exit 101
+	[ "$?" = 101 ] && exit 101
 
 	else
-		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG: | /opt/karoshi/serversetup/modules/squid/setupsquid
-	[ $? = 101 ] && exit 101
+		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:" | /opt/karoshi/serversetup/modules/squid/setupsquid
+	[ "$?" = 101 ] && exit 101
 fi
 
 #Sync e2guardian information to the main server if this is the first time a proxy server has been added.
 if [ "$SYNC_CONFIG" = no ]
 then
-	if [ "$SERVERNAME" != `hostname-fqdn` ]
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 	then
 		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/e2guardian /etc
 		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SERVERNAME":/etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default /etc/squid-deb-proxy/mirror-dstdomain.acl.d/
@@ -197,31 +189,26 @@ then
 fi
 
 #Schedule IST checks
-echo 05 23 '*' '*' '*' /opt/karoshi/serversetup/modules/squid/scripts/generate_ist_data > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/generate_ist_data.cron
+echo '05 23 * * *' /opt/karoshi/serversetup/modules/squid/scripts/generate_ist_data > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/generate_ist_data.cron"
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $"Squid Internet Proxy - port 3128""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid
-echo $"Apt Proxy - port 8000""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/squid-deb-proxy
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo $"Squid Internet Proxy - port 3128""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/squid
+echo $"Apt Proxy - port 8000""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/squid-deb-proxy
 sed -i 's/INTERNETCTRL=no/INTERNETCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $SERVERNAME > /opt/karoshi/server_network/proxyserver
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo "$SERVERNAME" > /opt/karoshi/server_network/proxyserver
 
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVERNAME"
 fi
 
 #Create info file for linux clients proxy server
-if [ "$PROXY_LOADBALANCE" = yes ]
-then
-	echo proxy > /var/lib/samba/netlogon/domain_information/proxy_server
-else
-	PROXYSERVER=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
-	echo $PROXYSERVER > /var/lib/samba/netlogon/domain_information/proxy_server
-fi
+echo proxy > /var/lib/samba/netlogon/domain_information/proxy_server
+
 exit
 
 

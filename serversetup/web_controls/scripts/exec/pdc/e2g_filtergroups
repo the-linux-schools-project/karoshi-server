@@ -23,36 +23,36 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/e2g_filtergroups_cgi
 then
-	echo `date`: e2g_filtergroups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/e2g_filtergroups_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $e2g_filtergroups_cgi'check' ]
+if [ "$MD5SUM"'check' != "$e2g_filtergroups_cgi"'check' ]
 then
-	echo `date`: e2g_filtergroups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/e2g_filtergroups_cgi
 then
-	echo `date`: e2g_filtergroups - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/e2g_filtergroups_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/e2g_filtergroups.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/e2g_filtergroups.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $e2g_filtergroups_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$e2g_filtergroups_cgi"'check' ]
 then
-	echo `date`: e2g_filtergroups - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -60,31 +60,31 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: e2g_filtergroups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+%')
 
 if [ -z "$DATA" ]
 then
-	echo `date`: e2g_filtergroups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: e2g_filtergroups - no data >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-FILTERNAME=`echo "$DATA" | cut -s -d: -f5`
-FILTERDATA=`echo "$DATA" | cut -s -d: -f6`
-FILTERDATA2=`echo "$DATA" | cut -s -d: -f7`
-FILTERDATA3=`echo "$DATA" | cut -s -d: -f8`
-FILTERDATA4=`echo "$DATA" | cut -s -d: -f9`
-MOBILE=`echo "$DATA" | cut -s -d: -f10`
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+FILTERNAME=$(echo "$DATA" | cut -s -d: -f5)
+FILTERDATA=$(echo "$DATA" | cut -s -d: -f6)
+FILTERDATA2=$(echo "$DATA" | cut -s -d: -f7)
+FILTERDATA3=$(echo "$DATA" | cut -s -d: -f8)
+FILTERDATA4=$(echo "$DATA" | cut -s -d: -f9)
+MOBILE=$(echo "$DATA" | cut -s -d: -f10)
+PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 
 TABLECLASS=standard
 HELPCLASS="info"
@@ -101,7 +101,7 @@ ICON2=/images/submenus/internet/allowed_sites.png
 ICON3=/images/submenus/internet/banned_sites.png
 ICON4=/images/submenus/system/edit.png
 ICON5=/images/submenus/system/delete.png
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	TABLECLASS=mobilestandard
 	HELPCLASS="info infoleft"
@@ -123,36 +123,36 @@ fi
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: e2g_filtergroups - Not called by e2g_filtergroups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Not called by e2g_filtergroups.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: e2g_filtergroups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: e2g_filtergroups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: e2g_filtergroups - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): e2g_filtergroups - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ "$ACTION" = reallyadd ]
 then
 	if [ -z "$FILTERDATA2" ]
 	then
-		echo `date`: e2g_filtergroups - Blank fiter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): e2g_filtergroups - Blank fiter description by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 	if [ -z "$FILTERDATA3" ]
 	then
-		echo `date`: e2g_filtergroups - Blank filter clone by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): e2g_filtergroups - Blank filter clone by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -161,7 +161,7 @@ if [ "$ACTION" = editlabel ]
 then
 	if [ -z "$FILTERNAME" ]
 	then
-		echo `date`: e2g_filtergroups - Blank filtername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): e2g_filtergroups - Blank filtername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -170,20 +170,20 @@ if [ $ACTION = reallyeditlabel ]
 then
 	if [ -z "$FILTERDATA" ]
 	then
-		echo `date`: e2g_filtergroups - Blank filter description by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): e2g_filtergroups - Blank filter description by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 	if [ -z "$FILTERDATA2" ]
 	then
-		echo `date`: e2g_filtergroups - Blank filter label by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): e2g_filtergroups - Blank filter label by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi	
 
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ] && [ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]
 then
-echo `date`: e2g_filtergroups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: e2g_filtergroups - access denied to $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit 101
 fi
 
@@ -404,7 +404,7 @@ FILTERCLONE="$FILTERDATA3"
 FILTERCOUNT=`ls -1 /etc/e2guardian/lists/filtergroups/ | wc -l`
 let FILTERCOUNT="$FILTERCOUNT"+1
 
-echo `date`: e2g_filtergroups - adding new filter group f"$FILTERCOUNT" by "$REMOTE_USER" from "$REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: e2g_filtergroups - adding new filter group f"$FILTERCOUNT" by "$REMOTE_USER" from "$REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Copy filter group config folder
 cp -f -R /etc/e2guardian/lists/filtergroups/"$FILTERCLONE" /etc/e2guardian/lists/filtergroups/f"$FILTERCOUNT"
@@ -435,7 +435,7 @@ datasync
 restarte2guardian
 
 #Modify details file
-FILTERNAME=f$FILTERCOUNT
+FILTERNAME=f"$FILTERCOUNT"
 reallyeditlabels
 }
 
@@ -455,7 +455,7 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 }
 
 function reallydelete {
-echo `date`: e2g_filtergroups - deleting filter group $FILTERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: e2g_filtergroups - deleting filter group $FILTERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Delete filter folder
 rm -f -R /etc/e2guardian/lists/filtergroups/$FILTERNAME
@@ -485,7 +485,7 @@ do
 		sed -i "s%/etc/e2guardian/lists/filtergroups/$FILTERGROUP/%/etc/e2guardian/lists/filtergroups/f$COUNTER/%g" /etc/e2guardian/lists/filtergroups/f"$COUNTER"/exceptionurllist
 
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done 
 
 #Regenerate filter lists
@@ -506,51 +506,51 @@ HELPMSG=$"This allows you assign user groups to filter groups. Groups that are n
 SUBTITLE="#Edit_Filter_Group"
 showtitle
 
-source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+source /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/details
 
 #Show details for the group
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="____FILTERNAME____" value="'$FILTERNAME'"><input type="hidden" name="____ACTION____" value="reallyeditlable"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH1'px;"><b>'$"Description"'</b></td><td><input tabindex= "2" value="'$FILTERDESC'" name="____FILTERDATA2____" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><input value='$"Submit"' class="button" type="submit"></td></tr></tbody></table><br>'
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'"><input type="hidden" name="____ACTION____" value="reallyeditlable"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Description"'</b></td><td><input tabindex= "2" value="'"$FILTERDESC"'" name="____FILTERDATA2____" style="width: '"$WIDTH2"'px;" size="20" type="text"></td><td><input value='$"Submit"' class="button" type="submit"></td></tr></tbody></table><br>'
 
 #Show option to edit banned site lists and part banned site lists
 echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">
-<input type="hidden" name="____FILTERNAME____" value="'$FILTERNAME'">
+<input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'">
 <table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH7'px;"><b>'$"Filter Group Options"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
+<tr><th style="width: '"$WIDTH7"'px;"><b>'$"Filter Group Options"'</b></th><th style="width: '"$WIDTH8"'px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
 <tr><td>'$"Custom Allowed Sites"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditCustomAllowedSites____" value="____ACTION____viewcustomsites____FILTERDATA____allowed____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Custom Allowed Sites"'">
+	<button class="'"$HELPCLASS"'" name="____EditCustomAllowedSites____" value="____ACTION____viewcustomsites____FILTERDATA____allowed____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Custom Allowed Sites"'">
 	<span>'$"Edit"'<br>'$"Custom Allowed Sites"'</span>
 	</button>
 </td></tr>
 <tr><td>'$"Custom Banned Sites"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditCustomBannedSites____" value="____ACTION____viewcustomsites____FILTERDATA____banned____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Custom Banned Sites"'">
+	<button class="'"$HELPCLASS"'" name="____EditCustomBannedSites____" value="____ACTION____viewcustomsites____FILTERDATA____banned____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Custom Banned Sites"'">
 	<span>'$"Edit"'<br>'$"Custom Banned Sites"'</span>
 	</button>
 </td></tr>
 <tr><td>'$"Banned Categories"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditBannedDomains____" value="____ACTION____editfilterlists____FILTERDATA____domains____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Banned Categories"'">
+	<button class="'"$HELPCLASS"'" name="____EditBannedDomains____" value="____ACTION____editfilterlists____FILTERDATA____domains____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Banned Categories"'">
 	<span>'$"Edit"'<br>'$"Banned Categories"'</span>
 	</button>
 </td></tr>'
 #echo "<tr><td>$"Part Banned Site Lists"</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_editfilterlists_FILTERDATA_urls_\" type=\"image\" class=\"images\" src=\"$ICON4\" value=\"\"><span>$"Edit"<br>$"Part Banned Site Lists"</span></a></td></tr>"
 echo '<tr><td>'$"Banned Phrase Categories"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditBannedPhraseCategories____" value="____ACTION____editfilterlists____FILTERDATA____phraselists____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Banned Phrase Categories"'">
+	<button class="'"$HELPCLASS"'" name="____EditBannedPhraseCategories____" value="____ACTION____editfilterlists____FILTERDATA____phraselists____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Banned Phrase Categories"'">
 	<span>'$"Edit"'<br>'$"Banned Phrase Categories"'</span>
 	</button>
 </td></tr>
 <tr><td>'$"Banned Extensions"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditBannedExtensions____" value="____ACTION____bannedextensionlists____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Banned Extensions"'">
+	<button class="'"$HELPCLASS"'" name="____EditBannedExtensions____" value="____ACTION____bannedextensionlists____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Banned Extensions"'">
 	<span>'$"Edit"'<br>'$"Banned Extensions"'</span>
 	</button>
 </td></tr>
 <tr><td>'$"Banned Mime Types"'</td><td style="vertical-align: top;">
-	<button class="'$HELPCLASS'" name="____EditBannedMimeTypes____" value="____ACTION____bannedmimetypelists____">
-	<img src="'$ICON4'" alt="'$"Edit" $"Banned Mime Types"'">
+	<button class="'"$HELPCLASS"'" name="____EditBannedMimeTypes____" value="____ACTION____bannedmimetypelists____">
+	<img src="'"$ICON4"'" alt="'$"Edit" $"Banned Mime Types"'">
 	<span>'$"Edit"'<br>'$"Banned Mime Types"'</span>
 	</button>
 </td></tr>
@@ -559,14 +559,14 @@ echo '<tr><td>'$"Banned Phrase Categories"'</td><td style="vertical-align: top;"
 
 echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">'
 
-if [ $FILTERNAME != f1 ]
+if [ "$FILTERNAME" != f1 ]
 then
 	#Show option to add in a group
 	echo "<input type=\"hidden\" name=\"____FILTERNAME____\" value=\"$FILTERNAME\"><input type=\"hidden\" name=\"____ACTION____\" value=\"reallyaddgroup\">"
 	echo '<b>'$"Add User Group"'</b><br><table class="'$TABLECLASS'" style="text-align: left;" >
 	<tr><td style="width: '$WIDTH1'px;">'$"Group"'</td><td>'
 
-	/opt/karoshi/web_controls/group_dropdown_list | sed 's/_GROUP_/____FILTERDATA____/g' | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px;">/g'
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/_GROUP_/____FILTERDATA____/g' | sed 's/style="width: 200px;">/style="width: '"$WIDTH2"'px;">/g'
 
 	echo '</td><td><input value="'$"Add Group"'" class="button" type="submit"></td></tr></tbody></table><br>'
 
@@ -576,15 +576,15 @@ then
 	#Show any existing groups that have been assigned.
 	if [ -d /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups ]
 	then
-		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH7'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: '$WIDTH8'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
+		echo '<table id="myTable2" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '"$WIDTH7"'px;"><b>'$"Assigned User Groups"'</b></th><th style="width: '"$WIDTH8"'px;"><b>'$"Remove"'</b></th></tr></thead><tbody>
 		'
-		for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/*
+		for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/assigned_groups/*
 		do
-			FILTERGROUP=`basename $FILTERGROUPS`
-			echo '<tr><td style="width: 180px;">'$FILTERGROUP'</td><td>
-				<button class="'$HELPCLASS'" name="____RemoveFilterGroup____" value="____ACTION____removegroup____FILTERNAME____'$FILTERNAME'____FILTERDATA____'$FILTERGROUP'____">
-				<img src="'$ICON1'" alt="'$FILTERGROUP $"Remove"'">
-				<span>'$"Remove"'<br>'$FILTERGROUP'</span>
+			FILTERGROUP=$(basename "$FILTERGROUPS")
+			echo '<tr><td style="width: 180px;">'"$FILTERGROUP"'</td><td>
+				<button class="'"$HELPCLASS"'" name="____RemoveFilterGroup____" value="____ACTION____removegroup____FILTERNAME____'"$FILTERNAME"'____FILTERDATA____'"$FILTERGROUP"'____">
+				<img src="'"$ICON1"'" alt="'"$FILTERGROUP" $"Remove"'">
+				<span>'$"Remove"'<br>'"$FILTERGROUP"'</span>
 				</button>
 			</td></tr>'
 			done
@@ -595,14 +595,14 @@ echo '</form>'
 }
 
 function removegroup {
-FILTERGROUP=$FILTERDATA
-echo `date`: e2g_filtergroups - removing $FILTERGROUP from filtergroup $FILTERNAME by  $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+FILTERGROUP="$FILTERDATA"
+echo "$(date): e2g_filtergroups - removing $FILTERGROUP from filtergroup $FILTERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Remove filtergroup flag file
-[ -f /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/$FILTERGROUP ] && rm -f /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/$FILTERGROUP
+[ -f /etc/e2guardian/lists/filtergroups/"$FILTERNAME/assigned_groups/$FILTERGROUP" ] && rm -f /etc/e2guardian/lists/filtergroups/"$FILTERNAME/assigned_groups/$FILTERGROUP"
 
 #Remove assigned_groups folder if it is empty
-[ `ls -1 /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups | wc -l` = 0 ] && rm -f -R /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups
+[ $(ls -1 /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/assigned_groups | wc -l) = 0 ] && rm -f -R /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/assigned_groups
 
 #Regenerate filter lists
 /opt/karoshi/serversetup/modules/squid/scripts/e2gupdatefilterlist
@@ -615,26 +615,26 @@ datasync
 }
 
 function reallyaddgroup {
-FILTERGROUP=$FILTERDATA
-echo `date`: e2g_filtergroups - adding $FILTERGROUP to filter $FILTERNAME by  $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+FILTERGROUP="$FILTERDATA"
+echo "$(date): e2g_filtergroups - adding $FILTERGROUP to filter $FILTERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
 #Create flag file
-[ ! -d /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups ] && mkdir -p /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups
-touch /etc/e2guardian/lists/filtergroups/$FILTERNAME/assigned_groups/$FILTERGROUP
+[ ! -d /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/assigned_groups ] && mkdir -p /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/assigned_groups
+touch /etc/e2guardian/lists/filtergroups/"$FILTERNAME/assigned_groups/$FILTERGROUP"
 
 #Remove flag file from any other filtergroup.
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
-	GROUP=`basename $FILTERGROUPS`
-	if [ $GROUP != $FILTERNAME ]
+	GROUP=$(basename "$FILTERGROUPS")
+	if [ "$GROUP" != "$FILTERNAME" ]
 	then
-		if [ -d /etc/e2guardian/lists/filtergroups/$GROUP/assigned_groups ]
+		if [ -d /etc/e2guardian/lists/filtergroups/"$GROUP"/assigned_groups ]
 		then
-			[ -f /etc/e2guardian/lists/filtergroups/$GROUP/assigned_groups/$FILTERGROUP ] && rm -f /etc/e2guardian/lists/filtergroups/$GROUP/assigned_groups/$FILTERGROUP
+			[ -f /etc/e2guardian/lists/filtergroups/"$GROUP/assigned_groups/$FILTERGROUP" ] && rm -f /etc/e2guardian/lists/filtergroups/"$GROUP"/assigned_groups/$FILTERGROUP
 
 			#Remove assigned_groups folder if it is empty
-			[ `ls -1 /etc/e2guardian/lists/filtergroups/$GROUP/assigned_groups | wc -l` = 0 ] && rm -f -R /etc/e2guardian/lists/filtergroups/$GROUP/assigned_groups
+			[ `ls -1 /etc/e2guardian/lists/filtergroups/"$GROUP"/assigned_groups | wc -l` = 0 ] && rm -f -R /etc/e2guardian/lists/filtergroups/"$GROUP"/assigned_groups
 		fi
 	fi
 done
@@ -658,7 +658,7 @@ COL2=7
 TITLE=$"Banned Categories"
 HELPMSG=$"This allows you to choose the domain categories that are added for filtering to the filter group."
 
-if [ $FILTERDATA = urls ]
+if [ "$FILTERDATA" = urls ]
 then
 	FILENAME=bannedurllist
 	FILTERTYPE=urls
@@ -666,7 +666,7 @@ then
 	HELPMSG=$"This allows you to choose the url categories that are added for filtering to the filter group to block parts of websites."
 fi
 
-if [ $FILTERDATA = phraselists ]
+if [ "$FILTERDATA" = phraselists ]
 then
 	FILENAME=bannedphraselist
 	FILTERTYPE=banned
@@ -679,19 +679,19 @@ SUBTITLE="#Filter_Group_Options"
 showtitle
 
 
-source /etc/e2guardian/lists/filtergroups/$FILTERNAME/details
+source /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/details
 
 #Show details for the group
 
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'$FILTERNAME'</td></tr>
-<tr><td><b>'$"Description"'</b></td><td>'$FILTERDESC'</td></tr></tbody></table><br>'
+echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;"><b>'$"Name"'</b></td><td>'"$FILTERNAME"'</td></tr>
+<tr><td><b>'$"Description"'</b></td><td>'"$FILTERDESC"'</td></tr></tbody></table><br>'
 
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '$WIDTH7'px;"><b>'$"Filter Category"'</b></th><th style="width: 60px;"><b>'$"Status"'</b></th><th></th></tr></thead><tbody>'
 
 #Show categories that are currently active
-for CATEGORIES in `grep ^".Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$FILENAME | sed "s/>//g" | sed "s/<//g"`
+for CATEGORIES in $(grep ^".Include</etc/e2guardian/lists/$SEARCHTERM/" /etc/e2guardian/lists/filtergroups/"$FILTERNAME/$FILENAME" | sed "s/>//g" | sed "s/<//g")
 do
 	CATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL1`
 	SUBCATEGORY=`echo "$CATEGORIES" | cut -d"/" -f$COL2`
@@ -1042,7 +1042,7 @@ then
 		then
 			for FILTERGROUP in `echo $FILTERDATA4 | sed "s/_/ /g" | sed "s/^ //g"`
 			do
-				echo `date`: e2g_filtergroups - adding $FILTERDATA2 to $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+				echo `date`: e2g_filtergroups - adding $FILTERDATA2 to $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 				echo $FILTERDATA2 >> /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
 				sort --unique /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE -o /etc/e2guardian/lists/filtergroups/$FILTERGROUP/$CUSTOMFILE
 			done
@@ -1051,9 +1051,9 @@ then
 		#Delete site from the banned list
 		if [ $FILTERDATA3 = delete ]
 		then
-			echo `date`: e2g_filtergroups - deleting  $FILTERDATA2 from $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			SITELINENUMBER=`grep -n -w ^$FILTERDATA2 /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE | cut -d: -f1`
-			[ ! -z "$SITELINENUMBER" ] && sed -i $SITELINENUMBER"d" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE
+			echo "$(date): e2g_filtergroups - deleting $FILTERDATA2 from $FILTERGROUP $CUSTOMFILE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			SITELINENUMBER=$(grep -n -w ^"$FILTERDATA2" /etc/e2guardian/lists/filtergroups/"$FILTERNAME/$CUSTOMFILE" | cut -d: -f1)
+			[ ! -z "$SITELINENUMBER" ] && sed -i "$SITELINENUMBER""d" /etc/e2guardian/lists/filtergroups/"$FILTERNAME/$CUSTOMFILE"
 			#Remove blank lines
 			sed -i "/^$/d" /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE
 		fi
@@ -1063,7 +1063,7 @@ fi
 #Filter data if the file is too large
 FILTER_RESULTS=no
 
-[ `cat /etc/e2guardian/lists/filtergroups/$FILTERNAME/$CUSTOMFILE | wc -l` -gt 15 ] && FILTER_RESULTS=yes
+[ $(cat /etc/e2guardian/lists/filtergroups/"$FILTERNAME/$CUSTOMFILE" | wc -l) -gt 15 ] && FILTER_RESULTS=yes
 
 if [ $FILTER_RESULTS = yes ]
 then

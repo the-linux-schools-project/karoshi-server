@@ -23,78 +23,77 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-FAILED_SERVER=no
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_bans_cgi
 then
-	echo `date`: dhcp_bans - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_bans_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dhcp_bans_cgi'check' ]
-	then
-	echo `date`: dhcp_bans - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+if [ "$MD5SUM"'check' != "$dhcp_bans_cgi"'check' ]
+then
+	echo "$(date): dhcp_bans - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dhcp_bans - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%+')
 if [ -z "$DATA" ]
 then
-	echo `date`: dhcp_bans - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-CLIENTHOSTNAME=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-'`
-MACADDRESS=`echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g'`
-COMMENT=`echo "$DATA" | cut -s -d: -f7 | sed 's/+/ /g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+CLIENTHOSTNAME=$(echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-')
+MACADDRESS=$(echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g')
+COMMENT=$(echo "$DATA" | cut -s -d: -f7 | sed 's/+/ /g')
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] 
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] 
 then
-	echo `date`: dhcp_bans - Not called by dhcp_bans.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - Not called by dhcp_bans.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dhcp_bans - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dhcp_bans - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: dhcp_bans - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $ACTION != reallydelete ] && [ $ACTION != restartdhcp ]
+if [ "$ACTION" != reallydelete ] && [ "$ACTION" != restartdhcp ]
 then
 	if [ -z "$CLIENTHOSTNAME" ]
 	then
-		echo `date`: dhcp_bans - Blank "client hostname" by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_bans - Blank client hostname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -102,7 +101,7 @@ if [ "$ACTION" = reallyadd ] || [ "$ACTION" = import ]
 then
 	if [ -z "$MACADDRESS" ]
 	then
-		echo `date`: dhcp_bans - Blank mac address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_bans - Blank mac address by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -126,12 +125,12 @@ match substring (hardware, 1, 6);
 deny booting;
 }' > /opt/karoshi/server_network/dhcp/ban_list
 
-if [ `ls -1 /opt/karoshi/server_network/dhcp/bans | wc -l` -gt 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/dhcp/bans | wc -l) -gt 0 ]]
 then
 	for RESERVATIONS in /opt/karoshi/server_network/dhcp/bans/*
 	do
 		source "$RESERVATIONS"
-		echo 'subclass "black-hole" '$MACADDRESS';' >> /opt/karoshi/server_network/dhcp/ban_list
+		echo 'subclass "black-hole" '"$MACADDRESS"';' >> /opt/karoshi/server_network/dhcp/ban_list
 	done
 	echo >> /opt/karoshi/server_network/dhcp/ban_list
 fi
@@ -140,7 +139,7 @@ fi
 cat /opt/karoshi/server_network/dhcp/ban_list > /etc/dhcp/dhcpd_bans.conf
 
 #Make sure config file is included in dhcpd.conf
-if [ $(grep -c "/etc/dhcp/dhcpd_bans.conf" /etc/dhcp/dhcpd.conf) = 0 ]
+if [[ $(grep -c "/etc/dhcp/dhcpd_bans.conf" /etc/dhcp/dhcpd.conf) = 0 ]]
 then
 	echo "include \"/etc/dhcp/dhcpd_bans.conf\";" >> /etc/dhcp/dhcpd.conf
 fi
@@ -148,11 +147,12 @@ fi
 #Sync config file to failover server
 if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
-	for DHCPSERVER in `ls -1 /opt/karoshi/server_network/dhcp_servers`
+	for DHCPSERVER in /opt/karoshi/server_network/dhcp_servers/*
 	do
-		if [ "$DHCPSERVER" != `hostname-fqdn` ]
+		DHCPSERVER=$(basename "$DHCPSERVER")
+		if [[ "$DHCPSERVER" != $(hostname-fqdn) ]]
 		then
-			scp /etc/dhcp/dhcpd_bans.conf root@$DHCPSERVER:/etc/dhcp/
+			scp /etc/dhcp/dhcpd_bans.conf root@"$DHCPSERVER":/etc/dhcp/
 		fi
 	done
 fi
@@ -163,17 +163,17 @@ touch /opt/karoshi/server_network/dhcp/restart_required
 if [ "$ACTION" = reallyadd ]
 then
 	#Add dhcp reservation and restart dhcp
-	echo `date`: dhcp_bans - adding $CLIENTHOSTNAME - mac address: $MACADDRESS  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - adding $CLIENTHOSTNAME - mac address: $MACADDRESS  by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ ! -d /opt/karoshi/server_network/dhcp/bans ] && mkdir -p /opt/karoshi/server_network/dhcp/bans
 	#Only add the mac address if it has not already been added
 	grep -r "$MACADDRESS" /opt/karoshi/server_network/dhcp/bans 1>/dev/null
-	if [ $? != 0 ]
+	if [ "$?" != 0 ]
 	then
-		echo -e 'MACADDRESS="'$MACADDRESS'"' > /opt/karoshi/server_network/dhcp/bans/$CLIENTHOSTNAME
-		echo -e 'COMMENT="'$COMMENT'"' >> /opt/karoshi/server_network/dhcp/bans/$CLIENTHOSTNAME
+		echo -e 'MACADDRESS="'"$MACADDRESS"'"' > /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME"
+		echo -e 'COMMENT="'"$COMMENT"'"' >> /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME"
 		updatedhcpconf
 	else
-		echo `date`: dhcp_bans - mac address: $MACADDRESS - this mac address is already banned from the DHCP server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_bans - mac address: $MACADDRESS - this mac address is already banned from the DHCP server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 fi
 
@@ -181,7 +181,7 @@ if [ "$ACTION" = delete ]
 then
 	if [ -f /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME" ]
 	then
-		echo `date`: dhcp_bans - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dhcp_bans - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		[ ! -d /opt/karoshi/server_network/dhcp/bans_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/bans_delete
 		cp -f /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/bans_delete/"$CLIENTHOSTNAME"
 	fi
@@ -190,28 +190,29 @@ fi
 if [ "$ACTION" = deleteall ]
 then
 	[ ! -d /opt/karoshi/server_network/dhcp/bans_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/bans_delete
-	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/bans/)
+	for CLIENTHOSTNAME in /opt/karoshi/server_network/dhcp/bans/*
 	do
-		echo `date`: dhcp_bans - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		CLIENTHOSTNAME=$(basename "$CLIENTHOSTNAME")
+		echo "$(date): dhcp_bans - deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		cp -f /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME" /opt/karoshi/server_network/dhcp/bans_delete/"$CLIENTHOSTNAME"
 	done
 fi
 
 if [ "$ACTION" = clearall ]
 then
-	echo `date`: dhcp_bans - clearing all bans by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - clearing all bans by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	rm -f -R /opt/karoshi/server_network/dhcp/bans_delete
 fi
 
 if [ "$ACTION" = canceldelete ]
 then
-	echo `date`: dhcp_bans - canceling deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dhcp_bans - canceling deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [ -f /opt/karoshi/server_network/dhcp/bans_delete/"$CLIENTHOSTNAME" ]
 	then
 		rm -f /opt/karoshi/server_network/dhcp/bans_delete/"$CLIENTHOSTNAME"
 	fi
 	#Delete folder if it is empty so that delete reservations button no longer shows
-	if [ $(ls -1 /opt/karoshi/server_network/dhcp/bans_delete | wc -l) = 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/dhcp/bans_delete | wc -l) = 0 ]]
 	then
 		rm -f -R /opt/karoshi/server_network/dhcp/bans_delete
 	fi
@@ -220,9 +221,10 @@ fi
 if [ "$ACTION" = reallydelete ]
 then
 	[ ! -d /opt/karoshi/server_network/dhcp/bans_delete ] && mkdir -p /opt/karoshi/server_network/dhcp/bans_delete
-	for CLIENTHOSTNAME in $(ls -1 /opt/karoshi/server_network/dhcp/bans_delete/)
+	for CLIENTHOSTNAME in /opt/karoshi/server_network/dhcp/bans_delete/*
 	do
-		echo `date`: dhcp_bans - really deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		CLIENTHOSTNAME=$(basename "$CLIENTHOSTNAME")
+		echo "$(date): dhcp_bans - really deleting $CLIENTHOSTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		#Get tcpip address
 		source /opt/karoshi/server_network/dhcp/bans/"$CLIENTHOSTNAME"
 		rm -f -R /opt/karoshi/server_network/dhcp/bans_delete

@@ -44,6 +44,7 @@ if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
 	for DHCPSERVER in /opt/karoshi/server_network/dhcp_servers/*
 	do
+		DHCPSERVER=$(basename "$DHCPSERVER")
 		if [[ "$DHCPSERVER" != $(hostname-fqdn) ]]
 		then
 			echo '<ul><li>'"$DHCPSERVER"' - '$"Restarting dhcp"'</li>'
