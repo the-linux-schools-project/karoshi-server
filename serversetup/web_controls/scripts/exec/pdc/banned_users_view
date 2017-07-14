@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,29 +31,29 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/banned_users_view_cgi
 then
-	echo `date`: banned_users_view - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/banned_users_view_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $banned_users_view_cgi'check' ]
+if [ "$MD5SUM"'check' != "$banned_users_view_cgi"'check' ]
 then
-	echo `date`: banned_users_view - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/banned_users_view_cgi
 then
-	echo `date`: banned_users_view - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/banned_users_view_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/banned_users_view.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/banned_users_view.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $banned_users_view_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$banned_users_view_cgi"'check' ]
 then
-	echo `date`: banned_users_view - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -61,70 +61,70 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: banned_users_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+')
 if [ -z "$DATA" ]
 then
-	echo `date`: banned_users_view - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ALPHABET=`echo "$DATA" | cut -s -d: -f4`
-ALPHABET2=`echo $ALPHABET | tr 'A-Z' 'a-z'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ALPHABET=$(echo "$DATA" | cut -s -d: -f4)
+ALPHABET2=$(echo "$ALPHABET" | tr '[:upper:]' '[:lower:]')
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: banned_users_view - Not called by banned_users_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - Not called by banned_users_view.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: banned_users_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: banned_users_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: banned_users_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$ALPHABET" ]
 then
-	echo `date`: banned_users_view - No letter chosen by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): banned_users_view - No letter chosen by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: banned_users_view - viewing banned users in category $ALPHABET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): banned_users_view - viewing banned users in category $ALPHABET by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 [ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
 chmod 0700 /opt/karoshi/.tempdata
 
-if [ $ALPHABET = ALL ]
+if [ "$ALPHABET" = ALL ]
 then
 	ls -1 /opt/karoshi/logs/banned_user_account_durations > /opt/karoshi/.tempdata/badusers.$$
 	ls -1 /opt/karoshi/logs/banned_user_permanent >> /opt/karoshi/.tempdata/badusers.$$
 else
-	ls -1 /opt/karoshi/logs/banned_user_account_durations | grep ^$ALPHABET > /opt/karoshi/.tempdata/badusers.$$
-	ls -1 /opt/karoshi/logs/banned_user_permanent  | grep ^$ALPHABET >> /opt/karoshi/.tempdata/badusers.$$
-	if [ $ALPHABET != $ALPHABET2 ]
+	ls -1 /opt/karoshi/logs/banned_user_account_durations | grep ^"$ALPHABET" > /opt/karoshi/.tempdata/badusers."$$"
+	ls -1 /opt/karoshi/logs/banned_user_permanent  | grep ^"$ALPHABET" >> /opt/karoshi/.tempdata/badusers."$$"
+	if [ "$ALPHABET" != "$ALPHABET2" ]
 	then
-		ls -1 /opt/karoshi/logs/banned_user_account_durations | grep ^$ALPHABET2 >> /opt/karoshi/.tempdata/badusers.$$
-		ls -1 /opt/karoshi/logs/banned_user_permanent | grep ^$ALPHABET2 >> /opt/karoshi/.tempdata/badusers.$$
+		ls -1 /opt/karoshi/logs/banned_user_account_durations | grep ^"$ALPHABET2" >> /opt/karoshi/.tempdata/badusers."$$"
+		ls -1 /opt/karoshi/logs/banned_user_permanent | grep ^"$ALPHABET2" >> /opt/karoshi/.tempdata/badusers."$$"
 	fi
 fi
 
@@ -132,32 +132,32 @@ fi
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 
-USERCOUNT=`cat /opt/karoshi/.tempdata/badusers.$$ | wc -l`
+USERCOUNT=$(wc -l < /opt/karoshi/.tempdata/badusers."$$")
 COUNTER=1
-if [ $USERCOUNT -gt 0 ]
+if [ "$USERCOUNT" -gt 0 ]
 then
 	#Show table of sites
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 	<thead><tr><th style="width: 250px;"><b>'$"Banned Users"'</b></th><th style="width: 70px;"><b>'$"Duration"'</b></th><th style="width: 100px;"><b>'$"View Incidents"'</b></th><th style="width: 100px;"><b>'$"Allow"'</b></th></tr></thead><tbody>'
-	while [ $COUNTER -le $USERCOUNT ]
+	while [ "$COUNTER" -le "$USERCOUNT" ]
 	do
-		USERDATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/.tempdata/badusers.$$`
-		USERNAME=`echo $USERDATA | cut -d, -f1`
+		USERDATA=$(sed -n "$COUNTER,$COUNTER""p" /opt/karoshi/.tempdata/badusers."$$")
+		USERNAME=$(echo "$USERDATA" | cut -d, -f1)
 		BANLENGTH="-"
-		[ -f /opt/karoshi/logs/banned_user_account_durations/$USERNAME ] && BANLENGTH=`sed -n 1,1p /opt/karoshi/logs/banned_user_account_durations/$USERNAME`
-		echo "<tr><td>"$USERNAME"</td><td>$BANLENGTH</td><td>""<"input name='"'_VIEWLOG_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td><td>""<"input name='"'_USERNAME_'"' value='"'$USERNAME'"' type='"'checkbox'"'"></td></tr>"
-		let COUNTER=$COUNTER+1
+		[ -f /opt/karoshi/logs/banned_user_account_durations/"$USERNAME" ] && BANLENGTH=$(sed -n 1,1p /opt/karoshi/logs/banned_user_account_durations/"$USERNAME")
+		echo '<tr><td>'"$USERNAME"'</td><td>'"$BANLENGTH"'</td><td><"input name="_VIEWLOG_" value="'"$USERNAME"'" type="checkbox"></td><td><"input name="_USERNAME_" value="'"$USERNAME"'" type="checkbox"></td></tr>'
+		let COUNTER="$COUNTER"+1
 	done
 	echo '</tbody></table><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-	echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedusers"'", "'"_USERNAME_"'", true')'';''"' value='"'Select all'"''>'
-	rm -f /opt/karoshi/.tempdata/badusers.$$
+	echo "<input class=\"button\" type=\"button\" onclick=\"SetAllCheckBoxes('selectedusers', '_USERNAME_', true);\" value=\"Select all\">"
+	rm -f /opt/karoshi/.tempdata/badusers."$$"
 else
-	rm -f /opt/karoshi/.tempdata/badusers.$$
+	rm -f /opt/karoshi/.tempdata/badusers."$$"
 	exit 101
 fi
 exit
