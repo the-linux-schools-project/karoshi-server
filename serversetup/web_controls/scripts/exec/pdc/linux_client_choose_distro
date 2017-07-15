@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_fm_cgi
 then
-	echo `date`: linux_client_choose_distro - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: linux_client_choose_distro - No admin MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_choose_distro_fm_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $linux_client_choose_distro_fm_cgi'check' ]
+if [ "$MD5SUM"'check' != "$linux_client_choose_distro_fm_cgi"'check' ]
 then
-	echo `date`: linux_client_choose_distro - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,43 +46,43 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: linux_client_choose_distro - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: linux_client_choose_distro - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
 ########################
 #Check data
 ########################
 if [[ $REMOTE_MD5'check' != $MD5SUM'check' ]]
 then
-	echo `date`: linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Not called by linux_client_choose_distro.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: linux_client_choose_distro - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: linux_client_choose_distro - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ $(grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin) != 1 ]
 then
-	echo `date`: linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): linux_client_choose_distro - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -91,8 +91,8 @@ fi
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Make sure the folders exist
@@ -118,7 +118,7 @@ then
 	echo /home/itadminshare/distributions/linux/ - $"This folder does not contain any iso images."
 fi
 
-if [ `ls -1 /home/itadminshare/distributions/linux/ | wc -l` -gt 0 ]
+if [[ $(ls -1 /home/itadminshare/distributions/linux/ | wc -l) -gt 0 ]]
 then
 	#Show list of distros in itadminshare
 	echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 180px;">'$"Netboot Version"'</td><td>'
@@ -130,8 +130,8 @@ then
 
 	for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz | sort -r)
 	do
-		DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
-		echo '<option value="'$DISTROVERSION'">'$DISTROVERSION'</option>'
+		DISTROVERSION=$(basename "$DISTROVERSIONS" | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
+		echo '<option value="'"$DISTROVERSION"'">'"$DISTROVERSION"'</option>'
 	done
 	echo '</select></td></tr></tbody></table>'
 
@@ -140,9 +140,9 @@ then
 
 	for ISOIMAGES in /home/itadminshare/distributions/linux/*.iso
 	do
-		ISOIMAGE=`basename "$ISOIMAGES"`
-		echo '<tr><td>'$ISOIMAGE'</td><td style="vertical-align: top;">
-		<button class="info" name="___ChooseISO___" value="___DISTROCHOICE___'$ISOIMAGE'___CONTROL___copy___">
+		ISOIMAGE=$(basename "$ISOIMAGES")
+		echo '<tr><td>'"$ISOIMAGE"'</td><td style="vertical-align: top;">
+		<button class="info" name="___ChooseISO___" value="___DISTROCHOICE___'"$ISOIMAGE"'___CONTROL___copy___">
 		<img src="/images/submenus/client/copy_iso.png" alt="'$"Copy"'">
 		<span>'$"Copy the iso to the distribution server and make it available for network installation."'</span>
 		</button>
@@ -152,51 +152,51 @@ then
 
 	echo '</tbody></table>'
 else
-	echo '<b>Itadminshare '$"ISO Images"'</b><br><br>'$"There are no iso images in this area."'<br>'
+	echo '<b>Itadminshare '$"ISO Images"'</b><br><br>/home/itadminshare/distributions/linux/ - '$"There are no iso images in this area."'<br>'
 fi
 
-DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
+DISTROSERVER=$(sed -n 1,1p /opt/karoshi/server_network/distribution_server)
 
 #Show a list of distributions on the distribution server
 
 echo '<br>'
 
 
-if [ $DISTROSERVER = `hostname-fqdn` ]
+if [[ "$DISTROSERVER" = $(hostname-fqdn) ]]
 then
 	[ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
-	if [ `ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l` -gt 0 ]
+	if [[ $(ls -1 /home/distributions/linux_iso/ 2>/dev/null | wc -l) -gt 0 ]]
 	then
 		echo '<table id="myTable2" class="tablesorter" style="text-align: left;">
 		<thead><th style="width: 300px;">'$"Distribution Server ISO Images"'</th><th style="width: 200px;">'$"Netboot Version"'</th><th style="width: 80px;">'$"Delete"'</th></tr></thead><tbody>'
 		for ISOIMAGES in /home/distributions/linux_iso/*.iso
 		do
-			ISOIMAGE=`basename "$ISOIMAGES"`
-			NETBOOT=$(cat /home/distributions/linux_iso/$ISOIMAGE.netboot)
-			echo '<tr><td style=\"width: 200px; vertical-align: top;\">'$ISOIMAGE'</td><td style=\"width: 200px; vertical-align: top;\">'$NETBOOT'</td>
+			ISOIMAGE=$(basename "$ISOIMAGES")
+			NETBOOT=$(cat /home/distributions/linux_iso/"$ISOIMAGE".netboot)
+			echo '<tr><td style=\"width: 200px; vertical-align: top;\">'"$ISOIMAGE"'</td><td style=\"width: 200px; vertical-align: top;\">'"$NETBOOT"'</td>
 			<td style="vertical-align: top;">
-			<button class="info" name="___DeleteISO___" value="___DISTROCHOICE___'$ISOIMAGE'___NETBOOT___'$NETBOOT'___CONTROL___delete___">
+			<button class="info" name="___DeleteISO___" value="___DISTROCHOICE___'"$ISOIMAGE"'___NETBOOT___'"$NETBOOT"'___CONTROL___delete___">
 			<img src="/images/submenus/client/delete_iso.png" alt="'$"Delete"'">
-			<span>'$ISOIMAGE' - '$"Delete the iso from the distribution server."'</span>
+			<span>'"$ISOIMAGE"' - '$"Delete the iso from the distribution server."'</span>
 			</button>
 			</td></tr>
 			'
 		done
 		echo "</tbody></table>"
 	else
-		echo ''$"There are no iso images in this area."'<br>'
+		echo '/home/distributions/linux_iso/ - '$"There are no iso images in this area."'<br>'
 	fi
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$DISTROSERVER" '
 	[ ! -d /home/distributions/linux_iso ] && mkdir /home/distributions/linux_iso
-	if [ `ls -1 /home/distributions/linux_iso/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /home/distributions/linux_iso/ | wc -l) -gt 0 ]]
 	then
 		echo "<table id=\"myTable2\" class=\"tablesorter\" style=\"text-align: left;\">
 		<thead><th style=\"width: 300px;\">'$"Distribution Server ISO Images"'</th><th style=\"width: 200px;\">'$"Netboot Version"'</th><th style=\"width: 80px;\">'$"Delete"'</th></tr></thead><tbody>"
 
 		for ISOIMAGES in /home/distributions/linux_iso/*.iso
 		do
-			ISOIMAGE=`basename "$ISOIMAGES"`
+			ISOIMAGE=$(basename "$ISOIMAGES")
 			NETBOOT=$(cat /home/distributions/linux_iso/$ISOIMAGE.netboot)
 			echo "<tr><td>$ISOIMAGE</td><td>$NETBOOT</td>
 			<td style=\"vertical-align: top;\">
@@ -209,7 +209,7 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3  $DISTROSERVER '
 		done
 		echo "</tbody></table>"
 	else
-		echo "<br>'$"There are no iso images in this area."'<br>"
+		echo "<br>/home/distributions/linux_iso/ - '$"There are no iso images in this area."'<br>"
 	fi
 	'
 fi

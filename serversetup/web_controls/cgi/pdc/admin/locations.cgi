@@ -29,15 +29,15 @@
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Locations"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -49,15 +49,11 @@ $(document).ready(function()
 );
 </script>
 </head><body onLoad="start()"><div id="pagecontainer">'
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_admin_log.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -66,7 +62,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -74,13 +70,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -91,6 +87,8 @@ fi
 
 echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Client Locations"'</div></td>
+<td style="vertical-align: top;"><form action="asset_register_view.cgi" name="AssetRegister" method="post">
+<input name="AssetRegister" type="submit" class="button" value="'$"Asset Register"'"></form></td>
 <td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
 <input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'"></form></td>
 <td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></td>
@@ -104,26 +102,26 @@ echo '</tbody></table></form><br></div><div id="infobox">'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=$(wc -l < /var/lib/samba/netlogon/locations.txt)
 else
 	LOCATION_COUNT=0
 fi
 #Show current rooms
-if [ $LOCATION_COUNT -gt 0 ]
+if [ "$LOCATION_COUNT" -gt 0 ]
 then
 	echo '<form action="/cgi-bin/admin/locations2.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 350px;"><b>'$"Locations"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 COUNTER=1
-while [ $COUNTER -lt $LOCATION_COUNT ]
+while [ "$COUNTER" -lt "$LOCATION_COUNT" ]
 do
-	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-	echo '<tr><td style="width: 180px;">'$LOCATION'</td><td>
-	<button class="info" name="DoDelete" value="____DELETE____'$LOCATION'____">
-	<img src="/images/submenus/client/delete_location.png" alt="'$"Delete"' '$LOCATION'">
-	<span>'$"Delete"' '$LOCATION'</span>
+	LOCATION=$(sed -n "$COUNTER,$COUNTER""p" /var/lib/samba/netlogon/locations.txt)
+	echo '<tr><td style="width: 180px;">'"$LOCATION"'</td><td>
+	<button class="info" name="DoDelete" value="____DELETE____'"$LOCATION"'____">
+	<img src="/images/submenus/client/delete_location.png" alt="'$"Delete"' '"$LOCATION"'">
+	<span>'$"Delete"' '"$LOCATION"'</span>
 	</button>
 	</td></tr>'
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 echo '</tbody></table></form><br>'
 fi

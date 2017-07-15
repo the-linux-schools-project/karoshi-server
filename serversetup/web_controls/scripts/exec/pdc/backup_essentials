@@ -193,7 +193,7 @@ then
 	[ -f "$BACKUP_PATH"/restore ] && rm -f "$BACKUP_PATH/karoshi_backup-$LOG_DATE.tar.gz"
 
 	#Create encrypted tar archive for the backup
-	tar czvf "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz" "$BACKUPFOLDERS" 1>/dev/null
+	tar czvf "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz" $BACKUPFOLDERS 1>/dev/null
 	chmod 0600 "$BACKUP_PATH/karoshi-backup-$SERVERNAME_SHORT-$LOG_DATE.tar.gz"
 else
 	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '	
@@ -213,7 +213,7 @@ else
 	[ -f '"$BACKUP_PATH"'/restore ] && rm -f '"$BACKUP_PATH"'/karoshi_backup-'"$LOG_DATE"'.tar.gz
 
 	#Create encrypted tar archive for the backup
-	tar czvf '"$BACKUP_PATH"'/karoshi-backup-'"$SERVERNAME_SHORT"'-'"$LOG_DATE"'.tar.gz '"$BACKUPFOLDERS"' 1>/dev/null
+	tar czvf '"$BACKUP_PATH"'/karoshi-backup-'"$SERVERNAME_SHORT"'-'"$LOG_DATE"'.tar.gz '$BACKUPFOLDERS' 1>/dev/null
 	chmod 0600 '"$BACKUP_PATH"'/karoshi-backup-'"$SERVERNAME_SHORT"'-'"$LOG_DATE"'.tar.gz
 	'
 fi

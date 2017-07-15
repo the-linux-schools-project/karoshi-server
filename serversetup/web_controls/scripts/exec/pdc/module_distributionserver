@@ -30,7 +30,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_distributionserver_cgi
 then
-	echo "$(date): module_distributionserver - No MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_distributionserver_cgi
@@ -38,7 +38,7 @@ MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | c
 [ -z "$MD5SUM" ] && MD5SUM=not_set
 if [ "$MD5SUM"'check' != "$module_distributionserver_cgi"'check' ]
 then
-	echo "$(date): module_distributionserver - Incorrect MD5Checksum" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -48,7 +48,7 @@ fi
 numArgs=$#
 if [ "$numArgs" != 0 ]
 then
-	echo "$(date): module_distributionserver - incorrect number of arguments" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -56,7 +56,7 @@ read DATA
 DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo "$(date): module_distributionserver - no data" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
@@ -68,26 +68,26 @@ SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo "$(date): module_distributionserver - Not called by module_distributionserver.cgi" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - Not called by module_distributionserver.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo "$(date): module_distributionserver - Blank remote user" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo "$(date): module_distributionserver - Blank remote tcpip address" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo "$(date): module_distributionserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_distributionserver - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "$(date): module_distributionserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >>" /opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): module_distributionserver - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Copy in language files
 #Copy in module
