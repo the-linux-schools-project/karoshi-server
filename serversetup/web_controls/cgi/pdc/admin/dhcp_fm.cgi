@@ -54,22 +54,32 @@ echo '
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/system/dhcp.png
+ICON2=/images/submenus/system/lock.png
+
 echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" >
-<tr><td style="width:180px"><div class="sectiontitle">'$"Configure DHCP"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></td>
-<td>
-<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPLeases_" value="_">
-'$"View DHCP Leases"'
-</button>
-</td><td>
-<button class="button" formaction="dhcp_reservations.cgi" name="_DHCPReservations_" value="_">
-'$"DHCP Reservations"'
-</button>
+<div class="sectiontitle">'$"Configure DHCP"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></div><table class="tablesorter"><tbody><tr>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
+		'$"DHCP Leases"'<br>
+		<img src="'$ICON1'" alt="'$"View DHCP Leases"'">
+		<span>'$"View DHCP Leases"'</span>
+	</button>
 </td>
-</tr>
-</tbody></table><br><br></div><div id="infobox">'
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<button class="info" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
+		'$"Reservations"'<br>
+		<img src="'$ICON2'" alt="'$"DHCP Reservations"'">
+		<span>'$"View and edit DHCP Reservations"'</span>
+	</button>
+</td>
+</tbody></table><br></div><div id="infobox">
+'
 
 #Get current dhcp data
 

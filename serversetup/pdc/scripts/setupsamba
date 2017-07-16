@@ -388,6 +388,7 @@ then
 			SETFSMO=no
 
 			#Try setting fsmo role with ssh key
+			echo "$(date): seizing fsmo roles on $DNSTCPIP" >> /opt/karoshi/serversetup/install_log
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
 			samba-tool fsmo seize --role=all --force
 			'
@@ -404,6 +405,7 @@ then
 
 				while [ $SETFSMO = no ]
 				do
+					echo "$(date): connecting with sshpass and seizing fsmo roles on $DNSTCPIP" >> /opt/karoshi/serversetup/install_log
 					sshpass -p "$ROOTPASS" ssh -o StrictHostKeyChecking=no $DNSTCPIP samba-tool fsmo seize --role=all --force
 					[ $? = 0 ] && break
 					ERRORMSG='<span foreground="red">'$"Root SSL authentication error."'</span>'
@@ -414,6 +416,7 @@ then
 
 		
 		#Get idmp.ldb from an additional domain controller
+		echo "$(date): Copying idmap.ldb from $DNSTCPIP" >> /opt/karoshi/serversetup/install_log
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $DNSTCPIP '
 		[ -f /var/lib/samba/private/idmap.ldb.bak ] && rm -f /var/lib/samba/private/idmap.ldb.bak
 		tdbbackup -s .bak /var/lib/samba/private/idmap.ldb
@@ -2128,12 +2131,14 @@ then
 	#Set /etc/resolv.conf to use the existing domain controller
 	echo domain $REALM > /etc/resolv.conf
 	echo nameserver $DNSTCPIP >> /etc/resolv.conf
-	#Restore dc-data gluster volume	
+	#Restore dc-data gluster volume
+	echo "$(date): Restoring dc-data gluster volume" >> /opt/karoshi/serversetup/install_log
 	/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn` dc-data restore
-	if [ $? = 0 ]
+	if [ "$?" = 0 ]
 	then
 		for FOLDER in /var/lib/samba/netlogon /var/lib/samba/sysvol /var/lib/samba/dfs /home/applications /opt/karoshi/server_network
 		do
+			echo "$(date): Populating $FOLDER on dc-data" >> /opt/karoshi/serversetup/install_log
 			/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume `hostname-fqdn` "$FOLDER" dc-data
 		done
 	fi
@@ -2147,12 +2152,14 @@ then
 			if [ -f /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/$(hostname-fqdn) ]
 			then
 				#Restore gluster volume
+				echo "$(date): Restoring $GLUSTERVOLUME gluster volume" >> /opt/karoshi/serversetup/install_log
 				/opt/karoshi/serversetup/modules/glusterfs/scripts/karoshi_gluster `hostname-fqdn` "$GLUSTERVOLUME" restore
 				if [ $? = 0 ]
 				then
 					for FOLDER in $(ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/folders)
 					do
 						FOLDER=$(echo $FOLDER | sed 's%-%/%g')
+						echo "$(date): Populating $FOLDER on $GLUSTERVOLUME" >> /opt/karoshi/serversetup/install_log
 						/opt/karoshi/serversetup/modules/glusterfs/scripts/populate_gluster_volume $(hostname-fqdn) "$FOLDER" "$GLUSTERVOLUME"
 					done
 				fi
@@ -2160,8 +2167,10 @@ then
 		fi
 	done
 	#Seize ad roles back
-	samba-tool fsmo seize --role=all
+	echo "$(date): Seizing adc roles" >> /opt/karoshi/serversetup/install_log
+	samba-tool fsmo seize --role=all &
 	#Set /etc/resolv.conf back to this server
+	echo "$(date): Creating resolv.conf" >> /opt/karoshi/serversetup/install_log
 	create_resolv.conf
 fi
 
@@ -2171,17 +2180,19 @@ fi
 if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
 then 
 	#Modify role information
-	if [ -d /opt/karoshi/server_network/servers/$HOSTNAME.$REALM ]
+	if [ -d /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM" ]
 	then
-		for INFOFILES in /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/*
+		echo "$(date): modifying role information" >> /opt/karoshi/serversetup/install_log
+		for INFOFILES in /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM"/*
 		do
-			INFOFILE=`basename $INFOFILES`
-			if [ $INFOFILE != apacheserver ] && [ $INFOFILE != glusterfs_server ] && [ $INFOFILE != 1dc ] && [ $INFOFILE != 1domainmember ] && [ $INFOFILE != 2users-groups ]
+			INFOFILE=$(basename "$INFOFILES")
+			if [ "$INFOFILE" != apacheserver ] && [ "$INFOFILE" != glusterfs_server ] && [ "$INFOFILE" != 1dc ] && [ "$INFOFILE" != 1domainmember ] && [ "$INFOFILE" != 2users-groups ]
 			then
 				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE` = 0 ]
 				then
-					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE
-					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE
+					echo "$(date): marking $INFOFILE for re-install" >> /opt/karoshi/serversetup/install_log
+					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM/$INFOFILE"
+					echo 'RE-INSTALL MODULE<br></b></span>' >> /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM/$INFOFILE"
 				fi
 			fi
 		done

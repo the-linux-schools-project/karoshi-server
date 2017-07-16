@@ -403,9 +403,9 @@ echo '				</ul>
 #			
 #'
 #Distribution server
-if [ $DISTROCTRL = yes ]
+if [ "$DISTROCTRL" = yes ]
 then
-echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi" class="fly">'$"Distribution Controls"'</a>
+	echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi" class="fly">'$"Distribution Controls"'</a>
 				<ul>
 					<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$"Distribution Controls"'</a></li>
 					<li><a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a></li>

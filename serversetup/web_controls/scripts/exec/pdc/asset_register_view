@@ -150,6 +150,7 @@ then
 	ICON16=/images/assets/importm.png
 	ICON17=/images/assets/client_logsm.png
 	ICON18=/images/assets/qrcodem.png
+	ICON19=/images/submenus/file/folderm.png
 	WIDTH1=120
 	WIDTH2=100
 	WIDTH3=160
@@ -173,6 +174,7 @@ else
 	ICON16=/images/assets/import.png
 	ICON17=/images/assets/client_logs.png
 	ICON18=/images/assets/qrcode.png
+	ICON19=/images/submenus/file/folder.png
 	WIDTH1=200
 	WIDTH2=100
 	WIDTH3=300
@@ -986,7 +988,7 @@ then
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button formaction="locations.cgi" class="info" name="_ViewLocations_" value="_Viewlocations_">
 			'$"Locations"'<br>
-			<img src="'$ICON1'" alt="'$"Locations"'">
+			<img src="'$ICON19'" alt="'$"Locations"'">
 			<span>'$"View and add areas where you have computer equipment."'</span>
 		</button>
 	</td>'

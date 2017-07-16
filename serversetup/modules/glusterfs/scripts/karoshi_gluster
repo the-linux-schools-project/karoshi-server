@@ -516,27 +516,27 @@ then
 	SERVER="$SERVERLIST"
 
 	#Dont restore if the volume if it is mounted and running on the server
-	if [[ "$SERVER" = $(hostname-fqdn) ]]
-	then
-		if [[ $(mount | grep -c -w "$VOLUME") -gt 0 ]]
-		then
-			exit
-		fi
-	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
-		if [ $(mount | grep -c -w '"$VOLUME"') -gt 0 ]
-		then
-			exit 1
-		else
-			exit 0
-		fi		
-		'
-	fi
-	if [ "$?" != 0 ]
-	then
-		echo "$(date): karoshi_gluster volume is mounted on $SERVER." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		exit
-	fi
+	#if [[ "$SERVER" = $(hostname-fqdn) ]]
+	#then
+	#	if [[ $(mount | grep -c -w "$VOLUME") -gt 0 ]]
+	#	then
+	#		exit
+	#	fi
+	#else
+	#	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	#	if [ $(mount | grep -c -w '"$VOLUME"') -gt 0 ]
+	#	then
+	#		exit 1
+	#	else
+	#		exit 0
+	#	fi		
+	#	'
+	#fi
+	#if [ "$?" != 0 ]
+	#then
+	#	echo "$(date): karoshi_gluster volume is mounted on $SERVER." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	#	exit
+	#fi
 
 	echo '<ul><li>'"$SERVER"' - '$"Restoring"' '"$VOLUME"'</li></ul>'
 	#Get list of servers in the gluster volume
@@ -552,8 +552,6 @@ then
 	then
 			#Create folder for gluster volume
 			[ ! -d "$GLUSTERBASE/$VOLUME" ] && mkdir -p "$GLUSTERBASE/$VOLUME"
-			echo creating "$GLUSTERBASE/$VOLUME"
-			ls -l $GLUSTERBASE
 			[ ! -d $MOUNTBASE ] && mkdir -p $MOUNTBASE
 			echo '<ul><li>'"$HOSTNAME"'.'"$REALM"' - '$"stopping glusterfs"'</li></ul>'
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/glusterfs_stop 1>/dev/null
@@ -563,7 +561,7 @@ then
 			#Wait for volinfo to appear
 			VCOUNTER=1
 			sleep 1
-			while  [ ! -f /var/lib/glusterd/vols/"$VOLUME"/info ]
+			while  [ ! -f "/var/lib/glusterd/vols/$VOLUME/info" ]
 			do
 				sleep 1
 				let VCOUNTER="$VCOUNTER"+1

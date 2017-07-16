@@ -313,46 +313,95 @@ then
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'"><br><br>'
 	fi
 else
-	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody><tr>
-	<td style="width:180px"><div class="sectiontitle">'$"DHCP Reservations"'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to add in reserved tcpip addresses for client devices."'</span></a></td>
-	<td>
-	<button class="button" formaction="dhcp_import_reservations_fm.cgi" name="_DHCPImportReseravations_" value="_">
-	'$"Import DHCP Reservations"'
-	</button>
-	</td>
-	<td>'
+	WIDTH=100
+	ICON1=/images/submenus/system/import.png
+	ICON2=/images/submenus/system/add.png
+	ICON3=/images/submenus/system/lock.png
+	ICON4=/images/submenus/system/dhcp.png
+	ICON5=/images/submenus/system/edit.png
+	ICON6=/images/submenus/system/delete.png
+	ICON7=/images/submenus/system/reload.png
+	echo '
 
+	<div class="sectiontitle">'$"DHCP Reservations"'</div><table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="dhcp_import_reservations_fm.cgi" name="_ImportDHCPReservations_" value="_">
+			'$"Import"'<br>
+			<img src="'$ICON1'" alt="'$"Import DHCP Reservations"'">
+			<span>'$"Import DHCP Reservations"'</span>
+		</button>
+	</td>
+
+	'
 	if [ "$ACTION" = view ]
 	then
-		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$"Add DHCP Reservation"'">'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_AddDHCPReservation_" value="_ACTION_add_reservation_">
+					'$"Add"'<br>
+					<img src="'$ICON2'" alt="'$"Add DHCP Reservation"'">
+					<span>'$"Add DHCP Reservation"'</span>
+				</button>
+			</td>
+
+		'
 	else
-		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'">'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_ViewDHCPReservations_" value="_ACTION_view_">
+					'$"View"'<br>
+					<img src="'$ICON3'" alt="'$"View DHCP Reservations"'">
+					<span>'$"View DHCP Reservations"'</span>
+				</button>
+			</td>
+
+		'
 	fi
-	echo '</td><td>
-	<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPViewLeases_" value="_">
-	'$"View DHCP Leases"'
-	</button>
-	</td><td>
-	<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
-	'$"Configure DHCP"'
-	</button>
-	</td>'
+
+	echo '
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="dhcp_view_leases.cgi" name="_ViewDHCPleases_" value="_">
+				'$"Leases"'<br>
+				<img src="'$ICON4'" alt="'$"View DHCP Leases"'">
+				<span>'$"View DHCP Leases"'</span>
+			</button>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+				'$"Configure"'<br>
+				<img src="'$ICON5'" alt="'$"Configure DHCP"'">
+				<span>'$"Configure DHCP"'</span>
+			</button>
+		</td>
+	'
 	if [ -d /opt/karoshi/server_network/dhcp/reservations_delete ]
 	then
-		echo '<td>
-		<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
-		'$"Delete DHCP reservations"'
-		</button>
-		</td>'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_DeleteAll_" value="_ACTION_reallydelete_">
+					'$"Delete"'<br>
+					<img src="'$ICON6'" alt="'$"Delete DHCP reservations"'">
+					<span>'$"Delete DHCP reservations"'</span>
+				</button>
+			</td>
+
+		'
+
 	fi
 	if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
 	then
-		echo '<td>
-		<button class="button" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
-		'$"Activate Changes"'
-		</button>
-		</td>'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
+					'$"Activate Changes"'<br>
+					<img src="'$ICON7'" alt="'$"Activate Changes"'">
+					<span>'$"Activate Changes"'</span>
+				</button>
+			</td>
+		'
 	fi
 	echo '</tr></tbody></table></form></div><div id="infobox">
 	'

@@ -540,7 +540,7 @@ then
 			then
 				echo "$GLUSTERVOLINFO" | sed "/^ /d" | tail -n +3 | sed "s/^/<tr><td style=\"width:150px\">/g" | sed "s/ : /<\/td><td>/g" | sed "s/$/<\/td><\/tr>/g" | sed "s/  //g"
 			else
-				echo '<tr><td style="width:150px">'"$SERVER"'</td><td style="text-align:right"><b style="color:red;">'$"Brick missing"'</b> <button class="button" name="_RestoreBrick_" value="_ACTION_restorebrick_VOLUME_'"$VOLUME"'_server_'"$SERVER"'_">
+				echo '<tr><td style="width:150px">'"$SERVER"'</td><td style="text-align:right"><b style="color:red;">'$"Brick missing"'</b> <button class="button" name="_RestoreBrick_" value="_ACTION_restorebrick_VOLUME_'"$VOLUME"'_SERVER_'"$SERVER"'_">
 				'$"Restore Brick"'
 				</button></td></tr>'
 			fi

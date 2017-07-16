@@ -264,41 +264,86 @@ then
 		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Bans"'"><br><br>'
 	fi
 else
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>
-	<td><div class="sectiontitle">'$"DHCP Bans"'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Bans"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows stop a MAC address from being assigned a tcpip number."'</span></a></td>
-	<td>'
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+	ICON2=/images/submenus/system/ban.png
+	ICON3=/images/submenus/system/dhcp.png
+	ICON4=/images/submenus/system/edit.png
+	ICON5=/images/submenus/system/delete.png
+	ICON6=/images/submenus/system/reload.png
+
+	echo '
+	<div class="sectiontitle">'$"DHCP Bans"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Bans"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows stop a MAC address from being assigned a tcpip number."'</span></a></div><table class="tablesorter"><tbody><tr>'
 
 	if [ $ACTION = view ]
 	then
-		echo '<input name="_ACTION_add_ban_" type="submit" class="button" value="'$"Add DHCP Ban"'">'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_BanDHCP_" value="_ACTION_add_ban_">
+					'$"Add"'<br>
+					<img src="'$ICON1'" alt="'$"Add DHCP Ban"'">
+					<span>'$"Add DHCP Ban"'</span>
+				</button>
+			</td>
+		'
 	else
-		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Bans"'">'
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+				<button class="info" name="_ViewDHCPBans_" value="_ACTION_view_">
+					'$"View"'<br>
+					<img src="'$ICON2'" alt="'$"View banned DHCP devices"'">
+					<span>'$"View banned DHCP devices"'</span>
+				</button>
+			</td>
+
+		'
 	fi
-	echo '</td><td>
-	<button class="button" formaction="dhcp_view_leases.cgi" name="_DHCPViewLeases_" value="_">
-	'$"View DHCP Leases"'
-	</button>
-	</td><td>
-	<button class="button" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
-	'$"Configure DHCP"'
-	</button>
-	</td>'
+
+
+
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
+			'$"DHCP Leases"'<br>
+			<img src="'$ICON3'" alt="'$"View DHCP Leases"'">
+			<span>'$"View DHCP Leases"'</span>
+		</button>
+	</td>
+
+
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+				'$"Configure"'<br>
+				<img src="'$ICON4'" alt="'$"Configure DHCP"'">
+				<span>'$"Configure DHCP"'</span>
+			</button>
+		</td>
+	</tbody></table><br>
+	'
+
 	if [ -d /opt/karoshi/server_network/dhcp/bans_delete ]
 	then
-		echo '<td>
-		<button class="button" name="_DeleteAll_" value="_ACTION_reallydelete_">
-		'$"Delete DHCP bans"'
-		</button>
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" name="_DeleteAll_" value="_ACTION_reallydelete_">
+				'$"Delete"'<br>
+				<img src="'$ICON5'" alt="'$"Delete DHCP bans"'">
+				<span>'$"Delete DHCP bans"'</span>
+			</button>
 		</td>'
 	fi
 	if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
 	then
-		echo '<td>
-		<button class="button" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
-		'$"Activate Changes"'
-		</button>
-		</td>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
+				'$"Activate Changes"'<br>
+				<img src="'$ICON6'" alt="'$"Activate Changes"'">
+				<span>'$"Activate Changes"'</span>
+			</button>
+		</td>
+		'
 	fi
 	echo '</tr></tbody></table></form></div><div id="infobox">
 	'
