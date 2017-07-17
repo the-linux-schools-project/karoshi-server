@@ -65,17 +65,17 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 	<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
-		'$"DHCP Leases"'<br>
 		<img src="'$ICON1'" alt="'$"View DHCP Leases"'">
-		<span>'$"View DHCP Leases"'</span>
+		<span>'$"View DHCP Leases"'</span><br>
+		'$"DHCP Leases"'
 	</button>
 </td>
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 	<button class="info" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
-		'$"Reservations"'<br>
 		<img src="'$ICON2'" alt="'$"DHCP Reservations"'">
-		<span>'$"View and edit DHCP Reservations"'</span>
+		<span>'$"View and edit DHCP Reservations"'</span><br>
+		'$"Reservations"'
 	</button>
 </td>
 </tbody></table><br></div><div id="infobox">

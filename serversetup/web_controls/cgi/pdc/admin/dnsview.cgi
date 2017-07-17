@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"DNS Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"DNS Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -69,9 +69,9 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -95,114 +95,65 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=19
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-	done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign NAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=NAME
+get_data
+NAME="$DATAENTRY"
 
 #Assign DNSENTRY
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DNSENTRYcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DNSENTRY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DNSENTRY
+get_data
+DNSENTRY="$DATAENTRY"
 
 #Assign DNSTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DNSTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DNSTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DNSTYPE
+get_data
+DNSTYPE="$DATAENTRY"
 
 #Assign ZONE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ZONEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ZONE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ZONE
+get_data
+ZONE="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/dnsview_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -212,7 +163,7 @@ exit
 function show_dns {
 echo "
 <form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\" id=\"showdns\">
-<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_$ACTION"_"ZONE_$ZONE"_"\" value=''>
+<input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME""_SERVERTYPE_$SERVERTYPE""_ACTION_$ACTION""_ZONE_$ZONE""_\" value=''>
 </form>
 <script language=\"JavaScript\" type=\"text/javascript\">
 <!--
@@ -249,13 +200,8 @@ fi
 #Check to see that linenumber is not blank.
 [ -z "$LINENUMBER" ] && LINENUMBER=notset
 
-#Check to see if we have a monitoring server
-MONITORSERVER=no
-[ -f /opt/karoshi/server_network/monitoringserver ] && MONITORSERVER=yes
-
-
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	WIDTH1=180
 	DIV_ID=actionbox3
@@ -266,40 +212,46 @@ else
 	DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 
 
 TITLE=$"View Entries"
 ALTTITLE=$"View Entries"
-ICON=/images/submenus/system/dnsviewm.png
+ALTDESC=$"View DNS Entries"
 ACTION2=view
+WIDTH=100
+ICON1=/images/submenus/system/dns.png
+ICON2=/images/submenus/system/dns.png
 
-[ $ACTION = edit ] && TITLE=$"Edit an Entry"
-[ $ACTION = add ] && TITLE=$"Add Entry"
-[ $ACTION = viewdnszones ] && TITLE=$"View Zones"
-[ $ACTION = adddzone ] && TITLE=$"Add Zone"
-[ $ACTION = deletezone ] && TITLE=$"Delete Zone"
+[ "$ACTION" = edit ] && TITLE=$"Edit an Entry"
+[ "$ACTION" = add ] && TITLE=$"Add Entry"
+[ "$ACTION" = viewdnszones ] && TITLE=$"View Zones"
+[ "$ACTION" = adddzone ] && TITLE=$"Add Zone"
+[ "$ACTION" = deletezone ] && TITLE=$"Delete Zone"
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
 	ALTTITLE=$"Add Entry"
+	ALTDESC=$"Add a DNS Entry"
 	ACTION2=add
-	ICON=/images/submenus/system/dnsaddm.png
+	ICON2=/images/submenus/system/dnsadd.png
 fi
 
 ACTION3=viewdnszones
+ICON3=/images/submenus/system/zones.png
 ALTTITLE3=$"Zones"
-if [ $ACTION = viewdnszones ]
+ALTDESC3=$"View DNS Zones"
+if [ "$ACTION" = viewdnszones ]
 then
 	ALTTITLE3=$"Add Zone"
+	ALTDESC3=$"Add a DNS Zone"
 	ACTION3=addzone
+	ICON3=/images/submenus/system/add.png
 fi
 
-SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
-
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -307,12 +259,12 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION3'_ZONE_'$ZONE'_">
+<button class="button" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
 '$ALTTITLE3'
 </button>
 </form>
 <form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ALTTITLE'">
+<input name="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ALTTITLE"'">
 </form>
 <form action="/cgi-bin/admin/dns_settings.cgi" method="post">
 <button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
@@ -320,39 +272,50 @@ then
 <br>
 '
 else
-	echo '<table class="standard" style="text-align: left;" >
-<tr><td style="min-width: '$WIDTH1'px;"><div class="sectiontitle">'$TITLE'</div></td>
-<td>
-<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION3'_ZONE_'$ZONE'_">
-'$ALTTITLE3'
-</button>
-</form>
-</td>
-<td>
-<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<button class="button" name="_AltAction_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_'$ACTION2'_ZONE_'$ZONE'_">
-'$ALTTITLE'
-</button>
-</form>
-</td>
-<td>
-<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-<button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
-</form>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></td>
-</tr></tbody></table>'
+	echo '
+	<div class="sectiontitle">'"$TITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></div><table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+			<button class="info" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
+				<img src="'$ICON3'" alt="'"$ALTTITLE3"'">
+				<span>'"$ALTDESC3"'</span><br>
+				'"$ALTTITLE3"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+			<button class="info" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_ZONE_'"$ZONE"'_">
+				<img src="'$ICON2'" alt="'"$ALTTITLE"'">
+				<span>'"$ALTDESC"'</span><br>
+				'"$ALTTITLE"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
+			<button class="info" name="_ViewDNSSettings_" value="_">
+				<img src="'$ICON1'" alt="'$"DNS Settings"'">
+				<span>'$"View server DNS Settings"'</span><br>
+				'$"DNS Settings"'
+			</button>
+		</form>
+	</td>
+
+	</tr></tbody></table>'
 fi
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$ZONE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview
 
-if [ $ACTION = reallyedit ] || [ $ACTION = reallydelete ] || [ $ACTION = reallyadd ] || [ $ACTION = reallyaddzone ] || [ $ACTION = reallydeletezone ]
+if [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyaddzone ] || [ "$ACTION" = reallydeletezone ]
 then
-	if [ $ACTION = reallyaddzone ] || [ $ACTION = reallydeletezone ]
+	if [ "$ACTION" = reallyaddzone ] || [ "$ACTION" = reallydeletezone ]
 	then
 		ACTION=viewdnszones
 	else

@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT"` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>'$"DNS Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"DNS Settings"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -85,91 +85,62 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+*'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+*')
 #CONVERT STAR
-DATA=`echo "$DATA" | sed 's/*/%99/g'`
+DATA=$(echo "$DATA" | sed 's/*/%99/g')
 #echo $DATA"<br>"
 #########################
 #Assign data to variables
 #########################
 END_POINT=25
-#Assign SERVER
+
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVERNAME
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 END_POINT=45
 
 #Assign DNS1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DNS1check ]
-	then
-		let COUNTER=$COUNTER+1
-		DNS1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DNS1
+get_data
+DNS1="$DATAENTRY"
 
 #Assign DNS2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DNS2check ]
-	then
-		let COUNTER=$COUNTER+1
-		DNS2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DNS2
+get_data
+DNS2="$DATAENTRY"
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/dns_settings.cgi";
 </script></div></body></html>'
 exit
@@ -197,14 +168,14 @@ then
 	#Check that the tcpip number is valid.
 
 	#Check dots and max number.
-	if [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ] || [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]
+	if [[ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]] || [[ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]]
 	then
 		MESSAGE=$"You have entered in an incorrect DNS entry."
 		show_status
 	fi
 	if [ ! -z "$DNS2" ]
 	then
-		if [ $(echo "$DNS2" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ] || [ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]
+		if [[ $(echo "$DNS2" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]] || [[ $(echo "$DNS1" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p) -gt 255 ]]
 		then
 			MESSAGE=$"You have entered in an incorrect DNS entry."
 			show_status
@@ -221,21 +192,12 @@ then
 	SERVERTYPE=notset
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	#Assign SERVERMASTER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERMASTER
+	get_data
+	SERVERMASTER="$DATAENTRY"
 fi
 
 #########################
@@ -245,7 +207,7 @@ fi
 
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -255,51 +217,65 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"DNS Settings"' '$SERVER2'</span>'
-	if [ $SERVERNAME != notset ]
+		<span>'$"DNS Settings"' '"$SERVER2"'</span>'
+	if [ "$SERVERNAME" != notset ]
 	then
 		echo '<a href="/cgi-bin/admin/dns_settings.cgi">'$"Select Server"'</a>'
 	else
 		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
 	fi
 	echo '</div></div>
-	<div id="'$DIV_ID'">
+	<div id="'"$DIV_ID"'">
 	'
 
-	else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td><div class="sectiontitle">'$"DNS Settings"' '$SERVER2'</div></td>'
+else
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+	ICON2=/images/submenus/system/dns.png
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
 
-	if [ $SERVERNAME != notset ]
+	<div class="sectiontitle">'$"DNS Settings"' '"$SERVER2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"View and edit the DNS settings for your servers."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+	'
+
+	if [ "$SERVERNAME" != notset ]
 	then
 		echo '
-	<td>
-	<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-	<button class="button" name="_">'$"Choose Server"'</button>
-	</form>
-	</td>
-	'
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
+				<button class="info" name="_ChooseServer_" value="_">
+					<img src="'$ICON1'" alt="'$"Choose Server"'">
+					<span>'$"Choose Server"'</span><br>
+					'$"Choose Server"'
+				</button>
+			</form>
+		</td>
+		'
 	else
-		echo '<td>
-	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-	<button class="button" name="_ViewDNSEntries_">'$"View DNS Entries"'</button>
-	</form>
-	</td>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+				<button class="info" name="_ViewDNSEntries_" value="_">
+					<img src="'$ICON2'" alt="'$"View DNS Entries"'">
+					<span>'$"View DNS Entries"'</span><br>
+					'$"View"'
+				</button>
+			</form>
+		</td>
+		'
 	fi
-	echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"View and edit the DNS settings for your servers."'</span></a></td></tr></tbody></table></div><div id="infobox">'
+	echo '</tr></tbody></table></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/dns_settings.cgi" method="post">'
 
 if [ "$ACTION" = reallyedit ] || [ "$ACTION" = autogenerate ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1)
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$DNS1:$DNS2:" | sudo -H /opt/karoshi/web_controls/exec/dns_set_forwarder	
 	ACTION=view
 fi
@@ -307,36 +283,36 @@ fi
 if [ "$ACTION" = edit ]
 then
 	#Get DNS settings for the server
-	DNSLIST=( $(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders $SERVERNAME) )
+	DNSLIST=( $(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders "$SERVERNAME") )
 	DNSLISTCOUNT=${#DNSLIST[*]} 
 
 	FORMACTION=reallyedit
-	[ $DNSLISTCOUNT -gt 1 ] && FORMACTION=autogenerate
+	[ "$DNSLISTCOUNT" -gt 1 ] && FORMACTION=autogenerate
 
 	#Show form with the current dns servers on it
 
 
-	echo '<input type="hidden" name="_SERVERNAME_'$SERVERNAME'_">
-	<input type="hidden" name="_SERVERTYPE_'$SERVERTYPE'_">
-	<input type="hidden" name="_SERVERMASTER_" value="'$SERVERMASTER'">
+	echo '<input type="hidden" name="_SERVERNAME_'"$SERVERNAME"'_">
+	<input type="hidden" name="_SERVERTYPE_'"$SERVERTYPE"'_">
+	<input type="hidden" name="_SERVERMASTER_" value="'"$SERVERMASTER"'">
 	<input type="hidden" name="_ACTION_" value="'$FORMACTION'">
 	<table class="tablesorter" style="text-align: left;" ><tbody>
-	<tr><td style="width: 220px;">'$"Servername"'</td><td style="width: 180px;">'$SERVERNAME'</td></tr>'
+	<tr><td style="width: 220px;">'$"Servername"'</td><td style="width: 180px;">'"$SERVERNAME"'</td></tr>'
 
 	COUNTER=0
 	COUNTER1=1
-	while [ $COUNTER -lt $DNSLISTCOUNT ]
+	while [ "$COUNTER" -lt "$DNSLISTCOUNT" ]
 	do
 		echo '<tr><td>'$"DNS Server"' 1</td><td>'
 		if [ "$FORMACTION" = reallyedit ]
 		then
-			echo '<input tabindex= "'$COUNTER1'" style="width: 120px;" name="_DNS'$COUNTER1'_" value="'${DNSLIST[$COUNTER]}'"  type="text">'
+			echo '<input tabindex= "'"$COUNTER1"'" style="width: 120px;" name="_DNS'"$COUNTER1"'_" value="'"${DNSLIST[$COUNTER]}"'"  type="text">'
 		else
 			echo "${DNSLIST[$COUNTER]}"
 		fi
 	echo '</td></tr>'
-		let COUNTER=$COUNTER+1
-		let COUNTER1=$COUNTER1+1		
+		let COUNTER="$COUNTER"+1
+		let COUNTER1="$COUNTER1"+1		
 	done
 	echo '</tbody></table>'
 	[ "$FORMACTION" = autogenerate ] && echo ''$"This server uses your Domain Controllers for DNS."' '$"Press submit to auto regenerate the DNS settings."''
@@ -347,10 +323,10 @@ fi
 #Show list of servers
 if [ "$ACTION" = view ]
 then
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Set DNS Forwarder" "edit" "showdns"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Set DNS Forwarder" "edit" "showdns"
 fi
 
 echo '</form>'
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

@@ -327,9 +327,9 @@ else
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<button class="info" formaction="dhcp_import_reservations_fm.cgi" name="_ImportDHCPReservations_" value="_">
-			'$"Import"'<br>
 			<img src="'$ICON1'" alt="'$"Import DHCP Reservations"'">
-			<span>'$"Import DHCP Reservations"'</span>
+			<span>'$"Import DHCP Reservations"'</span><br>
+			'$"Import"'
 		</button>
 	</td>
 
@@ -339,9 +339,9 @@ else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 				<button class="info" name="_AddDHCPReservation_" value="_ACTION_add_reservation_">
-					'$"Add"'<br>
 					<img src="'$ICON2'" alt="'$"Add DHCP Reservation"'">
-					<span>'$"Add DHCP Reservation"'</span>
+					<span>'$"Add DHCP Reservation"'</span><br>
+					'$"Add"'
 				</button>
 			</td>
 
@@ -350,9 +350,9 @@ else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 				<button class="info" name="_ViewDHCPReservations_" value="_ACTION_view_">
-					'$"View"'<br>
 					<img src="'$ICON3'" alt="'$"View DHCP Reservations"'">
-					<span>'$"View DHCP Reservations"'</span>
+					<span>'$"View DHCP Reservations"'</span><br>
+					'$"View"'
 				</button>
 			</td>
 
@@ -363,17 +363,17 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<button class="info" formaction="dhcp_view_leases.cgi" name="_ViewDHCPleases_" value="_">
-				'$"Leases"'<br>
 				<img src="'$ICON4'" alt="'$"View DHCP Leases"'">
-				<span>'$"View DHCP Leases"'</span>
+				<span>'$"View DHCP Leases"'</span><br>
+				'$"Leases"'
 			</button>
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<button class="info" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
-				'$"Configure"'<br>
 				<img src="'$ICON5'" alt="'$"Configure DHCP"'">
-				<span>'$"Configure DHCP"'</span>
+				<span>'$"Configure DHCP"'</span><br>
+				'$"Configure"'
 			</button>
 		</td>
 	'
@@ -382,9 +382,9 @@ else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 				<button class="info" name="_DeleteAll_" value="_ACTION_reallydelete_">
-					'$"Delete"'<br>
 					<img src="'$ICON6'" alt="'$"Delete DHCP reservations"'">
-					<span>'$"Delete DHCP reservations"'</span>
+					<span>'$"Delete DHCP reservations"'</span><br>
+					'$"Delete"'
 				</button>
 			</td>
 
@@ -396,9 +396,9 @@ else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 				<button class="info" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
-					'$"Activate Changes"'<br>
 					<img src="'$ICON7'" alt="'$"Activate Changes"'">
-					<span>'$"Activate Changes"'</span>
+					<span>'$"Activate Changes"'</span><br>
+					'$"Activate Changes"'
 				</button>
 			</td>
 		'

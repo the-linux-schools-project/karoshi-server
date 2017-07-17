@@ -914,25 +914,25 @@ then
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoSearch_" value="_ACTION_search_LOCATION_notset_">
-			'$"Search"'<br>
 			<img src="'$ICON6'" alt="'$"Statistics"'">
-			<span>'$"Search the asset register."'</span>
+			<span>'$"Search the asset register."'</span><br>
+			'$"Search"'
 		</button>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoAddAsset_" value="_ACTION_add_LOCATION_notset_">
-			'$"Add"'<br>
 			<img src="'$ICON4'" alt="'$"Add Asset"'">
-			<span>'$"Add an asset to the asset register."'</span>
+			<span>'$"Add an asset to the asset register."'</span><br>
+			'$"Add"'
 		</button>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoImport_" value="_ACTION_import_LOCATION_notset_">
-			'$"Import"'<br>
 			<img src="'$ICON16'" alt="'$"Import"'">
-			<span>'$"Import assets to the asset register."'</span>
+			<span>'$"Import assets to the asset register."'</span><br>
+			'$"Import"'
 		</button>
 	</td>
 	'
@@ -942,26 +942,26 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoExport_" value="_ACTION_export_LOCATION_notset_">
-			'$"Export"'<br>
 			<img src="'$ICON15'" alt="'$"Export"'">
-			<span>'$"Export assets from the asset register."'</span>
+			<span>'$"Export assets from the asset register."'</span><br>
+			'$"Export"'
 		</button>
 	</td>
 	
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoViewDescriptions_" value="_ACTION_viewdescriptions_LOCATION_notset_">
-			'$"Descriptions"'<br>
 			<img src="'$ICON7'" alt="'$"Description"'">
-			<span>'$"Descriptions of computer hardware and software that you want to use in your asset register."'</span>
+			<span>'$"Descriptions of computer hardware and software that you want to use in your asset register."'</span><br>
+			'$"Descriptions"'
 		</button>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoViewSuppliers_" value="_ACTION_viewsuppliers_LOCATION_notset_">
-			'$"Suppliers"'<br>
 			<img src="'$ICON7'" alt="'$"Suppliers"'">
-			<span>'$"Where you purchase your equipment from."'</span>
+			<span>'$"Where you purchase your equipment from."'</span><br>
+			'$"Suppliers"'
 		</button>
 	</td>
 	'
@@ -971,25 +971,25 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_DoViewBudgets_" value="_ACTION_viewbudgets_LOCATION_notset_">
-			'$"Budgets"'<br>
 			<img src="'$ICON12'" alt="'$"Budgets"'">
-			<span>'$"Budgets that your purchases are paid from."'</span>
+			<span>'$"Budgets that your purchases are paid from."'</span><br>
+			'$"Budgets"'
 		</button>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
-			'$"TCPIP"'<br>
 			<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
-			<span>'$"View Allocated TCPIP Addresses."'</span>
+			<span>'$"View Allocated TCPIP Addresses."'</span><br>
+			'$"TCPIP"'
 		</button>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button formaction="locations.cgi" class="info" name="_ViewLocations_" value="_Viewlocations_">
-			'$"Locations"'<br>
 			<img src="'$ICON19'" alt="'$"Locations"'">
-			<span>'$"View and add areas where you have computer equipment."'</span>
+			<span>'$"View and add areas where you have computer equipment."'</span><br>
+			'$"Locations"'
 		</button>
 	</td>'
 
@@ -998,9 +998,9 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 		<button class="info" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
-			'$"Statistics"'<br>
 			<img src="'$ICON5'" alt="'$"Statistics"'">
-			<span>'$"Asset register statistics"'</span>
+			<span>'$"Asset register statistics"'</span><br>
+			'$"Statistics"'
 		</button>
 	</td>
 	'
@@ -1574,17 +1574,17 @@ then
 		echo '<div class="sectiontitle">'$"Asset Register"' - '$LOCATION'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
 			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_">
-				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
-				<span>'$"Choose Location"'</span>
+				<span>'$"Choose Location"'</span><br>
+				'$"Choose Location"'
 			</button>
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 			<button class="info" name="_DoAddAsset_" value="_ACTION_add_LOCATION_'$LOCATION'_">
-				'$"Add Asset"'<br>
 				<img src="'$ICON4'" alt="'$"Add Asset"'">
-				<span>'$"Add Asset"'</span>
+				<span>'$"Add Asset"'</span><br>
+				'$"Add Asset"'
 			</button>
 		</td>
 		'
@@ -1594,9 +1594,9 @@ then
 	echo '
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 			<button class="info" name="_DoQRCodes_" value="_ACTION_qrcodes_LOCATION_'$LOCATION'_">
-				'$"QR Codes"'<br>
 				<img src="'$ICON18'" alt="'$"QR Codes"'">
-				<span>'$"QR Codes"'</span>
+				<span>'$"QR Codes"'</span><br>
+				'$"QR Codes"'
 			</button>
 		</td>'
 	if [ -f /opt/karoshi/server_network/distribution_server ]
@@ -1604,9 +1604,9 @@ then
 		echo '
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
 			<button class="info" formaction="client_boot_controls.cgi" name="_ClientBootControls_" value="_LOCATION_'$LOCATION'_">
-				'$"Client Boot Controls"'<br>
 				<img src="'$ICON17'" alt="'$"Client Boot Controls"'">
-				<span>'$"Client Boot Controls"'</span>
+				<span>'$"Client Boot Controls"'</span><br>
+				'$"Client Boot Controls"'
 			</button>
 		</td>
 		'
