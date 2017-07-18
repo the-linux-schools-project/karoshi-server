@@ -192,13 +192,17 @@ then
 	ACTION2=view
 	BUTTONTXT=$"View Access Points"
 	TITLETXT=$"Add Access Point"
+	BUTTONTXT2=$"View"
+	ICON1=/images/submenus/system/wireless.png
 fi
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
 then
 	ACTION2=add
 	BUTTONTXT=$"Add Access Point"
-	TITLETXT=$"View Access Points"
+	TITLETXT=$"Radius Access Points"
+	BUTTONTXT2=$"Add"
+	ICON1=/images/submenus/system/add.png
 fi
 
 #Show back button for mobiles
@@ -211,15 +215,22 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 fi
-echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: middle;"><b>'"$TITLETXT"'</b></td>
-<td style="vertical-align: top;">
-<button class="button" name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
-'"$BUTTONTXT"'
-</button>
-</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a>
-</td></tr></tbody></table></form><br>'
+WIDTH=100
+
+echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
+<div class="sectiontitle">'"$TITLETXT"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info"  name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
+			<img src="'$ICON1'" alt="'"$BUTTONTXT"'">
+			<span>'"$BUTTONTXT"'</span><br>
+			'"$BUTTONTXT2"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+</form><br>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 

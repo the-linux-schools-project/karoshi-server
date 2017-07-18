@@ -34,15 +34,15 @@ source /opt/karoshi/web_controls/version
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"VPN Certificates"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"VPN Certificates"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
@@ -56,7 +56,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -81,40 +81,36 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=11
-#Assign USERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 if [ -z "$ACTION" ]
 then
@@ -126,12 +122,16 @@ then
 	TITLEMSG=$"VPN Certificates"
 	ACTION2=add
 	ACTIONMSG=$"Add Certificate"
+	ACTIONMSG2=$"Add"
+	ICON1=/images/submenus/system/add.png
 fi
 
 if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = revoke ] || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = downloadcert ]
 then
 	ACTION2=view
 	ACTIONMSG=$"View Certificates"
+	ACTIONMSG2=$"View"
+	ICON1=/images/submenus/system/vpn.png
 fi
 
 if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ]
@@ -151,7 +151,7 @@ fi
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/vpn_certificates.cgi"
 </script>
 </div></body></html>'
@@ -160,7 +160,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -168,13 +168,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -188,7 +188,7 @@ fi
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyrevoke ]
 then
 	#Make sure that a username has been entered.
-	if [ -z $USERNAME ]
+	if [ -z "$USERNAME" ]
 	then
 		MESSAGE=$"You must enter in a username."
 		show_status
@@ -197,8 +197,8 @@ then
 	if [ "$ACTION" = reallyadd ]
 	then
 		#Check that the username exists
-		getent passwd $USERNAME 1>/dev/null 2>/dev/null
-		if [ $? != 0 ]
+		getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
+		if [ "$?" != 0 ]
 		then
 			MESSAGE=$"This username does not exist."
 			show_status
@@ -217,26 +217,35 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"VPN Certificates"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox"><b>'$USERNAME'</b><br>
+</div></div><div id="mobileactionbox"><b>'"$USERNAME"'</b><br>
 '
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><b>'$TITLEMSG'</b></td><td><form action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><input name="_ACTION_'$ACTION2'_" type="submit" class="button" value="'$ACTIONMSG'"></form></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server#Creating_Client_Certificates"><img class="images" alt="" src="/images/help/info.png"><span>'$"VPN Certificates"'</span></a></td>
-</tr></tbody></table></div><div id="infobox">'
+	WIDTH=100
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	<div class="sectiontitle">'"$TITLEMSG"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=OpenVPN_Server#Creating_Client_Certificates"><img class="images" alt="" src="/images/help/info.png"><span>'"$ACTIONMSG"'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">
+				<button class="info" name="_DoAction_" value="_ACTION_'$ACTION2'_">
+					<img src="'$ICON1'" alt="'"$ACTIONMSG"'">
+					<span>'"$ACTIONMSG"'</span><br>
+					'"$ACTIONMSG2"'
+				</button>
+			</form>
+		</td>
+	</tbody></table>
+	</div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/vpn_certificates
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
 

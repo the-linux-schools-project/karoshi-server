@@ -33,15 +33,15 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"UPS Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"UPS Status"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ "$MOBILE" = yes ]
 then
@@ -69,7 +69,7 @@ echo '</head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/ups_add_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -78,7 +78,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -92,14 +92,14 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	#Generate navigation bar
@@ -109,7 +109,7 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -118,23 +118,29 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"UPS Status"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></td><td><form action="ups_add_fm.cgi" method="post">
-<button class="button" name="_AddUPS" value="_">
-'$"Add a UPS"'
-</button>
-</form>
-</td>
-</tr></table>
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+	echo '<div id="'"$DIV_ID"'">
+	<div class="sectiontitle">'$"UPS Status"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></div>
+
+	<table class="tablesorter"><tbody><tr>
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="ups_add_fm.cgi" method="post">
+				<button class="info" name="_AddUPS" value="_">
+					<img src="'$ICON1'" alt="'$"Add a UPS"'">
+					<span>'$"Add a UPS"'</span><br>
+					'$"Add"'
+				</button>
+			</form>
+		</td>
+	</tr></tbody></table>
 <br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1)
 #Show UPS status
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 106 ]
+if [ "$?" = 106 ]
 then
 	echo $"No UPS devices have been added."
 fi

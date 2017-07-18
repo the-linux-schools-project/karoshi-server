@@ -32,33 +32,18 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
 
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-
-#Get current date and time
-DAY=`date +%d`
-MONTH=`date +%m`
-YEAR=`date +%Y`
-
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
-
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a UPS"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a UPS"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
 <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -74,7 +59,7 @@ $(document).ready(function()
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -88,23 +73,31 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td><div class="sectiontitle">'$"Add a UPS"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a>
-</td>
-<td>
-<button class="button" formaction="ups_status.cgi" name="_UPSStatus" value="_">
-'$"UPS Status"'
-</button>
-</td>
-</tr></tbody></table><br></div><div id="infobox">'
+
+WIDTH=100
+ICON1=/images/submenus/system/battery.png
+
+echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Add a UPS"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></div>
+
+	<table class="tablesorter"><tbody><tr>
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="ups_status.cgi" name="_UPSStatus" value="_">
+				<img src="'$ICON1'" alt="'$"UPS Status"'">
+				<span>'$"UPS Status"'</span><br>
+				'$"Status"'
+			</button>
+		</td>
+	</tr></tbody></table>
+
+<br></div><div id="infobox">'
 
 
 echo '<table class="standard" style="text-align: left;" ><tbody>
@@ -112,17 +105,17 @@ echo '<table class="standard" style="text-align: left;" ><tbody>
         <td>'
 #Generate list of UPC data
 echo '<select name="_UPSDRIVER_" style="width: 200px;">'
-UPSDATA_LENGTH=`cat /opt/karoshi/server_network/ups/ups-model-information.csv | wc -l`
+UPSDATA_LENGTH=$(wc -l < /opt/karoshi/server_network/ups/ups-model-information.csv)
 
 COUNTER=1
-while [ $COUNTER -le $UPSDATA_LENGTH ]
+while [ "$COUNTER" -le "$UPSDATA_LENGTH" ]
 do
-	UPSDATA=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/server_network/ups/ups-model-information.csv`
-	UPSMAKE=`echo $UPSDATA | cut -d, -f1,2 | sed 's/,/: /g'`
-	UPSMODEL=`echo $UPSDATA | cut -d, -f2`
-	UPSDRIVER=`echo $UPSDATA | cut -d, -f3`
-	echo '<option value="'$UPSMODEL,$UPSDRIVER'">'$UPSMAKE'</option>'
-	let COUNTER=$COUNTER+1
+	UPSDATA=$(sed -n "$COUNTER,$COUNTER"'p' /opt/karoshi/server_network/ups/ups-model-information.csv)
+	UPSMAKE=$(echo "$UPSDATA" | cut -d, -f1,2 | sed 's/,/: /g')
+	UPSMODEL=$(echo "$UPSDATA" | cut -d, -f2)
+	UPSDRIVER=$(echo "$UPSDATA" | cut -d, -f3)
+	echo '<option value="'"$UPSMODEL,$UPSDRIVER"'">'"$UPSMAKE"'</option>'
+	let COUNTER="$COUNTER"+1
 done
 
 echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a UPS device from the list."'</span></a></td></tr>
@@ -134,7 +127,4 @@ echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxsc
 
 echo '</div></div></form></div></body></html>'
 exit
-
-
-
 

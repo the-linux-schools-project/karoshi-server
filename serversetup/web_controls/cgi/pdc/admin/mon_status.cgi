@@ -34,8 +34,8 @@ source /opt/karoshi/web_controls/version
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Get defcon level
 DEFCON=5
@@ -46,7 +46,7 @@ DEFCON=5
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"System Status"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><META HTTP-EQUIV="refresh" CONTENT="120"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"System Status"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><META HTTP-EQUIV="refresh" CONTENT="120"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -60,7 +60,7 @@ $(document).ready(function()
 
 HEIGHT=15
 PADHEIGHT=6
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	HEIGHT=20
 	PADHEIGHT=9
@@ -85,8 +85,8 @@ fi
 
 echo '
 <style type="text/css">
- #hide1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #000 !important }
- #show1{height:'$HEIGHT'px !important; width:100px !important; padding-top:'$PADHEIGHT'px !important; color: #000 !important }
+ #hide1{height:'"$HEIGHT"'px !important; width:100px !important; padding-top:'"$PADHEIGHT"'px !important; color: #000 !important }
+ #show1{height:'"$HEIGHT"'px !important; width:100px !important; padding-top:'"$PADHEIGHT"'px !important; color: #000 !important }
  #show1:hover{color: #fff !important }
  #hide1:hover{color: #fff !important } 
 
@@ -110,17 +110,13 @@ else
 	DIV_ID=actionbox2
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
+
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
-echo '                window.location = "/cgi-bin/admin/use_ssh_fm.cgi";'
+echo 'alert("'"$MESSAGE"'")';
+echo '                window.location = "/cgi-bin/admin/change_password_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -128,7 +124,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -136,20 +132,20 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -158,38 +154,55 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-#Show title
-echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td><div class="sectiontitle">'$"System Status"' Defcon '$DEFCON'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></td><td>
-<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
-	<button class="button" name="_AddMonitor_" value="_">
-	'$"Add Monitor"'
-	</button>
-</form>
-</td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
-	<button class="button" name="_ViewMonitors_" value="_">
-	'$"View Monitors"'
-	</button>
-</form>
-</td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi" method="post">
-	<button class="button" name="_ViewEmailAlerts_" value="_">
-	'$"E-Mail Alerts"'
-	</button>
-</form>
-</td>
-</tr></tbody></table></div><div id="infobox">'
+	#Show title
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+	ICON2=/images/submenus/system/view_monitors.png
+	ICON3=/images/submenus/email/mail.png
+	echo '
+	<div class="sectiontitle">'$"System Status"' Defcon '"$DEFCON"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#System_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Monitoring can be used to monitor any device connected to your network."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
+				<button class="info" name="_AddMonitor_" value="_">
+					<img src="'$ICON1'" alt="'$"Add Monitor"'">
+					<span>'$"Add monitor"'</span><br>
+					'$"Add Monitor"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
+				<button class="info" name="_ViewMonitors_" value="_">
+					<img src="'$ICON2'" alt="'$"View Monitors"'">
+					<span>'$"View existing monitors"'</span><br>
+					'$"View monitors"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi" method="post">
+				<button class="info" name="_ViewEmailAlerts_" value="_">
+					<img src="'$ICON3'" alt="'$"E-Mail Alerts"'">
+					<span>'$"View and add E-Mail Alerts"'</span><br>
+					'$"E-Mail alerts"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+	</div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/mon_status $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:
-if [ $? = 102 ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/mon_status "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:"
+if [ "$?" = 102 ]
 then
 	echo '<br><br>'$"A monitoring server has not been setup."'<br>'
 fi
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo "</div></div></body></html>"
 exit
