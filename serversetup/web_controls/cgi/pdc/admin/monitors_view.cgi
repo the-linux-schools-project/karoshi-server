@@ -31,11 +31,11 @@ STYLESHEET=defaultstyle.css
 TIMEOUT=300
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -44,25 +44,24 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">'
-echo '<script>'
-echo '<!--'
-echo 'function SetAllCheckBoxes(FormName, FieldName, CheckValue)'
-echo '{'
-echo '	if(!document.forms[FormName])'
-echo '		return;'
-echo '	var objCheckBoxes = document.forms[FormName].elements[FieldName];'
-echo '	if(!objCheckBoxes)'
-echo '		return;'
-echo '	var countCheckBoxes = objCheckBoxes.length;'
-echo '	if(!countCheckBoxes)'
-echo '		objCheckBoxes.checked = CheckValue;'
-echo '	else'
-echo '		// set the check value for all check boxes'
-echo '		for(var i = 0; i < countCheckBoxes; i++)'
-echo '			objCheckBoxes[i].checked = CheckValue;'
-echo '}'
-echo '// --></script><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Monitors"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script>
+<!--
+function SetAllCheckBoxes(FormName, FieldName, CheckValue)
+{
+	if(!document.forms[FormName])
+		return;
+	var objCheckBoxes = document.forms[FormName].elements[FieldName];
+	if(!objCheckBoxes)
+		return;
+	var countCheckBoxes = objCheckBoxes.length;
+	if(!countCheckBoxes)
+		objCheckBoxes.checked = CheckValue;
+	else
+		// set the check value for all check boxes
+		for(var i = 0; i < countCheckBoxes; i++)
+			objCheckBoxes[i].checked = CheckValue;
+}
+// --></script><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -74,15 +73,10 @@ $(document).ready(function()
 </script>
 '
 echo "</head><body><div id='pagecontainer'>"
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/monitors_add_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -91,7 +85,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must choose a monitor."
 	show_status
@@ -99,13 +93,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -114,19 +108,35 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$"View Monitors"'</div></td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
-<button class="button" name="_AddMonitor_" value="_">
-'$"Add Monitor"'
-</button>
-</form>
-</td><td><form action="/cgi-bin/admin/mon_status.cgi" name="monitors" method="post">
-<button class="button" name="_NetworkStatus_" value="_">
-'$"Network Status"'
-</button>
-</form></td></tr></tbody></table>
+WIDTH=100
+ICON1=/images/submenus/system/add.png
+ICON2=/images/submenus/system/monitor_status.png
+
+echo '<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"View Monitors"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
+			<button class="info" name="_AddMonitor_" value="_">
+				<img src="'$ICON1'" alt="'$"Add Monitor"'">
+				<span>'$"Add a network monitor"'</span><br>
+				'$"Add Monitor"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/mon_status.cgi" method="post">
+			<button class="info" name="_NetworkStatus_" value="_">
+				<img src="'$ICON2'" alt="'$"Network Status"'">
+				<span>'$"Network Status"'</span><br>
+				'$"Status"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>
 <br></div><div id="infobox">'
 
 #Show monitors
@@ -137,7 +147,7 @@ then
 	show_status
 fi 
 
-if [ `ls -1 /opt/karoshi/server_network/mon/monitors | wc -l` = 0 ] && [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` = 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/mon/monitors | wc -l) = 0 ]] && [[ $(ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l) = 0 ]]
 then
 	MESSAGE=$"No monitors available."
 	show_status
@@ -150,59 +160,59 @@ echo '<tr><th style="width: 180px;"><b>'$"Monitors"'</b></th><th style="width: 7
 
 for MONITORNAME in /opt/karoshi/server_network/mon/monitors/*
 do
-	MONITORNAME=`basename $MONITORNAME`
-	MONITORNAME2=`echo $MONITORNAME | sed 's/_/%%%%%/g'`
-	MONITOR_SERVICES=`grep service /opt/karoshi/server_network/mon/monitors/$MONITORNAME | sed 's/service//g' |sed 's/$/<br>/g'`
-	SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors/$MONITORNAME | cut -d' ' -f3-`
+	MONITORNAME=$(basename "$MONITORNAME")
+	MONITORNAME2=$(echo "$MONITORNAME" | sed 's/_/%%%%%/g')
+	MONITOR_SERVICES=$(grep service /opt/karoshi/server_network/mon/monitors/"$MONITORNAME" | sed 's/service//g' |sed 's/$/<br>/g')
+	SERVICE_TCPIPS=$(sed -n 4,4p /opt/karoshi/server_network/mon/monitors/"$MONITORNAME" | cut -d' ' -f3-)
 
 	echo '<tr>
 
-	<td style="vertical-align: top;">'$MONITORNAME'</td>
+	<td style="vertical-align: top;">'"$MONITORNAME"'</td>
 	<td style="vertical-align: top;">
 		<form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-			<button class="button smallbutton" name="_Disable_" value="_MONITOR_'$MONITORNAME2'_">
+			<button class="button smallbutton" name="_Disable_" value="_MONITOR_'"$MONITORNAME2"'_">
 			<span>'$"On"'</span>
 			</button>
 		</form>
 	</td>
 	<td style="vertical-align: top;">
 		<form action="/cgi-bin/admin/monitors_add_fm.cgi" name="monitors" method="post">
-			<button class="info" name="_Edit_" value="_MONITOR_'$MONITORNAME2'_">
-			<img src="/images/submenus/system/edit.png" alt="'$"Edit"' - '$MONITORNAME'">
-			<span>'$"Edit"' - '$MONITORNAME'</span>
+			<button class="info" name="_Edit_" value="_MONITOR_'"$MONITORNAME2"'_">
+			<img src="/images/submenus/system/edit.png" alt="'$"Edit"' - '"$MONITORNAME"'">
+			<span>'$"Edit"' - '"$MONITORNAME"'</span>
 			</button>
 		</form>
 	</td>
 	<td style="vertical-align: top;">
 		<form action="/cgi-bin/admin/monitors_delete.cgi" name="monitors" method="post">
-			<button class="info" name="_Delete_" value="_MONITOR_'$MONITORNAME2'_">
-			<img src="/images/submenus/system/delete.png" alt="'$"Delete"' - '$MONITORNAME'">
-			<span>'$"Delete"' - '$MONITORNAME'</span>
+			<button class="info" name="_Delete_" value="_MONITOR_'"$MONITORNAME2"'_">
+			<img src="/images/submenus/system/delete.png" alt="'$"Delete"' - '"$MONITORNAME"'">
+			<span>'$"Delete"' - '"$MONITORNAME"'</span>
 			</button>
 		</form>
 	</td>
 	<td style="vertical-align: top;">
-		<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'$SERVICE_TCPIPS'<br>'$"Services Monitored":'<br>'$MONITOR_SERVICES'</span></a>
+		<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'"$SERVICE_TCPIPS"'<br>'$"Services Monitored":'<br>'"$MONITOR_SERVICES"'</span></a>
 	</td></tr>'
 done
 
 if [ -d /opt/karoshi/server_network/mon/monitors_disabled ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/mon/monitors_disabled | wc -l) -gt 0 ]]
 	then
 		for MONITORNAME in /opt/karoshi/server_network/mon/monitors_disabled/*
 		do
-			MONITORNAME=`basename $MONITORNAME`
-			MONITORNAME2=`echo $MONITORNAME | sed 's/_/%%%%%/g'`
-			MONITOR_SERVICES=`grep service /opt/karoshi/server_network/mon/monitors_disabled/$MONITORNAME | sed 's/service//g' |sed 's/$/<br>/g'`
-			SERVICE_TCPIPS=`sed -n 4,4p /opt/karoshi/server_network/mon/monitors_disabled/$MONITORNAME | cut -d' ' -f3-`
+			MONITORNAME=$(basename "$MONITORNAME")
+			MONITORNAME2=$(echo "$MONITORNAME" | sed 's/_/%%%%%/g')
+			MONITOR_SERVICES=$(grep service /opt/karoshi/server_network/mon/monitors_disabled/"$MONITORNAME" | sed 's/service//g' |sed 's/$/<br>/g')
+			SERVICE_TCPIPS=$(sed -n 4,4p /opt/karoshi/server_network/mon/monitors_disabled/"$MONITORNAME" | cut -d' ' -f3-)
 
 			echo '<tr>
 
-			<td style="vertical-align: top;">'$MONITORNAME'</td>
+			<td style="vertical-align: top;">'"$MONITORNAME"'</td>
 			<td style="vertical-align: top;">
 				<form action="/cgi-bin/admin/monitors_enable_disable.cgi" name="monitors" method="post">
-					<button class="button smallbutton" name="_Enable_" value="_MONITOR_'$MONITORNAME2'_">
+					<button class="button smallbutton" name="_Enable_" value="_MONITOR_'"$MONITORNAME2"'_">
 					<span>'$"Off"'</span>
 					</button>
 				</form>
@@ -210,13 +220,13 @@ then
 			<td style="vertical-align: top;"></td>
 			<td style="vertical-align: top;">
 				<form action="/cgi-bin/admin/monitors_delete.cgi" name="monitors" method="post">
-					<button class="info" name="_Delete_" value="_MONITOR_'$MONITORNAME2'_">
-					<img src="/images/submenus/system/delete.png" alt="'$"Delete"' - '$MONITORNAME'">
-					<span>'$"Delete"' - '$MONITORNAME'</span>
+					<button class="info" name="_Delete_" value="_MONITOR_'"$MONITORNAME2"'_">
+					<img src="/images/submenus/system/delete.png" alt="'$"Delete"' - '"$MONITORNAME"'">
+					<span>'$"Delete"' - '"$MONITORNAME"'</span>
 					</button>
 				</form>
 			</td>
-			<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'$SERVICE_TCPIPS'<br>'$"Services Monitored":'<br>'$MONITOR_SERVICES'</span></a></td></tr>'
+			<td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"TCPIP numbers monitored":'<br>'"$SERVICE_TCPIPS"'<br>'$"Services Monitored":'<br>'"$MONITOR_SERVICES"'</span></a></td></tr>'
 		done
 	fi
 fi

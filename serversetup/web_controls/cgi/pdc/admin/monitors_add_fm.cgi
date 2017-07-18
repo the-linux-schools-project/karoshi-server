@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -46,8 +46,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
  <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -74,76 +74,72 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=9
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign MONITOR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MONITORcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MONITOR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MONITOR
+get_data
+MONITOR="$DATAENTRY"
 
 #Assign NAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NAME=`echo $DATA | cut -s -d'_' -f$COUNTER | cut -d+ -f1`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=NAME
+get_data
+NAME="$DATAENTRY"
 
 #Assign TCPIP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TCPIPS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9.'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=TCPIP
+get_data
+TCPIPS="$DATAENTRY"
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+WIDTH=100
+ICON1=/images/submenus/system/monitor_status.png
+ICON2=/images/submenus/system/view_monitors.png
 
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'$"Add Monitors"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></td>
-<td>
-<form action="/cgi-bin/admin/mon_status.cgi" method="post">
-	<button class="button" name="_NetworkStatus_" value="_">
-	'$"Network Status"'
-	</button>
-</form>
-</td>
-<td style="vertical-align: top;">
-<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
-	<button class="button" name="_ViewMonitors_" value="_">
-	'$"View Monitors"'
-	</button>
-</form>
-</td>
+<div class="sectiontitle">'$"Add Monitors"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to have a monitoring server set up to use this feature. This will allow you to add in extra monitors for your network."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/mon_status.cgi" method="post">
+			<button class="info" name="_NetworkStatus_" value="_">
+				<img src="'$ICON1'" alt="'$"Network Status"'">
+				<span>'$"Network Status"'</span><br>
+				'$"Status"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
+			<button class="info" name="_ViewMonitors_" value="_">
+				<img src="'$ICON2'" alt="'$"View Monitors"'">
+				<span>'$"View Monitors"'</span><br>
+				'$"View Monitors"'
+			</button>
+		</form>
+	</td>
 </tr></tbody></table><br>
 <form action="/cgi-bin/admin/monitors_add.cgi" method="post" name="selectmonitors">'
 ALERTAFTER=1
@@ -151,12 +147,12 @@ EDITMODE=no
 #Check to see if a monitoring server has been setup
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	if [ `echo $MONITOR'null' | sed 's/ //g'` != null ]
+	if [ ! -z "$MONITOR" ]
 	then
 		EDITMODE=yes
 		#Get existing monitoring information
 
-		if [ -f /opt/karoshi/server_network/mon/monitors/$MONITOR ]
+		if [ -f /opt/karoshi/server_network/mon/monitors/"$MONITOR" ]
 		then
 			MONFOLDER=monitors
 		else
@@ -166,52 +162,52 @@ then
 		#Show monitor information
 		#Ping
 		PING=""
-		[ `grep -c "service ping" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && PING='checked="checked"'
+		[[ $(grep -c "service ping" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && PING='checked="checked"'
 		#pop3
 		POP3=""
-		[ `grep -c "service pop3" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && POP3='checked="checked"'
+		[[ $(grep -c "service pop3" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && POP3='checked="checked"'
 		#pop3s
 		POP3S=""
-		[ `grep -c "service pop3s" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && POP3S='checked="checked"'
+		[[ $(grep -c "service pop3s" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && POP3S='checked="checked"'
 		#imap
 		IMAP=""
-		[ `grep -c "service imap" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && IMAP='checked="checked"'
+		[[ $(grep -c "service imap" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && IMAP='checked="checked"'
 		#imaps
 		IMAPS=""
-		[ `grep -c "service imaps" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && IMAPS='checked="checked"'
+		[[ $(grep -c "service imaps" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && IMAPS='checked="checked"'
 		#samba
 		SAMBA=""
-		[ `grep -c "service samba" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && SAMBA='checked="checked"'
+		[[ $(grep -c "service samba" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && SAMBA='checked="checked"'
 		#http
 		HTTP=""
-		[ `grep -c "service http" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && HTTP='checked="checked"'
+		[[ $(grep -c "service http" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && HTTP='checked="checked"'
 		#https
 		HTTPSECURE=""
-		[ `grep -c "service https" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && HTTPSECURE='checked="checked"'
+		[[ $(grep -c "service https" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && HTTPSECURE='checked="checked"'
 		#smtp
 		SMTP=""
-		[ `grep -c "service smtp" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && SMTP='checked="checked"'
+		[[ $(grep -c "service smtp" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && SMTP='checked="checked"'
 		#cups
 		CUPS=""
-		[ `grep -c "service cups" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && CUPS='checked="checked"'
+		[[ $(grep -c "service cups" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && CUPS='checked="checked"'
 		#PROXY
 		PROXY=""
-		[ `grep -c "service proxy" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && PROXY='checked="checked"'
+		[[ $(grep -c "service proxy" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && PROXY='checked="checked"'
 		#dns
 		DNS=""
-		[ `grep -c "service dns" /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR` -gt 0 ] && DNS='checked="checked"'
+		[[ $(grep -c "service dns" /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR") -gt 0 ]] && DNS='checked="checked"'
 
 		#alertafter
-		ALERTAFTER=`grep alertafter /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR | sed -n 1,1p | tr -cd 0-9`
-		[ -z $ALERTAFTER ] && ALERTAFTER=1
+		ALERTAFTER=$(grep alertafter /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR" | sed -n 1,1p | tr -cd 0-9)
+		[ -z "$ALERTAFTER" ] && ALERTAFTER=1
 
 		#Interval
-		INTERVAL=`grep interval /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR | sed -n 1,1p | tr -cd 0-9`
+		INTERVAL=$(grep interval /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR" | sed -n 1,1p | tr -cd 0-9)
 
-		GROUPDATA=`sed -n 4,4p  /opt/karoshi/server_network/mon/$MONFOLDER/$MONITOR`
-		TCPIPS=`echo $GROUPDATA | cut -d' ' -f3-`
+		GROUPDATA=$(sed -n 4,4p  /opt/karoshi/server_network/mon"/$MONFOLDER/$MONITOR")
+		TCPIPS=$(echo "$GROUPDATA" | cut -d' ' -f3-)
 	else
-		MONITOR=$NAME
+		MONITOR="$NAME"
 		INTERVAL=5
 	fi
 
@@ -222,12 +218,12 @@ then
 	'$"Group name"'</td>
 		<td>'
 
-	if [ $EDITMODE = no ]
+	if [ "$EDITMODE" = no ]
 	then
-		echo '<input tabindex="1" name="_GROUPNAME_" value="'$MONITOR'" size="20" type="text" style="width: 300px;">'
+		echo '<input tabindex="1" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
 	else
-		echo '<b>'$MONITOR'</b>'
-		echo '<input name="_GROUPNAME_" value="'$MONITOR'" type="hidden">'
+		echo '<b>'"$MONITOR"'</b>'
+		echo '<input name="_GROUPNAME_" value="'"$MONITOR"'" type="hidden">'
 	fi
 	echo '</td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This can be the name of the group of equipment that you want to monitor. Examples: switches, wireless access points."'</span></a>
@@ -237,7 +233,7 @@ then
 	<tr>
 		<td>
 	'$"Alert after"'</td>
-		<td><input tabindex="2" name="_ALERTAFTER_" value="'$ALERTAFTER'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
+		<td><input tabindex="2" name="_ALERTAFTER_" value="'"$ALERTAFTER"'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
 		<td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of times a failure is detected before sending an alert."'</span></a>
 	      </td>
@@ -245,7 +241,7 @@ then
 	      <tr>
 		<td>
 	'$"Monitor check interval"'</td>
-		<td><input tabindex="2" name="_INTERVAL_" value="'$INTERVAL'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
+		<td><input tabindex="2" name="_INTERVAL_" value="'"$INTERVAL"'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
 		<td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The monitoring service will wait this amount of time in minutes between each check for this group."'</span></a>
 	      </td>
@@ -308,39 +304,39 @@ then
 	<option>12pm</option>
 	</select>
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the hour start and end times."'</span></a></td></tr>
-	<tr><td>'$"TCPIP numbers"'</td><td><input tabindex="2" name="_TCPIP_" value="'$TCPIPS'" type="text" style="width: 300px;"></td><td>
+	<tr><td>'$"TCPIP numbers"'</td><td><input tabindex="2" name="_TCPIP_" value="'"$TCPIPS"'" type="text" style="width: 300px;"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to enter in the TCPIP numbers separated by spaces of the devices that you want to monitor."'</span></a></td></tr></tbody></table>
 	<br><br><b>'$"Services to monitor"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Pick the services that you want monitored for this group."'</span></a><br><br>
 	<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '$PING' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the most basic monitor type. Most devices will respond to a ping request."'</span></a>
-	</td><td style="width: 200px;"><input type="checkbox" name="_MONITORTYPES_" '$POP3' value="pop3"> pop3
+	<tr><td style="width: 180px;"><input type="checkbox" name="_MONITORTYPES_" '"$PING"' value="ping"> ping <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is the most basic monitor type. Most devices will respond to a ping request."'</span></a>
+	</td><td style="width: 200px;"><input type="checkbox" name="_MONITORTYPES_" '"$POP3"' value="pop3"> pop3
 	</td></tr>
 	<tr><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$POP3S' value="pop3s"> pop3s
+	<input type="checkbox" name="_MONITORTYPES_" '"$POP3S"' value="pop3s"> pop3s
 	</td><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$IMAP' value="imap"> imap
+	<input type="checkbox" name="_MONITORTYPES_" '"$IMAP"' value="imap"> imap
 	</td></tr>
 	<tr><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$IMAPS' value="imaps"> imaps
+	<input type="checkbox" name="_MONITORTYPES_" '"$IMAPS"' value="imaps"> imaps
 	</td><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$SAMBA' value="samba"> samba
+	<input type="checkbox" name="_MONITORTYPES_" '"$SAMBA"' value="samba"> samba
 	</td></tr>
 	<tr><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$HTTP' value="http"> http
+	<input type="checkbox" name="_MONITORTYPES_" '"$HTTP"' value="http"> http
 	</td><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$HTTPSECURE' value="https"> https
+	<input type="checkbox" name="_MONITORTYPES_" '"$HTTPSECURE"' value="https"> https
 	</td></tr>
 	<tr><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$SMTP' value="smtp"> smtp
+	<input type="checkbox" name="_MONITORTYPES_" '"$SMTP"' value="smtp"> smtp
 	</td>
 	<td>
-	<input type="checkbox" name="_MONITORTYPES_" '$CUPS' value="cups"> cups
+	<input type="checkbox" name="_MONITORTYPES_" '"$CUPS"' value="cups"> cups
 	</td></tr>
 	<tr><td>
-	<input type="checkbox" name="_MONITORTYPES_" '$PROXY' value="PROXY"> proxy
+	<input type="checkbox" name="_MONITORTYPES_" '"$PROXY"' value="PROXY"> proxy
 	</td>
 	<td>
-	<input type="checkbox" name="_MONITORTYPES_" '$DNS' value="dns"> dns
+	<input type="checkbox" name="_MONITORTYPES_" '"$DNS"' value="dns"> dns
 	</td>
 	</tr>
 	</tbody></table><br><br>

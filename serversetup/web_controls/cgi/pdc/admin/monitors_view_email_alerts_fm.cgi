@@ -62,26 +62,34 @@ $(document).ready(function()
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+WIDTH=100
+ICON1=/images/submenus/system/add.png
+ICON2=/images/submenus/system/monitor_status.png
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left; " ><tbody>
-<tr><td><div class="sectiontitle">'$"View E-Mail - SMS Alerts"'</div></td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a>
-</td>
-<td>
-	<form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
-		<button class="button" name="_AddEmailAlert_" value="_">
-		'$"Add E-Mail Alert"'
-		</button>
-	</form>
-</td>
-<td>
-	<form action="/cgi-bin/admin/mon_status.cgi" method="post">
-		<button class="button" name="_NetworkStatus_" value="_">
-		'$"Network Status"'
-		</button>
-	</form>
-</td>
+echo '<div id="actionbox">
+<div class="sectiontitle">'$"View E-Mail - SMS Alerts"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/monitors_add_email_alert_fm.cgi" method="post">
+			<button class="info" name="_AddEmailAlert_" value="_">
+				<img src="'$ICON1'" alt="'$"Add E-Mail Alert"'">
+				<span>'$"Add E-Mail Alert"'</span><br>
+				'$"Add"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/mon_status.cgi" method="post">
+			<button class="info" name="_NetworkStatus_" value="_">
+				<img src="'$ICON2'" alt="'$"Network Status"'">
+				<span>'$"Network Status"'</span><br>
+				'$"Status"'
+			</button>
+		</form>
+	</td>
+
 </tr></tbody></table>
 <br>'
 

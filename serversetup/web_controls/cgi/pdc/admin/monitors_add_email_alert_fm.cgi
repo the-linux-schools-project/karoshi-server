@@ -103,16 +103,32 @@ MAILSERVER="$DATAENTRY"
 #Check to see if a monitoring server has been setup
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
+	WIDTH=100
+	ICON1=/images/submenus/email/mail.png
+	ICON2=/images/submenus/system/monitor_status.png
+
 	echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
-<table class="standard" style="text-align: left;" >
-<tbody><tr><td><b>'$"E-Mail - SMS Alerts"'</b></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></td>
-<td>
-<a href="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi"><input class="button" type="button" name="" value="'$"E-Mail Alerts"'"></a>
-</td>
-<td>
-<a href="/cgi-bin/admin/mon_status.cgi"><input class="button" type="button" name="" value="'$"Network Status"'"></a>
-</td>
-</tr></tbody></table>
+
+<div class="sectiontitle">'$"E-Mail - SMS Alerts"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="monitors_view_email_alerts_fm.cgi" name="_ViewAlerts_" value="_">
+			<img src="'$ICON1'" alt="'$"E-Mail Alerts"'">
+			<span>'$"View E-Mail alerts"'</span><br>
+			'$"View"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="mon_status.cgi" name="_MonStatus_" value="_">
+			<img src="'$ICON2'" alt="'$"Network Status"'">
+			<span>'$"View network status"'</span><br>
+			'$"Network Status"'
+		</button>
+	</td>
+</tr></tbody></table><br>
+
 <br>
   <table class="standard" style="text-align: left;" >
     <tbody>

@@ -178,7 +178,7 @@ else
 				<button class="info" name="_ViewMonitors_" value="_">
 					<img src="'$ICON2'" alt="'$"View Monitors"'">
 					<span>'$"View existing monitors"'</span><br>
-					'$"View monitors"'
+					'$"View Monitors"'
 				</button>
 			</form>
 		</td>
@@ -188,7 +188,7 @@ else
 				<button class="info" name="_ViewEmailAlerts_" value="_">
 					<img src="'$ICON3'" alt="'$"E-Mail Alerts"'">
 					<span>'$"View and add E-Mail Alerts"'</span><br>
-					'$"E-Mail alerts"'
+					'$"E-Mail Alerts"'
 				</button>
 			</form>
 		</td>
