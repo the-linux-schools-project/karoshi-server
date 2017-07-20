@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR "| grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,8 +45,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$"Bulk User Creation"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+    <TITLE>'$"Bulk User Creation"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -56,21 +56,33 @@ echo '
 #Check password settings
 source /opt/karoshi/server_network/security/password_settings
 
+WIDTH=100
+ICON1=/images/submenus/user/password.png
+ICON2=/images/submenus/user/users.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Bulk User Creation"'</div></td>
-<td>
-<button class="button" formaction="/cgi-bin/admin/bulk_user_creation_view_passwords_fm.cgi" name="ViewNewPasswords" value="_">
-'$"View new passwords"'
-</button>
-</td>
-<td>
-<button class="button" formaction="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi" name="ImportEnrolmentNumbers" value="_">
-'$"Import enrolment numbers"'
-</button>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"'</span></a></td></tr></tbody></table><br>
+<div class="sectiontitle">'$"Bulk User Creation"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_view_passwords_fm.cgi" name="_ViewNewPasswords_" value="_">
+			<img src="'"$ICON1"'" alt="'$"View new passwords"'">
+			<span>'$"View the passwords set for newly created accounts."'</span><br>
+			'$"View new passwords"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Import enrollment numbers"'">
+			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
+			'$"Import enrollment numbers"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br>
 <b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"''
 [ "$PASSWORDCOMPLEXITY" = on ] && echo '. '$"Upper and lower case characters and numbers are required."''
 echo '<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>

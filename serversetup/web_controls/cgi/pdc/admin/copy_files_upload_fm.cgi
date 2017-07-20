@@ -31,13 +31,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -46,26 +46,37 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$"Copy Files - upload"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+    <TITLE>'$"Copy Files - upload"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/user/groups.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><div class="sectiontitle">'$"Copy Files - upload"'</div></td>
-<td style="vertical-align: top;"><a href="/cgi-bin/admin/groups.cgi"><input class="button" type="button" name="" value="'$"Group Management"'"></a></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy files into all of the user home areas for the group that you choose."'</span></a></td></tr></tbody></table><br>
 
+<div class="sectiontitle">'$"Copy Files"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy files into all of the user home areas for the group that you choose."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
 
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="groups.cgi" name="_ViewNewPasswords_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Group Management"'">
+			<span>'$"Manage groups."'</span><br>
+			'$"Group Management"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br>
 <P>
-'$"Please select the files that you want to upload to a group"':
+'$"Select the files that you want to upload to a group"':
 <P>
         
-        <table class="standard" style="text-align: left; height: 91px;" >
+        <table class="tablesorter" style="text-align: left; height: 91px;" >
         <TR>
             <TD ALIGN=RIGHT>
                 '$"File"' 1:

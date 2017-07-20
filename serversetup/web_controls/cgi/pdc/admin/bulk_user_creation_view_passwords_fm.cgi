@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,27 +45,40 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Bulk User Creation - View Passwords"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+  <title>'$"Bulk User Creation - View Passwords"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/user/bulk_user_creation.png
+ICON2=/images/submenus/user/password.png
+
 echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Bulk User Creation - View Passwords"'</b></td>
-<td style="vertical-align: top;">
-<button class="button" formaction="bulk_user_creation_upload_fm.cgi" name="BulkUserCreation" value="_">
-'$"Bulk User Creation"'
-</button>
-</td>
-<td style="vertical-align: top;">
-<button class="button" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="ImportEnrolmentNumbers" value="_">
-'$"Import enrolment numbers"'
-</button>
-</td></tr>
-</tbody></table><br>
+<div class="sectiontitle">'$"Bulk User Creation - View Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"username, enrollment number or staff code"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Bulk User Creation"'">
+			<span>'$"Create user accounts from a CSV file."'</span><br>
+			'$"Bulk User Creation"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Import enrollment numbers"'">
+			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
+			'$"Import enrollment numbers"'
+		</button>
+	</td>
+
+</tbody></table>
+<br>
 '$"View the new passwords for a group of users."'<br>
   <br>
   <table class="standard" style="text-align: left;">

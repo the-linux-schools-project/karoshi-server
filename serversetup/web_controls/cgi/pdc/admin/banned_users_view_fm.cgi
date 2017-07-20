@@ -30,8 +30,8 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -46,7 +46,7 @@ echo ""
 echo '
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Banned User Accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View Banned User Accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -62,9 +62,24 @@ $(document).ready(function()
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" method="post">
-  <div id="actionbox"><div class="sectiontitle">'$"View Banned User Accounts"'</div>
-  <br>
+WIDTH=100
+ICON1=/images/submenus/user/ban_user.png
+
+echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" method="post"><div id="actionbox">
+
+<div class="sectiontitle">'$"Banned User Accounts"'</div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="ban_user_account.cgi" name="_BanUser_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Ban User"'">
+			<span>'$"Ban a user account."'</span><br>
+			'$"Ban User"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br>
 
 <table class="standard" style="text-align: left;" >
 <tbody>

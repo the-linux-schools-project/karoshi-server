@@ -265,6 +265,7 @@ if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
+	WIDTH=100
 	WIDTH1=170
 	WIDTH2=100
 	WIDTH3=200
@@ -275,11 +276,20 @@ then
 	ICON1=/images/submenus/system/delete.png
 	ICON2=/images/submenus/system/edit.png
 	ICON3=/images/submenus/user/users.png
+	ICON4=/images/submenus/user/categories.png
+	ICON5=/images/submenus/user/groups.png
+	ICON6=/images/submenus/user/groups.png
+	ICON7=/images/submenus/user/groups.png
+	ICON8=/images/submenus/user/label_groups.png
+	ICON9=/images/submenus/user/copy.png
+	ICON10=/images/submenus/system/delete.png
+	ICON11=/images/submenus/user/groups.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
+	WIDTH=100
 	WIDTH1=100
 	WIDTH2=70
 	WIDTH3=150
@@ -290,6 +300,14 @@ else
 	ICON1=/images/submenus/system/deletem.png
 	ICON2=/images/submenus/system/editm.png
 	ICON3=/images/submenus/user/usersm.png
+	ICON4=/images/submenus/user/categoriesm.png
+	ICON5=/images/submenus/user/groupsm.png
+	ICON6=/images/submenus/user/groupsm.png
+	ICON7=/images/submenus/user/groupsm.png
+	ICON8=/images/submenus/user/label_groupsm.png
+	ICON9=/images/submenus/user/copym.png
+	ICON10=/images/submenus/system/deletem.png
+	ICON11=/images/submenus/user/groupsm.png
 fi
 
 function do_action {
@@ -356,94 +374,121 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
+	DISPTITLE="$TITLE"
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"Group Management"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
 	'
-	else
+else
+	DISPTITLE="$TITLE $GROUPNAME"
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 fi
 
-echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr>'
-	if [ "$MOBILE" = no ]
-	then
-		echo '<td><div class="sectiontitle">'"$TITLE"' '"$GROUPNAME"'</div></td>'
-	else
-		echo '<td><div class="sectiontitle">'"$GROUPNAME"'</div></td>'
-	fi
+
+echo '
+<div class="sectiontitle">'"$DISPTITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></div>
+<table class="tablesorter"><tbody><tr>'
+
 
 if [ "$ACTION" = view ] 
 then
-	echo '<td style="vertical-align: top;">
-	<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
-	<button class="button" name="Categories" value="">
-	'$"Categories"'
-	</button>
-	</form>
+
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
+			<button class="info" name="_Categories_" value="_">
+				<img src="'"$ICON4"'" alt="'$"Categories"'">
+				<span>'$"View Categories"'</span><br>
+				'$"Categories"'
+			</button>
+		</form>
 	</td>
-	<td style="vertical-align: top;">
-	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-	<button class="button" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
-	'$"New primary group"'
-	</button>
-	</form>
-	</td><td style="vertical-align: top;">
-	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-	<button class="button" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
-	'$"New secondary group"'
-	</button>
-	</form>
-	</td>'
 
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+			<button class="info" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
+				<img src="'"$ICON5"'" alt="'$"New primary group"'">
+				<span>'$"Create a new primary group."'</span><br>
+				'$"New primary group"'
+			</button>
+		</form>
+	</td>
 
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+			<button class="info" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
+				<img src="'"$ICON6"'" alt="'$"New secondary group"'">
+				<span>'$"Create a new secondary group."'</span><br>
+				'$"New secondary group"'
+			</button>
+		</form>
+	</td>
+	'
 	if [ "$MOBILE" = no ]
 	then
-		echo '<td style="vertical-align: top;">
-		<form name="DynamicGroups" action="/cgi-bin/admin/dynamic_groups_fm.cgi" method="post">
-		<button class="button" name="ViewGroups" value="_">
-		'$"Dynamic Groups"'
-		</button>
-		</form>
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form name="DynamicGroups" action="/cgi-bin/admin/dynamic_groups_fm.cgi" method="post">
+				<button class="info" name="ViewGroups" value="__">
+					<img src="'"$ICON7"'" alt="'$"Dynamic Groups"'">
+					<span>'$"View dynamic groups."'</span><br>
+					'$"Dynamic Groups"'
+				</button>
+			</form>
 		</td>
-		<td style="vertical-align: top;">
-		<form name="LabelGroups" action="/cgi-bin/admin/label_groups_fm.cgi" method="post">
-		<button class="button" name="LabelGroups" value="_">
-		'$"Label Groups"'
-		</button>
-		</form>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form name="LabelGroups" action="/cgi-bin/admin/label_groups_fm.cgi" method="post">
+				<button class="info" name="LabelGroups" value="__">
+					<img src="'"$ICON8"'" alt="'$"Label Groups"'">
+					<span>'$"Label Groups"'</span><br>
+					'$"Label Groups"'
+				</button>
+			</form>
 		</td>
-		<td style="vertical-align: top;">
-		<form name="CopyFiles" action="/cgi-bin/admin/copy_files_upload_fm.cgi" method="post">
-		<button class="button" name="CopyFiles" value="_">
-		'$"Copy Files"'
-		</button>
-		</form>
-		</td>'
 
-
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form name="CopyFiles" action="/cgi-bin/admin/copy_files_upload_fm.cgi" method="post">
+				<button class="info" name="CopyFiles" value="_">
+					<img src="'"$ICON9"'" alt="'$"Copy Files"'">
+					<span>'$"Copy files to user home areas."'</span><br>
+					'$"Copy Files"'
+				</button>
+			</form>
+		</td>
+		'
 		if [ "$TYPE" = dynamic ]
 		then
-			echo '<td style="vertical-align: top;"><form name="DynamicGroups" action="/cgi-bin/admin/groups.cgi" method="post">
-			<button class="button" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
-			'$"Delete all dynamic groups"'
-			</button>
-			</form>
-			</td>'
+			echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+				<form name="DynamicGroups" action="/cgi-bin/admin/groups.cgi" method="post">
+					<button class="info" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
+						<img src="'"$ICON10"'" alt="'$"Delete all dynamic groups"'">
+						<span>'$"Delete all dynamic groups."'</span><br>
+						'$"Delete all dynamic groups"'
+					</button>
+				</form>
+			</td>
+			'
 		fi
 	fi
 else
-	echo '<td style="vertical-align: top;">
-	<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-	<button class="button" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
-	'$"Group Management"'
-	</button>
-	</form>	
-	</td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+			<button class="info" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
+				<img src="'"$ICON11"'" alt="'$"Group Management"'">
+				<span>'$"Manage groups."'</span><br>
+				'$"Group Management"'
+			</button>
+		</form>
+	</td>
+	'
 fi
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page lets you add and remove groups from your system."'<br><br>'$"Primary groups are used when creating users. All users are assigned to a primary group."'<br><br>'$"Secondary groups can be used when creating sub folders and restricting access to certain groups."'</span></a></td></tr></tbody></table>'
+
+echo '</tr></tbody></table><br>'
 
 if [ "$MOBILE" = no ]
 then

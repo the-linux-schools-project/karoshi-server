@@ -29,11 +29,11 @@
 
 STYLESHEET=defaultstyle.css
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -67,7 +67,7 @@ echo "</head><body><div id='pagecontainer'>"
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
@@ -88,7 +88,7 @@ done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/banned_users_view_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -97,7 +97,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must choose a letter."
 	show_status
@@ -105,13 +105,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -129,18 +129,31 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form action="/cgi-bin/admin/banned_users_view2.cgi" name="selectedusers" method="post"><b></b>'
-echo '<div id="actionbox"><div class="sectiontitle">'$"View Banned User Accounts"'</div><br>'
+WIDTH=100
+ICON1=/images/submenus/user/ban_user.png
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1`
+echo '<form action="/cgi-bin/admin/banned_users_view2.cgi" name="selectedusers" method="post"><div id="actionbox">
+<div class="sectiontitle">'$"Banned User Accounts"'</div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="ban_user_account.cgi" name="_BanUser_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Ban User"'">
+			<span>'$"Ban User"'</span><br>
+			'$"Ban User"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br>
+'
+
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1)
 #Show sites
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET" | sudo -H /opt/karoshi/web_controls/exec/banned_users_view
-SITESTATUS=`echo $?`
-if [ $SITESTATUS = 101 ]
+if [ "$?" = 101 ]
 then
-MESSAGE=$"No users listed."
-show_status
+	MESSAGE=$"No users listed."
+	show_status
 fi
-echo '</div>'
-echo '</form>'
-echo "</div></body></html>"
+echo '</div></form></div></body></html>'

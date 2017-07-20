@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,19 +45,39 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$"Bulk User Creation - Import Enrolment Numbers or staff codes"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+    <TITLE>'$"Import Enrollment Numbers or staff codes"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
 <body onLoad="start()"<div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/user/bulk_user_creation.png
+ICON2=/images/submenus/user/password.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><b>'$"Bulk User Creation - Import Enrolment Numbers or staff codes"'</b></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_upload_fm.cgi"><input class="button" type="button" name="" value="'$"Bulk User Creation"'"></td>
-<td style="vertical-align: top;"><a href="bulk_user_creation_view_passwords_fm.cgi"><input class="button" type="button" name="" value="'$"View new passwords"'"></td></tr>
-</tbody></table><br>
+<div class="sectiontitle">'$"Import Enrollment Numbers or staff codes"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"username, enrollment number or staff code"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Bulk User Creation"'">
+			<span>'$"Create user accounts from a CSV file."'</span><br>
+			'$"Bulk User Creation"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="bulk_user_creation_view_passwords_fm.cgi" name="_ViewNewPasswords_" value="_">
+			<img src="'"$ICON2"'" alt="'$"View new passwords"'">
+			<span>'$"View the passwords set for newly created accounts."'</span><br>
+			'$"View new passwords"'
+		</button>
+	</td>
+
+</tr></tbody></table><br>
         
         <TABLE class="standard" BORDER=0>
         <TR>

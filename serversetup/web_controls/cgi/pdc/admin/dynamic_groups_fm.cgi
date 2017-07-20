@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,42 +45,45 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$"Dynamic Groups"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+    <TITLE>'$"Dynamic Groups"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/user/groups.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_upload.cgi" METHOD="POST"><div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Dynamic Groups"'</div></td>
-<td style="vertical-align: top;">
 
-<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="GroupManagement" value="_">
-'$"Group Management"'
-</button>
+<div class="sectiontitle">'$"Dynamic Groups"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to create groups of users that change on a regular basis."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="groups.cgi" name="_ViewNewPasswords_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Group Management"'">
+			<span>'$"Manage groups."'</span><br>
+			'$"Group Management"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br>
+
+<table class="standard">
+<tr><td style="width: 180px;">'$"Upload CSV file"'</td><td>
+<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV Format""<br>"$"username or enrolment number or staff code,group1,group2,group3..."'</span></a>
 </td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to create groups of users that change on a regular basis."'</span></a></td>
 </tr>
-</tbody></table><br>
-        
-        <TABLE class="standard">
-        <TR>
-            <td style="width: 180px;">'$"Upload CSV file"'
-            </TD>
-            <TD>
-                <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV Format""<br>"$"username or enrolment number or staff code,group1,group2,group3..."'</span></a>
-
-            </TD>
-        </TR>
-        </TABLE>
-  </div>
+</table>
+</div>
 <div id="submitbox">
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-        </FORM>
-</div></BODY>
-</HTML>
+</form>
+</div></body>
+</html>
 '
 exit

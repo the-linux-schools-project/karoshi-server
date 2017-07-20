@@ -30,8 +30,8 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -43,133 +43,84 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record User Incident"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Record User Incident"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
 	END_POINT=16
 	#Assign HOUR
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = HOURcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			HOUR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=HOUR
+	get_data
+	HOUR=$(echo "$DATAENTRY" | sed 's/3F/?/g')
+
 	#Assign MINUTES
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MINUTES
+	get_data
+	MINUTES=$(echo "$DATAENTRY" | sed 's/3F/?/g')
+
 	#Assign DAY
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = DAYcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			DAY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-		break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=DAY
+	get_data
+	DAY=$(echo "$DATAENTRY" | sed 's/3F/?/g')
+
 	#Assign MONTH
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MONTHcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			MONTH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MONTH
+	get_data
+	MONTH=$(echo "$DATAENTRY" | sed 's/3F/?/g')
+
 	#Assign YEAR
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = YEARcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			YEAR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/3F/?/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=YEAR
+	get_data
+	YEAR=$(echo "$DATAENTRY" | sed 's/3F/?/g')
+
 	#Assign INCIDENT
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = INCIDENTcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			INCIDENT=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=INCIDENT
+	get_data
+	INCIDENT=$(echo "$DATAENTRY" | sed 's/2B/ /g')
+
 	#Assign ACTIONTAKEN
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ACTIONTAKENcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ACTIONTAKEN=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-			break
-			fi
-		let COUNTER=$COUNTER+1
-		done
+	DATANAME=ACTIONTAKEN
+	get_data
+	ACTIONTAKEN=$(echo "$DATAENTRY" | sed 's/2B/ /g')
+
 	#Assign STUDENTS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = STUDENTScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			STUDENTS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/2B/ /g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=STUDENTS
+	get_data
+	STUDENTS=$(echo "$DATAENTRY" | sed 's/2B/ /g')
+
 fi
 
-DATE_INFO=`date +%F`
-[ -z "$DAY" ] && DAY=`echo $DATE_INFO | cut -d- -f3`
-[ -z "$MONTH" ] && MONTH=`echo $DATE_INFO | cut -d- -f2`
-[ -z "$YEAR" ] && YEAR=`echo $DATE_INFO | cut -d- -f1`
+DATE_INFO=$(date +%F)
+[ -z "$DAY" ] && DAY=$(echo "$DATE_INFO" | cut -d- -f3)
+[ -z "$MONTH" ] && MONTH=$(echo "$DATE_INFO" | cut -d- -f2)
+[ -z "$YEAR" ] && YEAR=$(echo "$DATE_INFO" | cut -d- -f1)
 
-TIME_INFO=`date +%T`
-[ -z "$HOUR" ] && HOUR=`echo $TIME_INFO | cut -d: -f1`
-[ -z "$MINUTES" ] && MINUTES=`echo $TIME_INFO | cut -d: -f2`
+TIME_INFO=$(date +%T)
+[ -z "$HOUR" ] && HOUR=$(echo "$TIME_INFO" | cut -d: -f1)
+[ -z "$MINUTES" ] && MINUTES=$(echo "$TIME_INFO" | cut -d: -f2)
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/incident_log_add.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -178,7 +129,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -186,13 +137,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -201,34 +152,40 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
+WIDTH=100
+ICON1=/images/submenus/user/ban_user.png
+
 echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox">
 
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="height:30px;"><div class="sectiontitle">'$"Record User Incident"'</div></td>
-<td><button formaction="incident_log_view_fm.cgi" class="button" name="ViewIncidentLogs" value="_">
-'$"View Incident Logs"'
-</button></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></td>
-</tr></table>
-<br>'
-echo '<table class="standard" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" >'
-echo '<tbody><tr><td>'$"Incident Time and Date"'</td><td>'
-#HOUR
-echo '<input name="_HOUR_" value="'$HOUR'" size="2" maxlength="2" type="text">:'
-echo '<input name="_MINUTES_" value="'$MINUTES'" size="2" maxlength="2" type="text">'
-echo '</td><td>'
-echo ' <input name="_DAY_" value="'$DAY'" size="2" maxlength="2" type="text">'
-echo '<input name="_MONTH_" value="'$MONTH'" size="2" maxlength="2" type="text">'
-echo '<input name="_YEAR_" value="'$YEAR'" size="4" maxlength="4" type="text">'
-echo '</td></tr></tbody></table>'
-#Students involved
-echo $"Please enter the usernames involved separated by spaces."'<br><br>'
-echo '<input value="'$STUDENTS'" name="_STUDENTS_" size="53" type="text">'
+<div class="sectiontitle">'$"Record User Incident"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
 
-#Incident and action taken
-echo '<br>Incident Report<br>'
-echo '<textarea cols="77" rows="5" name="_INCIDENT_">'$INCIDENT'</textarea><br><br>Action Taken<br>'
-echo '<textarea cols="77" rows="5" name="_ACTIONTAKEN_">'$ACTIONTAKEN'</textarea>'
-echo '</div><div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div></form></div></body></html>'
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="incident_log_view_fm.cgi" name="_ViewIncidentLogs_" value="_">
+			<img src="'"$ICON1"'" alt="'$"View Incident Logs"'">
+			<span>'$"View Incident Logs"'</span><br>
+			'$"Incident Logs"'
+		</button>
+	</td>
+
+</tr></tbody></table><br>'
+echo '<table class="tablesorter" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" >
+<tbody><tr><td>'$"Incident Time and Date"'</td><td>
+<input name="_HOUR_" value="'"$HOUR"'" size="2" maxlength="2" type="text">:
+<input name="_MINUTES_" value="'"$MINUTES"'" size="2" maxlength="2" type="text">
+</td><td>
+<input name="_DAY_" value="'"$DAY"'" size="2" maxlength="2" type="text">
+<input name="_MONTH_" value="'"$MONTH"'" size="2" maxlength="2" type="text">
+<input name="_YEAR_" value="'"$YEAR"'" size="4" maxlength="4" type="text">
+</td></tr></tbody></table>'
+#Students involved
+echo '<table class="tablesorter" style="text-align: left; width: 674px;"><tbody>
+<tr><td>'$"Enter the usernames involved separated by spaces:"'</td></tr>
+<tr><td><input value="'"$STUDENTS"'" name="_STUDENTS_" size="78" type="text"></td></tr>
+<tr><td>Incident Report</td></tr>
+<tr><td><textarea cols="90" rows="4" name="_INCIDENT_">'"$INCIDENT"'</textarea></td></tr>
+<tr><td>Action Taken</td></tr>
+<tr><td><textarea cols="90" rows="4" name="_ACTIONTAKEN_"></textarea></td></tr>
+</tbody></table>
+</div><div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div></form></div></body></html>'
 exit

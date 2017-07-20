@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,23 +45,32 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"View Incident Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"View Incident Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/system/add.png
+
 echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" method="post">
 <div id="actionbox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="height:30px;"><div class="sectiontitle">'$"View Incident Logs"'</div></td>
-<td><button formaction="incident_log_add.cgi" class="button" name="AddIncidentLog" value="_">
-'$"Add Incident Log"'
-</button></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></td>
-</tr></table><br>
+
+<div class="sectiontitle">'$"View Incident Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" formaction="incident_log_add.cgi" name="_ViewIncidentLogs_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Add Incident Log"'">
+			<span>'$"Add Incident Log"'</span><br>
+			'$"Add"'
+		</button>
+	</td>
+</tr></tbody></table>
+<br>
 <table class="standard" style="text-align: left;" >
 <tbody>
 <tr><td style="width: 180px;">'$"Filter"'</td><td>
