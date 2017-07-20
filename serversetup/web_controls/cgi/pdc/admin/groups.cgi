@@ -409,9 +409,9 @@ then
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="info" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
-				<img src="'"$ICON5"'" alt="'$"New primary group"'">
+				<img src="'"$ICON5"'" alt="'$"New Primary Group"'">
 				<span>'$"Create a new primary group."'</span><br>
-				'$"New primary group"'
+				'$"New Primary Group"'
 			</button>
 		</form>
 	</td>
@@ -419,9 +419,9 @@ then
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="info" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
-				<img src="'"$ICON6"'" alt="'$"New secondary group"'">
+				<img src="'"$ICON6"'" alt="'$"New Secondary Group"'">
 				<span>'$"Create a new secondary group."'</span><br>
-				'$"New secondary group"'
+				'$"New Secondary Group"'
 			</button>
 		</form>
 	</td>

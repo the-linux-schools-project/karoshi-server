@@ -71,9 +71,9 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info" formaction="bulk_user_creation_view_passwords_fm.cgi" name="_ViewNewPasswords_" value="_">
-			<img src="'"$ICON2"'" alt="'$"View new passwords"'">
+			<img src="'"$ICON2"'" alt="'$"View New Passwords"'">
 			<span>'$"View the passwords set for newly created accounts."'</span><br>
-			'$"View new passwords"'
+			'$"View New Passwords"'
 		</button>
 	</td>
 
