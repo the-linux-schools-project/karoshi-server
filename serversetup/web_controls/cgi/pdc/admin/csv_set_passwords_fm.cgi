@@ -54,12 +54,13 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/csv_set_passwords_upload.cgi" METHOD="POST"><div id="actionbox">
-<div class="sectiontitle">'$"Set Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to upload a CSV file to change user passwords."'</span></a></div>
+<div class="sectiontitle">'$"Set Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to upload a CSV file to change user passwords."'</span></a></div>
 <br>    
 <table class="standard" BORDER=0>
 <tr><td style="width: 180px;">'$"CSV file"'
 </td><td>
-<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV format"'<br><br>'$"username"', '$"password"'</span></a>
+<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" target="_blank" href=http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV format"'<br><br>'$"username"', '$"password"'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
 </td></tr></table>
   </div>
 <div id="submitbox">

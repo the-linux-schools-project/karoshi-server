@@ -77,7 +77,7 @@
 system "[ -d /var/www/karoshi/csv_set_passwords ] && rm -f -R /var/www/karoshi/csv_set_passwords ";
 system "mkdir -p /var/www/karoshi/csv_set_passwords ";
 system "chmod 0700 /var/www/karoshi/";
-system "chmod 0700 /var/www/karoshi/bulk_user_creation";
+system "chmod 0700 /var/www/karoshi/csv_set_passwords";
 BEGIN {
 
 	$SAVE_DIRECTORY = "/var/www/karoshi/csv_set_passwords";
