@@ -105,16 +105,25 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<div id="actionbox3"><div id="titlebox">'
 
-echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td><div class="sectiontitle">'$"My Servers"' '"$SHORTNAME"'</div></td>
-<td style="vertical-align: top;">
-<form action="karoshi_servers_add_fm.cgi" method="post">
-<button class="button" name="_AddServer_" value="_">
-<span>'$"Add server"'</span>
-</button>
-</form>
-</td>
-</tr></tbody></table></div><div id="infobox">
+ICON1=/images/submenus/system/add.png
+
+echo '
+
+<div class="sectiontitle">'$"My Servers"' '"$SHORTNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="karoshi_servers_add_fm.cgi" method="post">
+			<button class="info" name="ShowServers" value="_">
+				<img src="'$ICON1'" alt="'$"Add Server"'">
+				<span>'$"Add a server."'</span><br>
+				'$"Add Server"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>
+</div><div id="infobox">
 <table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 210px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Version"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
 
 function show_servers {

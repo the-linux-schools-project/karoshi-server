@@ -206,18 +206,24 @@ SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '</div></div><div id="mobileactionbox">
 '
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td style="height:30px"><div class="sectiontitle">'$"Service Status"' - '$SERVERNAME'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the services that you want to start or stop."'</span></a></td>
-	<td>
-	<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
-	<button class="button" name="SelectServer" value="_">
-	'$"Select server"'
-	</button>
-	</form>
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+
+	echo '
+<div class="sectiontitle">'$"Service Status"' - '$SERVERNAME' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the services that you want to start or stop."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
+			<button class="info" name="SelectServer" value="_">
+				<img src="'$ICON1'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
 	</td>
-	</tr></table>
+
+	</tr></tbody></table>
 	</div><div id="infobox">
 '
 fi

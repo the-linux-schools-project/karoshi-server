@@ -185,18 +185,23 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/system/computer.png
+
 echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"></td><td><div class="sectiontitle">'$"Add Server"'</div></td>
-<td style="vertical-align: top;">
-<button class="button" formaction="karoshi_servers_view.cgi" name="ShowServers" value="_">
-'$"Show servers"'
-</button>
-</td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."'</span></a>
-</td>
+<div class="sectiontitle">'$"Add Server"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="karoshi_servers_view.cgi" name="ShowServers" value="_">
+			<img src="'$ICON1'" alt="'$"Show Servers"'">
+			<span>'$"Show the servers and roles."'</span><br>
+			'$"Show Servers"'
+		</button>
+	</td>
+
 </tr></tbody></table>
 <br>
 <table class="standard" style="text-align: left;" ><tbody>

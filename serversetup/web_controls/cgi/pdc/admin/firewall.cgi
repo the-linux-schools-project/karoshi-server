@@ -260,44 +260,58 @@ then
 	'
 
 else
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+	ICON2=/images/submenus/system/add.png
+	ICON3=/images/submenus/system/firewall.png
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td style="height:30px;"><div class="sectiontitle">'$"Firewall Rules"' '"$SERVERNAME2"'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Firewall Rules"'</span></a></td>'
+	<div class="sectiontitle">'$"Firewall Rules"' '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Firewall Rules"'</span></a></div>
+	<table class="tablesorter"><tbody><tr>'
 
 	if [ "$SERVERNAME" != notset ]
 	then
-		echo '
-	<td>
-	<form action="/cgi-bin/admin/firewall.cgi" method="post">
-	<button class="button" name="_">'$"Choose Server"'</button>
-	</form>
-	</td>
+	echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/firewall.cgi" method="post">
+				<button class="info" name="SelectServer" value="_">
+					<img src="'$ICON1'" alt="'$"Select server"'">
+					<span>'$"Select the server you want to view."'</span><br>
+					'$"Select Server"'
+				</button>
+			</form>
+		</td>
 	'
 	fi
 
 	if [ "$ACTION" = view ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] && [ "$SERVERNAME" != notset ]
 	then
 		echo '
-	<td>
-	<form action="/cgi-bin/admin/firewall.cgi" method="post">
-	<button class="button" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">'$"Add Rule"'</button>
-	</form>
-	</td>
-	'
-	fi
-	if [ "$ACTION" = add ] || [ "$ACTION" = edit ] || [ "$ACTION" = delete ]
-	then
-		echo '
-	<td>
-	<form action="/cgi-bin/admin/firewall.cgi" method="post">
-	<button class="button" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">'$"View Rules"'</button>
-	</form>
-	</td>
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/firewall.cgi" method="post">
+				<button class="info" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
+					<img src="'$ICON2'" alt="'$"Add Rule"'">
+					<span>'$"Add a firewall rule."'</span><br>
+					'$"Add Rule"'
+				</button>
+			</form>
+		</td>
 	'
 	fi
 
+	if [ "$ACTION" = add ] || [ "$ACTION" = edit ] || [ "$ACTION" = delete ]
+	then
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/firewall.cgi" method="post">
+				<button class="info" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
+					<img src="'$ICON3'" alt="'$"View Rules"'">
+					<span>'$"View firewall rules."'</span><br>
+					'$"View Rules"'
+				</button>
+			</form>
+		</td>
+	'
+	fi
 
 	echo '</tr></tbody></table></div><div id="infobox">'
 fi
