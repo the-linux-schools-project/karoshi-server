@@ -63,10 +63,37 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%')
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td><div class="sectiontitle">'$"Change Home Server"'</div></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a>
-</td><td><a href="home_folders_fm.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Home Folders"'"></a></td><td><a href="gluster_control.cgi"><input class="button" type="button" style="min-width: 135px;" name="" value="'$"Gluster Volume Control"'"></a></td></tr></tbody></table>'
+WIDTH=100
+ICON1="/images/submenus/file/folder.png"
+ICON2="/images/submenus/system/gluster.png"
+
+echo '<div id="actionbox3"><div id="titlebox">
+
+<div class="sectiontitle">'$"Change Home Server"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="home_folders_fm.cgi" method="post">
+			<button class="info" name="ViewHomeFolders" value="_">
+				<img src="'$ICON2'" alt="'$"Home Folders"'">
+				<span>'$"Configure user home folders."'</span><br>
+				'$"Home Folders"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="gluster_control.cgi" method="post">
+			<button class="info" name="GlusterVolumeControl" value="_">
+				<img src="'$ICON2'" alt="'$"Gluster Volumes"'">
+				<span>'$"Configure gluster volumes."'</span><br>
+				'$"Gluster Volumes"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>
+'
 
 
 #########################

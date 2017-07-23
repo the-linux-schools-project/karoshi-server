@@ -143,13 +143,14 @@ exit
 }
 
 [ -z "$ACTION" ] && ACTION=view
-
+ICON1="/images/submenus/system/add.png"
 ACTION2=create
-ACTIONMSG=$"Create Gluster Volume"
+ACTIONMSG=$"Create Volume"
 if [ "$ACTION" = create ] || [ "$ACTION" = addfolder ] || [ "$ACTION" = assignshare ] || [ "$ACTION" = removefolder ] || [ "$ACTION" = confirmremovefolder ] || [ "$ACTION" = reallyremovefolder ] || [ "$ACTION" = deleteglustervolume ] || [ "$ACTION" = status ] || [ "$ACTION" = restorebrick ]  
 then
 	ACTION2=view
-	ACTIONMSG=$"View Gluster Volumes"
+	ACTIONMSG=$"View Volumes"
+	ICON1="/images/submenus/system/gluster.png"
 fi
 #########################
 #Check data
@@ -224,21 +225,44 @@ if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu"><div class="expanded"><span>'$"Gluster Controls"' '"$SERVER2"'</span></div></div><div id="'"$DIV_ID"'">'
 else
+
+	WIDTH=100
+	ICON2="/images/submenus/file/folder.png"
+	ICON3="/images/submenus/system/network-server.png"
+
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
-<form action="/cgi-bin/admin/gluster_control.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">Gluster - '"$TITLE"'</div></td>
-<td><input name="_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ACTIONMSG"'"></td>
-<td>
-<button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">
-'$"Home Folders"'
-</button>
-</td>
-<td>
-<button class="button" formaction="samba_shares.cgi" name="NetworkShares" value="_">
-'$"Network Shares"'
-</button>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></td></tr></tbody></table><br></form></div><div id="infobox">'
+
+
+	<div class="sectiontitle">Gluster - '"$TITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Gluster_Volumes"><img class="images" alt="" src="/images/help/info.png"><span>'$"Gluster Volumes"'</span></a></div><form action="/cgi-bin/admin/gluster_control.cgi" method="post">
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" name="_GlusterAction_" value="_ACTION_'"$ACTION2"'_">
+				<img src="'$ICON1'" alt="'"$ACTIONMSG"'">
+				<span>'"$ACTIONMSG"'</span><br>
+				'"$ACTIONMSG"'
+			</button>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
+				<img src="'$ICON2'" alt="'$"Home Folders"'">
+				<span>'$"Configure user home folders"'</span><br>
+				'$"Home Folders"'
+			</button>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="samba_shares.cgi" name="NetworkShares" value="_">
+				<img src="'$ICON3'" alt="'$"Network Shares"'">
+				<span>'$"Configure network shares"'</span><br>
+				'$"Network Shares"'
+			</button>
+		</td>
+
+	</tr></tbody></table></form>
+
+	<br></form></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'

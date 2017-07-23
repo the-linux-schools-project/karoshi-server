@@ -33,13 +33,13 @@ source /opt/karoshi/web_controls/version
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/disk_usage_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -48,7 +48,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Disk Usage"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Disk Usage"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -60,9 +60,9 @@ $(document).ready(function()
 </script>
 '
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -86,74 +86,53 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-'`
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%/+-')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=26
-#Assign CHOICE
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = CHOICEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		CHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign CHOICE
+DATANAME=CHOICE
+get_data
+CHOICE="$DATAENTRY"
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=SERVERMASTER
+get_data
+SERVERMASTER="$DATAENTRY"
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -161,13 +140,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -190,7 +169,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -201,20 +180,20 @@ else
 fi
 echo '<form name="myform" action="/cgi-bin/admin/disk_usage.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id ="titlebox">'
-echo '<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<input name="_SERVERTYPE_" value="'$SERVERTYPE'" type="hidden">
-<input name="_SERVERMASTER_" value="'$SERVERMASTER'" type="hidden">
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id ="titlebox">'
+echo '<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
+<input name="_SERVERTYPE_" value="'"$SERVERTYPE"'" type="hidden">
+<input name="_SERVERMASTER_" value="'"$SERVERMASTER"'" type="hidden">
 '
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-	SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Disk Usage"' - '$SERVERNAME2'</span>'
+	<span>'$"Disk Usage"' - '"$SERVERNAME2"'</span>'
 
 	if [ "$SERVERCOUNT" = 1 ]
 	then
@@ -224,20 +203,30 @@ then
 	fi
 	echo '</div></div><div id="mobileactionbox">'
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><b>'$"Disk Usage"' - '$SERVERNAME'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Disk usage data is generated once per week."'</span></a></td>
-<td style="vertical-align: top;">
-<button class="button" formaction="disk_usage_fm.cgi" name="SelectServer" value="_">
-'$"Select server"'
-</button>
-</td>
-</tr></tbody></table><br></div><div id="infobox">
+
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+
+	echo '
+	<div class="sectiontitle">'$"Disk Usage"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Disk usage data is generated once per week."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="disk_usage_fm.cgi" name="SelectServer" value="__">
+				<img src="'$ICON1'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</td>
+
+	</tr></tbody></table>
+
+</div><div id="infobox">
 '
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CHOICE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/disk_usage
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

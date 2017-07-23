@@ -137,10 +137,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 echo '
-<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><b>'$"Disk Usage"'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to view the disk usage on."'</span></a></td>
-</tr></tbody></table><br>
+	<div class="sectiontitle">'$"Disk Usage"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to view the disk usage on."'</span></a></div><br>
 </div><div id="infobox">'
 fi
 

@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"ZFS Status"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"ZFS Status"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -83,9 +83,9 @@ $(document).ready(function()
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -108,7 +108,7 @@ echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -121,7 +121,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/zfs_raid_control.cgi" name="selectservers" method="post"><b></b>'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -132,22 +132,33 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"ZFS Status"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
-<td>
-<button class="button" formaction="zfs_raid_create_fm.cgi" name="CreateRaid" value="_">
-'$"Create ZFS Raid"'
-</button>
-</td>
-</tr></tbody></table>
-<br></div><div id="infobox">'
+
+	WIDTH=100
+	ICON1="/images/submenus/system/add.png"
+
+	echo '
+
+	<div class="sectiontitle">'$"ZFS Status"' <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="zfs_raid_create_fm.cgi" name="CreateRaid" value="_">
+				<img src="'$ICON1'" alt="'$"Create ZFS volume"'">
+				<span>'$"Create a ZFS volume."'</span><br>
+				'$"Create ZFS Raid"'
+			</button>
+		</td>
+
+	</tr></tbody></table>
+
+
+	<br></div><div id="infobox">'
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"ZFS status" none none ____
+/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"ZFS status" none none ____
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit

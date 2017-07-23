@@ -557,17 +557,19 @@ fi
 if [ "$ACTION" = add ] || [ "$ACTION" = edit ] || [ "$ACTION" = delete ]
 then
 	ACTION2=view
-	BUTTONTXT=$"View Network Shares"
+	BUTTONTXT=$"View Shares"
 	TITLETXT=$"Add Network Share"
 	[ "$ACTION" = edit ] && TITLETXT=$"Edit Network Share"
 	[ "$ACTION" = delete ] && TITLETXT=$"Delete Network Share"
+	ICON1="/images/submenus/system/network-server.png"
 fi
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyedit ] 
 then
 	ACTION2=add
-	BUTTONTXT=$"Add Network Share"
+	BUTTONTXT=$"Add Share"
 	TITLETXT=$"View Network Shares"
+	ICON1="/images/submenus/system/add.png"
 fi
 
 #Show back button for mobiles
@@ -580,25 +582,44 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 fi
-echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="height:30px;"><div class="sectiontitle">'$TITLETXT'</div></td>
-<td>
-<input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
-</td>
-<td>
-<button class="button" formaction="gluster_control.cgi" name="GlusterControl" value="_">
-'$"Gluster Volume Control"'
-</button>
-</td>
-<td>
-<button class="button" formaction="home_folders_fm.cgi" name="HomeFolders" value="_">
-'$"Home Folders"'
-</button>
-</td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Shares"'</span></a>
-</td></tr></tbody></table></form>
-'
+
+WIDTH=100
+
+ICON3="/images/submenus/file/folder.png"
+ICON2="/images/submenus/system/gluster.png"
+
+echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">
+
+<div class="sectiontitle">'$TITLETXT' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Network_Shares"><img class="images" alt="" src="/images/help/info.png"><span>'$"Network Shares"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" name="____SambaAction____" value="____ACTION____'$ACTION2'____">
+			<img src="'$ICON1'" alt="'$BUTTONTXT'">
+			<span>'$BUTTONTXT'</span><br>
+			'$BUTTONTXT'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
+			<img src="'$ICON2'" alt="'$"Gluster Volumes"'">
+			<span>'$"Configure gluster volumes"'</span><br>
+			'$"Gluster Volumes"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
+			<img src="'$ICON3'" alt="'$"Home Folders"'">
+			<span>'$"Configure user home folders"'</span><br>
+			'$"Home Folders"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+</form>'
+
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/samba_shares.cgi | cut -d' ' -f1)

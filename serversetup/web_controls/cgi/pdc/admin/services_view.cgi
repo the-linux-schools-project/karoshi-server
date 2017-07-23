@@ -211,19 +211,19 @@ else
 
 	echo '
 <div class="sectiontitle">'$"Service Status"' - '$SERVERNAME' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the services that you want to start or stop."'</span></a></div>
-<table class="tablesorter"><tbody><tr>
+	<table class="tablesorter"><tbody><tr>
 
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
-			<button class="info" name="SelectServer" value="_">
-				<img src="'$ICON1'" alt="'$"Select server"'">
-				<span>'$"Select the server you want to view."'</span><br>
-				'$"Select Server"'
-			</button>
-		</form>
-	</td>
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form name="myform" action="/cgi-bin/admin/services_view_fm.cgi" method="post">
+				<button class="info" name="SelectServer" value="_">
+					<img src="'$ICON1'" alt="'$"Select server"'">
+					<span>'$"Select the server you want to view."'</span><br>
+					'$"Select Server"'
+				</button>
+			</form>
+		</td>
 
-	</tr></tbody></table>
+		</tr></tbody></table>
 	</div><div id="infobox">
 '
 fi

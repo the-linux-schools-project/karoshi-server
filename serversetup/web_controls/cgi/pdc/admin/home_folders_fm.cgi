@@ -64,27 +64,51 @@ $(document).ready(function()
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="height:30px;"><div class="sectiontitle">'$"Home Folders"'</div></td>'
+WIDTH=100
+ICON1=/images/submenus/system/gluster.png
+ICON2=/images/submenus/system/network-server.png
+
+echo '<form action="/cgi-bin/admin/home_folders.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+
+<div class="sectiontitle">'$"Home Folders"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></div>
+<table class="tablesorter"><tbody><tr>'
 
 #Check for gluster support
-[[ $(grep -c dfs /etc/samba/smb.conf) -gt 0 ]] && echo '<td>
-<button class="button" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
-'$"Gluster Volume Control"'
-</button>
-</td>'
+if [[ $(grep -c dfs /etc/samba/smb.conf) -gt 0 ]]
+then
+	echo '
 
-echo '<td>
-<button class="button" formaction="samba_shares.cgi" name="SambaShares" value="_">
-'$"Network Shares"'
-</button>
-</td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Home_Folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This displays the server that hosts the home folders for each group."'</span></a></td></tr></tbody></table><br></div><div id="infobox">
-  <table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" ><thead>
-<tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 180px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td><b>'$"Change"'</b></td></tr></thead><tbody>
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
+			<img src="'$ICON1'" alt="'$"Gluster Volumes"'">
+			<span>'$"Configure gluster volumes"'</span><br>
+			'$"Gluster Volumes"'
+		</button>
+	</td>
+	'
+fi
+
+
+echo '
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<button class="info" formaction="samba_shares.cgi" name="SambaShares" value="_">
+		<img src="'$ICON2'" alt="'$"Network Shares"'">
+		<span>'$"Configure network shares"'</span><br>
+		'$"Network Shares"'
+	</button>
+</td>
+
+</tr></tbody></table>
+
+</div><div id="infobox">
+
+<table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" >
+<thead><tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 180px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td><b>'$"Change"'</b></td></tr>
+</thead><tbody>
 '
 START_LINE=yes
-ICON1=/images/submenus/system/computer.png
+ICON£=/images/submenus/system/computermed.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
 	PRI_GROUP=$(basename "$PRI_GROUP")
@@ -95,16 +119,16 @@ do
 	[ -z "$GLUSTERVOL" ] && GLUSTERVOL=notset
 	if [ -d /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOL" ]
 	then
-		ICON1=/images/submenus/system/gluster.png
+		ICON3=/images/submenus/system/glustermed.png
 	else
-		ICON1=/images/submenus/system/computer.png
+		ICON3=/images/submenus/system/computermed.png
 	fi
 
 	if [ "$START_LINE" = yes ]
 	then
 		echo '<tr><td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//,/<br>}"'</td><td style="vertical-align: top;">
 		<button class="info" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
-		<img src="'"$ICON1"'" alt="'$"Rename"'">
+		<img src="'"$ICON3"'" alt="'$"Rename"'">
 		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br>'"${SERVER//,/<br>}"'</span>
 		</button>
 		</td>'
@@ -112,7 +136,7 @@ do
 	else
 		echo '<td style="vertical-align: top;">'"$PRI_GROUP"'</td><td style="vertical-align: top;">'"${SERVER//,/<br>}"'</td><td style="vertical-align: top;">
 		<button class="info infoleft" name="_ChangeServer_" value="_PRIGROUP_'"$PRI_GROUP"'_SERVER_'"$SERVER"'_">
-		<img src="'"$ICON1"'" alt="'$"Rename"'">
+		<img src="'"$ICON3"'" alt="'$"Rename"'">
 		<span>'$"Change Server"'<br><br>'"$PRI_GROUP"'<br><br><br>'"${SERVER//,/<br>}"'</span>
 		</button>
 		</td></tr>'
