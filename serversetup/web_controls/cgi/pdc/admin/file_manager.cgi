@@ -37,10 +37,10 @@ STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT"` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>'$"File Manager"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"File Manager"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -89,11 +89,10 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`cat | tr -cd 'A-Za-z0-9\._:&%\-+*'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:&%\-+*')
 #CONVERT STAR
-DATA=`echo "$DATA" | sed 's/*/%99/g'`
+DATA=$(echo "$DATA" | sed 's/*/%99/g')
 #echo $DATA"<br>"
 #########################
 #Assign data to variables
@@ -157,7 +156,7 @@ done
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/file_manager.cgi";
 </script></div></body></html>'
 exit
@@ -626,7 +625,7 @@ done
 if [ "$ACTION" = notset ]
 then
 	SERVER2=""
-	else
+else
 	if [ $MOBILE = yes ]
 	then
 		SERVER2=`echo "- ${SERVERNAME:0:9}" | cut -d. -f1`
@@ -636,6 +635,8 @@ then
 fi
 
 #Show back button for mobiles
+echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post">'
+
 if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
@@ -651,32 +652,14 @@ then
 	<div id="'$DIV_ID'">
 	'
 
-	else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td style="height:30px;"><div class="sectiontitle">'$"File Manager"' '$SERVER2'</div></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></td>'
-
-	if [ $SERVERNAME != notset ]
-	then
-		echo '
-	<td>
-	<form action="/cgi-bin/admin/file_manager.cgi" method="post">
-	<button class="button" name="_">'$"Choose Server"'</button>
-	</form>
-	</td>
-	'
-	fi
-	echo '</tr></tbody></table></div><div id="infobox">'
+else
+	echo '<div id="'$DIV_ID'">'
 fi
 
-echo '<form action="/cgi-bin/admin/file_manager.cgi" method="post">'
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
-echo '</form>'
 [ $MOBILE = no ] && echo '</div>'
-echo '</div></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

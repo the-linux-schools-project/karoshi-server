@@ -77,19 +77,19 @@ NEWFOLDER=$(echo "$DATA" | cut -s -d: -f15)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: file_manager - Not called by file_manager.cgi >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): file_manager - Not called by file_manager.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: file_manager - Blank remote user >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): file_manager - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: file_manager - Blank remote tcpip address >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): file_manager - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -114,7 +114,7 @@ then
 	exit 101
 fi
 
-if [ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	echo "$(date): file_manager - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -122,7 +122,7 @@ fi
 
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
-
+SHOWMOVE=no
 #icons
 if [ "$MOBILE" = no ]
 then
@@ -135,6 +135,7 @@ then
 	WIDTH5=90
 	WIDTH6=140
 	WIDTH7=70
+	WIDTH8=100
 
 	COLSIZE=95
 	ROWSIZE=28
@@ -156,7 +157,9 @@ then
 	ICON15=/images/submenus/file/file.png
 	ICON16=/images/submenus/file/folder.png
 	ICON17=/images/submenus/file/search.png
+	ICON18=/images/submenus/system/computer.png
 	COLSPAN=5
+	COLSPAN2=5
 	COLWIDTH=22
 	VIEWWIDTH1=35
 	VIEWWIDTH2=520
@@ -172,6 +175,7 @@ else
 	WIDTH5=60
 	WIDTH6=100
 	WIDTH7=70
+	WIDTH8=90
 	COLSIZE=36
 	ROWSIZE=26
 	TABLECLASS=mobilestandard
@@ -193,7 +197,9 @@ else
 	ICON15=/images/submenus/file/filem.png
 	ICON16=/images/submenus/file/folderm.png
 	ICON17=/images/submenus/file/searchm.png
+	ICON18=/images/submenus/system/computerm.png
 	COLSPAN=5
+	COLSPAN2=3
 	COLWIDTH=32
 	VIEWWIDTH1=50
 	VIEWWIDTH2=520
@@ -206,16 +212,165 @@ LINECOLOUR1="#A0A0A0"
 LINECOLOUR2="#DCDCDC"
 
 #Show SERVERNAME choice
-if [ $SERVERNAME = notset ]
+if [ "$SERVERNAME" = notset ]
 then
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"Enter" ENTER
+	if [ "$MOBILE" = no ]
+	then
+		echo '<div id="titlebox">
+		<div class="sectiontitle">'$"File Manager"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></div></div><div id="infobox">
+
+	'
+	fi
+
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Enter" ENTER
 fi
 
 #This list is used to declare areas that cannot me deleted or moved
 LOCATION_LIST="/ /bin /boot /dev /etc /media /mnt /home /home/applications /home/itadminshare /home/staffshare /home/subjects /home/officeshare /home/users /home/users/guests /home/users/exams /home/users/profileuser /home/users/nonteachingstaff /home/users/studentstaff /home/users/staff /home/users/students /home/users/itadminstaff /home/users/officestaff /home/users/techstaff /initrd /lib /root /opt /opt/karoshi /opt/karoshi/serversetup /opt/karoshi/karoshi_user /usr /usr/bin /proc /sbin /sys /var /var/www /var/www/html /var/www/html_karoshi /var/www/cgi-bin /var/www/cgi-bin_karoshi /tmp"
 #This list is used to recursivly declare areas that cannot me deleted or moved
 LOCATION_LIST2=( /opt/karoshi/logs /opt/karoshi/web_management /var/www/cgi-bin_karoshi )
+
+function show_title {
+
+if [ "$ACTION" = notset ]
+then
+	SERVER2=""
+else
+	if [ $MOBILE = yes ]
+	then
+		SERVER2=$(echo "- ${SERVERNAME:0:9}" | cut -d. -f1)
+	else
+		SERVER2="- $SERVERNAME"
+	fi
+fi
+
+UPICON="$ICON6"
+UPMESG1=$"Up"
+UPMESG2=$"Go up one directory."
+
+if [ "$ACTION" = EDIT ] || [ "$ACTION" = DELETE ] || [ "$ACTION" = RENAME ] || [ "$ACTION" = SETPERMS ]
+then
+	UPICON="$ICON9"
+	UPMESG1=$"Back"
+	UPMESG2=$"Go back to the previous folder."
+fi
+
+[ "$MOBILE" = no ] && echo '<div id="titlebox">' 
+
+echo '
+<div class="sectiontitle">'$"File Manager"' '"$SERVER2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
+		<button class="info" name="_" value="_">
+			<img src="'"$ICON18"'" alt="'$"Select Server"'">
+			<span>'$"Select another server."'</span><br>
+			'$"Select Server"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
+		<button class="info" name="_Top_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_">
+			<img src="'"$ICON16"'" alt="'$"Top Directory"'">
+			<span>'$"Go to the top level of the file system."'</span><br>
+			'$"Top Directory"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
+		<button class="info" name="_Up_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LASTLOCATION"'_">
+			<img src="'"$UPICON"'" alt="'"$UPMESG1"'">
+			<span>'"$UPMESG2"'</span><br>
+			'"$UPMESG1"'
+		</button>
+	</td>
+'
+
+if [ "$ACTION" = ENTER ] || [ "$ACTION" = REALLYCREATEDIR ] || [ "$ACTION" = REALLYCREATEFILE ] || [ "$ACTION" = REALLYSETPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ] || [ "$ACTION" = REALLYADDACLPERMS ] || [ "$ACTION" = REALLYRENAME ] || [ "$ACTION" = REALLYRESTORE ] || [ "$ACTION" = REALLYDELETE ]
+then
+	[ "$MOBILE" = yes ] && echo '</tr><tr>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+		<button class="info" name="_NewFolder_" value="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<img src="'"$ICON11"'" alt="'$"New Folder"'">
+			<span>'$"Create a new folder."'</span><br>
+			'$"New Folder"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+		<button class="info" name="_NewFile_" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<img src="'"$ICON15"'" alt="'$"New File"'">
+			<span>'$"Create a new file."'</span><br>
+			'$"New File"'
+		</button>
+	</td>
+	'
+
+	[ "$MOBILE" = yes ] && echo '<td></td>'
+	
+fi
+
+if [ "$SHOWMOVE" = yes ]
+then
+	echo '</tr><tr><td colspan="'"$COLSPAN2"'">'"$ITEMMOVE2"'</td></tr><tr>'
+	if [ "$MOVECHECK" = yes ]
+	then 
+
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+			<button class="info" name="_MoveFile_" value="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
+				<img src="'"$ICON9"'" alt="'$"Move here?"'">
+				<span>'$"Move to this location?"'</span><br>
+				'$"Move here?"'
+			</button>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+			<button class="info" name="_CopyFile_" value="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
+				<img src="'"$ICON4"'" alt="'$"Copy here?"'">
+				<span>'$"Copy to this location?"'</span><br>
+				'$"Copy here?"'
+			</button>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+			<button class="info" name="_CancelCopy_" value="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+				<img src="'"$ICON13"'" alt="'$"Cancel"'">
+				<span>'$"Cancel copying this item."'</span><br>
+				'$"Cancel"'
+			</button>
+		</td>
+		'
+		[ "$MOBILE" = no ] && echo '<td></td><td></td>'
+
+	else
+		echo '<tr><td>'$"This item is protected and cannot be moved or copied."'</td></tr>'
+	fi
+fi
+
+if [ "$SHOWRESTORESEARCH" = yes ]
+then
+	[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+		<button class="info" name="_Search_" value="_ACTION_SEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<img src="'"$ICON13"'" alt="'$"Search Backup"'">
+			<span>'$"Search the backup for an item."'</span><br>
+			'$"Search Backup"'
+		</button>
+	</td>
+	'
+
+	[ "$MOBILE" = yes ] && echo '</td><td></td><td>'	
+fi
+
+echo '</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">
+'
+}
 
 function check_recursive {
 ENTER=yes
@@ -246,7 +401,6 @@ then
 	LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 fi
 
-SHOWMOVE=no
 if [ ! -z "$ITEMMOVE" ]
 then
 	convert_special_chars2
@@ -312,45 +466,7 @@ then
 	DISPLOCATION="...${DISPLOCATION:$STARTPOINT:$DISPLOCATIONLENGTH}"
 fi
 
-echo '<br>
-<button class="button" name="_Top_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_">
-'$"Top Directory"'
-</button>
-<button class="button" name="_Up_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_">
-'$"Up"'
-</button>
-<button class="button" name="_NewFolder_" value="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
-'$"New Folder"'
-</button>
-<button class="button" name="_NewFile_" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
-'$"New File"'
-</button>'
-
-if [ "$SHOWRESTORESEARCH" = yes ]
-then
-	echo '<button class="button" name="_Top_" value="_ACTION_SEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
-	'$"Search Backup"'
-	</button>'	
-fi
-
-echo '<br><br>'
-
-if [ $SHOWMOVE = yes ]
-then
-	if [ $MOVECHECK = yes ]
-	then 
-		echo '<input name="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Move here?"'">
-		<input name="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Copy here?"'">
-		<input name="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Cancel"'">'
-
-		[ $MOBILE = yes ] && echo "<br>"
-
-		echo ''$ITEMMOVE2'
-		'
-	else
-		echo '<br><br>'$"This item is protected and cannot be moved or copied."'<br>'
-	fi
-fi
+show_title
 
 if [ $MOBILE = yes ]
 then
@@ -696,6 +812,7 @@ fi
 
 function delete_item {
 getlastlocation
+show_title
 #Check to see that item is not on the protected list
 DELETECHECK=yes
 #Check that file is not in a banned path
@@ -978,11 +1095,14 @@ show_directory
 function set_perms {
 convert_special_chars
 
+
 #Get ownership details
 getlastlocation
-LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+show_title
+
+if [ "$SERVERNAME" = $(hostname-fqdn) ]
 then
 	OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
 	GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
@@ -1088,7 +1208,7 @@ then
 	[ "$SHOWTABLEFOOTER" = yes ] && echo '</tbody></table>'
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+if [ "$SERVERTYPE" = network ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]] || [ "$SERVERTYPE" = federated ]
 then
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
@@ -1587,40 +1707,41 @@ function rename_item {
 #Check to see that item is not on the protected list
 getlastlocation
 RENAMECHECK=yes
+show_title
 #Check that file is not in a banned path
-if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$LOCATION"` -gt 0 ]
+if [ $(echo "${LOCATION_LIST[@]:0}" | grep -c -w "$LOCATION") -gt 0 ]
 then
 	RENAMECHECK=no
 fi
-for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+for PATHCHECK in $(echo ${LOCATION_LIST2[@]:0})
 do
-	if [ `echo "$LOCATION" | grep -c $PATHCHECK` -gt 0 ]
+	if [[ $(echo "$LOCATION" | grep -c $PATHCHECK) -gt 0 ]]
 	then
 		RENAMECHECK=no 
 	fi
 done
 
-if [ $RENAMECHECK = no ]
+if [ "$RENAMECHECK" = no ]
 then
-	echo '<br><br><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Back"'"><br><br>'$"This item is protected and cannot be renamed."
+	echo '<br><br><input name="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LASTLOCATION"'_" type="submit" class="button" value="'$"Back"'"><br><br>'$"This item is protected and cannot be renamed."
 else
 	#Confirm rename of item.
 	convert_special_chars
-	RENAMEFILE=`basename "$LOCATION"`
-	LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+	RENAMEFILE=$(basename "$LOCATION")
+	LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 
-	echo '<br><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+	echo '<br><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 	<tr><td style="height: 25px; width: 180px;"><b>'$"Location"'</b></td>'
-	[ $MOBILE = yes ] && echo "</tr><tr>" 
-	echo '<td>'$LOCATION'</td></tr>
+	[ "$MOBILE" = yes ] && echo "</tr><tr>" 
+	echo '<td>'"$LOCATION"'</td></tr>
 	<tr><td style="height: 25px;"><b>'$"Current Name"'</b></td>'
-	[ $MOBILE = yes ] && echo "</tr><tr>" 
-	echo '<td>'$RENAMEFILE'</td></tr>
+	[ "$MOBILE" = yes ] && echo "</tr><tr>" 
+	echo '<td>'"$RENAMEFILE"'</td></tr>
 	<tr><td style="height: 25px;"><b>'$"New Name"'</b></td>'
-	[ $MOBILE = yes ] && echo "</tr><tr>" 
-	echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'$RENAMEFILE'"></td></tr>
+	[ "$MOBILE" = yes ] && echo "</tr><tr>" 
+	echo '<td><input name="_NEWFOLDER_" type="text" size="20" value="'"$RENAMEFILE"'"></td></tr>
 	</tbody></table><br>
-	<input name="_ACTION_REALLYRENAME_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Rename"'"> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_" type="submit" class="button" value="'$"Cancel"'"><br>'
+	<input name="_ACTION_REALLYRENAME_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Rename"'"> <input name="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LASTLOCATION"'_" type="submit" class="button" value="'$"Cancel"'"><br>'
 
 fi
 }
@@ -1732,6 +1853,7 @@ function edit_item {
 convert_special_chars
 getlastlocation
 LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
+show_title
 echo $"Edit" $LOCATION'<br><br>'
 
 #Get data from text file
@@ -1825,43 +1947,43 @@ function really_create_dir {
 if [ ! -z "$LOCATION" ] && [ ! -z "$NEWFOLDER" ]
 then
 
-convert_special_chars
+	convert_special_chars
 
-ITEMMOVE="$NEWFOLDER"
-convert_special_chars2
-NEWFOLDER="$ITEMMOVE"
-ITEMMOVE=""
-LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
+	ITEMMOVE="$NEWFOLDER"
+	convert_special_chars2
+	NEWFOLDER="$ITEMMOVE"
+	ITEMMOVE=""
+	LOCATION=`echo "$LOCATION" | sed 's/+/ /g'`
 
-#Create new folder
-echo `date`: file_manager - creating "$LOCATION"/"$NEWFOLDER" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	#Create new folder
+	echo "$(date): file_manager - creating $LOCATION/$NEWFOLDER on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-	if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
-		mkdir "$LOCATION"/"$NEWFOLDER"
-	else
-		echo ''$"An item with this name already exists."'<br><br> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">
-'
-		exit
-	fi
-fi
-
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
-then
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-	[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-	if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
-	then
-		mkdir "'$LOCATION'"/"'$NEWFOLDER'"
-	else
-		echo "'$"An item with this name already exists."'<br><br><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">"
-		exit 100
-	fi
+		if [ ! -e "$LOCATION"/"$NEWFOLDER" ]
+		then
+			mkdir "$LOCATION"/"$NEWFOLDER"
+		else
+			echo ''$"An item with this name already exists."'<br><br> <input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">
 	'
-	[ `echo $?` = 100 ] && exit
-fi
+			exit
+		fi
+	fi
+
+	if [ "$SERVERTYPE" = network ] && [ "$SERVERNAME" != $(hostname-fqdn) ] || [ "$SERVERTYPE" = federated ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - creating "'$LOCATION'"/"'$NEWFOLDER'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		if [ ! -e "'$LOCATION'"/"'$NEWFOLDER'" ]
+		then
+			mkdir "'$LOCATION'"/"'$NEWFOLDER'"
+		else
+			echo "'$"An item with this name already exists."'<br><br><input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION'_" type="submit" class="button" value="'$"Back"'">"
+			exit 100
+		fi
+		'
+		[ "$?" = 100 ] && exit
+	fi
 fi
 
 if [ $SERVERTYPE = federatedslave ]
@@ -1889,18 +2011,19 @@ show_directory
 
 function create_dir {
 [ -z "$LOCATION" ] && LOCATION=/
-LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 convert_special_chars
-echo '<b>'$"Create folder"'</b><br><br>
-<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+show_title
+echo '
+<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Current Location"'</b></td>'
-[ $MOBILE = yes ] && echo '</tr><tr>'
-echo '<td>'$LOCATION'<td></tr>
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+echo '<td>'"$LOCATION"'</td></tr>
 <tr><td><b>'$"Create Folder"'</b></td>'
-[ $MOBILE = yes ] && echo '</tr><tr>'
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
 echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>
-<input name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Create Folder"'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Cancel"'">
+<input name="_ACTION_REALLYCREATEDIR_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Create Folder"'">
+<input name="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Cancel"'">
 '
 }
 
@@ -1970,21 +2093,22 @@ show_directory
 
 
 function create_file {
+
 [ -z "$LOCATION" ] && LOCATION=/
-LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
+show_title
 convert_special_chars
 CREATEFILEMSG="Create File"
-echo '<b>'$"Create file"'</b>
-<br><br>
-<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
+echo '
+<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Current Location"'</b></td>'
-[ $MOBILE = yes ] && echo '</tr><tr>'
-echo '<td>'$LOCATION2'<td></tr>
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+echo '<td>'$LOCATION2'</td></tr>
 <tr><td><b>'$"New File"'</b></td>'
-[ $MOBILE = yes ] && echo '</tr><tr>'
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
 echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></table><br>
-<input name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Create File"'">
-<input name="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_" type="submit" class="button" value="'$"Cancel"'">
+<input name="_ACTION_REALLYCREATEFILE_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Create File"'">
+<input name="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Cancel"'">
 <br><br>
 '
 
@@ -1995,13 +2119,13 @@ function restore_check_info {
 ENABLE_RESTORE=yes
 if [ `echo $"Back"UPINFO'null' | sed 's/ //g'` = null ]
 then
-ENABLE_RESTORE=no
+	ENABLE_RESTORE=no
 fi
 
 if [ `echo "$RESTOREPATH"null | sed 's/ //g'` = null ]
 then
-echo '<br>'$"Blank restore path."'<br><br>'
-ENABLE_RESTORE=no
+	echo '<br>'$"Blank restore path."'<br><br>'
+	ENABLE_RESTORE=no
 fi
 }
 
@@ -2267,29 +2391,29 @@ echo '<b>'$"Delete ACL"'</b><br><table class="tablesorter" style="text-align: le
 
 
 function really_add_acl_perms {
-ACLOWNERS=`echo "$DATA" | cut -s -d: -f18`
-ACLPERMISSIONS=`echo "$DATA" | cut -s -d: -f20`
+ACLOWNERS=$(echo "$DATA" | cut -s -d: -f18)
+ACLPERMISSIONS=$(echo "$DATA" | cut -s -d: -f20)
 convert_special_chars
 getlastlocation
-for ACLOWNER in $(echo $ACLOWNERS | sed 's/+/ /g')
+for ACLOWNER in $(echo "$ACLOWNERS" | sed 's/+/ /g')
 do
 	getent passwd "$ACLOWNER" 1>/dev/null
-	if [ $? = 0 ]
+	if [ "$?" = 0 ]
 	then
 		ACLGROUP=u
 	fi
 
 	getent group "$ACLOWNER" 1>/dev/null
-	if [ $? = 0 ]
+	if [ "$?" = 0 ]
 	then
 		ACLGROUP=g
 	fi
 
 	if [ ! -z $ACLGROUP ]
 	then
-		echo `date`: "file_manager - adding $ACLOWNER: $ACLPERMISSIONS on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$(date): file_manager - adding $ACLOWNER: $ACLPERMISSIONS on $LOCATION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-		if [ $SERVERNAME = $(hostname-fqdn) ]
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
 			#Check if there are any existing acls
 			if [ $(getfacl --omit-header --skip-base -p -d "$LOCATION" | wc -l) = 0 ]
@@ -2304,7 +2428,7 @@ do
 		 	setfacl -Rm d:"$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS","$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS" "$LOCATION"
 		fi
 
-		if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+		if [ "$SERVERTYPE" = network ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]] || [ "$SERVERTYPE" = federated ]
 		then
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 			#Check if there are any existing acls
@@ -2317,7 +2441,7 @@ do
 			'
 		fi
 
-		if [ $SERVERTYPE = federatedslave ]
+		if [ "$SERVERTYPE" = federatedslave ]
 		then
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 			echo `date`: file_manager \(federated mode\) - adding '$ACLOWNER': '$ACLPERMISSIONS' on '$LOCATION' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
@@ -2350,7 +2474,8 @@ function add_acl_perms {
 convert_special_chars
 getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
-echo '<b>'$"Add ACL"'</b><br><table class="tablesorter" style="text-align: left;" ><tbody>
+show_title
+echo '<b>'$"Add ACL"'</b><br><table class="tablesorter"><tbody>
 <tr><td style="width: 180px;">'$"Location"'</td><td>'$LOCATION'</td></tr>
 <tr><td>'$"Username"' / '$"Groupname"'</td><td><input tabindex= "1" name="_ACLOWNER_" style="width: 200px" size="20" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img style="vertical-align: text-top;" class="images" align="middle" alt="" src="/images/help/info.png"><span>'$"Enter in the username or a groupname that you want to add an ACL for."'<br><br>'$"Use spaces for additional usernames / groupnames."'</span></a></td></tr>
 <tr><td>'$"Permissions"'</td><td>
