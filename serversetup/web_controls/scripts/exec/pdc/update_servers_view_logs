@@ -23,217 +23,217 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_view_logs_cgi
 then
-echo `date`: update_servers_view_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: update_servers_view_logs - No MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_servers_view_logs_cgi
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $update_servers_view_logs_cgi'check' ]
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$update_servers_view_logs_cgi"'check' ]
 then
-echo `date`: update_servers_view_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [ "$numArgs" != 1 ]
 then
-echo `date`: update_servers_view_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-LOGVIEW=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-DAY=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
-MONTH=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6`
-YEAR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7`
-SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8`
-SERVERTYPE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9`
-SERVERMASTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f10`
-MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f11`
+REMOTE_USER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+LOGVIEW=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+DAY=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
+MONTH=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6)
+YEAR=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7)
+SERVERNAME=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f8)
+SERVERTYPE=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f9)
+SERVERMASTER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f10)
+MOBILE=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f11)
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: update_servers_view_logs - Not called by update_servers_view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Not called by update_servers_view_logs.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: update_servers_view_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: update_servers_view_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-echo `date`: update_servers_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $LOGVIEW'null' = null ]
+if [ -z "$LOGVIEW" ]
 then
-echo `date`: update_servers_view_logs - Blank log view >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank log view" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-echo `date`: update_servers_view_logs - Blank day >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank day" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-echo `date`: update_servers_view_logs - Blank month>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank month" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-echo `date`: update_servers_view_logs - Blank year >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank year" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-if [ $SERVERNAME'null' = null ]
+if [ -z "$SERVERNAME" ]
 then
-echo `date`: update_servers_view_logs - Blank servername >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank servername" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $SERVERTYPE'null' = null ]
+if [ -z "$SERVERTYPE" ]
 then
-echo `date`: update_servers_view_logs - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_servers_view_logs - Blank servertype" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
-if [ $SERVERMASTER'null' = null ]
-then
-echo `date`: update_servers_view_logs - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
+	if [ -z "$SERVERMASTER" ]
+	then
+		echo "$(date): update_servers_view_logs - Blank servermaster" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		exit 101
+	fi
 fi
 
-echo `date`: update_servers_view_logs "for" $SERVERNAME on $DAY-$MONTH-$YEAR from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): update_servers_view_logs for $SERVERNAME on $DAY-$MONTH-$YEAR from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 #This server
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-#Get todays logs
-if [ $LOGVIEW = today ]
-then
-[ ! -f /opt/karoshi/logs/server_upgrades/$YEAR-$MONTH-$DAY ] && exit 101
-cat /opt/karoshi/logs/server_upgrades/$YEAR-$MONTH-$DAY
-fi
-#Get the logs for the month
-if [ $LOGVIEW = month ]
-then
-LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep $YEAR'[-]'$MONTH'[-]'` )
-LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
-COUNTER=0
-while [ $COUNTER -lt $LOG_LIST_COUNT ]
-do
-LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
-cat /opt/karoshi/logs/server_upgrades/$LOG_FILE_NAME
-if [ `echo $?` != 0 ]
-then
-exit 102
-fi
-let COUNTER=$COUNTER+1
-done
-fi
+	#Get todays logs
+	if [ "$LOGVIEW" = today ]
+	then
+		[ ! -f /opt/karoshi/logs/server_upgrades/"$YEAR-$MONTH-$DAY" ] && exit 101
+		cat /opt/karoshi/logs/server_upgrades/"$YEAR-$MONTH-$DAY"
+	fi
+	#Get the logs for the month
+	if [ "$LOGVIEW" = month ]
+	then
+		LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep $YEAR'[-]'$MONTH'[-]'` )
+		LOG_LIST_COUNT="${#LOG_LIST[@]}"
+		COUNTER=0
+		while [ "$COUNTER" -lt "$LOG_LIST_COUNT" ]
+		do
+			LOG_FILE_NAME="${LOG_LIST[$COUNTER]}"
+			cat /opt/karoshi/logs/server_upgrades/"$LOG_FILE_NAME"
+			if [ "$?" != 0 ]
+			then
+				exit 102
+			fi
+			let COUNTER="$COUNTER"+1
+		done
+	fi
 fi
 #Slave and federated servers
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
-then
-#Get todays logs
-if [ $LOGVIEW = today ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ ! -f /opt/karoshi/logs/server_upgrades/'$YEAR'-'$MONTH'-'$DAY' ] && exit 101
-cat /opt/karoshi/logs/server_upgrades/'$YEAR'-'$MONTH'-'$DAY'
-'
-[ `echo $?` = 101 ] && exit 101
-fi
-#Get the logs for the month
-if [ $LOGVIEW = month ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
-LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
-COUNTER=0
-while [ $COUNTER -lt $LOG_LIST_COUNT ]
-do
-LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
-cat /opt/karoshi/logs/server_upgrades/$LOG_FILE_NAME
-if [ `echo $?` != 0 ]
-then
-exit 102
-fi
-let COUNTER=$COUNTER+1
-done
-'
-[ `echo $?` = 102 ] && exit 102
-fi
-fi
+	if [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
+	then
+		#Get todays logs
+		if [ "$LOGVIEW" = today ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			[ ! -f /opt/karoshi/logs/server_upgrades/'"$YEAR"'-'"$MONTH"'-'"$DAY"' ] && exit 101
+			cat /opt/karoshi/logs/server_upgrades/'"$YEAR"'-'"$MONTH"'-'"$DAY"'
+			'
+			[ "$?" = 101 ] && exit 101
+		fi
+		#Get the logs for the month
+		if [ "$LOGVIEW" = month ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep '"$YEAR"'"[-]"'"$MONTH"'"[-]"` )
+			LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
+			COUNTER=0
+			while [ "$COUNTER" -lt "$LOG_LIST_COUNT" ]
+			do
+				LOG_FILE_NAME="${LOG_LIST[$COUNTER]}"
+				cat /opt/karoshi/logs/server_upgrades/"$LOG_FILE_NAME"
+				if [ "$?" != 0 ]
+				then
+					exit 102
+				fi
+				let COUNTER=$COUNTER+1
+			done
+			'
+			[ "$?" = 102 ] && exit 102
+		fi
+	fi
 fi
 
 #Federated slave servers
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
-#Get todays logs
-if [ $LOGVIEW = today ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-[ ! -f /opt/karoshi/logs/server_upgrades/'$YEAR'-'$MONTH'-'$DAY' ] && exit 101
-cat /opt/karoshi/logs/server_upgrades/'$YEAR'-'$MONTH'-'$DAY'
-'\''
-[ `echo $?` = 101 ] && exit 101
-'
-[ `echo $?` = 101 ] && exit 101
-fi
-#Get the logs for the month
-if [ $LOGVIEW = month ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep '$YEAR'"[-]"'$MONTH'"[-]"` )
-LOG_LIST_COUNT=`echo ${#LOG_LIST[@]}`
-COUNTER=0
-while [ $COUNTER -lt $LOG_LIST_COUNT ]
-do
-LOG_FILE_NAME=`echo ${LOG_LIST[$COUNTER]}`
-cat /opt/karoshi/logs/server_upgrades/$LOG_FILE_NAME
-if [ `echo $?` != 0 ]
-then
-exit 102
-fi
-let COUNTER=$COUNTER+1
-done
-'\''
-[ `echo $?` = 102 ] && exit 102
-'
-[ `echo $?` = 102 ] && exit 102
-fi
+	#Get todays logs
+	if [ "$LOGVIEW" = today ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
+		[ ! -f /opt/karoshi/logs/server_upgrades/'"$YEAR"'-'"$MONTH"'-'"$DAY"' ] && exit 101
+		cat /opt/karoshi/logs/server_upgrades/'"$YEAR"'-'"$MONTH"'-'"$DAY"'
+		'\''
+		[ "?" = 101 ] && exit 101
+		'
+		[ "$?" = 101 ] && exit 101
+	fi
+	#Get the logs for the month
+	if [ "$LOGVIEW" = month ]
+	then
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
+		LOG_LIST=( `ls -1 /opt/karoshi/logs/server_upgrades/ | grep '"$YEAR"'"[-]"'"$MONTH"'"[-]"` )
+		LOG_LIST_COUNT="${#LOG_LIST[@]}"
+		COUNTER=0
+		while [ "$COUNTER" -lt "$LOG_LIST_COUNT" ]
+		do
+			LOG_FILE_NAME="${LOG_LIST[$COUNTER]}"
+			cat /opt/karoshi/logs/server_upgrades/"$LOG_FILE_NAME"
+			if [ "$?" != 0 ]
+			then
+				exit 102
+			fi
+			let COUNTER="$COUNTER"+1
+		done
+		'\''
+		[ "$?" = 102 ] && exit 102
+		'
+		[ "$?" = 102 ] && exit 102
+	fi
 fi
 
 echo '</pre>'
-[ $MOBILE = yes ] && echo '</div>'
+[ "$MOBILE" = yes ] && echo '</div>'
 
 exit
 

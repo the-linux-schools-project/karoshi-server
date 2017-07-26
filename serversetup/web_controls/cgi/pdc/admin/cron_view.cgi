@@ -43,17 +43,17 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Scheduled Jobs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Scheduled Jobs"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -87,7 +87,7 @@ $(document).ready(function()
 </head><body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -95,62 +95,50 @@ then
 else
 	DIV_ID=actionbox2
 fi
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 ########################
 #Assign data to variables
 #########################
 END_POINT=15
-#Assign SERVERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVERNAME
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERMASTER
+get_data
+SERVERMASTER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/cron_view_fm.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -177,7 +165,7 @@ fi
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -191,23 +179,23 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Scheduled Jobs"' - '$SERVERNAME2'</span>'
+	<span>'$"Scheduled Jobs"' - '"$SERVERNAME2"'</span>'
 
 	if [ "$SERVERCOUNT" = 1 ]
 	then
@@ -217,30 +205,45 @@ then
 	fi
 	echo '</div></div><div id="mobileactionbox">'
 else
-	echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post"><table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"' - '$SERVERNAME2'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></td>
-<td>
-<button class="button" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
-'$"Select server"'
-</button>
-</td>
-<td>
-<button class="button" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
-'$"Schedule Job"'
-</button>
-</td>
-</tr></tbody></table><br></form></div><div id="infobox">'
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+	ICON2=/images/submenus/system/cron/cron.png
+
+	echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">
+
+	<div class="sectiontitle">'$"Scheduled Jobs"' - '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<button class="info" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<button class="info" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
+				<img src="'"$ICON2"'" alt="'$"Schedule Job"'">
+				<span>'$"Schedule a job for this server."'</span><br>
+				'$"Schedule Job"'
+			</button>
+		</td>
+
+	</tr></tbody></table>
+
+	<br></form></div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1)
 #View cron jobs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_view
 
 echo '</form>'
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
 

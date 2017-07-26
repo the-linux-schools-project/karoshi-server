@@ -23,21 +23,21 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/cron_edit_cgi
 then
-	echo `date`: cron_edit - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/cron_edit_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $cron_edit_cgi'check' ]
+if [ "$MD5SUM"'check' != "$cron_edit_cgi"'check' ]
 then
-	echo `date`: cron_edit - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -45,92 +45,92 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: cron_edit - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: cron_edit - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
-ACTION=`echo "$DATA" | cut -s -d: -f7`
-JOBNAME=`echo "$DATA" | cut -s -d: -f8 | sed 's/UNDERSCORE/_/g'`
-MOBILE=`echo "$DATA" | cut -s -d: -f9`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f5)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f6)
+ACTION=$(echo "$DATA" | cut -s -d: -f7)
+JOBNAME=$(echo "$DATA" | cut -s -d: -f8 | sed 's/UNDERSCORE/_/g')
+MOBILE=$(echo "$DATA" | cut -s -d: -f9)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: cron_edit - Not called by cron_edit.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Not called by cron_edit.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: cron_edit - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: cron_edit - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$JOBNAME" ]
 then
-	echo `date`: cron_edit - Blank jobname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank jobname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: cron_edit - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: cron_edit - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: cron_edit - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $SERVERTYPE != network ] && [ $SERVERTYPE != federated ] && [ $SERVERTYPE != federatedslave ]
+if [ "$SERVERTYPE" != network ] && [ "$SERVERTYPE" != federated ] && [ "$SERVERTYPE" != federatedslave ]
 then
-	echo `date`: cron_edit - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - Incorrect servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: cron_edit - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): cron_edit - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: cron_edit - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
+SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 
 ########################
 #Edit the cron job
@@ -138,40 +138,40 @@ SERVERNAME2=`echo "${SERVERNAME:0:9}" | cut -d. -f1`
 
 if [ "$ACTION" = DELETE ]
 then
-	echo `date`: cron_edit - deleting $JOBNAME on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): cron_edit - deleting $JOBNAME on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
-		if [ -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron ]
+		if [ -f "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron" ]
 		then
-			rm -f /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron
+			rm -f "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron"
 			/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 			exit 102
 		fi
 	fi
 
 
-	if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
 	then
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-		[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_edit \(federated mode\) - deleting '$JOBNAME' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		if [ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+		[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: cron_edit \(federated mode\) - deleting '"$JOBNAME"' on '"$SERVERNAME"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+		if [ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron ]
 		then
-			rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron
+			rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron
 			/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 		fi
 		'
 		exit 102
 	fi
 
-	if [ $SERVERTYPE = federatedslave ]
+	if [ "$SERVERTYPE" = federatedslave ]
 	then
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-		echo `date`: cron_edit \(federated mode\) - deleting '$JOBNAME' on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-		if [ -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+		echo `date`: cron_edit \(federated mode\) - deleting '"$JOBNAME"' on '"$SERVERNAME"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
+		if [ -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron ]
 		then
-			rm -f /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron
+			rm -f /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron
 			/opt/karoshi/"useful scripts"/refreshcronjobs 1>/dev/null
 		fi
 		'\''
@@ -186,58 +186,83 @@ then
 	#Feed job information to cron_add
 
 	#Get data for form
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#cat /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron
-		CRONDATA=`cat /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron`
+		CRONDATA=$(cat "/opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/$JOBNAME.cron")
 	fi
-	if [ $SERVERNAME != `hostname-fqdn` ] && [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ]
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
 	then
-		CRONDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-		cat /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron
-	'`
+		CRONDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+		cat /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron
+	')
 	fi
 
-	if [ $SERVERTYPE = federatedslave ]
+	if [ "$SERVERTYPE" = federatedslave ]
 	then
-		CRONDATA=`ssh -x -o PasswordAuthentication=no $SERVERMASTER '
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-		cat /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/'$JOBNAME'.cron
+		CRONDATA=$(ssh -x -o PasswordAuthentication=no "$SERVERMASTER" '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
+		cat /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/'"$JOBNAME"'.cron
 		'\''
-		'`
+		')
 	fi
 
 
-	MINS=`echo "$CRONDATA" | cut -d' ' -f1`
-	HOUR=`echo "$CRONDATA" | cut -d' ' -f2`
-	DAY=`echo "$CRONDATA" | cut -d' ' -f3`
-	MONTH=`echo "$CRONDATA" | cut -d' ' -f4`
-	WEEKDAY=`echo "$CRONDATA" | cut -d' ' -f5`
-	COMMAND=`echo "$CRONDATA" | cut -d' ' -f6- | sed 's/\"//g'`
+	MINS=$(echo "$CRONDATA" | cut -d' ' -f1)
+	HOUR=$(echo "$CRONDATA" | cut -d' ' -f2)
+	DAY=$(echo "$CRONDATA" | cut -d' ' -f3)
+	MONTH=$(echo "$CRONDATA" | cut -d' ' -f4)
+	WEEKDAY=$(echo "$CRONDATA" | cut -d' ' -f5)
+	COMMAND=$(echo "$CRONDATA" | cut -d' ' -f6- | sed 's/\"//g')
 
 	#Make a form for the data
 
 	#Show back button for mobiles
-	if [ $MOBILE = yes ]
+	if [ "$MOBILE" = yes ]
 	then
 		echo '<div style="float: center" id="my_menu" class="sdmenu">
 			<div class="expanded">
 			<span>'$"Edit Scheduled Jobs"'</span>
-		<a href="/cgi-bin/admin/cron_view_fm.cgi">'$SERVERNAME'</a>
+		<a href="/cgi-bin/admin/cron_view_fm.cgi">'"$SERVERNAME"'</a>
 		</div></div><div id="mobileactionbox">
 		'
 	else
-		echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Edit Scheduled Jobs"' - '$SERVERNAME2'</div></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the parameters for the scheduled job."'</span></a></td>
-<td style="vertical-align: top;"><a href="cron_view_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/cron_view.cgi" name="selectservers" method="post">
-<input name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_ACTION_notset_" type="submit" class="button" value="View Jobs"></form></td>
-</tr></tbody></table><br>'
+		WIDTH=100
+		ICON1=/images/submenus/system/computer.png
+		ICON2=/images/submenus/system/cron/cron.png
+
+		echo '
+
+		<div class="sectiontitle">'$"Edit Scheduled Jobs"' - '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the parameters for the scheduled job."'</span></a></div>
+		<table class="tablesorter"><tbody><tr>
+
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+				<form action="/cgi-bin/admin/cron_view_fm.cgi" name="selectservers" method="post">
+					<button class="info" name="_SelectServer_" value="_">
+						<img src="'"$ICON1"'" alt="'$"Select server"'">
+						<span>'$"Select the server you want to view."'</span><br>
+						'$"Select Server"'
+					</button>
+				</form>
+			</td>
+
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+				<form action="cron_view.cgi" name="selectservers" method="post">
+					<button class="info" name="SelectServer" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_ACTION_notset_">
+						<img src="'"$ICON2"'" alt="'$"Scheduled Jobs"'">
+						<span>'$"View the scheduled jobs for this server."'</span><br>
+						'$"Scheduled Jobs"'
+					</button>
+				</form>
+			</td>
+
+		</tr></tbody></table>
+
+		<br>'
 
 	fi
 
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
 		TABLECLASS=standard
 		STYLEWIDTH=200
@@ -247,13 +272,13 @@ then
 	fi
 
 	echo '<form action="/cgi-bin/admin/cron_add.cgi" name="selectservers" method="post">
-	  <table class="'$TABLECLASS'" style="text-align: left;" >
+	  <table class="'"$TABLECLASS"'" style="text-align: left;" >
 	    <tbody>
 	      <tr>
 		<td style="width: 180px;">
 	'$"Minutes"'</td>
-	<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px;">
-	<option value="'$MINS'" selected="selected">'$MINS'</option>
+	<td><select name="___MINUTES___" style="width: '"$STYLEWIDTH"'px;">
+	<option value="'"$MINS"'" selected="selected">'"$MINS"'</option>
 	<option value="0">0</option>
 	<option value="5">5</option>
 	<option value="10">10</option>
@@ -275,8 +300,8 @@ then
 	</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the minute you want the job to start on."'</span></a>
 	      </td></tr>
 	<tr><td>'$"Hour"'</td>
-	<td><select name="___HOUR___" style="width: '$STYLEWIDTH'px;">
-	<option value="'$HOUR'" selected="selected">'$HOUR'</option>
+	<td><select name="___HOUR___" style="width: '"$STYLEWIDTH"'px;">
+	<option value="'"$HOUR"'" selected="selected">'"$HOUR"'</option>
 	<option value="*">'$"Every hour"'</option>
 	<option>0</option>
 	<option>1</option>
@@ -306,10 +331,10 @@ then
 	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the hour you want the job to start on."'</span></a>
 	      </td></tr>
 	<tr><td>'$"Day"'</td>
-	<td><select name="___DAY___" style="width: '$STYLEWIDTH'px;">
+	<td><select name="___DAY___" style="width: '"$STYLEWIDTH"'px;">
 
 	<option value="*">'$"Every day"'</option>
-	<option value="'$DAY'" selected="selected">'$DAY'</option>
+	<option value="'"$DAY"'" selected="selected">'"$DAY"'</option>
 	<option>0</option>
 	<option>1</option>
 	<option>2</option>
@@ -344,8 +369,8 @@ then
 	</select></td>
 	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day of the month you want the job to start on."'</span></a></td></tr>
 	<tr><td>'$"Month"'</td>
-	<td><select name="___MONTH___" style="width: '$STYLEWIDTH'px;">
-	<option value="'$MONTH'" selected="selected">'$MONTH'</option>
+	<td><select name="___MONTH___" style="width: '"$STYLEWIDTH"'px;">
+	<option value="'"$MONTH"'" selected="selected">'"$MONTH"'</option>
 	<option value="*">'$"Every Month"'</option>
 	<option>0</option>
 	<option>1</option>
@@ -363,8 +388,8 @@ then
 	</select></td>
 	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the month you want the job to start on."'</span></a></td></tr>
 	<tr><td>'$"Day of week"'</td>
-	<td><select name="___DOFW___" style="width: '$STYLEWIDTH'px;">
-	<option value="'$WEEKDAY'" selected="selected">'$WEEKDAY'</option>
+	<td><select name="___DOFW___" style="width: '"$STYLEWIDTH"'px;">
+	<option value="'"$WEEKDAY"'" selected="selected">'"$WEEKDAY"'</option>
 	<option value="1-7">'$"Every day"'</option>
 	<option value="1-5">'$"Every week day"'</option>
 	<option value="6-7">'$"Weekend"'</option>
@@ -380,23 +405,23 @@ then
 	<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the days of the week you want the job to run on."'</span></a>
 	</td></tr></tbody></table>'
 
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
-		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+		echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
 	    <tbody>
 	      <tr>
 		<td style="width: 180px;">
-	<tr><td>'$"Command"'</td><td>'$COMMAND'</td></tr>
-	<tr><td>'$"Server"'</td><td>'$SERVERNAME'</td></tr>
+	<tr><td>'$"Command"'</td><td>'"$COMMAND"'</td></tr>
+	<tr><td>'$"Server"'</td><td>'"$SERVERNAME"'</td></tr>
 	</tbody></table>
 	'
 	else
-		echo '<small><br>'$"Command"'<br>'$COMMAND'<br><br>'$"Server"'<br>'$SERVERNAME'</small><br><br>'
+		echo '<small><br>'$"Command"'<br>'"$COMMAND"'<br><br>'$"Server"'<br>'"$SERVERNAME"'</small><br><br>'
 	fi
 
-	echo '<input name="___SERVERTYPE___'$SERVERTYPE'___SERVERMASTER___'$SERVERMASTER'___SERVERNAME___'$SERVERNAME'______COMMAND___'$COMMAND'___" value="" type="hidden">'
+	echo '<input name="___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'______COMMAND___'"$COMMAND"'___" value="" type="hidden">'
 
-	if [ $MOBILE = no ]
+	if [ "$MOBILE" = no ]
 	then
 		echo '</div><div id="submitbox">'
 	fi
@@ -406,8 +431,4 @@ then
 	'
 fi
 exit
-
-
-
-
 

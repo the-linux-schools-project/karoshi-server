@@ -37,22 +37,22 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
 
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
+HOUR=$(date +%H)
+MINUTES=$(date +%M)
+SECONDS=$(date +%S)
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/calendar/ts_picker.js" type="text/javascript"></script>
 <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -65,7 +65,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -91,49 +91,56 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+'`
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%+')
 
 END_POINT=9
-#Assign _DAY_
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DAYcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign _DAY_
+DATANAME=DAY
+get_data
+DAY="$DATAENTRY"
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
@@ -141,8 +148,6 @@ then
 	WIDTH1=180
 	WIDTH2=200
 	WIDTH3=200
-	HEIGHT1=25
-	HEIGHT2=18
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -152,13 +157,11 @@ else
 	WIDTH1=90
 	WIDTH2=120
 	WIDTH3=120
-	HEIGHT1=30
-	HEIGHT2=30
 fi
 
 echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -169,56 +172,64 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
+	WIDTH=100
+	ICON1=/images/submenus/system/logs.png
+
 	echo '
-<table class="standard"><tbody><tr>
-<td></td><td><div class="sectiontitle">'$"Update Servers"'</div></td><td>
-<a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></td>
-<td>
-	
-	<button class="button" formaction="update_servers_view_logs_fm.cgi" name="_">'$"View Update Logs"'</button>
-</td>
-</tr></tbody></table><br><br>'
+	<div class="sectiontitle">'$"Update Servers"' <a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to schedule updates for your servers."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" formaction="update_servers_view_logs_fm.cgi" name="_ViewUpdateLogs_" value="_">
+				<img src="'$ICON1'" alt="'$"Update Logs"'">
+				<span>'$"View the update logs for this server."'</span><br>
+				'$"Update Logs"'
+			</button>
+		</td>
+
+	</tr></tbody></table><br><br>
+	'
 fi
 
 #Preselect day
-if [ ! -z $DAY ]
+if [ ! -z "$DAY" ]
 then
-	[ $DAY = 1 ] && OP1='selected="selected"'
-	[ $DAY = 2 ] && OP2='selected="selected"'
-	[ $DAY = 3 ] && OP3='selected="selected"'
-	[ $DAY = 4 ] && OP4='selected="selected"'
-	[ $DAY = 5 ] && OP5='selected="selected"'
-	[ $DAY = 6 ] && OP6='selected="selected"'
-	[ $DAY = 7 ] && OP7='selected="selected"'
-	[ $DAY = 8 ] && OP8='selected="selected"'
+	[ "$DAY" = 1 ] && OP1='selected="selected"'
+	[ "$DAY" = 2 ] && OP2='selected="selected"'
+	[ "$DAY" = 3 ] && OP3='selected="selected"'
+	[ "$DAY" = 4 ] && OP4='selected="selected"'
+	[ "$DAY" = 5 ] && OP5='selected="selected"'
+	[ "$DAY" = 6 ] && OP6='selected="selected"'
+	[ "$DAY" = 7 ] && OP7='selected="selected"'
+	[ "$DAY" = 8 ] && OP8='selected="selected"'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: '$WIDTH1'px;">'$"Day"'</td><td>
-<select style="width: '$WIDTH3'px;" name="_DAY_">
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Day"'</td><td>
+<select style="width: '"$WIDTH3"'px;" name="_DAY_">
 <option label="blank" value=""></option>
 <option value="never">'$"Never"'</option>
-<option '$OP1' value="1">'$"Monday"'</option>
-<option '$OP2' value="2">'$"Tuesday"'</option>
-<option '$OP3' value="3">'$"Wednesday"'</option>
-<option '$OP4' value="4">'$"Thursday"'</option>
-<option '$OP5' value="5">'$"Friday"'</option>
-<option '$OP6' value="6">'$"Saturday"'</option>
-<option '$OP7' value="7">'$"Sunday"'</option>
-<option '$OP8' value="8">'$"Every day"'</option>
+<option '"$OP1"' value="1">'$"Monday"'</option>
+<option '"$OP2"' value="2">'$"Tuesday"'</option>
+<option '"$OP3"' value="3">'$"Wednesday"'</option>
+<option '"$OP4"' value="4">'$"Thursday"'</option>
+<option '"$OP5"' value="5">'$"Friday"'</option>
+<option '"$OP6"' value="6">'$"Saturday"'</option>
+<option '"$OP7"' value="7">'$"Sunday"'</option>
+<option '"$OP8"' value="8">'$"Every day"'</option>
 </select>
-</td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'$HOUR'" name="_HOURS_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'$MINUTES'" name="_MINUTES_" style="width: '$WIDTH2'px;" size="3" type="text"></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Force Reboot"'</td><td><input type="checkbox" name="_FORCEREBOOT_" value="yes"></td><td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select this option only if you have a server that will not restart correctly if a reboot is required after system updates."'</span></a></td></tr>
+</td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'"$HOUR"'" name="_HOURS_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'"$MINUTES"'" name="_MINUTES_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Force Reboot"'</td><td><input type="checkbox" name="_FORCEREBOOT_" value="yes"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select this option only if you have a server that will not restart correctly if a reboot is required after system updates."'</span></a></td></tr>
 </tbody></table><br>'
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE all $"Schedule Update" notset updateserver
+/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Schedule Update" notset updateserver
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit
 

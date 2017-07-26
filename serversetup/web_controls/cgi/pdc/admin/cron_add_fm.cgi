@@ -37,13 +37,13 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -52,8 +52,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Schedule Job"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Schedule Job"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -85,7 +85,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -109,7 +109,7 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -127,7 +127,7 @@ fi
 echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
@@ -140,26 +140,34 @@ then
 
 
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><div class="sectiontitle">'$"Schedule Job"'</div></td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
-<td>
-<button class="button" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="_DHCPLeases_" value="_">
-'$"Scheduled Jobs"'
-</button>
-</td>
-</tr></table></div><div id ="infobox">'
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+
+
+	<div class="sectiontitle">'$"Schedule Job"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<button class="info" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="SelectServer" value="_">
+				<img src="'"$ICON1"'" alt="'$"Scheduled Jobs"'">
+				<span>'$"View the scheduled jobs for this server."'</span><br>
+				'$"Scheduled Jobs"'
+			</button>
+		</td>
+
+	</tr></tbody></table>
+	
+	</div><div id ="infobox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
     <tbody>
       <tr>
-        <td style="width: '$WIDTH1'px;">
+        <td style="width: '"$WIDTH1"'px;">
 '$"Minutes"'</td>
-<td><select name="___MINUTES___" style="width: '$STYLEWIDTH'px;">
+<td><select name="___MINUTES___" style="width: '"$WIDTH2"'px;">
 <option value="0">0</option>
 <option value="5">5</option>
 <option value="10">10</option>
@@ -179,10 +187,10 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <option value="*/20">'$"Every"' 20 '$"Minutes"'</option>
 <option value="*/30">'$"Every"' 30 '$"Minutes"'</option>
 </select></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the minute you want the job to start on.'"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the minute you want the job to start on."'</span></a>
 </td></tr>
 <tr><td>'$"Hour"'</td>
-<td><select name="___HOUR___" style="width: '$WIDTH2'px;">
+<td><select name="___HOUR___" style="width: '"$WIDTH2"'px;">
 <option value="*">'$"Every hour"'</option>
 <option>0</option>
 <option>1</option>
@@ -210,10 +218,10 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <option>23</option>
 </select></td>
 <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the hour you want the job to start on.'"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the hour you want the job to start on."'</span></a>
       </td></tr>
 <tr><td>'$"Day"'</td>
-<td><select name="___DAY___" style="width: '$WIDTH2'px;">
+<td><select name="___DAY___" style="width: '"$WIDTH2"'px;">
 <option value="*">'$"Every day"'</option>
 <option>0</option>
 <option>1</option>
@@ -247,10 +255,10 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <option>30</option>
 <option>31</option>
 </select></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the day of the month you want the job to start on.'"'</span></a>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day of the month you want the job to start on."'</span></a>
 </td></tr>
 <tr><td>'$"Month"'</td>
-<td><select name="___MONTH___" style="width: '$WIDTH2'px; height: '$HEIGHT'px;">
+<td><select name="___MONTH___" style="width: '"$WIDTH2"'px; height: '"$HEIGHT"'px;">
 <option value="*">'$"Every Month"'</option>
 <option>0</option>
 <option>1</option>
@@ -267,10 +275,10 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <option>12</option>
 </select></td>
 <td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'"$'Choose the month you want the job to start on.'"'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Scheduled_Job"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the month you want the job to start on."'</span></a>
 </td></tr>
 <tr><td>'$"Day of week"'</td>
-<td><select name="___DOFW___" style="width: '$WIDTH2'px;">
+<td><select name="___DOFW___" style="width: '"$WIDTH2"'px;">
 <option value="1-7">'$"Every day"'</option>
 <option value="1-5">'$"Every week day"'</option>
 <option value="6-7">'$"Weekend"'</option>
@@ -289,14 +297,14 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
       <tr>
         <td>
 '$"Command"'</td>
-        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '$WIDTH2'px;" type="text"></td><td>
+        <td><input tabindex= "2" name="___COMMAND___" size="25" style="width: '"$WIDTH2"'px;" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the command or path to the command that you want to run."'</span></a>
       </td></tr></tbody></table><br><br>'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Schedule Job" notset notset ___
+/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Schedule Job" notset notset ___
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 

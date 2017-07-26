@@ -195,10 +195,10 @@ else
 	<div class="sectiontitle">'$"Disk Information"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></div>
 	<table class="tablesorter"><tbody><tr>
 
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="disk_information_fm.cgi" name="selectservers" method="post">
 				<button class="info" name="SelectServer" value="__">
-					<img src="'$ICON1'" alt="'$"Select server"'">
+					<img src="'"$ICON1"'" alt="'$"Select server"'">
 					<span>'$"Select the server you want to view."'</span><br>
 					'$"Select Server"'
 				</button>

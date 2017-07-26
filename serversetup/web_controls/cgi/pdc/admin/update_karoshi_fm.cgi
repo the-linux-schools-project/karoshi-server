@@ -37,11 +37,11 @@ UPDATECHOICE=updatelist.html
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,8 +52,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Update Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+  <title>'$"Update Web Management"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -74,7 +74,7 @@ function SetAllCheckBoxes(FormName, FieldName, CheckValue)
 // -->
 </script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -100,8 +100,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
@@ -122,20 +121,26 @@ done
 [ -z "$ACTION" ] && ACTION=UPDATES
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox3
-TABLECLASS=standard
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	TABLECLASS=standard
+	WIDTH=100
+	ICON1=/images/submenus/system/edit.png
+	ICON2=/images/submenus/system/update.png
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
-TABLECLASS=mobilestandard
+	DIV_ID=actionbox2
+	TABLECLASS=mobilestandard
+	WIDTH=90
+	ICON1=/images/submenus/system/editm.png
+	ICON2=/images/submenus/system/updatem.png
 fi
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show update list choice
-if [ $ACTION = ALL ]
+if [ "$ACTION" = ALL ]
 then
 	UPDATELIST=updatelist_all.html
 	[ "$MOBILE" = yes ] && UPDATELIST=updatelist_all_mobile.html
@@ -151,38 +156,52 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	MOBILEACTIONBOX=mobileactionbox2
-	[ ! -f /opt/karoshi/updates/$UPDATELIST ] && MOBILEACTIONBOX=mobileactionbox
+	[ ! -f /opt/karoshi/updates/"$UPDATELIST" ] && MOBILEACTIONBOX=mobileactionbox
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"Update Web Management"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-	</div></div><div id="mobilecontent"><div id="'$MOBILEACTIONBOX'">'
-else
-	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-	<td style="vertical-align: top;"><div class="sectiontitle">'$"Update Web Management"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Karoshi Server patches that are available."'</span></a></td></tr></tbody></table><br>'
+	</div></div><div id="mobilecontent"><div id="'"$MOBILEACTIONBOX"'">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td>
-<form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post">
-<button class="button" name="Updates" value="_ACTION_'$ACTION'_">
-'$MESSAGE'
-</button>
-</form></td><td>
-<form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
-<input name="RefreshList" type="submit" class="button" value="'$"Check for updates"'">
-</form></td></tr></tbody></table>'
+[ "$MOBILE" = no ] && echo '
+<div class="sectiontitle">'$"Update Web Management"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Linux_Schools_Server_System"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any Karoshi Server patches that are available."'</span></a></div>'
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+echo '	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post">
+				<button class="info" name="Updates" value="_ACTION_'"$ACTION"'_">
+					<img src="'$ICON1'" alt="'"$MESSAGE"'">
+					<span>'"$MESSAGE"'</span><br>
+					'"$MESSAGE"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
+				<button class="info" name="Refresh" value="_">
+					<img src="'$ICON2'" alt="'$"Check for updates"'">
+					<span>'$"Check for updates"'</span><br>
+					'$"Check for updates"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<form action="/cgi-bin/admin/update_karoshi.cgi" name="selectservers" method="post">'
 
-if [ -f /opt/karoshi/updates/$UPDATELIST ]
+if [ -f /opt/karoshi/updates/"$UPDATELIST" ]
 then
-	cat /opt/karoshi/updates/$UPDATELIST
+	cat /opt/karoshi/updates/"$UPDATELIST"
 else
 	echo '<br>'$"No updates are available."'<br>'
 fi

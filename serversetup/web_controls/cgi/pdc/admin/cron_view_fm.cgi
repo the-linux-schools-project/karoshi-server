@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,7 +52,7 @@ echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Scheduled Jobs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -84,7 +84,7 @@ $(document).ready(function()
 </script>
 '
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -108,22 +108,20 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
-	TABLECLASS=standard
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	TABLECLASS=mobilestandard
 fi
 
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -156,10 +154,10 @@ fi
 echo '<form action="/cgi-bin/admin/cron_view.cgi" id="foo" name="selectservers" method="post">'
 
 #Redirect to show the services if there is only one server
-if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+if [[ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]]
 then
 	echo '
-	<input name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'$MOBILE'_" value="" type="hidden">
+	<input name="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'"$MOBILE"'_" value="" type="hidden">
 	<script type="text/javascript">
 	    function myfunc () {
 		var frm = document.getElementById("foo");
@@ -169,11 +167,11 @@ then
 	</script>'
 else
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Jobs"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"View Jobs"
 fi
 echo '</form>'
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></div></body></html>'
 
