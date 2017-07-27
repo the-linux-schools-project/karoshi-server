@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT"` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"View Event Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"View Event Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -90,81 +90,58 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
-TCPIP_ADDR=$REMOTE_ADDR
 
-DATA=`echo $QUERY_STRING | tr -cd 'A-Za-z0-9\_.-/-' | sed 's/\.\.\///g'`
+DATA=$(echo "$QUERY_STRING" | tr -cd 'A-Za-z0-9\_.-/-' | sed 's/\.\.\///g')
 
 #If we have not received any data via get then try and get it from post
 if [ -z "$DATA" ]
 then
-	DATA=`cat | tr -cd 'A-Za-z0-9\_.-/-%' | sed 's/\.\.\///g'`
+	DATA=$(cat | tr -cd 'A-Za-z0-9\_.-/-%' | sed 's/\.\.\///g')
 fi
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=45
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign LOGFILE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = LOGFILEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		LOGFILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=LOGFILE
+get_data
+LOGFILE="$DATAENTRY"
 
 #Assign TAIL_LENGTH
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TAIL_LENGTHcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TAIL_LENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=TAIL_LENGTH
+get_data
+TAIL_LENGTH="$DATAENTRY"
 
 function show_status {
 echo '<script>
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 </script></div></body></html>'
 exit
 }
@@ -179,11 +156,11 @@ else
 	SERVERNAME2="$SERVERNAME"
 fi
 
-if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+if [[ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]]
 then
 	SERVERNAME=$(hostname-fqdn)
-	SERVERTYPE=network
-	SERVERMASTER=notset	
+	#SERVERTYPE=network
+	#SERVERMASTER=notset	
 fi
 
 if [ -z "$LOGFILE" ]
@@ -192,23 +169,24 @@ then
 	LOGFILE2=""
 	EVENT=""
 else
-	LOGFILE2=`echo "$LOGFILE" | sed 's/%3A/:/g'`
+	LOGFILE2="${LOGFILE//%3A/:}"
+		
 	#Get time, date and category of the event
-	CATEGORY=$(echo $LOGFILE2 | cut -d"-" -f1)
+	CATEGORY=$(echo "$LOGFILE2" | cut -d"-" -f1)
 
-	case "$CATEGORY" in
-		syslog)
-		    CATEGORY2=$"System Log"
-		    ;;
-		 
-		backup)
-		    CATEGORY2=$"Backup Log"
-		    ;;
-		 
-		restore)
-		     CATEGORY2=$"Restore Log"
-		    ;;
-	esac
+	#case "$CATEGORY" in
+	#	syslog)
+	#	    CATEGORY2=$"System Log"
+	#	    ;;
+	#	 
+	#	backup)
+	#	    CATEGORY2=$"Backup Log"
+	#	    ;;
+	#	 
+	#	restore)
+	#	     CATEGORY2=$"Restore Log"
+	#	    ;;
+	#esac
 	DAY=$(echo "$LOGFILE2" | cut -d"-" -f4)
 	MONTH=$(echo "$LOGFILE2" | cut -d"-" -f3)
 	YEAR=$(echo "$LOGFILE2" | cut -d"-" -f2)
@@ -222,7 +200,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -233,27 +211,27 @@ fi
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-	SERVERNAME2=`echo $SERVERNAME | cut -d. -f1`
+	SERVERNAME2=$(echo "$SERVERNAME" | cut -d. -f1)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"View Event Logs"' '$SERVERNAME2'</span>
+	<span>'$"View Event Logs"' '"$SERVERNAME2"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div>
-	<div id="'$DIV_ID'">
+	<div id="'"$DIV_ID"'">
 	'
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"View Event Logs"' '$SERVERNAME2' '$CATEGORY' '$EVENT'</div></div><div id="infobox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"View Event Logs"' '"$SERVERNAME2"' '"$CATEGORY"' '"$EVENT"'</div>'
 fi
-if [ $SERVERNAME = viewservers ]
+if [ "$SERVERNAME" = viewservers ]
 then
 	#Show list of servers
 	echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post">'
-	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Event Logs" viewlist
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"View Event Logs" viewlist
 	echo '</form>'
 else
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1)
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$ACTION:$LOGFILE:$TAIL_LENGTH:" | sudo -H /opt/karoshi/web_controls/exec/view_logs
 fi
 

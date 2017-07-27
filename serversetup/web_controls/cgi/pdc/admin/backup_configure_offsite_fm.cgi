@@ -30,15 +30,12 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-DATE_INFO=`date +%F`
-DAY=`echo $DATE_INFO | cut -d- -f3`
-MONTH=`echo $DATE_INFO | cut -d- -f2`
-YEAR=`echo $DATE_INFO | cut -d- -f1`
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,8 +46,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Configure Offsite Backup"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Configure Offsite Backup"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->'
 
@@ -76,7 +73,7 @@ echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -85,7 +82,7 @@ exit
 
 #Show list of servers
 MOBILE=no
-/opt/karoshi/web_controls/show_servers $MOBILE all $"Configure" view notset "____"
+/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Configure" view notset "____"
 
 echo '</div></div></form></div></body></html>'
 exit

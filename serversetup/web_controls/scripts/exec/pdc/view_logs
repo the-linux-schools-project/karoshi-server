@@ -23,78 +23,78 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/view_logs_cgi
 then
-	echo `date`: view_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/view_logs_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $view_logs_cgi'check' ]
+if [ "$MD5SUM"'check' != "$view_logs_cgi"'check' ]
 then
-	echo `date`: view_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
+numArgs="$#"
 if [ "$numArgs" != 0 ]
 then
-	echo `date`: view_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+%-/-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+%-/-')
 if [ -z "$DATA" ]
 then
-	echo `date`: view_logs - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MOBILE=`echo "$DATA" | cut -s -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-ACTION=`echo "$DATA" | cut -s -d: -f6`
-LOGFILE=`echo "$DATA" | cut -s -d: -f7 | sed 's/%3A/:/g'`
-TAIL_LENGTH=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+MOBILE=$(echo "$DATA" | cut -s -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+ACTION=$(echo "$DATA" | cut -s -d: -f6)
+LOGFILE=$(echo "$DATA" | cut -s -d: -f7 | sed 's/%3A/:/g')
+TAIL_LENGTH=$(echo "$DATA" | cut -s -d: -f8)
 [ -z "$ACTION" ] && ACTION=viewlist
 ########################
 #Check data
 ########################
 if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: view_logs - Not called by view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - Not called by view_logs.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: view_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: view_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: view_logs - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -107,79 +107,114 @@ if [ -z "$TAIL_LENGTH" ]
 then
 	TAIL_LENGTH=200
 fi
-
+WIDTH=100
 WIDTH1=80
 WIDTH2=80
 WIDTH3=180
 TABLECLASS=standard
 ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
-if [ $MOBILE = yes ]
+ICON3=/images/submenus/system/computer.png
+ICON4=/images/submenus/system/logs.png
+ICON5=/images/submenus/system/delete.png
+ICON6=/images/submenus/system/update.png
+if [ "$MOBILE" = yes ]
 then
 	TABLECLASS=mobilestandard
+	WIDTH=90
 	WIDTH1=70
 	WIDTH2=70
 	WIDTH1=120
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
+	ICON3=/images/submenus/system/computerm.png
+	ICON4=/images/submenus/system/logsm.png
+	ICON5=/images/submenus/system/deletem.png
+	ICON6=/images/submenus/system/updatem.png
 fi
 
 function show_options {
 #Show options
-echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td>
-<button class="button" name="_ViewServers_" value="_ACTION_viewservers_">
-'$"View Servers"'
-</button>
-</td>'
+echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post">
+
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_ViewServers_" value="_ACTION_viewservers_">
+			<img src="'"$ICON3"'" alt="'$"Select server"'">
+			<span>'$"Select the server you want to view."'</span><br>
+			'$"Select Server"'
+		</button>
+	</td>
+
+'
 if [ "$ACTION" != viewlist ]
 then
-	echo '<td>
-	<button class="button" name="_ViewEventLogs_" value="_ACTION_viewlist_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
-	'$"View Event Logs"'
-	</button>
-	</td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_ViewEventLogs_" value="_ACTION_viewlist_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$LOGFILE"'_">
+			<img src="'"$ICON4"'" alt="'$"View Logs"'">
+			<span>'$"View the event logs for this server."'</span><br>
+			'$"View Logs"'
+		</button>
+	</td>
+	'
 fi
 if [ "$ACTION" = viewevent ]
 then
-	echo '<td>
-	<button class="button" name="_DeleteLog_" value="_ACTION_delete_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
-	'$"Delete"'
-	</button>
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_DeleteLog_" value="_ACTION_delete_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$LOGFILE"'_">
+			<img src="'"$ICON5"'" alt="'$"Delete"'">
+			<span>'$"Delete this event log for this server."'</span><br>
+			'$"Delete"'
+		</button>
 	</td>
-	<td>
-	<button class="button" name="_RefreshLog_" value="_ACTION_viewevent_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
-	'$"Refresh"'
-	</button>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_RefreshLog_" value="_ACTION_viewevent_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$LOGFILE"'_">
+			<img src="'"$ICON6"'" alt="'$"Refresh"'">
+			<span>'$"Refresh the event logs for this server."'</span><br>
+			'$"Refresh"'
+		</button>
 	</td>
-'
+	'
 fi
 if [ "$ACTION" = viewlist ]
 then
-	echo '<td>
-	<button class="button" name="_DeleteAllLogs_" value="_ACTION_deleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
-	'$"Delete All"'
-	</button>
-	</td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_DeleteAllLogs_" value="_ACTION_deleteall_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$LOGFILE"'_">
+			<img src="'"$ICON5"'" alt="'$"Delete All"'">
+			<span>'$"Delete all event logs for this server."'</span><br>
+			'$"Delete All"'
+		</button>
+	</td>
+	'
 fi
 if [ "$ACTION" = deleteall ]
 then
-	echo '<td>
-
-	<button class="button" name="_ReallyDeleteAllLogs_" value="_ACTION_reallydeleteall_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOGFILE_'$LOGFILE'_">
-	'$"Confirm Delete All"'
-	</button>
-	</td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="_ReallyDeleteAllLogs_" value="_ACTION_reallydeleteall_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$LOGFILE"'_">
+			<img src="'"$ICON5"'" alt="'$"Confirm Delete All"'">
+			<span>'$"Really delete all of event logs for this server."'</span><br>
+			'$"Confirm Delete All"'
+		</button>
+	</td>
+	'
 fi
 
 echo '</tr></tbody></table></form>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 }
 
 if [ "$ACTION" = delete ]
 then
-	echo `date`: view_logs - deleting "$LOGFILE" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - deleting $LOGFILE on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		if [ -f /opt/karoshi/logs/events/"$LOGFILE" ]
 		then
@@ -198,10 +233,10 @@ fi
 
 if [ "$ACTION" = viewevent ]
 then
-	echo `date`: view_logs - viewing "$LOGFILE" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): view_logs - viewing $LOGFILE on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	show_options
 	echo "<br>"
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		if [ -f /opt/karoshi/logs/events/"$LOGFILE" ]
 		then
@@ -221,8 +256,8 @@ fi
 
 if [ "$ACTION" = reallydeleteall ]
 then
-	echo `date`: view_logs - deleting all stored logs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	echo "$(date): view_logs - deleting all stored logs on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		if [ -d /opt/karoshi/logs/events ]
 		then
@@ -252,11 +287,11 @@ fi
 if [ "$ACTION" = viewlist ]
 then
 	#Delete warning message
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete syslog-$SERVERNAME
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete syslog-"$SERVERNAME"
 
 	show_options
 	#Get a list of event logs for the server
-	if [ "$SERVERNAME" = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		LOGCOUNT=$(ls -1 /opt/karoshi/logs/events | wc -l)
 	else
@@ -269,13 +304,13 @@ then
 	if [ "$LOGCOUNT" -gt 0 ]
 	then
 		echo '<form action="/cgi-bin/admin/view_logs.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" >
-	    <thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '$WIDTH3'px;">'$"Category"'</th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
-		if [ "$SERVERNAME" = `hostname-fqdn` ]
+	    <thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Date"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th style="width: '"$WIDTH3"'px;">'$"Category"'</th><th style="width: '$WIDTH2'px;"><b>'$"View Log"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
 			for EVENT in $(ls -t -1 /opt/karoshi/logs/events/)
 			do
 				#Get time, date and category of the event
-				CATEGORY=$(echo $EVENT | cut -d"-" -f1)
+				CATEGORY=$(echo "$EVENT" | cut -d"-" -f1)
 
 				case "$CATEGORY" in
 					syslog)
@@ -291,21 +326,21 @@ then
 					    ;;
 				esac
 
-				DAY=$(echo $EVENT | cut -d"-" -f4)
-				MONTH=$(echo $EVENT | cut -d"-" -f3)
-				YEAR=$(echo $EVENT | cut -d"-" -f2)
-				TIME=$(echo $EVENT | cut -d"-" -f5)
+				DAY=$(echo "$EVENT" | cut -d"-" -f4)
+				MONTH=$(echo "$EVENT" | cut -d"-" -f3)
+				YEAR=$(echo "$EVENT" | cut -d"-" -f2)
+				TIME=$(echo "$EVENT" | cut -d"-" -f5)
 
-				echo '<tr><td>'$DAY-$MONTH-$YEAR'</td><td>'$TIME'</td><td>'$CATEGORY2'</td>
+				echo '<tr><td>'"$DAY-$MONTH-$YEAR"'</td><td>'"$TIME"'</td><td>'"$CATEGORY2"'</td>
 				<td>
-				<button class="info" name="_ViewEventLog_" value="_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_">
-				<img src="'$ICON1'" alt="'$"ViewEventLog"'">
-				<span>'$"View"'<br>'$EVENT'</span>
+				<button class="info" name="_ViewEventLog_" value="_ACTION_viewevent_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$EVENT"'_">
+				<img src="'"$ICON1"'" alt="'$"ViewEventLog"'">
+				<span>'$"View"'<br>'"$EVENT"'</span>
 				</button>
 				</td><td>
-				<button class="info" name="_DeleteEventLog_" value="_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_'$EVENT'_">
-				<img src="'$ICON2'" alt="'$"DeleteEventLog"'">
-				<span>'$"Delete"'<br>'$EVENT'</span>
+				<button class="info" name="_DeleteEventLog_" value="_ACTION_delete_SERVERNAME_'"$SERVERNAME"'_LOGFILE_'"$EVENT"'_">
+				<img src="'"$ICON2"'" alt="'$"DeleteEventLog"'">
+				<span>'$"Delete"'<br>'"$EVENT"'</span>
 				</button>
 				</td></tr>'
 			done
@@ -314,7 +349,7 @@ then
 			for EVENT in $(ls -t -1 /opt/karoshi/logs/events/)
 			do
 				#Get time, date and category of the event
-				CATEGORY=$(echo $EVENT | cut -d"-" -f1)
+				CATEGORY=$(echo "$EVENT" | cut -d"-" -f1)
 
 				case "$CATEGORY" in
 					syslog)
@@ -330,20 +365,20 @@ then
 					    ;;
 				esac
 
-				DAY=$(echo $EVENT | cut -d"-" -f4)
-				MONTH=$(echo $EVENT | cut -d"-" -f3)
-				YEAR=$(echo $EVENT | cut -d"-" -f2)
-				TIME=$(echo $EVENT | cut -d"-" -f5)
+				DAY=$(echo "$EVENT" | cut -d"-" -f4)
+				MONTH=$(echo "$EVENT" | cut -d"-" -f3)
+				YEAR=$(echo "$EVENT" | cut -d"-" -f2)
+				TIME=$(echo "$EVENT" | cut -d"-" -f5)
 
 				echo "<tr><td>$DAY-$MONTH-$YEAR</td><td>$TIME</td><td>$CATEGORY2</td>
 				<td>
-				<button class=\"info\" name=\"_ViewEventLog_\" value=\"_ACTION_viewevent_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\">
-				<img src=\"'$ICON1'\" alt=\"'$"ViewEventLog"'\">
+				<button class=\"info\" name=\"_ViewEventLog_\" value=\"_ACTION_viewevent_SERVERNAME_'"$SERVERNAME"'_LOGFILE_$EVENT"_"\">
+				<img src=\"'"$ICON1"'\" alt=\"'$"ViewEventLog"'\">
 				<span>'$"View"'<br>$EVENT</span>
 				</button>
 				</td><td>
-				<button class="info" name="_DeleteEventLog_" value=\"_ACTION_delete_SERVERNAME_'$SERVERNAME'_LOGFILE_$EVENT"_"\">
-				<img src="'$ICON2'" alt="'$"DeleteEventLog"'">
+				<button class="info" name="_DeleteEventLog_" value=\"_ACTION_delete_SERVERNAME_'"$SERVERNAME"'_LOGFILE_$EVENT"_"\">
+				<img src="'"$ICON2"'" alt="'$"DeleteEventLog"'">
 				<span>'$"Delete"'<br>$EVENT</span>
 				</button>
 				</td></tr>"
@@ -352,7 +387,7 @@ then
 		fi
 		echo '</tbody></table></form>'
 	else
-		echo "<br>"$"No event logs"
+		echo "<br>"$"There are no event logs stored for this server."
 	fi
 fi
 

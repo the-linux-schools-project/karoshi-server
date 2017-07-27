@@ -642,7 +642,7 @@ then
 
 		#Show offsite backup details for scheduled servers
 
-		echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><br><table class="standard" style="text-align: left;" >
+		echo '<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post"><br><table class="tablesorter" style="text-align: left;" >
 		<tr><td style="width: 200px; height: 30px;"><b>'$"Backup Server"'</b></td><td style="width: 170px;">'"$BACKUPSERVERNAME"'</td><td><input name="____SERVERNAME____'"$SERVERNAME"'____ACTION____edit____BACKUPNAME____'"$BACKUPNAME"'____BACKUPSERVERNAME____'"$BACKUPSERVERNAME"'____" type="submit" class="button" value="'$"Edit"'"></td><td><input name="____SERVERNAME____'"$SERVERNAME"'____ACTION____delete____BACKUPNAME____'"$BACKUPNAME"'____BACKUPSERVERNAME____'"$BACKUPSERVERNAME"'____" type="submit" class="button" value="'$"Delete"'"></td></tr>
 		<tr><td style="height: 30px;"><b>'$"Backup Status"'</b></td>
 		<td>
@@ -652,17 +652,17 @@ then
 			</button>
 		</td>
 		<td><input name="____SERVERNAME____'"$SERVERNAME"'____ACTION____setbackupstatus____BACKUPSTATUS____'"$BACKUPSTATUS2"'____BACKUPUSERNAME____'"$BACKUPUSERNAME"'____BACKUPSERVERNAME____'"$BACKUPSERVERNAME"'____" type="submit" class="button" value="'"$BACKUPSTATUS"'"></td><td><input name="____ACTION____addbackupfolder____SERVERNAME____'"$SERVERNAME"'____" type="submit" class="button" value="'$"Add Folder"'"></td></tr>
-		<tr><td style="height: 30px;"><b>'$"Backup Type"'</b></td><td>
-		'"$BACKUPTYPE"'</td><td></td><td></td></tr>'
+		<tr><td style="height: 30px;"><b>'$"Backup Type"'</b></td><td colspan="3">
+		'"$BACKUPTYPE"'</td></tr>'
 
 		if [ "$BACKUPTYPE" = local ]
 		then
-			echo '<tr><td style="height: 30px;"><b>'$"Partition Label"'</b></td><td>'"$LABEL"'</td><td></td><td></td></tr>'
+			echo '<tr><td style="height: 30px;"><b>'$"Partition Label"'</b></td><td colspan="3">'"$LABEL"'</td></tr>'
 		fi
 
-		echo '<tr><td style="height: 30px;"><b>'$"Storage Path"'</b></td><td>
-		'"$STORAGEPATH"'</td><td></td><td></td></tr>
-		<tr><td style="height: 30px;"><b>'$"Backup Time"'</b></td><td>'"$HOURS"':'"$MINUTES"'</td><td></td><td></td></tr>
+		echo '<tr><td style="height: 30px;"><b>'$"Storage Path"'</b></td><td colspan="3">
+		'"$STORAGEPATH"'</td></tr>
+		<tr><td style="height: 30px;"><b>'$"Backup Time"'</b></td><td colspan="3">'"$HOURS"':'"$MINUTES"'</td></tr>
 
 		</tbody></table></form><br>'
 

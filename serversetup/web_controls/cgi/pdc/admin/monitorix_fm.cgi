@@ -32,16 +32,15 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Monitorix System Monitor"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Monitorix System Monitor"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -66,7 +65,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -90,7 +89,7 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -105,7 +104,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/monitorix.cgi" name="selectservers" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -116,16 +115,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="height:30px"><div class="sectiontitle">'$"Monitorix System Monitor"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></td></tr></tbody></table><br></div><div id="infobox">'
+	echo '
+<div class="sectiontitle">'$"Monitorix System Monitor"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=System_Monitoring"><img class="images" alt="" src="/images/help/info.png"><span>'$"Monitorix is a system monitoring tool."'</span></a></div>
+	</div><div id="infobox">'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
     <tbody>
       <tr>
-        <td style="width: '$WIDTH'px;">'$"Monitor Interval"'</td>
+        <td style="width: '"$WIDTH"'px;">'$"Monitor Interval"'</td>
         <td style="vertical-align: top; text-align: left;">
 
 <select name="____INTERVAL____">
@@ -139,9 +137,9 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 '
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE servers $"Show statistics" no no ____
+/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Show statistics" no no ____
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit

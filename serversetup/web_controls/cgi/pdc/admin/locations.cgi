@@ -85,13 +85,34 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Client Locations"'</div></td>
-<td style="vertical-align: top;"><form action="asset_register_view.cgi" name="AssetRegister" method="post">
-<input name="AssetRegister" type="submit" class="button" value="'$"Asset Register"'"></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-<input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'"></form></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></td>
+WIDTH=100
+ICON1=/images/assets/curriculum_computer.png
+ICON2=/images/submenus/printer/assign_printer.png
+
+echo '<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Client Locations"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Locations are used to assign printers."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="asset_register_view.cgi" name="AssetRegister" method="post">
+			<button class="info" name="AssetRegister" value="_">
+				<img src="'"$ICON1"'" alt="'$"Asset Register"'">
+				<span>'$"View the asset register."'</span><br>
+				'$"Asset Register"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+			<button class="info" name="ShowPrinters" value="_">
+				<img src="'"$ICON2"'" alt="'$"Show Printers"'">
+				<span>'$"Show all configured printers"'</span><br>
+				'$"Show Printers"'
+			</button>
+		</form>
+	</td>
+
 </tr></tbody></table><br>
 '
 

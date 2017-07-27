@@ -28,8 +28,8 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
@@ -37,7 +37,7 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '<!DOCTYPE html>
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Off-Site Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Off-Site Backup"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -81,15 +81,15 @@ if (selectedstyle == "AmazonS3") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "AWS Access Key ID";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSACCESSKEYID'\" name=\"____AWSACCESSKEYID____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$AWSACCESSKEYID"'\" name=\"____AWSACCESSKEYID____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 	var el = document.getElementById("extraoptions3");
 el.innerHTML = "AWS Secret Access Key";
 	var el = document.getElementById("extraoptions4");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSSECRETACCESSKEY'\" name=\"____AWSSECRETACCESSKEY____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$AWSSECRETACCESSKEY"'\" name=\"____AWSSECRETACCESSKEY____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
 	var el = document.getElementById("extraoptions5");
 el.innerHTML = "Bucket Name";
 	var el = document.getElementById("extraoptions6");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$AWSBUCKETNAME'\" name=\"____AWSBUCKETNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$AWSBUCKETNAME"'\" name=\"____AWSBUCKETNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 	var el = document.getElementById("extraoptions7");
 el.innerHTML = "Bucket Location";
 	var el = document.getElementById("extraoptions8");
@@ -99,15 +99,15 @@ if (selectedstyle == "scp") {
 	var el = document.getElementById("extraoptions1");
 el.innerHTML = "Backup Server";
 	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPSERVERNAME'\" name=\"____BACKUPSERVERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$BACKUPSERVERNAME"'\" name=\"____BACKUPSERVERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 	var el = document.getElementById("extraoptions3");
 el.innerHTML = "Username to connect as";
 	var el = document.getElementById("extraoptions4");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPUSERNAME'\" name=\"____BACKUPUSERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$BACKUPUSERNAME"'\" name=\"____BACKUPUSERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
 	var el = document.getElementById("extraoptions5");
 el.innerHTML = "Password";
 	var el = document.getElementById("extraoptions6");
-el.innerHTML = "<input tabindex= \"6\" value=\"'$BACKUPPASSWORD'\" name=\"____BACKUPPASSWORD____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
+el.innerHTML = "<input tabindex= \"6\" value=\"'"$BACKUPPASSWORD"'\" name=\"____BACKUPPASSWORD____\" style=\"width: 200px\;\" size=\"20\" type=\"password\">";
 }
 if (selectedstyle == "local") {
 	var el = document.getElementById("extraoptions1");
@@ -132,323 +132,149 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=26
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 [ -z "$ACTION" ] && ACTION=view
 
 if [ "$ACTION" = deletebackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = addbackupfolder ] || [ "$ACTION" = editbackupfolder ] || [ "$ACTION" = delete ] || [ "$ACTION" = edit ]
 then
 	#Assign BACKUPNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPNAME
+	get_data
+	BACKUPNAME=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign BACKUPFOLDER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPFOLDERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPFOLDER
+	get_data
+	BACKUPFOLDER=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign DURATION
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = DURATIONcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			DURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=DURATION
+	get_data
+	DURATION=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign FULLBACKUP
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FULLBACKUPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			FULLBACKUP=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
-
+	DATANAME=FULLBACKUP
+	get_data
+	FULLBACKUP=${DATAENTRY//12345UNDERSCORE12345/_}
 fi 
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = edit ] || [ "$ACTION" = setbackupstatus ]
 then
 	#Assign BACKUPUSERNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPUSERNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPUSERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPUSERNAME
+	get_data
+	BACKUPUSERNAME=${DATAENTRY//12345UNDERSCORE12345/_}
+
 	#Assign BACKUPSERVERNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPSERVERNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPSERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPSERVERNAME
+	get_data
+	BACKUPSERVERNAME=${DATAENTRY//12345UNDERSCORE12345/_}
 fi
 
 if [ "$ACTION" = reallyadd ]
 then
 	#Assign BACKUPTYPE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPTYPEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPTYPE
+	get_data
+	BACKUPTYPE=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign BACKUPPASSWORD
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPPASSWORDcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPPASSWORD=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPPASSWORD
+	get_data
+	BACKUPPASSWORD=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign ENCRYPTIONKEY
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ENCRYPTIONKEYcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ENCRYPTIONKEY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=ENCRYPTIONKEY
+	get_data
+	ENCRYPTIONKEY=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign HOURS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = HOURScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=HOURS
+	get_data
+	HOURS=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign MINUTES
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MINUTES
+	get_data
+	MINUTES=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign STORAGEPATH
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = STORAGEPATHcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			STORAGEPATH=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=STORAGEPATH
+	get_data
+	STORAGEPATH=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign FULLBACKUP
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = FULLBACKUPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			FULLBACKUP=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=FULLBACKUP
+	get_data
+	FULLBACKUP=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	#Assign DURATION
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = DURATIONcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			DURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=DURATION
+	get_data
+	DURATION=${DATAENTRY//12345UNDERSCORE12345/_}
 
 	if [ "$BACKUPTYPE" = local ]
 	then
 		#Assign LABEL
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = LABELcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				LABEL=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=LABEL
+		get_data
+		LABEL=${DATAENTRY//12345UNDERSCORE12345/_}
 	fi
 
 	if [ "$BACKUPTYPE" = AmazonS3 ]
 	then
 		END_POINT=36
 		#Assign AWSACCESSKEYID
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = AWSACCESSKEYIDcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				AWSACCESSKEYID=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=AWSACCESSKEYID
+		get_data
+		AWSACCESSKEYID=${DATAENTRY//12345UNDERSCORE12345/_}
 
 		#Assign AWSSECRETACCESSKEY
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = AWSSECRETACCESSKEYcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				AWSSECRETACCESSKEY=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=AWSSECRETACCESSKEY
+		get_data
+		AWSSECRETACCESSKEY=${DATAENTRY//12345UNDERSCORE12345/_}
 
 		#Assign AWSBUCKETNAME
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = AWSBUCKETNAMEcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				AWSBUCKETNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=AWSBUCKETNAME
+		get_data
+		AWSBUCKETNAME=${DATAENTRY//12345UNDERSCORE12345/_}
 
 		#Assign AWSBUCKETLOCATION
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = AWSBUCKETLOCATIONcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				AWSBUCKETLOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=AWSBUCKETLOCATION
+		get_data
+		AWSBUCKETLOCATION=${DATAENTRY//12345UNDERSCORE12345/_}
 	fi
 
 
@@ -457,24 +283,15 @@ fi
 if [ "$ACTION" = setbackupstatus ]
 then
 	#Assign BACKUPSTATUS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPSTATUScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPSTATUS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPSTATUS
+	get_data
+	BACKUPSTATUS=${DATAENTRY//12345UNDERSCORE12345/_}
 fi
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -488,7 +305,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -591,30 +408,60 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/system/computer.png
+ICON2=/images/submenus/system/add.png
+ICON3=/images/submenus/system/backup.png
+
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Configure Off-Site Backup"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
-<form action="/cgi-bin/admin/backup_configure_offsite_fm.cgi" method="post">
-<button class="button" name="ChooseServer_" value="_">
-'$"Select server"'
-</button>
-</form>
-</td>'
+
+<div class="sectiontitle">'$"Configure Off-Site Backup"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/backup_configure_offsite_fm.cgi" method="post">
+			<button class="info" name="SelectServer" value="_">
+				<img src="'"$ICON1"'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
+	</td>
+'
 
 if [ "$ACTION" = view ] || [ "$ACTION" = editbackupfolder ] || [ "$ACTION" = reallyaddbackupfolder ] || [ "$ACTION" = reallydeletebackupfolder ] || [ "$ACTION" = assignbackupserver ] || [ "$ACTION" = setbackupstatus ] || [ "$ACTION" = deletebackupfolder ]
 then
-	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-	<input name="____ACTION____add____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"Add Offsite Backup"'"></form></td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+			<button class="info" name="____AddOffsiteBackup____" value="____ACTION____add____SERVERNAME____'"$SERVERNAME"'____">
+				<img src="'"$ICON2"'" alt="'$"Add Offsite Backup"'">
+				<span>'$"Add an offsite backup."'</span><br>
+				'$"Add Offsite Backup"'
+			</button>
+		</form>
+	</td>
+	'
 fi
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ]
 then
-	echo '<td><form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Offsite Backups"'"></form></td>'
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
+			<button class="info" name="____ViewOffsiteBackup____" value="____SERVERNAME____'"$SERVERNAME"'____">
+				<img src="'"$ICON3"'" alt="'$"View Offsite Backups"'">
+				<span>'$"View configured offsite backups."'</span><br>
+				'$"View Offsite Backups"'
+			</button>
+		</form>
+	</td>
+	'
 fi
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Offsite_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
-</div><br><div id="infobox">'
+echo '</tr></tbody></table></div><br><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_configure_offsite.cgi | cut -d' ' -f1)
 #View logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$SERVERNAME:$BACKUPSERVERNAME:$BACKUPUSERNAME:$BACKUPTYPE:$BACKUPPASSWORD:$ENCRYPTIONKEY:$HOURS:$MINUTES:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$STORAGEPATH:$FULLBACKUP:$AWSACCESSKEYID:$AWSSECRETACCESSKEY:$AWSBUCKETNAME:$AWSBUCKETLOCATION:$LABEL:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure_offsite
 echo "</div></div></div></body></html>"
