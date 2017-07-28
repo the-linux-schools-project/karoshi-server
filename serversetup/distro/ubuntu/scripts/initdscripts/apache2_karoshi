@@ -5,6 +5,7 @@
 # Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
+# X-Start-Before:    samba4
 # Short-Description: Start/stop apache2_karoshi web server
 ### END INIT INFO
 #
@@ -12,6 +13,9 @@
 #			It basically just calls apache2ctl.
 
 ENV="env -i LANG=C PATH=/usr/local/bin:/usr/bin:/bin"
+
+#Release the reserved port for this service.
+[ -f /etc/reserveports/apache2_karoshi ] && /usr/sbin/releaseports apache2_karoshi
 
 #[ $(ls -1 /etc/apache2/sites-enabled/ | wc -l | sed -e 's/ *//;') -eq 0 ] && \
 #echo "You haven't enabled any sites yet, so I'm not starting apache2." && \

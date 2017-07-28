@@ -7,5 +7,7 @@
 #                       	        	PORT    PORT(S)    DEST		LIMIT		GROUP
 ACCEPT	net	fw	tcp	53,88,123,135,137,138,139,389,445,464,636,1024:1100,3268	-#Samba4-tcp
 ACCEPT	net	fw	udp	53,88,123,137,138,139,389,445,464,636,1024:1100	-#Samba4-udp
+ACCEPT	net	fw	tcp	49152:50000	-#Samba4.7-onwards-ad-ports-1
+ACCEPT	net	fw	tcp	50003:65535	-#Samba4.7-onwards-ad-ports-2
 ACCEPT	net	fw	icmp	8	-	-	30/sec:10	-#Limit-Ping
 #LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE

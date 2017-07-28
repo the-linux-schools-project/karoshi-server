@@ -1,7 +1,7 @@
 [apache_karoshi]
 
 enabled = true
-port	= 50001,50002,50003
+port	= 50001,50002
 filter	= apache-auth
 logpath = /var/log/apache2/karoshi_error.log
 bantime  = 600
