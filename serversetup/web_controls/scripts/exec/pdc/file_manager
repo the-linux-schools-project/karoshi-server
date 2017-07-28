@@ -2343,13 +2343,13 @@ echo `date`: "file_manager - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION
 
 if [ $SERVERNAME = $(hostname-fqdn) ]
 then
-	setfacl -Rx $ACLGROUP:$ACLOWNER,d:$ACLGROUP:$ACLOWNER "$LOCATION"
+	setfacl -Rx $ACLGROUP:$ACLOWNER,d:$ACLGROUP:$ACLOWNER "$LOCATION" &
 fi
 
 if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
 then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'"
+	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'" &
 	'
 fi
 
@@ -2358,7 +2358,7 @@ then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
 	echo `date`: file_manager \(federated mode\) - deleting acl for $ACLGROUP : $ACLOWNER at $LOCATION on $SERVERNAME by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'"
+	setfacl -Rx '$ACLGROUP':'$ACLOWNER',d:'$ACLGROUP':'$ACLOWNER' "'$LOCATION'" &
 	'\''
 	'
 fi
@@ -2425,7 +2425,7 @@ do
 				chmod 0000 -R "$LOCATION"
 			fi
 
-		 	setfacl -Rm d:"$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS","$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS" "$LOCATION"
+		 	setfacl -Rm d:"$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS","$ACLGROUP":"$ACLOWNER":"$ACLPERMISSIONS" "$LOCATION" &
 		fi
 
 		if [ "$SERVERTYPE" = network ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]] || [ "$SERVERTYPE" = federated ]
@@ -2437,7 +2437,7 @@ do
 				chown root.root -R "'$LOCATION'"
 				chmod 0000 -R "'$LOCATION'"
 			fi
-			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
+			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'" &
 			'
 		fi
 
@@ -2452,7 +2452,7 @@ do
 				chown root.root -R "'$LOCATION'"
 				chmod 0000 -R "'$LOCATION'"
 			fi
-			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'"
+			setfacl -Rm d:"'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'","'$ACLGROUP'":"'$ACLOWNER'":"'$ACLPERMISSIONS'" "'$LOCATION'" &
 			'\''
 			'
 		fi

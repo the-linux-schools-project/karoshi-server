@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,11 +51,11 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<TITLE>'$"Linux Background - Upload"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<TITLE>'$"Linux Background - Upload"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -79,52 +79,63 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	TABLECLASS=standard
-	MAXSTYLES=5
 	WIDTH1=180
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=mobileactionbox
 	TABLECLASS=mobilestandard
-	MAXSTYLES=4
 	WIDTH1=90
 fi
 
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Linux Background - Upload"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="'$DIV_ID'">'
+</div></div><div id="'"$DIV_ID"'">'
 else
-	echo '<form action="/cgi-bin/admin/linux_client_choose_background_fm.cgi" method="post"><table class="standard" style="text-align: left;" ><tbody><tr><td><b>'$"Linux Background - Upload"'</b></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Background"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will replace the standard background with one of your choice. The backgrounds are applied when the client computer is rebooted."'</span></a>
-</td><td style="vertical-align: top;">
-<input name="_VIEW_" type="submit" class="button" value="'$"View Backgrounds"'">
-</td></tr></tbody></table></form>'
+	WIDTH=100
+	ICON1=/images/submenus/client/view_backgrounds.png
+
+	echo '
+	<div class="sectiontitle">'$"Linux Background - Upload"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Background"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will replace the standard background with one of your choice. The backgrounds are applied when the client computer is rebooted."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="/cgi-bin/admin/linux_client_choose_background_fm.cgi" method="post">
+				<button class="info" name="_VIEW_" value="_">
+					<img src="'$ICON1'" alt="'$"View Backgrounds"'">
+					<span>'$"View uploaded backgrounds."'</span><br>
+					'$"View Backgrounds"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>'
 fi
 
-echo '<P>
-'$"Please select the background that you want to upload."':
-<P>
+echo '<p>
+'$"Select the background that you want to upload."':
+<p>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/linux_client_background_upload.cgi" METHOD="POST">
-        <table class="'$TABLECLASS'">
-        <tr><td style="width: '$WIDTH1'px;">
+        <table class="'"$TABLECLASS"'">
+        <tr><td style="width: '"$WIDTH1"'px;">
                 '$"Background"'
             </td>
 <td style="vertical-align: top;">
 <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="30"></td>'
 
-if [ $MOBILE != yes ]
+if [ "$MOBILE" != yes ]
 then
 echo '<td style="vertical-align: middle;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"You must use a png format."'</span></a>
             </td>'

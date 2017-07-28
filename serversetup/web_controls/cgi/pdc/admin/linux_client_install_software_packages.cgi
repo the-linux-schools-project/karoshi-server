@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,7 +49,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client software packages"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Client software packages"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -61,7 +61,7 @@ $(document).ready(function()
 </script>
 '
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -86,12 +86,11 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/linux_client_install_software_packages_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -100,7 +99,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -114,7 +113,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -124,23 +123,29 @@ fi
 #Assign data to variables
 #########################
 END_POINT=6
-#Assign VERSION
-VERSION=""
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-	do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = VERSIONcheck ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		VERSION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign VERSION
+DATANAME=VERSION
+get_data
+VERSION="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -159,16 +164,16 @@ fi
 #Check data
 #########################
 #Check to see that VERSION is not blank
-if [ -z $VERSION ]
+if [ -z "$VERSION" ]
 then
 	MESSAGE=$"Blank version"
 	show_status
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 <div class="expanded">
@@ -176,26 +181,40 @@ then
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<form action="/cgi-bin/admin/linux_client_software_controls.cgi" method="post"><input name="_VERSION_" value="'$VERSION'" type="hidden">
-<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td>
-<div class="sectiontitle">'$"Linux Client Software Controls"' - '$VERSION'</div></td><td><input type="submit" class="button" value="'$"Software Controls"'"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will be installed by your linux client computers on boot."'</span></a></td></tr></tbody></table></form><br>'
+	WIDTH=100
+	ICON1=/images/submenus/client/software.png
+
+	echo '<form action="/cgi-bin/admin/linux_client_software_controls.cgi" method="post"><input name="_VERSION_" value="'"$VERSION"'" type="hidden">
+
+	<div class="sectiontitle">'$"Linux Client Software Packages"' - '"$VERSION"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Linux_Client_Software_Packages"><img class="images" alt="" src="/images/help/info.png"><span>'$"The software shown below will be installed by your linux client computers on boot."'</span></a></div>
+
+	<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info" name="_UPLOAD_" value="_">
+				<img src="'$ICON1'" alt="'$"Software Controls"'">
+				<span>'$"View software controls."'</span><br>
+				'$"Software Controls"'
+			</button>
+	</td>
+
+	</tr></tbody></table>
+	</form><br>'
 fi
 
 #Show a table of current software to install and remove
 # install - /var/lib/samba/netlogon/linuxclient/version/install_list
 # remove - /var/lib/samba/netlogon/linuxclient/version/remove_list
 
-ICON1=/images/submenus/client/install_software.png
-ICON2=/images/submenus/client/remove_software.png
 ICON3=/images/submenus/client/delete_software.png
 
 #Show input box
-echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'$VERSION'" type="hidden">
+echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'"$VERSION"'" type="hidden">
 <b>'$"Add software package"'</b><br><br>'
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;">'$"Location"'</td><td>'
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;">'$"Location"'</td><td>'
 
 	#Show current rooms
 	echo '<select name="___LOCATION___" style="width: 200px;">'
@@ -204,11 +223,11 @@ then
 	then
 		for LOCATION in $(cat /var/lib/samba/netlogon/locations.txt)
 		do
-			echo '<option value="'$LOCATION'">'$LOCATION'</option>'
+			echo '<option value="'"$LOCATION"'">'"$LOCATION"'</option>'
 		done
 	fi
 	echo '</select></td><td></td></tr>
-	<tr><td style="width: '$WIDTH1'px;">'$"Software Package"'</td><td><input style="width: '$WIDTH1'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td>
+	<tr><td style="width: '"$WIDTH1"'px;">'$"Software Package"'</td><td><input style="width: '"$WIDTH1"'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td>
 	<td>
 	<button class="button" name="___Install___" value="___INSTALL___install___">
 	'$"Install"'
@@ -221,7 +240,7 @@ then
 	</td></tr>
 	</tbody></table></form></div><div id="infobox">'
 else
-	echo ''$"Software Package"' <input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '$WIDTH1'px;" size="20" type="text"><br>
+	echo ''$"Software Package"' <input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '"$WIDTH1"'px;" size="20" type="text"><br>
 	<button class="button" name="___Install___" value="___INSTALL___install___">
 	'$"Install"'
 	</button> 
@@ -230,33 +249,33 @@ else
 	</button>
 	<br><br></form>'
 fi
-echo '<br><form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'$VERSION'" type="hidden">'
+echo '<br><form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'"$VERSION"'" type="hidden">'
 
 function show_software {
-if [ -d /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"/ ]
+if [ -d /var/lib/samba/netlogon/linuxclient/"$VERSION/software/$INSTALL"/ ]
 then
-	if [ $(ls -1 /var/lib/samba/netlogon/linuxclient/"$VERSION"/software/"$INSTALL"/*_software 2>/dev/null | wc -l) != 0 ]
+	if [[ $(ls -1 /var/lib/samba/netlogon/linuxclient/"$VERSION/software/$INSTALL"/*_software 2>/dev/null | wc -l) != 0 ]]
 	then
 		if [ "$SHOW_TABLE_HEADER" = yes ]
 		then
 			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"Location"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Action"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Software Package"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Location"'</b></th><th style="width: '"$WIDTH1"'px;"><b>'$"Action"'</b></th><th style="width: '"$WIDTH1"'px;"><b>'$"Software Package"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 			SHOW_TABLE_HEADER=no
 			SHOW_TABLE_FOOTER=yes
 		fi
-		for LOCATIONS in `ls -1 /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/*_software`
+		for LOCATIONS in $(ls -1 /var/lib/samba/netlogon/linuxclient/"$VERSION/software/$INSTALL"/*_software)
 		do
 			#Show install list
-			LOCATION=`basename $LOCATIONS | cut -d"_" -f1`
-			if [ `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software | wc -l` -gt 0 ]
+			LOCATION=$(basename "$LOCATIONS" | cut -d"_" -f1)
+			if [[ $(wc -l < "/var/lib/samba/netlogon/linuxclient/$VERSION/software/$INSTALL/$LOCATION"_software) -gt 0 ]]
 			then
-				for SOFTWARE in `cat /var/lib/samba/netlogon/linuxclient/$VERSION/software/"$INSTALL"/"$LOCATION"_software`
+				for SOFTWARE in $(cat /var/lib/samba/netlogon/linuxclient/"$VERSION/software/$INSTALL/$LOCATION"_software)
 				do
-					echo '<tr><td>'$LOCATION'</td><td>'$INSTALL_LANG'</td><td>'$SOFTWARE'</td><td>
+					echo '<tr><td>'"$LOCATION"'</td><td>'"$INSTALL_LANG"'</td><td>'"$SOFTWARE"'</td><td>
 
-					<button class="info" name="___Delete___" value="___ACTION___delete___INSTALL___'$INSTALL'___SOFTWARE___'$SOFTWARE'___LOCATION___'$LOCATION'___">
-					<img src="'$ICON3'" alt="'$"Delete"'">
-					<span>'$"Delete" $SOFTWARE'</span>
+					<button class="info" name="___Delete___" value="___ACTION___delete___INSTALL___'"$INSTALL"'___SOFTWARE___'"$SOFTWARE"'___LOCATION___'"$LOCATION"'___">
+					<img src="'"$ICON3"'" alt="'$"Delete"'">
+					<span>'$"Delete" "$SOFTWARE"'</span>
 					</button>
 					</td></tr>'
 				done
@@ -274,7 +293,7 @@ show_software
 INSTALL=remove
 INSTALL_LANG=$"Remove"
 show_software
-if [ $SHOW_TABLE_FOOTER = yes ]
+if [ "$SHOW_TABLE_FOOTER" = yes ]
 then
 	echo '</tbody></table>'
 fi
