@@ -41,17 +41,17 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -72,57 +72,65 @@ echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	</script>'
 fi
 
-echo '</head><body><div id="pagecontainer">'
+echo '
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=9
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign SEARCH
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
-then
-let COUNTER=$COUNTER+1
-SEARCH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=SEARCH
+get_data
+SEARCH="$DATAENTRY"
+
 #Assign DATE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=DATE
+get_data
+DATE=$(echo "$DATAENTRY" | tr -cd '0-9-')
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_site_logs_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -131,97 +139,97 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that SEARCH is not blank
-if [ $SEARCH'null' = null ]
+if [ -z "$SEARCH" ]
 then
-MESSAGE=$"The log search cannot be blank."
-show_status
+	MESSAGE=$"The log search cannot be blank."
+	show_status
 fi
 
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
-DAY=`echo $DATE | cut -d- -f1`
-MONTH=`echo $DATE | cut -d- -f2`
-YEAR=`echo $DATE | cut -d- -f3`
+DAY=$(echo "$DATE" | cut -d- -f1)
+MONTH=$(echo "$DATE" | cut -d- -f2)
+YEAR=$(echo "$DATE" | cut -d- -f3)
 
 #Check to see that DAY is not blank
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check to see that MONTH is not blank
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check to see that YEAR is not blank
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-MESSAGE=$"The date cannot be blank."
-show_status
+	MESSAGE=$"The date cannot be blank."
+	show_status
 fi
 
 #Check that day is not greater than 31
-if [ $DAY -gt 31 ]
+if [ "$DAY" -gt 31 ]
 then
-MESSAGE=$"Date input error."
-show_status
+	MESSAGE=$"Date input error."
+	show_status
 fi
 
 #Check that the month is not greater than 12
-if [ $MONTH -gt 12 ]
+if [ "$MONTH" -gt 12 ]
 then
-MESSAGE=$"Date input error."
-show_status
+	MESSAGE=$"Date input error."
+	show_status
 fi
 
 #Check that the year is in range
-if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
+if [ "$YEAR" -lt 2006 ] || [ "$YEAR" -gt 3006 ]
 then
-MESSAGE=$"The year is not valid."
-show_status
+	MESSAGE=$"The year is not valid."
+	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs.cgi | cut -d' ' -f1)
 #View logs
 echo '<form action="/cgi-bin/admin/dg_view_site_logs2.cgi" name="selectedsites" method="post">'
-echo '<input name="_LOGDATE_" value="'$DAY'-'$MONTH'-'$YEAR'" type="hidden">'
+echo '<input name="_LOGDATE_" value="'"$DAY"'-'"$MONTH"'-'"$YEAR"'" type="hidden">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Site Internet Logs"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -229,21 +237,35 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 
 else
-echo '<div id="'$DIV_ID'"><div id="titlebox"><b>'$"Site Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
-<br><br></div><div id="infobox">'
+	WIDTH=100
+	ICON1=/images/submenus/internet/normal_logs.png
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Site Internet Logs"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
+	</div>
+	<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" formaction="dg_view_site_logs_fm.cgi" name="_ChooseSite_" value="_">
+			<img src="'$ICON1'" alt="'$"Choose Website"'">
+			<span>'$"Choose a website to view the logs for."'</span><br>
+			'$"Choose Website"'
+		</button>
+	</td>
+
+	</tr></tbody></table>
+	</div><div id="infobox">'
 fi
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SEARCH:$DAY:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 102 ]
+EXEC_STATUS="$?"
+if [ "$EXEC_STATUS" = 102 ]
 then
-MESSAGE=`echo $"No log exists for this date."`
-show_status
+	MESSAGE=$"No log exists for this date."
+	show_status
 fi
 if [ $EXEC_STATUS = 103 ]
 then
-MESSAGE=`echo $"No sites for this search exist in this log."`
-show_status
+	MESSAGE=$"No sites for this search exist in this log."
+	show_status
 fi
 
 echo '</div></div></form></div></body></html>'

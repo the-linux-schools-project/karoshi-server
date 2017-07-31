@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -53,8 +53,8 @@ echo '
 <!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Client Bypass Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Client Bypass Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 
   
   <script>
@@ -91,9 +91,9 @@ $(document).ready(function()
 </script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -116,61 +116,62 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=7
-#Assign action
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
 
-#Assign tcpipaddress
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
-[ -z $ACTION ] && ACTION=view
+#Assign TCPIP
+DATANAME=TCPIP
+get_data
+TCPIP="$DATAENTRY"
+
+[ -z "$ACTION" ] && ACTION=view
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
-	TABLECLASS=standard
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+	ICON2=/images/submenus/system/computer.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	TABLECLASS=mobilestandard
+	WIDTH=90
+	ICON1=/images/submenus/system/addm.png
+	ICON2=/images/submenus/system/computerm.png
 fi
 
 echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><b></b>'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
 
 
 function passinfo {
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_bypass
 }
 
@@ -178,58 +179,64 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$MOBILE:" | sudo -H /opt/
 TITLE=$"Client Bypass Controls"
 BUTTONACTION=add
 BUTTONMSG=$"Add IP number"
-
+ICON="$ICON1"
 if [ $ACTION = add ]
 then
-	TITLE=$"Add Bypass"
 	BUTTONACTION=view
 	BUTTONMSG=$"View IP numbers"
+	ICON="$ICON2"
+	
 fi
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLE'</span>
+	<span>'"$TITLE"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr>
-<td style="vertical-align: top;"><b>'$TITLE'</b></td>
-<td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bypass_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This can be used for client devices to bypass the internet filtering."'</span></a></td>
-<td style="vertical-align: top;">
-<input name="_ACTION_'$BUTTONACTION'_" type="submit" class="button" value="'$BUTTONMSG'">
-</td>
-</tr></table><br>'
+echo '
+<div class="sectiontitle">'"$TITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Bypass_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This can be used for client devices to bypass the internet filtering."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
 
-if [ $ACTION = reallyadd ]
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info" name="_Add_" value="_ACTION_'"$BUTTONACTION"'_">
+			<img src="'$ICON'" alt="'"$BUTTONMSG"'">
+			<span>'"$BUTTONMSG"'</span><br>
+			'"$BUTTONMSG"'
+		</button>
+	</td>
+
+</tr></tbody></table><br>'
+
+if [ "$ACTION" = reallyadd ]
 then
 	passinfo
 fi
 
-if [ $ACTION = view ] || [ $ACTION = delete ]
+if [ "$ACTION" = view ] || [ "$ACTION" = delete ]
 then
 	passinfo
 fi
 
-if [ $ACTION = add ]
+if [ "$ACTION" = add ]
 then 
 	echo '<input type="hidden" name="_ACTION_" value="reallyadd">'
-	if [ $MOBILE = yes ]
+	if [ "$MOBILE" = yes ]
 	then
 		echo '
 	'$"TCPIP Number"'<br>
-	<input name="_TCPIP_" style="width: 160px;" value="'$TCPIP_ADDR'" size="20"><br><br>
+	<input name="_TCPIP_" style="width: 160px;" value="'"$TCPIP_ADDR"'" size="20"><br><br>
 	'
 	else
 		echo '<table class="standard" style="text-align: left;" >
 	    <tbody>
 	      <tr>
 		<td style="width: 200px;">'$"TCPIP Number"'</td>
-		<td><input name="_TCPIP_" value="'$TCPIP_ADDR'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
+		<td><input name="_TCPIP_" value="'"$TCPIP_ADDR"'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
 	      </tr>
 	    </tbody>
 	  </table>

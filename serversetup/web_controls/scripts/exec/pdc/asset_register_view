@@ -28,84 +28,84 @@
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_view_cgi
 then
-	echo `date`: asset_register_view - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - No Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_view_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $asset_register_view_cgi'check' ]
+if [ "$MD5SUM"'check' != "$asset_register_view_cgi"'check' ]
 then
-	echo `date`: asset_register_view - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - Incorrect Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_view_cgi
 then
-	echo `date`: asset_register_view - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_view_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/asset_register_view.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/asset_register_view.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
 if [ $MD5SUM2'check' != $asset_register_view_cgi'check' ]
 then
-	echo `date`: asset_register_view - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - Incorrect Tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: asset_register_view - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._,:\-+%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+%')
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MOBILE=`echo "$DATA" | cut -s -d: -f4`
-LOCATION=`echo "$DATA" | cut -s -d: -f5 | sed 's/+/ /g'`
-ACTION=`echo "$DATA" | cut -s -d: -f6`
-ASSET=`echo "$DATA" | cut -s -d: -f7`
-OPTION=`echo "$DATA" | cut -s -d: -f8`
-ASSETCHOICE=`echo "$DATA" | cut -s -d: -f9`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+MOBILE=$(echo "$DATA" | cut -s -d: -f4)
+LOCATION=$(echo "$DATA" | cut -s -d: -f5 | sed 's/+/ /g')
+ACTION=$(echo "$DATA" | cut -s -d: -f6)
+ASSET=$(echo "$DATA" | cut -s -d: -f7)
+OPTION=$(echo "$DATA" | cut -s -d: -f8)
+ASSETCHOICE=$(echo "$DATA" | cut -s -d: -f9)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: asset_register_view - Not called by asset_register_view.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - Not called by asset_register_view.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: asset_register_view - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: asset_register_view - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ] && [ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]
 then
-	echo `date`: asset_register_view - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): asset_register_view - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -129,7 +129,7 @@ COLOR17="#E5D7FF"
 COLOR18="#BEFFF5"
 
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	TABLECLASS=mobilestandard
 	ICON1=/images/assets/locationm.png
@@ -195,100 +195,100 @@ function assign_asset_labels {
 ASSETLABEL=$"Curriculum Computer"
 ASSETICON=/images/assets/curriculum_computer.png
 COLOR=$COLOR1
-if [ $ASSETTYPE = 2 ]
+if [ "$ASSETTYPE" = 2 ]
 then
 	ASSETICON=/images/assets/admin_computer.png ; ASSETLABEL=$"Admin Computer"
 	COLOR=$COLOR2
 fi
-if [ $ASSETTYPE = 3 ]
+if [ "$ASSETTYPE" = 3 ]
 then
 	ASSETICON=/images/assets/curriculum_laptop.png ; ASSETLABEL=$"Curriculum Laptop"
 	COLOR=$COLOR3
 fi
-if [ $ASSETTYPE = 4 ]
+if [ "$ASSETTYPE" = 4 ]
 then
 	ASSETICON=/images/assets/admin_laptop.png ; ASSETLABEL=$"Admin Laptop"
 	COLOR=$COLOR4
 fi
-if [ $ASSETTYPE = 5 ]
+if [ "$ASSETTYPE" = 5 ]
 then
 	ASSETICON=/images/assets/curriculum_tablet.png ; ASSETLABEL=$"Curriculum Tablet"
 	COLOR=$COLOR5
 fi
-if [ $ASSETTYPE = 6 ]
+if [ "$ASSETTYPE" = 6 ]
 then
 	ASSETICON=/images/assets/admin_tablet.png ; ASSETLABEL=$"Admin Tablet"
 	COLOR=$COLOR6
 fi
-if [ $ASSETTYPE = 7 ]
+if [ "$ASSETTYPE" = 7 ]
 then
 	ASSETICON=/images/assets/curriculum_pda.png ; ASSETLABEL=$"Curriculum PDA"
 	COLOR=$COLOR7
 fi
-if [ $ASSETTYPE = 8 ]
+if [ "$ASSETTYPE" = 8 ]
 then
 	ASSETICON=/images/assets/admin_pda.png ; ASSETLABEL=$"Admin PDA"
 	COLOR=$COLOR8
 fi
-if [ $ASSETTYPE = 9 ]
+if [ "$ASSETTYPE" = 9 ]
 then
 	ASSETICON=/images/assets/curriculum_thinclient.png ; ASSETLABEL=$"Curriculum Thin Client"
 	COLOR=$COLOR9
 fi
-if [ $ASSETTYPE = 10 ]
+if [ "$ASSETTYPE" = 10 ]
 then
 	ASSETICON=/images/assets/admin_thinclient.png ; ASSETLABEL=$"Admin Thin Client"
 	COLOR=$COLOR10
 fi
-if [ $ASSETTYPE = 11 ]
+if [ "$ASSETTYPE" = 11 ]
 then
 	ASSETICON=/images/assets/printer.png ; ASSETLABEL=$"Printer"
 	COLOR=$COLOR11
 fi
-if [ $ASSETTYPE = 12 ]
+if [ "$ASSETTYPE" = 12 ]
 then
 	ASSETICON=/images/assets/scanner.png ; ASSETLABEL=$"Scanner"
 	COLOR=$COLOR12
 fi
-if [ $ASSETTYPE = 13 ]
+if [ "$ASSETTYPE" = 13 ]
 then
 	ASSETICON=/images/assets/projector.png ; ASSETLABEL=$"Projector"
 	COLOR=$COLOR13
 fi
-if [ $ASSETTYPE = 14 ]
+if [ "$ASSETTYPE" = 14 ]
 then
 	ASSETICON=/images/assets/whiteboard.png ; ASSETLABEL=$"Whiteboard"
 	COLOR=$COLOR14
 fi
-if [ $ASSETTYPE = 15 ]
+if [ "$ASSETTYPE" = 15 ]
 then
 	ASSETICON=/images/assets/network_switch.png ; ASSETLABEL=$"Network Switch"
 	COLOR=$COLOR15
 fi
-if [ $ASSETTYPE = 16 ]
+if [ "$ASSETTYPE" = 16 ]
 then
 	ASSETICON=/images/assets/network_device.png ; ASSETLABEL=$"Network Device"
 	COLOR=$COLOR16
 fi
-if [ $ASSETTYPE = 17 ]
+if [ "$ASSETTYPE" = 17 ]
 then
 	ASSETICON=/images/assets/wireless.png ; ASSETLABEL=$"Wireless Access Point"
 	COLOR=$COLOR17
 fi
-if [ $ASSETTYPE = 18 ]
+if [ "$ASSETTYPE" = 18 ]
 then
 	ASSETICON=/images/assets/audio_visual.png ; ASSETLABEL=$"Audio Visual"
 	COLOR=$COLOR18
 fi
-if [ $ASSETTYPE = 19 ]
+if [ "$ASSETTYPE" = 19 ]
 then
 ASSETICON=/images/assets/monitor.png ; ASSETLABEL=$"Monitor"
 fi
-if [ $ASSETTYPE = 20 ]
+if [ "$ASSETTYPE" = 20 ]
 then
 	ASSETICON=/images/assets/software.png ; ASSETLABEL=$"Software"
 fi
-if [ $ASSETTYPE = 21 ]
+if [ "$ASSETTYPE" = 21 ]
 then
 	SSETICON=/images/assets/other.png ; ASSETLABEL=$"Other"
 fi
@@ -450,7 +450,7 @@ fi
 
 if [ $ACTION = reallyadddesc ]
 then
-	echo `date`: asset_register_view - adding description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		#Create folders
 		[ ! -d /opt/karoshi/asset_register/descriptions ] && mkdir -p /opt/karoshi/asset_register/descriptions
 		#Get Hardwaredesc number
@@ -490,7 +490,7 @@ then
 	if [ -f /opt/karoshi/asset_register/descriptions/$ASSET ]
 	then
 		#Delete description
-		echo `date`: asset_register_view - deleting description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - deleting description $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		rm -f /opt/karoshi/asset_register/descriptions/$ASSET
 		#Rebuild asset list
 		if [ `ls -1 /opt/karoshi/asset_register/descriptions/ | wc -l` -gt 0 ]
@@ -579,7 +579,7 @@ fi
 
 if [ $ACTION = reallyaddsupplier ]
 then
-	echo `date`: asset_register_view - adding supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Create folders
 	[ ! -d /opt/karoshi/asset_register/suppliers ] && mkdir -p /opt/karoshi/asset_register/suppliers
 	#Get Hardwaredesc number
@@ -621,7 +621,7 @@ then
 	if [ -f /opt/karoshi/asset_register/suppliers/$ASSET ]
 	then
 		#Delete supplier
-		echo `date`: asset_register_view - deleting supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - deleting supplier $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		rm -f /opt/karoshi/asset_register/suppliers/$ASSET
 		#Rebuild supplier list
 		if [ `ls -1 /opt/karoshi/asset_register/suppliers/ | wc -l` -gt 0 ]
@@ -710,7 +710,7 @@ fi
 
 if [ $ACTION = reallyaddbudget ]
 then
-	echo `date`: asset_register_view - adding budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Create folders
 	[ ! -d /opt/karoshi/asset_register/budgets ] && mkdir -p /opt/karoshi/asset_register/budgets
 	#Get budget number
@@ -746,7 +746,7 @@ then
 	if [ -f /opt/karoshi/asset_register/budgets/$ASSET ]
 	then
 		#Delete budget
-		echo `date`: asset_register_view - deleting budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - deleting budget $ASSET by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		rm -f /opt/karoshi/asset_register/budgets/$ASSET
 		#Rebuild budget list
 		if [ `ls -1 /opt/karoshi/asset_register/budgets/ | wc -l` -gt 0 ]
@@ -997,7 +997,7 @@ then
 
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
+		<button class="info inforight" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
 			<img src="'$ICON5'" alt="'$"Statistics"'">
 			<span>'$"Asset register statistics"'</span><br>
 			'$"Statistics"'
@@ -1021,9 +1021,15 @@ then
 		ARRAYMAX=${#LOCATIONARRAY[@]}
 		while [ $ARRAYCOUNT -lt $ARRAYMAX ]
 		do
+			if [ $(echo $(( $LOCCOUNTER + 1 ))) -gt "$ROWCOUNT" ]
+			then
+				BUTTONCLASS="info infoleft"
+			else
+				BUTTONCLASS="info"
+			fi
 			LOCATION=${LOCATIONARRAY[$ARRAYCOUNT]}
 			echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align:center">
-			<button class="info" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
+			<button class="'"$BUTTONCLASS"'" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
 			<img src="'$ICON1'" alt="'$"View Assets"'">
 			<span>'$"View Assets"'<br>'$LOCATION'</span>
 			</button>
@@ -1080,7 +1086,7 @@ then
 			[ -f /var/lib/samba/netlogon/clients/$MAC1 ] && rm -f /var/lib/samba/netlogon/clients/$MAC1
 			#Move entry to deleted folder
 			mv -f /opt/karoshi/asset_register/locations/$LOCATION/$ASSET /opt/karoshi/asset_register/deleted/$LOCATION/
-			echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo `date`: asset_register_view - deleting $ASSET from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			#Delete entry from tcpip list
 			deletefromtcpiplist
 			#Sort the tcpiplist
@@ -1348,19 +1354,19 @@ if [[ $TCPIP1 ]] && [[ $TCPIP1 != "N.A." ]]; then
 	source /opt/karoshi/server_network/domain_information/domain_name
 	
 	#Add entry to dns for TCPIP1
-	echo `date`: asset_register_view - checking "if" $IDENTITY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns query 127.0.0.1 $REALM $IDENTITY A --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - checking "if" $IDENTITY is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns query 127.0.0.1 $REALM $IDENTITY A --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [ `echo $?` != 0 ]
 	then
-		echo `date`: asset_register_view - removing existing $IDENTITY $TCPIP1 from dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns delete 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - removing existing $IDENTITY $TCPIP1 from dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns delete 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
-	echo `date`: asset_register_view - adding $IDENTITY $TCPIP1 to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding $IDENTITY $TCPIP1 to the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 $REALM $IDENTITY A $TCPIP1 --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	
 	#Add reverse DNS entry for TCPIP1
 	SUBNET=$(grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2)
-	echo `date`: asset_register_view - adding a reverse DNS entry "for" $IDENTITY $TCPIP1 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding a reverse DNS entry "for" $IDENTITY $TCPIP1 by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $TCPIP1 $SUBNET $IDENTITY.$REALM 1>/dev/null
 fi
 }
@@ -1453,7 +1459,7 @@ then
 
 	get_asset_number
 
-	echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	write_asset_data
 	#Delete lock file
 	rm -f /opt/karoshi/asset_register/.asset_lock
@@ -1465,7 +1471,7 @@ then
 	ACTION=view
 	if [ ! -z "$ASSET" ]
 	then
-		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - editing $IDENTITY from $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
 		#Delete current asset data 
@@ -1640,7 +1646,7 @@ then
 		if [ $OPTION = filter ]
 		then
 			SHOWENTRY=no
-			[ $ASSETTYPE = $ASSETCHOICE ] && SHOWENTRY=yes
+			[ "$ASSETTYPE" = $ASSETCHOICE ] && SHOWENTRY=yes
 		fi
 		if [ $SHOWENTRY = yes ]
 		then
@@ -1885,7 +1891,7 @@ then
 		#Add in asset
 		#########################
 		get_asset_number
-		echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo `date`: asset_register_view - adding $IDENTITY to $LOCATION by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		write_asset_data
 		#Delete lock file
 		rm -f /opt/karoshi/asset_register/.asset_lock

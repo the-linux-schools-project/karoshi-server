@@ -35,13 +35,13 @@ source /opt/karoshi/web_controls/version
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
-DATE_INFO=`date +%F`
-DAY=`echo $DATE_INFO | cut -d- -f3`
-MONTH=`echo $DATE_INFO | cut -d- -f2`
-YEAR=`echo $DATE_INFO | cut -d- -f1`
+DATE_INFO=$(date +%F)
+DAY=$(echo "$DATE_INFO" | cut -d- -f3)
+MONTH=$(echo "$DATE_INFO" | cut -d- -f2)
+YEAR=$(echo "$DATE_INFO" | cut -d- -f1)
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
@@ -50,15 +50,15 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Computer Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Computer Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 
 <link rel="stylesheet" href="/all/calendar2/calendar.css">
 <script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -82,22 +82,22 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 echo '<form action="/cgi-bin/admin/dg_view_computer_logs.cgi" name="testform" method="post"><b></b>'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -106,17 +106,16 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<b>'$"Computer Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
-<br><br>'
+	echo '<div class="sectiontitle">'$"Computer Logs"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a></div><br>'
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo ''$"Client TCPIP"'<br>
-<input tabindex= "1" name="_TCPIP_" type="text" size="14" style="width: 160px;"><br>
-'$"Log Date"'<br>'
+	echo ''$"Client TCPIP"'<br>
+	<input tabindex= "1" name="_TCPIP_" type="text" size="14" style="width: 160px;"><br>
+	'$"Log Date"'<br>'
 
-echo "
+	echo "
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" style=\"width: 160px\" size=14 maxlength=10 name=\"_DATE_\">
 	<script>
@@ -134,7 +133,7 @@ echo ''$"Number of days to view"'<br>
 '
 
 else
-echo '<table class="standard" style="text-align: left;" >
+	echo '<table class="standard" style="text-align: left;" >
     <tbody>
 <tr><td style="width: 180px;">'$"Client TCPIP"'</td><td><input tabindex= "1" name="_TCPIP_" type="text" size="14" style="width: 200px;"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr><tr><td>'$"Log Date"'</td><td>'
 echo "<!-- calendar attaches to existing form element -->
@@ -153,10 +152,9 @@ echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DA
 </tbody></table><br>'
 fi
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit

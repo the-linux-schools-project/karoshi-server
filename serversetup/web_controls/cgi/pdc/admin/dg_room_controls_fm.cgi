@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,9 +49,9 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -76,12 +76,10 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_admin_log.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -90,14 +88,14 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -110,10 +108,10 @@ else
 	ICON1=/images/assets/locationm.png
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -122,57 +120,83 @@ then
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<table class="standard" style="text-align: left;" >
-<tr><td style="height:30px;"><div class="sectiontitle">'$"Client Internet Controls"' - '$"Location"'</div></td>
-<td>
-	<form action="dg_reset_room_controls_fm.cgi" method="post">	
-		<button class="button" name="Top" value="_">
-		'$"Reset times"'
-		</button>
-	</form>
-</td>
-<td>
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a>
-</td></tr></tbody></table><br></div><div id=infobox>'
+	WIDTH=100
+	ICON3=/images/submenus/system/clock.png
+	ICON4=/images/assets/curriculum_computer.png
+
+	echo '
+	<div class="sectiontitle">'$"Client Internet Controls"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="dg_reset_room_controls_fm.cgi" method="post">
+				<button class="info" name="_SetResetTimes_" value="_">
+					<img src="'$ICON3'" alt="'$"Reset Times"'">
+					<span>'$"Set reset times."'</span><br>
+					'$"Reset Times"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="asset_register_view.cgi" method="post">
+				<button class="info" name="_AssetRegister_" value="_">
+					<img src="'$ICON4'" alt="'$"Asset Register"'">
+					<span>'$"View the asset register."'</span><br>
+					'$"Asset Register"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+
+</div><div id=infobox>'
 
 fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=$(wc -l < /var/lib/samba/netlogon/locations.txt)
 else
 	LOCATION_COUNT=0
 fi
 
-if [ $LOCATION_COUNT != 0 ]
+if [ "$LOCATION_COUNT" != 0 ]
 then
 	if [ -d /opt/karoshi/asset_register/locations/ ]
 	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
+		if [[ $(ls -1 /opt/karoshi/asset_register/locations/ | wc -l) -gt 0 ]]
 		then
 			ROWCOUNT=6
-			[ $MOBILE = yes ] && ROWCOUNT=3
+			[ "$MOBILE" = yes ] && ROWCOUNT=3
 			WIDTH=90
-			[ $MOBILE = yes ] && WIDTH=70
+			[ "$MOBILE" = yes ] && WIDTH=70
 
-			echo '<form action="dg_room_controls.cgi" method="post"><table class="'$TABLECLASS' centerTable" style="text-align: left;" ><tbody><tr>'
+			echo '<form action="dg_room_controls.cgi" method="post"><table class="tablesorter" style="text-align: left;" ><tbody><tr>'
 			LOCCOUNTER=1
 
 			for LOCATIONS in /opt/karoshi/asset_register/locations/*
 			do
-				LOCATION=`basename "$LOCATIONS"`
-				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: left;">
+				LOCATION=$(basename "$LOCATIONS")
+				echo '<td style="width: '"$WIDTH"'px; vertical-align: top; text-align: center; ">
 
-					<button class="info" name="_ChooseLocation_" value="_LOCATION_'$LOCATION'_">
+					<button class="info" name="_ChooseLocation_" value="_LOCATION_'"$LOCATION"'_">
 					<img src="'$ICON1'" alt="'$"Choose Location"'">
-					<span>'$"Client Internet Controls"'<br>'$LOCATION'</span>
+					<span>'$"Client Internet Controls"'<br>'"$LOCATION"'</span>
 					</button>
-					<br>'$LOCATION'
+					<br>'"$LOCATION"'
 				</td>'
-				[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-				let LOCCOUNTER=$LOCCOUNTER+1
-				[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
+				[ "$LOCCOUNTER" = "$ROWCOUNT" ] && echo '</tr><tr>'
+				let LOCCOUNTER="$LOCCOUNTER"+1
+				[ "$LOCCOUNTER" -gt "$ROWCOUNT" ] && LOCCOUNTER=1
 			done
+
+			while [ "$LOCCOUNTER" -le "$ROWCOUNT" ]
+			do
+				echo '<td></td>'
+				let LOCCOUNTER="$LOCCOUNTER"+1
+			done
+
 			echo "</tr></tbody></table></form><br>"
 		fi
 	else

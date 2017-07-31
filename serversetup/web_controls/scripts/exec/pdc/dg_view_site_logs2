@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
@@ -31,102 +31,107 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_site_logs2_cgi
 then
-	echo `date`: dg_view_site_logs2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_site_logs2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dg_view_site_logs2_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dg_view_site_logs2_cgi"'check' ]
 then
-	echo `date`: dg_view_site_logs2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_site_logs2_cgi
 then
-	echo `date`: dg_view_site_logs2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_site_logs2_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_site_logs2.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/dg_view_site_logs2.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $dg_view_site_logs2_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$dg_view_site_logs2_cgi"'check' ]
 then
-	echo `date`: dg_view_site_logs2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dg_view_site_logs2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: dg_view_site_logs2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-WEBSITE=`echo "$DATA" | cut -s -d: -f4`
-LOGDATE=`echo "$DATA" | cut -s -d: -f5`
-MOBILE=`echo "$DATA" | cut -s -d: -f6`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+WEBSITE=$(echo "$DATA" | cut -s -d: -f4)
+LOGDATE=$(echo "$DATA" | cut -s -d: -f5)
+MOBILE=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: dg_view_top_sites - Not called by dg_view_site_logs2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_top_sites - Not called by dg_view_site_logs2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dg_view_site_logs2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dg_view_site_logs2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$WEBSITE" ]
 then
-	echo `date`: dg_view_site_logs2 - Blank website by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Blank website by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$LOGDATE" ]
 then
-	echo `date`: dg_view_site_logs2 - Blank logdate by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - Blank logdate by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: dg_view_site_logs2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_site_logs2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: dg_view_site_logs2 - Viewing logs "for" $WEBSITE $LOGDATE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): dg_view_site_logs2 - Viewing logs for $WEBSITE $LOGDATE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #View logs
 
 TABLECLASS=standard
+ICON1=/images/submenus/internet/internet_ban.png
+ICON2=/images/submenus/internet/normal_logs.png
+WIDTH=100
 WIDTH1=60
 WIDTH2=90
 WIDTH3=250
 WIDTH4=250
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	TABLECLASS=mobilestandard
-	FILTERMSG=""
+	ICON1=/images/submenus/internet/internet_banm.png
+	ICON2=/images/submenus/internet/normal_logsm.png
+	WIDTH=90
 	WIDTH1=30
 	WIDTH2=60
 	WIDTH3=90
@@ -134,84 +139,100 @@ then
 fi
 
 #Create table header
-if [ $MOBILE = no ]
-then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"Site Internet Logs"' '$WEBSITE' '$LOGDATE'</b></td><td><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
-<input name="_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'_" type="submit" class="button" value="'$"Ban Website"'"></form></td><td><form action="/cgi-bin/admin/dg_view_site_logs_fm.cgi" method="post">
-<input name="_ChooseSite_" type="submit" class="button" value="'$"Choose Website"'">
-</form></td></tr></tbody></table><br></div><div id="infobox">'
-else
-	echo '<b>'$"Site Internet Logs"' '$WEBSITE' '$LOGDATE'</b><br><form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post" target="_blank">
-<input name="_FILTERNAME_f1_ACTION_viewcustomsites_FILTERDATA_banned_FILTERDATA2_'$WEBSITE'_" type="submit" class="button" value="'$"Ban Website"'">
-</form><br>'
-fi
+echo '<div class="sectiontitle">'$"Site Internet Logs"' '"$WEBSITE"' '"$LOGDATE"'</div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/e2g_filtergroups.cgi" method="post">
+			<button class="info" name="____BanWebsite____" value="____FILTERNAME____f1____ACTION____viewcustomsites____FILTERDATA____banned____FILTERDATA2____'"$WEBSITE"'____">
+				<img src="'$ICON1'" alt="'$"Ban Website"'">
+				<span>'$"Ban this website."'</span><br>
+				'$"Ban Website"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dg_view_site_logs_fm.cgi" method="post">
+			<button class="info" name="_ChooseSite_" value="_">
+				<img src="'$ICON2'" alt="'$"Choose Website"'">
+				<span>'$"Choose a website to view the logs for."'</span><br>
+				'$"Choose Website"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table><br>
+'
+[ "$MOBILE" = no ] && 'echo </div><div id="infobox">'
+
 
 function create_temp_logfile {
 #Create a temporary log file from all of the servers
-if [ $PROXYSERVER = `hostname-fqdn` ]
+if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
 then
 
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE" ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/allowed/$WEBSITE" ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/allowed/$WEBSITE".tar.gz ] && LOGTYPE=archive
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed.$$
-	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed/"$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_allowed.$$
-	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed.tar.gz allowed/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed.$$
+	[ "$LOGTYPE" = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/allowed/$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
+	[ "$LOGTYPE" = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/allowed/$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
+	[ "$LOGTYPE" = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/allowed.tar.gz allowed/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
 
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE" ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/denied/$WEBSITE" ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/denied/$WEBSITE".tar.gz ] && LOGTYPE=archive
 	[ -f /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied.$$
-	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied/"$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_denied.$$
-	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied.tar.gz denied/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied.$$
+	[ "$LOGTYPE" = text ] && cat /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/denied/$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied."$$"
+	[ "$LOGTYPE" = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE/sites/denied/$WEBSITE".tar.gz >> /opt/karoshi/.tempdata/sitelog_denied."$$"
+	[ "$LOGTYPE" = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$LOGDATE"/sites/denied.tar.gz denied/"$WEBSITE" >> /opt/karoshi/.tempdata/sitelog_denied."$$"
 
 else
-	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	ssh -x -o PasswordAuthentication=no "$PROXYSERVER" '
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'" ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && exit 105
-	[ $LOGTYPE = archive ] && exit 106
-	[ $LOGTYPE = globalarchive ] && exit 107
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed/"'"$WEBSITE"'" ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed/"'"$WEBSITE"'".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed.tar.gz ] && LOGTYPE=globalarchive
+	[ "$LOGTYPE" = text ] && exit 105
+	[ "$LOGTYPE" = archive ] && exit 106
+	[ "$LOGTYPE" = globalarchive ] && exit 107
 	'
 	LOGTYPE=$?
-	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'" ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
-	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed/"'$WEBSITE'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
-	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/allowed.tar.gz allowed/"'$WEBSITE'"' >> /opt/karoshi/.tempdata/sitelog_allowed.$$
+	[ "$LOGTYPE" = 105 ] && ssh "$PROXYSERVER" ' cat /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed/"'"$WEBSITE"'" ' >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
+	[ "$LOGTYPE" = 106 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed/"'"$WEBSITE"'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
+	[ "$LOGTYPE" = 107 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/allowed.tar.gz allowed/"'"$WEBSITE"'"' >> /opt/karoshi/.tempdata/sitelog_allowed."$$"
 
-	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	ssh -x -o PasswordAuthentication=no "$PROXYSERVER" '
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'" ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'".tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && exit 105
-	[ $LOGTYPE = archive ] && exit 106
-	[ $LOGTYPE = globalarchive ] && exit 107
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied/"'"$WEBSITE"'" ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied/"'"$WEBSITE"'".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied.tar.gz ] && LOGTYPE=globalarchive
+	[ "$LOGTYPE" = text ] && exit 105
+	[ "$LOGTYPE" = archive ] && exit 106
+	[ "$LOGTYPE" = globalarchive ] && exit 107
 	'
 	LOGTYPE=$?
-	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'" ' >> /opt/karoshi/.tempdata/sitelog_denied.$$
-	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied/"'$WEBSITE'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_denied.$$
-	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/"'$LOGDATE'"/sites/denied.tar.gz denied/"'$WEBSITE'"' >> /opt/karoshi/.tempdata/sitelog_denied.$$
+	[ "$LOGTYPE" = 105 ] && ssh "$PROXYSERVER" ' cat /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied/"'"$WEBSITE"'" ' >> /opt/karoshi/.tempdata/sitelog_denied."$$"
+	[ "$LOGTYPE" = 106 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied/"'"$WEBSITE"'".tar.gz ' >> /opt/karoshi/.tempdata/sitelog_denied."$$"
+	[ "$LOGTYPE" = 107 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/"'"$LOGDATE"'"/sites/denied.tar.gz denied/"'"$WEBSITE"'"' >> /opt/karoshi/.tempdata/sitelog_denied."$$"
 fi
 }
 
 function viewlogs {
-if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ] || [ -f /opt/karoshi/.tempdata/sitelog_allowed.$$ ]
+if [ -f /opt/karoshi/.tempdata/sitelog_denied."$$" ] || [ -f /opt/karoshi/.tempdata/sitelog_allowed."$$" ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th style="width: '$WIDTH4'px;"><b>'$"Client"'</b></th></tr></thead><tbody>'
-	if [ -f /opt/karoshi/.tempdata/sitelog_denied.$$ ]
+<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Filter"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Time"'</b></th><th></th><th style="width: '"$WIDTH3"'px;"><b>'$"Username"'</b></th><th></th><th style="width: '"$WIDTH4"'px;"><b>'$"Client"'</b></th></tr></thead><tbody>'
+	if [ -f /opt/karoshi/.tempdata/sitelog_denied."$$" ]
 	then	
-		sort -t">" -s -k 6 /opt/karoshi/.tempdata/sitelog_denied.$$
-		rm -f /opt/karoshi/.tempdata/sitelog_denied.$$
+		sort -t">" -s -k 6 /opt/karoshi/.tempdata/sitelog_denied."$$"
+		rm -f /opt/karoshi/.tempdata/sitelog_denied."$$"
 	fi
-	if [ -f /opt/karoshi/.tempdata/sitelog_allowed.$$ ]
+	if [ -f /opt/karoshi/.tempdata/sitelog_allowed."$$" ]
 	then
-		sort -t">" -s -k 6 /opt/karoshi/.tempdata/sitelog_allowed.$$
-		rm -f /opt/karoshi/.tempdata/sitelog_allowed.$$
+		sort -t">" -s -k 6 /opt/karoshi/.tempdata/sitelog_allowed."$$"
+		rm -f /opt/karoshi/.tempdata/sitelog_allowed."$$"
 	fi
 	echo '</tbody></table><br>'
 else
@@ -224,13 +245,13 @@ fi
 
 if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
 	do
 		create_temp_logfile
 	done
 	viewlogs
 else 
-	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 	create_temp_logfile
 	viewlogs
 fi

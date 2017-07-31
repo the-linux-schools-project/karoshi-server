@@ -28,68 +28,57 @@
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Internet Controls"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=19
-#Assign LOCATION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-#Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-then
-let COUNTER=$COUNTER+1
-ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-#Assign ASSET
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ASSETcheck ]
-then
-let COUNTER=$COUNTER+1
-ASSET=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+}
 
+#Assign LOCATION
+DATANAME=LOCATION
+get_data
+LOCATION="$DATAENTRY"
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
+
+#Assign ASSET
+DATANAME=ASSET
+get_data
+ASSET="$DATAENTRY"
 
 function show_status {
 echo '<script>'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/dg_room_controls_fm.cgi;'
 echo '</script>'
 echo "</div></body></html>"
@@ -99,43 +88,43 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 
 #########################
 #Check data
 #########################
 #Check to see that location is not blank
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-MESSAGE=$"You have not chosen a location."
-show_status
+	MESSAGE=$"You have not chosen a location."
+	show_status
 fi
 #Check to see that ACTION is not blank
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-MESSAGE=$"You have not chosen an action."
-show_status
+	MESSAGE=$"You have not chosen an action."
+	show_status
 fi
 
 #Check to see that ASSET is not blank
-if [ $ASSET'null' = null ]
+if [ -z "$ASSET" ]
 then
-MESSAGE=$"You have not chosen an asset."
-show_status
+	MESSAGE=$"You have not chosen an asset."
+	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$ACTION:$ASSET:" | sudo -H /opt/karoshi/web_controls/exec/dg_room_controls
 
 
 #Redirect to room controls location page
 
 echo '<form id="submit_form" action="dg_room_controls.cgi" method="POST">
-<input type="hidden" name="_LOCATION_" value="'$LOCATION'">
+<input type="hidden" name="_LOCATION_" value="'"$LOCATION"'">
 </form>'
 
 echo '<script>

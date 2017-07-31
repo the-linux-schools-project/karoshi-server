@@ -35,12 +35,12 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Check if timout should be disabled
-[ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ] && TIMEOUT=86400
+[[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]] && TIMEOUT=86400
 
 ############################
 #Show page
@@ -48,8 +48,8 @@ TEXTDOMAIN=karoshi-server
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"User Internet Access"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-if [ $MOBILE = yes ]
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"User Internet Access"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -82,157 +82,81 @@ $(document).ready(function()
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+%'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+%')
 #########################
 #Assign data to variables
 #########################
-#echo $DATA"<br>"
 END_POINT=10
-#Assign ACTION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-		then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 if [ ! -z "$ACTION" ]
 then
 	#Assign USERNAMES
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = USERNAMEScheck ]
-			then
-			let COUNTER=$COUNTER+1
-			USERNAMES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/%40/@/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=USERNAMES
+	get_data
+	USERNAMES="${DATAENTRY//%40/@}"
 
 	if [ "$ACTION" = banusers ]
 	then
 		END_POINT=22
 		#Assign HOUR
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = HOURcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				HOUR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=HOUR
+		get_data
+		HOUR="$DATAENTRY"
 
 		#Assign MINUTES
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-				then
-				let COUNTER=$COUNTER+1
-				MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=MINUTES
+		get_data
+		MINUTES="$DATAENTRY"
 
 		#Assign DAY
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = DAYcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=DAY
+		get_data
+		DAY="$DATAENTRY"
 
 		#Assign MONTH
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = MONTHcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				MONTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=MONTH
+		get_data
+		MONTH="$DATAENTRY"
 
 		#Assign YEAR
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = YEARcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				YEAR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=YEAR
+		get_data
+		YEAR="$DATAENTRY"
 
 		#Assign INCIDENT
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = INCIDENTcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				INCIDENT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=INCIDENT
+		get_data
+		INCIDENT="$DATAENTRY"
 
 		#Assign ACTIONTAKEN
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = ACTIONTAKENcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				ACTIONTAKEN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=ACTIONTAKEN
+		get_data
+		ACTIONTAKEN="$DATAENTRY"
 
 		#Assign BANLENGTH
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = BANLENGTHcheck ]
-				then
-				let COUNTER=$COUNTER+1
-				BANLENGTH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
-
+		DATANAME=BANLENGTH
+		get_data
+		BANLENGTH="$DATAENTRY"
 	fi
 fi
 
@@ -244,7 +168,7 @@ fi
 [ -z "$ACTION" ] && ACTION=view 
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -254,7 +178,7 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
@@ -263,10 +187,10 @@ then
 	</div></div><div id="mobileactionbox">
 '
 else
-	echo '<div id="'$DIV_ID'"><div id=titlebox>'
+	echo '<div id="'"$DIV_ID"'"><div id=titlebox>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAMES:$HOUR:$MINUTES:$DAY:$MONTH:$YEAR:$BANLENGTH:$INCIDENT:$ACTIONTAKEN:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_internet_access
 
 [ "$MOBILE" = no ] && echo '</div>'

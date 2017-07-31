@@ -23,193 +23,219 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_computer_logs_cgi
 then
-	echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_computer_logs_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dg_view_computer_logs_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dg_view_computer_logs_cgi"'check' ]
 then
-	echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_computer_logs_cgi
 then
-	echo `date`: dg_view_computer_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_computer_logs_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_computer_logs.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/dg_view_computer_logs.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $dg_view_computer_logs_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$dg_view_computer_logs_cgi"'check' ]
 then
-	echo `date`: dg_view_computer_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dg_view_computer_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: dg_view_computer_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-TCPIP=`echo "$DATA" | cut -s -d: -f4`
-DAY=`echo "$DATA" | cut -s -d: -f5`
-MONTH=`echo "$DATA" | cut -s -d: -f6`
-YEAR=`echo "$DATA" | cut -s -d: -f7`
-DETAILED=`echo "$DATA" | cut -s -d: -f8`
-MOBILE=`echo "$DATA" | cut -s -d: -f9`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+TCPIP=$(echo "$DATA" | cut -s -d: -f4)
+DAY=$(echo "$DATA" | cut -s -d: -f5)
+MONTH=$(echo "$DATA" | cut -s -d: -f6)
+YEAR=$(echo "$DATA" | cut -s -d: -f7)
+DETAILED=$(echo "$DATA" | cut -s -d: -f8)
+MOBILE=$(echo "$DATA" | cut -s -d: -f9)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: dg_view_computer_logs - Not called by dg_computer_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Not called by dg_computer_logs.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dg_view_computer_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dg_view_computer_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$TCPIP" ]
 then
-	echo `date`: dg_view_computer_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$DAY" ]
 then
-	echo `date`: dg_view_computer_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$MONTH" ]
 then
-	echo `date`: dg_view_computer_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$YEAR" ]
 then
-	echo `date`: dg_view_computer_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$DETAILED" ]
 then
-	echo `date`: dg_view_user_logs - Blank detail by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_user_logs - Blank detail by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: dg_view_computer_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dg_view_computer_logs - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: dg_view_computer_logs - Viewing logs "for" $TCPIP $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): dg_view_computer_logs - Viewing logs for $TCPIP $DAY-$MONTH-$YEAR by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #View logs
 
 TABLECLASS=standard
+WIDTH=100
 WIDTH1=60
 WIDTH2=90
 WIDTH3=250
 WIDTH4=250
-if [ $MOBILE = yes ]
+ICON1=/images/submenus/system/computer.png
+if [ "$MOBILE" = yes ]
 then
 	TABLECLASS=mobilestandard
-	FILTERMSG=""
+	WIDTH=90
 	WIDTH1=30
 	WIDTH2=60
 	WIDTH3=90
 	WIDTH4=90
+	ICON1=/images/submenus/system/computer.png
 fi
 
 #Set detailed path
 
-if [ $DETAILED = yes ]
+if [ "$DETAILED" = yes ]
 then
 	MACHINES=machines_detailed
-	DETAIL_ICON=normal_logs.png
 	DETAILED2=no
-	DETAILEDLOGSMSG=$"Normal logs"
+	DETAILEDLOGSMSG=$"Normal Logs"
+	DETAILEDLOGSMSG2=$"View the normal logs for this computer."
+	ICON2=/images/submenus/internet/normal_logs.png
+	[ "$MOBILE" = yes ] && ICON2=/images/submenus/internet/normal_logsm.png
 else
 	MACHINES=machines
-	DETAIL_ICON=detailed_logs.png
 	DETAILED2=yes
-	DETAILEDLOGSMSG=$"Detailed logs"
+	DETAILEDLOGSMSG=$"Detailed Logs"
+	DETAILEDLOGSMSG2=$"View the detailed logs for this computer."
+	ICON2=/images/submenus/internet/detailed_logs.png
+	[ "$MOBILE" = yes ] && ICON2=/images/submenus/internet/detailed_logsm.png
 fi
 
 #Create table header
-if [ "$MOBILE" = no ]
-then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;"><tbody><tr><td><b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b></td><td><form action="/cgi-bin/admin/dg_view_computer_logs.cgi" method="post" target="_top">
-<input name="_TCPIP_'$TCPIP'_DATE_'$DAY'-'$MONTH'-'$YEAR'_DETAILED_'$DETAILED2'_" type="submit" class="button" value="'$DETAILEDLOGSMSG'">
-</form></td></tr></tbody></table><br></div><div id="infobox">'
-else
-	echo '<b>'$"Computer Logs"' '$TCPIP' '$DAY'-'$MONTH'-'$YEAR'</b><br><br>'
-fi
+echo '
+<div class="sectiontitle">'$"Computer Logs"' '"$TCPIP"' '"$DAY"'-'"$MONTH"'-'"$YEAR"'</div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dg_view_computer_logs.cgi" method="post">
+			<button class="info" name="_DetailedLogs_" value="_TCPIP_'"$TCPIP"'_DATE_'"$DAY"'-'"$MONTH"'-'"$YEAR"'_DETAILED_'"$DETAILED2"'_">
+				<img src="'$ICON2'" alt="'"$DETAILEDLOGSMSG"'">
+				<span>'"$DETAILEDLOGSMSG2"'</span><br>
+				'"$DETAILEDLOGSMSG"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="dg_view_computer_logs_fm.cgi" method="post">
+			<button class="info" name="_ChangeComputer_" value="_">
+				<img src="'$ICON1'" alt="'$"Change Computer"'">
+				<span>'$"View logs for a different computer."'</span><br>
+				'$"Change Computer"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 function create_temp_logfile {
 #Create a temporary log file from all of the servers
-if [ $PROXYSERVER = `hostname-fqdn` ]
+if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
 then
 
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP.tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES.tar.gz ] && LOGTYPE=globalarchive
-	[ $LOGTYPE = text ] && cat /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP >> /opt/karoshi/.tempdata/$TCPIP.$$
-	[ $LOGTYPE = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP.tar.gz >> /opt/karoshi/.tempdata/$TCPIP.$$
-	[ $LOGTYPE = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$MACHINES.tar.gz $MACHINES/$TCPIP >> /opt/karoshi/.tempdata/$TCPIP.$$
+	[ -f /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP" ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP".tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES".tar.gz ] && LOGTYPE=globalarchive
+	[ "$LOGTYPE" = text ] && cat /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP" >> /opt/karoshi/.tempdata/"$TCPIP.$$"
+	[ "$LOGTYPE" = archive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES/$TCPIP".tar.gz >> /opt/karoshi/.tempdata/"$TCPIP.$$"
+	[ "$LOGTYPE" = globalarchive ] && tar -xzOf /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$MACHINES".tar.gz "$MACHINES/$TCPIP" >> /opt/karoshi/.tempdata/"$TCPIP.$$"
 else
-	ssh -x -o PasswordAuthentication=no $PROXYSERVER '
+	ssh -x -o PasswordAuthentication=no "$PROXYSERVER" '
 	LOGTYPE="notset"
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP' ] && LOGTYPE=text
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ] && LOGTYPE=archive
-	[ -f /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'.tar.gz ] && LOGTYPE=globalarchive
+	[ -f /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'/'"$TCPIP"' ] && LOGTYPE=text
+	[ -f /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'/'"$TCPIP"'.tar.gz ] && LOGTYPE=archive
+	[ -f /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'.tar.gz ] && LOGTYPE=globalarchive
 	[ $LOGTYPE = text ] && exit 105
 	[ $LOGTYPE = archive ] && exit 106
 	[ $LOGTYPE = globalarchive ] && exit 107
 	'
-	LOGTYPE=$?
-	[ $LOGTYPE = 105 ] && ssh $PROXYSERVER ' cat /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP' ' >> /opt/karoshi/.tempdata/$TCPIP.$$
-	[ $LOGTYPE = 106 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'/'$TCPIP'.tar.gz ' >> /opt/karoshi/.tempdata/$TCPIP.$$
-	[ $LOGTYPE = 107 ] && ssh $PROXYSERVER ' tar -xzOf /opt/karoshi/logs/internetlogs/'$DAY'-'$MONTH'-'$YEAR'/'$MACHINES'.tar.gz '$MACHINES'/'$TCPIP'' >> /opt/karoshi/.tempdata/$TCPIP.$$
+	LOGTYPE="$?"
+	[ "$LOGTYPE" = 105 ] && ssh "$PROXYSERVER" ' cat /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'/'"$TCPIP"' ' >> /opt/karoshi/.tempdata/"$TCPIP.$$"
+	[ "$LOGTYPE" = 106 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'/'"$TCPIP"'.tar.gz ' >> /opt/karoshi/.tempdata/"$TCPIP.$$"
+	[ "$LOGTYPE" = 107 ] && ssh "$PROXYSERVER" ' tar -xzOf /opt/karoshi/logs/internetlogs/'"$DAY"'-'"$MONTH"'-'"$YEAR"'/'"$MACHINES"'.tar.gz '"$MACHINES"'/'"$TCPIP"'' >> /opt/karoshi/.tempdata/"$TCPIP.$$"
 fi
 }
 
 function viewlogs {
-if [ -f /opt/karoshi/.tempdata/$TCPIP.$$ ]
+if [ -f /opt/karoshi/.tempdata/"$TCPIP.$$" ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-<tr><th style="width: '$WIDTH1'px;"><b>'$"Filter"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Time"'</b></th><th></th><th style="width: '$WIDTH3'px;"><b>'$"Username"'</b></th><th></th><th style="width: '$WIDTH4'px;"><b>'$"Website"'</b></th></tr></thead><tbody>'
-sort -t">" -s -k 6 /opt/karoshi/.tempdata/$TCPIP.$$
-	rm -f /opt/karoshi/.tempdata/$TCPIP.$$
+<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Filter"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Time"'</b></th><th></th><th style="width: '"$WIDTH3"'px;"><b>'$"Username"'</b></th><th></th><th style="width: '"$WIDTH4"'px;"><b>'$"Website"'</b></th></tr></thead><tbody>'
+sort -t">" -s -k 6 /opt/karoshi/.tempdata/"$TCPIP.$$"
+	rm -f /opt/karoshi/.tempdata/"$TCPIP.$$"
 	echo '</tbody></table><br>'
 else
 	echo $"No logs exist for this TCPIP address."
@@ -222,13 +248,13 @@ fi
 
 if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
 	do
 		create_temp_logfile
 	done
 	viewlogs
 else 
-	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 	create_temp_logfile
 	viewlogs
 fi

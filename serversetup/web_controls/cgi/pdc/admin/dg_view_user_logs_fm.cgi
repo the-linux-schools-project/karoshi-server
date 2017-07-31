@@ -35,13 +35,13 @@ source /opt/karoshi/web_controls/version
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
-DATE_INFO=`date +%F`
-DAY=`echo $DATE_INFO | cut -d- -f3`
-MONTH=`echo $DATE_INFO | cut -d- -f2`
-YEAR=`echo $DATE_INFO | cut -d- -f1`
+DATE_INFO=$(date +%F)
+DAY=$(echo "$DATE_INFO" | cut -d- -f3)
+MONTH=$(echo "$DATE_INFO" | cut -d- -f2)
+YEAR=$(echo "$DATE_INFO" | cut -d- -f1)
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
@@ -50,8 +50,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"User Internet Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"User Internet Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 <script src="/all/js/jquery.js"></script>
@@ -60,7 +60,7 @@ echo '
 <script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -84,7 +84,7 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	#Generate navigation bar
@@ -95,10 +95,10 @@ fi
 
 echo '<form action="/cgi-bin/admin/dg_view_user_logs.cgi" name="testform" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -108,11 +108,10 @@ then
 '
 
 else
-	echo '<b>'$"User Internet Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a>
-<br><br>'
+	echo '<div class="sectiontitle">'$"User Internet Logs"' <a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Internet logs are updated every three minutes."'</span></a></div><br>'
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div id="suggestions"></div>
 '$"Username"'<br>
@@ -145,7 +144,7 @@ else
 	    <td>
 		<a class="info" href="javascript:void(0)"><img class="images" alt="help" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a>
 	    </td>
-        	<td colspan="1" rowspan="7" style="vertical-align: top;">
+        	<td colspan="1" rowspan="4" style="vertical-align: top;">
 	 		<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>
 		</td>
 	  </tr>
@@ -167,24 +166,23 @@ else
 	if [ -d /opt/karoshi/server_network/domain_information/trusted_domains ]
 	then
 		source /opt/karoshi/server_network/domain_information/domain_name
-		echo '<tr><td>'$"Domain"'</td><td><select name="_DOMAIN_" style="width: 200px; padding-left:0px;padding-right:0px"><option value="'$REALM'">'$REALM'</option>'
+		echo '<tr><td>'$"Domain"'</td><td><select name="_DOMAIN_" style="width: 200px; padding-left:0px;padding-right:0px"><option value="'"$REALM"'">'"$REALM"'</option>'
 		for TRUSTED_DOMAIN in $(ls -1 /opt/karoshi/server_network/domain_information/trusted_domains)
 		do
-			echo '<option value="'$TRUSTED_DOMAIN'">'$TRUSTED_DOMAIN'</option>'	
+			echo '<option value="'"$TRUSTED_DOMAIN"'">'"$TRUSTED_DOMAIN"'</option>'	
 		done
 		echo '<option label="blank" value=""></option></select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the domain that this user is on."'</span></a></td></tr>'
 	fi
 
 	echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
-<tr><td style="vertical-align: top; height: 120px;"></td><td></td></tr>
+<tr><td style="vertical-align: top; height: 120px;"></td><td></td><td></td></tr>
 </tbody></table><br>'
 fi
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit
 

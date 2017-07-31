@@ -41,15 +41,15 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Site Internet Logs"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -68,7 +68,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -92,57 +92,50 @@ fi
 echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 	echo '<div id="actionbox3"><div id="titlebox">'
-else
-	DIV_ID=actionbox2
 fi
 
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=9
-#Assign _WEBSITE_
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = WEBSITEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		WEBSITE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
 
-#Assign _LOGDATE_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = LOGDATEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		LOGDATE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign WEBSITE
+DATANAME=WEBSITE
+get_data
+WEBSITE="$DATAENTRY"
 
+#Assign LOGDATE
+DATANAME=LOGDATE
+get_data
+LOGDATE="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_site_logs_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -151,7 +144,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -159,13 +152,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -188,7 +181,7 @@ then
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -199,18 +192,18 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1)
 #View logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBSITE:$LOGDATE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs2
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 102 ]
+EXEC_STATUS="$?"
+if [ "$EXEC_STATUS" = 102 ]
 then
-	MESSAGE=`echo $"No log exists for this date."`
+	MESSAGE=$"No log exists for this date."
 	show_status
 fi
-if [ $EXEC_STATUS = 103 ]
+if [ "$EXEC_STATUS" = 103 ]
 then
-	MESSAGE=`echo $"No sites for this search exist in this log."`
+	MESSAGE=$"No sites for this search exist in this log."
 	show_status
 fi
 

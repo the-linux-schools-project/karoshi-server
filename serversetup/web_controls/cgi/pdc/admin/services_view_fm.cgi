@@ -32,16 +32,15 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,8 +51,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Service Status"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Service Status"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
   <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -85,7 +84,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -109,22 +108,20 @@ fi
 echo '</head><body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
-	TABLECLASS=standard
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=menubox
-	TABLECLASS=mobilestandard
 fi
 
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -134,19 +131,15 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 else
 	echo '
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td style="height:30px"><div class="sectiontitle">'$"Service Status"'</div>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></td>
-</tr></table>
-</div><div id="infobox">'
+	<div class="sectiontitle">'$"Service Status"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Service_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to control services on."'</span></a></div>
+	</div><div id="infobox">'
 fi
 
 #Redirect to show the services if there is only one server
-if [ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]
+if [[ $(ls -1 /opt/karoshi/server_network/servers/ | wc -l) = 1 ]]
 then
 	echo '<form action="services_view.cgi" id="foo" method="post">
-	<input name="_SERVERNAME_'`hostname-fqdn`'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'$MOBILE'_" value="" type="hidden">
+	<input name="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_MOBILE_'"$MOBILE"'_" value="" type="hidden">
 	</form>
 
 	<script type="text/javascript">
@@ -159,11 +152,11 @@ then
 else
 	echo '<form action="/cgi-bin/admin/services_view.cgi" name="selectservers" method="post">'
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers $MOBILE all $"Service Status"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Service Status"
 	echo '</form>'
 fi
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></div></body></html>'
 

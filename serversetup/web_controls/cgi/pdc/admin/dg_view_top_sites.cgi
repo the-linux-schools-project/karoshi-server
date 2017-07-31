@@ -34,25 +34,21 @@
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Top Sites"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Top Sites"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter({
-	headers: {
-	2: { sorter: false}
-    		}
-		});
+        $("#myTable").tablesorter(); 
     } 
 );
 </script>
@@ -63,30 +59,35 @@ echo '<div id="actionbox3"><div id="titlebox">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-
-#Assign DATE
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DATEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign DATE
+DATANAME=DATE
+get_data
+DATE=$(echo "$DATAENTRY" | tr -cd '0-9-')
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/dg_view_top_sites_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -95,7 +96,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -103,13 +104,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -125,9 +126,9 @@ then
 	show_status
 fi
 
-DAY=`echo $DATE | cut -d- -f1`
-MONTH=`echo $DATE | cut -d- -f2`
-YEAR=`echo $DATE | cut -d- -f3`
+DAY=$(echo "$DATE" | cut -d- -f1)
+MONTH=$(echo "$DATE" | cut -d- -f2)
+YEAR=$(echo "$DATE" | cut -d- -f3)
 
 #Check to see that DAY is not blank
 if [ -z "$DAY" ]
@@ -151,39 +152,39 @@ then
 fi
 
 #Check that day is not greater than 31
-if [ $DAY -gt 31 ]
+if [ "$DAY" -gt 31 ]
 then
 	MESSAGE=$"Date input error."
 	show_status
 fi
 
 #Check that the month is not greater than 12
-if [ $MONTH -gt 12 ]
+if [ "$MONTH" -gt 12 ]
 then
 	MESSAGE=$"Date input error."
 	show_status
 fi
 
-if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
+if [ "$YEAR" -lt 2006 ] || [ "$YEAR" -gt 3006 ]
 then
 	MESSAGE=$"The year is not valid."
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1)
 #View logs
-echo '<b>'$"Top Sites" $DAY-$MONTH-$YEAR'</b><br><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Top Sites" "$DAY-$MONTH-$YEAR"'</div><br></div><div id="infobox">'
 echo \<form action=\"/cgi-bin/admin/dg_view_site_logs2.cgi\" method=\"post\"\>
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_top_sites
-EXEC_STATUS=`echo $?`
+EXEC_STATUS="$?"
 if [ $EXEC_STATUS = 102 ]
 then
-	MESSAGE=`echo $"No log exists for this date."`
+	MESSAGE=$"No log exists for this date."
 	show_status
 fi
-if [ $EXEC_STATUS = 103 ]
+if [ "$EXEC_STATUS" = 103 ]
 then
-	MESSAGE=`echo $"No sites for this search exist in this log."`
+	MESSAGE=$"No sites for this search exist in this log."
 	show_status
 fi
 
