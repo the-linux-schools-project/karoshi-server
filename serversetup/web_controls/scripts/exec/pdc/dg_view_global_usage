@@ -23,114 +23,131 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_global_usage_cgi
 then
-	echo `date`: dg_view_global_usage - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_global_usage_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_global_usage.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_global_usage.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dg_view_global_usage_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dg_view_global_usage_cgi"'check' ]
 then
-	echo `date`: dg_view_global_usage - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_global_usage_cgi
 then
-	echo `date`: dg_view_global_usage - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_global_usage_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/dg_view_global_usage.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/dg_view_global_usage.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $dg_view_global_usage_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$dg_view_global_usage_cgi"'check' ]
 then
-	echo `date`: dg_view_global_usage - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-echo `date`: dg_view_global_usage - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-exit 101
+	echo "$(date): dg_view_global_usage - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: dg_view_global_usage - no data >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-DAY=`echo "$DATA" | cut -s -d: -f4`
-MONTH=`echo "$DATA" | cut -s -d: -f5`
-YEAR=`echo "$DATA" | cut -s -d: -f6`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+DAY=$(echo "$DATA" | cut -s -d: -f4)
+MONTH=$(echo "$DATA" | cut -s -d: -f5)
+YEAR=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
 if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: dg_view_global_usage - Not called by dg_view_global_usage.cgi >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Not called by dg_view_global_usage.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dg_view_global_usage - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dg_view_global_usage - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$DAY" ]
 then
-	echo `date`: dg_view_user_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Blank day by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$MONTH" ]
 then
-	echo `date`: dg_view_user_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Blank month by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$YEAR" ]
 then
-	echo `date`: dg_view_user_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - Blank year by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: dg_view_global_usage - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+	echo "$(date): dg_view_global_usage - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: dg_view_global_usage - Viewing logs "for" $USERNAME  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
+echo "$(date): dg_view_global_usage - Viewing logs for $USERNAME  by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 function viewlogs {
 if [ -f /opt/karoshi/.tempdata/global_user_usage.$$ ]
 then
-	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$"Global Internet Usage"' '$DAY'-'$MONTH'-'$YEAR'</b></td><td style="vertical-align: top;"><form action="dg_view_top_sites.cgi" method="post"><input name="_DATE_'$DAY'-'$MONTH'-'$YEAR'_" type="submit" class="button" value="'$"Top Sites"'">
-</form></td></tr></tbody></table><br>
 
-<table class="standard" style="text-align: left;" ><tbody><tr><td style="width: 60px;"><b>'$"View log"'</b></td><td style="width: 90px;"><b>'$"Username"'</b></td><td style="width: 120px;"><b>'$"Hits"'</b></td></tr>'
-sort -t">" -s -k 13 /opt/karoshi/.tempdata/global_user_usage.$$
-	rm -f /opt/karoshi/.tempdata/global_user_usage.$$
+	WIDTH=100
+	ICON1=/images/submenus/internet/internet_usage.png
+
+	echo '
+	<div class="sectiontitle">'$"Global Internet Usage"' '"$DAY"'-'"$MONTH"'-'"$YEAR"'</div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="dg_view_top_sites.cgi" method="post">
+				<button class="info" name="_TopSites_" value="_DATE_'"$DAY"'-'"$MONTH"'-'"$YEAR"'_">
+					<img src="'$ICON1'" alt="'$"Top Sites"'">
+					<span>'$"View the top sites visited."'</span><br>
+					'$"Top Sites"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table><br>
+
+	<table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><th style="width: 100px;"><b>'$"View log"'</b></th><th style="width: 200px;"><b>'$"Username"'</b></th><th style="width: 120px;"><b>'$"Hits"'</b></th></tr></thead><tbody>'
+	sort -t">" -s -k 13 /opt/karoshi/.tempdata/global_user_usage."$$"
+	rm -f /opt/karoshi/.tempdata/global_user_usage."$$"
 	echo '</tbody></table><br>'
 else
 	echo $"No usage logs exist for this date."
@@ -140,11 +157,11 @@ fi
 
 function create_temp_logfile {
 #Create a temporary log file from all of the servers
-if [ "$PROXYSERVER" = `hostname-fqdn` ]
+if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
 then
-	[ -f /opt/karoshi/logs/internetlogs/"$DAY"-"$MONTH"-"$YEAR"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"$DAY"-"$MONTH"-"$YEAR"/global_user_usage >> /opt/karoshi/.tempdata/global_user_usage.$$
+	[ -f /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR"/global_user_usage >> /opt/karoshi/.tempdata/global_user_usage."$$"
 else
-	ssh "$PROXYSERVER" ' [ -f /opt/karoshi/logs/internetlogs/"'$DAY'"-"'$MONTH'"-"'$YEAR'"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"'$DAY'"-"'$MONTH'"-"'$YEAR'"/global_user_usage ' >> /opt/karoshi/.tempdata/global_user_usage.$$
+	ssh "$PROXYSERVER" ' [ -f /opt/karoshi/logs/internetlogs/"'"$DAY"'"-"'"$MONTH"'"-"'"$YEAR"'"/global_user_usage ] && cat /opt/karoshi/logs/internetlogs/"'"$DAY"'"-"'"$MONTH"'"-"'"$YEAR"'"/global_user_usage ' >> /opt/karoshi/.tempdata/global_user_usage."$$"
 fi
 }
 
@@ -154,13 +171,13 @@ fi
 
 if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
 	do
 		create_temp_logfile
 	done
 	viewlogs
 else 
-	PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+	PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 	create_temp_logfile
 	viewlogs
 fi

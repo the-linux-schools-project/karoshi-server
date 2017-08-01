@@ -173,7 +173,27 @@ fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1)
 #View logs
-echo '<div class="sectiontitle">'$"Top Sites" "$DAY-$MONTH-$YEAR"'</div><br></div><div id="infobox">'
+
+WIDTH=100
+ICON1=/images/submenus/internet/date.png
+
+echo '<div class="sectiontitle">'$"Top Sites" "$DAY-$MONTH-$YEAR"'</div>
+
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/dg_view_top_sites_fm.cgi" method="post">
+			<button class="info" name="_ChangeDate_" value="_">
+				<img src="'$ICON1'" alt="'$"Change Date"'">
+				<span>'$"View the top sites for a different date."'</span><br>
+				'$"Change Date"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>
+
+</div><div id="infobox">'
 echo \<form action=\"/cgi-bin/admin/dg_view_site_logs2.cgi\" method=\"post\"\>
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_top_sites
 EXEC_STATUS="$?"

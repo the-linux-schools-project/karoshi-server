@@ -257,7 +257,7 @@ then
 	elif [ -f /opt/karoshi/logs/internetlogs/"$DAY-$MONTH-$YEAR/$USERS".tar.gz ]
 	then
 		#Global archive log
-		tar -xzOf "/opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz $USERS/$USERNAME" >> /opt/karoshi/.tempdata/"$USERNAME.$$"
+		tar -xzOf "/opt/karoshi/logs/internetlogs/$DAY-$MONTH-$YEAR/$USERS.tar.gz" "$USERS/$USERNAME" >> /opt/karoshi/.tempdata/"$USERNAME.$$"
 	fi
 else
 	ssh -x -o PasswordAuthentication=no "$PROXYSERVER" '

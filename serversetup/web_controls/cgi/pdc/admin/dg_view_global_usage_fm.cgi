@@ -29,17 +29,16 @@
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
-DATE_INFO=`date +%F`
 ################################
 #Get date for yesterday
 ################################
-EPOCH_TODAY=`date +%s`
+EPOCH_TODAY=$(date +%s)
 let ONEDAY=60*60*24
-let EPOCH_YESTERDAY=$EPOCH_TODAY-$ONEDAY
-LOG_DATE=`date +%d-%m-%Y -d @$EPOCH_YESTERDAY`
+let EPOCH_YESTERDAY="$EPOCH_TODAY-$ONEDAY"
+LOG_DATE=$(date +%d-%m-%Y -d @"$EPOCH_YESTERDAY")
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
@@ -48,8 +47,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Global Internet Usage"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Global Internet Usage"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) -->
 
@@ -60,8 +59,8 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_global_usage.cgi" name="testform" method="post"><b></b>
-  <div id="actionbox"><b>'$"Global Internet Usage"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage logs are updated at the end of every day."'</span></a>
-<br><br>
+  <div id="actionbox"><div id="titlebox"><div class="sectiontitle">'$"Global Internet Usage"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage logs are updated at the end of every day."'</span></a>
+</div><br>
 
 <table class="standard" style="text-align: left;" >
     <tbody>
@@ -81,13 +80,10 @@ echo "<!-- calendar attaches to existing form element -->
 
 
 
-echo '</tbody></table>
-  </div>
-  <div id="submitbox">
-  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-  </div>
+echo '</tbody></table><br>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div></div>
 </form>
-</div></body>
-</html>
+</div></body></html>
 '
 exit

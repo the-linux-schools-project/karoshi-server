@@ -172,7 +172,7 @@ else
 	WIDTH=70
 	WIDTH2=90
 	WIDTH3=110
-	WIDTH4=90
+	WIDTH4=110
 	ICON1=/images/assets/curriculum_computerm.png
 	ICON2=/images/submenus/system/clockm.png
 	ICON3=/images/submenus/internet/client_allowedm.png
@@ -184,7 +184,7 @@ else
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"Client Internet Controls"'</span>
-	<a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'"$LOCATION"'</a>
+	<a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Client Internet Controls"'</a>
 	</div></div><div id="mobileactionbox">
 	'
 fi

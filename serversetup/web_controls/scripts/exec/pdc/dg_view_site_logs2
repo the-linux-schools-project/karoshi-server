@@ -164,7 +164,7 @@ echo '<div class="sectiontitle">'$"Site Internet Logs"' '"$WEBSITE"' '"$LOGDATE"
 
 </tr></tbody></table><br>
 '
-[ "$MOBILE" = no ] && 'echo </div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 
 function create_temp_logfile {

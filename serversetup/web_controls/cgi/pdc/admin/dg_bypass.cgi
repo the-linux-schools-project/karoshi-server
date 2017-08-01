@@ -167,7 +167,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><b></b>'
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 
 function passinfo {
@@ -240,10 +240,10 @@ then
 	      </tr>
 	    </tbody>
 	  </table>
-	  <br></div><div id="submitbox">'
+	  <br>'
 	fi
-	echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+	echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 fi
-
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

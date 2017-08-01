@@ -99,13 +99,19 @@ if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
+	WIDTH=100
 	ICON1=/images/assets/location.png
+	ICON3=/images/submenus/system/clock.png
+	ICON4=/images/assets/curriculum_computer.png
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
+	WIDTH=110
 	ICON1=/images/assets/locationm.png
+	ICON3=/images/submenus/system/clockm.png
+	ICON4=/images/assets/curriculum_computerm.png
 fi
 
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
@@ -119,40 +125,34 @@ then
 <a href="mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
-else
-	WIDTH=100
-	ICON3=/images/submenus/system/clock.png
-	ICON4=/images/assets/curriculum_computer.png
-
-	echo '
-	<div class="sectiontitle">'$"Client Internet Controls"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<form action="dg_reset_room_controls_fm.cgi" method="post">
-				<button class="info" name="_SetResetTimes_" value="_">
-					<img src="'$ICON3'" alt="'$"Reset Times"'">
-					<span>'$"Set reset times."'</span><br>
-					'$"Reset Times"'
-				</button>
-			</form>
-		</td>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<form action="asset_register_view.cgi" method="post">
-				<button class="info" name="_AssetRegister_" value="_">
-					<img src="'$ICON4'" alt="'$"Asset Register"'">
-					<span>'$"View the asset register."'</span><br>
-					'$"Asset Register"'
-				</button>
-			</form>
-		</td>
-
-	</tr></tbody></table>
-
-</div><div id=infobox>'
-
 fi
+echo '
+<div class="sectiontitle">'$"Client Internet Controls"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Room_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location that you want to allow or deny internet access for."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="dg_reset_room_controls_fm.cgi" method="post">
+			<button class="info" name="_SetResetTimes_" value="_">
+				<img src="'$ICON3'" alt="'$"Reset Times"'">
+				<span>'$"Set reset times."'</span><br>
+				'$"Reset Times"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="asset_register_view.cgi" method="post">
+			<button class="info" name="_AssetRegister_" value="_">
+				<img src="'$ICON4'" alt="'$"Asset Register"'">
+				<span>'$"View the asset register."'</span><br>
+				'$"Asset Register"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id=infobox>'
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then

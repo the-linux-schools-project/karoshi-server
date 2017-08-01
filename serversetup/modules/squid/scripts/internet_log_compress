@@ -24,10 +24,10 @@
 ################################
 #Get date for yesterday
 ################################
-EPOCH_TODAY=`date +%s`
+EPOCH_TODAY=$(date +%s)
 let ONEDAY=60*60*24
-let EPOCH_YESTERDAY=$EPOCH_TODAY-$ONEDAY
-LOG_DATE=`date +%d-%m-%Y -d @$EPOCH_YESTERDAY`
+let EPOCH_YESTERDAY="$EPOCH_TODAY-$ONEDAY"
+LOG_DATE=$(date +%d-%m-%Y -d @"$EPOCH_YESTERDAY")
 #################################
 #Compress all internet logs in yesterdays log folder
 #################################
@@ -35,96 +35,96 @@ LOG_DATE=`date +%d-%m-%Y -d @$EPOCH_YESTERDAY`
 [ ! -d /opt/karoshi/logs/internetlogs/user_usage ] && mkdir -p /opt/karoshi/logs/internetlogs/user_usage
 
 
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/users ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE/"users ]
 then
-	if [ `ls -1 /opt/karoshi/logs/internetlogs/$LOG_DATE/users | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/logs/internetlogs/"$LOG_DATE"/users | wc -l) -gt 0 ]]
 	then
-		for USERLOGS in /opt/karoshi/logs/internetlogs/$LOG_DATE/users/*
+		for USERLOGS in /opt/karoshi/logs/internetlogs/"$LOG_DATE"/users/*
 		do
-			USERLOG=`basename $USERLOGS`
-			if [ `echo $USERLOG | grep -c tar.gz$` = 0 ]
+			USERLOG=$(basename "$USERLOGS")
+			if [[ $(echo "$USERLOG" | grep -c tar.gz$) = 0 ]]
 			then
 				#Get number of sites visted for user
-				LOGLENGTH=`wc -l /opt/karoshi/logs/internetlogs/$LOG_DATE/users/$USERLOG  | cut -d' ' -f1`
+				LOGLENGTH=$(wc -l /opt/karoshi/logs/internetlogs/"$LOG_DATE/users/$USERLOG"  | cut -d' ' -f1)
 
-				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$LOG_DATE'_USERNAME_'$USERLOG'_" type="image" class="images" src="/images/submenus/internet/user_log.png" value=""><span>View log - '$USERLOG'</span></a></form></td><td style="vertical-align: top;">'$USERLOG'</td><td style="vertical-align: top;">'$LOGLENGTH'</td></tr>' >> /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1
+				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'$USERLOG'</td><td style="vertical-align: top;">'$LOGLENGTH'</td></tr>' >> /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1
 
-				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_ACTION_'DATE_$LOG_DATE'_USERNAME_'$USERLOG'_" type="image" class="images" src="/images/submenus/internet/user_log.png" value=""><span>View log - '$USERLOG'</span></a></form></td><td style="vertical-align: top;">'$LOGLENGTH'</td><td style="vertical-align: top;">'$LOG_DATE'</td></tr>' >> /opt/karoshi/logs/internetlogs/user_usage/$USERLOG
+				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'$LOGLENGTH'</td><td style="vertical-align: top;">'$LOG_DATE'</td></tr>' >> /opt/karoshi/logs/internetlogs/user_usage/$USERLOG
 
 
 			fi
 		done
 
 		#Sort user_usage
-		if [ -f /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1 ]
+		if [ -f /opt/karoshi/logs/internetlogs/"$LOG_DATE"/global_user_usage1 ]
 		then
-			sort -t'>' -n -r -k 14 /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1 > /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage
-			rm -f /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1
+			sort -t'>' -n -r -k 14 /opt/karoshi/logs/internetlogs/"$LOG_DATE"/global_user_usage1 > /opt/karoshi/logs/internetlogs/"$LOG_DATE"/global_user_usage
+			rm -f /opt/karoshi/logs/internetlogs/"$LOG_DATE"/global_user_usage1
 		fi
 	fi
 
 	#Tar up archive
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/
 	tar --force-local -z -c -f users.tar.gz users
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/users
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/users
 fi
 
 #Compress detailed users logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/users_detailed ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/users_detailed ]
 then
 	#Tar up archive
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/
 	tar --force-local -z -c -f users_detailed.tar.gz users_detailed
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/users_detailed
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/users_detailed
 fi
 
 #Compress allowed sites logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/sites/allowed ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites/allowed ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/sites
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites
 	tar --force-local -z -c -f allowed.tar.gz allowed
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/sites/allowed
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites/allowed
 fi
 
 #Compress detailed allowed sites
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed/allowed ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed/allowed ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed
 	tar --force-local -z -c -f allowed.tar.gz allowed
-	[ $? = 0 ] && rm -f -R cd /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed/allowed
+	[ "$?" = 0 ] && rm -f -R cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed/allowed
 fi
 
 #Compress denied sites logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/sites/denied ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites/denied ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/sites
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites
 	tar --force-local -z -c -f denied.tar.gz denied
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/sites/denied
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites/denied
 fi
 
 
 #Compress detailed denied sites logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed/denied ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed/denied ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed
 	tar --force-local -z -c -f denied.tar.gz denied
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/sites_detailed/denied
+	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/sites_detailed/denied
 fi
 
 #Compress machine logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/machines ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/machines ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"
 	tar --force-local -z -c -f machines.tar.gz machines
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/machines/
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/machines/
 fi
 
 #Compress detailed machine logs
-if [ -d /opt/karoshi/logs/internetlogs/$LOG_DATE/machines_detailed ]
+if [ -d /opt/karoshi/logs/internetlogs/"$LOG_DATE"/machines_detailed ]
 then
-	cd /opt/karoshi/logs/internetlogs/$LOG_DATE
+	cd /opt/karoshi/logs/internetlogs/"$LOG_DATE"
 	tar --force-local -z -c -f machines_detailed.tar.gz machines_detailed
-	[ $? = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/$LOG_DATE/machines_detailed/
+	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/machines_detailed/
 fi
 
 exit
