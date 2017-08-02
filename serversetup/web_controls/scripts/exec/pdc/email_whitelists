@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,62 +31,62 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_whitelists_cgi
 then
-	echo `date`: email_whitelists - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_whitelists_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_whitelists.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_whitelists.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_whitelists_cgi'check' ]
+if [ "$MD5SUM"'check' != "$email_whitelists_cgi"'check' ]
 then
-	echo `date`: email_whitelists - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_whitelists - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_whitelists - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-ADDRESS=`echo "$DATA" | cut -s -d: -f5`
-MOBILE=`echo "$DATA" | cut -s -d: -f6`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+ADDRESS=$(echo "$DATA" | cut -s -d: -f5)
+MOBILE=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: email_whitelists - Not called by email_whitelists.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - Not called by email_whitelists.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_whitelists - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_whitelists - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: email_whitelists - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_whitelists - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ ! -z "$ACTION" ]
@@ -95,7 +95,7 @@ then
 	then
 		if [ -z "$ADDRESS" ]
 		then
-		echo `date`: email_whitelists - Blank address by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): email_whitelists - Blank address by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 		fi
 	fi
@@ -107,26 +107,21 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $MOBILE = no ]
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=80
 	ICON1="/images/submenus/email/email_delete.png"
-	ICON2="/images/submenus/email/alias_add.png"
-	ICON3="/images/submenus/email/alias_view.png"
 else
 	TABLECLASS=mobilestandard
 	WIDTH1=160
 	WIDTH2=80
 	ICON1="/images/submenus/email/email_deletem.png"
-	ICON2="/images/submenus/email/alias_addm.png"
-	ICON3="/images/submenus/email/alias_viewm.png"
 fi
 
 function completed_status {
@@ -139,27 +134,27 @@ exit
 
 if [ "$ACTION" = reallyadd ]
 then
-	ADDRESS=`echo "$ADDRESS" | sed "s/%40/@/g" | sed "s/%3A/:/g"`
-	if [ "$EMAILSERVER" = `hostname-fqdn` ]
+	ADDRESS=$(echo "$ADDRESS" | sed "s/%40/@/g" | sed "s/%3A/:/g")
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
-		if [ `grep -c -w "$ADDRESS" /etc/MailScanner/rules/spam.whitelist.rules.karoshi` = 0 ]
+		if [[ $(grep -c -w "$ADDRESS" /etc/MailScanner/rules/spam.whitelist.rules.karoshi) = 0 ]]
 		then
 			echo "From:	$ADDRESS yes" >> /etc/MailScanner/rules/spam.whitelist.rules.karoshi
-			sort /etc/MailScanner/rules/spam.whitelist.rules.karoshi > /etc/MailScanner/rules/spam.whitelist.rules.karoshi.$$
+			sort /etc/MailScanner/rules/spam.whitelist.rules.karoshi > /etc/MailScanner/rules/spam.whitelist.rules.karoshi."$$"
 			rm -f /etc/MailScanner/rules/spam.whitelist.rules.karoshi
-			mv /etc/MailScanner/rules/spam.whitelist.rules.karoshi.$$ /etc/MailScanner/rules/spam.whitelist.rules.karoshi
+			mv /etc/MailScanner/rules/spam.whitelist.rules.karoshi."$$" /etc/MailScanner/rules/spam.whitelist.rules.karoshi
 			cat  /etc/MailScanner/rules/spam.whitelist.rules.karoshi /etc/MailScanner/rules/spam.whitelist.rules.additional > /etc/MailScanner/rules/spam.whitelist.rules
 			echo "FromOrTo:	default		no" >> /etc/MailScanner/rules/spam.whitelist.rules
 			service mailscanner reload 1>/dev/null
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		if [ `grep -c -w "'$ADDRESS'" /etc/MailScanner/rules/spam.whitelist.rules.karoshi` = 0 ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+		if [ `grep -c -w "'"$ADDRESS"'" /etc/MailScanner/rules/spam.whitelist.rules.karoshi` = 0 ]
 		then
-			echo "From:	'$ADDRESS' yes" >> /etc/MailScanner/rules/spam.whitelist.rules.karoshi
-			sort /etc/MailScanner/rules/spam.whitelist.rules.karoshi > /etc/MailScanner/rules/spam.whitelist.rules.karoshi.$$
+			echo "From:	'"$ADDRESS"' yes" >> /etc/MailScanner/rules/spam.whitelist.rules.karoshi
+			sort /etc/MailScanner/rules/spam.whitelist.rules.karoshi > /etc/MailScanner/rules/spam.whitelist.rules.karoshi."$$"
 			rm -f /etc/MailScanner/rules/spam.whitelist.rules.karoshi
-			mv /etc/MailScanner/rules/spam.whitelist.rules.karoshi.$$ /etc/MailScanner/rules/spam.whitelist.rules.karoshi
+			mv /etc/MailScanner/rules/spam.whitelist.rules.karoshi."$$" /etc/MailScanner/rules/spam.whitelist.rules.karoshi
 			cat  /etc/MailScanner/rules/spam.whitelist.rules.karoshi /etc/MailScanner/rules/spam.whitelist.rules.additional > /etc/MailScanner/rules/spam.whitelist.rules
 			echo "FromOrTo:	default		no" >> /etc/MailScanner/rules/spam.whitelist.rules
 			service mailscanner reload 1>/dev/null
@@ -172,11 +167,11 @@ fi
 #Delete whitelist entry
 if [ "$ACTION" = delete ]
 then
-	ADDRESS=`echo "$ADDRESS" | sed "s/%40/@/g" | sed "s/%3A/:/g"`
-	if [ "$EMAILSERVER" = `hostname-fqdn` ]
+	ADDRESS=$(echo "$ADDRESS" | sed "s/%40/@/g" | sed "s/%3A/:/g")
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		#Get line number for the address
-		LINENUM=`grep -n -w "$ADDRESS" /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -d: -f1 | sed -n 1,1p`
+		LINENUM=$(grep -n -w "$ADDRESS" /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -d: -f1 | sed -n 1,1p)
 		if [ ! -z "$LINENUM" ]
 		then
 			sed -i "$LINENUM"d /etc/MailScanner/rules/spam.whitelist.rules.karoshi
@@ -186,9 +181,9 @@ then
 			service mailscanner reload 1>/dev/null
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		#Get line number for the address
-		LINENUM=`grep -n -w "'$ADDRESS'" /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -d: -f1 | sed -n 1,1p`
+		LINENUM=$(grep -n -w "'"$ADDRESS"'" /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -d: -f1 | sed -n 1,1p)
 		if [ ! -z "$LINENUM" ]
 		then
 			sed -i "$LINENUM"d /etc/MailScanner/rules/spam.whitelist.rules.karoshi
@@ -206,19 +201,19 @@ fi
 #View whitelist
 if [ "$ACTION" = view ]
 then
-	if [ "$EMAILSERVER" = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		touch /etc/MailScanner/rules/spam.whitelist.rules.karoshi
 		touch /etc/MailScanner/rules/spam.whitelist.rules.additional
-		if [ `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | wc -l` -gt 0 ]
+		if [[ $(cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | wc -l) -gt 0 ]]
 		then
-			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$"Address"'</b></th><th style="width: '$WIDTH2'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
-			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Address"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+			for ADDRESS in $(cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g")
 			do
-				echo '<tr><td>'$ADDRESS'</td><td>
-				<button class="info" name="_DeleteAddress_" value="_ACTION_delete_ADDRESS_'$ADDRESS'_">
-				<img src="'$ICON1'" alt="'$ADDRESS'">
-				<span>'$ADDRESS'</span>
+				echo '<tr><td>'"$ADDRESS"'</td><td>
+				<button class="info" name="_DeleteAddress_" value="_ACTION_delete_ADDRESS_'"$ADDRESS"'_">
+				<img src="'"$ICON1"'" alt="'"$ADDRESS"'">
+				<span>'"$ADDRESS"'</span>
 				</button>
 				</td></tr>'
 			done
@@ -230,12 +225,12 @@ then
 		touch /etc/MailScanner/rules/spam.whitelist.rules.additional
 		if [ `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | wc -l` -gt 0 ]
 		then
-			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead><tr><th style=\"width: '$WIDTH1'px;\"><b>'$"Address"'</b></th><th style=\"width: '$WIDTH2'px;\"><b>'$"Delete"'</b></th></tr></thead><tbody>"
+			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><thead><tr><th style=\"width: '"$WIDTH1"'px;\"><b>'$"Address"'</b></th><th style=\"width: '"$WIDTH2"'px;\"><b>'$"Delete"'</b></th></tr></thead><tbody>"
 			for ADDRESS in `cat /etc/MailScanner/rules/spam.whitelist.rules.karoshi | cut -f2 | cut -d" " -f1 | sed "s/\t//g"`
 			do
 				echo "<tr><td>$ADDRESS</td><td>
 				<button class=\"info\" name=\"_DeleteAddress_\" value=\"_ACTION_delete_ADDRESS_$ADDRESS"_"\">
-				<img src=\"'$ICON1'\" alt=\"$ADDRESS\">
+				<img src=\"'"$ICON1"'\" alt=\"$ADDRESS\">
 				<span>$ADDRESS</span>
 				</button>
 				</td></tr>"
@@ -250,11 +245,11 @@ if [ $ACTION = add ]
 then
 
 	echo '
-	<input name="_ACTION_" value="reallyadd" type="hidden"><table class="'$TABLECLASS'" style="text-align: left;" >
+	<input name="_ACTION_" value="reallyadd" type="hidden"><table class="'"$TABLECLASS"'" style="text-align: left;" >
 	<tbody><tr><td style="width: 180px;">'$"E-Mail Address or domain"'</td>
-	<td><input tabindex= "1" name="_ADDRESS_" style="width: '$WIDTH1'px;" size="20" type="text"></td><td>
+	<td><input tabindex= "1" name="_ADDRESS_" style="width: '"$WIDTH1"'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_whitelists"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the E-Mail address or domain that you want to add to the whitelist."'</span></a>
-	</td></tr></tbody></table><br>
+	</td></tr></tbody></table><br><br>
 	<input class="button" value="'$"Submit"'" type="submit">'
 fi
 

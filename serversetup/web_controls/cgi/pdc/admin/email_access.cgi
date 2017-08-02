@@ -34,15 +34,15 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Access"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Access"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -55,7 +55,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -80,68 +80,47 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #echo $DATA"<br>"
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
-#Assign USERSELECT
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERSELECTcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERSELECT=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign USERSELECT
+DATANAME=USERSELECT
+get_data
+USERSELECT="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign ACCESSLEVEL
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACCESSLEVELcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACCESSLEVEL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACCESSLEVEL
+get_data
+ACCESSLEVEL="$DATAENTRY"
 
 #Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=GROUP
+get_data
+GROUP="$DATAENTRY"
 
 #Generate navigation bar
 if [ $MOBILE = no ]
@@ -155,7 +134,7 @@ fi
 
 function show_status {
 echo '<script>'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/email_access.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -165,7 +144,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -173,13 +152,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -191,18 +170,18 @@ then
 	ACTION=getchoice
 fi
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
-	if [ -z $USERSELECT ]
+	if [ -z "$USERSELECT" ]
 	then
 		ACTION=getchoice
 	fi
 	#Check to see if the user or the group exists
 	getent group "$USERSELECT" 1>/dev/null
-	if [ $? != 0 ]
+	if [ "$?" != 0 ]
 	then
 		getent passwd "$USERSELECT" 1>/dev/null
-		if [ $? != 0 ]
+		if [ "$?" != 0 ]
 		then
 			MESSAGE=$"The username or group you have chosen does not exist."
 			show_status
@@ -211,9 +190,9 @@ then
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"E-Mail Access"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -228,35 +207,56 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	fi
 	echo '<br><br>'
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr style="height: 30px;">
-<td><div class="sectiontitle">'$"E-Mail Access"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></td>'
+
+	WIDTH=100
+	ICON1=/images/submenus/system/edit.png
+	ICON2=/images/submenus/user/users.png
+
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+
+
+	<div class="sectiontitle">'$"E-Mail Access"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set the level of access for sending and receiving E-Mails for your users."'<br><br>'$"Full access - allow the user to send and receive E-mails to all domains."'<br><br>'$"Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."'<br><br>'$"No Access - the user will not be able to send or receive any E-Mails."'</span></a></div><table class="tablesorter"><tbody><tr>'
+
 	if [ "$ACTION" != viewrestrictionlist ]
 	then
-		echo '<td><form action="/cgi-bin/admin/email_access.cgi" method="post">
-		<button class="button" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
-		'$"View Restriction List"'
-		</button>
-		</form></td>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/email_access.cgi" method="post">
+				<button class="info" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
+					<img src="'"$ICON1"'" alt="'$"View Restriction List"'">
+					<span>'$"View the restriction list."'</span><br>
+					'$"View Restriction List"'
+				</button>
+			</form>
+		</td>
+
+	'
 	fi
+
 	if [ "$ACTION" != getchoice ]
 	then
-		echo '<td><form action="email_access.cgi" method="post">
-		<button class="button" name="_ChooseUserOrGroup_" value="_">
-		'$"Choose User / group"'
-		</button>
-		</form>
-		</td>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/email_access.cgi" method="post">
+				<button class="info" name="_ViewList_" value="_">
+					<img src="'"$ICON2"'" alt="'$"Choose User / Group"'">
+					<span>'$"Choose a user or group to change their E-Mail access."'</span><br>
+					'$"Choose User / Group"'
+				</button>
+			</form>
+		</td>
+
+	'
 	fi
+
 	echo '</tr></table><br></div><div id="infobox">'
 fi
 
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERSELECT:$ACCESSLEVEL:$GROUP:$MOBILE:email_access:" | sudo -H /opt/karoshi/web_controls/exec/email_access
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
 

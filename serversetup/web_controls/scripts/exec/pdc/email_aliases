@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,83 +31,83 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
 then
-	echo `date`: email_aliases - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_aliases_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_aliases_cgi'check' ]
+if [ "$MD5SUM"'check' != "$email_aliases_cgi"'check' ]
 then
-	echo `date`: email_aliases - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_aliases - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_aliases - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f5 | tr '[A-Z]' '[a-z]'`
-USERNAME=`echo "$DATA" | cut -s -d: -f6`
-DOMAIN=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+ALIAS=$(echo "$DATA" | cut -s -d: -f5 | tr '[:upper:]' '[:lower:]')
+USERNAME=$(echo "$DATA" | cut -s -d: -f6)
+DOMAIN=$(echo "$DATA" | cut -s -d: -f7)
+MOBILE=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: email_aliases - Not called by email_aliases.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - Not called by email_aliases.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_aliases - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_aliases - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: email_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ ! -z $ACTION ]
+if [ ! -z "$ACTION" ]
 then
-	if [ $ACTION = delete ] || [ $ACTION = reallyadd ] || [ $ACTION = reallydelete ]
+	if [ "$ACTION" = delete ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
 	then
 		if [ -z "$ALIAS" ]
 		then
-			echo `date`: email_aliases - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): email_aliases - Blank alias by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			exit 101
 		fi
 		if [ -z "$USERNAME" ]
 		then
-			echo `date`: email_aliases - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): email_aliases - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			exit 101
 		fi
 		if [ -z "$DOMAIN" ]
 		then
-			echo `date`: email_aliases - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): email_aliases - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			exit 101
 		fi
 	fi
@@ -119,12 +119,11 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 source /opt/karoshi/server_network/domain_information/domain_name
 
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 if [ "$MOBILE" = no ]
 then
 	USERNAMEMSG=$"Username"
@@ -133,12 +132,9 @@ then
 	WIDTH2=200
 	WIDTH3=60
 	WIDTH4=200
-	WIDTH5=192
 	HEIGHT=25
 	HEIGHT2=20
 	ICON1="/images/submenus/email/email_delete.png"
-	ICON2="/images/submenus/email/alias_add.png"
-	ICON3="/images/submenus/email/alias_view.png"
 else
 	USERNAMEMSG=$"User"
 	TABLECLASS=mobilestandard
@@ -146,12 +142,9 @@ else
 	WIDTH2=200
 	WIDTH3=30
 	WIDTH4=120
-	WIDTH5=200
 	HEIGHT=30
 	HEIGHT2=30
 	ICON1="/images/submenus/email/email_deletem.png"
-	ICON2="/images/submenus/email/alias_addm.png"
-	ICON3="/images/submenus/email/alias_viewm.png"
 fi
 
 function completed_status {
@@ -166,28 +159,28 @@ exit
 if [ "$ACTION" = view ]
 then
 
-	echo '<form action="/cgi-bin/admin/email_aliases.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '$WIDTH1'px;"><b>'$USERNAMEMSG'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Alias"'</b></th><th style="width: '$WIDTH1'px;"><b>'$"Domain"'</b></th><th style="width: '$WIDTH3'px;">'
+	echo '<form action="/cgi-bin/admin/email_aliases.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: '"$WIDTH1"'px;"><b>'"$USERNAMEMSG"'</b></th><th style="width: '"$WIDTH1"'px;"><b>'$"Alias"'</b></th><th style="width: '"$WIDTH1"'px;"><b>'$"Domain"'</b></th><th style="width: '"$WIDTH3"'px;">'
 
 	[ "$MOBILE" = no ] && echo '<b>'$"Delete"'</b>'
 
 	echo '</th></tr></thead><tbody>'
 
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 	#Check that alias file is there
 		if [ ! -f /etc/postfix/aliases ]
 		then
-			echo `date`: "email_aliases - no alias file on $EMAILSERVER for $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): email_aliases - no alias file on $EMAILSERVER for $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			exit 101
 		fi
-	for ENTRY in `cat /etc/postfix/aliases | sed "s/\t//g"`
+	for ENTRY in $(sed "s/\t//g" /etc/postfix/aliases)
 		do
-		ALIAS=`echo $ENTRY | cut -d: -f1`
-		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo '<tr><td>'$USERNAME'</td><td>'$ALIAS'</td><td>'$REALM'</td><td>
-		<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'$ALIAS'_USERNAME_'$USERNAME'_DOMAIN_'$REALM'_">
-		<img src="'$ICON1'" alt="'$"Delete"'">
-		<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+		ALIAS=$(echo "$ENTRY" | cut -d: -f1)
+		USERNAME=$(echo "$ENTRY" | cut -d: -f2)
+		echo '<tr><td>'"$USERNAME"'</td><td>'"$ALIAS"'</td><td>'"$REALM"'</td><td>
+		<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'"$ALIAS"'_USERNAME_'"$USERNAME"'_DOMAIN_'"$REALM"'_">
+		<img src="'"$ICON1"'" alt="'$"Delete"'">
+		<span>'$"Delete"' '"$ALIAS"' - '"$USERNAME"'</span>
 		</button>
 		</td></tr>'
 		done
@@ -196,37 +189,37 @@ then
 	then
 		for VIRTUAL_DOMAIN in $(ls -1 /etc/postfix/virtual_domain_addresses/)
 		do
-			for VIRTUAL_ADDRESS in $(cat /etc/postfix/virtual_domain_addresses/$VIRTUAL_DOMAIN | sed "s/\t/:/g")
+			for VIRTUAL_ADDRESS in $(sed "s/\t/:/g" /etc/postfix/virtual_domain_addresses/"$VIRTUAL_DOMAIN")
 			do
-				ALIAS=`echo $VIRTUAL_ADDRESS | cut -d: -f1 | cut -d"@" -f1`
-				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
-				echo '<tr><td>'$USERNAME'</td><td>'$ALIAS'</td><td>'$VIRTUAL_DOMAIN'</td><td>
-				<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'$ALIAS'_USERNAME_'$USERNAME'_DOMAIN_'$VIRTUAL_DOMAIN'_">
-				<img src="'$ICON1'" alt="'$"Delete"'">
-				<span>'$"Delete"' '$ALIAS' - '$USERNAME'</span>
+				ALIAS=$(echo "$VIRTUAL_ADDRESS" | cut -d: -f1 | cut -d"@" -f1)
+				USERNAME=$(echo "$VIRTUAL_ADDRESS" | cut -d: -f2)
+				echo '<tr><td>'"$USERNAME"'</td><td>'"$ALIAS"'</td><td>'"$VIRTUAL_DOMAIN"'</td><td>
+				<button class="info" name="_DeleteAlias_" value="_ACTION_delete_ALIAS_'"$ALIAS"'_USERNAME_'"$USERNAME"'_DOMAIN_'"$VIRTUAL_DOMAIN"'_">
+				<img src="'"$ICON1"'" alt="'$"Delete"'">
+				<span>'$"Delete"' '"$ALIAS"' - '"$USERNAME"'</span>
 				</button>
 				</td></tr>'
 			done
 		done
 	fi
 	else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 	#Check that alias file is there
-		if [ ! -f /etc/postfix/aliases ]
-		then
+	if [ ! -f /etc/postfix/aliases ]
+	then
 		exit 101
-		fi
-	for ENTRY in `cat /etc/postfix/aliases | sed "s/\t//g"`
-		do
-		ALIAS=`echo $ENTRY | cut -d: -f1`
-		USERNAME=`echo $ENTRY | cut -d: -f2`
-		echo "<tr><td>"$USERNAME"</td><td>"$ALIAS"</td><td>'$REALM'</td><td>
-		<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_'$REALM'_\">
-		<img src=\"'$ICON1'\" alt=\"'$"Delete"'\">
+	fi
+	for ENTRY in $(cat /etc/postfix/aliases | sed "s/\t//g")
+	do
+		ALIAS=$(echo "$ENTRY" | cut -d: -f1)
+		USERNAME=$(echo "$ENTRY" | cut -d: -f2)
+		echo "<tr><td>$USERNAME</td><td>$ALIAS</td><td>'"$REALM"'</td><td>
+		<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_'"$REALM"'_\">
+		<img src=\"'"$ICON1"'\" alt=\"'$"Delete"'\">
 		<span>'$"Delete"' $ALIAS - $USERNAME</span>
 		</button>
 		</td></tr>"
-		done
+	done
 	#Show any virtual aliases
 	if [ -d /etc/postfix/virtual_domain_addresses/ ]
 	then
@@ -238,7 +231,7 @@ then
 				USERNAME=`echo $VIRTUAL_ADDRESS | cut -d: -f2`
 				echo "<tr><td>$USERNAME</td><td>$ALIAS</td><td>$VIRTUAL_DOMAIN</td><td>
 				<button class=\"info\" name=\"_DeleteAlias_\" value=\"_ACTION_delete_ALIAS_$ALIAS"_"USERNAME_$USERNAME"_"DOMAIN_$VIRTUAL_DOMAIN"_"\">
-				<img src=\"'$ICON1'\" alt=\"'$"Delete"'\">
+				<img src=\"'"$ICON1"'\" alt=\"'$"Delete"'\">
 				<span>'$"Delete"' $ALIAS - $USERNAME</span>
 				</button>
 				</td></tr>"
@@ -253,52 +246,52 @@ fi
 if [ "$ACTION" = delete ]
 then
 	#Confirm delete request
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH4'px;">'$"Username"'</td><td>'$USERNAME'</td></tr>
-	<tr><td>'$"Alias"'</td><td>'$ALIAS'</td></tr>
-	<tr><td>'$"Domain"'</td><td>'$DOMAIN'</td></tr>
-	</tbody></table><br>
+	echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH4"'px;">'$"Username"'</td><td>'"$USERNAME"'</td></tr>
+	<tr><td>'$"Alias"'</td><td>'"$ALIAS"'</td></tr>
+	<tr><td>'$"Domain"'</td><td>'"$DOMAIN"'</td></tr>
+	</tbody></table><br><br>
 	'$"Are you sure that you want to delete this alias?"'
 	<br><br>
 	<form style="display: inline;" action="/cgi-bin/admin/email_aliases.cgi" method="post">
 	<input type="hidden" name="_ACTION_" value="reallydelete">
-	<input type="hidden" name="_ALIAS_" value="'$ALIAS'">
-	<input type="hidden" name="_USERNAME_" value="'$USERNAME'">
-	<input type="hidden" name="_DOMAIN_" value="'$DOMAIN'">
+	<input type="hidden" name="_ALIAS_" value="'"$ALIAS"'">
+	<input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
+	<input type="hidden" name="_DOMAIN_" value="'"$DOMAIN"'">
 	<input value="'$"Submit"'" class="button" type="submit"></form>
 	<form style="display: inline;" action="/cgi-bin/admin/email_aliases.cgi" method="post"><input value="'$"Cancel"'" class="button" type="submit"></form>'
 fi
 
-if [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallydelete ]
 then
-	echo `date`: "email_aliases - deleting alias for $ALIAS on $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - deleting alias for $ALIAS on $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [ "$DOMAIN" = "$REALM" ]
 	then
-		if [ "$EMAILSERVER" = `hostname-fqdn` ]
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
 			sed -i "/^$ALIAS:/d" /etc/postfix/aliases
 			newaliases
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-			sed -i "/^'$ALIAS':/d" /etc/postfix/aliases
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+			sed -i "/^'"$ALIAS"':/d" /etc/postfix/aliases
 			newaliases
 		'
 		fi
 	else
-		if [ "$EMAILSERVER" = `hostname-fqdn` ]
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
-			sed -i "/^$ALIAS@$DOMAIN\t/d" /etc/postfix/virtual_domain_addresses/$DOMAIN
+			sed -i "/^$ALIAS@$DOMAIN\t/d" /etc/postfix/virtual_domain_addresses/"$DOMAIN"
 			echo > /etc/postfix/virtual_addresses
 			for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
 			do
 				echo "$DOMAIN_LIST	#DOMAIN" >> /etc/postfix/virtual_addresses
-				cat /etc/postfix/virtual_domain_addresses/$DOMAIN_LIST >> /etc/postfix/virtual_addresses
+				cat /etc/postfix/virtual_domain_addresses/"$DOMAIN_LIST" >> /etc/postfix/virtual_addresses
 			done
 			postmap hash:/etc/postfix/virtual_addresses
 			service postfix reload 1>/dev/null
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-			sed -i "/^'$ALIAS'@'$DOMAIN'\t/d" /etc/postfix/virtual_domain_addresses/'$DOMAIN'
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+			sed -i "/^'"$ALIAS"'@'"$DOMAIN"'\t/d" /etc/postfix/virtual_domain_addresses/'"$DOMAIN"'
 			echo > /etc/postfix/virtual_addresses
 			for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
 			do
@@ -312,43 +305,43 @@ then
 	fi
 
 	#Get samba 4 database password
-	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	#Delete entry from samba4 ldap
-	USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
-	echo -e "$USERDN\nchangetype: modify\ndelete: proxyAddresses\nproxyAddresses: $ALIAS@$DOMAIN\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+	USERDN=$(ldapsearch -o ldif-wrap=no -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep ^dn:)
+	echo -e "$USERDN\nchangetype: modify\ndelete: proxyAddresses\nproxyAddresses: $ALIAS@$DOMAIN\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 	completed_status
 fi
 
-if [ $ACTION = add ]
+if [ "$ACTION" = add ]
 then
 	echo '<form  style="display: inline;" action="/cgi-bin/admin/email_aliases.cgi" method="post"><input name="_ACTION_" value="reallyadd" type="hidden">'
 	if [ "$MOBILE" = no ]
 	then
 		echo '<table class="'$TABLECLASS'" style="text-align: left;" >
 <tbody><tr><td style="width: '$WIDTH2'px;">'$"Username"'</td>
-<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '"$WIDTH2"'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to add an alias to. This username has to exist on the system."'</span></a>
 </td></tr>
- <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH5'px; height: '$HEIGHT2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
+ <tr><td>'$"Alias"'</td><td><input tabindex= "2" name="_ALIAS_" style="width: '"$WIDTH2"'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Aliases"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the alias that you want for the username."'</span></a></td></tr>
 <tr><td>'$"Domain"'</td><td>'
 	else
 		echo ''$"Username"'<br>
-		<div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+		<div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: '"$WIDTH2"'px;" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 		'$"Alias"'<br>
-		<input tabindex= "2" name="_ALIAS_" style="width: '$WIDTH2'px; height: '$HEIGHT'px;" size="20" type="text"><br>
+		<input tabindex= "2" name="_ALIAS_" style="width: '"$WIDTH2"'px;" size="20" type="text"><br>
 		'$"Domain"'<br>
 		'
 	fi
 
 	#Show a list of domains for the alias
-	echo '<select name="_DOMAIN_" style="width: '$WIDTH2'px; height: 30px;">
-	<option value="'$REALM'">'$REALM'</option>'
+	echo '<select name="_DOMAIN_" style="width: '"$WIDTH2"'px;">
+	<option value="'"$REALM"'">'"$REALM"'</option>'
 
 	if [ -d /opt/karoshi/server_network/email/virtual_domains ]
 	then
 		for VIRTUAL_DOMAIN in $(ls -1 /opt/karoshi/server_network/email/virtual_domains)
 		do
-			echo '<option value="'$VIRTUAL_DOMAIN'">'$VIRTUAL_DOMAIN'</option>'
+			echo '<option value="'"$VIRTUAL_DOMAIN"'">'"$VIRTUAL_DOMAIN"'</option>'
 		done
 	fi
 
@@ -365,83 +358,83 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
-	echo `date`: "email_aliases - adding  alias $ALIAS for $USERNAME on $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_aliases - adding  alias $ALIAS for $USERNAME on $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	ADD_LDAP=no
 	if [ "$DOMAIN" = "$REALM" ]
 	then
 		#Add entry to postfix alias map.
-		if [ $EMAILSERVER = `hostname-fqdn` ]
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
-			if [ `grep -c ^$ALIAS: /etc/postfix/aliases` = 0 ]
+			if [[ $(grep -c ^"$ALIAS:" /etc/postfix/aliases) = 0 ]]
 			then
 				echo -e "$ALIAS:\t\t$USERNAME" >> /etc/postfix/aliases
-				cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+				sort /etc/postfix/aliases > /etc/postfix/aliases1
 				rm /etc/postfix/aliases
 				mv /etc/postfix/aliases1 /etc/postfix/aliases
 				newaliases
 				ADD_LDAP=yes
 			fi
 		else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-			if [ `grep -c ^'$ALIAS': /etc/postfix/aliases` = 0 ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+			if [ $(grep -c ^'"$ALIAS"': /etc/postfix/aliases) = 0 ]
 			then
-				echo -e "'$ALIAS':\t\t'$USERNAME'" >> /etc/postfix/aliases
-				cat /etc/postfix/aliases | sort > /etc/postfix/aliases1
+				echo -e "'"$ALIAS"':\t\t'"$USERNAME"'" >> /etc/postfix/aliases
+				sort /etc/postfix/aliases > /etc/postfix/aliases1
 				rm /etc/postfix/aliases
 				mv /etc/postfix/aliases1 /etc/postfix/aliases
 				newaliases
 				exit 100
 			fi
 		'
-		[ $? = 100 ] && ADD_LDAP=yes
+		[ "$?" = 100 ] && ADD_LDAP=yes
 		fi
 	else
 		#Add a virtual domain alias.
-		if [ $EMAILSERVER = `hostname-fqdn` ]
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
 			#Check to see that virtual aliases are enabled in postfix main.cf
-			if [ $(grep -c "hash:/etc/postfix/virtual_addresses virtual_maps" /etc/postfix/main.cf) = 0 ]
+			if [[ $(grep -c "hash:/etc/postfix/virtual_addresses virtual_maps" /etc/postfix/main.cf) = 0 ]]
 			then
 				echo "virtual_maps  = hash:/etc/postfix/virtual_addresses" >> /etc/postfix/main.cf
 				service postfix reload 1>/dev/null
 			fi
 			touch /etc/postfix/virtual_addresses
 			[ ! -d /etc/postfix/virtual_domain_addresses ] && mkdir -p /etc/postfix/virtual_domain_addresses
-			touch /etc/postfix/virtual_domain_addresses/$DOMAIN
-			if [ $(grep -c ^"$ALIAS@$DOMAIN" /etc/postfix/virtual_domain_addresses/"$DOMAIN") = 0 ]
+			touch /etc/postfix/virtual_domain_addresses/"$DOMAIN"
+			if [[ $(grep -c ^"$ALIAS@$DOMAIN" /etc/postfix/virtual_domain_addresses/"$DOMAIN") = 0 ]]
 			then
 				echo "$ALIAS@$DOMAIN	$USERNAME" >> /etc/postfix/virtual_domain_addresses/"$DOMAIN"
-				sort /etc/postfix/virtual_domain_addresses/"$DOMAIN" > /etc/postfix/virtual_domain_addresses/"$DOMAIN".$$
+				sort /etc/postfix/virtual_domain_addresses/"$DOMAIN" > /etc/postfix/virtual_domain_addresses/"$DOMAIN.$$"
 				rm -f /etc/postfix/virtual_domain_addresses/"$DOMAIN"
-				mv /etc/postfix/virtual_domain_addresses/"$DOMAIN".$$ /etc/postfix/virtual_domain_addresses/"$DOMAIN"
+				mv /etc/postfix/virtual_domain_addresses/"$DOMAIN.$$" /etc/postfix/virtual_domain_addresses/"$DOMAIN"
 				echo > /etc/postfix/virtual_addresses
 				for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
 				do
 					echo "$DOMAIN_LIST	#DOMAIN" >> /etc/postfix/virtual_addresses
-					cat /etc/postfix/virtual_domain_addresses/$DOMAIN_LIST >> /etc/postfix/virtual_addresses
+					cat /etc/postfix/virtual_domain_addresses/"$DOMAIN_LIST" >> /etc/postfix/virtual_addresses
 				done
 				postmap hash:/etc/postfix/virtual_addresses
 				service postfix reload 1>/dev/null
 				ADD_LDAP=yes
 			fi
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 			#Check to see that virtual aliases are enabled in postfix main.cf
-			if [ $(grep -c "hash:/etc/postfix/virtual_addresses virtual_maps" /etc/postfix/main.cf) = 0 ]
+			if [[ $(grep -c "hash:/etc/postfix/virtual_addresses virtual_maps" /etc/postfix/main.cf) = 0 ]]
 			then
 				echo "virtual_maps  = hash:/etc/postfix/virtual_addresses" >> /etc/postfix/main.cf
 				service postfix reload 1>/dev/null
 			fi
 			touch /etc/postfix/virtual_addresses
 			[ ! -d /etc/postfix/virtual_domain_addresses ] && mkdir -p /etc/postfix/virtual_domain_addresses
-			touch /etc/postfix/virtual_domain_addresses/'$DOMAIN'
-			if [ $(grep -c ^"'$ALIAS'@'$DOMAIN'" /etc/postfix/virtual_domain_addresses/"'$DOMAIN'") = 0 ]
+			touch /etc/postfix/virtual_domain_addresses/'"$DOMAIN"'
+			if [ $(grep -c ^"'"$ALIAS"'@'"$DOMAIN"'" /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'") = 0 ]
 			then
-				echo "'$ALIAS'@'$DOMAIN'	'$USERNAME'" >> /etc/postfix/virtual_domain_addresses/"'$DOMAIN'"
-				sort /etc/postfix/virtual_domain_addresses/"'$DOMAIN'" > /etc/postfix/virtual_domain_addresses/"'$DOMAIN'".'$$'
-				rm -f /etc/postfix/virtual_domain_addresses/"'$DOMAIN'"
-				mv /etc/postfix/virtual_domain_addresses/"'$DOMAIN'".'$$' /etc/postfix/virtual_domain_addresses/"'$DOMAIN'"
+				echo "'"$ALIAS"'@'"$DOMAIN"'	'"$USERNAME"'" >> /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'"
+				sort /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'" > /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'".'"$$"'
+				rm -f /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'"
+				mv /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'".'"$$"' /etc/postfix/virtual_domain_addresses/"'"$DOMAIN"'"
 
 				echo > /etc/postfix/virtual_addresses
 				for DOMAIN_LIST in $(ls -1 /etc/postfix/virtual_domain_addresses)
@@ -454,17 +447,17 @@ then
 				exit 100
 			fi
 		'
-		[ $? = 100 ] && ADD_LDAP=yes
+		[ "$?" = 100 ] && ADD_LDAP=yes
 		fi
 	fi
 
 	if [ "$ADD_LDAP" = yes ]
 	then
 		#Get samba 4 database password
-		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+		LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 		#Add entry to samba4 ldap
-		USERDN=`ldapsearch -o ldif-wrap=no -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | grep ^dn:`
-		echo -e "$USERDN\nchangetype: modify\nadd: proxyAddresses\nproxyAddresses: $ALIAS@$DOMAIN\n-" | ldapmodify -x -w $LDAPPASS -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+		USERDN=$(ldapsearch -o ldif-wrap=no -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep ^dn:)
+		echo -e "$USERDN\nchangetype: modify\nadd: proxyAddresses\nproxyAddresses: $ALIAS@$DOMAIN\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 	fi
 	completed_status
 fi

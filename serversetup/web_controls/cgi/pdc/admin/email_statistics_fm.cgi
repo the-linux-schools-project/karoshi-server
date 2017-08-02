@@ -37,27 +37,27 @@ STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 #Get current date and time
-DAY=`date -d "-1 day" +"%d"`
-MONTH=`date -d "-1 day" +"%m"`
-YEAR=`date -d "-1 day" +"%Y"`
+DAY=$(date -d "-1 day" +"%d")
+MONTH=$(date -d "-1 day" +"%m")
+YEAR=$(date -d "-1 day" +"%Y")
 
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
+HOUR=$(date +%H)
+MINUTES=$(date +%M)
+SECONDS=$(date +%S)
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View E-Mail Statistics"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/calendar2/calendar_eu.js"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"View E-Mail Statistics"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -70,7 +70,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -95,14 +95,13 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -110,20 +109,20 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox
 	TABLECLASS=standard
@@ -139,7 +138,7 @@ fi
 echo '<form action="/cgi-bin/admin/email_statistics.cgi" name="testform" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -148,10 +147,10 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$"View E-Mail Statistics"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the email statistics for."'</span></a><br><br>'
+echo '<div id="'"$DIV_ID"'"><div class="sectiontitle">'$"View E-Mail Statistics"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the email statistics for."'</span></a></div><br>'
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo ''$"Log date"'<br>'
 
@@ -173,9 +172,9 @@ echo ''$"View logs by date"'<br>
 <input name="_LOGVIEW_" value="month" type="radio"><br><br>'
 
 else
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"Log date"'</td><td>'
-echo "	<!-- calendar attaches to existing form element -->
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: 180px;">'$"Log date"'</td><td>'
+	echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script>
 	new tcal ({
@@ -192,7 +191,7 @@ echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-
 fi
 
 #Show list of email servers
-/opt/karoshi/web_controls/show_servers $MOBILE email $"Email Statistics"
+/opt/karoshi/web_controls/show_servers "$MOBILE" email $"Email Statistics"
 
 echo '</div></form></div></body></html>'
 exit

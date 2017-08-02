@@ -23,118 +23,118 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_delete_banned_domains_cgi
 then
-echo `date`: email_delete_banned_domains - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_delete_banned_domains_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_delete_banned_domains.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_delete_banned_domains_cgi'check' ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_delete_banned_domains.cgi | cut -d' ' -f1)
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$email_delete_banned_domains_cgi"'check' ]
 then
-echo `date`: email_delete_banned_domains - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-echo `date`: email_delete_banned_domains - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
+if [ -z "$DATA" ]
 then
-echo `date`: email_delete_banned_domains - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-DOMAIN=`echo "$DATA" | cut -s -d: -f5`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+DOMAIN=$(echo "$DATA" | cut -s -d: -f5)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-echo `date`: email_delete_banned_domains - Not called by email_delete_banned_domains.cgi or bulk_user_creation_create.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Not called by email_delete_banned_domains.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_delete_banned_domains - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_delete_banned_domains - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $ACTION'null' = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: email_delete_banned_domains - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $DOMAIN'null' = null ]
+if [ -z "$DOMAIN" ]
 then
-echo `date`: email_delete_banned_domains - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
-then
-echo `date`: email_delete_banned_domains - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_delete_banned_domains - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-echo `date`: email_delete_banned_domains - Deleting $DOMAIN by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-
-if [ $EMAILSERVER = `hostname-fqdn` ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-if [ $ACTION = DELETE ]
+	echo "$(date): email_delete_banned_domains - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+echo "$(date): email_delete_banned_domains - Deleting $DOMAIN by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+
+if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 then
-LINENUMBER=`grep -w -n ^$DOMAIN /etc/postfix/access | cut -d: -f1`
-if [ $LINENUMBER"null" != null ]
-then 
-#Delete line
-sed -i $LINENUMBER"d" /etc/postfix/access
-#Refress access db
-postmap hash:/etc/postfix/access
-#Reload Postfix
-service postfix reload 1>/dev/null
-fi
-fi
+	if [ "$ACTION" = DELETE ]
+	then
+		LINENUMBER=$(grep -w -n ^"$DOMAIN" /etc/postfix/access | cut -d: -f1)
+		if [ ! -z "$LINENUMBER" ]
+		then 
+			#Delete line
+			sed -i "$LINENUMBER""d" /etc/postfix/access
+			#Refress access db
+			postmap hash:/etc/postfix/access
+			#Reload Postfix
+			service postfix reload 1>/dev/null
+		fi
+	fi
 else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-if [ '$ACTION' = DELETE ]
-then
-LINENUMBER=`grep -w -n ^'$DOMAIN' /etc/postfix/access | cut -d: -f1`
-if [ $LINENUMBER"null" != null ]
-then 
-#Delete line
-sed -i $LINENUMBER"d" /etc/postfix/access
-#Refress access db
-postmap hash:/etc/postfix/access
-#Reload Postfix
-service postfix reload 1>/dev/null
-fi
-fi
-'
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+	if [ '"$ACTION"' = DELETE ]
+	then
+		LINENUMBER=$(grep -w -n ^'"$DOMAIN"' /etc/postfix/access | cut -d: -f1)
+		if [ ! -z "$LINENUMBER" ]
+		then 
+			#Delete line
+			sed -i "$LINENUMBER""d" /etc/postfix/access
+			#Refress access db
+			postmap hash:/etc/postfix/access
+			#Reload Postfix
+			service postfix reload 1>/dev/null
+		fi
+	fi
+	'
 fi
 exit
 

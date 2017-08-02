@@ -23,50 +23,50 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
 then
-	echo `date`: email_access - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_access_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_access_cgi'check' ]
+if [ "$MD5SUM"'check' != "$email_access_cgi"'check' ]
 then
-	echo `date`: email_access - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_access - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_access - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-USERSELECT=`echo "$DATA" | cut -s -d: -f5`
-ACCESSLEVEL=`echo "$DATA" | cut -s -d: -f6`
-GROUP=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
-CALLEDBY=`echo "$DATA" | cut -s -d: -f9`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+USERSELECT=$(echo "$DATA" | cut -s -d: -f5)
+ACCESSLEVEL=$(echo "$DATA" | cut -s -d: -f6)
+GROUP=$(echo "$DATA" | cut -s -d: -f7)
+MOBILE=$(echo "$DATA" | cut -s -d: -f8)
+CALLEDBY=$(echo "$DATA" | cut -s -d: -f9)
 
 TABLECLASS=standard
 ICON1=/images/submenus/email/email_delete.png
@@ -95,24 +95,24 @@ fi
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: email_access - Not called by email_access.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - Not called by email_access.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_access - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_access - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: email_access - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -121,27 +121,25 @@ fi
 ##########################
 #Language
 ##########################
-
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Get email server details
 if [ ! -f /opt/karoshi/server_network/emailserver ]
 then
-	echo `date`: email_access - No email server has been declared by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_access - No email server has been declared by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 source /opt/karoshi/server_network/domain_information/domain_name
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 
 
 function check_user {
 #Check to see if the userdata is for a user or a group.
-getent group $USERSELECT 1>/dev/null
-if [ $? = 0 ]
+getent group "$USERSELECT" 1>/dev/null
+if [ "$?" = 0 ]
 then
 	DATATYPE=group
 else
@@ -149,19 +147,19 @@ else
 fi
 }
 
-if [ $ACTION = addrestricteddomain ]
+if [ "$ACTION" = addrestricteddomain ]
 then
 	#Make sure the domain is lower case.
-	USERSELECT=$(echo $USERSELECT | tr 'A-Z' 'a-z')
+	USERSELECT=$(echo "$USERSELECT" | tr '[:upper:]' '[:lower:]')
 
 	#Make sure that the entry is a proper domain.
-	if [ $(echo "$USERSELECT" | grep -c "\.") -gt 0 ]
+	if [[ $(echo "$USERSELECT" | grep -c "\.") -gt 0 ]]
 	then 
 		#Add entry to /etc/postfix/restricted_domains
-		echo `date`: "email_access - adding $USERSELECT to the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		if [ $EMAILSERVER = $(hostname-fqdn) ]
+		echo "$(date): email_access - adding $USERSELECT to the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
-			if [ $(grep -c -w ^$USERSELECT /etc/postfix/restricted_domains) = 0 ]
+			if [[ $(grep -c -w ^"$USERSELECT" /etc/postfix/restricted_domains) = 0 ]]
 			then
 				echo "$USERSELECT	OK" >> /etc/postfix/restricted_domains
 				#Sort the list
@@ -172,10 +170,10 @@ then
 				postmap hash:/etc/postfix/restricted_domains
 			fi
 		else
-			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-			if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/restricted_domains) = 0 ]
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+			if [ $(grep -c -w ^'"$USERSELECT"' /etc/postfix/restricted_domains) = 0 ]
 			then
-				echo "'$USERSELECT'	OK" >> /etc/postfix/restricted_domains
+				echo "'"$USERSELECT"'	OK" >> /etc/postfix/restricted_domains
 				#Sort the list
 				sort /etc/postfix/restricted_domains > /etc/postfix/restricted_domains2
 				rm /etc/postfix/restricted_domains
@@ -186,22 +184,22 @@ then
 			'
 		fi
 	else
-		echo `date`: "email_access - $USERSELECT is not a domain name by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): email_access - $USERSELECT is not a domain name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 	ACTION=viewrestrictionlist
 fi
 
-if [ $ACTION = reallydeleterestricteddomain ]
+if [ "$ACTION" = reallydeleterestricteddomain ]
 then
 	#Delete entry from /etc/postfix/restricted_domains
-	echo `date`: "email_access - deleting $USERSELECT from the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	if [ $EMAILSERVER = $(hostname-fqdn) ]
+	echo "$(date): email_access - deleting $USERSELECT from the restriction list by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		sed -i "/^$USERSELECT	/d" /etc/postfix/restricted_domains
 		postmap hash:/etc/postfix/restricted_domains
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		sed -i "/^'$USERSELECT'	/d" /etc/postfix/restricted_domains
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+		sed -i "/^'"$USERSELECT"'	/d" /etc/postfix/restricted_domains
 		postmap hash:/etc/postfix/restricted_domains
 		'
 	fi
@@ -209,32 +207,32 @@ then
 	ACTION=viewrestrictionlist	
 fi
 
-if [ $ACTION = deleterestricteddomain ]
+if [ "$ACTION" = deleterestricteddomain ]
 then
 	#Ask for confirmation before removing the domain from the list.
-	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallydeleterestricteddomain"><input type="hidden" name="_USERSELECT_" value="'$USERSELECT'">
-	<b>'$"Domain"'</b>: '$USERSELECT'<br><br>
+	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="reallydeleterestricteddomain"><input type="hidden" name="_USERSELECT_" value="'"$USERSELECT"'">
+	<b>'$"Domain"'</b>: '"$USERSELECT"'<br><br>
 	'$"Remove this domain from the restriction list?"'<br><br><br>
 	<input value="'$"Submit"'" class="button" type="submit"></form>
 '
 fi
 
-if [ $ACTION = viewrestrictionlist ]
+if [ "$ACTION" = viewrestrictionlist ]
 then
 	#Show add domain
-	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="addrestricteddomain"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;"><b>'$"Add Domain"'</b></td><td><input type="text" name="_USERSELECT_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" value="" size="10"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a domain that you want to add to the restricted list."'<br><br>'$"Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"></form><br>
+	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="addrestricteddomain"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Add Domain"'</b></td><td><input type="text" name="_USERSELECT_" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" value="" size="10"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a domain that you want to add to the restricted list."'<br><br>'$"Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"></form><br>
 	
 	'
 
 	#Show the contents of /etc/postfix/restricted_domains
 	echo '<form action="/cgi-bin/admin/email_access.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH3'px;"><b>'$"Allowed Domains"'</b></th><th style="width: '$WIDTH5'px;"></th></tr></thead><tbody>'
-	if [ $EMAILSERVER = $(hostname-fqdn) ]
+	<tr><th style="width: '"$WIDTH3"'px;"><b>'$"Allowed Domains"'</b></th><th style="width: '$WIDTH5'px;"></th></tr></thead><tbody>'
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		RESTRICTED_DOMAIN_LIST=$(cat /etc/postfix/restricted_domains | cut -f1)
 	else
-		RESTRICTED_DOMAIN_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		RESTRICTED_DOMAIN_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		cat /etc/postfix/restricted_domains | cut -f1
 		')
 	fi
@@ -242,12 +240,12 @@ then
 	for RESTRICTED_DOMAIN in $RESTRICTED_DOMAIN_LIST
 	do
 		echo "<tr><td>$RESTRICTED_DOMAIN</td><td>"
-		if [ $RESTRICTED_DOMAIN != $REALM ]
+		if [ "$RESTRICTED_DOMAIN" != "$REALM" ]
 		then
 			echo '
-			<button class="info" name="_DoDeleteRestrictedDomain_" value="_ACTION_deleterestricteddomain_USERSELECT_'$RESTRICTED_DOMAIN'_">
-			<img src="'$ICON1'" alt="'$"Delete" $RESTRICTED_DOMAIN'">
-			<span>'$"Delete"'<br>'$RESTRICTED_DOMAIN'</span>
+			<button class="info" name="_DoDeleteRestrictedDomain_" value="_ACTION_deleterestricteddomain_USERSELECT_'"$RESTRICTED_DOMAIN"'_">
+			<img src="'"$ICON1"'" alt="'$"Delete" "$RESTRICTED_DOMAIN"'">
+			<span>'$"Delete"'<br>'"$RESTRICTED_DOMAIN"'</span>
 			</button>
 			'
 		fi
@@ -256,24 +254,24 @@ then
 	echo '</tbody></table></form>'
 fi
 
-if [ $ACTION = change ]
+if [ "$ACTION" = change ]
 then
 	function set_access {
-	echo `date`: "email_access - setting E-Mail level to $ACCESSLEVEL for $USERSELECT by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	echo "$(date): email_access - setting E-Mail level to $ACCESSLEVEL for $USERSELECT by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		#Remove the username from all restriction lists and then add into the correct lists as needed.
-		if [ $(grep -c -w ^$USERSELECT /etc/postfix/restricted_accounts) -gt 0 ]
+		if [[ $(grep -c -w ^"$USERSELECT" /etc/postfix/restricted_accounts) -gt 0 ]]
 		then
 			sed -i "/^$USERSELECT@/d" /etc/postfix/restricted_accounts
 		fi
 
-		if [ $(grep -c -w ^$USERSELECT /etc/postfix/deny_sending) -gt 0 ]
+		if [[ $(grep -c -w ^"$USERSELECT" /etc/postfix/deny_sending) -gt 0 ]]
 		then
 			sed -i "/^$USERSELECT@/d" /etc/postfix/deny_sending
 		fi
 
-		if [ $(grep -c -w ^$USERSELECT /etc/postfix/deny_receiving) -gt 0 ]
+		if [[ $(grep -c -w ^"$USERSELECT" /etc/postfix/deny_receiving) -gt 0 ]]
 		then
 			sed -i "/^$USERSELECT@/d" /etc/postfix/deny_receiving
 		fi
@@ -301,39 +299,39 @@ then
 		postmap hash:/etc/postfix/deny_sending
 		postmap hash:/etc/postfix/deny_receiving
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		#Remove the username from all restriction lists and then add into the correct lists as needed.
-		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/restricted_accounts) -gt 0 ]
+		if [ $(grep -c -w ^'"$USERSELECT"' /etc/postfix/restricted_accounts) -gt 0 ]
 		then
-			sed -i "/^'$USERSELECT'@/d" /etc/postfix/restricted_accounts
+			sed -i "/^'"$USERSELECT"'@/d" /etc/postfix/restricted_accounts
 		fi
 
-		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/deny_sending) -gt 0 ]
+		if [ $(grep -c -w ^'"$USERSELECT"' /etc/postfix/deny_sending) -gt 0 ]
 		then
-			sed -i "/^'$USERSELECT'@/d" /etc/postfix/deny_sending
+			sed -i "/^'"$USERSELECT"'@/d" /etc/postfix/deny_sending
 		fi
 
-		if [ $(grep -c -w ^'$USERSELECT' /etc/postfix/deny_receiving) -gt 0 ]
+		if [ $(grep -c -w ^'"$USERSELECT"' /etc/postfix/deny_receiving) -gt 0 ]
 		then
-			sed -i "/^'$USERSELECT'@/d" /etc/postfix/deny_receiving
+			sed -i "/^'"$USERSELECT"'@/d" /etc/postfix/deny_receiving
 		fi
 
-		if [ "'$ACCESSLEVEL'" = 2 ] || [ "'$ACCESSLEVEL'" = 4 ] || [ "'$ACCESSLEVEL'" = 6 ]
+		if [ "'"$ACCESSLEVEL"'" = 2 ] || [ "'"$ACCESSLEVEL"'" = 4 ] || [ "'"$ACCESSLEVEL"'" = 6 ]
 		then
 			#Add the user to the restricted list
-			echo "'$USERSELECT'@'$REALM'	restricted_domains" >> /etc/postfix/restricted_accounts
+			echo "'"$USERSELECT"'@'"$REALM"'	restricted_domains" >> /etc/postfix/restricted_accounts
 		fi
 
-		if [ "'$ACCESSLEVEL'" = 3 ] || [ "'$ACCESSLEVEL'" = 4 ] || [ "'$ACCESSLEVEL'" = 7 ]
+		if [ "'"$ACCESSLEVEL"'" = 3 ] || [ "'"$ACCESSLEVEL"'" = 4 ] || [ "'"$ACCESSLEVEL"'" = 7 ]
 		then
 			#Add the user to the deny sending list
-			echo "'$USERSELECT'@'$REALM' REJECT" >> /etc/postfix/deny_sending
+			echo "'"$USERSELECT"'@'"$REALM"' REJECT" >> /etc/postfix/deny_sending
 		fi
 
-		if [ "'$ACCESSLEVEL'" = 5 ] || [ "'$ACCESSLEVEL'" = 6 ] || [ "'$ACCESSLEVEL'" = 7 ]
+		if [ "'"$ACCESSLEVEL"'" = 5 ] || [ "'"$ACCESSLEVEL"'" = 6 ] || [ "'"$ACCESSLEVEL"'" = 7 ]
 		then
 			#Add the user to the deny receiving list
-			echo "'$USERSELECT'@'$REALM' REJECT" >> /etc/postfix/deny_receiving
+			echo "'"$USERSELECT"'@'"$REALM"' REJECT" >> /etc/postfix/deny_receiving
 		fi
 	
 		#Activate changes
@@ -346,7 +344,7 @@ then
 
 	#Check to see if we are making a change for a user or a group
 	check_user
-	if [ $DATATYPE = user ]
+	if [ "$DATATYPE" = user ]
 	then
 		set_access
 	else
@@ -359,7 +357,7 @@ then
 		#Set E-mail level for the group
 		if [ -f /opt/karoshi/server_network/group_information/"$USERSELECT" ]
 		then
-			if [ $(grep -c ^EMAIL_LEVEL /opt/karoshi/server_network/group_information/"$USERSELECT") -gt 0 ]
+			if [[ $(grep -c ^EMAIL_LEVEL /opt/karoshi/server_network/group_information/"$USERSELECT") -gt 0 ]]
 			then
 				sed -i "/^EMAIL_LEVEL/d" /opt/karoshi/server_network/group_information/"$USERSELECT"	
 			fi
@@ -390,15 +388,15 @@ fi
 if [ $ACTION = view ]
 then
 	function showdata {
-	echo '<tr><td>'$USERNAME'</td><td>'$EMAIL_LEVEL'</td><td><form id="'$USERNAME'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'$USERNAME'"><input type="hidden" name="_GROUP_" value="'$GROUP'">
-	<select name="_ACCESSLEVEL_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" onchange="'$USERNAME'.submit()">
-	<option value="1" '$SELECT1'>'$"Full access"'</option>
-  	<option value="2" '$SELECT2'>'$"Restricted"'</option>
-  	<option value="3" '$SELECT3'>'$"Receive only"'</option>
-	<option value="4" '$SELECT4'>'$"Receive only and restricted"'</option>
-	<option value="5" '$SELECT5'>'$"Send only"'</option>
-	<option value="6" '$SELECT6'>'$"Send only and restricted"'</option>
-  	<option value="7" '$SELECT7'>'$"No access"'</option>
+	echo '<tr><td>'"$USERNAME"'</td><td>'"$EMAIL_LEVEL"'</td><td><form id="'"$USERNAME"'" name="viewdata" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="change"><input type="hidden" name="_USERSELECT_" value="'"$USERNAME"'"><input type="hidden" name="_GROUP_" value="'"$GROUP"'">
+	<select name="_ACCESSLEVEL_" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" onchange="'"$USERNAME"'.submit()">
+	<option value="1" '"$SELECT1"'>'$"Full access"'</option>
+  	<option value="2" '"$SELECT2"'>'$"Restricted"'</option>
+  	<option value="3" '"$SELECT3"'>'$"Receive only"'</option>
+	<option value="4" '"$SELECT4"'>'$"Receive only and restricted"'</option>
+	<option value="5" '"$SELECT5"'>'$"Send only"'</option>
+	<option value="6" '"$SELECT6"'>'$"Send only and restricted"'</option>
+  	<option value="7" '"$SELECT7"'>'$"No access"'</option>
 	</select></form>
 	</td></tr>'
 	}
@@ -409,7 +407,7 @@ then
 	check_user
 	GROUP="$USERSELECT"
 
-	if [ $DATATYPE = group ]
+	if [ "$DATATYPE" = group ]
 	then
 		source /opt/karoshi/server_network/group_information/"$GROUP"
 		GROUPCOUNT=$(getent passwd | grep -c -w "$HOMEPATH")
@@ -423,25 +421,25 @@ then
 		[ $EMAIL_LEVEL = 7 ] && SELECT7="selected"
 
 		echo '<table id="myTableUser" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH1'px;"><b>'$"Group"'</b></th><th style="width: 20px;"></td><td><b>'$"Change Status"'</b></th></tr></thead><tbody>'
+	<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Group"'</b></th><th style="width: 20px;"></th><td><b>'$"Change Status"'</b></th></tr></thead><tbody>'
 		#Show an option to change the status of all of the users in the group
-		USERNAME=$USERSELECT
+		USERNAME="$USERSELECT"
 		showdata
 		echo '</tbody></table><br>'
 	fi
 
 	#If this is for a group then dont show any info is the group is empty
-	if [ $DATATYPE = group ] && [ $GROUPCOUNT = 0 ]
+	if [ "$DATATYPE" = group ] && [ "$GROUPCOUNT" = 0 ]
 	then
 		exit
 	fi
 
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH1'px;"><b>'$"Username"'</b></th><th style="width: 20px;"></th><td><b>'$"Status"'</b></td></tr></thead><tbody>'
+	<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Username"'</b></th><th style="width: 20px;"></th><td><b>'$"Status"'</b></td></tr></thead><tbody>'
 
 	#Get restricted lists
 
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		#Get list of users on the restricted list
 		RESTRICTED_USERS=$(cat /etc/postfix/restricted_accounts | sed "s/	restricted_domains/,/g" | sed "s/@$REALM//g")
@@ -450,22 +448,21 @@ then
 		#Get list of users on the deny_receiving list
 		DENIED_RECEIVING=$(cat /etc/postfix/deny_receiving | sed "s/ REJECT/,/g" | sed "s/@$REALM//g")
 	else
-		RESTRICTED_USERS=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		cat /etc/postfix/restricted_accounts | sed "s/	restricted_domains/,/g" | sed "s/@'$REALM'//g"
-		'`
-		DENIED_SENDING=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		cat /etc/postfix/deny_sending | sed "s/ REJECT/,/g" | sed "s/@'$REALM'//g"	
-		'`
-		DENIED_RECEIVING=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
-		cat /etc/postfix/deny_receiving | sed "s/ REJECT/,/g" | sed "s/'@$REALM'//g"	
-		'`
+		RESTRICTED_USERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+		cat /etc/postfix/restricted_accounts | sed "s/	restricted_domains/,/g" | sed "s/@'"$REALM"'//g"
+		')
+		DENIED_SENDING=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+		cat /etc/postfix/deny_sending | sed "s/ REJECT/,/g" | sed "s/@'"$REALM"'//g"	
+		')
+		DENIED_RECEIVING=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
+		cat /etc/postfix/deny_receiving | sed "s/ REJECT/,/g" | sed "s/'@"$REALM"'//g"	
+		')
 	fi
 	
 
 	function getuserstatus {
 	RESTRICTED=no
 	DENYSENDING=no
-	DENYRECEIVING=no
 	EMAIL_LEVEL=1
 	SELECT1="selected"
 	SELECT2=""
@@ -476,7 +473,7 @@ then
 	SELECT7=""
 
 	#Check if the user is on the restricted list
-	if [ $(echo "$RESTRICTED_USERS" | grep -c -w $USERNAME) -gt 0 ]
+	if [[ $(echo "$RESTRICTED_USERS" | grep -c -w "$USERNAME") -gt 0 ]]
 	then
 		RESTRICTED=yes
 		EMAIL_LEVEL=2
@@ -490,10 +487,10 @@ then
 	fi
 
 	#Check if the user is on the deny_sending list
-	if [ $(echo "$DENIED_SENDING" | grep -c -w $USERNAME) -gt 0 ]
+	if [[ $(echo "$DENIED_SENDING" | grep -c -w "$USERNAME") -gt 0 ]]
 	then
 		DENYSENDING=yes
-		if [ $RESTRICTED = no ]
+		if [ "$RESTRICTED" = no ]
 		then
 			EMAIL_LEVEL=3
 			SELECT1=""
@@ -516,10 +513,9 @@ then
 	fi
 
 	#Check if the user is on the deny_receiving list
-	if [ $(echo "$DENIED_RECEIVING" | grep -c -w $USERNAME) -gt 0 ]
+	if [[ $(echo "$DENIED_RECEIVING" | grep -c -w "$USERNAME") -gt 0 ]]
 	then
-		DENYRECEIVING=yes
-		if [ $RESTRICTED = no ] && [ $DENYSENDING = no ]
+		if [ "$RESTRICTED" = no ] && [ "$DENYSENDING" = no ]
 		then
 			EMAIL_LEVEL=5
 			SELECT1=""
@@ -530,7 +526,7 @@ then
 			SELECT6=""
 			SELECT7=""
 		fi
-		if [ $RESTRICTED = yes ] && [ $DENYSENDING = no ]
+		if [ "$RESTRICTED" = yes ] && [ "$DENYSENDING" = no ]
 		then
 			EMAIL_LEVEL=6
 			SELECT1=""
@@ -541,7 +537,7 @@ then
 			SELECT6="selected"
 			SELECT7=""
 		fi
-		if [ $DENYSENDING = yes ]
+		if [ "$DENYSENDING" = yes ]
 		then
 			EMAIL_LEVEL=7
 			SELECT1=""
@@ -556,7 +552,7 @@ then
 	
 	}
 
-	if [ $DATATYPE = user ]
+	if [ "$DATATYPE" = user ]
 	then
 		USERNAME="$USERSELECT"
 		getuserstatus
@@ -574,13 +570,13 @@ then
 	echo '</tbody></table>'
 fi
 
-if [ $ACTION = getchoice ]
+if [ "$ACTION" = getchoice ]
 then
 	#Show the user a choice of username or group to select.
-	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
-	<input type="text" name="_USERSELECT_" id="inputString" onkeyup="lookup(this.value);" style="width: '$WIDTH4'px; height: '$HEIGHT2'px;" value="" size="10"></td><td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
-<tr><td></td><td><select name="_USERSELECTLIST_" style="width: '$WIDTH2'px; height: '$HEIGHT1'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">'
+	echo '<form id="form1" name="combobox" action="/cgi-bin/admin/email_access.cgi" method="post"><input type="hidden" name="_ACTION_" value="view"> <table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH1"'px;">'$"Username"' / '$"Group"'</td><td><div id="suggestions"></div>
+	<input type="text" name="_USERSELECT_" id="inputString" onkeyup="lookup(this.value);" style="width: '"$WIDTH4"'px; height: '"$HEIGHT2"'px;" value="" size="10"></td><td><a class="'"$HELPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a username or choose a group from the dropdown list."'</span></a></td></tr>
+<tr><td></td><td><select name="_USERSELECTLIST_" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" size="1" onchange="document.combobox._USERSELECT_.value = document.combobox._USERSELECTLIST_.options[document.combobox._USERSELECTLIST_.selectedIndex].value;document.combobox._USERSELECTLIST_.value=&#39;&#39;">'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">//g'
 

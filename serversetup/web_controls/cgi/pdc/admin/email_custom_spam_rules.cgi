@@ -111,15 +111,6 @@ then
 	ACTION=view
 fi
 
-if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
-then
-	ACTION2=add
-	ACTIONTEXT=$"Add Rule"
-else
-	ACTION2=view
-	ACTIONTEXT=$"View Rules"	
-fi
-
 #Assign RULEDATA
 DATANAME=RULEDATA
 get_data
@@ -136,14 +127,36 @@ get_data
 RULESCORE="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+	ICON2=/images/submenus/system/edit.png
+	ICON3=/images/submenus/system/update.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
+	WIDTH=90
+	ICON1=/images/submenus/system/addm.png
+	ICON2=/images/submenus/system/editm.png
+	ICON3=/images/submenus/system/updatem.png
 fi
+
+if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
+then
+	ACTION2=add
+	ACTIONTEXT=$"Add"
+	ACTIONTEXT2=$"Add a spam rule."
+	ICON="$ICON1"
+else
+	ACTION2=view
+	ACTIONTEXT=$"View"
+	ACTIONTEXT2=$"View existing spam rules."
+	ICON="$ICON2"	
+fi
+
 
 function show_status {
 echo '<script>'
@@ -184,52 +197,49 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Custom E-Mail Spam Rules"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-<button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
-'$ACTIONTEXT'
-</button>
-</form>'
+</div></div><div id="mobileactionbox">'
+else
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	<div class="sectiontitle">'$"Custom Spam Rules"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Custom_Spam_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></div>'
+fi
+
+echo '
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
+			<button class="info" name="_DoAction_" value="_ACTION_'"$ACTION2"'_">
+				<img src="'"$ICON"'" alt="'"$ACTIONTEXT"'">
+				<span>'"$ACTIONTEXT2"'</span><br>
+				'"$ACTIONTEXT"'
+			</button>
+		</form>
+	</td>
+'
+
 if [ -f /opt/karoshi/server_network/email/activate_spam_rule_changes ] && [ "$ACTION" != activatechanges ]
 then
+
 	echo '
-	<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-	<button class="button" name="_Add_" value="_ACTION_activatechanges_">
-	'$"Activate Changes"'
-	</button>
-	</form>
-	' 
-fi
-else
-	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr style="height: 30px;">
-<td><div class="sectiontitle">'$"Custom Spam Rules"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Custom_Spam_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to set custom spam rules for your E-Mail system."'</span></a></td>
-<td>
-<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-<button class="button" name="_Add_" value="_ACTION_'$ACTION2'_">
-'$ACTIONTEXT'
-</button>
-</form>
-</td>'
-	if [ -f /opt/karoshi/server_network/email/activate_spam_rule_changes ] && [ "$ACTION" != activatechanges ]
-	then
-		echo '
-		<td>
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-		<button class="button" name="_Add_" value="_ACTION_activatechanges_">
-		'$"Activate Changes"'
-		</button>
+			<button class="info" name="_DoAction_" value="_ACTION_activatechanges_">
+				<img src="'"$ICON3"'" alt="'$"Activate Changes"'">
+				<span>'$"Activate the changes."'</span><br>
+				'$"Activate Changes"'
+			</button>
 		</form>
-		</td>
-		' 
-	fi
-	echo '</tr></table><br></div><div id="infobox">'
+	</td>
+	'
 fi
+
+echo '</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$RULEDATA:$RULEDATA2:$RULESCORE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_custom_spam_rules
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
 

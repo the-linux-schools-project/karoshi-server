@@ -34,15 +34,15 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Authentication"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"E-Mail Authentication"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -60,7 +60,7 @@ $(document).ready(function()
 
 HELPCLASS="info"
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	HELPCLASS="info infoleft"
 	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -86,67 +86,54 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%+' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=16
-
-#Assign ACTION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 [ -z "$ACTION" ] && ACTION=view
 
 if [ "$ACTION" = delete ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyadd ]
 then
 	#Assign TCPIP
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=TCPIP
+	get_data
+	TCPIP="$DATAENTRY"
 fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
 then
 	#Assign COMMENT
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = COMMENTcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			COMMENT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=COMMENT
+	get_data
+	COMMENT="$DATAENTRY"
 fi
 
 
 function show_status {
 echo '<script>'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/email_authentication.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -156,7 +143,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -170,7 +157,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -199,74 +186,92 @@ then
 	fi
 
 	#Check that we have some sort of useful ip address.
-	if [ `ipcalc -n "$TCPIP" | grep -c INVALID` -gt 0 ]
+	if [[ $(ipcalc -n "$TCPIP" | grep -c INVALID) -gt 0 ]]
 	then
 		MESSAGE=$"The TCPIP address is incorrect."
 		show_status	
 	fi
 fi
 
-
-#Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	TABLECLASS=standard
+	WIDTH=100
+	ICON1=/images/submenus/system/edit.png
+	ICON2=/images/submenus/system/add.png
 	DIV_ID=actionbox3
-	#Generate navigation bar
-	/opt/karoshi/web_controls/generate_navbar_admin
-	echo '<div id="'$DIV_ID'"><div id=titlebox>'
 else
-	TABLECLASS=mobilestandard
-fi
-
+	WIDTH=90
+	ICON1=/images/submenus/system/editm.png
+	ICON2=/images/submenus/system/addm.png
+fi 
 
 if [ "$ACTION" = add ] || [ "$ACTION" = delete ]
 then
 	ACTION2=view
-	BUTTONTXT=$"View TCPIP Addresses"
+	BUTTONTXT=$"View"
+	BUTTONTXT2=$"View TCPIP addresses."
 	TITLETXT=$"Add TCPIP Address"
+	ICON="$ICON1"
 	[ "$ACTION" = delete ] && TITLETXT=$"Delete TCPIP Address"
 fi
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
 then
 	ACTION2=add
-	BUTTONTXT=$"Add TCPIP Address"
+	BUTTONTXT=$"Add"
+	BUTTONTXT2=$"Add a TCPIP address."
 	TITLETXT=$"Bypass E-Mail Authentication"
+	ICON="$ICON2"
 fi
+
+#Generate navigation bar
+if [ "$MOBILE" = no ]
+then
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="'"$DIV_ID"'"><div id=titlebox>
+	<div class="sectiontitle">'"$TITLETXT"' <a class="'"$HELPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"By default all E-Mail clients have to authenticate to be able to send E-Mails."'<br><br>'$"Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."'</span></a></div>
+	'
+fi
+
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$TITLETXT'</span>
+	<span>'"$TITLETXT"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 fi
-echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$TITLETXT'</div></td>
-<td>
-<input name="____ACTION____'$ACTION2'____" type="submit" class="button" value="'$BUTTONTXT'">
-</td>'
-#echo '<td><a href="gluster_control.cgi"><input class="button" type="button" name="" value="'$"Gluster Volume Control"'"></a></td><td><a href="home_folders_fm.cgi"><input class="button" type="button" name="" value="'$"Home Folders"'"></a></td>'
-echo '<td><a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"By default all E-Mail clients have to authenticate to be able to send E-Mails."'<br><br>'$"Here you can allow TCPIP addresses that you want to be able to send E-Mail without having to authenticate."'</span></a>
-</td></tr></tbody></table></form>
-'
+echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">
+
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info" name="____DoAction____" value="____ACTION____'"$ACTION2"'____">
+			<img src="'"$ICON"'" alt="'"$BUTTONTXT"'">
+			<span>'"$BUTTONTXT2"'</span><br>
+			'"$BUTTONTXT"'
+		</button>
+	</td>
+
+</tr></tbody></table></form>'
+
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$COMMENT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_authentication
-EXIT_STATUS=$?
+EXIT_STATUS="$?"
 
-if [ $EXIT_STATUS = 102 ]
+if [ "$EXIT_STATUS" = 102 ]
 then
 	MESSAGE=$"A folder with this name already exists."
 	show_status	
 fi
 
-if [ $EXIT_STATUS = 103 ]
+if [ "$EXIT_STATUS" = 103 ]
 then
 	MESSAGE=$"This share already exits in samba."
 	show_status	

@@ -23,49 +23,49 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_authentication_cgi
 then
-	echo `date`: email_authentication - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_authentication_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_authentication_cgi'check' ]
+if [ "$MD5SUM"'check' != "$email_authentication_cgi"'check' ]
 then
-	echo `date`: email_authentication - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_authentication - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_authentication - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-ACTION=`echo "$DATA" | cut -s -d: -f4`
-TCPIP=`echo "$DATA" | cut -s -d: -f5`
-COMMENT=`echo "$DATA" | cut -s -d: -f6 | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%3A/:/g' | sed 's/%26/\&/g'`
-MOBILE=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f4)
+TCPIP=$(echo "$DATA" | cut -s -d: -f5)
+COMMENT=$(echo "$DATA" | cut -s -d: -f6 | sed 's/+/ /g' | sed 's/%2C/,/g' | sed 's/%3A/:/g' | sed 's/%26/\&/g')
+MOBILE=$(echo "$DATA" | cut -s -d: -f7)
 
 #Add in some default comments
 [ ! -d /opt/karoshi/server_network/email/no_auth_addresses ] && mkdir -p /opt/karoshi/server_network/email/no_auth_addresses
@@ -77,31 +77,31 @@ fi
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: email_authentication - Not called by email_authentication.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - Not called by email_authentication.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_authentication - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_authentication - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: email_authentication - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
-if [ $ACTION = reallyadd ] || [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallydelete ]
 then
 	if [ -z "$TCPIP" ]
 	then
-		echo `date`: email_authentication - Blank TCPIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): email_authentication - Blank TCPIP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit
 	fi
 fi
@@ -125,16 +125,16 @@ fi
 
 EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 
-if [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallydelete ]
 then
-	echo `date`: email_authentication - removing $TCPIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - removing $TCPIP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Remove any comments
-	[ -f /opt/karoshi/server_network/email/no_auth_addresses/$TCPIP ] && rm -f /opt/karoshi/server_network/email/no_auth_addresses/$TCPIP
+	[ -f /opt/karoshi/server_network/email/no_auth_addresses/"$TCPIP" ] && rm -f /opt/karoshi/server_network/email/no_auth_addresses/"$TCPIP"
 
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		#Edit main.cf
-		if [ $(grep -c -w "$TCPIP" /etc/postfix/main.cf) -gt 0 ]
+		if [[ $(grep -c -w "$TCPIP" /etc/postfix/main.cf) -gt 0 ]]
 		then
 			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf | sed "s/$/ /g")
 			MYNETWORKS=$(echo "$MYNETWORKS" | sed "s/ $TCPIP //g" | sed "s/ //g" | sed "s/,$//g" | sed "s/,,/,/g" | sed "s/,/ , /g")	
@@ -142,53 +142,53 @@ then
 
 			#Restart postfix
 			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		#Edit main.cf
-		if [ $(grep -c -w "'$TCPIP'" /etc/postfix/main.cf) -gt 0 ]
+		if [ $(grep -c -w "'"$TCPIP"'" /etc/postfix/main.cf) -gt 0 ]
 		then
 			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf | sed "s/$/ /g")
-			MYNETWORKS=$(echo "$MYNETWORKS" | sed "s/ '$TCPIP' //g" | sed "s/ //g" | sed "s/,$//g" | sed "s/,,/,/g" | sed "s/,/ , /g")	
+			MYNETWORKS=$(echo "$MYNETWORKS" | sed "s/ '"$TCPIP"' //g" | sed "s/ //g" | sed "s/,$//g" | sed "s/,,/,/g" | sed "s/,/ , /g")	
 			sed -i "/^mynetworks/c\\$MYNETWORKS" /etc/postfix/main.cf
 
 			#Restart postfix
 			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
 		fi
 		'
 	fi
 	ACTION=view
 fi
 
-if [ $ACTION = delete ]
+if [ "$ACTION" = delete ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: '$WIDTH1'px;"><b>'$"TCPIP"'</b></td><td style="width: '$WIDTH2'px;"><b>'$"Comment"'</b></td></tr>
-<tr><td>'$TCPIP'</td><td>'$COMMENT'</td></tr>
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;"><b>'$"TCPIP"'</b></td><td style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></td></tr>
+<tr><td>'"$TCPIP"'</td><td>'"$COMMENT"'</td></tr>
 </tbody></table><br>'$"Remove this TCPIP address?"'<br><br>
 <input type="hidden" name="____ACTION____" value="reallydelete">
-<input type="hidden" name="____TCPIP____" value="'$TCPIP'">
+<input type="hidden" name="____TCPIP____" value="'"$TCPIP"'">
 <input value='$"Submit"' class="button" type="submit"></form>
 '
 
 fi
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ]
 then
-	echo `date`: email_authentication - adding $TCPIP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_authentication - adding $TCPIP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	#Add save comment
 	echo "$COMMENT" > /opt/karoshi/server_network/email/no_auth_addresses/"$TCPIP"
 
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		#Add entry to main.cf if the entry is not already there
-		if [ $(grep -c -w "$TCPIP" /etc/postfix/main.cf) = 0 ]
+		if [[ $(grep -c -w "$TCPIP" /etc/postfix/main.cf) = 0 ]]
 		then
 			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf)
 			MYNETWORKS="$MYNETWORKS , $TCPIP"
@@ -196,24 +196,24 @@ then
 
 			#Restart postfix
 			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		#Add entry to main.cf if the entry is not already there
-		if [ $(grep -c -w "'$TCPIP'" /etc/postfix/main.cf) = 0 ]
+		if [ $(grep -c -w "'"$TCPIP"'" /etc/postfix/main.cf) = 0 ]
 		then
 			MYNETWORKS=$(grep ^mynetworks /etc/postfix/main.cf)
-			MYNETWORKS="$MYNETWORKS , '$TCPIP'"
+			MYNETWORKS="$MYNETWORKS , '"$TCPIP"'"
 			sed -i "/^mynetworks/c\\$MYNETWORKS" /etc/postfix/main.cf
 
 			#Restart postfix
 			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null 2>/dev/null
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null 2>/dev/null
 		fi
 		'
 	fi
@@ -222,44 +222,42 @@ then
 fi
 
 
-if [ $ACTION = add ]
+if [ "$ACTION" = add ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"TCPIP"'</td><td><input tabindex= "1" value="'$TCPIP'" name="____TCPIP____" style="width: '$WIDTH3'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the TCPIP address of a device that you want to be able to send E-Mail from without having to authenticate."'</span></a></td></tr><tr><td>'$"Comment"'</td><td><input tabindex= "2" value="'$COMMENT'" name="____COMMENT____" style="width: '$WIDTH3'px;" size="60" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a comment for the TCPIP address."'</span></a></td></tr></tbody></table><br><br><input type="hidden" name="____ACTION____" value="reallyadd"> <input value="'$"Submit"'" class="button" type="submit"></form>'
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH1"'px;">'$"TCPIP"'</td><td><input tabindex= "1" value="'"$TCPIP"'" name="____TCPIP____" style="width: '"$WIDTH3"'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the TCPIP address of a device that you want to be able to send E-Mail from without having to authenticate."'</span></a></td></tr><tr><td>'$"Comment"'</td><td><input tabindex= "2" value="'"$COMMENT"'" name="____COMMENT____" style="width: '"$WIDTH3"'px;" size="60" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a comment for the TCPIP address."'</span></a></td></tr></tbody></table><br><br><input type="hidden" name="____ACTION____" value="reallyadd"> <input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
 	#Get a list of allowed tcpip addresses
-	if [ $EMAILSERVER = `hostname-fqdn` ]
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 	then
 		ALLOWED_LIST=$(grep ^mynetworks /etc/postfix/main.cf | cut -d"=" -f2 | sed "s/,/ /g" | sed "s/ * / /g" | sed "s/^ //g")
 	else
-		ALLOWED_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '
+		ALLOWED_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
 		grep ^mynetworks /etc/postfix/main.cf | cut -d"=" -f2 | sed "s/,/ /g" | sed "s/ * / /g" | sed "s/^ //g"
 		')
 	fi
 	
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">'
-
-	echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead>
-	<tr><th style=\"width: $WIDTH1\px;\"><b>"$"TCPIP""</b></th><th style=\"width: $WIDTH2\px;\"><b>"$"Comment""</b></th><th style=\"width: $WIDTH4\px;\"></th></tr></thead><tbody>"
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><thead>
+	<tr><th style="width: '"$WIDTH1"'px;"><b>'$"TCPIP"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></th><th style="width: '"$WIDTH4"'px;"></th></tr></thead><tbody>'
 	#Show all allowed tcpip addresses
 	for ALLOWED in $ALLOWED_LIST
 	do
-		if [ -f /opt/karoshi/server_network/email/no_auth_addresses/$ALLOWED ]
+		if [ -f /opt/karoshi/server_network/email/no_auth_addresses/"$ALLOWED" ]
 		then
-			COMMENT=$(cat /opt/karoshi/server_network/email/no_auth_addresses/$ALLOWED)
+			COMMENT=$(cat /opt/karoshi/server_network/email/no_auth_addresses/"$ALLOWED")
 		else
 			COMMENT=""
 		fi
-		echo '<tr><td>'$ALLOWED'</td><td>'$COMMENT'</td>'
-		if [ $ALLOWED != 127.0.0.1 ]
+		echo '<tr><td>'"$ALLOWED"'</td><td>'"$COMMENT"'</td>'
+		if [ "$ALLOWED" != 127.0.0.1 ]
 		then
 			echo '<td>
-			<button class="info" name="____DoDelete____" value="____ACTION____delete____TCPIP____'$ALLOWED'____COMMENT____'$COMMENT'____">
-			<img src="'$ICON1'" alt="'$"Remove"' '$ALLOWED'">
-			<span>'$"Remove"'<br>'$ALLOWED'</span>
+			<button class="info" name="____DoDelete____" value="____ACTION____delete____TCPIP____'"$ALLOWED"'____COMMENT____'"$COMMENT"'____">
+			<img src="'"$ICON1"'" alt="'$"Remove"' '"$ALLOWED"'">
+			<span>'$"Remove"'<br>'"$ALLOWED"'</span>
 			</button>
 			</td>'
 		else

@@ -64,17 +64,17 @@ echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3">
 <div class="sectiontitle">'$"Configure DHCP"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
-			<img src="'$ICON1'" alt="'$"View DHCP Leases"'">
+			<img src="'"$ICON1"'" alt="'$"View DHCP Leases"'">
 			<span>'$"View DHCP Leases"'</span><br>
 			'$"DHCP Leases"'
 		</button>
 	</td>
 
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
-			<img src="'$ICON2'" alt="'$"DHCP Reservations"'">
+			<img src="'"$ICON2"'" alt="'$"DHCP Reservations"'">
 			<span>'$"View and edit DHCP Reservations"'</span><br>
 			'$"Reservations"'
 		</button>
