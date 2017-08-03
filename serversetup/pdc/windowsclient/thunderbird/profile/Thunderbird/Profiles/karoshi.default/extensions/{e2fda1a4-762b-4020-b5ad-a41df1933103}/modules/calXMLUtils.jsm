@@ -6,7 +6,7 @@
 
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-EXPORTED_SYMBOLS = ["cal"];
+this.EXPORTED_SYMBOLS = ["cal"];
 cal.xml = {} || cal.xml;
 
 /**
@@ -23,7 +23,7 @@ cal.xml = {} || cal.xml;
  * @param aType     (optional) Force a result type, must be an XPathResult constant
  * @return          The result, see above for details.
  */
-cal.xml.evalXPath = function evaluateXPath(aNode, aExpr, aResolver, aType) {
+cal.xml.evalXPath = function(aNode, aExpr, aResolver, aType) {
     const XPR = Components.interfaces.nsIDOMXPathResult;
     let doc = (aNode.ownerDocument ? aNode.ownerDocument : aNode);
     let resolver = aResolver || doc.createNSResolver(doc.documentElement);
@@ -98,7 +98,7 @@ cal.xml.evalXPath = function evaluateXPath(aNode, aExpr, aResolver, aType) {
  * @param aType     (optional) Force a result type, must be an XPathResult constant
  * @return          The result, see above for details.
  */
-cal.xml.evalXPathFirst = function evalXPathFirst(aNode, aExpr, aResolver, aType) {
+cal.xml.evalXPathFirst = function(aNode, aExpr, aResolver, aType) {
     let result = cal.xml.evalXPath(aNode, aExpr, aResolver, aType);
 
     if (Array.isArray(result)) {
@@ -135,7 +135,7 @@ cal.xml.parseFile = function(uri) {
     let req = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"]
                         .createInstance(Components.interfaces.nsIXMLHttpRequest);
 
-    req.open('GET', uri, false);
+    req.open("GET", uri, false);
     req.overrideMimeType("text/xml");
     req.send(null);
     return req.responseXML;
@@ -160,14 +160,14 @@ cal.xml.serializeDOM = function(doc) {
  * @param isAttribute   If true, " and ' are also escaped
  * @return              The escaped string
  */
-cal.xml.escapeString = function escapeString(str, isAttribute) {
-    return str.replace(/[&<>'"]/g, function(chr) {
+cal.xml.escapeString = function(str, isAttribute) {
+    return str.replace(/[&<>'"]/g, (chr) => {
         switch (chr) {
             case "&": return "&amp;";
             case "<": return "&lt;";
             case ">": return "&gt;";
-            case '"': if (isAttribute) return "&quot;";
-            case "'": if (isAttribute) return "&apos;";
+            case '"': return (isAttribute ? "&quot;" : chr);
+            case "'": return (isAttribute ? "&apos;" : chr);
             default: return chr;
         }
     });

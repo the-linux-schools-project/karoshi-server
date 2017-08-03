@@ -30,8 +30,8 @@ function calStartupService() {
     this.setupObservers();
 }
 
-const calStartupServiceInterfaces = [Components.interfaces.nsIObserver];
-const calStartupServiceClassID = Components.ID("{2547331f-34c0-4a4b-b93c-b503538ba6d6}");
+var calStartupServiceInterfaces = [Components.interfaces.nsIObserver];
+var calStartupServiceClassID = Components.ID("{2547331f-34c0-4a4b-b93c-b503538ba6d6}");
 calStartupService.prototype = {
     QueryInterface: XPCOMUtils.generateQI(calStartupServiceInterfaces),
     classID: calStartupServiceClassID,
@@ -48,11 +48,13 @@ calStartupService.prototype = {
     /**
      * Sets up the needed observers for noticing startup/shutdown
      */
-    setupObservers: function ccm_setUpStartupObservers() {
+    setupObservers: function() {
         Services.obs.addObserver(this, "profile-after-change", false);
         Services.obs.addObserver(this, "profile-before-change", false);
         Services.obs.addObserver(this, "xpcom-shutdown", false);
     },
+
+    started: false,
 
     /**
      * Gets the startup order of services. This is an array of service objects
@@ -60,7 +62,8 @@ calStartupService.prototype = {
      *
      * @return      The startup order as an array.
      */
-    getStartupOrder: function getStartupOrder() {
+    getStartupOrder: function() {
+        let self = this;
         let tzService = Components.classes["@mozilla.org/calendar/timezone-service;1"]
                                   .getService(Components.interfaces.calITimezoneService);
         let calMgr = Components.classes["@mozilla.org/calendar/manager;1"]
@@ -69,14 +72,16 @@ calStartupService.prototype = {
         // Notification object
         let notify = {
             startup: function(aCompleteListener) {
+                self.started = true;
                 Services.obs.notifyObservers(null, "calendar-startup-done", null);
                 aCompleteListener.onResult(null, Components.results.NS_OK);
             },
-            shutdown: function shutdown(aCompleteListener) {
+            shutdown: function(aCompleteListener) {
                 // Argh, it would have all been so pretty! Since we just reverse
                 // the array, the shutdown notification would happen before the
                 // other shutdown calls. For lack of pretty code, I'm
                 // leaving this out! Users can still listen to xpcom-shutdown.
+                self.started = false;
                 aCompleteListener.onResult(null, Components.results.NS_OK);
             }
         };
@@ -90,7 +95,7 @@ calStartupService.prototype = {
     /**
      * Observer notification callback
      */
-    observe: function observe(aSubject, aTopic, aData) {
+    observe: function(aSubject, aTopic, aData) {
         switch (aTopic) {
             case "profile-after-change":
                 callOrderedServices("startup", this.getStartupOrder());

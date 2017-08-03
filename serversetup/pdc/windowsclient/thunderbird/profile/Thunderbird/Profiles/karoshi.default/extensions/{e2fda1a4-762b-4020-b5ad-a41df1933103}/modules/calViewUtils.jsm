@@ -4,7 +4,7 @@
 
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-EXPORTED_SYMBOLS = ["cal"];
+this.EXPORTED_SYMBOLS = ["cal"];
 cal.view = {
     /**
       - * Item comparator for inserting items into dayboxes.
@@ -14,8 +14,12 @@ cal.view = {
       - * @return      The usual -1, 0, 1
       - */
     compareItems: function(a, b) {
-        if (!a) return -1;
-        if (!b) return 1;
+        if (!a) {
+            return -1;
+        }
+        if (!b) {
+            return 1;
+        }
 
         let aIsEvent = cal.isEvent(a);
         let aIsTodo = cal.isToDo(a);
@@ -24,23 +28,44 @@ cal.view = {
         let bIsTodo = cal.isToDo(b);
 
         // sort todos before events
-        if (aIsTodo && bIsEvent) return -1;
-        if (aIsEvent && bIsTodo) return 1;
+        if (aIsTodo && bIsEvent) {
+            return -1;
+        }
+        if (aIsEvent && bIsTodo) {
+            return 1;
+        }
 
-        // todos are kept equal
-        if (aIsTodo && bIsTodo) return 0;
+        // sort items of the same type according to date-time
+        let aStartDate = a.startDate || a.entryDate || a.dueDate;
+        let bStartDate = b.startDate || b.entryDate || b.dueDate;
+        let aEndDate = a.endDate || a.dueDate || a.entryDate;
+        let bEndDate = b.endDate || b.dueDate || b.entryDate;
+        if (!aStartDate || !bStartDate) {
+            return 0;
+        }
 
         // sort all day events before events with a duration
-        if (a.startDate.isDate && !b.startDate.isDate) return -1;
-        if (!a.startDate.isDate && b.startDate.isDate) return 1;
+        if (aStartDate.isDate && !bStartDate.isDate) {
+            return -1;
+        }
+        if (!aStartDate.isDate && bStartDate.isDate) {
+            return 1;
+        }
 
-        let cmp = a.startDate.compare(b.startDate);
-        if (cmp != 0) return cmp;
+        let cmp = aStartDate.compare(bStartDate);
+        if (cmp != 0) {
+            return cmp;
+        }
 
-        cmp = a.endDate.compare(b.endDate);
-        if (cmp != 0) return cmp;
+        if (!aEndDate || !bEndDate) {
+            return 0;
+        }
+        cmp = aEndDate.compare(bEndDate);
+        if (cmp != 0) {
+            return cmp;
+        }
 
         cmp = (a.title > b.title) - (a.title < b.title);
         return cmp;
     }
-}
+};

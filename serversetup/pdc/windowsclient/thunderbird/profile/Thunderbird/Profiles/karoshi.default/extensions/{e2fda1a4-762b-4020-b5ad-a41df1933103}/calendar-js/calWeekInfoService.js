@@ -9,8 +9,8 @@ Components.utils.import("resource://gre/modules/Preferences.jsm");
 function calWeekInfoService() {
     this.wrappedJSObject = this;
 }
-const calWeekInfoServiceClassID = Components.ID("{6877bbdd-f336-46f5-98ce-fe86d0285cc1}");
-const calWeekInfoServiceInterfaces = [Components.interfaces.calIWeekInfoService];
+var calWeekInfoServiceClassID = Components.ID("{6877bbdd-f336-46f5-98ce-fe86d0285cc1}");
+var calWeekInfoServiceInterfaces = [Components.interfaces.calIWeekInfoService];
 calWeekInfoService.prototype = {
     classID: calWeekInfoServiceClassID,
     QueryInterface: XPCOMUtils.generateQI(calWeekInfoServiceInterfaces),
@@ -25,11 +25,11 @@ calWeekInfoService.prototype = {
     // calIWeekInfoService:
     getWeekTitle: function(aDateTime) {
         /**
-         * This implementation is based on the ISO 8601 standard.  
+         * This implementation is based on the ISO 8601 standard.
          * ISO 8601 defines week one as the first week with at least 4
          * days, and defines Monday as the first day of the week.
          * Equivalently, the week one is the week with the first Thursday.
-         * 
+         *
          * This implementation uses the second definition, because it
          * enables the user to set a different start-day of the week
          * (Sunday instead of Monday is a common setting).  If the first
@@ -56,65 +56,62 @@ calWeekInfoService.prototype = {
         // which may be part of the week counted in the previous year.) So we
         // need the startWeekday.
         const SUNDAY = 0;
-        var startWeekday = Preferences.get("calendar.week.start", SUNDAY); // default to monday per ISO8601 standard.
+        let startWeekday = Preferences.get("calendar.week.start", SUNDAY); // default to monday per ISO8601 standard.
 
         // The number of days since the start of the week.
         // Notice that the result of the substraction might be negative.
         // We correct for that by adding 7, and then using the remainder operator.
-        var sinceStartOfWeek = (aDateTime.weekday - startWeekday + 7) % 7; 
+        let sinceStartOfWeek = (aDateTime.weekday - startWeekday + 7) % 7;
 
         // The number of days to Thursday is the difference between Thursday
         // and the start-day of the week (again corrected for negative values).
         const THURSDAY = 4;
-        var startToThursday = (THURSDAY - startWeekday + 7) % 7;
+        let startToThursday = (THURSDAY - startWeekday + 7) % 7;
 
         // The yearday number of the Thursday this week.
-        var thisWeeksThursday = aDateTime.yearday - sinceStartOfWeek + startToThursday;
+        let thisWeeksThursday = aDateTime.yearday - sinceStartOfWeek + startToThursday;
 
-        // For the first few days of the year, we might still be in week 52 or 53.
         if (thisWeeksThursday < 1) {
-            var lastYearDate = aDateTime.clone();
+            // For the first few days of the year, we still are in week 52 or 53.
+            let lastYearDate = aDateTime.clone();
             lastYearDate.year -= 1;
             thisWeeksThursday += lastYearDate.endOfYear.yearday;
-        }
-
-        // For the last few days of the year, we might already be in week 1. 
-        if (thisWeeksThursday > aDateTime.endOfYear.yearday) {
+        } else if (thisWeeksThursday > aDateTime.endOfYear.yearday) {
+            // For the last few days of the year, we already are in week 1.
             thisWeeksThursday -= aDateTime.endOfYear.yearday;
         }
 
-        var weekNumber = Math.ceil(thisWeeksThursday/7);
+        let weekNumber = Math.ceil(thisWeeksThursday / 7);
         return weekNumber;
     },
 
     /**
-     * gets the first day of a week of a passed day under consideration 
+     * gets the first day of a week of a passed day under consideration
      * of the preference setting "calendar.week.start"
      *
      * @param aDate     a date time object
      * @return          a dateTime-object denoting the first day of the week
      */
     getStartOfWeek: function(aDate) {
-        var date = aDate.clone();
+        let date = aDate.clone();
         date.isDate = true;
-        var offset = (Preferences.get("calendar.week.start", 0) - aDate.weekday);
+        let offset = Preferences.get("calendar.week.start", 0) - aDate.weekday;
+        date.day += offset;
         if (offset > 0) {
-            date.day -= (7 - offset);
-        } else {
-            date.day += offset;
+            date.day -= 7;
         }
         return date;
     },
 
     /**
-     * gets the last day of a week of a passed day under consideration 
+     * gets the last day of a week of a passed day under consideration
      * of the preference setting "calendar.week.start"
      *
      * @param aDate     a date time object
      * @return          a dateTime-object denoting the last day of the week
      */
     getEndOfWeek: function(aDate) {
-        var date = this.getStartOfWeek(aDate);
+        let date = this.getStartOfWeek(aDate);
         date.day += 6;
         return date;
     }

@@ -6,8 +6,8 @@ Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const calSleepMonitorClassID = Components.ID("9b987a8d-c2ef-4cb9-9602-1261b4b2f6fa");
-const calSleepMonitorInterfaces = [Components.interfaces.nsIObserver];
+var calSleepMonitorClassID = Components.ID("9b987a8d-c2ef-4cb9-9602-1261b4b2f6fa");
+var calSleepMonitorInterfaces = [Components.interfaces.nsIObserver];
 
 function calSleepMonitor() {
 }
@@ -50,7 +50,7 @@ calSleepMonitor.prototype = {
     },
 
     // nsIObserver:
-    observe: function observe(aSubject, aTopic, aData) {
+    observe: function(aSubject, aTopic, aData) {
         // calSleepMonitor is not used on Windows or OSX.
         if (Services.appinfo.OS == "WINNT" || Services.appinfo.OS == "Darwin") {
             return;
@@ -68,4 +68,4 @@ calSleepMonitor.prototype = {
     }
 };
 
-let NSGetFactory = XPCOMUtils.generateNSGetFactory([calSleepMonitor]);
+this.NSGetFactory = XPCOMUtils.generateNSGetFactory([calSleepMonitor]);

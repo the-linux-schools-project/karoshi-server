@@ -11,8 +11,8 @@ function calRecurrenceRule(innerObject) {
     this.wrappedJSObject = this;
 }
 
-const calRecurrenceRuleInterfaces = [Components.interfaces.calIRecurrenceRule];
-const calRecurrenceRuleClassID = Components.ID("{df19281a-5389-4146-b941-798cb93a7f0d}");
+var calRecurrenceRuleInterfaces = [Components.interfaces.calIRecurrenceRule];
+var calRecurrenceRuleClassID = Components.ID("{df19281a-5389-4146-b941-798cb93a7f0d}");
 calRecurrenceRule.prototype = {
     QueryInterface: XPCOMUtils.generateQI(calRecurrenceRuleInterfaces),
     classID: calRecurrenceRuleClassID,
@@ -26,11 +26,11 @@ calRecurrenceRule.prototype = {
     innerObject: null,
 
     isMutable: true,
-    makeImmutable: function() this.isMutable = false,
-    clone: function() new calRecurrenceRule(new ICAL.Recur(this.innerObject)),
+    makeImmutable: function() { this.isMutable = false; },
+    clone: function() { return new calRecurrenceRule(new ICAL.Recur(this.innerObject)); },
 
     isNegative: false, // We don't support EXRULE anymore
-    get isFinite() this.innerObject.isFinite(),
+    get isFinite() { return this.innerObject.isFinite(); },
 
     getNextOccurrence: function(aStartTime, aRecId) {
         aStartTime = unwrapSingle(ICAL.Time, aStartTime);
@@ -66,8 +66,8 @@ calRecurrenceRule.prototype = {
 
         let iter = this.innerObject.iterator(aStartTime);
 
-        for (let next = iter.next(); next ; next = iter.next()) {
-            let dtNext  = next.clone();
+        for (let next = iter.next(); next; next = iter.next()) {
+            let dtNext = next.clone();
             dtNext.isDate = false;
 
             if (dtNext.compare(rangeStart) < 0) {
@@ -95,23 +95,25 @@ calRecurrenceRule.prototype = {
         return occurrences;
     },
 
-    get icalString() "RRULE:" + this.innerObject.toString() + ICAL.newLineChar,
-    set icalString(val) this.innerObject = ICAL.Recur.fromString(val.replace(/^RRULE:/i, "")),
+    get icalString() { return "RRULE:" + this.innerObject.toString() + ICAL.newLineChar; },
+    set icalString(val) { this.innerObject = ICAL.Recur.fromString(val.replace(/^RRULE:/i, "")); },
 
     get icalProperty() {
         let prop = new ICAL.Property("rrule");
         prop.setValue(this.innerObject);
         return new calIcalProperty(prop);
     },
-    set icalProperty(val) unwrapSetter(ICAL.Property, val, function(val) {
-        this.innerObject = val.getFirstValue();
-    }, this),
+    set icalProperty(rawval) {
+        unwrapSetter(ICAL.Property, rawval, function(val) {
+            this.innerObject = val.getFirstValue();
+        }, this);
+    },
 
-    get type() this.innerObject.freq,
-    set type(val) this.innerObject.freq = val,
+    get type() { return this.innerObject.freq; },
+    set type(val) { this.innerObject.freq = val; },
 
-    get interval() this.innerObject.interval,
-    set interval(val) this.innerObject.interval = val,
+    get interval() { return this.innerObject.interval; },
+    set interval(val) { this.innerObject.interval = val; },
 
     get count() {
         if (!this.isByCount) {
@@ -119,7 +121,7 @@ calRecurrenceRule.prototype = {
         }
         return this.innerObject.count || -1;
     },
-    set count(val) this.innerObject.count = (val && val > 0 ? val : null),
+    set count(val) { this.innerObject.count = (val && val > 0 ? val : null); },
 
     get untilDate() {
         if (this.innerObject.until) {
@@ -128,19 +130,21 @@ calRecurrenceRule.prototype = {
             return null;
         }
     },
-    set untilDate(val) unwrapSetter(ICAL.Time, val, function(val) {
-        if (val.timezone != ICAL.Timezone.utcTimezone &&
-            val.timezone != ICAL.Timezone.localTimezone) {
-            val = val.convertToZone(ICAL.Timezone.utcTimezone);
-        }
+    set untilDate(rawval) {
+        unwrapSetter(ICAL.Time, rawval, function(val) {
+            if (val.timezone != ICAL.Timezone.utcTimezone &&
+                val.timezone != ICAL.Timezone.localTimezone) {
+                val = val.convertToZone(ICAL.Timezone.utcTimezone);
+            }
 
-        this.innerObject.until = val;
-    }, this),
+            this.innerObject.until = val;
+        }, this);
+    },
 
-    get isByCount() this.innerObject.isByCount(),
+    get isByCount() { return this.innerObject.isByCount(); },
 
-    get weekStart() this.innerObject.wkst - 1,
-    set weekStart(val) this.innerObject.wkst = val + 1,
+    get weekStart() { return this.innerObject.wkst - 1; },
+    set weekStart(val) { this.innerObject.wkst = val + 1; },
 
     getComponent: function(aType, aCount) {
         let values = this.innerObject.getComponent(aType);
@@ -157,14 +161,16 @@ calRecurrenceRule.prototype = {
                     // match[2] is the week number for this value.
                     values[i] += 8 * match[2];
                 }
-                if (match[1] == '-') {
+                if (match[1] == "-") {
                     // Week numbers are counted back from the end of the period.
                     values[i] *= -1;
                 }
             }
         }
 
-        if (aCount) aCount.value = values.length;
+        if (aCount) {
+            aCount.value = values.length;
+        }
         return values;
     },
 

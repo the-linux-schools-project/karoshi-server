@@ -1,10 +1,10 @@
 #!/bin/bash
 source /opt/karoshi/server_network/domain_information/domain_name
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 #Get timezone
-TIMEZONE=`cat /etc/timezone`
+TIMEZONE=$(cat /etc/timezone)
 
 #Delete any current thunderbird settings
 [ -d /var/lib/samba/netlogon/windows_settings/thunderbird ] && rm -f -R /var/lib/samba/netlogon/windows_settings/thunderbird
@@ -16,13 +16,13 @@ cp -f /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/thunderbird.kix /va
 cp -f /opt/karoshi/serversetup/pdc/windowsclient/thunderbird/thunderbird.bat /var/lib/samba/netlogon/windows_settings/thunderbird/
 #Set the timezone
 TIMEZONE=$(cat /etc/timezone)
-sed -i 's%CHANGETHISTIMEZONE%'$TIMEZONE'%g' /var/lib/samba/netlogon/windows_settings/thunderbird/thunderbird.kix
+sed -i 's%CHANGETHISTIMEZONE%'"$TIMEZONE"'%g' /var/lib/samba/netlogon/windows_settings/thunderbird/thunderbird.kix
 
 #Add thunderbird.kix to logonform.kix
 
-if [ `grep -c ConfigureThunderbird /var/lib/samba/netlogon/logonform.kix` = 0 ]
+if [[ $(grep -c ConfigureThunderbird /var/lib/samba/netlogon/logonform.kix) = 0 ]]
 then
-	cp -f /var/lib/samba/netlogon/logonform.kix /var/lib/samba/netlogon/logonform.kix.$LOG_DATE.$$
+	cp -f /var/lib/samba/netlogon/logonform.kix /var/lib/samba/netlogon/logonform.kix."$LOG_DATE.$$"
 	echo '
 Function ConfigureThunderbird()
 	Progress( "Configuring Thunderbird")
@@ -40,7 +40,7 @@ fi
 
 
 #Point thunderbird.bat at the main server
-sed -i "s/CHANGTHISSERVER/`hostname-fqdn`/g" /var/lib/samba/netlogon/windows_settings/thunderbird/thunderbird.bat
+sed -i "s/CHANGTHISSERVER/$(hostname-fqdn)/g" /var/lib/samba/netlogon/windows_settings/thunderbird/thunderbird.bat
 
 #Delete an existing cert8.db
 [ -f /var/lib/samba/netlogon/windows_settings/thunderbird/profile/Thunderbird/Profiles/karoshi.default/cert8.db ] && rm -f /var/lib/samba/netlogon/windows_settings/thunderbird/profile/Thunderbird/Profiles/karoshi.default/cert8.db
@@ -69,7 +69,7 @@ unzip "sogo-integrator@inverse.ca.xpi" 1>/dev/null
 rm -f "/tmp/sogo_integrator/sogo-integrator@inverse.ca.xpi"
 
 #Set correct path in extensions.rd
-sed -i 's/sogo-demo.inverse.ca/mail.'$REALM'\/SOGo/g' /tmp/sogo_integrator/chrome/content/extensions.rdf
+sed -i 's/sogo-demo.inverse.ca/mail.'"$REALM"'\/SOGo/g' /tmp/sogo_integrator/chrome/content/extensions.rdf
 
 #Create sogo-integrator site.js
 
@@ -84,7 +84,7 @@ pref("mail.mdn.report.not_in_to_cc", 0);
 pref("mail.strictly_mime.parm_folding", 0);
 pref("calendar.alarms.showmissed", false);
 pref("calendar.caldav.sched.enabled", true);
-pref("calendar.timezone.local", "/mozilla.org/20070129_1/'$TIMEZONE'");
+pref("calendar.timezone.local", "/mozilla.org/20070129_1/'"$TIMEZONE"'");
 pref("sogo-integrator.autocomplete.server.urlid", "directory");
 ' > /tmp/sogo_integrator/defaults/preferences/site.js
 

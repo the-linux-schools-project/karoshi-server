@@ -10,8 +10,8 @@ function calPeriod(innerObject) {
     this.wrappedJSObject = this;
 }
 
-const calPeriodInterfaces = [Components.interfaces.calIPeriod];
-const calPeriodClassID = Components.ID("{394a281f-7299-45f7-8b1f-cce21258972f}");
+var calPeriodInterfaces = [Components.interfaces.calIPeriod];
+var calPeriodClassID = Components.ID("{394a281f-7299-45f7-8b1f-cce21258972f}");
 calPeriod.prototype = {
     QueryInterface: XPCOMUtils.generateQI(calPeriodInterfaces),
     classID: calPeriodClassID,
@@ -25,33 +25,37 @@ calPeriod.prototype = {
     isMutable: true,
     innerObject: null,
 
-    get icalPeriod() this.innerObject,
-    set icalPeriod(val) this.innerObject = val,
+    get icalPeriod() { return this.innerObject; },
+    set icalPeriod(val) { this.innerObject = val; },
 
-    makeImmutable: function() this.isMutable = false,
-    clone: function() new calPeriod(this.innerObject.clone()),
+    makeImmutable: function() { this.isMutable = false; },
+    clone: function() { return new calPeriod(this.innerObject.clone()); },
 
-    get start() wrapGetter(calDateTime, this.innerObject.start),
-    set start(val) unwrapSetter(ICAL.Time, val, function(val) {
-        this.innerObject.start = val;
-    }, this),
+    get start() { return wrapGetter(calDateTime, this.innerObject.start); },
+    set start(rawval) {
+        unwrapSetter(ICAL.Time, rawval, function(val) {
+            this.innerObject.start = val;
+        }, this);
+    },
 
-    get end() wrapGetter(calDateTime, this.innerObject.getEnd()),
-    set end(val) unwrapSetter(ICAL.Time, val, function(val) {
-        if (this.innerObject.duration) {
-            this.innerObject.duration = null;
-        }
-        this.innerObject.end = val;
-    }, this),
+    get end() { return wrapGetter(calDateTime, this.innerObject.getEnd()); },
+    set end(rawval) {
+        unwrapSetter(ICAL.Time, rawval, function(val) {
+            if (this.innerObject.duration) {
+                this.innerObject.duration = null;
+            }
+            this.innerObject.end = val;
+        }, this);
+    },
 
-    get duration() wrapGetter(calDuration, this.innerObject.getDuration()),
+    get duration() { return wrapGetter(calDuration, this.innerObject.getDuration()); },
 
-    get icalString() this.innerObject.toICALString(),
+    get icalString() { return this.innerObject.toICALString(); },
     set icalString(val) {
-        let str = ICAL.parse._parseValue(val, "period");
-        this.innerObject = ICAL.Period.fromString(str);
+        let dates = ICAL.parse._parseValue(val, "period", ICAL.design.icalendar);
+        this.innerObject = ICAL.Period.fromString(dates.join("/"));
         return val;
     },
 
-    toString: function() this.innerObject.toString()
+    toString: function() { return this.innerObject.toString(); }
 };

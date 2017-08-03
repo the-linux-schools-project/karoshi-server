@@ -6,7 +6,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Preferences.jsm");
 
-const nsIScriptableDateFormat = Components.interfaces.nsIScriptableDateFormat;
+var nsIScriptableDateFormat = Components.interfaces.nsIScriptableDateFormat;
 
 function calDateTimeFormatter() {
     this.wrappedJSObject = this;
@@ -22,7 +22,7 @@ function calDateTimeFormatter() {
     // If LONG FORMATTED DATE is same as short formatted date,
     // then OS has poor extended/long date config, so use workaround.
     this.mUseLongDateService = true;
-    var probeDate =
+    let probeDate =
         Components.classes["@mozilla.org/calendar/datetime;1"]
                   .createInstance(Components.interfaces.calIDateTime);
     probeDate.timezone = UTC();
@@ -33,17 +33,17 @@ function calDateTimeFormatter() {
         // We're try/catching the calls to nsScriptableDateFormat since it's
         // outside this module. We're also reusing probeDate rather than
         // creating 3 discrete calDateTimes for performance.
-        var probeStringA = this.formatDateShort(probeDate);
-        var longProbeString = this.formatDateLong(probeDate);
+        let probeStringA = this.formatDateShort(probeDate);
+        let longProbeString = this.formatDateLong(probeDate);
         probeDate.month = 4;
-        var probeStringB = this.formatDateShort(probeDate);
+        let probeStringB = this.formatDateShort(probeDate);
         probeDate.month = 3;
         probeDate.day = 6;
-        var probeStringC = this.formatDateShort(probeDate);
+        let probeStringC = this.formatDateShort(probeDate);
 
         // Compare the index of the first differing character between
         // probeStringA to probeStringB and probeStringA to probeStringC.
-        for (var i=0; i < probeStringA.length ; i++) {
+        for (let i = 0; i < probeStringA.length; i++) {
             if (probeStringA[i] != probeStringB[i]) {
                 this.mMonthFirst = true;
                 break;
@@ -59,14 +59,15 @@ function calDateTimeFormatter() {
         // workaround hack instead.
         if (longProbeString == null ||
             longProbeString.length < 4 ||
-            longProbeString == probeStringA)
-           this.mUseLongDateService = false;
+            longProbeString == probeStringA) {
+            this.mUseLongDateService = false;
+        }
     } catch (e) {
         this.mUseLongDateService = false;
     }
 }
-const calDateTimeFormatterClassID = Components.ID("{4123da9a-f047-42da-a7d0-cc4175b9f36a}");
-const calDateTimeFormatterInterfaces = [Components.interfaces.calIDateTimeFormatter];
+var calDateTimeFormatterClassID = Components.ID("{4123da9a-f047-42da-a7d0-cc4175b9f36a}");
+var calDateTimeFormatterInterfaces = [Components.interfaces.calIDateTimeFormatter];
 calDateTimeFormatter.prototype = {
     classID: calDateTimeFormatterClassID,
     QueryInterface: XPCOMUtils.generateQI(calDateTimeFormatterInterfaces),
@@ -77,13 +78,13 @@ calDateTimeFormatter.prototype = {
         interfaces: calDateTimeFormatterInterfaces,
     }),
 
-    formatDate: function formatDate(aDate) {
+    formatDate: function(aDate) {
         // Format the date using user's format preference (long or short)
         let format = Preferences.get("calendar.date.format", 0);
         return (format == 0 ? this.formatDateLong(aDate) : this.formatDateShort(aDate));
     },
 
-    formatDateShort: function formatDateShort(aDate) {
+    formatDateShort: function(aDate) {
         return this.mDateService.FormatDate("",
                                             nsIScriptableDateFormat.dateFormatShort,
                                             aDate.year,
@@ -91,26 +92,37 @@ calDateTimeFormatter.prototype = {
                                             aDate.day);
     },
 
-    formatDateLong: function formatDateLong(aDate) {
+    formatDateLong: function(aDate) {
+        let longDate;
         if (this.mUseLongDateService) {
-            return this.mDateService.FormatDate("",
-                                                nsIScriptableDateFormat.dateFormatLong,
-                                                aDate.year,
-                                                aDate.month + 1,
-                                                aDate.day);
-        } else {
-            // HACK We are probably on Linux and want a string in long format.
-            // dateService.dateFormatLong on Linux may return a short string, so
-            // build our own.
-            return cal.calGetString("calendar", "formatDateLong",
-                                    [this.shortDayName(aDate.weekday),
-                                     this.formatDayWithOrdinal(aDate.day),
-                                     this.shortMonthName(aDate.month),
-                                     aDate.year]);
+            longDate = this.mDateService.FormatDate("",
+                                                    nsIScriptableDateFormat.dateFormatLong,
+                                                    aDate.year,
+                                                    aDate.month + 1,
+                                                    aDate.day);
+            // check whether weekday name appears as in Lightning localization. if not, this is
+            // probably a minority language without OS support, so we should fall back to compose
+            // longDate on our own. May be not needed anymore once bug 441167 is fixed.
+            if (!longDate.includes(this.dayName(aDate.weekday)) &&
+                !longDate.includes(this.shortDayName(aDate.weekday))) {
+                longDate = null;
+                this.mUseLongDateService = false;
+            }
         }
+        if (longDate == null) {
+            // HACK We are probably on Linux or have a minority localization and want a string in
+            // long format. dateService.dateFormatLong on Linux may return a short string, so
+            // build our own.
+            longDate = cal.calGetString("calendar", "formatDateLong",
+                                        [this.shortDayName(aDate.weekday),
+                                         this.formatDayWithOrdinal(aDate.day),
+                                         this.shortMonthName(aDate.month),
+                                         aDate.year]);
+        }
+        return longDate;
     },
 
-    formatDateWithoutYear: function formatDateWithoutYear(aDate) {
+    formatDateWithoutYear: function(aDate) {
         // Doing this the hard way, because nsIScriptableDateFormat doesn't
         // have a way to not include the year.
         if (this.mMonthFirst) {
@@ -120,9 +132,10 @@ calDateTimeFormatter.prototype = {
         }
     },
 
-    formatTime: function formatTime(aDate) {
-        if (aDate.isDate)
+    formatTime: function(aDate) {
+        if (aDate.isDate) {
             return this.mDateStringBundle.GetStringFromName("AllDay");
+        }
 
         return this.mDateService.FormatTime("",
                                             nsIScriptableDateFormat.timeFormatNoSeconds,
@@ -131,7 +144,7 @@ calDateTimeFormatter.prototype = {
                                             0);
     },
 
-    formatDateTime: function formatDateTime(aDate) {
+    formatDateTime: function(aDate) {
         let formattedDate = this.formatDate(aDate);
         let formattedTime = this.formatTime(aDate);
 
@@ -143,10 +156,16 @@ calDateTimeFormatter.prototype = {
         }
     },
 
-    formatTimeInterval: function formatTimeInterval(aStartDate, aEndDate) {
-        if (!aStartDate && aEndDate) return this.formatTime(aEndDate);
-        if (!aEndDate && aStartDate) return this.formatTime(aStartDate);
-        if (!aStartDate && !aEndDate) return "";
+    formatTimeInterval: function(aStartDate, aEndDate) {
+        if (!aStartDate && aEndDate) {
+            return this.formatTime(aEndDate);
+        }
+        if (!aEndDate && aStartDate) {
+            return this.formatTime(aStartDate);
+        }
+        if (!aStartDate && !aEndDate) {
+            return "";
+        }
 
         // TODO do we need l10n for this?
         // TODO should we check for the same day? The caller should know what
@@ -154,9 +173,9 @@ calDateTimeFormatter.prototype = {
         return this.formatTime(aStartDate) + "\u2013" + this.formatTime(aEndDate);
     },
 
-    formatInterval: function formatInterval(aStartDate, aEndDate) {
+    formatInterval: function(aStartDate, aEndDate) {
         // Check for tasks without start and/or due date
-        if (aEndDate == null && aStartDate == null ) {
+        if (aEndDate == null && aStartDate == null) {
             return calGetString("calendar", "datetimeIntervalTaskWithoutDate");
         } else if (aEndDate == null) {
             let startDateString = this.formatDate(aStartDate);
@@ -186,13 +205,13 @@ calDateTimeFormatter.prototype = {
                     let startMonthName = cal.formatMonth(aStartDate.month + 1, "calendar", "daysIntervalBetweenYears");
                     let endMonthName = cal.formatMonth(aEndDate.month + 1, "calendar", "daysIntervalBetweenYears");
                     return cal.calGetString("calendar", "daysIntervalBetweenYears", [startMonthName, startDay, startYear, endMonthName, endDay, endYear]);
-                } else if (aStartDate.month != endDate.month) {
+                } else if (aStartDate.month == endDate.month) {
+                    let startMonthName = cal.formatMonth(aStartDate.month + 1, "calendar", "daysIntervalInMonth");
+                    return cal.calGetString("calendar", "daysIntervalInMonth", [startMonthName, startDay, endDay, endYear]);
+                } else {
                     let startMonthName = cal.formatMonth(aStartDate.month + 1, "calendar", "daysIntervalBetweenMonths");
                     let endMonthName = cal.formatMonth(aEndDate.month + 1, "calendar", "daysIntervalBetweenMonths");
                     return cal.calGetString("calendar", "daysIntervalBetweenMonths", [startMonthName, startDay, endMonthName, endDay, endYear]);
-                } else {
-                    let startMonthName = cal.formatMonth(aStartDate.month + 1, "calendar", "daysIntervalInMonth");
-                    return cal.calGetString("calendar", "daysIntervalInMonth", [startMonthName, startDay, endDay, endYear]);
                 }
             }
         } else {
@@ -221,13 +240,13 @@ calDateTimeFormatter.prototype = {
         }
     },
 
-    formatDayWithOrdinal: function formatDayWithOrdinal(aDay) {
+    formatDayWithOrdinal: function(aDay) {
         let ordinalSymbols = this.mDateStringBundle.GetStringFromName("dayOrdinalSymbol").split(",");
         let dayOrdinalSymbol = ordinalSymbols[aDay - 1] || ordinalSymbols[0];
         return aDay + dayOrdinalSymbol;
     },
 
-    _getItemDates: function _getItemDates(aItem) {
+    _getItemDates: function(aItem) {
         let start = aItem[calGetStartDateProp(aItem)];
         let end = aItem[calGetEndDateProp(aItem)];
         let kDefaultTimezone = calendarDefaultTimezone();
@@ -247,31 +266,31 @@ calDateTimeFormatter.prototype = {
         return [start, end];
     },
 
-    formatItemInterval: function formatItemInterval(aItem) {
-        return this.formatInterval.apply(this, this._getItemDates(aItem));
+    formatItemInterval: function(aItem) {
+        return this.formatInterval(...this._getItemDates(aItem));
     },
 
-    formatItemTimeInterval: function formatItemTimeInterval(aItem) {
-        return this.formatTimeInterval.apply(this, this._getItemDates(aItem));
+    formatItemTimeInterval: function(aItem) {
+        return this.formatTimeInterval(...this._getItemDates(aItem));
     },
 
-    monthName: function monthName(aMonthIndex) {
+    monthName: function(aMonthIndex) {
         let oneBasedMonthIndex = aMonthIndex + 1;
-        return this.mDateStringBundle.GetStringFromName("month." + oneBasedMonthIndex + ".name" );
+        return this.mDateStringBundle.GetStringFromName("month." + oneBasedMonthIndex + ".name");
     },
 
-    shortMonthName: function shortMonthName(aMonthIndex) {
+    shortMonthName: function(aMonthIndex) {
         let oneBasedMonthIndex = aMonthIndex + 1;
-        return this.mDateStringBundle.GetStringFromName("month." + oneBasedMonthIndex + ".Mmm" );
+        return this.mDateStringBundle.GetStringFromName("month." + oneBasedMonthIndex + ".Mmm");
     },
 
-    dayName: function dayName(aDayIndex) {
+    dayName: function(aDayIndex) {
         let oneBasedDayIndex = aDayIndex + 1;
-        return this.mDateStringBundle.GetStringFromName("day." + oneBasedDayIndex + ".name" );
+        return this.mDateStringBundle.GetStringFromName("day." + oneBasedDayIndex + ".name");
     },
 
-    shortDayName: function shortDayName(aDayIndex) {
+    shortDayName: function(aDayIndex) {
         let oneBasedDayIndex = aDayIndex + 1;
-        return this.mDateStringBundle.GetStringFromName("day." + oneBasedDayIndex + ".Mmm" );
+        return this.mDateStringBundle.GetStringFromName("day." + oneBasedDayIndex + ".Mmm");
     }
 };

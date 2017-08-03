@@ -16,8 +16,8 @@ function calWeekPrinter() {
     this.wrappedJSObject = this;
 }
 
-const calWeekPrinterClassID = Components.ID("{2d6ec97b-9109-4b92-89c5-d4b4806619ce}");
-const calWeekPrinterInterfaces = [Components.interfaces.calIPrintFormatter];
+var calWeekPrinterClassID = Components.ID("{2d6ec97b-9109-4b92-89c5-d4b4806619ce}");
+var calWeekPrinterInterfaces = [Components.interfaces.calIPrintFormatter];
 calWeekPrinter.prototype = {
     classID: calWeekPrinterClassID,
     QueryInterface: XPCOMUtils.generateQI(calWeekPrinterInterfaces),
@@ -29,9 +29,9 @@ calWeekPrinter.prototype = {
         interfaces: calWeekPrinterInterfaces
     }),
 
-    get name() cal.calGetString("calendar", "weekPrinterName"),
+    get name() { return cal.calGetString("calendar", "weekPrinterName"); },
 
-    formatToHtml: function weekPrint_format(aStream, aStart, aEnd, aCount, aItems, aTitle) {
+    formatToHtml: function(aStream, aStart, aEnd, aCount, aItems, aTitle) {
         let document = cal.xml.parseFile("chrome://calendar-common/skin/printing/calWeekPrinter.html");
         let defaultTimezone = cal.calendarDefaultTimezone();
 
@@ -49,21 +49,20 @@ calWeekPrinter.prototype = {
             }
         }
 
-        for each (let item in aItems) {
+        for (let item of aItems) {
             let itemStartDate = item[cal.calGetStartDateProp(item)] || item[cal.calGetEndDateProp(item)];
             let itemEndDate = item[cal.calGetEndDateProp(item)] || item[cal.calGetStartDateProp(item)];
-            itemStartDate = itemStartDate.getInTimezone(defaultTimezone);
-            itemEndDate = itemEndDate.getInTimezone(defaultTimezone);
 
             if (!itemStartDate && !itemEndDate) {
                 cal.print.addItemToDayboxNodate(document, item);
                 continue;
             }
+            itemStartDate = itemStartDate.getInTimezone(defaultTimezone);
+            itemEndDate = itemEndDate.getInTimezone(defaultTimezone);
 
             let boxDate = itemStartDate.clone();
             boxDate.isDate = true;
             for (boxDate; boxDate.compare(itemEndDate) < (itemEndDate.isDate ? 0 : 1); boxDate.day++) {
-
                 // Ignore items outside of the range, i.e tasks without start date
                 // where the end date is somewhere else.
                 if (aStart && aEnd && boxDate &&
@@ -79,7 +78,7 @@ calWeekPrinter.prototype = {
                     this.setupWeek(document, startOfWeek, dayTable);
                 }
 
-                cal.print.addItemToDaybox(document, item, dayTable[boxDateKey]);
+                cal.print.addItemToDaybox(document, item, boxDate, dayTable[boxDateKey]);
             }
         }
 
@@ -91,11 +90,11 @@ calWeekPrinter.prototype = {
         let html = cal.xml.serializeDOM(document);
         let convStream = Components.classes["@mozilla.org/intl/converter-output-stream;1"]
                                    .createInstance(Components.interfaces.nsIConverterOutputStream);
-        convStream.init(aStream, 'UTF-8', 0, 0x0000);
+        convStream.init(aStream, "UTF-8", 0, 0x0000);
         convStream.writeString(html);
     },
 
-    setupWeek: function weekPrint_setupWeek(document, startOfWeek, dayTable) {
+    setupWeek: function(document, startOfWeek, dayTable) {
         const weekdayMap = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
         let weekTemplate = document.getElementById("week-template");
@@ -111,7 +110,7 @@ calWeekPrinter.prototype = {
         let weekInfo = cal.getWeekInfoService();
         let dateFormatter = cal.getDateFormatter();
         let weekno = weekInfo.getWeekTitle(startOfWeek);
-        let weekTitle = cal.calGetString("calendar", 'WeekTitle', [weekno]);
+        let weekTitle = cal.calGetString("calendar", "WeekTitle", [weekno]);
         currentPage.querySelector(".week-number").textContent = weekTitle;
 
         // Set up the day boxes
@@ -119,7 +118,7 @@ calWeekPrinter.prototype = {
         for (let currentDate = startOfWeek.clone(); currentDate.compare(endOfWeek) <= 0; currentDate.day++) {
             let weekday = currentDate.weekday;
             let weekdayName = weekdayMap[weekday];
-            let dayOffPrefName = "calendar.week.d" +  weekday + weekdayName + "soff";
+            let dayOffPrefName = "calendar.week.d" + weekday + weekdayName + "soff";
             dayTable[cal.print.getDateKey(currentDate)] = currentPage.querySelector("." + weekdayName + "-container");
 
             let titleNode = currentPage.querySelector("." + weekdayName + "-title");
@@ -133,9 +132,7 @@ calWeekPrinter.prototype = {
 
         // Now insert the week into the week container, sorting by date (and therefore week number)
         function compareDates(a, b) {
-            if (!a || !b) return -1;
-            let res = a.compare(b);
-            return res;
+            return !a || !b ? -1 : a.compare(b);
         }
 
         cal.binaryInsertNode(weekContainer, currentPage, currentPage.item, compareDates);

@@ -12,16 +12,16 @@ function calTodo() {
     this.initItemBase();
 
     this.todoPromotedProps = {
-        "DTSTART": true,
-        "DTEND": true,
-        "DUE": true,
-        "COMPLETED": true,
+        DTSTART: true,
+        DTEND: true,
+        DUE: true,
+        COMPLETED: true,
         __proto__: this.itemBasePromotedProps
     };
 }
 
-const calTodoClassID = Components.ID("{7af51168-6abe-4a31-984d-6f8a3989212d}");
-const calTodoInterfaces = [
+var calTodoClassID = Components.ID("{7af51168-6abe-4a31-984d-6f8a3989212d}");
+var calTodoInterfaces = [
     Components.interfaces.calIItemBase,
     Components.interfaces.calITodo,
     Components.interfaces.calIInternalShallowCopy
@@ -38,16 +38,16 @@ calTodo.prototype = {
         interfaces: calTodoInterfaces,
     }),
 
-    cloneShallow: function (aNewParent) {
-        let m = new calTodo();
-        this.cloneItemBaseInto(m, aNewParent);
-        return m;
+    cloneShallow: function(aNewParent) {
+        let cloned = new calTodo();
+        this.cloneItemBaseInto(cloned, aNewParent);
+        return cloned;
     },
 
-    createProxy: function calTodo_createProxy(aRecurrenceId) {
+    createProxy: function(aRecurrenceId) {
         cal.ASSERT(!this.mIsProxy, "Tried to create a proxy for an existing proxy!", true);
 
-        let m = new calTodo();
+        let proxy = new calTodo();
 
         // override proxy's DTSTART/DUE/RECURRENCE-ID
         // before master is set (and item might get immutable):
@@ -55,17 +55,17 @@ calTodo.prototype = {
         if (duration) {
             let dueDate = aRecurrenceId.clone();
             dueDate.addDuration(duration);
-            m.dueDate = dueDate;
+            proxy.dueDate = dueDate;
         }
-        m.entryDate = aRecurrenceId;
+        proxy.entryDate = aRecurrenceId;
 
-        m.initializeProxy(this, aRecurrenceId);
-        m.mDirty = false;
+        proxy.initializeProxy(this, aRecurrenceId);
+        proxy.mDirty = false;
 
-        return m;
+        return proxy;
     },
 
-    makeImmutable: function () {
+    makeImmutable: function() {
         this.makeItemBaseImmutable();
     },
 
@@ -75,10 +75,11 @@ calTodo.prototype = {
                this.status == "COMPLETED";
     },
 
-    set isCompleted(v) {
-        if (v) {
-            if (!this.completedDate)
+    set isCompleted(completed) {
+        if (completed) {
+            if (!this.completedDate) {
                 this.completedDate = cal.jsDateToDateTime(new Date());
+            }
             this.status = "COMPLETED";
             this.percentComplete = 100;
         } else {
@@ -122,35 +123,39 @@ calTodo.prototype = {
     },
 
     get icalString() {
-        var calcomp = getIcsService().createIcalComponent("VCALENDAR");
+        let calcomp = getIcsService().createIcalComponent("VCALENDAR");
         calSetProdidVersion(calcomp);
         calcomp.addSubcomponent(this.icalComponent);
         return calcomp.serializeToICS();
     },
 
     get icalComponent() {
-        var icssvc = getIcsService();
-        var icalcomp = icssvc.createIcalComponent("VTODO");
+        let icssvc = getIcsService();
+        let icalcomp = icssvc.createIcalComponent("VTODO");
         this.fillIcalComponentFromBase(icalcomp);
         this.mapPropsToICS(icalcomp, this.icsEventPropMap);
 
-        var bagenum = this.propertyEnumerator;
+        let bagenum = this.propertyEnumerator;
         while (bagenum.hasMoreElements()) {
-            var iprop = bagenum.getNext().
-                QueryInterface(Components.interfaces.nsIProperty);
+            let iprop = bagenum.getNext()
+                               .QueryInterface(Components.interfaces.nsIProperty);
             try {
                 if (!this.todoPromotedProps[iprop.name]) {
-                    var icalprop = icssvc.createIcalProperty(iprop.name);
+                    let icalprop = icssvc.createIcalProperty(iprop.name);
                     icalprop.value = iprop.value;
-                    var propBucket = this.mPropertyParams[iprop.name]
+                    let propBucket = this.mPropertyParams[iprop.name];
                     if (propBucket) {
                         for (let paramName in propBucket) {
                             try {
                                 icalprop.setParameter(paramName, propBucket[paramName]);
-                            } catch (e if e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
-                                // Illegal values should be ignored, but we could log them if
-                                // the user has enabled logging.
-                                cal.LOG("Warning: Invalid todo parameter value " + paramName + "=" + propBucket[paramName]);
+                            } catch (e) {
+                                if (e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
+                                    // Illegal values should be ignored, but we could log them if
+                                    // the user has enabled logging.
+                                    cal.LOG("Warning: Invalid todo parameter value " + paramName + "=" + propBucket[paramName]);
+                                } else {
+                                    throw e;
+                                }
                             }
                         }
                     }
@@ -169,8 +174,9 @@ calTodo.prototype = {
         this.modify();
         if (todo.componentType != "VTODO") {
             todo = todo.getFirstSubcomponent("VTODO");
-            if (!todo)
+            if (!todo) {
                 throw Components.results.NS_ERROR_INVALID_ARG;
+            }
         }
 
         this.mDueDate = undefined;
@@ -182,9 +188,9 @@ calTodo.prototype = {
         this.mDirty = false;
     },
 
-    isPropertyPromoted: function (name) {
+    isPropertyPromoted: function(name) {
         // avoid strict undefined property warning
-        return (this.todoPromotedProps[name] || false);
+        return this.todoPromotedProps[name] || false;
     },
 
     set entryDate(value) {
@@ -195,9 +201,9 @@ calTodo.prototype = {
         // the appropriate method here to adjust the internal structure in
         // order to free clients from worrying about such details.
         if (this.parentItem == this) {
-            var rec = this.recurrenceInfo;
+            let rec = this.recurrenceInfo;
             if (rec) {
-                rec.onStartDateChange(value,this.entryDate);
+                rec.onStartDateChange(value, this.entryDate);
             }
         }
 
@@ -210,12 +216,12 @@ calTodo.prototype = {
 
     mDueDate: undefined,
     get dueDate() {
-        var dueDate = this.mDueDate;
+        let dueDate = this.mDueDate;
         if (dueDate === undefined) {
             dueDate = this.getProperty("DUE");
             if (!dueDate) {
-                var entryDate = this.entryDate;
-                var dur = this.getProperty("DURATION");
+                let entryDate = this.entryDate;
+                let dur = this.getProperty("DURATION");
                 if (entryDate && dur) {
                     // If there is a duration set on the todo, calculate the right end time.
                     dueDate = entryDate.clone();

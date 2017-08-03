@@ -12,13 +12,13 @@ function calEvent() {
     this.initItemBase();
 
     this.eventPromotedProps = {
-        "DTSTART": true,
-        "DTEND": true,
+        DTSTART: true,
+        DTEND: true,
         __proto__: this.itemBasePromotedProps
-    }
+    };
 }
-const calEventClassID = Components.ID("{974339d5-ab86-4491-aaaf-2b2ca177c12b}");
-const calEventInterfaces = [
+var calEventClassID = Components.ID("{974339d5-ab86-4491-aaaf-2b2ca177c12b}");
+var calEventInterfaces = [
     Components.interfaces.calIItemBase,
     Components.interfaces.calIEvent,
     Components.interfaces.calIInternalShallowCopy
@@ -35,31 +35,31 @@ calEvent.prototype = {
         interfaces: calEventInterfaces
     }),
 
-    cloneShallow: function (aNewParent) {
-        let m = new calEvent();
-        this.cloneItemBaseInto(m, aNewParent);
-        return m;
+    cloneShallow: function(aNewParent) {
+        let cloned = new calEvent();
+        this.cloneItemBaseInto(cloned, aNewParent);
+        return cloned;
     },
 
-    createProxy: function calEvent_createProxy(aRecurrenceId) {
+    createProxy: function(aRecurrenceId) {
         cal.ASSERT(!this.mIsProxy, "Tried to create a proxy for an existing proxy!", true);
 
-        let m = new calEvent();
+        let proxy = new calEvent();
 
         // override proxy's DTSTART/DTEND/RECURRENCE-ID
         // before master is set (and item might get immutable):
         let endDate = aRecurrenceId.clone();
         endDate.addDuration(this.duration);
-        m.endDate = endDate;
-        m.startDate = aRecurrenceId;
+        proxy.endDate = endDate;
+        proxy.startDate = aRecurrenceId;
 
-        m.initializeProxy(this, aRecurrenceId);
-        m.mDirty = false;
+        proxy.initializeProxy(this, aRecurrenceId);
+        proxy.mDirty = false;
 
-        return m;
+        return proxy;
     },
 
-    makeImmutable: function () {
+    makeImmutable: function() {
         this.makeItemBaseImmutable();
     },
 
@@ -85,35 +85,39 @@ calEvent.prototype = {
     },
 
     get icalString() {
-        var calcomp = getIcsService().createIcalComponent("VCALENDAR");
+        let calcomp = getIcsService().createIcalComponent("VCALENDAR");
         calSetProdidVersion(calcomp);
         calcomp.addSubcomponent(this.icalComponent);
         return calcomp.serializeToICS();
     },
 
     get icalComponent() {
-        var icssvc = getIcsService();
-        var icalcomp = icssvc.createIcalComponent("VEVENT");
+        let icssvc = getIcsService();
+        let icalcomp = icssvc.createIcalComponent("VEVENT");
         this.fillIcalComponentFromBase(icalcomp);
         this.mapPropsToICS(icalcomp, this.icsEventPropMap);
 
-        var bagenum = this.propertyEnumerator;
+        let bagenum = this.propertyEnumerator;
         while (bagenum.hasMoreElements()) {
-            var iprop = bagenum.getNext().
-                QueryInterface(Components.interfaces.nsIProperty);
+            let iprop = bagenum.getNext()
+                               .QueryInterface(Components.interfaces.nsIProperty);
             try {
                 if (!this.eventPromotedProps[iprop.name]) {
-                    var icalprop = icssvc.createIcalProperty(iprop.name);
+                    let icalprop = icssvc.createIcalProperty(iprop.name);
                     icalprop.value = iprop.value;
-                    var propBucket = this.mPropertyParams[iprop.name];
+                    let propBucket = this.mPropertyParams[iprop.name];
                     if (propBucket) {
                         for (let paramName in propBucket) {
                             try {
                                 icalprop.setParameter(paramName, propBucket[paramName]);
-                            } catch (e if e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
-                                // Illegal values should be ignored, but we could log them if
-                                // the user has enabled logging.
-                                cal.LOG("Warning: Invalid event parameter value " + paramName + "=" + propBucket[paramName]);
+                            } catch (e) {
+                                if (e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
+                                    // Illegal values should be ignored, but we could log them if
+                                    // the user has enabled logging.
+                                    cal.LOG("Warning: Invalid event parameter value " + paramName + "=" + propBucket[paramName]);
+                                } else {
+                                    throw e;
+                                }
                             }
                         }
                     }
@@ -132,8 +136,9 @@ calEvent.prototype = {
         this.modify();
         if (event.componentType != "VEVENT") {
             event = event.getFirstSubcomponent("VEVENT");
-            if (!event)
+            if (!event) {
                 throw Components.results.NS_ERROR_INVALID_ARG;
+            }
         }
 
         this.mEndDate = undefined;
@@ -146,9 +151,9 @@ calEvent.prototype = {
         this.mDirty = false;
     },
 
-    isPropertyPromoted: function (name) {
+    isPropertyPromoted: function(name) {
         // avoid strict undefined property warning
-        return (this.eventPromotedProps[name] || false);
+        return this.eventPromotedProps[name] || false;
     },
 
     set startDate(value) {
@@ -159,9 +164,9 @@ calEvent.prototype = {
         // the appropriate method here to adjust the internal structure in
         // order to free clients from worrying about such details.
         if (this.parentItem == this) {
-            var rec = this.recurrenceInfo;
+            let rec = this.recurrenceInfo;
             if (rec) {
-                rec.onStartDateChange(value,this.startDate);
+                rec.onStartDateChange(value, this.startDate);
             }
         }
 
@@ -174,22 +179,20 @@ calEvent.prototype = {
 
     mEndDate: undefined,
     get endDate() {
-        var endDate = this.mEndDate;
+        let endDate = this.mEndDate;
         if (endDate === undefined) {
             endDate = this.getProperty("DTEND");
             if (!endDate && this.startDate) {
                 endDate = this.startDate.clone();
-                var dur = this.getProperty("DURATION");
+                let dur = this.getProperty("DURATION");
                 if (dur) {
                     // If there is a duration set on the event, calculate the right end time.
                     endDate.addDuration(cal.createDuration(dur));
-                } else {
+                } else if (endDate.isDate) {
                     // If the start time is a date-time the event ends on the same calendar
                     // date and time of day. If the start time is a date the events
                     // non-inclusive end is the end of the calendar date.
-                    if (endDate.isDate) {
-                        endDate.day += 1;
-                    }
+                    endDate.day += 1;
                 }
             }
             this.mEndDate = endDate;
@@ -203,4 +206,3 @@ calEvent.prototype = {
         return (this.mEndDate = value);
     }
 };
-

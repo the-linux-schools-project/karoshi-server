@@ -14,8 +14,8 @@ function calAttachment() {
     this.mProperties = new cal.calPropertyBag();
 }
 
-const calAttachmentClassID = Components.ID("{5f76b352-ab75-4c2b-82c9-9206dbbf8571}");
-const calAttachmentInterfaces = [Components.interfaces.calIAttachment];
+var calAttachmentClassID = Components.ID("{5f76b352-ab75-4c2b-82c9-9206dbbf8571}");
+var calAttachmentInterfaces = [Components.interfaces.calIAttachment];
 calAttachment.prototype = {
     mData: null,
     mHashId: null,
@@ -31,17 +31,17 @@ calAttachment.prototype = {
 
     get hashId() {
         if (!this.mHashId) {
-            let ch = Components.classes["@mozilla.org/security/hash;1"]
-                               .createInstance(Components.interfaces.nsICryptoHash);
+            let cryptoHash = Components.classes["@mozilla.org/security/hash;1"]
+                                       .createInstance(Components.interfaces.nsICryptoHash);
 
             let converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
                                       .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
             converter.charset = "UTF-8";
             let data = converter.convertToByteArray(this.rawData, {});
 
-            ch.init(ch.MD5);
-            ch.update(data, data.length);
-            this.mHashId = ch.finish(true);
+            cryptoHash.init(cryptoHash.MD5);
+            cryptoHash.update(data, data.length);
+            this.mHashId = cryptoHash.finish(true);
         }
         return this.mHashId;
     },
@@ -100,13 +100,17 @@ calAttachment.prototype = {
     get icalProperty() {
         let icalatt = cal.getIcsService().createIcalProperty("ATTACH");
 
-        for each (let [key, value] in this.mProperties) {
+        for (let [key, value] of this.mProperties) {
             try {
                 icalatt.setParameter(key, value);
-            } catch (e if e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
-                // Illegal values should be ignored, but we could log them if
-                // the user has enabled logging.
-                cal.LOG("Warning: Invalid attachment parameter value " + key + "=" + value);
+            } catch (e) {
+                if (e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
+                    // Illegal values should be ignored, but we could log them if
+                    // the user has enabled logging.
+                    cal.LOG("Warning: Invalid attachment parameter value " + key + "=" + value);
+                } else {
+                    throw e;
+                }
             }
         }
 
@@ -122,7 +126,7 @@ calAttachment.prototype = {
         this.mProperties = new cal.calPropertyBag();
         this.setData(attProp.value);
 
-        for each (let [name, value] in cal.ical.paramIterator(attProp)) {
+        for (let [name, value] of cal.ical.paramIterator(attProp)) {
             this.setParameter(name, value);
         }
     },
@@ -140,11 +144,11 @@ calAttachment.prototype = {
         return val;
     },
 
-    getParameter: function (aName) {
+    getParameter: function(aName) {
         return this.mProperties.getProperty(aName);
     },
 
-    setParameter: function (aName, aValue) {
+    setParameter: function(aName, aValue) {
         if (aValue || aValue === 0) {
             return this.mProperties.setProperty(aName, aValue);
         } else {
@@ -152,21 +156,21 @@ calAttachment.prototype = {
         }
     },
 
-    deleteParameter: function (aName) {
+    deleteParameter: function(aName) {
         this.mProperties.deleteProperty(aName);
     },
 
-    clone: function cA_clone() {
+    clone: function() {
         let newAttachment = new calAttachment();
         newAttachment.mData = this.mData;
         newAttachment.mHashId = this.mHashId;
-        for each (let [name, value] in this.mProperties) {
+        for (let [name, value] of this.mProperties) {
             newAttachment.mProperties.setProperty(name, value);
         }
         return newAttachment;
     },
 
-    setData: function setData(aData) {
+    setData: function(aData) {
         // Sets the data and invalidates the hash so it will be recalculated
         this.mHashId = null;
         this.mData = aData;

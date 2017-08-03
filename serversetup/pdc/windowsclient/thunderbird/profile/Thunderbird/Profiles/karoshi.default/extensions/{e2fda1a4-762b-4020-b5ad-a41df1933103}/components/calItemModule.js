@@ -4,7 +4,7 @@
 
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-const scriptLoadOrder = [
+var scriptLoadOrder = [
     "calItemBase.js",
     "calUtils.js",
     "calCachedCalendar.js",
@@ -64,4 +64,4 @@ function getComponents() {
     ];
 }
 
-var NSGetFactory = cal.loadingNSGetFactory(scriptLoadOrder, getComponents, this);
+this.NSGetFactory = cal.loadingNSGetFactory(scriptLoadOrder, getComponents, this);

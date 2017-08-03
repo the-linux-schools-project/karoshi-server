@@ -4,7 +4,11 @@
 
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-var EXPORTED_SYMBOLS = [
+/* exported CAL_ITEM_FLAG, getInUtcOrKeepFloating, dateToText, textToDate,
+ *          calStorageTimezone, getTimezone, newDateTime
+ */
+
+this.EXPORTED_SYMBOLS = [
     "CAL_ITEM_FLAG",
     "getInUtcOrKeepFloating",
     "dateToText",
@@ -37,33 +41,37 @@ var gForeignTimezonesCache = {};
  * Returns the passed date in UTC, unless it is floating. In this case, it is
  * kept floating.
  *
- * @param dt        The calIDateTime to convert.
+ * @param date      The calIDateTime to convert.
  * @return          The possibly converted calIDateTime.
  */
-function getInUtcOrKeepFloating(dt) {
-    let tz = dt.timezone;
-    if (tz.isFloating || tz.isUTC) {
-        return dt;
+function getInUtcOrKeepFloating(date) {
+    let timezone = date.timezone;
+    if (timezone.isFloating || timezone.isUTC) {
+        return date;
     } else {
-        return dt.getInTimezone(cal.UTC());
+        return date.getInTimezone(cal.UTC());
     }
 }
 
 /**
  * Transforms a date object to a text which is suitable for the database
  *
- * @param d     The calIDateTime to transform.
+ * @param date  The calIDateTime to transform.
  * @return      The string representation of the date object.
  */
-function dateToText(d) {
-    let datestr;
-    let tz = null;
+function dateToText(date) {
+    let zonestr;
+    if (date.timezone.isFloating) {
+        zonestr = "L";
+    } else if (date.timezone.isUTC) {
+        zonestr = "U";
+    } else {
+        zonestr = "Z";
+    }
 
-    datestr = (d.timezone.isFloating ? "L" :
-                 (d.timezone.isUTC ? "U" : "Z")) +
-              (d.isDate ? "D" : "T") + d.nativeTime;
-    if (!d.timezone.isFloating && ! d.timezone.isUTC) {
-        datestr += ":" + d.timezone.tzid.replace(/%/g, "%%").replace(/:/g, "%:");
+    let datestr = zonestr + (date.isDate ? "D" : "T") + date.nativeTime;
+    if (!date.timezone.isFloating && !date.timezone.isUTC) {
+        datestr += ":" + date.timezone.tzid.replace(/%/g, "%%").replace(/:/g, "%:");
     }
     return datestr;
 }
@@ -72,31 +80,32 @@ function dateToText(d) {
  * Transforms the text representation of this date object to a calIDateTime
  * object.
  *
- * @param d     The text to transform.
+ * @param text  The text to transform.
  * @return      The resulting calIDateTime.
  */
-function textToDate(d) {
-    let dval;
-    let tz = "UTC";
+function textToDate(text) {
+    let textval;
+    let timezone = "UTC";
 
-    if (d[0] == 'Z') {
-        let strs = d.substr(2).split(":");
-        dval = parseInt(strs[0]);
-        tz = strs[1].replace(/%:/g, ":").replace(/%%/g, "%");
+    if (text[0] == "Z") {
+        let strs = text.substr(2).split(":");
+        textval = parseInt(strs[0], 10);
+        timezone = strs[1].replace(/%:/g, ":").replace(/%%/g, "%");
     } else {
-        dval = parseInt(d.substr(2));
+        textval = parseInt(text.substr(2), 10);
     }
 
     let date;
-    if (d[0] == 'U' || d[0] == 'Z') {
-        date = newDateTime(dval, tz);
-    } else if (d[0] == 'L') {
+    if (text[0] == "U" || text[0] == "Z") {
+        date = newDateTime(textval, timezone);
+    } else if (text[0] == "L") {
         // is local time
-        date = newDateTime(dval, "floating");
+        date = newDateTime(textval, "floating");
     }
 
-    if (d[1] == 'D')
+    if (text[1] == "D") {
         date.isDate = true;
+    }
     return date;
 }
 
@@ -131,23 +140,23 @@ calStorageTimezone.prototype = {
  * @return              The calITimezone object
  */
 function getTimezone(aTimezone) {
-    let tz = null;
+    let timezone = null;
     if (aTimezone.indexOf("BEGIN:VTIMEZONE") == 0) {
-        tz = gForeignTimezonesCache[aTimezone]; // using full definition as key
-        if (!tz) {
+        timezone = gForeignTimezonesCache[aTimezone]; // using full definition as key
+        if (!timezone) {
             try {
                 // cannot cope without parent VCALENDAR:
                 let comp = cal.getIcsService().parseICS("BEGIN:VCALENDAR\n" + aTimezone + "\nEND:VCALENDAR", null);
-                tz = new calStorageTimezone(comp.getFirstSubcomponent("VTIMEZONE"));
-                gForeignTimezonesCache[aTimezone] = tz;
+                timezone = new calStorageTimezone(comp.getFirstSubcomponent("VTIMEZONE"));
+                gForeignTimezonesCache[aTimezone] = timezone;
             } catch (e) {
                 cal.ASSERT(false, e);
             }
         }
     } else {
-        tz = cal.getTimezoneService().getTimezone(aTimezone);
+        timezone = cal.getTimezoneService().getTimezone(aTimezone);
     }
-    return tz;
+    return timezone;
 }
 
 /**
@@ -160,7 +169,7 @@ function getTimezone(aTimezone) {
  * @param aTimezone         The timezone identifier or definition.
  */
 function newDateTime(aNativeTime, aTimezone) {
-    let t = cal.createDateTime();
+    let date = cal.createDateTime();
 
     // Bug 751821 - Dates before 1970 were incorrectly stored with an unsigned nativeTime value, we need to
     // convert back to a negative value
@@ -171,16 +180,16 @@ function newDateTime(aNativeTime, aTimezone) {
         aNativeTime = Math.round(aNativeTime / 1000000) * 1000000;
     }
 
-    t.nativeTime = aNativeTime;
+    date.nativeTime = aNativeTime;
     if (aTimezone) {
-        let tz = getTimezone(aTimezone);
-        if (tz) {
-            t = t.getInTimezone(tz);
+        let timezone = getTimezone(aTimezone);
+        if (timezone) {
+            date = date.getInTimezone(timezone);
         } else {
             cal.ASSERT(false, "Timezone not available: " + aTimezone);
         }
     } else {
-        t.timezone = cal.floating();
+        date.timezone = cal.floating();
     }
-    return t;
+    return date;
 }

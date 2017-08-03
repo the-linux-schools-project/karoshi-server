@@ -14,8 +14,8 @@ function calBackendLoader() {
     }
 }
 
-const calBackendLoaderClassID = Components.ID("{0314c271-7168-40fa-802e-83c8c46a557e}");
-const calBackendLoaderInterfaces = [Components.interfaces.nsIObserver];
+var calBackendLoaderClassID = Components.ID("{0314c271-7168-40fa-802e-83c8c46a557e}");
+var calBackendLoaderInterfaces = [Components.interfaces.nsIObserver];
 calBackendLoader.prototype = {
     classID: calBackendLoaderClassID,
     QueryInterface: XPCOMUtils.generateQI(calBackendLoaderInterfaces),
@@ -33,31 +33,49 @@ calBackendLoader.prototype = {
         // Nothing to do here, just need the entry so this is instanciated
     },
 
-    loadBackend: function loadBackend() {
+    loadBackend: function() {
         if (this.loaded) {
             return;
         }
 
-        let backend = "libical";
-        if (Services.prefs.prefHasUserValue("calendar.icaljs")) {
-            backend = Services.prefs.getBoolPref("calendar.icaljs") ? "icaljs" : "libical";
+        if (Services.prefs.getBoolPref("calendar.icaljs")) {
+            let contracts = [
+                "@mozilla.org/calendar/datetime;1",
+                "@mozilla.org/calendar/duration;1",
+                "@mozilla.org/calendar/ics-service;1",
+                "@mozilla.org/calendar/period;1",
+                "@mozilla.org/calendar/recurrence-rule;1"
+            ];
+
+            // Unregister libical components
+            let registrar = Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+            for (let contractId of contracts) {
+                let classobj = Components.classes[contractId];
+                let factory = Components.manager.getClassObject(classobj, Components.interfaces.nsIFactory);
+                let classId = registrar.contractIDToCID(contractId);
+                registrar.unregisterFactory(classId, factory);
+            }
+
+            // Now load ical.js backend
+            let uri = Services.io.getProtocolHandler("resource")
+                              .QueryInterface(Components.interfaces.nsIResProtocolHandler)
+                              .getSubstitution("calendar");
+
+            let file = Services.io.getProtocolHandler("file")
+                               .QueryInterface(Components.interfaces.nsIFileProtocolHandler)
+                               .getFileFromURLSpec(uri.spec);
+            file.append("components");
+            file.append("icaljs-manifest");
+
+            Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar)
+                      .autoRegister(file);
+            dump("[calBackendLoader] Using icaljs backend at " + file.path + "\n");
+        } else {
+            dump("[calBackendLoader] Using Thunderbird's builtin libical backend\n");
         }
-        let uri = Services.io.getProtocolHandler("resource")
-                          .QueryInterface(Components.interfaces.nsIResProtocolHandler)
-                          .getSubstitution("calendar");
 
-        let file = Services.io.getProtocolHandler("file")
-                           .QueryInterface(Components.interfaces.nsIFileProtocolHandler)
-                           .getFileFromURLSpec(uri.spec);
-
-        file.append("components");
-        file.append(backend + "-manifest");
-
-        Components.manager.QueryInterface(Components.interfaces.nsIComponentRegistrar)
-                  .autoRegister(file);
-        dump("[calBackendLoader] Using " + backend + " backend at " + file.path + "\n");
         this.loaded = true;
     }
 };
 
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([calBackendLoader]);
+this.NSGetFactory = XPCOMUtils.generateNSGetFactory([calBackendLoader]);

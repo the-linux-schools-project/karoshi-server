@@ -72,6 +72,15 @@ pref("calendar.itip.notify-replies", false);
 // whether email invitation updates are send out to all attendees if (only) adding a new attendee
 pref("calendar.itip.updateInvitationForNewAttendeesOnly", false);
 
+//whether changes in email invitation updates should be displayed
+pref("calendar.itip.displayInvitationChanges", true);
+
+//whether for delegated invitations a delegatee's replies will be send also to delegator(s)
+pref("calendar.itip.notifyDelegatorOnReply", true);
+
+// whether to prefix the subject field for email invitation invites or updates.
+pref("calendar.itip.useInvitationSubjectPrefixes", true);
+
 // whether CalDAV (experimental) scheduling is enabled or not.
 pref("calendar.caldav.sched.enabled", false);
 
@@ -80,6 +89,9 @@ pref("calendar.caldav.sched.enabled", false);
 pref("calendar.week.start", 0);
 pref("calendar.weeks.inview", 4);
 pref("calendar.previousweeks.inview", 0);
+
+// Show week number in minimonth and multiweek/month views
+pref("calendar.view-minimonth.showWeekNumber", true);
 
 // Default days off
 pref("calendar.week.d0sundaysoff", true);
@@ -129,17 +141,28 @@ pref("calendar.threading.latency ", 250);
 pref("calendar.network.multirealm", false);
 
 // Set up user agent
-pref("calendar.useragent.extra", "Lightning/4.0.0.1");
+pref("calendar.useragent.extra", "Lightning/5.4.2.1");
 
 // Disable use of system colors in minimonth and calendar views
 pref("calendar.view.useSystemColors", false);
+
+// Disable hiding the label on todayPane button
+pref("calendar.view.showTodayPaneStatusLabel", true);
 
 // Maximum number of iterations allowed when searching for the next matching
 // occurrence of a repeating item in calFilter
 pref("calendar.filter.maxiterations", 50);
 
+// Edit events and tasks in a tab rather than a window.
+pref("calendar.item.editInTab", false);
+
+// Edit events and tasks in the new (HTML-based) UI for tabs and windows
+pref("calendar.item.useNewItemUI", false);
+
 // Backend to use. false: libical, true: ical.js
+//@line 166 "c:\builds\moz2_slave\tb-rel-c-esr52-w32_bld-0000000\build\calendar\lightning\content\lightning.js"
 pref("calendar.icaljs", false);
+//@line 168 "c:\builds\moz2_slave\tb-rel-c-esr52-w32_bld-0000000\build\calendar\lightning\content\lightning.js"
 
 // Calendar integration notification
 pref("calendar.integration.notify", true);

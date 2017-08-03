@@ -66,6 +66,8 @@
  * please file a bug.
  */
 
+/* exported upgradeDB */
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://calendar/modules/calStorageHelpers.jsm");
@@ -92,7 +94,7 @@ var EXPORTED_SYMBOLS = ["DB_SCHEMA_VERSION", "getSql", "getAllSql", "getSqlTable
  */
 function getSql(tblName, tblData, alternateName) {
     tblData = tblData || getSqlTable();
-    let altName = (alternateName || tblName);
+    let altName = alternateName || tblName;
     let sql;
     if (tblName.substr(0, 4) == "idx_") {
         // If this is an index, we need construct the SQL differently
@@ -100,8 +102,8 @@ function getSql(tblName, tblData, alternateName) {
         let idxOn = idxTbl + "(" + tblData[tblName].join(",") + ")";
         sql = "CREATE INDEX " + altName + " ON " + idxOn + ";";
     } else {
-        sql = "CREATE TABLE " + altName  + " (\n";
-        for (let [key, type] in Iterator(tblData[tblName]))  {
+        sql = "CREATE TABLE " + altName + " (\n";
+        for (let [key, type] of Object.entries(tblData[tblName])) {
             sql += "    " + key + " " + type + ",\n";
         }
     }
@@ -204,16 +206,7 @@ function backupDB(db, currentVersion) {
  */
 function upgradeDB(db) {
     cal.ASSERT(db, "Database has not been opened!", true);
-    if (!db.tableExists("cal_calendar_schema_version")) {
-        cal.LOG("Storage: Creating tables from scratch");
-        beginTransaction(db);
-        try {
-            executeSimpleSQL(db, getAllSql());
-            setDbVersionAndCommit(db, DB_SCHEMA_VERSION);
-        } catch (e) {
-            reportErrorAndRollback(db, e);
-        }
-    } else {
+    if (db.tableExists("cal_calendar_schema_version")) {
         let version = getVersion(db);
         if (version < DB_SCHEMA_VERSION) {
             // First, create a backup
@@ -225,6 +218,15 @@ function upgradeDB(db) {
             upgrade["v" + DB_SCHEMA_VERSION](db, version);
         } else if (version > DB_SCHEMA_VERSION) {
             throw Components.interfaces.calIErrors.STORAGE_UNKNOWN_SCHEMA_ERROR;
+        }
+    } else {
+        cal.LOG("Storage: Creating tables from scratch");
+        beginTransaction(db);
+        try {
+            executeSimpleSQL(db, getAllSql());
+            setDbVersionAndCommit(db, DB_SCHEMA_VERSION);
+        } catch (e) {
+            reportErrorAndRollback(db, e);
         }
     }
 
@@ -254,22 +256,18 @@ function setDbVersionAndCommit(db, version) {
  * @return              The delegate function for the passed named function.
  */
 function createDBDelegate(funcName) {
-    let func = function(db /* , ... */) {
+    return function(db, ...args) {
         if (db) {
-            let args = Array.slice(arguments);
-            args.shift();
             try {
-                return db[funcName].apply(db, args);
+                return db[funcName](...args);
             } catch (e) {
                 cal.ERROR("Error calling '" + funcName + "' db error: '" +
                           lastErrorString(db) + "'.\nException: " + e);
                 cal.WARN(cal.STACK(10));
             }
         }
+        return null;
     };
-
-    func.name = "dbDelegate_" + funcName;
-    return func;
 }
 
 /**
@@ -281,12 +279,9 @@ function createDBDelegate(funcName) {
  * @return                  The function that delegates the getter.
  */
 function createDBDelegateGetter(getterAttr) {
-    let func = function(db) {
+    return function(db) {
         return (db ? db[getterAttr] : null);
-    }
-
-    func.name = "dbDelegate_get_" + getterAttr;
-    return func;
+    };
 }
 
 // These functions use the db delegate to allow easier calling of common
@@ -379,7 +374,7 @@ function ensureUpdatedTimezones(db) {
 
         let zonesToUpdate = [];
         let getZones = createStatement(db,
-            "SELECT DISTINCT(zone) FROM ("+
+            "SELECT DISTINCT(zone) FROM (" +
             "SELECT recurrence_id_tz AS zone FROM cal_attendees    WHERE recurrence_id_tz IS NOT NULL UNION " +
             "SELECT recurrence_id_tz AS zone FROM cal_events       WHERE recurrence_id_tz IS NOT NULL UNION " +
             "SELECT event_start_tz   AS zone FROM cal_events       WHERE event_start_tz   IS NOT NULL UNION " +
@@ -396,9 +391,9 @@ function ensureUpdatedTimezones(db) {
             while (getZones.executeStep()) {
                 let zone = getZones.row.zone;
                 // Send the timezones off to the timezone service to attempt conversion:
-                let tz = getTimezone(zone);
-                if (tz) {
-                    let refTz = cal.getTimezoneService().getTimezone(tz.tzid);
+                let timezone = getTimezone(zone);
+                if (timezone) {
+                    let refTz = cal.getTimezoneService().getTimezone(timezone.tzid);
                     if (refTz && refTz.tzid != zone) {
                         zonesToUpdate.push({ oldTzId: zone, newTzId: refTz.tzid });
                     }
@@ -413,7 +408,7 @@ function ensureUpdatedTimezones(db) {
 
         beginTransaction(db);
         try {
-            for each (let update in zonesToUpdate) {
+            for (let update of zonesToUpdate) {
                 executeSimpleSQL(db,
                     "UPDATE cal_attendees    SET recurrence_id_tz = '" + update.newTzId + "' WHERE recurrence_id_tz = '" + update.oldTzId + "'; " +
                     "UPDATE cal_events       SET recurrence_id_tz = '" + update.newTzId + "' WHERE recurrence_id_tz = '" + update.oldTzId + "'; " +
@@ -467,11 +462,11 @@ function addColumn(tblData, tblName, colName, colType, db) {
  * @param db            (optional) The database to apply the operation on
  */
 function deleteColumns(tblData, tblName, colNameArray, db) {
-    for each (let colName in colNameArray) {
+    for (let colName of colNameArray) {
         delete tblData[tblName][colName];
     }
 
-    let columns = [ k for (k in tblData[tblName]) ];
+    let columns = Object.keys(tblData[tblName]);
     executeSimpleSQL(db, getSql(tblName, tblData, tblName + "_temp"));
     executeSimpleSQL(db, "INSERT INTO " + tblName + "_temp" +
                          "  (" + columns.join(",") + ") " +
@@ -499,7 +494,7 @@ function copyTable(tblData, tblName, newTblName, db, condition, selectOptions) {
 
     tblData[newTblName] = objcopy(tblData[tblName]);
 
-    let columns = [ k for (k in tblData[newTblName]) ];
+    let columns = Object.keys(tblData[newTblName]);
     executeSimpleSQL(db, getSql(newTblName, tblData));
     executeSimpleSQL(db, "INSERT INTO " + newTblName +
                          "  (" + columns.join(",") + ") " +
@@ -519,11 +514,11 @@ function copyTable(tblData, tblName, newTblName, db, condition, selectOptions) {
  * @param db            (optional) The database to apply the operation on
  */
 function alterTypes(tblData, tblName, colNameArray, newType, db) {
-    for each (let colName in colNameArray) {
+    for (let colName of colNameArray) {
         tblData[tblName][colName] = newType;
     }
 
-    let columns = [ k for (k in tblData[tblName]) ];
+    let columns = Object.keys(tblData[tblName]);
     executeSimpleSQL(db, getSql(tblName, tblData, tblName + "_temp"));
     executeSimpleSQL(db, "INSERT INTO " + tblName + "_temp" +
                          "  (" + columns.join(",") + ") " +
@@ -616,7 +611,7 @@ function mapStorageArgs(storArgs) {
     const mISVA = Components.interfaces.mozIStorageValueArray;
     let mappedArgs = [];
     for (let i = 0; i < storArgs.numEntries; i++) {
-        switch(storArgs.getTypeOfIndex(i)) {
+        switch (storArgs.getTypeOfIndex(i)) {
             case mISVA.VALUE_TYPE_NULL: mappedArgs.push(null); break;
             case mISVA.VALUE_TYPE_INTEGER:
                 mappedArgs.push(storArgs.getInt64(i));
@@ -646,86 +641,84 @@ var upgrade = {};
  * everything else ical can throw at us. I hope.
  * p=vlad
  */
-upgrade.v2 = upgrade.v1 = function upgrade_v2(db, version) {
+upgrade.v2 = upgrade.v1 = function(db, version) { // eslint-disable-line id-length
     LOGdb(db, "Storage: Upgrading to v1/v2");
     let tblData = {
-      cal_calendar_schema_version: {
-        version: "INTEGER"
-      },
+        cal_calendar_schema_version: { version: "INTEGER" },
 
-    /* While this table is in v1, actually keeping it in the sql object will
-     * cause problems when migrating from storage.sdb to local.sqlite. There,
-     * all tables from storage.sdb will be moved to local.sqlite and so starting
-     * sunbird again afterwards causes a borked upgrade since its missing tables
-     * it expects.
-     *
-     *  cal_calendars: {
-     *   id:  "INTEGER PRIMARY KEY",
-     *   name: "STRING"
-     * },
-     */
+        /* While this table is in v1, actually keeping it in the sql object will
+         * cause problems when migrating from storage.sdb to local.sqlite. There,
+         * all tables from storage.sdb will be moved to local.sqlite and so starting
+         * sunbird again afterwards causes a borked upgrade since its missing tables
+         * it expects.
+         *
+         *  cal_calendars: {
+         *   id:  "INTEGER PRIMARY KEY",
+         *   name: "STRING"
+         * },
+         */
 
-      cal_items: {
-        cal_id: "INTEGER",
-        item_type: "INTEGER",
-        id: "STRING",
-        time_created: "INTEGER",
-        last_modified: "INTEGER",
-        title: "STRING",
-        priority: "INTEGER",
-        privacy: "STRING",
-        ical_status: "STRING",
-        flags: "INTEGER",
-        event_start: "INTEGER",
-        event_end: "INTEGER",
-        event_stamp: "INTEGER",
-        todo_entry: "INTEGER",
-        todo_due: "INTEGER",
-        todo_completed: "INTEGER",
-        todo_complete: "INTEGER",
-        alarm_id: "INTEGER"
-      },
+        cal_items: {
+            cal_id: "INTEGER",
+            item_type: "INTEGER",
+            id: "STRING",
+            time_created: "INTEGER",
+            last_modified: "INTEGER",
+            title: "STRING",
+            priority: "INTEGER",
+            privacy: "STRING",
+            ical_status: "STRING",
+            flags: "INTEGER",
+            event_start: "INTEGER",
+            event_end: "INTEGER",
+            event_stamp: "INTEGER",
+            todo_entry: "INTEGER",
+            todo_due: "INTEGER",
+            todo_completed: "INTEGER",
+            todo_complete: "INTEGER",
+            alarm_id: "INTEGER"
+        },
 
-      cal_attendees: {
-        item_id: "STRING",
-        attendee_id: "STRING",
-        common_name: "STRING",
-        rsvp: "INTEGER",
-        role: "STRING",
-        status: "STRING",
-        type: "STRING"
-      },
+        cal_attendees: {
+            item_id: "STRING",
+            attendee_id: "STRING",
+            common_name: "STRING",
+            rsvp: "INTEGER",
+            role: "STRING",
+            status: "STRING",
+            type: "STRING"
+        },
 
-      cal_alarms: {
-        id: "INTEGER PRIMARY KEY",
-        alarm_data: "BLOB"
-      },
+        cal_alarms: {
+            id: "INTEGER PRIMARY KEY",
+            alarm_data: "BLOB"
+        },
 
-      cal_recurrence: {
-        item_id: "STRING",
-        recur_type: "INTEGER",
-        recur_index: "INTEGER",
-        is_negative: "BOOLEAN",
-        dates: "STRING",
-        end_date: "INTEGER",
-        count: "INTEGER",
-        interval: "INTEGER",
-        second: "STRING",
-        minute: "STRING",
-        hour: "STRING",
-        day: "STRING",
-        monthday: "STRING",
-        yearday: "STRING",
-        weekno: "STRING",
-        month: "STRING",
-        setpos: "STRING"
-      },
+        cal_recurrence: {
+            item_id: "STRING",
+            recur_type: "INTEGER",
+            recur_index: "INTEGER",
+            is_negative: "BOOLEAN",
+            dates: "STRING",
+            end_date: "INTEGER",
+            count: "INTEGER",
+            interval: "INTEGER",
+            second: "STRING",
+            minute: "STRING",
+            hour: "STRING",
+            day: "STRING",
+            monthday: "STRING",
+            yearday: "STRING",
+            weekno: "STRING",
+            month: "STRING",
+            setpos: "STRING"
+        },
 
-      cal_properties: {
-        item_id: "STRING",
-        key: "STRING",
-        value: "BLOB"
-      }
+        cal_properties: {
+            item_id: "STRING",
+            key: "STRING",
+            value: "BLOB"
+        }
     };
 
     for (let tbl in tblData) {
@@ -740,13 +733,17 @@ upgrade.v2 = upgrade.v1 = function upgrade_v2(db, version) {
  * fix, r=shaver, p=vlad
  * p=vlad
  */
-upgrade.v3 = function upgrade_v3(db, version) {
+upgrade.v3 = function(db, version) { // eslint-disable-line id-length
+    function updateSql(tbl, field) {
+        executeSimpleSQL(db, "UPDATE " + tbl + " SET " + field + "_tz='UTC'" +
+                             " WHERE " + field + " IS NOT NULL");
+    }
+
     let tbl = upgrade.v2(version < 2 && db, version);
     LOGdb(db, "Storage: Upgrading to v3");
 
     beginTransaction(db);
     try {
-
         copyTable(tbl, "cal_items", "cal_events", db, "item_type = 0");
         copyTable(tbl, "cal_items", "cal_todos", db, "item_type = 1");
 
@@ -788,11 +785,6 @@ upgrade.v3 = function upgrade_v3(db, version) {
         // given, since that's what the default was for v2 calendars
 
         // Fix up the new timezone columns
-        function updateSql(tbl, field) {
-            executeSimpleSQL(db, "UPDATE " + tbl + " SET " + field + "_tz='UTC'" +
-                                 " WHERE " + field + " IS NOT NULL");
-        }
-
         updateSql("cal_events", "event_start");
         updateSql("cal_events", "event_end");
         updateSql("cal_todos", "todo_entry");
@@ -811,13 +803,13 @@ upgrade.v3 = function upgrade_v3(db, version) {
  * Bug 293183 - implement exception support for recurrence.
  * r=shaver,p=vlad
  */
-upgrade.v4 = function upgrade_v4(db, version) {
+upgrade.v4 = function(db, version) { // eslint-disable-line id-length
     let tbl = upgrade.v3(version < 3 && db, version);
     LOGdb(db, "Storage: Upgrading to v4");
 
     beginTransaction(db);
     try {
-        for each (let tblid in ["events", "todos", "attendees", "properties"]) {
+        for (let tblid of ["events", "todos", "attendees", "properties"]) {
             addColumn(tbl, "cal_" + tblid, "recurrence_id", "INTEGER", db);
             addColumn(tbl, "cal_" + tblid, "recurrence_id_tz", "VARCHAR", db);
         }
@@ -834,13 +826,13 @@ upgrade.v4 = function upgrade_v4(db, version) {
  * rather than as absolute times. Ensure that missed alarms are fired.
  * r=dmose, p=jminta
  */
-upgrade.v5 = function upgrade_v5(db, version) {
+upgrade.v5 = function(db, version) { // eslint-disable-line id-length
     let tbl = upgrade.v4(version < 4 && db, version);
     LOGdb(db, "Storage: Upgrading to v5");
 
     beginTransaction(db);
     try {
-        for each (let tblid in ["events", "todos"]) {
+        for (let tblid of ["events", "todos"]) {
             addColumn(tbl, "cal_" + tblid, "alarm_offset", "INTEGER", db);
             addColumn(tbl, "cal_" + tblid, "alarm_related", "INTEGER", db);
             addColumn(tbl, "cal_" + tblid, "alarm_last_ack", "INTEGER", db);
@@ -858,7 +850,7 @@ upgrade.v5 = function upgrade_v5(db, version) {
  * auto-conversion of strings to numbers (10e4 to 10000)
  * r=ctalbert,jminta p=lilmatt
  */
-upgrade.v6 = function upgrade_v6(db, version) {
+upgrade.v6 = function(db, version) { // eslint-disable-line id-length
     let tbl = upgrade.v5(version < 5 && db, version);
     LOGdb(db, "Storage: Upgrading to v6");
 
@@ -879,9 +871,9 @@ upgrade.v6 = function upgrade_v6(db, version) {
                             "common_name", "role", "status", "type"];
         alterTypes(tbl, "cal_attendees", attendeeCols, "TEXT", db);
 
-        let recurrenceCols =  ["item_id", "recur_type", "dates", "second",
-                               "minute", "hour", "day", "monthday", "yearday",
-                               "weekno", "month", "setpos"];
+        let recurrenceCols = ["item_id", "recur_type", "dates", "second",
+                              "minute", "hour", "day", "monthday", "yearday",
+                              "weekno", "month", "setpos"];
         alterTypes(tbl, "cal_recurrence", recurrenceCols, "TEXT", db);
 
         let propertyCols = ["item_id", "recurrence_id_tz", "key"];
@@ -898,7 +890,7 @@ upgrade.v6 = function upgrade_v6(db, version) {
  * Bug 369010: Migrate all old tzids in storage to new one.
  * r=ctalbert,dmose p=lilmatt
  */
-upgrade.v7 = function upgrade_v7(db, version) {
+upgrade.v7 = function(db, version) { // eslint-disable-line id-length
     // No schema changes in v7
     let tbl = upgrade.v6(db, version);
     LOGdb(db, "Storage: Upgrading to v7");
@@ -909,7 +901,7 @@ upgrade.v7 = function upgrade_v7(db, version) {
  * Bug 410931 - Update internal timezone definitions
  * r=ctalbert, p=dbo,nth10sd,hb
  */
-upgrade.v8 = function upgrade_v8(db, version) {
+upgrade.v8 = function(db, version) { // eslint-disable-line id-length
     // No schema changes in v8
     let tbl = upgrade.v7(db, version);
     LOGdb(db, "Storage: Upgrading to v8");
@@ -920,7 +912,7 @@ upgrade.v8 = function upgrade_v8(db, version) {
  * Bug 363191 - Handle Timezones more efficiently (Timezone Database)
  * r=philipp,ctalbert, p=dbo
  */
-upgrade.v9 = function upgrade_v9(db, version) {
+upgrade.v9 = function(db, version) { // eslint-disable-line id-length
     // No schema changes in v9
     let tbl = upgrade.v8(db, version);
     LOGdb(db, "Storage: Upgrading to v9");
@@ -932,7 +924,7 @@ upgrade.v9 = function upgrade_v9(db, version) {
  * recent timezone version;
  * r=philipp, p=dbo
  */
-upgrade.v10 = function upgrade_v10(db, version) {
+upgrade.v10 = function(db, version) {
     let tbl = upgrade.v9(version < 9 && db, version);
     LOGdb(db, "Storage: Upgrading to v10");
 
@@ -951,7 +943,7 @@ upgrade.v10 = function upgrade_v10(db, version) {
  * properties.
  * r=philipp,p=fred.jen@web.de
  */
-upgrade.v11 = function upgrade_v11(db, version) {
+upgrade.v11 = function(db, version) {
     let tbl = upgrade.v10(version < 10 && db, version);
     LOGdb(db, "Storage: Upgrading to v11");
 
@@ -974,7 +966,7 @@ upgrade.v11 = function upgrade_v11(db, version) {
  * Bug 449031 - Add meta data API to memory/storage
  * r=philipp, p=dbo
  */
-upgrade.v12 = function upgrade_v12(db, version) {
+upgrade.v12 = function(db, version) {
     let tbl = upgrade.v11(version < 11 && db, version);
     LOGdb(db, "Storage: Upgrading to v12");
 
@@ -1001,7 +993,7 @@ upgrade.v12 = function upgrade_v12(db, version) {
  * across different calendars
  * r=dbo,philipp, p=wsourdeau@inverse.ca
  */
-upgrade.v13 = function upgrade_v13(db, version) {
+upgrade.v13 = function(db, version) {
     let tbl = upgrade.v12(version < 12 && db, version);
     LOGdb(db, "Storage: Upgrading to v13");
 
@@ -1011,22 +1003,21 @@ upgrade.v13 = function upgrade_v13(db, version) {
 
         let calIds = {};
         if (db) {
-            for each (let itemTable in ["events", "todos"]) {
+            for (let itemTable of ["events", "todos"]) {
                 let stmt = createStatement(db,
                                            "SELECT id, cal_id FROM cal_" + itemTable);
                 try {
                     while (stmt.executeStep()) {
                         calIds[stmt.row.id] = stmt.row.cal_id;
                     }
-                }
-                finally {
+                } finally {
                     stmt.reset();
                 }
             }
         }
 
-        for each (let tblid in ["attendees", "recurrence", "properties",
-                                "attachments"]) {
+        for (let tblid of ["attendees", "recurrence", "properties",
+                           "attachments"]) {
             addColumn(tbl, "cal_" + tblid, "cal_id", "INTEGER", db);
 
             for (let itemId in calIds) {
@@ -1052,7 +1043,7 @@ upgrade.v13 = function upgrade_v13(db, version) {
  * Bug 446303 - use the "RELATED-TO" property.
  * r=philipp,dbo, p=fred.jen@web.de
  */
-upgrade.v14 = function upgrade_v14(db, version) {
+upgrade.v14 = function(db, version) {
     let tbl = upgrade.v13(version < 13 && db, version);
     LOGdb(db, "Storage: Upgrading to v14");
 
@@ -1075,7 +1066,7 @@ upgrade.v14 = function upgrade_v14(db, version) {
  * Bug 463282 - Tasks cannot be created or imported (regression).
  * r=philipp,berend, p=dbo
  */
-upgrade.v15 = function upgrade_v15(db, version) {
+upgrade.v15 = function(db, version) {
     let tbl = upgrade.v14(version < 14 && db, version);
     LOGdb(db, "Storage: Upgrading to v15");
 
@@ -1100,13 +1091,13 @@ upgrade.v15 = function upgrade_v15(db, version) {
  * from 0.9 -> 1.0b1 and later. The v17 upgrader will merely take care of the
  * upgrade if a user is upgrading from 1.0pre -> 1.0b1 or later.
  */
-upgrade.v16 = function upgrade_v16(db, version) {
+upgrade.v16 = function(db, version) {
     let tbl = upgrade.v15(version < 15 && db, version);
     LOGdb(db, "Storage: Upgrading to v16");
     beginTransaction(db);
     try {
         createFunction(db, "translateAlarm", 4, {
-            onFunctionCall: function translateAlarm(storArgs) {
+            onFunctionCall: function(storArgs) {
                 try {
                     let [aOffset, aRelated, aAlarmTime, aTzId] =
                         mapStorageArgs(storArgs);
@@ -1154,21 +1145,20 @@ upgrade.v16 = function upgrade_v16(db, version) {
             icalString: "TEXT"
         }, db);
 
-        let copyDataOver = function copyDataOver(tbl) {
-            const transAlarm =  "translateAlarm(alarm_offset, " +
-                                               "alarm_related, " +
-                                               "alarm_time, " +
-                                               "alarm_time_tz)";
+        let copyDataOver = function(tblName) {
+            const transAlarm = "translateAlarm(alarm_offset, " +
+                                              "alarm_related, " +
+                                              "alarm_time, " +
+                                              "alarm_time_tz)";
             executeSimpleSQL(db, "INSERT INTO cal_alarms (cal_id, item_id," +
                                  "                        recurrence_id, " +
                                  "                        recurrence_id_tz, " +
                                  "                        icalString)" +
                                  " SELECT cal_id, id, recurrence_id," +
                                  "        recurrence_id_tz, " + transAlarm +
-                                 "   FROM " + tbl +
+                                 "   FROM " + tblName +
                                  "  WHERE alarm_offset IS NOT NULL" +
                                  "     OR alarm_time IS NOT NULL;");
-
         };
         copyDataOver("cal_events");
         copyDataOver("cal_todos");
@@ -1193,7 +1183,7 @@ upgrade.v16 = function upgrade_v16(db, version) {
                     "alarm_time_tz",
                     "alarm_offset",
                     "alarm_related"];
-        for each (let tblid in ["events", "todos"]) {
+        for (let tblid of ["events", "todos"]) {
             deleteColumns(tbl, "cal_" + tblid, cols, db);
         }
 
@@ -1215,12 +1205,12 @@ upgrade.v16 = function upgrade_v16(db, version) {
  * Therefore all this upgrader does is handle users of 1.0pre before the
  * mentioned bug.
  */
-upgrade.v17 = function upgrade_v17(db, version) {
+upgrade.v17 = function(db, version) {
     let tbl = upgrade.v16(version < 16 && db, version);
     LOGdb(db, "Storage: Upgrading to v17");
     beginTransaction(db);
     try {
-        for each (let tblName in ["alarms", "relations", "attachments"]) {
+        for (let tblName of ["alarms", "relations", "attachments"]) {
             let hasColumns = true;
             let stmt;
             try {
@@ -1237,8 +1227,7 @@ upgrade.v17 = function upgrade_v17(db, version) {
             } catch (e) {
                 // An error happened, which means the cols don't exist
                 hasColumns = false;
-            }
-            finally {
+            } finally {
                 if (stmt) {
                     stmt.finalize();
                 }
@@ -1265,7 +1254,6 @@ upgrade.v17 = function upgrade_v17(db, version) {
                         "cal_" + tblName,
                         db,
                         true);
-
         }
         setDbVersionAndCommit(db, 17);
     } catch (e) {
@@ -1282,7 +1270,7 @@ upgrade.v17 = function upgrade_v17(db, version) {
  * This bug adds some indexes to improve performance. If you would like to add
  * additional indexes, please read http://www.sqlite.org/optoverview.html first.
  */
-upgrade.v18 = function upgrade_v18(db, version) {
+upgrade.v18 = function(db, version) {
     let tbl = upgrade.v17(version < 17 && db, version);
     LOGdb(db, "Storage: Upgrading to v18");
     beginTransaction(db);
@@ -1292,12 +1280,12 @@ upgrade.v18 = function upgrade_v18(db, version) {
         let allIds = simpleIds.concat(["recurrence_id", "recurrence_id_tz"]);
 
         // Alarms, Attachments, Attendees, Relations
-        for each (let tblName in ["alarms", "attachments", "attendees", "relations"]) {
+        for (let tblName of ["alarms", "attachments", "attendees", "relations"]) {
             createIndex(tbl, "cal_" + tblName, allIds, db);
         }
 
         // Events and Tasks
-        for each (let tblName in ["events", "todos"]) {
+        for (let tblName of ["events", "todos"]) {
             createIndex(tbl, "cal_" + tblName, ["flags", "cal_id", "recurrence_id"], db);
             createIndex(tbl, "cal_" + tblName, ["id", "cal_id", "recurrence_id"], db);
         }
@@ -1326,17 +1314,17 @@ upgrade.v18 = function upgrade_v18(db, version) {
  * events to be shown for multiple cached calendars
  * r=simon.at.orcl, p=philipp,dbo
  */
-upgrade.v19 = function upgrade_v19(db, version) {
+upgrade.v19 = function(db, version) {
     let tbl = upgrade.v18(version < 18 && db, version);
     LOGdb(db, "Storage: Upgrading to v19");
     beginTransaction(db);
     try {
         // Change types of column to TEXT.
-        for each (let tblName in ["cal_alarms", "cal_attachments",
-                                  "cal_attendees", "cal_events",
-                                  "cal_metadata", "cal_properties",
-                                  "cal_recurrence", "cal_relations",
-                                  "cal_todos"]) {
+        for (let tblName of ["cal_alarms", "cal_attachments",
+                             "cal_attendees", "cal_events",
+                             "cal_metadata", "cal_properties",
+                             "cal_recurrence", "cal_relations",
+                             "cal_todos"]) {
             alterTypes(tbl, tblName, ["cal_id"], "TEXT", db);
         }
         setDbVersionAndCommit(db, 19);
@@ -1352,66 +1340,66 @@ upgrade.v19 = function upgrade_v19(db, version) {
  * Setting a offline_journal column in cal_events tables
  * r=philipp, p=redDragon
  */
-upgrade.v20 = function upgrade_v20(db, version) {
+upgrade.v20 = function(db, version) {
     let tbl = upgrade.v19(version < 19 && db, version);
     LOGdb(db, "Storage: Upgrading to v20");
     beginTransaction(db);
     try {
-        //Adding a offline_journal column
-        for each (let tblName in ["cal_events", "cal_todos"]) {
+        // Adding a offline_journal column
+        for (let tblName of ["cal_events", "cal_todos"]) {
             addColumn(tbl, tblName, ["offline_journal"], "INTEGER", db);
         }
         setDbVersionAndCommit(db, 20);
     } catch (e) {
-        throw reportErrorAndRollback(db,e);
+        throw reportErrorAndRollback(db, e);
     }
     return tbl;
-}
+};
 
 /**
  * Bug 785659 - Get rid of calIRecurrenceDateSet
  * Migrate x-dateset to x-date in the storage database
  * r=mmecca, p=philipp
  */
-upgrade.v21 = function upgrade_v21(db, version) {
+upgrade.v21 = function(db, version) {
     let tbl = upgrade.v20(version < 20 && db, version);
     LOGdb(db, "Storage: Upgrading to v21");
     beginTransaction(db);
-    try {
 
+    try {
         // The following operation is only important on a live DB, since we are
         // changing only the values on the DB, not the schema itself.
         if (db) {
             // Oh boy, here we go :-)
             // Insert a new row with the following columns...
-            let insertSQL = 'INSERT INTO cal_recurrence ' +
-                            '            (item_id, cal_id, recur_type, recur_index,' +
-                            '             is_negative, dates, end_date, count,' +
-                            '             interval, second, minute, hour, day,' +
-                            '             monthday, yearday, weekno,  month, setpos)' +
+            let insertSQL = "INSERT INTO cal_recurrence " +
+                            "            (item_id, cal_id, recur_type, recur_index," +
+                            "             is_negative, dates, end_date, count," +
+                            "             interval, second, minute, hour, day," +
+                            "             monthday, yearday, weekno,  month, setpos)" +
                             // ... by selecting some columns from the existing table ...
                             '     SELECT item_id, cal_id, "x-date" AS recur_type, ' +
                             // ... like a new recur_index, we need it to be maximum for this item ...
-                            '            (SELECT MAX(recur_index)+1' +
-                            '               FROM cal_recurrence AS rinner ' +
-                            '              WHERE rinner.item_id = router.item_id' +
-                            '                AND rinner.cal_id = router.cal_id) AS recur_index,' +
-                            '            is_negative,' +
+                            "            (SELECT MAX(recur_index)+1" +
+                            "               FROM cal_recurrence AS rinner " +
+                            "              WHERE rinner.item_id = router.item_id" +
+                            "                AND rinner.cal_id = router.cal_id) AS recur_index," +
+                            "            is_negative," +
                             // ... the string until the first comma in the current dates field
                             '            SUBSTR(dates, 0, LENGTH(dates) - LENGTH(LTRIM(dates, REPLACE(dates, ",", ""))) + 1) AS dates,' +
-                            '            end_date, count, interval, second, minute,' +
-                            '            hour, day, monthday, yearday, weekno, month,' +
-                            '            setpos' +
+                            "            end_date, count, interval, second, minute," +
+                            "            hour, day, monthday, yearday, weekno, month," +
+                            "            setpos" +
                             // ... from the recurrence table ...
-                            '       FROM cal_recurrence AS router ' +
+                            "       FROM cal_recurrence AS router " +
                             // ... but only on fields that are x-datesets ...
                             '      WHERE recur_type = "x-dateset" ' +
                             // ... and are not already empty.
                             '        AND dates != ""';
-                            dump(insertSQL + "\n");
+            dump(insertSQL + "\n");
 
             // Now we need to remove the first segment from the dates field
-            let updateSQL = 'UPDATE cal_recurrence' +
+            let updateSQL = "UPDATE cal_recurrence" +
                             '   SET dates = SUBSTR(dates, LENGTH(dates) - LENGTH(LTRIM(dates, REPLACE(dates, ",", ""))) + 2)' +
                             ' WHERE recur_type = "x-dateset"' +
                             '   AND dates != ""';
@@ -1422,7 +1410,6 @@ upgrade.v21 = function upgrade_v21(db, version) {
 
             // Repeat these two statements until the update affects 0 rows
             // (because the dates field on all x-datesets is empty)
-            let insertedRows = 0;
             do {
                 insertStmt.execute();
                 updateStmt.execute();
@@ -1436,10 +1423,10 @@ upgrade.v21 = function upgrade_v21(db, version) {
 
         setDbVersionAndCommit(db, 21);
     } catch (e) {
-        throw reportErrorAndRollback(db,e);
+        throw reportErrorAndRollback(db, e);
     }
     return tbl;
-}
+};
 
 /**
  * Bug 785733 - Move some properties to use icalString in database.
@@ -1447,14 +1434,14 @@ upgrade.v21 = function upgrade_v21(db, version) {
  * tables.
  * r=mmecca, p=philipp
  */
-upgrade.v22 = function upgrade_v22(db, version) {
+upgrade.v22 = function(db, version) {
     let tbl = upgrade.v21(version < 21 && db, version);
     LOGdb(db, "Storage: Upgrading to v22");
     beginTransaction(db);
     try {
         // Update attachments to using icalString directly
         createFunction(db, "translateAttachment", 3, {
-            onFunctionCall: function translateAttachment(storArgs) {
+            onFunctionCall: function(storArgs) {
                 try {
                     let [aData, aFmtType, aEncoding] = mapStorageArgs(storArgs);
 
@@ -1474,7 +1461,7 @@ upgrade.v22 = function upgrade_v22(db, version) {
 
         // Update relations to using icalString directly
         createFunction(db, "translateRelation", 2, {
-            onFunctionCall: function translateAttachment(storArgs) {
+            onFunctionCall: function(storArgs) {
                 try {
                     let [aRelType, aRelId] = mapStorageArgs(storArgs);
                     let relation = cal.createRelation();
@@ -1492,7 +1479,7 @@ upgrade.v22 = function upgrade_v22(db, version) {
 
         // Update attendees table to using icalString directly
         createFunction(db, "translateAttendee", 8, {
-            onFunctionCall: function translateAttachment(storArgs) {
+            onFunctionCall: function(storArgs) {
                 try {
                     let [aAttendeeId, aCommonName, aRsvp, aRole,
                          aStatus, aType, aIsOrganizer, aProperties] =
@@ -1503,16 +1490,18 @@ upgrade.v22 = function upgrade_v22(db, version) {
                     attendee.id = aAttendeeId;
                     attendee.commonName = aCommonName;
 
-                    if (aRsvp === 0) attendee.rsvp = "FALSE";
-                    if (aRsvp === 1) attendee.rsvp = "TRUE";
-                    // default: keep undefined
+                    switch (aRsvp) {
+                        case 0: attendee.rsvp = "FALSE"; break;
+                        case 1: attendee.rsvp = "TRUE"; break;
+                        // default: keep undefined
+                    }
 
                     attendee.role = aRole;
                     attendee.participationStatus = aStatus;
                     attendee.userType = aType;
                     attendee.isOrganizer = !!aIsOrganizer;
                     if (aProperties) {
-                        for each (let pair in aProperties.split(",")) {
+                        for (let pair of aProperties.split(",")) {
                             let [key, value] = pair.split(":");
                             attendee.setProperty(decodeURIComponent(key),
                                                  decodeURIComponent(value));
@@ -1534,8 +1523,10 @@ upgrade.v22 = function upgrade_v22(db, version) {
 
         // Update recurrence table to using icalString directly
         createFunction(db, "translateRecurrence", 17, {
-            onFunctionCall: function translateRecurrence(storArgs) {
+            onFunctionCall: function(storArgs) {
+                function parseInt10(x) { return parseInt(x, 10); }
                 try {
+                    // eslint-disable-next-line no-unused-vars
                     let [aIndex, aType, aIsNegative, aDates, aCount,
                          aEndDate, aInterval, aSecond, aMinute, aHour,
                          aDay, aMonthday, aYearday, aWeekno, aMonth,
@@ -1555,22 +1546,23 @@ upgrade.v22 = function upgrade_v22(db, version) {
                             try {
                                 ritem.count = aCount;
                             } catch (exc) {
+                                // Don't fail if setting an invalid count
                             }
+                        } else if (aEndDate) {
+                            let allday = (aTmpFlags & CAL_ITEM_FLAG.EVENT_ALLDAY) != 0;
+                            let untilDate = newDateTime(aEndDate, allday ? "" : "UTC");
+                            if (allday) {
+                                untilDate.isDate = true;
+                            }
+                            ritem.untilDate = untilDate;
                         } else {
-                            if (aEndDate) {
-                                let allday = ((aTmpFlags & CAL_ITEM_FLAG.EVENT_ALLDAY) != 0);
-                                let untilDate = newDateTime(aEndDate, allday ? "" : "UTC");
-                                if (allday) {
-                                    untilDate.isDate = true;
-                                }
-                                ritem.untilDate = untilDate;
-                            } else {
-                                ritem.untilDate = null;
-                            }
+                            ritem.untilDate = null;
                         }
+
                         try {
                             ritem.interval = aInterval;
                         } catch (exc) {
+                            // Don't fail if setting an invalid interval
                         }
 
                         let rtypes = {
@@ -1585,11 +1577,10 @@ upgrade.v22 = function upgrade_v22(db, version) {
                             SETPOS: aSetPos
                         };
 
-                        function parseInt10(x) parseInt(x, 10);
                         for (let rtype in rtypes) {
                             if (rtypes[rtype]) {
                                 let comp = "BY" + rtype;
-                                let rstr = rtypes[rtype].toString()
+                                let rstr = rtypes[rtype].toString();
                                 let rarray = rstr.split(",").map(parseInt10);
                                 ritem.setComponent(comp, rarray.length, rarray);
                             }

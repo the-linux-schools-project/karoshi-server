@@ -7,10 +7,35 @@
  * that loading this file twice in the same scope will throw errors.
  */
 
+
+/* exported createEvent, createTodo, createDateTime, createDuration, createAttendee,
+ *          createAttachment, createAlarm, createRelation,
+ *          createRecurrenceDate, createRecurrenceRule, createRecurrenceInfo,
+ *          getCalendarManager, getIcsService, getCalendarSearchService,
+ *          getFreeBusyService, getWeekInfoService, getDateFormatter, UTC,
+ *          floating, saveRecentTimezone, getCalendarDirectory,
+ *          isCalendarWritable, userCanAddItemsToCalendar,
+ *          userCanDeleteItemsFromCalendar, attendeeMatchesAddresses,
+ *          userCanRespondToInvitation, openCalendarWizard,
+ *          openCalendarProperties, calPrint, makeURL, calRadioGroupSelectItem,
+ *          isItemSupported, calInstanceOf, getPrefSafe, setPref,
+ *          setLocalizedPref, getLocalizedPref, getPrefCategoriesArray,
+ *          setPrefCategoriesFromArray, compareItems, calTryWrappedJSObject,
+ *          compareArrays, doQueryInterface, setDefaultStartEndHour, LOG, WARN,
+ *          ERROR, showError, getContrastingTextColor, calGetEndDateProp,
+ *          checkIfInRange, getProgressAtom, sendMailTo, sameDay,
+ *          calSetProdidVersion, applyAttributeToMenuChildren,
+ *          isPropertyValueSame, getParentNodeOrThis,
+ *          getParentNodeOrThisByAttribute, setItemProperty,
+ *          calIterateEmailIdentities, compareItemContent, binaryInsert,
+ *          getCompositeCalendar, findItemWindow
+ */
+
 Components.utils.import("resource:///modules/mailServices.js");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/Preferences.jsm");
+Components.utils.import("resource://gre/modules/AppConstants.jsm");
 
 function _calIcalCreator(cid, iid) {
     return function(icalString) {
@@ -22,31 +47,31 @@ function _calIcalCreator(cid, iid) {
     };
 }
 
-let createEvent = _calIcalCreator("@mozilla.org/calendar/event;1",
+var createEvent = _calIcalCreator("@mozilla.org/calendar/event;1",
                                   Components.interfaces.calIEvent);
-let createTodo = _calIcalCreator("@mozilla.org/calendar/todo;1",
+var createTodo = _calIcalCreator("@mozilla.org/calendar/todo;1",
                                  Components.interfaces.calITodo);
-let createDateTime  = _calIcalCreator("@mozilla.org/calendar/datetime;1",
-                                      Components.interfaces.calIDateTime);
-let createDuration = _calIcalCreator("@mozilla.org/calendar/duration;1",
+var createDateTime = _calIcalCreator("@mozilla.org/calendar/datetime;1",
+                                     Components.interfaces.calIDateTime);
+var createDuration = _calIcalCreator("@mozilla.org/calendar/duration;1",
                                      Components.interfaces.calIDuration);
-let createAttendee = _calIcalCreator("@mozilla.org/calendar/attendee;1",
+var createAttendee = _calIcalCreator("@mozilla.org/calendar/attendee;1",
                                      Components.interfaces.calIAttendee);
-let createAttachment = _calIcalCreator("@mozilla.org/calendar/attachment;1",
+var createAttachment = _calIcalCreator("@mozilla.org/calendar/attachment;1",
                                        Components.interfaces.calIAttachment);
-let createAlarm = _calIcalCreator("@mozilla.org/calendar/alarm;1",
+var createAlarm = _calIcalCreator("@mozilla.org/calendar/alarm;1",
                                   Components.interfaces.calIAlarm);
-let createRelation = _calIcalCreator("@mozilla.org/calendar/relation;1",
+var createRelation = _calIcalCreator("@mozilla.org/calendar/relation;1",
                                      Components.interfaces.calIRelation);
-let createRecurrenceDate = _calIcalCreator("@mozilla.org/calendar/recurrence-date;1",
+var createRecurrenceDate = _calIcalCreator("@mozilla.org/calendar/recurrence-date;1",
                                            Components.interfaces.calIRecurrenceDate);
-let createRecurrenceRule = _calIcalCreator("@mozilla.org/calendar/recurrence-rule;1",
+var createRecurrenceRule = _calIcalCreator("@mozilla.org/calendar/recurrence-rule;1",
                                            Components.interfaces.calIRecurrenceRule);
 
 /* Returns a clean new calIRecurrenceInfo */
 function createRecurrenceInfo(aItem) {
-    var recInfo = Components.classes["@mozilla.org/calendar/recurrence-info;1"].
-           createInstance(Components.interfaces.calIRecurrenceInfo);
+    let recInfo = Components.classes["@mozilla.org/calendar/recurrence-info;1"]
+                            .createInstance(Components.interfaces.calIRecurrenceInfo);
     recInfo.item = aItem;
     return recInfo;
 }
@@ -93,7 +118,7 @@ function getDateFormatter() {
                      .getService(Components.interfaces.calIDateTimeFormatter);
 }
 
-/// @return the UTC timezone.
+// @return the UTC timezone.
 function UTC() {
     if (UTC.mObject === undefined) {
         UTC.mObject = getTimezoneService().UTC;
@@ -101,7 +126,7 @@ function UTC() {
     return UTC.mObject;
 }
 
-/// @return the floating timezone.
+// @return the floating timezone.
 function floating() {
     if (floating.mObject === undefined) {
         floating.mObject = getTimezoneService().floating;
@@ -128,7 +153,7 @@ function saveRecentTimezone(aTzid) {
     const MAX_RECENT_TIMEZONES = 5; // We don't need a pref for *everything*.
 
     if (aTzid != calendarDefaultTimezone().tzid &&
-        recentTimezones.indexOf(aTzid) < 0) {
+        !recentTimezones.includes(aTzid)) {
         // Add the timezone if its not already the default timezone
         recentTimezones.unshift(aTzid);
         recentTimezones.splice(MAX_RECENT_TIMEZONES);
@@ -153,14 +178,14 @@ function getRecentTimezones(aConvertZones) {
     if (aConvertZones) {
         let oldZonesLength = recentTimezones.length;
         for (let i = 0; i < recentTimezones.length; i++) {
-            let tz = tzService.getTimezone(recentTimezones[i]);
-            if (!tz) {
+            let timezone = tzService.getTimezone(recentTimezones[i]);
+            if (timezone) {
+                // Replace id with found timezone
+                recentTimezones[i] = timezone;
+            } else {
                 // Looks like the timezone doesn't longer exist, remove it
                 recentTimezones.splice(i, 1);
                 i--;
-            } else {
-                // Replace id with found timezone
-                recentTimezones[i] = tz;
             }
         }
 
@@ -197,10 +222,10 @@ function getRecentTimezones(aConvertZones) {
  * @return              The formatted string using only chars [_a-zA-Z0-9-]
  */
 function formatStringForCSSRule(aString) {
-    function toReplacement(ch) {
+    function toReplacement(char) {
         // char code is natural number (positive integer)
-        var nat = ch.charCodeAt(0);
-        switch(nat) {
+        let nat = char.charCodeAt(0);
+        switch (nat) {
             case 0x20: // space
                 return "_";
             default:
@@ -217,7 +242,7 @@ function formatStringForCSSRule(aString) {
  */
 function getCalendarDirectory() {
     if (getCalendarDirectory.mDir === undefined) {
-        var dir = Services.dirsvc.get("ProfD", Components.interfaces.nsILocalFile);
+        let dir = Services.dirsvc.get("ProfD", Components.interfaces.nsILocalFile);
         dir.append("calendar-data");
         if (!dir.exists()) {
             try {
@@ -242,12 +267,12 @@ function getCalendarDirectory() {
  * @return              True if the calendar is writable
  */
 function isCalendarWritable(aCalendar) {
-    return (!aCalendar.getProperty("disabled") &&
+    return !aCalendar.getProperty("disabled") &&
             !aCalendar.readOnly &&
             (!Services.io.offline ||
              aCalendar.getProperty("cache.enabled") ||
              aCalendar.getProperty("cache.always") ||
-             aCalendar.getProperty("requiresNetwork") === false));
+             aCalendar.getProperty("requiresNetwork") === false);
 }
 
 /**
@@ -258,7 +283,7 @@ function isCalendarWritable(aCalendar) {
  */
 function userCanAddItemsToCalendar(aCalendar) {
     let aclEntry = aCalendar.aclEntry;
-    return (!aclEntry || !aclEntry.hasAccessControl || aclEntry.userIsOwner || aclEntry.userCanAddItems);
+    return !aclEntry || !aclEntry.hasAccessControl || aclEntry.userIsOwner || aclEntry.userCanAddItems;
 }
 
 /**
@@ -269,7 +294,7 @@ function userCanAddItemsToCalendar(aCalendar) {
  */
 function userCanDeleteItemsFromCalendar(aCalendar) {
     let aclEntry = aCalendar.aclEntry;
-    return (!aclEntry || !aclEntry.hasAccessControl || aclEntry.userIsOwner || aclEntry.userCanDeleteItems);
+    return !aclEntry || !aclEntry.hasAccessControl || aclEntry.userIsOwner || aclEntry.userCanDeleteItems;
 }
 
 /**
@@ -282,7 +307,7 @@ function userCanDeleteItemsFromCalendar(aCalendar) {
  */
 function userCanModifyItem(aItem) {
     let aclEntry = aItem.aclEntry;
-    return (!aclEntry || !aclEntry.calendarEntry.hasAccessControl || aclEntry.calendarEntry.userIsOwner || aclEntry.userCanModify);
+    return !aclEntry || !aclEntry.calendarEntry.hasAccessControl || aclEntry.calendarEntry.userIsOwner || aclEntry.userCanModify;
 }
 
 /**
@@ -305,7 +330,7 @@ function attendeeMatchesAddresses(anAttendee, addresses) {
     }
 
     attId = attId.toLowerCase().replace(/^mailto:/, "");
-    for each (let address in addresses) {
+    for (let address of addresses) {
         if (attId == address.toLowerCase().replace(/^mailto:/, "")) {
             return true;
         }
@@ -336,8 +361,9 @@ function openCalendarWizard(aCallback) {
     openDialog("chrome://calendar/content/calendarCreation.xul", "caEditServer",
                // Workaround for Bug 1151440 - the HTML color picker won't work
                // in linux when opened from modal dialog
-               Application.platformIsLinux ? "chrome,titlebar,resizable" :
-                                             "modal,chrome,titlebar,resizable",
+               AppConstants.platform == "linux"
+                   ? "chrome,titlebar,resizable"
+                   : "modal,chrome,titlebar,resizable",
                aCallback);
 }
 
@@ -351,9 +377,10 @@ function openCalendarProperties(aCalendar) {
                "CalendarPropertiesDialog",
                // Workaround for Bug 1151440 - the HTML color picker won't work
                // in linux when opened from modal dialog
-               Application.platformIsLinux ? "chrome,titlebar,resizable" :
-                                             "modal,chrome,titlebar,resizable",
-               {calendar: aCalendar});
+               AppConstants.platform == "linux"
+                   ? "chrome,titlebar,resizable"
+                   : "modal,chrome,titlebar,resizable",
+               { calendar: aCalendar });
 }
 
 /**
@@ -384,8 +411,8 @@ function makeURL(aUriString) {
  * default timezone.
  */
 function now() {
-    var d = cal.jsDateToDateTime(new Date());
-    return d.getInTimezone(calendarDefaultTimezone());
+    let date = cal.jsDateToDateTime(new Date());
+    return date.getInTimezone(calendarDefaultTimezone());
 }
 
 /**
@@ -395,10 +422,10 @@ function now() {
  * @param aItemId        the item to be selected
  */
 function calRadioGroupSelectItem(aRadioGroupId, aItemId) {
-    var radioGroup = document.getElementById(aRadioGroupId);
-    var items = radioGroup.getElementsByTagName("radio");
-    var index;
-    for (var i in items) {
+    let radioGroup = document.getElementById(aRadioGroupId);
+    let items = radioGroup.getElementsByTagName("radio");
+    let index;
+    for (let i in items) {
         if (items[i].getAttribute("id") == aItemId) {
             index = i;
             break;
@@ -565,7 +592,7 @@ function setupDefaultCategories() {
 
     // Now, initialize the category default colors
     let categoryArray = categoriesStringToArray(categories);
-    for each (let category in categoryArray) {
+    for (let category of categoryArray) {
         let prefName = formatStringForCSSRule(category);
         Preferences.set("calendar.category.color." + prefName,
                         hashColor(category));
@@ -601,7 +628,7 @@ function hashColor(str) {
                           "#000000", "#330000", "#663300", "#663333", "#333300",
                           "#003300", "#003333", "#000066", "#330099", "#330033"];
 
-    let sum = Array.map(str || " ", function(e) e.charCodeAt(0)).reduce(function(a,b) a + b);
+    let sum = Array.map(str || " ", e => e.charCodeAt(0)).reduce((a, b) => a + b);
     return colorPalette[sum % colorPalette.length];
 }
 
@@ -649,7 +676,7 @@ function setPrefCategoriesFromArray(aCategoriesArray) {
  * may contain unescaped commas, which will be escaped in combined string.
  */
 function categoriesArrayToString(aSortedCategoriesArray) {
-    function escapeComma(category) { return category.replace(/,/g,"\\,"); }
+    function escapeComma(category) { return category.replace(/,/g, "\\,"); }
     return aSortedCategoriesArray.map(escapeComma).join(",");
 }
 
@@ -662,13 +689,11 @@ function categoriesArrayToString(aSortedCategoriesArray) {
  * @param aParams      optional array of parameters to format the string
  * @param aComponent   optional stringbundle component name
  */
-function calGetString(aBundleName, aStringName, aParams, aComponent) {
+function calGetString(aBundleName, aStringName, aParams, aComponent="calendar") {
+    let propName = "chrome://" + aComponent + "/locale/" + aBundleName + ".properties";
+
     try {
-        if (!aComponent) {
-            aComponent = "calendar";
-        }
-        var propName = "chrome://" + aComponent + "/locale/" + aBundleName + ".properties";
-        var props = Services.strings.createBundle(propName);
+        let props = Services.strings.createBundle(propName);
 
         if (aParams && aParams.length) {
             return props.formatStringFromName(aStringName, aParams, aParams.length);
@@ -676,9 +701,9 @@ function calGetString(aBundleName, aStringName, aParams, aComponent) {
             return props.GetStringFromName(aStringName);
         }
     } catch (ex) {
-        var s = ("Failed to read '" + aStringName + "' from " + propName + ".");
-        Components.utils.reportError(s + " Error: " + ex);
-        return s;
+        let msg = "Failed to read '" + aStringName + "' from " + propName + ".";
+        Components.utils.reportError(msg + " Error: " + ex);
+        return msg;
     }
 }
 
@@ -686,11 +711,11 @@ function calGetString(aBundleName, aStringName, aParams, aComponent) {
  * Make a UUID using the UUIDGenerator service available, we'll use that.
  */
 function getUUID() {
-    var uuidGen = Components.classes["@mozilla.org/uuid-generator;1"]
+    let uuidGen = Components.classes["@mozilla.org/uuid-generator;1"]
                   .getService(Components.interfaces.nsIUUIDGenerator);
     // generate uuids without braces to avoid problems with
     // CalDAV servers that don't support filenames with {}
-    return uuidGen.generateUUID().toString().replace(/[{}]/g, '');
+    return uuidGen.generateUUID().toString().replace(/[{}]/g, "");
 }
 
 /**
@@ -703,13 +728,13 @@ function getUUID() {
  * calIItemBase comparer
  */
 function compareItems(aItem, aOtherItem) {
-    var sip1 = Components.classes["@mozilla.org/supports-interface-pointer;1"].
-               createInstance(Components.interfaces.nsISupportsInterfacePointer);
+    let sip1 = Components.classes["@mozilla.org/supports-interface-pointer;1"]
+                         .createInstance(Components.interfaces.nsISupportsInterfacePointer);
     sip1.data = aItem;
     sip1.dataIID = Components.interfaces.calIItemBase;
 
-    var sip2 = Components.classes["@mozilla.org/supports-interface-pointer;1"].
-               createInstance(Components.interfaces.nsISupportsInterfacePointer);
+    let sip2 = Components.classes["@mozilla.org/supports-interface-pointer;1"]
+                         .createInstance(Components.interfaces.nsISupportsInterfacePointer);
     sip2.data = aOtherItem;
     sip2.dataIID = Components.interfaces.calIItemBase;
     return sip1.data == sip2.data;
@@ -744,13 +769,13 @@ function compareObjects(aObject, aOtherObject, aIID) {
     if (!aIID) {
         aIID = Components.interfaces.nsISupports;
     }
-    var sip1 = Components.classes["@mozilla.org/supports-interface-pointer;1"].
-               createInstance(Components.interfaces.nsISupportsInterfacePointer);
+    let sip1 = Components.classes["@mozilla.org/supports-interface-pointer;1"]
+                         .createInstance(Components.interfaces.nsISupportsInterfacePointer);
     sip1.data = aObject;
     sip1.dataIID = aIID;
 
-    var sip2 = Components.classes["@mozilla.org/supports-interface-pointer;1"].
-               createInstance(Components.interfaces.nsISupportsInterfacePointer);
+    let sip2 = Components.classes["@mozilla.org/supports-interface-pointer;1"]
+                         .createInstance(Components.interfaces.nsISupportsInterfacePointer);
     sip2.data = aOtherObject;
     sip2.dataIID = aIID;
     return sip1.data == sip2.data;
@@ -760,16 +785,20 @@ function compareObjects(aObject, aOtherObject, aIID) {
  * Compare two arrays using the passed function.
  */
 function compareArrays(aOne, aTwo, compareFunc) {
-    if (!aOne && !aTwo)
+    if (!aOne && !aTwo) {
         return true;
-    if (!aOne || !aTwo)
+    }
+    if (!aOne || !aTwo) {
         return false;
-    var len = aOne.length;
-    if (len != aTwo.length)
+    }
+    let len = aOne.length;
+    if (len != aTwo.length) {
         return false;
-    for (var i = 0; i < len; ++i) {
-        if (!compareFunc(aOne[i], aTwo[i]))
+    }
+    for (let i = 0; i < len; ++i) {
+        if (!compareFunc(aOne[i], aTwo[i])) {
             return false;
+        }
     }
     return true;
 }
@@ -804,9 +833,11 @@ function doQueryInterface(aSelf, aProto, aIID, aList, aClassInfo) {
         }
     }
 
-    for each (var iid in aList) {
-        if (aIID.equals(iid)) {
-            return aSelf;
+    if (aList) {
+        for (let iid of aList) {
+            if (aIID.equals(iid)) {
+                return aSelf;
+            }
         }
     }
 
@@ -815,7 +846,7 @@ function doQueryInterface(aSelf, aProto, aIID, aList, aClassInfo) {
     }
 
     if (aProto) {
-        var base = aProto.__proto__;
+        let base = aProto.__proto__;
         if (base && base.QueryInterface) {
             // Try to QI the base prototype
             return base.QueryInterface.call(aSelf, aIID);
@@ -836,7 +867,7 @@ function ensureDateTime(aDate) {
     if (!aDate || !aDate.isDate) {
         return aDate;
     }
-    var newDate = aDate.clone();
+    let newDate = aDate.clone();
     newDate.isDate = false;
     return newDate;
 }
@@ -849,9 +880,9 @@ function ensureDateTime(aDate) {
  *                            keeping the date and timezone intact.
  */
 function getDefaultStartDate(aReferenceDate) {
-    var startDate = now();
+    let startDate = now();
     if (aReferenceDate) {
-        var savedHour = startDate.hour;
+        let savedHour = startDate.hour;
         startDate = aReferenceDate;
         if (!startDate.isMutable) {
             startDate = startDate.clone();
@@ -885,9 +916,19 @@ function setDefaultStartEndHour(aItem, aReferenceDate) {
     }
 }
 
-/****
- **** debug code
- ****/
+/**
+ * Helper used in the following log functions to actually log the message.
+ * Should not be used outside of this file.
+ */
+function _log(message, flag) {
+    let frame = Components.stack.caller.caller;
+    let filename = frame.filename ? frame.filename.split(" -> ").pop() : null;
+    let scriptError = Components.classes["@mozilla.org/scripterror;1"]
+                                .createInstance(Components.interfaces.nsIScriptError);
+    scriptError.init(message, filename, null, frame.lineNumber, frame.columnNumber,
+                     flag, "component javascript");
+    Services.console.logMessage(scriptError);
+}
 
 /**
  * Logs a string or an object to both stderr and the js-console only in the case
@@ -897,30 +938,23 @@ function setDefaultStartEndHour(aItem, aReferenceDate) {
  *              properties should be logged.
  */
 function LOG(aArg) {
-    var shouldLog = false;
-    try {
-        shouldLog = Services.prefs.getBoolPref("calendar.debug.log");
-    } catch(ex) {}
-
-    if (!shouldLog) {
+    if (!Preferences.get("calendar.debug.log", false)) {
         return;
     }
+
     ASSERT(aArg, "Bad log argument.", false);
-    var string;
+    let string = aArg;
     // We should just dump() both String objects, and string primitives.
-    if (!(aArg instanceof String) && !(typeof(aArg) == "string")) {
-        var string = "Logging object...\n";
-        for (var prop in aArg) {
-            string += prop + ': ' + aArg[prop] + '\n';
+    if (!(aArg instanceof String) && !(typeof aArg == "string")) {
+        string = "Logging object...\n";
+        for (let prop in aArg) {
+            string += prop + ": " + aArg[prop] + "\n";
         }
         string += "End object\n";
-    } else {
-        string = aArg;
     }
 
-    // xxx todo consider using function debug()
-    dump(string + '\n');
-    Services.console.logStringMessage(string);
+    dump(string + "\n");
+    _log(string, Components.interfaces.nsIScriptError.infoFlag);
 }
 
 /**
@@ -929,15 +963,8 @@ function LOG(aArg) {
  * @param aMessage warning message
  */
 function WARN(aMessage) {
-    dump("Warning: " + aMessage + '\n');
-    let frame = Components.stack.caller;
-    let filename = frame.filename ? frame.filename.split(" -> ").pop() : null;
-    let scriptError = Components.classes["@mozilla.org/scripterror;1"]
-                                .createInstance(Components.interfaces.nsIScriptError);
-    scriptError.init(aMessage, filename, null, frame.lineNumber, frame.columnNumber,
-                     Components.interfaces.nsIScriptError.warningFlag,
-                     "component javascript");
-    Services.console.logMessage(scriptError);
+    dump("Warning: " + aMessage + "\n");
+    _log(aMessage, Components.interfaces.nsIScriptError.warningFlag);
 }
 
 /**
@@ -946,15 +973,8 @@ function WARN(aMessage) {
  * @param aMessage error message
  */
 function ERROR(aMessage) {
-    dump("Error: " + aMessage + '\n');
-    let frame = Components.stack.caller;
-    let filename = frame.filename ? frame.filename.split(" -> ").pop() : null;
-    let scriptError = Components.classes["@mozilla.org/scripterror;1"]
-                                .createInstance(Components.interfaces.nsIScriptError);
-    scriptError.init(aMessage, filename, null, frame.lineNumber, frame.columnNumber,
-                     Components.interfaces.nsIScriptError.errorFlag,
-                     "component javascript");
-    Services.console.logMessage(scriptError);
+    dump("Error: " + aMessage + "\n");
+    _log(aMessage, Components.interfaces.nsIScriptError.errorFlag);
 }
 
 /**
@@ -993,7 +1013,7 @@ function ASSERT(aCondition, aMessage, aCritical) {
         return;
     }
 
-    let string = "Assert failed: " + aMessage + '\n' + STACK(0, 1);
+    let string = "Assert failed: " + aMessage + "\n" + STACK(0, 1);
     if (aCritical) {
         throw new Components.Exception(string,
                                        aCritical === true ? Components.results.NS_ERROR_UNEXPECTED : aCritical);
@@ -1009,9 +1029,9 @@ function ASSERT(aCondition, aMessage, aCritical) {
  * @param aMsg The message to be shown
  */
 function showError(aMsg) {
-    let window = window || null;
-    if (window) {
-        Services.prompt.alert(window, calGetString("calendar", "genericErrorTitle"), aMsg);
+    let wnd = window || null;
+    if (wnd) {
+        Services.prompt.alert(wnd, calGetString("calendar", "genericErrorTitle"), aMsg);
     }
 }
 
@@ -1021,15 +1041,14 @@ function showError(aMsg) {
  *
  * @param bgColor   the background color as a "#RRGGBB" string
  */
-function getContrastingTextColor(bgColor)
-{
-    var calcColor = bgColor.replace(/#/g, "");
-    var red = parseInt(calcColor.substring(0, 2), 16);
-    var green = parseInt(calcColor.substring(2, 4), 16);
-    var blue = parseInt(calcColor.substring(4, 6), 16);
+function getContrastingTextColor(bgColor) {
+    let calcColor = bgColor.replace(/#/g, "");
+    let red = parseInt(calcColor.substring(0, 2), 16);
+    let green = parseInt(calcColor.substring(2, 4), 16);
+    let blue = parseInt(calcColor.substring(4, 6), 16);
 
     // Calculate the brightness (Y) value using the YUV color system.
-    var brightness = (0.299 * red) + (0.587 * green) + (0.114 * blue);
+    let brightness = (0.299 * red) + (0.587 * green) + (0.114 * blue);
 
     // Consider all colors with less than 56% brightness as dark colors and
     // use white as the foreground color, otherwise use black.
@@ -1075,8 +1094,7 @@ function calGetEndDateProp(aItem) {
  * @param returnDtstartOrDue returns item's start (or due) date in case
  *                           the item is in the specified Range; null otherwise.
  */
-function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue)
-{
+function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue) {
     let startDate;
     let endDate;
     let queryStart = ensureDateTime(rangeStart);
@@ -1086,10 +1104,10 @@ function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue)
             // xxx todo: should we assert this case?
             return null;
         }
-        endDate = (item.endDate || startDate);
+        endDate = item.endDate || startDate;
     } else {
         let dueDate = item.dueDate;
-        startDate = (item.entryDate || dueDate);
+        startDate = item.entryDate || dueDate;
         if (!item.entryDate) {
             if (returnDtstartOrDue) { // DTSTART or DUE mandatory
                 return null;
@@ -1104,7 +1122,7 @@ function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue)
                    completedDate.compare(queryStart) > 0 ||
                    (dueDate && dueDate.compare(queryStart) >= 0);
         }
-        endDate = (dueDate || startDate);
+        endDate = dueDate || startDate;
     }
 
     let start = ensureDateTime(startDate);
@@ -1116,11 +1134,9 @@ function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue)
             (!queryEnd || start.compare(queryEnd) < 0)) {
             return startDate;
         }
-    } else {
-        if ((!queryEnd || start.compare(queryEnd) < 0) &&
-            (!queryStart || end.compare(queryStart) > 0)) {
-            return startDate;
-        }
+    } else if ((!queryEnd || start.compare(queryEnd) < 0) &&
+               (!queryStart || end.compare(queryStart) > 0)) {
+        return startDate;
     }
     return null;
 }
@@ -1133,26 +1149,28 @@ function checkIfInRange(item, rangeStart, rangeEnd, returnDtstartOrDue)
  * @return          The progress atom.
  */
 function getProgressAtom(aTask) {
-    var now = new Date();
+    let nowdate = new Date();
 
-    if (aTask.recurrenceInfo)
-      return "repeating";
+    if (aTask.recurrenceInfo) {
+        return "repeating";
+    }
 
-    if (aTask.isCompleted)
-      return "completed";
+    if (aTask.isCompleted) {
+        return "completed";
+    }
 
     if (aTask.dueDate && aTask.dueDate.isValid) {
-        if (cal.dateTimeToJsDate(aTask.dueDate).getTime() < now.getTime()) {
+        if (cal.dateTimeToJsDate(aTask.dueDate).getTime() < nowdate.getTime()) {
             return "overdue";
-        } else if (aTask.dueDate.year == now.getFullYear() &&
-                   aTask.dueDate.month == now.getMonth() &&
-                   aTask.dueDate.day == now.getDate()) {
+        } else if (aTask.dueDate.year == nowdate.getFullYear() &&
+                   aTask.dueDate.month == nowdate.getMonth() &&
+                   aTask.dueDate.day == nowdate.getDate()) {
             return "duetoday";
         }
     }
 
     if (aTask.entryDate && aTask.entryDate.isValid &&
-        cal.dateTimeToJsDate(aTask.entryDate).getTime() < now.getTime()) {
+        cal.dateTimeToJsDate(aTask.entryDate).getTime() < nowdate.getTime()) {
         return "inprogress";
     }
 
@@ -1167,15 +1185,15 @@ calInterfaceBag.prototype = {
     mInterfaces: null,
 
     // Iterating the inteface bag iterates the interfaces it contains
-    [Symbol.iterator]: function() this.mInterfaces[Symbol.iterator](),
+    [Symbol.iterator]: function() { return this.mInterfaces[Symbol.iterator](); },
 
-    /// internal:
-    init: function calInterfaceBag_init(iid) {
+    // internal:
+    init: function(iid) {
         this.mIid = iid;
         this.mInterfaces = [];
     },
 
-    /// external:
+    // external:
     get size() {
         return this.mInterfaces.length;
     },
@@ -1184,31 +1202,28 @@ calInterfaceBag.prototype = {
         return this.mInterfaces;
     },
 
-    add: function calInterfaceBag_add(iface) {
+    add: function(iface) {
         if (iface) {
-            var iid = this.mIid;
-            function eq(obj) {
-                return compareObjects(obj, iface, iid);
-            }
-            if (!this.mInterfaces.some(eq)) {
+            let existing = this.mInterfaces.some(obj => {
+                return compareObjects(obj, iface, this.mIid);
+            });
+            if (!existing) {
                 this.mInterfaces.push(iface);
-                return true;
             }
+            return !existing;
         }
         return false;
     },
 
-    remove: function calInterfaceBag_remove(iface) {
+    remove: function(iface) {
         if (iface) {
-            var iid = this.mIid;
-            function neq(obj) {
-                return !compareObjects(obj, iface, iid);
-            }
-            this.mInterfaces = this.mInterfaces.filter(neq);
+            this.mInterfaces = this.mInterfaces.filter((obj) => {
+                return !compareObjects(obj, iface, this.mIid);
+            });
         }
     },
 
-    forEach: function calInterfaceBag_forEach(func) {
+    forEach: function(func) {
         this.mInterfaces.forEach(func);
     }
 };
@@ -1219,10 +1234,10 @@ function calListenerBag(iid) {
 calListenerBag.prototype = {
     __proto__: calInterfaceBag.prototype,
 
-    notify: function calListenerBag_notify(func, args) {
+    notify: function(func, args=[]) {
         function notifyFunc(iface) {
             try {
-                iface[func].apply(iface, args ? args : []);
+                iface[func](...args);
             } catch (exc) {
                 let stack = exc.stack || (exc.location ? exc.location.formattedStack : null);
                 Components.utils.reportError(exc + "\nSTACK: " + stack);
@@ -1266,10 +1281,10 @@ function calOperationGroup(cancelFunc) {
         calOperationGroup.mOpGroupId = 0;
     }
     if (calOperationGroup.mOpGroupPrefix === undefined) {
-        calOperationGroup.mOpGroupPrefix = (getUUID() + "-");
+        calOperationGroup.mOpGroupPrefix = getUUID() + "-";
     }
     this.mCancelFunc = cancelFunc;
-    this.mId = (calOperationGroup.mOpGroupPrefix + calOperationGroup.mOpGroupId++);
+    this.mId = calOperationGroup.mOpGroupPrefix + calOperationGroup.mOpGroupId++;
     this.mSubOperations = [];
 }
 calOperationGroup.prototype = {
@@ -1279,18 +1294,15 @@ calOperationGroup.prototype = {
     mStatus: Components.results.NS_OK,
     mSubOperations: null,
 
-    add: function calOperationGroup_add(op) {
-        if (op && op.isPending) {
-            this.mSubOperations.push(op);
+    add: function(aOperation) {
+        if (aOperation && aOperation.isPending) {
+            this.mSubOperations.push(aOperation);
         }
     },
 
-    remove: function calOperationGroup_remove(op) {
-        if (op) {
-            function filterFunc(op_) {
-                return (op.id != op_.id);
-            }
-            this.mSubOperations = this.mSubOperations.filter(filterFunc);
+    remove: function(aOperation) {
+        if (aOperation) {
+            this.mSubOperations = this.mSubOperations.filter(operation => aOperation.id != operation.id);
         }
     },
 
@@ -1298,7 +1310,7 @@ calOperationGroup.prototype = {
         return (this.mSubOperations.length == 0);
     },
 
-    notifyCompleted: function calOperationGroup_notifyCompleted(status) {
+    notifyCompleted: function(status) {
         ASSERT(this.isPending, "[calOperationGroup_notifyCompleted] this.isPending");
         if (this.isPending) {
             this.mIsPending = false;
@@ -1308,8 +1320,8 @@ calOperationGroup.prototype = {
         }
     },
 
-    toString: function calOperationGroup_toString() {
-        return ("[calOperationGroup] id=" + this.id);
+    toString: function() {
+        return "[calOperationGroup] id=" + this.id;
     },
 
     // calIOperation:
@@ -1325,23 +1337,22 @@ calOperationGroup.prototype = {
         return this.mStatus;
     },
 
-    cancel: function calOperationGroup_cancel(status) {
+    cancel: function(status) {
         if (this.isPending) {
             if (!status) {
                 status = Components.interfaces.calIErrors.OPERATION_CANCELLED;
             }
             this.notifyCompleted(status);
-            var cancelFunc = this.mCancelFunc;
+            let cancelFunc = this.mCancelFunc;
             if (cancelFunc) {
                 this.mCancelFunc = null;
                 cancelFunc();
             }
-            var subOperations = this.mSubOperations;
+            let subOperations = this.mSubOperations;
             this.mSubOperations = [];
-            function forEachFunc(op) {
-                op.cancel(Components.interfaces.calIErrors.OPERATION_CANCELLED);
+            for (let operation of subOperations) {
+                operation.cancel(Components.interfaces.calIErrors.OPERATION_CANCELLED);
             }
-            subOperations.forEach(forEachFunc);
         }
     }
 };
@@ -1351,7 +1362,7 @@ function sameDay(date1, date2) {
         if ((date1.day == date2.day) &&
             (date1.month == date2.month) &&
             (date1.year == date2.year)) {
-              return true;
+            return true;
         }
     }
     return false;
@@ -1401,25 +1412,25 @@ function calSetProdidVersion(aIcalComponent) {
  * @param aValue The value of the attribute
  */
 function applyAttributeToMenuChildren(aElement, aAttributeName, aValue) {
-   var sibling = aElement.firstChild;
-   do {
-       if (sibling) {
-           var domObject = sibling;
-           var commandName = null;
-           if (sibling.hasAttribute("command")){
-               commandName = sibling.getAttribute("command");
-           }
-           if (commandName) {
-               var command = document.getElementById(commandName);
-               if (command) {
-                   domObject = command;
-               }
-           }
-           domObject.setAttribute(aAttributeName, aValue);
-       sibling = sibling.nextSibling;
-       }
+    let sibling = aElement.firstChild;
+    do {
+        if (sibling) {
+            let domObject = sibling;
+            let commandName = null;
+            if (sibling.hasAttribute("command")) {
+                commandName = sibling.getAttribute("command");
+            }
+            if (commandName) {
+                let command = document.getElementById(commandName);
+                if (command) {
+                    domObject = command;
+                }
+            }
+            domObject.setAttribute(aAttributeName, aValue);
+            sibling = sibling.nextSibling;
+        }
     } while (sibling);
-  }
+}
 
 
 /**
@@ -1430,13 +1441,13 @@ function applyAttributeToMenuChildren(aElement, aAttributeName, aValue) {
  * @param aProperty Name the name of the Property of which the value is compared
  */
 function isPropertyValueSame(aObjects, aPropertyName) {
-    var value = null;
-    for (var i = 0; i < aObjects.length; i++) {
+    let value = null;
+    for (let i = 0; i < aObjects.length; i++) {
         if (!value) {
             value = aObjects[0][aPropertyName];
         }
-        var compValue = aObjects[i][aPropertyName];
-        if (compValue != value ) {
+        let compValue = aObjects[i][aPropertyName];
+        if (compValue != value) {
             return false;
         }
     }
@@ -1456,13 +1467,13 @@ function isPropertyValueSame(aObjects, aPropertyName) {
  *                      retrieved it is returned 'null'.
  */
 function getParentNodeOrThis(aChildNode, aLocalName) {
-    var node = aChildNode;
+    let node = aChildNode;
     while (node && (node.localName != aLocalName)) {
         node = node.parentNode;
         if (node.tagName == undefined) {
             return null;
         }
-    };
+    }
     return node;
 }
 
@@ -1479,32 +1490,32 @@ function getParentNodeOrThis(aChildNode, aLocalName) {
  *                          parent node can be retrieved it is returned 'null'.
  */
 function getParentNodeOrThisByAttribute(aChildNode, aAttributeName, aAttributeValue) {
-    var node = aChildNode;
+    let node = aChildNode;
     while (node && (node.getAttribute(aAttributeName) != aAttributeValue)) {
         node = node.parentNode;
         if (node.tagName == undefined) {
             return null;
         }
-    };
+    }
     return node;
 }
 
 function setItemProperty(item, propertyName, aValue, aCapability) {
-    var isSupported = (item.calendar.getProperty("capabilities." + aCapability + ".supported") !== false)
-    var value = (aCapability && !isSupported ? null : aValue);
+    let isSupported = (item.calendar.getProperty("capabilities." + aCapability + ".supported") !== false);
+    let value = (aCapability && !isSupported ? null : aValue);
 
     switch (propertyName) {
         case "startDate":
-            if (value.isDate && !item.startDate.isDate ||
-                !value.isDate && item.startDate.isDate ||
+            if ((value.isDate && !item.startDate.isDate) ||
+                (!value.isDate && item.startDate.isDate) ||
                 !compareObjects(value.timezone, item.startDate.timezone) ||
                 value.compare(item.startDate) != 0) {
                 item.startDate = value;
             }
             break;
         case "endDate":
-            if (value.isDate && !item.endDate.isDate ||
-                !value.isDate && item.endDate.isDate ||
+            if ((value.isDate && !item.endDate.isDate) ||
+                (!value.isDate && item.endDate.isDate) ||
                 !compareObjects(value.timezone, item.endDate.timezone) ||
                 value.compare(item.endDate) != 0) {
                 item.endDate = value;
@@ -1514,8 +1525,8 @@ function setItemProperty(item, propertyName, aValue, aCapability) {
             if (value == item.entryDate) {
                 break;
             }
-            if (value && !item.entryDate ||
-                !value && item.entryDate ||
+            if ((value && !item.entryDate) ||
+                (!value && item.entryDate) ||
                 value.isDate != item.entryDate.isDate ||
                 !compareObjects(value.timezone, item.entryDate.timezone) ||
                 value.compare(item.entryDate) != 0) {
@@ -1526,8 +1537,8 @@ function setItemProperty(item, propertyName, aValue, aCapability) {
             if (value == item.dueDate) {
                 break;
             }
-            if (value && !item.dueDate ||
-                !value && item.dueDate ||
+            if ((value && !item.dueDate) ||
+                (!value && item.dueDate) ||
                 value.isDate != item.dueDate.isDate ||
                 !compareObjects(value.timezone, item.dueDate.timezone) ||
                 value.compare(item.dueDate) != 0) {
@@ -1577,42 +1588,44 @@ function calPropertyBag() {
 calPropertyBag.prototype = {
     mData: null,
 
-    setProperty: function cpb_setProperty(aName, aValue) {
+    setProperty: function(aName, aValue) {
         return (this.mData[aName] = aValue);
     },
-    getProperty_: function cpb_getProperty(aName) {
+    getProperty_: function(aName) {
         // avoid strict undefined property warning
         return (aName in this.mData ? this.mData[aName] : undefined);
     },
-    getProperty: function cpb_getProperty(aName) {
+    getProperty: function(aName) {
         // avoid strict undefined property warning
         return (aName in this.mData ? this.mData[aName] : null);
     },
-    getAllProperties: function cpb_getAllProperties(aOutKeys, aOutValues) {
-        var keys = [];
-        var values = [];
-        for (var key in this.mData) {
+    getAllProperties: function(aOutKeys, aOutValues) {
+        let keys = [];
+        let values = [];
+        for (let key in this.mData) {
             keys.push(key);
             values.push(this.mData[key]);
         }
         aOutKeys.value = keys;
         aOutValues.value = values;
     },
-    deleteProperty: function cpb_deleteProperty(aName) {
+    deleteProperty: function(aName) {
         delete this.mData[aName];
     },
     get enumerator() {
         return new calPropertyBagEnumerator(this);
     },
-    __iterator__: function cpb_iterator(aWantKeys) {
-        return Iterator(this.mData, aWantKeys);
+    [Symbol.iterator]: function* () {
+        for (let name of Object.keys(this.mData)) {
+            yield [name, this.mData[name]];
+        }
     }
 };
 // implementation part of calPropertyBag
 function calPropertyBagEnumerator(bag) {
     this.mIndex = 0;
     this.mBag = bag;
-    this.mKeys = [ key for (key in bag.mData) ];
+    this.mKeys = Object.keys(bag.mData);
 }
 calPropertyBagEnumerator.prototype = {
     mIndex: 0,
@@ -1620,19 +1633,19 @@ calPropertyBagEnumerator.prototype = {
     mKeys: null,
 
     // nsISimpleEnumerator:
-    getNext: function cpb_enum_getNext() {
+    getNext: function() {
         if (!this.hasMoreElements()) { // hasMoreElements is called by intention to skip yet deleted properties
             ASSERT(false, Components.results.NS_ERROR_UNEXPECTED);
             throw Components.results.NS_ERROR_UNEXPECTED;
         }
-        var name = this.mKeys[this.mIndex++];
+        let name = this.mKeys[this.mIndex++];
         return { // nsIProperty:
             QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIProperty]),
             name: name,
             value: this.mCurrentValue
         };
     },
-    hasMoreElements: function cpb_enum_hasMoreElements() {
+    hasMoreElements: function() {
         while (this.mIndex < this.mKeys.length) {
             this.mCurrentValue = this.mBag.mData[this.mKeys[this.mIndex]];
             if (this.mCurrentValue !== undefined) {
@@ -1649,12 +1662,12 @@ calPropertyBagEnumerator.prototype = {
  * If the called function returns false, iteration is stopped.
  */
 function calIterateEmailIdentities(func) {
-    var accounts = MailServices.accounts.accounts;
-    for (var i = 0; i < accounts.length; ++i) {
-        var account = accounts.queryElementAt(i, Components.interfaces.nsIMsgAccount);
-        var identities = account.identities;
-        for (var j = 0; j < identities.length; ++j) {
-            var identity = identities.queryElementAt(j, Components.interfaces.nsIMsgIdentity);
+    let accounts = MailServices.accounts.accounts;
+    for (let i = 0; i < accounts.length; ++i) {
+        let account = accounts.queryElementAt(i, Components.interfaces.nsIMsgAccount);
+        let identities = account.identities;
+        for (let j = 0; j < identities.length; ++j) {
+            let identity = identities.queryElementAt(j, Components.interfaces.nsIMsgIdentity);
             if (!func(identity, account)) {
                 break;
             }
@@ -1685,18 +1698,18 @@ function calIterateEmailIdentities(func) {
  */
 function compareItemContent(aFirstItem, aSecondItem, aIgnoreProps, aIgnoreParams) {
     let ignoreProps = arr2hash(aIgnoreProps ||
-        [ "X-MOZ-GENERATION", "SEQUENCE", "DTSTAMP",
-          "LAST-MODIFIED", "X-MOZ-SEND-INVITATIONS" ]);
+        ["SEQUENCE", "DTSTAMP", "LAST-MODIFIED", "X-MOZ-GENERATION", "X-MICROSOFT-DISALLOW-COUNTER",
+         "X-MOZ-SEND-INVITATIONS", "X-MOZ-SEND-INVITATIONS-UNDISCLOSED"]);
 
     let ignoreParams = aIgnoreParams ||
-        { "ATTENDEE": ["CN"], "ORGANIZER": ["CN"] };
+        { ATTENDEE: ["CN"], ORGANIZER: ["CN"] };
     for (let x in ignoreParams) {
         ignoreParams[x] = arr2hash(ignoreParams[x]);
     }
 
     function arr2hash(arr) {
         let hash = {};
-        for each (let x in arr) {
+        for (let x of arr) {
             hash[x] = true;
         }
         return hash;
@@ -1705,27 +1718,29 @@ function compareItemContent(aFirstItem, aSecondItem, aIgnoreProps, aIgnoreParams
     // This doesn't have to be super correct rfc5545, it just needs to be
     // in the same order
     function normalizeComponent(comp) {
-        let props = [
-            normalizeProperty(prop)
-            for (prop in cal.ical.propertyIterator(comp))
-            if (!(prop.propertyName in ignoreProps))
-        ].sort();
+        let props = [];
+        for (let prop of cal.ical.propertyIterator(comp)) {
+            if (!(prop.propertyName in ignoreProps)) {
+                props.push(normalizeProperty(prop));
+            }
+        }
+        props = props.sort();
 
-        let comps = [
-            normalizeComponent(subcomp)
-            for (subcomp in cal.ical.subcomponentIterator(comp))
-        ].sort();
+        let comps = [];
+        for (let subcomp of cal.ical.subcomponentIterator(comp)) {
+            comps.push(normalizeComponent(subcomp));
+        }
+        comps = comps.sort();
 
         return comp.componentType + props.join("\r\n") + comps.join("\r\n");
     }
 
     function normalizeProperty(prop) {
-        let params = [
-            k + "=" + v
-            for each ([k,v] in cal.ical.paramIterator(prop))
-            if (!(prop.propertyName in ignoreParams) ||
-            !(k in ignoreParams[prop.propertyName]))
-        ].sort();
+        let params = [...cal.ical.paramIterator(prop)]
+            .filter(([k, v]) => !(prop.propertyName in ignoreParams) ||
+                   !(k in ignoreParams[prop.propertyName]))
+            .map(([k, v]) => k + "=" + v)
+            .sort();
 
         return prop.propertyName + ";" +
                params.join(";") + ":" +
@@ -1741,7 +1756,7 @@ function compareItemContent(aFirstItem, aSecondItem, aIgnoreProps, aIgnoreParams
  * function.
  *
  * The comptor function may look as follows for calIDateTime objects.
- *     function comptor(a,b) {
+ *     function comptor(a, b) {
  *         return a.compare(b);
  *     }
  * If no comptor is specified, the default greater-than comptor will be used.
@@ -1758,11 +1773,11 @@ function binarySearch(itemArray, newItem, comptor) {
             return low + (comptor(newItem, itemArray[low]) < 0 ? 0 : 1);
         }
 
-        var mid = Math.floor(low + ((high - low) / 2));
-        var q = comptor(newItem, itemArray[mid]);
-        if (q > 0) {
+        let mid = Math.floor(low + ((high - low) / 2));
+        let cmp = comptor(newItem, itemArray[mid]);
+        if (cmp > 0) {
             return binarySearchInternal(mid + 1, high);
-        } else if (q < 0) {
+        } else if (cmp < 0) {
             return binarySearchInternal(low, mid);
         } else {
             return mid;
@@ -1773,9 +1788,9 @@ function binarySearch(itemArray, newItem, comptor) {
         return -1;
     }
     if (!comptor) {
-        comptor = function defaultComptor(a,b) {
+        comptor = function(a, b) {
             return (a > b) - (a < b);
-        }
+        };
     }
     return binarySearchInternal(0, itemArray.length - 1);
 }
@@ -1805,7 +1820,6 @@ function binaryInsertNode(parentNode, insertNode, aItem, comptor, discardDuplica
         newIndex = 0;
     } else if (!discardDuplicates ||
         comptor(accessor(parentNode.childNodes[Math.min(newIndex, parentNode.childNodes.length - 1)]), aItem) >= 0) {
-
         // Only add the node if duplicates should not be discarded, or if
         // they should and the childNode[newIndex] == node.
         let node = parentNode.childNodes[newIndex];
@@ -1813,7 +1827,7 @@ function binaryInsertNode(parentNode, insertNode, aItem, comptor, discardDuplica
     }
     return newIndex;
 }
-binaryInsertNode.defaultAccessor = function(n) n.item;
+binaryInsertNode.defaultAccessor = n => n.item;
 
 /**
  * Insert an item into the given array, using binary search. See binarySearch
@@ -1828,7 +1842,7 @@ binaryInsertNode.defaultAccessor = function(n) n.item;
  * @return                      The index of the new item.
  */
 function binaryInsert(itemArray, item, comptor, discardDuplicates) {
-    var newIndex = binarySearch(itemArray, item, comptor);
+    let newIndex = binarySearch(itemArray, item, comptor);
 
     if (newIndex < 0) {
         itemArray.push(item);
@@ -1855,7 +1869,7 @@ function getCompositeCalendar() {
     if (getCompositeCalendar.mObject === undefined) {
         getCompositeCalendar.mObject = Components.classes["@mozilla.org/calendar/calendar;1?type=composite"]
                                                  .createInstance(Components.interfaces.calICompositeCalendar);
-        getCompositeCalendar.mObject.prefPrefix = 'calendar-main';
+        getCompositeCalendar.mObject.prefPrefix = "calendar-main";
 
         try {
             if (gCalendarStatusFeedback) {
@@ -1871,16 +1885,27 @@ function getCompositeCalendar() {
 }
 
 /**
- * Search for already open item dialog.
+ * Search for already open item dialog or tab.
  *
- * @param aItem     The item of the dialog to search for.
+ * @param aItem     The item of the dialog or tab to search for.
  */
-function findItemWindow(aItem){
+function findItemWindow(aItem) {
+    // check for existing dialog windows
     let list = Services.wm.getEnumerator("Calendar:EventDialog");
     while (list.hasMoreElements()) {
         let dlg = list.getNext();
+        if (dlg.arguments[0] &&
+            dlg.arguments[0].mode == "modify" &&
+            dlg.arguments[0].calendarEvent &&
+            dlg.arguments[0].calendarEvent.hashId == aItem.hashId) {
+            return dlg;
+        }
+    }
+    // check for existing summary windows
+    list = Services.wm.getEnumerator("Calendar:EventSummaryDialog");
+    while (list.hasMoreElements()) {
+        let dlg = list.getNext();
         if (dlg.calendarItem &&
-            dlg.mode == "modify" &&
             dlg.calendarItem.hashId == aItem.hashId) {
             return dlg;
         }

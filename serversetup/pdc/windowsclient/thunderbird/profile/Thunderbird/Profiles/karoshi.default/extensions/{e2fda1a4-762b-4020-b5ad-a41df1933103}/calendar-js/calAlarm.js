@@ -6,9 +6,9 @@ Components.utils.import("resource://gre/modules/PluralForm.jsm");
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const ALARM_RELATED_ABSOLUTE = Components.interfaces.calIAlarm.ALARM_RELATED_ABSOLUTE;
-const ALARM_RELATED_START = Components.interfaces.calIAlarm.ALARM_RELATED_START;
-const ALARM_RELATED_END = Components.interfaces.calIAlarm.ALARM_RELATED_END;
+var ALARM_RELATED_ABSOLUTE = Components.interfaces.calIAlarm.ALARM_RELATED_ABSOLUTE;
+var ALARM_RELATED_START = Components.interfaces.calIAlarm.ALARM_RELATED_START;
+var ALARM_RELATED_END = Components.interfaces.calIAlarm.ALARM_RELATED_END;
 
 function calAlarm() {
     this.wrappedJSObject = this;
@@ -18,8 +18,8 @@ function calAlarm() {
     this.mAttachments = [];
 }
 
-const calAlarmClassID = Components.ID("{b8db7c7f-c168-4e11-becb-f26c1c4f5f8f}");
-const calAlarmInterfaces = [Components.interfaces.calIAlarm];
+var calAlarmClassID = Components.ID("{b8db7c7f-c168-4e11-becb-f26c1c4f5f8f}");
+var calAlarmInterfaces = [Components.interfaces.calIAlarm];
 calAlarm.prototype = {
 
     mProperties: null,
@@ -50,7 +50,7 @@ calAlarm.prototype = {
      * calIAlarm
      */
 
-    ensureMutable: function cA_ensureMutable() {
+    ensureMutable: function() {
         if (this.mImmutable) {
             throw Components.results.NS_ERROR_OBJECT_IS_IMMUTABLE;
         }
@@ -60,7 +60,7 @@ calAlarm.prototype = {
         return !this.mImmutable;
     },
 
-    makeImmutable: function cA_makeImmutable() {
+    makeImmutable: function() {
         if (this.mImmutable) {
             return;
         }
@@ -69,7 +69,7 @@ calAlarm.prototype = {
                                "mOffset",
                                "mDuration",
                                "mLastAck"];
-        for each (let member in objectMembers) {
+        for (let member of objectMembers) {
             if (this[member] && this[member].isMutable) {
                 this[member].makeImmutable();
             }
@@ -79,21 +79,21 @@ calAlarm.prototype = {
         let e = this.mProperties.enumerator;
         while (e.hasMoreElements()) {
             let prop = e.getNext();
-            let val = prop.value;
 
             if (prop.value instanceof Components.interfaces.calIDateTime) {
-                if (prop.value.isMutable)
+                if (prop.value.isMutable) {
                     prop.value.makeImmutable();
+                }
             }
         }
 
         this.mImmutable = true;
     },
 
-    clone: function cA_clone() {
-        let m = new calAlarm();
+    clone: function() {
+        let cloned = new calAlarm();
 
-        m.mImmutable = false;
+        cloned.mImmutable = false;
 
         const simpleMembers = ["mAction",
                                "mSummary",
@@ -109,34 +109,34 @@ calAlarm.prototype = {
                                "mDuration",
                                "mLastAck"];
 
-        for each (let member in simpleMembers) {
-            m[member] = this[member];
+        for (let member of simpleMembers) {
+            cloned[member] = this[member];
         }
 
-        for each (let member in arrayMembers) {
+        for (let member of arrayMembers) {
             let newArray = [];
-            for each (let oldElem in this[member]) {
+            for (let oldElem of this[member]) {
                 newArray.push(oldElem.clone());
             }
-            m[member] = newArray;
+            cloned[member] = newArray;
         }
 
-        for each (let member in objectMembers) {
+        for (let member of objectMembers) {
             if (this[member] && this[member].clone) {
-                m[member] = this[member].clone();
+                cloned[member] = this[member].clone();
             } else {
-                m[member] = this[member];
+                cloned[member] = this[member];
             }
         }
 
         // X-Props
-        m.mProperties = new calPropertyBag();
-        for each (let [name, value] in this.mProperties) {
+        cloned.mProperties = new calPropertyBag();
+        for (let [name, value] of this.mProperties) {
             if (value instanceof Components.interfaces.calIDateTime) {
                 value = value.clone();
             }
 
-            m.mProperties.setProperty(name, value);
+            cloned.mProperties.setProperty(name, value);
 
             let propBucket = this.mPropertyParams[name];
             if (propBucket) {
@@ -144,10 +144,10 @@ calAlarm.prototype = {
                 for (let param in propBucket) {
                     newBucket[param] = propBucket[param];
                 }
-                m.mPropertyParams[name] = newBucket;
+                cloned.mPropertyParams[name] = newBucket;
             }
         }
-        return m;
+        return cloned;
     },
 
 
@@ -240,7 +240,7 @@ calAlarm.prototype = {
         if (aValue === null) {
             this.mRepeat = null;
         } else {
-            this.mRepeat = parseInt(aValue);
+            this.mRepeat = parseInt(aValue, 10);
             if (isNaN(this.mRepeat)) {
                 throw Components.results.NS_ERROR_INVALID_ARG;
             }
@@ -279,7 +279,7 @@ calAlarm.prototype = {
         return alarmDate;
     },
 
-    getAttendees: function getAttendees(aCount) {
+    getAttendees: function(aCount) {
         let attendees;
         if (this.action == "AUDIO" || this.action == "DISPLAY") {
             attendees = [];
@@ -290,7 +290,7 @@ calAlarm.prototype = {
         return attendees;
     },
 
-    addAttendee: function addAttendee(aAttendee) {
+    addAttendee: function(aAttendee) {
         // Make sure its not duplicate
         this.deleteAttendee(aAttendee);
 
@@ -303,7 +303,7 @@ calAlarm.prototype = {
         this.mAttendees.push(aAttendee);
     },
 
-    deleteAttendee: function deleteAttendee(aAttendee) {
+    deleteAttendee: function(aAttendee) {
         let deleteId = aAttendee.id;
         for (let i = 0; i < this.mAttendees.length; i++) {
             if (this.mAttendees[i].id == deleteId) {
@@ -313,11 +313,11 @@ calAlarm.prototype = {
         }
     },
 
-    clearAttendees: function clearAttendees() {
+    clearAttendees: function() {
         this.mAttendees = [];
     },
 
-    getAttachments: function getAttachments(aCount) {
+    getAttachments: function(aCount) {
         let attachments;
         if (this.action == "AUDIO") {
             attachments = (this.mAttachments.length ? [this.mAttachments[0]] : []);
@@ -330,7 +330,7 @@ calAlarm.prototype = {
         return attachments;
     },
 
-    addAttachment: function addAttachment(aAttachment) {
+    addAttachment: function(aAttachment) {
         // Make sure its not duplicate
         this.deleteAttachment(aAttachment);
 
@@ -345,7 +345,7 @@ calAlarm.prototype = {
         this.mAttachments.push(aAttachment);
     },
 
-    deleteAttachment: function deleteAttachment(aAttachment) {
+    deleteAttachment: function(aAttachment) {
         let deleteHash = aAttachment.hashId;
         for (let i = 0; i < this.mAttachments.length; i++) {
             if (this.mAttachments[i].hashId == deleteHash) {
@@ -355,7 +355,7 @@ calAlarm.prototype = {
         }
     },
 
-    clearAttachments: function clearAttachments() {
+    clearAttachments: function() {
         this.mAttachments = [];
     },
 
@@ -423,14 +423,8 @@ calAlarm.prototype = {
         if (this.action == "EMAIL" && !this.getAttendees({}).length) {
             throw Components.results.NS_ERROR_NOT_INITIALIZED;
         } */
-        for each (let attendee in this.getAttendees({})) {
+        for (let attendee of this.getAttendees({})) {
             comp.addProperty(attendee.icalProperty);
-        }
-
-        // Set up attachments (REQUIRED for AUDIO and EMAIL types, there MUST
-        // NOT be more than one for AUDIO.
-        if (this.action == "AUDIO" && this.getAttachments({}).length != 1) {
-            throw Components.results.NS_ERROR_NOT_INITIALIZED;
         }
 
         /* TODO should we be strict here?
@@ -438,7 +432,7 @@ calAlarm.prototype = {
             throw Components.results.NS_ERROR_NOT_INITIALIZED;
         } */
 
-        for each (let attachment in this.getAttachments({})) {
+        for (let attachment of this.getAttachments({})) {
             comp.addProperty(attachment.icalProperty);
         }
 
@@ -470,7 +464,8 @@ calAlarm.prototype = {
         }
 
         // Set up X-Props. mProperties contains only non-promoted props
-        for (let propName in this.mProperties) {
+        // eslint-disable-next-line array-bracket-spacing
+        for (let [propName, ] of this.mProperties) {
             let icalprop = icssvc.createIcalProperty(propName);
             icalprop.value = this.mProperties.getProperty(propName);
 
@@ -481,10 +476,14 @@ calAlarm.prototype = {
                     try {
                         icalprop.setParameter(paramName,
                                               propBucket[paramName]);
-                    } catch (e if e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
-                        // Illegal values should be ignored, but we could log them if
-                        // the user has enabled logging.
-                        cal.LOG("Warning: Invalid alarm parameter value " + paramName + "=" + propBucket[paramName]);
+                    } catch (e) {
+                        if (e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
+                            // Illegal values should be ignored, but we could log them if
+                            // the user has enabled logging.
+                            cal.LOG("Warning: Invalid alarm parameter value " + paramName + "=" + propBucket[paramName]);
+                        } else {
+                            throw e;
+                        }
                     }
                 }
             }
@@ -514,7 +513,7 @@ calAlarm.prototype = {
         }
 
         if (triggerProp) {
-            if (triggerProp.getParameter("VALUE") == "DATE-TIME")  {
+            if (triggerProp.getParameter("VALUE") == "DATE-TIME") {
                 this.mAbsoluteDate = triggerProp.valueAsDatetime;
                 this.related = ALARM_RELATED_ABSOLUTE;
             } else {
@@ -539,7 +538,7 @@ calAlarm.prototype = {
 
         // Set up attendees
         this.clearAttendees();
-        for (let attendeeProp in cal.ical.propertyIterator(aComp, "ATTENDEE")) {
+        for (let attendeeProp of cal.ical.propertyIterator(aComp, "ATTENDEE")) {
             let attendee = cal.createAttendee();
             attendee.icalProperty = attendeeProp;
             this.addAttendee(attendee);
@@ -547,7 +546,7 @@ calAlarm.prototype = {
 
         // Set up attachments
         this.clearAttachments();
-        for (let attachProp in cal.ical.propertyIterator(aComp, "ATTACH")) {
+        for (let attachProp of cal.ical.propertyIterator(aComp, "ATTACH")) {
             let attach = cal.createAttachment();
             attach.icalProperty = attachProp;
             this.addAttachment(attach);
@@ -568,15 +567,14 @@ calAlarm.prototype = {
         this.mPropertyParams = {};
 
         // Other properties
-        for (let prop in cal.ical.propertyIterator(aComp)) {
+        for (let prop of cal.ical.propertyIterator(aComp)) {
             if (!this.promotedProps[prop.propertyName]) {
                 this.setProperty(prop.propertyName, prop.value);
 
-                for (let paramName in cal.ical.paramIterator(prop)) {
+                for (let [paramName, param] of cal.ical.paramIterator(prop)) {
                     if (!(prop.propertyName in this.mPropertyParams)) {
                         this.mPropertyParams[prop.propertyName] = {};
                     }
-                    let param = prop.getParameter(paramName);
                     this.mPropertyParams[prop.propertyName][paramName] = param;
                 }
             }
@@ -584,11 +582,11 @@ calAlarm.prototype = {
         return aComp;
     },
 
-    hasProperty: function cA_hasProperty(aName) {
+    hasProperty: function(aName) {
         return (this.getProperty(aName.toUpperCase()) != null);
     },
 
-    getProperty: function cA_getProperty(aName) {
+    getProperty: function(aName) {
         let name = aName.toUpperCase();
         if (name in this.promotedProps) {
             return this[this.promotedProps[name]];
@@ -597,7 +595,7 @@ calAlarm.prototype = {
         }
     },
 
-    setProperty: function cA_setProperty(aName, aValue) {
+    setProperty: function(aName, aValue) {
         this.ensureMutable();
         let name = aName.toUpperCase();
         if (name in this.promotedProps) {
@@ -608,7 +606,7 @@ calAlarm.prototype = {
         return aValue;
     },
 
-    deleteProperty: function cA_deleteProperty(aName) {
+    deleteProperty: function(aName) {
         this.ensureMutable();
         let name = aName.toUpperCase();
         if (name in this.promotedProps) {
@@ -622,7 +620,17 @@ calAlarm.prototype = {
         return this.mProperties.enumerator;
     },
 
-    toString: function cA_toString(aItem) {
+    toString: function(aItem) {
+        function getItemBundleStringName(aPrefix) {
+            if (!aItem || isEvent(aItem)) {
+                return aPrefix + "Event";
+            } else if (isToDo(aItem)) {
+                return aPrefix + "Task";
+            } else {
+                return aPrefix;
+            }
+        }
+
         if (this.related == ALARM_RELATED_ABSOLUTE && this.mAbsoluteDate) {
             // this is an absolute alarm. Use the calendar default timezone and
             // format it.
@@ -630,16 +638,6 @@ calAlarm.prototype = {
             let formatDate = this.mAbsoluteDate.getInTimezone(cal.calendarDefaultTimezone());
             return formatter.formatDateTime(formatDate);
         } else if (this.related != ALARM_RELATED_ABSOLUTE && this.mOffset) {
-            function getItemBundleStringName(aPrefix) {
-                if (!aItem || isEvent(aItem)) {
-                    return aPrefix + "Event";
-                } else if (isToDo(aItem)) {
-                    return aPrefix + "Task";
-                } else {
-                    return aPrefix;
-                }
-            }
-
             // Relative alarm length
             let alarmlen = Math.abs(this.mOffset.inSeconds / 60);
             if (alarmlen == 0) {

@@ -8,12 +8,13 @@ Components.utils.import("resource://calendar/modules/calAuthUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Preferences.jsm");
+Components.utils.import("resource:///modules/iteratorUtils.jsm");
 
 /*
  * Provider helper code
  */
 
-EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
+this.EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
 
 /**
  * Prepare HTTP channel with standard request headers and upload
@@ -29,8 +30,13 @@ EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import 
  * @param aNotificationCallbacks     Calendar using channel
  * @param aExisting                  An existing channel to modify (optional)
  */
-cal.prepHttpChannel = function calPrepHttpChannel(aUri, aUploadData, aContentType, aNotificationCallbacks, aExisting) {
-    let channel = aExisting || Services.io.newChannelFromURI(aUri);
+cal.prepHttpChannel = function(aUri, aUploadData, aContentType, aNotificationCallbacks, aExisting) {
+    let channel = aExisting || Services.io.newChannelFromURI2(aUri,
+                                                              null,
+                                                              Services.scriptSecurityManager.getSystemPrincipal(),
+                                                              null,
+                                                              Components.interfaces.nsILoadInfo.SEC_NORMAL,
+                                                              Components.interfaces.nsIContentPolicy.TYPE_OTHER);
     let httpchannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
 
     httpchannel.setRequestHeader("Accept", "text/xml", false);
@@ -66,17 +72,17 @@ cal.prepHttpChannel = function calPrepHttpChannel(aUri, aUploadData, aContentTyp
  * @param aChannel          channel for request
  * @param aListener         listener for method completion
  */
-cal.sendHttpRequest = function calSendHttpRequest(aStreamLoader, aChannel, aListener) {
+cal.sendHttpRequest = function(aStreamLoader, aChannel, aListener) {
     aStreamLoader.init(aListener);
     aChannel.asyncOpen(aStreamLoader, aChannel);
 };
 
-cal.createStreamLoader = function calCreateStreamLoader() {
+cal.createStreamLoader = function() {
     return Components.classes["@mozilla.org/network/stream-loader;1"]
                      .createInstance(Components.interfaces.nsIStreamLoader);
 };
 
-cal.convertByteArray = function calConvertByteArray(aResult, aResultLength, aCharset, aThrow) {
+cal.convertByteArray = function(aResult, aResultLength, aCharset, aThrow) {
     try {
         let resultConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
                                         .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
@@ -108,7 +114,7 @@ cal.convertByteArray = function calConvertByteArray(aResult, aResultLength, aCha
  *
  * @param aIID      The interface ID to return
  */
-cal.InterfaceRequestor_getInterface = function calInterfaceRequestor_getInterface(aIID) {
+cal.InterfaceRequestor_getInterface = function(aIID) {
     try {
         // Try to query the this object for the requested interface but don't
         // throw if it fails since that borks the network code.
@@ -139,13 +145,13 @@ cal.InterfaceRequestor_getInterface = function calInterfaceRequestor_getInterfac
  * Bad Certificate Handler for Network Requests. Shows the Network Exception
  * Dialog if a certificate Problem occurs.
  */
-cal.BadCertHandler = function calBadCertHandler(thisProvider) {
+cal.BadCertHandler = function(thisProvider) {
     this.thisProvider = thisProvider;
 };
 cal.BadCertHandler.prototype = {
     QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIBadCertListener2]),
 
-    notifyCertProblem: function cBCL_notifyCertProblem(socketInfo, status, targetSite) {
+    notifyCertProblem: function(socketInfo, status, targetSite) {
         // Unfortunately we can't pass js objects using the window watcher, so
         // we'll just take the first available calendar window. We also need to
         // do this on a timer so that the modal window doesn't block the
@@ -156,10 +162,10 @@ cal.BadCertHandler.prototype = {
             thisProvider: this.thisProvider,
             notify: function(timer) {
                 let params = {
-                  exceptionAdded: false,
-                  sslStatus : status,
-                  prefetchCert: true,
-                  location: targetSite
+                    exceptionAdded: false,
+                    sslStatus: status,
+                    prefetchCert: true,
+                    location: targetSite
                 };
                 calWindow.openDialog("chrome://pippki/content/exceptionDialog.xul",
                                      "",
@@ -191,8 +197,8 @@ cal.BadCertHandler.prototype = {
  * @param aEnd           The end of the interval.
  * @return               The fresh calIFreeBusyInterval.
  */
-cal.FreeBusyInterval = function calFreeBusyInterval(aCalId, aFreeBusyType, aStart, aEnd) {
-    this.calId = aCalId
+cal.FreeBusyInterval = function(aCalId, aFreeBusyType, aStart, aEnd) {
+    this.calId = aCalId;
     this.interval = Components.classes["@mozilla.org/calendar/period;1"]
                               .createInstance(Components.interfaces.calIPeriod);
     this.interval.start = aStart;
@@ -210,7 +216,7 @@ cal.FreeBusyInterval.prototype = {
 /**
  * Gets the iTIP/iMIP transport if the passed calendar has configured email.
  */
-cal.getImipTransport = function calGetImipTransport(aCalendar) {
+cal.getImipTransport = function(aCalendar) {
     // assure an identity is configured for the calendar
     return (aCalendar.getProperty("imip.identity")
             ? Components.classes["@mozilla.org/calendar/itip-transport;1?type=email"]
@@ -225,67 +231,65 @@ cal.getImipTransport = function calGetImipTransport(aCalendar) {
  * @param outAccount    Optional out value for account
  * @return              The configured identity
  */
-cal.getEmailIdentityOfCalendar = function calGetEmailIdentityOfCalendar(aCalendar, outAccount) {
+cal.getEmailIdentityOfCalendar = function(aCalendar, outAccount) {
     cal.ASSERT(aCalendar, "no calendar!", Components.results.NS_ERROR_INVALID_ARG);
     let key = aCalendar.getProperty("imip.identity.key");
-    if (key !== null) {
+    if (key === null) { // take default account/identity:
+        let findIdentity = function(account) {
+            if (account && account.identities.length) {
+                return account.defaultIdentity ||
+                       account.identities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
+            }
+            return null;
+        };
+
+        let foundAccount = (function() {
+            try {
+                return MailServices.accounts.defaultAccount;
+            } catch (e) {
+                return null;
+            }
+        })();
+        let foundIdentity = findIdentity(foundAccount);
+
+        if (!foundAccount || !foundIdentity) {
+            let accounts = MailServices.accounts.accounts;
+            for (let account of fixIterator(accounts, Components.interfaces.nsIMsgAccount)) {
+                let identity = findIdentity(account);
+
+                if (account && identity) {
+                    foundAccount = account;
+                    foundIdentity = identity;
+                    break;
+                }
+            }
+        }
+
+        if (outAccount) {
+            outAccount.value = foundIdentity ? foundAccount : null;
+        }
+        return foundIdentity;
+    } else {
         if (key.length == 0) { // i.e. "None"
             return null;
         }
         let identity = null;
-        cal.calIterateEmailIdentities(
-            function(identity_, account) {
-                if (identity_.key == key) {
-                    identity = identity_;
-                    if (outAccount) {
-                        outAccount.value = account;
-                    }
+        cal.calIterateEmailIdentities((identity_, account) => {
+            if (identity_.key == key) {
+                identity = identity_;
+                if (outAccount) {
+                    outAccount.value = account;
                 }
-                return (identity_.key != key);
-            });
+            }
+            return (identity_.key != key);
+        });
+
         if (!identity) {
             // dangling identity:
             cal.WARN("Calendar " + (aCalendar.uri ? aCalendar.uri.spec : aCalendar.id) +
                      " has a dangling E-Mail identity configured.");
         }
         return identity;
-    } else { // take default account/identity:
-
-        let accounts = MailServices.accounts.accounts;
-        let account = null;
-        let identity = null;
-        try {
-            account = MailServices.accounts.defaultAccount;
-        } catch (exc) {}
-
-        for (let i = 0; accounts && (i < accounts.length) && (!account || !identity); ++i) {
-            if (!account) { // Pick an account only if none was set (i.e there is no default account)
-                try {
-                  account = accounts.queryElementAt(i, Components.interfaces.nsIMsgAccount);
-                } catch (exc) {
-                  account = null;
-                }
-            }
-
-            if (account && account.identities.length) { // Pick an identity
-                identity = account.defaultIdentity;
-                if (!identity) { // there is no default identity, use the first
-                    identity = account.identities.queryElementAt(0, Components.interfaces.nsIMsgIdentity);
-                }
-            } else { // If this account has no identities, continue to the next account.
-                account = null;
-            }
-        }
-
-        if (identity) {
-            // If an identity was set above, set the account out parameter
-            // and return the identity
-            if (outAccount) {
-                outAccount.value = account;
-            }
-            return identity;
-        }
-        return null;
     }
 };
 
@@ -298,8 +302,7 @@ cal.getEmailIdentityOfCalendar = function calGetEmailIdentityOfCalendar(aCalenda
  * @param aTimezone     The timezone this date string is most likely in
  * @return              A calIDateTime object
  */
-cal.fromRFC3339 = function fromRFC3339(aStr, aTimezone) {
-
+cal.fromRFC3339 = function(aStr, aTimezone) {
     // XXX I have not covered leapseconds (matches[8]), this might need to
     // be done. The only reference to leap seconds I found is bug 227329.
     //
@@ -308,18 +311,18 @@ cal.fromRFC3339 = function fromRFC3339(aStr, aTimezone) {
     let dateTime = cal.createDateTime();
 
     // Killer regex to parse RFC3339 dates
-    var re = new RegExp("^([0-9]{4})-([0-9]{2})-([0-9]{2})" +
+    let re = new RegExp("^([0-9]{4})-([0-9]{2})-([0-9]{2})" +
         "([Tt]([0-9]{2}):([0-9]{2}):([0-9]{2})(\\.[0-9]+)?)?" +
         "(([Zz]|([+-])([0-9]{2}):([0-9]{2})))?");
 
-    var matches = re.exec(aStr);
+    let matches = re.exec(aStr);
 
     if (!matches) {
         return null;
     }
 
     // Set usual date components
-    dateTime.isDate = (matches[4]==null);
+    dateTime.isDate = (matches[4] == null);
 
     dateTime.year = matches[1];
     dateTime.month = matches[2] - 1; // Jan is 0
@@ -336,17 +339,15 @@ cal.fromRFC3339 = function fromRFC3339(aStr, aTimezone) {
         // If the dates timezone is "Z" or "z", then this is UTC, no matter
         // what timezone was passed
         dateTime.timezone = cal.UTC();
-
     } else if (matches[9] == null) {
         // We have no timezone info, only a date. We have no way to
         // know what timezone we are in, so lets assume we are in the
         // timezone of our local calendar, or whatever was passed.
 
         dateTime.timezone = aTimezone;
-
     } else {
         let offset_in_s = (matches[11] == "-" ? -1 : 1) *
-            ( (matches[12] * 3600) + (matches[13] * 60) );
+            ((matches[12] * 3600) + (matches[13] * 60));
 
         // try local timezone first
         dateTime.timezone = aTimezone;
@@ -373,7 +374,7 @@ cal.fromRFC3339 = function fromRFC3339(aStr, aTimezone) {
             if (!dateTime.isDate) {
                 dateTime.hour += (matches[11] == "-" ? -1 : 1) * matches[12];
                 dateTime.minute += (matches[11] == "-" ? -1 : 1) * matches[13];
-             }
+            }
         }
     }
     return dateTime;
@@ -386,20 +387,19 @@ cal.fromRFC3339 = function fromRFC3339(aStr, aTimezone) {
  * @param aDateTime     The calIDateTime object
  * @return              The RFC3339 compliant date string
  */
-cal.toRFC3339 = function toRFC3339(aDateTime) {
-
+cal.toRFC3339 = function(aDateTime) {
     if (!aDateTime) {
         return "";
     }
 
-    var full_tzoffset = aDateTime.timezoneOffset;
-    var tzoffset_hr = Math.floor(Math.abs(full_tzoffset) / 3600);
+    let full_tzoffset = aDateTime.timezoneOffset;
+    let tzoffset_hr = Math.floor(Math.abs(full_tzoffset) / 3600);
 
-    var tzoffset_mn = ((Math.abs(full_tzoffset) / 3600).toFixed(2) -
+    let tzoffset_mn = ((Math.abs(full_tzoffset) / 3600).toFixed(2) -
                        tzoffset_hr) * 60;
 
-    var str = aDateTime.year + "-" +
-        ("00" + (aDateTime.month + 1)).substr(-2) +  "-" +
+    let str = aDateTime.year + "-" +
+        ("00" + (aDateTime.month + 1)).substr(-2) + "-" +
         ("00" + aDateTime.day).substr(-2);
 
     // Time and Timezone extension
@@ -423,11 +423,13 @@ cal.toRFC3339 = function toRFC3339(aDateTime) {
     return str;
 };
 
-cal.promptOverwrite = function cal_promptOverwrite(aMode, aItem) {
+cal.promptOverwrite = function(aMode, aItem) {
     let window = cal.getCalendarWindow();
-    let args = { item: aItem,
-                 mode: aMode,
-                 overwrite: false };
+    let args = {
+        item: aItem,
+        mode: aMode,
+        overwrite: false
+    };
 
     window.openDialog("chrome://calendar/content/calendar-conflicts-dialog.xul",
                       "calendarConflictsDialog",
@@ -440,30 +442,30 @@ cal.promptOverwrite = function cal_promptOverwrite(aMode, aItem) {
 /**
  * Observer bag implementation taking care to replay open batch notifications.
  */
-cal.ObserverBag = function calObserverBag(iid) {
+cal.ObserverBag = function(iid) {
     this.init(iid);
 };
 cal.ObserverBag.prototype = {
     __proto__: cal.calListenerBag.prototype,
 
     mBatchCount: 0,
-    notify: function calObserverBag_notify(func, args) {
+    notify: function(func, args) {
         switch (func) {
             case "onStartBatch":
-                 ++this.mBatchCount;
-                 break;
+                ++this.mBatchCount;
+                break;
             case "onEndBatch":
-                 --this.mBatchCount;
-                 break;
+                --this.mBatchCount;
+                break;
         }
         return this.__proto__.__proto__.notify.apply(this, arguments);
     },
 
-    add: function calObserverBag_add(iface) {
+    add: function(iface) {
         if (this.__proto__.__proto__.add.apply(this, arguments) && (this.mBatchCount > 0)) {
             // Replay batch notifications, because the onEndBatch notifications are yet to come.
             // We may think about doing the reverse on remove, though I currently see no need:
-            for (var i = this.mBatchCount; i--;) {
+            for (let i = this.mBatchCount; i--;) {
                 iface.onStartBatch();
             }
         }
@@ -475,7 +477,7 @@ cal.ObserverBag.prototype = {
  *
  * @see e.g. providers/gdata
  */
-cal.ProviderBase = function calProviderBase() {
+cal.ProviderBase = function() {
     cal.ASSERT("This prototype should only be inherited!");
 };
 cal.ProviderBase.mTransientProperties = {
@@ -500,7 +502,7 @@ cal.ProviderBase.prototype = {
     mObservers: null,
     mProperties: null,
 
-    initProviderBase: function cPB_initProviderBase() {
+    initProviderBase: function() {
         this.wrappedJSObject = this;
         this.mObservers = new cal.ObserverBag(Components.interfaces.calIObserver);
         this.mProperties = {};
@@ -526,25 +528,25 @@ cal.ProviderBase.prototype = {
         // make all properties persistent that have been set so far:
         for (let aName in this.mProperties) {
             if (!cal.ProviderBase.mTransientProperties[aName]) {
-                let aValue = this.mProperties[aName];
-                if (aValue !== null) {
-                    calMgr.setCalendarPref_(this, aName, aValue);
+                let value = this.mProperties[aName];
+                if (value !== null) {
+                    calMgr.setCalendarPref_(this, aName, value);
                 }
             }
         }
 
-        let this_ = this;
-        function takeOverIfNotPresent(oldPref, newPref, dontDeleteOldPref) {
-            let val = calMgr.getCalendarPref_(this_, oldPref);
+        let takeOverIfNotPresent = (oldPref, newPref, dontDeleteOldPref) => {
+            let val = calMgr.getCalendarPref_(this, oldPref);
             if (val !== null) {
                 if (!dontDeleteOldPref) {
-                    calMgr.deleteCalendarPref_(this_, oldPref);
+                    calMgr.deleteCalendarPref_(this, oldPref);
                 }
-                if (calMgr.getCalendarPref_(this_, newPref) === null) {
-                    calMgr.setCalendarPref_(this_, newPref, val);
+                if (calMgr.getCalendarPref_(this, newPref) === null) {
+                    calMgr.setCalendarPref_(this, newPref, val);
                 }
             }
-        }
+        };
+
         // takeover lightning calendar visibility from 0.5:
         takeOverIfNotPresent("lightning-main-in-composite", "calendar-main-in-composite");
         takeOverIfNotPresent("lightning-main-default", "calendar-main-default");
@@ -608,13 +610,13 @@ cal.ProviderBase.prototype = {
 
     // void startBatch();
     mBatchCount: 0,
-    startBatch: function cPB_startBatch() {
+    startBatch: function() {
         if (this.mBatchCount++ == 0) {
             this.mObservers.notify("onStartBatch");
         }
     },
 
-    endBatch: function cPB_endBatch() {
+    endBatch: function() {
         if (this.mBatchCount > 0) {
             if (--this.mBatchCount == 0) {
                 this.mObservers.notify("onEndBatch");
@@ -624,11 +626,7 @@ cal.ProviderBase.prototype = {
         }
     },
 
-    notifyPureOperationComplete: function cPB_notifyPureOperationComplete(aListener,
-                                                                          aStatus,
-                                                                          aOperationType,
-                                                                          aId,
-                                                                          aDetail) {
+    notifyPureOperationComplete: function(aListener, aStatus, aOperationType, aId, aDetail) {
         if (aListener) {
             try {
                 aListener.onOperationComplete(this.superCalendar, aStatus, aOperationType, aId, aDetail);
@@ -636,15 +634,9 @@ cal.ProviderBase.prototype = {
                 cal.ERROR(exc);
             }
         }
-
     },
 
-    notifyOperationComplete: function cPB_notifyOperationComplete(aListener,
-                                                                  aStatus,
-                                                                  aOperationType,
-                                                                  aId,
-                                                                  aDetail,
-                                                                  aExtraMessage) {
+    notifyOperationComplete: function(aListener, aStatus, aOperationType, aId, aDetail, aExtraMessage) {
         this.notifyPureOperationComplete(aListener, aStatus, aOperationType, aId, aDetail);
 
         if (aStatus == Components.interfaces.calIErrors.OPERATION_CANCELLED) {
@@ -666,7 +658,7 @@ cal.ProviderBase.prototype = {
     },
 
     // for convenience also callable with just an exception
-    notifyError: function cPB_notifyError(aErrNo, aMessage) {
+    notifyError: function(aErrNo, aMessage) {
         if (aErrNo == Components.interfaces.calIErrors.OPERATION_CANCELLED) {
             return; // cancellation doesn't change current status, no notification
         }
@@ -689,12 +681,12 @@ cal.ProviderBase.prototype = {
     },
 
     // nsIVariant getProperty(in AUTF8String aName);
-    getProperty: function cPB_getProperty(aName) {
+    getProperty: function(aName) {
         switch (aName) {
             case "itip.transport": // iTIP/iMIP default:
                 return cal.getImipTransport(this);
             case "itip.notify-replies": // iTIP/iMIP default:
-                 return Preferences.get("calendar.itip.notify-replies", false);
+                return Preferences.get("calendar.itip.notify-replies", false);
             // temporary hack to get the uncached calendar instance:
             case "cache.uncachedCalendar":
                 return this;
@@ -753,7 +745,7 @@ cal.ProviderBase.prototype = {
     },
 
     // void setProperty(in AUTF8String aName, in nsIVariant aValue);
-    setProperty: function cPB_setProperty(aName, aValue) {
+    setProperty: function(aName, aValue) {
         let oldValue = this.getProperty(aName);
         if (oldValue != aValue) {
             this.mProperties[aName] = aValue;
@@ -761,8 +753,8 @@ cal.ProviderBase.prototype = {
                 case "imip.identity.key": // invalidate identity and account object if key is set:
                     delete this.mProperties["imip.identity"];
                     delete this.mProperties["imip.account"];
-                    delete this.mProperties["organizerId"];
-                    delete this.mProperties["organizerCN"];
+                    delete this.mProperties.organizerId;
+                    delete this.mProperties.organizerCN;
                     break;
             }
             if (!this.transientProperties &&
@@ -777,29 +769,29 @@ cal.ProviderBase.prototype = {
     },
 
     // void deleteProperty(in AUTF8String aName);
-    deleteProperty: function cPB_deleteProperty(aName) {
+    deleteProperty: function(aName) {
         this.mObservers.notify("onPropertyDeleting", [this.superCalendar, aName]);
         delete this.mProperties[aName];
         cal.getCalendarManager().deleteCalendarPref_(this, aName);
     },
 
     // calIOperation refresh
-    refresh: function cPB_refresh() {
+    refresh: function() {
         return null;
     },
 
     // void addObserver( in calIObserver observer );
-    addObserver: function cPB_addObserver(aObserver) {
+    addObserver: function(aObserver) {
         this.mObservers.add(aObserver);
     },
 
     // void removeObserver( in calIObserver observer );
-    removeObserver: function cPB_removeObserver(aObserver) {
+    removeObserver: function(aObserver) {
         this.mObservers.remove(aObserver);
     },
 
     // calISchedulingSupport: Implementation corresponding to our iTIP/iMIP support
-    isInvitation: function cPB_isInvitation(aItem) {
+    isInvitation: function(aItem) {
         if (!this.mACLEntry || !this.mACLEntry.hasAccessControl) {
             // No ACL support - fallback to the old method
             let id = this.getProperty("organizerId");
@@ -820,7 +812,9 @@ cal.ProviderBase.prototype = {
             // to a recurring event. We check the parent item.
             if (aItem.parentItem) {
                 org = aItem.parentItem.organizer;
-                if (!org || !org.id) return false;
+                if (!org || !org.id) {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -832,17 +826,19 @@ cal.ProviderBase.prototype = {
         let ownerIdentities = this.mACLEntry.getOwnerIdentities({});
         for (let i = 0; i < ownerIdentities.length; i++) {
             let identity = "mailto:" + ownerIdentities[i].email.toLowerCase();
-            if (org.id.toLowerCase() == identity)
+            if (org.id.toLowerCase() == identity) {
                 return false;
+            }
 
-            if (aItem.getAttendeeById(identity) != null)
+            if (aItem.getAttendeeById(identity) != null) {
                 return true;
+            }
         }
 
         return false;
     },
 
-    getInvitedAttendee: function cPB_getInvitedAttendee(aItem) {
+    getInvitedAttendee: function(aItem) {
         let id = this.getProperty("organizerId");
         let attendee = (id ? aItem.getAttendeeById(id) : null);
 
@@ -860,7 +856,7 @@ cal.ProviderBase.prototype = {
         return attendee;
     },
 
-    canNotify: function cPB_canNotify(aMethod, aItem) {
+    canNotify: function(aMethod, aItem) {
         return false; // use outbound iTIP for all
     }
 };

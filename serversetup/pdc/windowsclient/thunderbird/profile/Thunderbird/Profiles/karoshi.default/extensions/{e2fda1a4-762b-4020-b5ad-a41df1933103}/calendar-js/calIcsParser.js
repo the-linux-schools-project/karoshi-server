@@ -8,13 +8,13 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 function calIcsParser() {
     this.wrappedJSObject = this;
-    this.mItems = new Array();
-    this.mParentlessItems = new Array();
-    this.mComponents = new Array();
-    this.mProperties = new Array();
+    this.mItems = [];
+    this.mParentlessItems = [];
+    this.mComponents = [];
+    this.mProperties = [];
 }
-const calIcsParserClassID = Components.ID("{6fe88047-75b6-4874-80e8-5f5800f14984}");
-const calIcsParserInterfaces = [Components.interfaces.calIIcsParser];
+var calIcsParserClassID = Components.ID("{6fe88047-75b6-4874-80e8-5f5800f14984}");
+var calIcsParserInterfaces = [Components.interfaces.calIIcsParser];
 calIcsParser.prototype = {
     classID: calIcsParserClassID,
     QueryInterface: XPCOMUtils.generateQI(calIcsParserInterfaces),
@@ -26,22 +26,29 @@ calIcsParser.prototype = {
         flags: Components.interfaces.nsIClassInfo.THREADSAFE
     }),
 
-    processIcalComponent: function ip_processIcalComponent(rootComp, aAsyncParsing) {
+    processIcalComponent: function(rootComp, aAsyncParsing) {
         let calComp;
         // libical returns the vcalendar component if there is just one vcalendar.
         // If there are multiple vcalendars, it returns an xroot component, with
         // vcalendar children. We need to handle both cases.
         if (rootComp) {
-            if (rootComp.componentType == 'VCALENDAR') {
+            if (rootComp.componentType == "VCALENDAR") {
                 calComp = rootComp;
             } else {
-                calComp = rootComp.getFirstSubcomponent('VCALENDAR');
+                calComp = rootComp.getFirstSubcomponent("VCALENDAR");
             }
         }
 
         if (!calComp) {
-            cal.ERROR("Parser Error. Could not find 'VCALENDAR' component: \n" +
-                      rootComp + "\nStack: \n" + cal.STACK(10));
+            let message = "Parser Error. Could not find 'VCALENDAR' component.\n";
+            try {
+                // we try to also provide the parsed component - if that fails due to an error in
+                // libical, we append the error message of the caught exception, which includes
+                // already a stack trace.
+                cal.ERROR(message + rootComp + "\n" + cal.STACK(10));
+            } catch (e) {
+                cal.ERROR(message + e);
+            }
         }
 
         let self = this;
@@ -49,21 +56,22 @@ calIcsParser.prototype = {
 
         while (calComp) {
             // Get unknown properties from the VCALENDAR
-            this.mProperties = this.mProperties.concat(
-                [ prop for (prop in cal.ical.propertyIterator(calComp))
-                        if (prop.propertyName != "VERSION" &&
-                            prop.propertyName != "PRODID") ]);
+            for (let prop of cal.ical.propertyIterator(calComp)) {
+                if (prop.propertyName != "VERSION" && prop.propertyName != "PRODID") {
+                    this.mProperties.push(prop);
+                }
+            }
 
-            for (let subComp in cal.ical.subcomponentIterator(calComp)) {
+            for (let subComp of cal.ical.subcomponentIterator(calComp)) {
                 state.submit(subComp);
             }
             calComp = rootComp.getNextSubcomponent("VCALENDAR");
         }
 
-        state.join(function() {
+        state.join(() => {
             let fakedParents = {};
             // tag "exceptions", i.e. items with rid:
-            for each (let item in state.excItems) {
+            for (let item of state.excItems) {
                 let parent = state.uid2parent[item.id];
 
                 if (!parent) { // a parentless one, fake a master and override it's occurrence
@@ -96,7 +104,11 @@ calIcsParser.prototype = {
                                              .getService(Components.interfaces.nsIAlertsService);
                     let title = calGetString("calendar", "TimezoneErrorsAlertTitle");
                     let text = calGetString("calendar", "TimezoneErrorsSeeConsole");
-                    notifier.showAlertNotification("", title, text, false, null, null, title);
+                    try {
+                        notifier.showAlertNotification("", title, text, false, null, null, title);
+                    } catch (e) {
+                        // The notifier may not be available, e.g. on xpcshell tests
+                    }
                 }
             }
 
@@ -110,11 +122,9 @@ calIcsParser.prototype = {
         });
     },
 
-    parseString: function ip_parseString(aICSString, aTzProvider, aAsyncParsing) {
+    parseString: function(aICSString, aTzProvider, aAsyncParsing) {
         if (aAsyncParsing) {
             let self = this;
-
-            let start = new Date();
 
             // We are using two types of very similar listeners here:
             // aAsyncParsing is a calIcsParsingListener that returns the ics
@@ -136,7 +146,7 @@ calIcsParser.prototype = {
         }
     },
 
-    parseFromStream: function ip_parseFromStream(aStream, aTzProvider, aAsyncParsing) {
+    parseFromStream: function(aStream, aTzProvider, aAsyncParsing) {
         // Read in the string. Note that it isn't a real string at this point,
         // because likely, the file is utf8. The multibyte chars show up as multiple
         // 'chars' in this string. So call it an array of octets for now.
@@ -154,7 +164,7 @@ calIcsParser.prototype = {
         // characters. So the space or the newline never can be part of a multi-byte
         // char.
         for (let i = octetArray.length - 2; i >= 0; i--) {
-            if (octetArray[i] == "\n" && octetArray[i+1] == " ") {
+            if (octetArray[i] == "\n" && octetArray[i + 1] == " ") {
                 octetArray = octetArray.splice(i, 2);
             }
         }
@@ -170,24 +180,24 @@ calIcsParser.prototype = {
         this.parseString(stringData, aTzProvider, aAsyncParsing);
     },
 
-    getItems: function ip_getItems(aCount) {
+    getItems: function(aCount) {
         aCount.value = this.mItems.length;
-        return this.mItems.concat([]); //clone
+        return this.mItems.concat([]);
     },
 
-    getParentlessItems: function ip_getParentlessItems(aCount) {
+    getParentlessItems: function(aCount) {
         aCount.value = this.mParentlessItems.length;
-        return this.mParentlessItems.concat([]); //clone
+        return this.mParentlessItems.concat([]);
     },
 
-    getProperties: function ip_getProperties(aCount) {
+    getProperties: function(aCount) {
         aCount.value = this.mProperties.length;
-        return this.mProperties.concat([]); //clone
+        return this.mProperties.concat([]);
     },
 
-    getComponents: function ip_getComponents(aCount) {
+    getComponents: function(aCount) {
         aCount.value = this.mComponents.length;
-        return this.mComponents.concat([]); //clone
+        return this.mComponents.concat([]);
     }
 };
 
@@ -224,11 +234,11 @@ parserState.prototype = {
      * Checks if the timezones are missing and notifies the user via error console
      *
      * @param item      The item to check for
-     * @param dt        The datetime object to check with
+     * @param date      The datetime object to check with
      */
-    checkTimezone: function checkTimezone(item, dt) {
-        if (dt && cal.isPhantomTimezone(dt.timezone)) {
-            let tzid = dt.timezone.tzid;
+    checkTimezone: function(item, date) {
+        if (date && cal.isPhantomTimezone(date.timezone)) {
+            let tzid = date.timezone.tzid;
             let hid = item.hashId + "#" + tzid;
             if (!(hid in this.tzErrors)) {
                 // For now, publish errors to console and alert user.
@@ -236,10 +246,10 @@ parserState.prototype = {
                 // so this UI code can be removed from the parser, and caller can
                 // choose whether to alert, or show user the problem items and ask
                 // for fixes, or something else.
-                let msg = (calGetString("calendar", "unknownTimezoneInItem",
-                                        [tzid, item.title, cal.getDateFormatter().formatDateTime(dt)]) +
-                           "\n" + item.icalString);
-                cal.ERROR(msg);
+                let msgArgs = [tzid, item.title, cal.getDateFormatter().formatDateTime(date)];
+                let msg = calGetString("calendar", "unknownTimezoneInItem", msgArgs);
+
+                cal.ERROR(msg + "\n" + item.icalString);
                 this.tzErrors[hid] = true;
             }
         }
@@ -250,23 +260,23 @@ parserState.prototype = {
      *
      * @param subComp       The component to process
      */
-    submit: function submit(subComp) {
-        let state = this;
+    submit: function(subComp) {
+        let self = this;
         let runner = {
-            run: function run() {
+            run: function() {
                 let item = null;
                 switch (subComp.componentType) {
                     case "VEVENT":
                         item = cal.createEvent();
                         item.icalComponent = subComp;
-                        state.checkTimezone(item, item.startDate);
-                        state.checkTimezone(item, item.endDate);
+                        self.checkTimezone(item, item.startDate);
+                        self.checkTimezone(item, item.endDate);
                         break;
                     case "VTODO":
                         item = cal.createTodo();
                         item.icalComponent = subComp;
-                        state.checkTimezone(item, item.entryDate);
-                        state.checkTimezone(item, item.dueDate);
+                        self.checkTimezone(item, item.entryDate);
+                        self.checkTimezone(item, item.dueDate);
                         // completed is defined to be in UTC
                         break;
                     case "VTIMEZONE":
@@ -275,23 +285,23 @@ parserState.prototype = {
                         // do anything with it here.
                         break;
                     default:
-                        state.extraComponents.push(subComp);
+                        self.extraComponents.push(subComp);
                         break;
                 }
 
                 if (item) {
                     let rid = item.recurrenceId;
-                    if (!rid) {
-                        state.items.push(item);
-                        if (item.recurrenceInfo) {
-                            state.uid2parent[item.id] = item;
-                        }
+                    if (rid) {
+                        self.excItems.push(item);
                     } else {
-                        state.excItems.push(item);
+                        self.items.push(item);
+                        if (item.recurrenceInfo) {
+                            self.uid2parent[item.id] = item;
+                        }
                     }
                 }
-                state.threadCount--;
-                state.checkCompletion();
+                self.threadCount--;
+                self.checkCompletion();
             }
         };
 
@@ -325,7 +335,7 @@ parserState.prototype = {
      *
      * @param joinFunc      The join function to call
      */
-    join: function join(joinFunc) {
+    join: function(joinFunc) {
         this.joinFunc = joinFunc;
         this.checkCompletion();
     }

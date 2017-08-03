@@ -57,12 +57,12 @@ etagsHandler.prototype = {
     /**
      * @see nsIStreamListener
      */
-    onStartRequest: function eSL_onStartRequest(request, context) {
+    onStartRequest: function(request, context) {
         let httpchannel = request.QueryInterface(Components.interfaces.nsIHttpChannel);
 
         let responseStatus;
         try {
-            responseStatus = httpchannel.responseStatus
+            responseStatus = httpchannel.responseStatus;
         } catch (ex) {
             cal.WARN("CalDAV: No response status getting etags for calendar " + this.calendar.name);
         }
@@ -83,7 +83,7 @@ etagsHandler.prototype = {
         }
     },
 
-    onStopRequest: Task.async(function*(request, context, statusCode) {
+    onStopRequest: Task.async(function* (request, context, statusCode) {
         if (this.calendar.verboseLogging()) {
             cal.LOG("CalDAV: recv: " + this.logXML);
         }
@@ -120,7 +120,7 @@ etagsHandler.prototype = {
                     let wasInboxItem = this.calendar.mItemInfoCache[foundItem.id].isInboxItem;
                     if ((wasInboxItem && this.calendar.isInbox(this.baseUri.spec)) ||
                         (wasInboxItem === false && !this.calendar.isInbox(this.baseUri.spec))) {
-                        cal.LOG("Deleting local href: " + path)
+                        cal.LOG("Deleting local href: " + path);
                         delete this.calendar.mHrefIndex[path];
                         yield pcal.deleteItem(foundItem);
                         needsRefresh = true;
@@ -135,7 +135,16 @@ etagsHandler.prototype = {
 
         // Avoid sending empty multiget requests update views if something has
         // been deleted server-side.
-        if (!this.itemsNeedFetching.length) {
+        if (this.itemsNeedFetching.length) {
+            let multiget = new multigetSyncHandler(this.itemsNeedFetching,
+                                       this.calendar,
+                                       this.baseUri,
+                                       null,
+                                       false,
+                                       null,
+                                       this.changeLogListener);
+            multiget.doMultiGet();
+        } else {
             if (this.calendar.isCached && this.changeLogListener) {
                 this.changeLogListener.onResult({ status: Components.results.NS_OK },
                                                 Components.results.NS_OK);
@@ -150,19 +159,10 @@ etagsHandler.prototype = {
                 !this.calendar.isInbox(this.baseUri.spec)) {
                 this.calendar.pollInbox();
             }
-        } else {
-            let multiget = new multigetSyncHandler(this.itemsNeedFetching,
-                                       this.calendar,
-                                       this.baseUri,
-                                       null,
-                                       false,
-                                       null,
-                                       this.changeLogListener)
-            multiget.doMultiGet();
         }
     }),
 
-    onDataAvailable: function eSL_onDataAvailable(request, context, inputStream, offset, count) {
+    onDataAvailable: function(request, context, inputStream, offset, count) {
         if (this._reader) {
             // No reader means request error
             this._reader.onDataAvailable(request, context, inputStream, offset, count);
@@ -173,7 +173,7 @@ etagsHandler.prototype = {
     /**
      * @see nsISAXErrorHandler
      */
-    fatalError: function eH_fatalError() {
+    fatalError: function() {
         cal.WARN("CalDAV: Fatal Error parsing etags for " + this.calendar.name);
     },
 
@@ -181,30 +181,31 @@ etagsHandler.prototype = {
     /**
      * @see nsISAXContentHandler
      */
-    characters: function eH_characters(aValue) {
+    characters: function(aValue) {
         if (this.calendar.verboseLogging()) {
             this.logXML += aValue;
         }
         this.currentResponse[this.tag] += aValue;
     },
 
-    startDocument: function eH_startDocument() {
+    startDocument: function() {
         this.hrefMap = {};
         this.currentResponse = {};
-        this.tag = null
+        this.tag = null;
     },
 
-    endDocument: function eH_endDocument() { },
+    endDocument: function() { },
 
-    startElement: function eH_startElement(aUri, aLocalName, aQName, aAttributes) {
+    startElement: function(aUri, aLocalName, aQName, aAttributes) {
         switch (aLocalName) {
             case "response":
                 this.currentResponse = {};
                 this.currentResponse.isCollection = false;
-                this.tag = null
+                this.tag = null;
                 break;
             case "collection":
                 this.currentResponse.isCollection = true;
+                // falls through
             case "href":
             case "getetag":
             case "getcontenttype":
@@ -215,60 +216,60 @@ etagsHandler.prototype = {
         if (this.calendar.verboseLogging()) {
             this.logXML += "<" + aQName + ">";
         }
-
     },
 
-    endElement: function eH_endElement(aUri, aLocalName, aQName) {
+    endElement: function(aUri, aLocalName, aQName) {
         switch (aLocalName) {
-            case "response":
+            case "response": {
                 this.tag = null;
-                let r = this.currentResponse;
-                if (r.getetag && r.getetag.length &&
-                    r.href && r.href.length &&
-                    r.getcontenttype && r.getcontenttype.length &&
-                    !r.isCollection) {
+                let resp = this.currentResponse;
+                if (resp.getetag && resp.getetag.length &&
+                    resp.href && resp.href.length &&
+                    resp.getcontenttype && resp.getcontenttype.length &&
+                    !resp.isCollection) {
+                    resp.href = this.calendar.ensureDecodedPath(resp.href);
 
-                    r.href = this.calendar.ensureDecodedPath(r.href);
-
-                    if (r.getcontenttype.substr(0, 14) == "message/rfc822") {
+                    if (resp.getcontenttype.substr(0, 14) == "message/rfc822") {
                         // workaround for a Scalix bug which causes incorrect
                         // contenttype to be returned.
-                        r.getcontenttype = "text/calendar";
+                        resp.getcontenttype = "text/calendar";
                     }
-                    if (r.getcontenttype == "text/vtodo") {
+                    if (resp.getcontenttype == "text/vtodo") {
                         // workaround Kerio wierdness
-                        r.getcontenttype = "text/calendar";
+                        resp.getcontenttype = "text/calendar";
                     }
 
                     // Only handle calendar items
-                    if (r.getcontenttype.substr(0,13) == "text/calendar") {
-                        if (r.href && r.href.length) {
-                            this.itemsReported[r.href] = r.getetag;
+                    if (resp.getcontenttype.substr(0, 13) == "text/calendar") {
+                        if (resp.href && resp.href.length) {
+                            this.itemsReported[resp.href] = resp.getetag;
 
-                            let itemUid = this.calendar.mHrefIndex[r.href];
+                            let itemUid = this.calendar.mHrefIndex[resp.href];
                             if (!itemUid ||
-                                r.getetag != this.calendar.mItemInfoCache[itemUid].etag) {
-                                this.itemsNeedFetching.push(r.href);
+                                resp.getetag != this.calendar.mItemInfoCache[itemUid].etag) {
+                                this.itemsNeedFetching.push(resp.href);
                             }
                         }
                     }
                 }
                 break;
+            }
             case "href":
             case "getetag":
-            case "getcontenttype":
+            case "getcontenttype": {
                 this.tag = null;
                 break;
+            }
         }
         if (this.calendar.verboseLogging()) {
             this.logXML += "</" + aQName + ">";
         }
     },
 
-    startPrefixMapping: function eH_startPrefixMapping(aPrefix, aUri) { },
-    endPrefixMapping: function eH_endPrefixMapping(aPrefix) { },
-    ignorableWhitespace: function eH_ignorableWhitespace(aWhiteSpace) { },
-    processingInstruction: function eH_processingInstruction(aTarget, aData) { }
+    startPrefixMapping: function(aPrefix, aUri) { },
+    endPrefixMapping: function(aPrefix) { },
+    ignorableWhitespace: function(aWhiteSpace) { },
+    processingInstruction: function(aTarget, aData) { }
 };
 
 /**
@@ -303,9 +304,9 @@ webDavSyncHandler.prototype = {
     newSyncToken: null,
     changeLogListener: null,
     logXML: "",
-    isInPropStat : false,
-    changeCount : 0,
-    unhandledErrors : 0,
+    isInPropStat: false,
+    changeCount: 0,
+    unhandledErrors: 0,
     itemsReported: null,
     itemsNeedFetching: null,
     additionalSyncNeeded: false,
@@ -317,7 +318,7 @@ webDavSyncHandler.prototype = {
         Components.interfaces.nsIStreamListener
     ]),
 
-    doWebDAVSync: function doWebDAVSync() {
+    doWebDAVSync: function() {
         if (this.calendar.mDisabled) {
             // check if maybe our calendar has become available
             this.calendar.setupAuthentication(this.changeLogListener);
@@ -335,12 +336,12 @@ webDavSyncHandler.prototype = {
           xmlHeader +
           '<sync-collection xmlns="DAV:">' +
             syncTokenString +
-            '<sync-level>1</sync-level>' +
-            '<prop>' +
-              '<getcontenttype/>' +
-              '<getetag/>' +
-            '</prop>' +
-          '</sync-collection>';
+            "<sync-level>1</sync-level>" +
+            "<prop>" +
+              "<getcontenttype/>" +
+              "<getetag/>" +
+            "</prop>" +
+          "</sync-collection>";
 
         let requestUri = this.calendar.makeUri(null, this.baseUri);
 
@@ -369,12 +370,12 @@ webDavSyncHandler.prototype = {
     /**
      * @see nsIStreamListener
      */
-    onStartRequest: function wSL_onStartRequest(request, context) {
+    onStartRequest: function(request, context) {
         let httpchannel = request.QueryInterface(Components.interfaces.nsIHttpChannel);
 
         let responseStatus;
         try {
-            responseStatus = httpchannel.responseStatus
+            responseStatus = httpchannel.responseStatus;
         } catch (ex) {
             cal.WARN("CalDAV: No response status doing webdav sync for calendar " + this.calendar.name);
         }
@@ -384,12 +385,11 @@ webDavSyncHandler.prototype = {
             // server error (i.e 50x).
             httpchannel.contentType = "application/xml";
             this._reader.onStartRequest(request, context);
-        }
-        // Invalidate sync token with 4xx errors that could indicate the
-        // sync token has become invalid and do a refresh
-        else if (this.calendar.mWebdavSyncToken != null &&
-                 responseStatus >= 400 &&
-                 responseStatus <= 499) {
+        } else if (this.calendar.mWebdavSyncToken != null &&
+                   responseStatus >= 400 &&
+                   responseStatus <= 499) {
+            // Invalidate sync token with 4xx errors that could indicate the
+            // sync token has become invalid and do a refresh
             cal.LOG("CalDAV: Reseting sync token because server returned status code: " + responseStatus);
             this._reader = null;
             this.calendar.mWebdavSyncToken = null;
@@ -406,7 +406,7 @@ webDavSyncHandler.prototype = {
         }
     },
 
-    onStopRequest: function wSL_onStopRequest(request, context, statusCode) {
+    onStopRequest: function(request, context, statusCode) {
         if (this.calendar.verboseLogging()) {
             cal.LOG("CalDAV: recv: " + this.logXML);
         }
@@ -422,7 +422,7 @@ webDavSyncHandler.prototype = {
         }
     },
 
-    onDataAvailable: function wSL_onDataAvailable(request, context, inputStream, offset, count) {
+    onDataAvailable: function(request, context, inputStream, offset, count) {
         if (this._reader) {
             // No reader means request error
             this._reader.onDataAvailable(request, context, inputStream, offset, count);
@@ -432,30 +432,30 @@ webDavSyncHandler.prototype = {
     /**
      * @see nsISAXErrorHandler
      */
-    fatalError: function wH_fatalError() {
+    fatalError: function() {
         cal.WARN("CalDAV: Fatal Error doing webdav sync for " + this.calendar.name);
     },
 
     /**
      * @see nsISAXContentHandler
      */
-    characters: function wH_characters(aValue) {
+    characters: function(aValue) {
         if (this.calendar.verboseLogging()) {
             this.logXML += aValue;
         }
         this.currentResponse[this.tag] += aValue;
     },
 
-    startDocument: function wH_startDocument() {
+    startDocument: function() {
         this.hrefMap = {};
         this.currentResponse = {};
-        this.tag = null
+        this.tag = null;
         if (this.calendar.isCached) {
             this.calendar.superCalendar.startBatch();
         }
     },
 
-    endDocument: function wH_endDocument() {
+    endDocument: function() {
         if (this.unhandledErrors) {
             this.calendar.superCalendar.endBatch();
             this.calendar.reportDavError(Components.interfaces.calIErrors.DAV_REPORT_ERROR);
@@ -480,7 +480,16 @@ webDavSyncHandler.prototype = {
             this.calendar.superCalendar.endBatch();
         }
 
-        if (!this.itemsNeedFetching.length) {
+        if (this.itemsNeedFetching.length) {
+            let multiget = new multigetSyncHandler(this.itemsNeedFetching,
+                                                   this.calendar,
+                                                   this.baseUri,
+                                                   this.newSyncToken,
+                                                   this.additionalSyncNeeded,
+                                                   null,
+                                                   this.changeLogListener);
+            multiget.doMultiGet();
+        } else {
             if (this.newSyncToken) {
                 this.calendar.mWebdavSyncToken = this.newSyncToken;
                 this.calendar.saveCalendarProperties();
@@ -488,34 +497,23 @@ webDavSyncHandler.prototype = {
             }
             this.calendar.finalizeUpdatedItems(this.changeLogListener,
                                                this.baseUri);
-        } else {
-            let multiget = new multigetSyncHandler(this.itemsNeedFetching,
-                                                   this.calendar,
-                                                   this.baseUri,
-                                                   this.newSyncToken,
-                                                   this.additionalSyncNeeded,
-                                                   null,
-                                                   this.changeLogListener)
-            multiget.doMultiGet();
         }
-
     },
 
-    startElement: function wH_startElement(aUri, aLocalName, aQName, aAttributes) {
+    startElement: function(aUri, aLocalName, aQName, aAttributes) {
         switch (aLocalName) {
             case "response": // WebDAV Sync draft 3
                 this.currentResponse = {};
-                this.tag = null
-                this.isInPropStat=false;
+                this.tag = null;
+                this.isInPropStat = false;
                 break;
             case "propstat":
-                this.isInPropStat=true;
+                this.isInPropStat = true;
                 break;
             case "status":
                 if (this.isInPropStat) {
                     this.tag = "propstat_" + aLocalName;
-                }
-                else {
+                } else {
                     this.tag = aLocalName;
                 }
                 this.currentResponse[this.tag] = "";
@@ -524,68 +522,65 @@ webDavSyncHandler.prototype = {
             case "getetag":
             case "getcontenttype":
             case "sync-token":
-                this.tag = aLocalName.replace(/-/g,'');
-                this.currentResponse[this.tag ] = "";
+                this.tag = aLocalName.replace(/-/g, "");
+                this.currentResponse[this.tag] = "";
                 break;
         }
         if (this.calendar.verboseLogging()) {
             this.logXML += "<" + aQName + ">";
         }
-
     },
 
-    endElement: function wH_endElement(aUri, aLocalName, aQName) {
+    endElement: function(aUri, aLocalName, aQName) {
         switch (aLocalName) {
             case "response": // WebDAV Sync draft 3
-            case "sync-response": // WebDAV Sync draft 0,1,2
-                let r = this.currentResponse;
-                if (r.href && r.href.length) {
-                    r.href = this.calendar.ensureDecodedPath(r.href);
+            case "sync-response": { // WebDAV Sync draft 0,1,2
+                let resp = this.currentResponse;
+                if (resp.href && resp.href.length) {
+                    resp.href = this.calendar.ensureDecodedPath(resp.href);
                 }
 
-                if ((!r.getcontenttype || r.getcontenttype == "text/plain")  &&
-                    r.href &&
-                    r.href.length >= 4 &&
-                    r.href.substr(r.href.length - 4,4) == ".ics") {
-                  // If there is no content-type (iCloud) or text/plain was passed
-                  // (iCal Server) for the resource but its name ends with ".ics"
-                  // assume the content type to be text/calendar. Apple
-                  // iCloud/iCal Server interoperability fix.
-                  r.getcontenttype = "text/calendar";
+                if ((!resp.getcontenttype || resp.getcontenttype == "text/plain") &&
+                    resp.href &&
+                    resp.href.endsWith(".ics")) {
+                    // If there is no content-type (iCloud) or text/plain was passed
+                    // (iCal Server) for the resource but its name ends with ".ics"
+                    // assume the content type to be text/calendar. Apple
+                    // iCloud/iCal Server interoperability fix.
+                    resp.getcontenttype = "text/calendar";
                 }
 
                 // Deleted item
-                if (r.href && r.href.length &&
-                    r.status &&
-                    r.status.length &&
-                    r.status.indexOf(" 404") > 0) {
-                    if (this.calendar.mHrefIndex[r.href]) {
+                if (resp.href && resp.href.length &&
+                    resp.status &&
+                    resp.status.length &&
+                    resp.status.indexOf(" 404") > 0) {
+                    if (this.calendar.mHrefIndex[resp.href]) {
                         this.changeCount++;
-                        this.calendar.deleteTargetCalendarItem(r.href);
-                    }
-                    else {
-                        cal.LOG("CalDAV: skipping unfound deleted item : " + r.href);
+                        this.calendar.deleteTargetCalendarItem(resp.href);
+                    } else {
+                        cal.LOG("CalDAV: skipping unfound deleted item : " + resp.href);
                     }
                 // Only handle Created or Updated calendar items
-                } else if (r.getcontenttype &&
-                           r.getcontenttype.substr(0,13) == "text/calendar" &&
-                           r.getetag && r.getetag.length &&
-                           r.href && r.href.length &&
-                           (!r.status ||                 // Draft 3 does not require
-                            r.status.length == 0 ||      // a status for created or updated items but
-                            r.status.indexOf(" 204") ||  // draft 0, 1 and 2 needed it so treat no status
-                            r.status.indexOf(" 200") ||  // Apple iCloud returns 200 status for each item
-                            r.status.indexOf(" 201"))) { // and status 201 and 204 the same
-                    this.itemsReported[r.href] = r.getetag;
-                    let itemId = this.calendar.mHrefIndex[r.href];
-                    let oldEtag = (itemId && this.calendar.mItemInfoCache[itemId].etag);
+                } else if (resp.getcontenttype &&
+                           resp.getcontenttype.substr(0, 13) == "text/calendar" &&
+                           resp.getetag && resp.getetag.length &&
+                           resp.href && resp.href.length &&
+                           (!resp.status ||                 // Draft 3 does not require
+                            resp.status.length == 0 ||      // a status for created or updated items but
+                            resp.status.indexOf(" 204") ||  // draft 0, 1 and 2 needed it so treat no status
+                            resp.status.indexOf(" 200") ||  // Apple iCloud returns 200 status for each item
+                            resp.status.indexOf(" 201"))) { // and status 201 and 204 the same
+                    this.itemsReported[resp.href] = resp.getetag;
+                    let itemId = this.calendar.mHrefIndex[resp.href];
+                    let oldEtag = itemId && this.calendar.mItemInfoCache[itemId].etag;
 
-                    if (!oldEtag || oldEtag != r.getetag) {
+                    if (!oldEtag || oldEtag != resp.getetag) {
                         // Etag mismatch, getting new/updated item.
-                        this.itemsNeedFetching.push(r.href);
+                        this.itemsNeedFetching.push(resp.href);
                     }
-                } else if (r.status &&
-                            r.status.indexOf(" 507") > -1) {
+                } else if (resp.status &&
+                           resp.status.includes(" 507")) {
                     // webdav-sync says that if a 507 is encountered and the
                     // url matches the request, the current token should be
                     // saved and another request should be made. We don't
@@ -595,36 +590,39 @@ webDavSyncHandler.prototype = {
                     // The 507 doesn't mean the data received is invalid, so
                     // continue processing.
                     this.additionalSyncNeeded = true;
-                } else if (r.status &&
-                           r.status.indexOf(" 200") &&
-                           r.href &&
-                           r.href.endsWith("/")) {
+                } else if (resp.status &&
+                           resp.status.indexOf(" 200") &&
+                           resp.href &&
+                           resp.href.endsWith("/")) {
                     // iCloud returns status responses for directories too
                     // so we just ignore them if they have status code 200. We
                     // want to make sure these are not counted as unhandled
                     // errors in the next block
-                } else if ((r.getcontenttype &&
-                            r.getcontenttype.substr(0,13) == "text/calendar") ||
-                           (r.status &&
-                            r.status.indexOf(" 404") == -1)) {
+                } else if ((resp.getcontenttype &&
+                            resp.getcontenttype.startsWith("text/calendar")) ||
+                           (resp.status &&
+                            !resp.status.includes(" 404"))) {
                     // If the response element is still not handled, log an
                     // error only if the content-type is text/calendar or the
                     // response status is different than 404 not found.  We
                     // don't care about response elements on non-calendar
                     // resources or whose status is not indicating a deleted
                     // resource.
-                    cal.WARN("CalDAV: Unexpected response, status: " + r.status + ", href: " + r.href);
+                    cal.WARN("CalDAV: Unexpected response, status: " + resp.status + ", href: " + resp.href);
                     this.unhandledErrors++;
                 } else {
-                    cal.LOG("CalDAV: Unhandled response element, status: " + r.status + ", href: " + r.href + " contenttype:" + r.getcontenttype);
+                    cal.LOG("CalDAV: Unhandled response element, status: " + resp.status + ", href: " + resp.href + " contenttype:" + resp.getcontenttype);
                 }
                 break;
-            case "sync-token":
+            }
+            case "sync-token": {
                 this.newSyncToken = this.currentResponse[this.tag];
                 break;
-            case "propstat":
-                this.isInPropStat=false;
+            }
+            case "propstat": {
+                this.isInPropStat = false;
                 break;
+            }
         }
         this.tag = null;
         if (this.calendar.verboseLogging()) {
@@ -632,10 +630,10 @@ webDavSyncHandler.prototype = {
         }
     },
 
-    startPrefixMapping: function wH_startPrefixMapping(aPrefix, aUri) { },
-    endPrefixMapping: function wH_endPrefixMapping(aPrefix) { },
-    ignorableWhitespace: function wH_ignorableWhitespace(aWhiteSpace) { },
-    processingInstruction: function wH_processingInstruction(aTarget, aData) { }
+    startPrefixMapping: function(aPrefix, aUri) { },
+    endPrefixMapping: function(aPrefix) { },
+    ignorableWhitespace: function(aWhiteSpace) { },
+    processingInstruction: function(aTarget, aData) { }
 };
 
 /**
@@ -678,7 +676,7 @@ multigetSyncHandler.prototype = {
     listener: null,
     changeLogListener: null,
     logXML: null,
-    unhandledErrors : 0,
+    unhandledErrors: 0,
     itemsNeedFetching: null,
     additionalSyncNeeded: false,
 
@@ -689,7 +687,7 @@ multigetSyncHandler.prototype = {
         Components.interfaces.nsIStreamListener
     ]),
 
-    doMultiGet: function doMultiGet() {
+    doMultiGet: function() {
         if (this.calendar.mDisabled) {
             // check if maybe our calendar has become available
             this.calendar.setupAuthentication(this.changeLogListener);
@@ -709,12 +707,12 @@ multigetSyncHandler.prototype = {
         let queryXml =
           xmlHeader +
           '<C:calendar-multiget xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' +
-            '<D:prop>' +
-              '<D:getetag/>' +
-              '<C:calendar-data/>' +
-            '</D:prop>' +
+            "<D:prop>" +
+              "<D:getetag/>" +
+              "<C:calendar-data/>" +
+            "</D:prop>" +
             hrefString +
-          '</C:calendar-multiget>';
+          "</C:calendar-multiget>";
 
         let requestUri = this.calendar.makeUri(null, this.baseUri);
         if (this.calendar.verboseLogging()) {
@@ -736,12 +734,12 @@ multigetSyncHandler.prototype = {
     /**
      * @see nsIStreamListener
      */
-    onStartRequest: function mg_onStartRequest(request, context) {
+    onStartRequest: function(request, context) {
         let httpchannel = request.QueryInterface(Components.interfaces.nsIHttpChannel);
 
         let responseStatus;
         try {
-            responseStatus = httpchannel.responseStatus
+            responseStatus = httpchannel.responseStatus;
         } catch (ex) {
             cal.WARN("CalDAV: No response status doing multiget for calendar " + this.calendar.name);
         }
@@ -759,7 +757,7 @@ multigetSyncHandler.prototype = {
         }
     },
 
-    onStopRequest: function mg_onStopRequest(request, context, statusCode) {
+    onStopRequest: function(request, context, statusCode) {
         if (this.calendar.verboseLogging()) {
             cal.LOG("CalDAV: recv: " + this.logXML);
         }
@@ -772,7 +770,7 @@ multigetSyncHandler.prototype = {
             if (this.newSyncToken) {
                 this.calendar.mWebdavSyncToken = this.newSyncToken;
                 this.calendar.saveCalendarProperties();
-              cal.LOG("CalDAV: New webdav-sync Token: " + this.calendar.mWebdavSyncToken);
+                cal.LOG("CalDAV: New webdav-sync Token: " + this.calendar.mWebdavSyncToken);
             }
 
             if (this.additionalSyncNeeded) {
@@ -806,7 +804,7 @@ multigetSyncHandler.prototype = {
             this._reader.errorHandler = this;
             this._reader.parseAsync(null);
             let timerCallback = {
-                requestHandler : this,
+                requestHandler: this,
                 notify: function(timer) {
                     // Call multiget again to get another batch
                     this.requestHandler.doMultiGet();
@@ -820,7 +818,7 @@ multigetSyncHandler.prototype = {
         }
     },
 
-    onDataAvailable: function mg_onDataAvailable(request, context, inputStream, offset, count) {
+    onDataAvailable: function(request, context, inputStream, offset, count) {
         if (this._reader) {
             // No reader means request error
             this._reader.onDataAvailable(request, context, inputStream, offset, count);
@@ -830,51 +828,50 @@ multigetSyncHandler.prototype = {
     /**
      * @see nsISAXErrorHandler
      */
-    fatalError: function mg_fatalError() {
+    fatalError: function() {
         cal.WARN("CalDAV: Fatal Error doing multiget for " + this.calendar.name);
     },
 
     /**
      * @see nsISAXContentHandler
      */
-    characters: function mg_characters(aValue) {
+    characters: function(aValue) {
         if (this.calendar.verboseLogging()) {
             this.logXML += aValue;
         }
         this.currentResponse[this.tag] += aValue;
     },
 
-    startDocument: function mg_startDocument() {
+    startDocument: function() {
         this.hrefMap = {};
         this.currentResponse = {};
-        this.tag = null
+        this.tag = null;
         this.logXML = "";
         if (this.calendar.isCached) {
             this.calendar.superCalendar.startBatch();
         }
     },
 
-    endDocument: function mg_endDocument() {
+    endDocument: function() {
         if (this.calendar.isCached) {
             this.calendar.superCalendar.endBatch();
         }
     },
 
-    startElement: function mg_startElement(aUri, aLocalName, aQName, aAttributes) {
+    startElement: function(aUri, aLocalName, aQName, aAttributes) {
         switch (aLocalName) {
             case "response":
                 this.currentResponse = {};
-                this.tag = null
-                this.isInPropStat=false;
+                this.tag = null;
+                this.isInPropStat = false;
                 break;
             case "propstat":
-                this.isInPropStat=true;
+                this.isInPropStat = true;
                 break;
             case "status":
                 if (this.isInPropStat) {
                     this.tag = "propstat_" + aLocalName;
-                }
-                else {
+                } else {
                     this.tag = aLocalName;
                 }
                 this.currentResponse[this.tag] = "";
@@ -882,64 +879,65 @@ multigetSyncHandler.prototype = {
             case "calendar-data":
             case "href":
             case "getetag":
-                this.tag = aLocalName.replace(/-/g,'');
-                this.currentResponse[this.tag ] = "";
+                this.tag = aLocalName.replace(/-/g, "");
+                this.currentResponse[this.tag] = "";
                 break;
         }
         if (this.calendar.verboseLogging()) {
             this.logXML += "<" + aQName + ">";
         }
-
     },
 
-    endElement: function mg_endElement(aUri, aLocalName, aQName) {
+    endElement: function(aUri, aLocalName, aQName) {
         switch (aLocalName) {
-            case "response":
-                let r = this.currentResponse;
-                if (r.href &&
-                    r.href.length) {
-                    r.href = this.calendar.ensureDecodedPath(r.href);
+            case "response": {
+                let resp = this.currentResponse;
+                if (resp.href &&
+                    resp.href.length) {
+                    resp.href = this.calendar.ensureDecodedPath(resp.href);
                 }
-                if (r.href && r.href.length &&
-                    r.status &&
-                    r.status.length &&
-                    r.status.indexOf(" 404") > 0) {
-                    if (this.calendar.mHrefIndex[r.href]) {
+                if (resp.href && resp.href.length &&
+                    resp.status &&
+                    resp.status.length &&
+                    resp.status.indexOf(" 404") > 0) {
+                    if (this.calendar.mHrefIndex[resp.href]) {
                         this.changeCount++;
-                        this.calendar.deleteTargetCalendarItem(r.href);
+                        this.calendar.deleteTargetCalendarItem(resp.href);
                     } else {
-                        cal.LOG("CalDAV: skipping unfound deleted item : " + r.href);
+                        cal.LOG("CalDAV: skipping unfound deleted item : " + resp.href);
                     }
                 // Created or Updated item
-                } else if (r.getetag && r.getetag.length &&
-                           r.href && r.href.length &&
-                           r.calendardata && r.calendardata.length) {
+                } else if (resp.getetag && resp.getetag.length &&
+                           resp.href && resp.href.length &&
+                           resp.calendardata && resp.calendardata.length) {
                     let oldEtag;
-                    let itemId = this.calendar.mHrefIndex[r.href];
+                    let itemId = this.calendar.mHrefIndex[resp.href];
                     if (itemId) {
                         oldEtag = this.calendar.mItemInfoCache[itemId].etag;
                     } else {
                         oldEtag = null;
                     }
-                    if (!oldEtag || oldEtag != r.getetag) {
+                    if (!oldEtag || oldEtag != resp.getetag) {
                         this.changeCount++;
-                        this.calendar.addTargetCalendarItem(r.href,
-                                                            r.calendardata,
+                        this.calendar.addTargetCalendarItem(resp.href,
+                                                            resp.calendardata,
                                                             this.baseUri,
-                                                            r.getetag,
+                                                            resp.getetag,
                                                             this.listener);
                     } else {
                         cal.LOG("CalDAV: skipping item with unmodified etag : " + oldEtag);
                     }
                 } else {
                     cal.WARN("CalDAV: Unexpected response, status: " +
-                             r.status + ", href: " + r.href + " calendar-data:\n" + r.calendardata);
+                             resp.status + ", href: " + resp.href + " calendar-data:\n" + resp.calendardata);
                     this.unhandledErrors++;
                 }
                 break;
-            case "propstat":
-                this.isInPropStat=false;
+            }
+            case "propstat": {
+                this.isInPropStat = false;
                 break;
+            }
         }
         this.tag = null;
         if (this.calendar.verboseLogging()) {
@@ -947,8 +945,8 @@ multigetSyncHandler.prototype = {
         }
     },
 
-    startPrefixMapping: function mg_startPrefixMapping(aPrefix, aUri) { },
-    endPrefixMapping: function mg_endPrefixMapping(aPrefix) { },
-    ignorableWhitespace: function mg_ignorableWhitespace(aWhiteSpace) { },
-    processingInstruction: function mg_processingInstruction(aTarget, aData) { }
+    startPrefixMapping: function(aPrefix, aUri) { },
+    endPrefixMapping: function(aPrefix) { },
+    ignorableWhitespace: function(aWhiteSpace) { },
+    processingInstruction: function(aTarget, aData) { }
 };

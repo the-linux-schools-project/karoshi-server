@@ -6,7 +6,7 @@ Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://gre/modules/Preferences.jsm");
 Components.utils.import("resource://calendar/modules/calViewUtils.jsm");
 
-EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
+this.EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
 cal.print = {
     /**
      * Returns a simple key in the format YYYY-MM-DD for use in the table of
@@ -15,8 +15,8 @@ cal.print = {
      * @param dt    The date to translate
      * @return      YYYY-MM-DD
      */
-    getDateKey: function getDateKey(dt) {
-        return dt.year + "-" + dt.month + "-" + dt.day;
+    getDateKey: function(date) {
+        return date.year + "-" + date.month + "-" + date.day;
     },
 
     /**
@@ -28,17 +28,17 @@ cal.print = {
      * @param document      The document that contains <style id="sheet"/>.
      * @param categories    Array of categories to insert rules for.
      */
-    insertCategoryRules: function insertCategoryRules(document, categories) {
+    insertCategoryRules: function(document, categories) {
         let sheet = document.getElementById("sheet");
         sheet.insertedCategoryRules = sheet.insertedCategoryRules || {};
 
-        for each (let category in categories) {
+        for (let category of categories) {
             let prefName = cal.formatStringForCSSRule(category);
             let color = Preferences.get("calendar.category.color." + prefName) || "transparent";
             if (!(prefName in sheet.insertedCategoryRules)) {
                 sheet.insertedCategoryRules[prefName] = true;
                 let ruleAdd = ' .category-color-box[categories~="' + prefName + '"] { ' +
-                              ' border: 2px solid ' + color + '; }' + "\n";
+                              " border: 2px solid " + color + "; }\n";
                 sheet.textContent += ruleAdd;
             }
         }
@@ -53,7 +53,7 @@ cal.print = {
      * @param document      The document that contains <style id="sheet"/>.
      * @param categories    The calendar to insert a rule for.
      */
-    insertCalendarRules: function insertCalendarRules(document, calendar) {
+    insertCalendarRules: function(document, calendar) {
         let sheet = document.getElementById("sheet");
         let color = calendar.getProperty("color") || "#A8C2E1";
         sheet.insertedCalendarRules = sheet.insertedCalendarRules || {};
@@ -62,8 +62,8 @@ cal.print = {
             sheet.insertedCalendarRules[calendar.id] = true;
             let formattedId = cal.formatStringForCSSRule(calendar.id);
             let ruleAdd = ' .calendar-color-box[calendar-id="' + formattedId + '"] { ' +
-                          ' background-color: ' + color + '; ' +
-                          ' color: ' + cal.getContrastingTextColor(color) + '; }' + "\n";
+                          " background-color: " + color + "; " +
+                          " color: " + cal.getContrastingTextColor(color) + "; }\n";
             sheet.textContent += ruleAdd;
         }
     },
@@ -83,14 +83,14 @@ cal.print = {
      * @param item              The item to serialize
      * @param dayContainer      The DOM Node to insert the container in
      */
-    addItemToDaybox: function addItemToDaybox(document, item, dayContainer) {
+    addItemToDaybox: function(document, item, boxDate, dayContainer) {
         // Clone our template
         let itemNode = document.getElementById("item-template").cloneNode(true);
         itemNode.removeAttribute("id");
         itemNode.item = item;
 
         // Fill in details of the item
-        let itemInterval = cal.print.getItemIntervalString(item);
+        let itemInterval = cal.print.getItemIntervalString(item, boxDate);
         itemNode.querySelector(".item-interval").textContent = itemInterval;
         itemNode.querySelector(".item-title").textContent = item.title;
 
@@ -128,7 +128,7 @@ cal.print = {
      * @param document          The DOM Document to set things on
      * @param item              The item to serialize
      */
-    addItemToDayboxNodate: function addItemToDayboxNodate(document, item) {
+    addItemToDayboxNodate: function(document, item) {
         let taskContainer = document.getElementById("task-container");
         let taskNode = document.getElementById("task-template").cloneNode(true);
         taskNode.removeAttribute("id");
@@ -138,7 +138,7 @@ cal.print = {
         if (taskListBox.hasAttribute("hidden")) {
             let tasksTitle = document.getElementById("tasks-title");
             taskListBox.removeAttribute("hidden");
-            tasksTitle.textContent = cal.calGetString("calendar","tasksWithNoDueDate");
+            tasksTitle.textContent = cal.calGetString("calendar", "tasksWithNoDueDate");
         }
 
         // Fill in details of the task
@@ -149,7 +149,7 @@ cal.print = {
         taskNode.querySelector(".task-title").textContent = item.title;
 
         let collator = cal.createLocaleCollator();
-        cal.binaryInsertNode(taskContainer, taskNode, item, function(a, b) collator.compareString(0, a, b), function(node) node.item.title);
+        cal.binaryInsertNode(taskContainer, taskNode, item, (a, b) => collator.compareString(0, a, b), node => node.item.title);
     },
 
     /**
@@ -158,15 +158,43 @@ cal.print = {
      * @param aItem     The item providing the interval
      * @return          The string describing the interval
      */
-    getItemIntervalString: function getItemIntervalString(aItem) {
+    getItemIntervalString: function(aItem, aBoxDate) {
         // omit time label for all-day items
-        let startDate = aItem[cal.calGetStartDateProp(aItem)]
+        let startDate = aItem[cal.calGetStartDateProp(aItem)];
         let endDate = aItem[cal.calGetEndDateProp(aItem)];
         if ((startDate && startDate.isDate) || (endDate && endDate.isDate)) {
             return "";
         }
 
-        // Bug 359007: will result in wrong time label for events that span two or more days
-        return cal.getDateFormatter().formatItemTimeInterval(aItem);
+        // check for tasks without start and/or due date
+        if (!startDate || !endDate) {
+            return cal.getDateFormatter().formatItemTimeInterval(aItem);
+        }
+
+        let dateFormatter = cal.getDateFormatter();
+        let defaultTimezone = cal.calendarDefaultTimezone();
+        startDate = startDate.getInTimezone(defaultTimezone);
+        endDate = endDate.getInTimezone(defaultTimezone);
+        let start = startDate.clone();
+        let end = endDate.clone();
+        start.isDate = true;
+        end.isDate = true;
+        if (start.compare(end) == 0) {
+            // Events that start and end in the same day.
+            return dateFormatter.formatTimeInterval(startDate, endDate);
+        } else {
+            // Events that span two or more days.
+            let compareStart = aBoxDate.compare(start);
+            let compareEnd = aBoxDate.compare(end);
+            if (compareStart == 0) {
+                return "\u21e4 " + dateFormatter.formatTime(startDate); // unicode '⇤'
+            } else if (compareStart > 0 && compareEnd < 0) {
+                return "\u21ff";                                        // unicode '↔'
+            } else if (compareEnd == 0) {
+                return "\u21e5 " + dateFormatter.formatTime(endDate);   // unicode '⇥'
+            } else {
+                return "";
+            }
+        }
     }
-}
+};

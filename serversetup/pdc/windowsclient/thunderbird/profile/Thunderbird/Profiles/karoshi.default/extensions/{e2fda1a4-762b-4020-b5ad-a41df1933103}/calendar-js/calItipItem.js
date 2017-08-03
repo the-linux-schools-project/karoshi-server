@@ -14,8 +14,8 @@ function calItipItem() {
     this.wrappedJSObject = this;
     this.mCurrentItemIndex = 0;
 }
-const calItipItemClassID = Components.ID("{f41392ab-dcad-4bad-818f-b3d1631c4d93}");
-const calItipItemInterfaces = [Components.interfaces.calIItipItem];
+var calItipItemClassID = Components.ID("{f41392ab-dcad-4bad-818f-b3d1631c4d93}");
+var calItipItemInterfaces = [Components.interfaces.calIItipItem];
 calItipItem.prototype = {
     mIsInitialized: false,
 
@@ -27,6 +27,14 @@ calItipItem.prototype = {
         classDescription: "Calendar iTIP item",
         interfaces: calItipItemInterfaces
     }),
+
+    mSender: null,
+    get sender() {
+        return this.mSender;
+    },
+    set sender(aValue) {
+        return (this.mSender = aValue);
+    },
 
     mIsSend: false,
     get isSend() {
@@ -85,11 +93,11 @@ calItipItem.prototype = {
     },
     set localStatus(aValue) {
         return (this.mLocalStatus = aValue);
-     },
+    },
 
     mItemList: {},
 
-    init: function ciiI(aIcalString) {
+    init: function(aIcalString) {
         let parser = Components.classes["@mozilla.org/calendar/ics-parser;1"]
                                .createInstance(Components.interfaces.calIIcsParser);
         parser.parseString(aIcalString, null);
@@ -116,17 +124,16 @@ calItipItem.prototype = {
                 }
             }
             // never publish an organizer's RECEIVED params:
-            item.getAttendees({}).forEach(
-                function(att) {
-                    att.deleteProperty("RECEIVED-SEQUENCE");
-                    att.deleteProperty("RECEIVED-DTSTAMP");
-                });
+            item.getAttendees({}).forEach((att) => {
+                att.deleteProperty("RECEIVED-SEQUENCE");
+                att.deleteProperty("RECEIVED-DTSTAMP");
+            });
             item.setProperty("DTSTAMP", stamp);
             item.setProperty("LAST-MODIFIED", lastModified); // need to be last to undirty the item
         }
 
         this.mItemList = [];
-        for (let item in cal.itemIterator(parser.getItems({}))) {
+        for (let item of cal.itemIterator(parser.getItems({}))) {
             cleanItem(item);
             // only push non-faked master items or
             // the overridden instances of faked master items
@@ -145,7 +152,7 @@ calItipItem.prototype = {
         // method is (using user feedback, prefs, etc.) for the given
         // receivedMethod.  The RFC tells us to treat items without a METHOD
         // as if they were METHOD:REQUEST.
-        for each (let prop in parser.getProperties({})) {
+        for (let prop of parser.getProperties({})) {
             if (prop.propertyName == "METHOD") {
                 this.mReceivedMethod = prop.value;
                 this.mResponseMethod = prop.value;
@@ -156,15 +163,16 @@ calItipItem.prototype = {
         this.mIsInitialized = true;
     },
 
-    clone: function ciiC() {
+    clone: function() {
         let newItem = new calItipItem();
-        newItem.mItemList = this.mItemList.map(function(item) { return item.clone(); });
+        newItem.mItemList = this.mItemList.map(item => item.clone());
         newItem.mReceivedMethod = this.mReceivedMethod;
         newItem.mResponseMethod = this.mResponseMethod;
         newItem.mAutoResponse = this.mAutoResponse;
         newItem.mTargetCalendar = this.mTargetCalendar;
         newItem.mIdentity = this.mIdentity;
         newItem.mLocalStatus = this.mLocalStatus;
+        newItem.mSender = this.mSender;
         newItem.mIsSend = this.mIsSend;
         newItem.mIsInitialized = this.mIsInitialized;
         return newItem;
@@ -174,7 +182,7 @@ calItipItem.prototype = {
      * This returns both the array and the number of items. An easy way to
      * call it is: let itemArray = itipItem.getItemList({ });
      */
-    getItemList: function ciiGIL(itemCountRef) {
+    getItemList: function(itemCountRef) {
         if (!this.mIsInitialized) {
             throw Components.results.NS_ERROR_NOT_INITIALIZED;
         }
@@ -186,13 +194,13 @@ calItipItem.prototype = {
      * Note that this code forces the user to respond to all items in the same
      * way, which is a current limitation of the spec.
      */
-    setAttendeeStatus: function ciiSAS(aAttendeeId, aStatus) {
+    setAttendeeStatus: function(aAttendeeId, aStatus) {
         // Append "mailto:" to the attendee if it is missing it.
         if (!aAttendeeId.match(/^mailto:/i)) {
-            aAttendeeId = ("mailto:" + aAttendeeId);
+            aAttendeeId = "mailto:" + aAttendeeId;
         }
 
-        for each (let item in this.mItemList) {
+        for (let item of this.mItemList) {
             let attendee = item.getAttendeeById(aAttendeeId);
             if (attendee) {
                 // Replies should not have the RSVP property.

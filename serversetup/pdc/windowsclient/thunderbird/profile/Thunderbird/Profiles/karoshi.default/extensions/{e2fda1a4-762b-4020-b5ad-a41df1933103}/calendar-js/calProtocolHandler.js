@@ -27,39 +27,48 @@ function calProtocolHandler(scheme) {
 }
 
 calProtocolHandler.prototype = {
-    get defaultPort() this.mHttpProtocol.defaultPort,
-    get protocolFlags() this.mHttpProtocol.protocolFlags,
+    get defaultPort() { return this.mHttpProtocol.defaultPort; },
+    get protocolFlags() { return this.mHttpProtocol.protocolFlags; },
 
-    newURI: function cph_newURI(aSpec, anOriginalCharset, aBaseURI) {
-        var uri = Components.classes["@mozilla.org/network/standard-url;1"].
-                             createInstance(Components.interfaces.nsIStandardURL);
-        uri.init(Components.interfaces.nsIStandardURL.URLTYPE_STANDARD, 
+    newURI: function(aSpec, anOriginalCharset, aBaseURI) {
+        let uri = Components.classes["@mozilla.org/network/standard-url;1"]
+                            .createInstance(Components.interfaces.nsIStandardURL);
+        uri.init(Components.interfaces.nsIStandardURL.URLTYPE_STANDARD,
                  this.mHttpProtocol.defaultPort, aSpec, anOriginalCharset, aBaseURI);
         return uri;
     },
-    
-    newChannel: function cph_newChannel(aUri) {
-      return this.newChannel2(aUri, null);
+
+    newChannel: function(aUri) {
+        return this.newChannel2(aUri, null);
     },
 
-    newChannel2: function cph_newChannel2(aUri, aLoadInfo)
-    {
+    newChannel2: function(aUri, aLoadInfo) {
         // make sure to clone the uri, because we are about to change
         // it, and we don't want to change the original uri.
-        var uri = aUri.clone();
+        let uri = aUri.clone();
         uri.scheme = this.mHttpProtocol.scheme;
 
-        var channel = Services.io.newChannelFromURI(uri, null);
+        let channel;
+        if (aLoadInfo) {
+            channel = Services.io.newChannelFromURIWithLoadInfo(uri, aLoadInfo);
+        } else {
+            channel = Services.io.newChannelFromURI2(uri,
+                                                     null,
+                                                     Services.scriptSecurityManager.getSystemPrincipal(),
+                                                     null,
+                                                     Components.interfaces.nsILoadInfo.SEC_NORMAL,
+                                                     Components.interfaces.nsIContentPolicy.TYPE_OTHER);
+        }
         channel.originalURI = aUri;
         return channel;
     },
 
     // We are not overriding any special ports
-    allowPort: function cph_allowPort(aPort, aScheme) false
+    allowPort: function(aPort, aScheme) { return false; }
 };
 
-const calProtocolHandlerWebcalClassID = Components.ID("{1153c73a-39be-46aa-9ba9-656d188865ca}");
-const calProtocolHandlerWebcalInterfaces = [Components.interfaces.nsIProtocolHandler];
+var calProtocolHandlerWebcalClassID = Components.ID("{1153c73a-39be-46aa-9ba9-656d188865ca}");
+var calProtocolHandlerWebcalInterfaces = [Components.interfaces.nsIProtocolHandler];
 calProtocolHandlerWebcal.prototype = {
     __proto__: calProtocolHandler.prototype,
     classID: calProtocolHandlerWebcalClassID,
@@ -72,8 +81,8 @@ calProtocolHandlerWebcal.prototype = {
     }),
 };
 
-const calProtocolHandlerWebcalsClassID = Components.ID("{bdf71224-365d-4493-856a-a7e74026f766}");
-const calProtocolHandlerWebcalsInterfaces = [Components.interfaces.nsIProtocolHandler];
+var calProtocolHandlerWebcalsClassID = Components.ID("{bdf71224-365d-4493-856a-a7e74026f766}");
+var calProtocolHandlerWebcalsInterfaces = [Components.interfaces.nsIProtocolHandler];
 calProtocolHandlerWebcals.prototype = {
     __proto__: calProtocolHandler.prototype,
     classID: calProtocolHandlerWebcalsClassID,

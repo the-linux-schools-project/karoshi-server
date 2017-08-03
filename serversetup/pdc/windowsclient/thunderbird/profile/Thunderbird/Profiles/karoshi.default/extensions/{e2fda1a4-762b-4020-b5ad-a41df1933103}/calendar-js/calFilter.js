@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 Components.utils.import("resource://gre/modules/Preferences.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
 /**
@@ -122,7 +123,7 @@ calFilterProperties.prototype = {
 
     onfilter: null,
 
-    equals: function cFP_equals(aFilterProps) {
+    equals: function(aFilterProps) {
         if (!(aFilterProps instanceof calFilterProperties)) {
             return false;
         }
@@ -132,17 +133,17 @@ calFilterProperties.prototype = {
         }, this);
     },
 
-    clone: function cFP_clone() {
-        let cl = new calFilterProperties();
+    clone: function() {
+        let cloned = new calFilterProperties();
         let props = ["start", "end", "due", "status", "category", "occurrences", "onfilter"];
         props.forEach(function(prop) {
-            cl[prop] = this[prop];
+            cloned[prop] = this[prop];
         }, this);
 
-        return cl;
+        return cloned;
     },
 
-    LOG: function cFP_LOG(aString) {
+    LOG: function(aString) {
         cal.LOG("[calFilterProperties] " +
                 (aString || "") +
                 " start=" + this.start +
@@ -179,7 +180,7 @@ calFilter.prototype = {
     /**
      * Initializes the predefined filters.
      */
-    initDefinedFilters: function cF_initDefinedFilters() {
+    initDefinedFilters: function() {
         let filters = ["all", "notstarted", "overdue", "open", "completed", "throughcurrent",
                        "throughtoday", "throughsevendays", "today", "thisCalendarMonth",
                        "future", "current", "currentview"];
@@ -197,7 +198,7 @@ calFilter.prototype = {
      * @result          The filter properties for the specified filter, or null if the filter
      *                  not predefined.
      */
-    getPreDefinedFilterProperties: function cF_getPreDefinedFilterProperties(aFilter) {
+    getPreDefinedFilterProperties: function(aFilter) {
         let props = new calFilterProperties();
 
         if (!aFilter) {
@@ -295,7 +296,7 @@ calFilter.prototype = {
      * @param aFilterName         The name to define the filter properties as.
      * @param aFilterProperties   The filter properties to define.
      */
-    defineFilter: function cF_defineFilter(aFilterName, aFilterProperties) {
+    defineFilter: function(aFilterName, aFilterProperties) {
         if (!(aFilterProperties instanceof calFilterProperties)) {
             return;
         }
@@ -310,7 +311,7 @@ calFilter.prototype = {
      * @return                    The properties defined by the filter name, or null if
      *                            the filter name was not previously defined.
      */
-    getDefinedFilterProperties: function cF_getDefinedFilterProperties(aFilter) {
+    getDefinedFilterProperties: function(aFilter) {
         if (aFilter in this.mDefinedFilters) {
             return this.mDefinedFilters[aFilter].clone();
         } else {
@@ -326,7 +327,7 @@ calFilter.prototype = {
      *                            were defined as, or null if the filter properties were
      *                            not previously defined.
      */
-    getDefinedFilterName: function cF_getDefinedFilterName(aFilterProperties) {
+    getDefinedFilterName: function(aFilterProperties) {
         for (filter in this.mDefinedFilters) {
             if (this.mDefinedFilters[filter].equals(aFilterProperties)) {
                 return filter;
@@ -342,7 +343,7 @@ calFilter.prototype = {
      * @return                    Returns true if the item matches the filter text or no
      *                            filter text has been set, false otherwise.
      */
-    textFilter: function cF_filterByText(aItem) {
+    textFilter: function(aItem) {
         if (!this.mFilterText) {
             return true;
         }
@@ -353,17 +354,15 @@ calFilter.prototype = {
             return true;
         }
 
-        //XXX TODO: Support specifying which fields to search on
-        for each (let field in ["SUMMARY", "DESCRIPTION", "LOCATION", "URL"]) {
+        // TODO: Support specifying which fields to search on
+        for (let field of ["SUMMARY", "DESCRIPTION", "LOCATION", "URL"]) {
             let val = aItem.getProperty(field);
-            if (val && val.toLowerCase().indexOf(searchText) != -1) {
+            if (val && val.toLowerCase().includes(searchText)) {
                 return true;
             }
         }
 
-        return aItem.getCategories({}).some(function(cat) {
-            return (cat.toLowerCase().indexOf(searchText) != -1);
-        });
+        return aItem.getCategories({}).some(cat => cat.toLowerCase().includes(searchText));
     },
 
     /**
@@ -373,7 +372,7 @@ calFilter.prototype = {
      * @return                    Returns true if the item falls within the date range
      *                            specified by mStartDate and mEndDate, false otherwise.
      */
-    dateRangeFilter: function cF_dateRangeFilter(aItem) {
+    dateRangeFilter: function(aItem) {
         return checkIfInRange(aItem, this.mStartDate, this.mEndDate);
     },
 
@@ -385,7 +384,7 @@ calFilter.prototype = {
      * @return                    Returns true if the item matches the filter properties
      *                            currently applied, false otherwise.
      */
-    propertyFilter: function cF_propertyFilter(aItem) {
+    propertyFilter: function(aItem) {
         let result;
         let props = this.mFilterProperties;
         if (!props) {
@@ -414,14 +413,12 @@ calFilter.prototype = {
         if (result && props.category) {
             let cats = [];
 
-            if (typeof(props.category) == "string") {
+            if (typeof props.category == "string") {
                 cats.push(props.category);
             } else if (Array.isArray(props.category)) {
                 cats = props.category;
             }
-            result = cats.some(function(cat) {
-                return aItem.getCategories({}).indexOf(cat) > -1;
-            });
+            result = cats.some(cat => aItem.getCategories({}).includes(cat));
         }
 
         // test the status property. Only applies to tasks.
@@ -457,7 +454,7 @@ calFilter.prototype = {
 
         // Call the filter properties onfilter callback if set. The return value of the
         // callback function will override the result of this function.
-        if (props.onfilter && (typeof(props.onfilter) == "function")) {
+        if (props.onfilter && typeof props.onfilter == "function") {
             return props.onfilter(aItem, result, props, this);
         }
 
@@ -475,13 +472,13 @@ calFilter.prototype = {
      *                            date value for the end of the date range.
      * @return                    The calculated date for the property.
      */
-    getDateForProperty: function cF_getDateForProperty(prop, start) {
+    getDateForProperty: function(prop, start) {
         let props = this.mFilterProperties || new calFilterProperties();
         let result = null;
         let selectedDate = this.mSelectedDate || currentView().selectedDay || cal.now();
         let nowDate = cal.now();
 
-        if (typeof(prop) == "string") {
+        if (typeof prop == "string") {
             let duration = cal.createDuration(prop);
             if (duration) {
                 result = nowDate;
@@ -493,8 +490,8 @@ calFilter.prototype = {
                     result = null;
                     break;
                 case props.FILTER_DATE_VIEW:
-                    result = start ? currentView().startDay.clone() :
-                                     currentView().endDay.clone();
+                    result = start ? currentView().startDay.clone()
+                                   : currentView().endDay.clone();
                     break;
                 case props.FILTER_DATE_SELECTED:
                     result = selectedDate.clone();
@@ -543,7 +540,7 @@ calFilter.prototype = {
      *
      * @return                    The current [startDate, endDate] for the applied filter.
      */
-    getDatesForFilter: function cfp_getDatesForFilter() {
+    getDatesForFilter: function() {
         let startDate = null;
         let endDate = null;
 
@@ -663,10 +660,10 @@ calFilter.prototype = {
      *                          - a String representing a duration offset from now
      *                          - a Function to use for the onfilter callback for a custom filter
      */
-    applyFilter: function cF_applyFilter(aFilter) {
+    applyFilter: function(aFilter) {
         this.mFilterProperties = null;
 
-        if (typeof(aFilter) == "string") {
+        if (typeof aFilter == "string") {
             if (aFilter in this.mDefinedFilters) {
                 this.mFilterProperties = this.getDefinedFilterProperties(aFilter);
             } else {
@@ -677,20 +674,20 @@ calFilter.prototype = {
                     this.mFilterProperties.end = aFilter;
                 }
             }
-        } else if (typeof(aFilter) == "object" && (aFilter instanceof calFilterProperties)) {
+        } else if (typeof aFilter == "object" && (aFilter instanceof calFilterProperties)) {
             this.mFilterProperties = aFilter;
-        } else if (typeof(aFilter) == "function") {
+        } else if (typeof aFilter == "function") {
             this.mFilterProperties = new calFilterProperties();
             this.mFilterProperties.onfilter = aFilter;
         } else {
             this.mFilterProperties = new calFilterProperties();
         }
 
-        if (!this.mFilterProperties) {
-            cal.WARN("[calFilter] Unable to apply filter " + aFilter);
-        } else {
+        if (this.mFilterProperties) {
             this.updateFilterDates();
             // this.mFilterProperties.LOG("Applying filter:");
+        } else {
+            cal.WARN("[calFilter] Unable to apply filter " + aFilter);
         }
     },
 
@@ -701,7 +698,7 @@ calFilter.prototype = {
      *
      * @return                    The current [startDate, endDate] for the applied filter.
      */
-    updateFilterDates: function cF_updateFilterDates() {
+    updateFilterDates: function() {
         let [startDate, endDate] = this.getDatesForFilter();
         this.mStartDate = startDate;
         this.mEndDate = endDate;
@@ -727,7 +724,7 @@ calFilter.prototype = {
      * @return                    A new array containing the items that match the filters, or
      *                            null if no filter has been applied.
      */
-    filterItems: function cF_filterItems(aItems, aCallback) {
+    filterItems: function(aItems, aCallback) {
         if (!this.mFilterProperties) {
             return null;
         }
@@ -735,7 +732,7 @@ calFilter.prototype = {
         return aItems.filter(function(aItem) {
             let result = this.propertyFilter(aItem) && this.textFilter(aItem);
 
-            if (aCallback && (typeof(aCallback) == "function")) {
+            if (aCallback && typeof aCallback == "function") {
                 aCallback(aItem, result, this.mFilterProperties, this);
             }
 
@@ -750,8 +747,8 @@ calFilter.prototype = {
      * @return                    Returns true if the item matches the filters,
      *                            false otherwise.
      */
-    isItemInFilters: function cF_isItemInFilters(aItem) {
-        return (this.propertyFilter(aItem) && this.textFilter(aItem));
+    isItemInFilters: function(aItem) {
+        return this.propertyFilter(aItem) && this.textFilter(aItem);
     },
 
     /**
@@ -762,7 +759,7 @@ calFilter.prototype = {
      * @return                    Returns the next occurrence that matches the filters,
      *                            or null if no match is found.
      */
-    getNextOccurrence: function cF_getNextOccurrence(aItem) {
+    getNextOccurrence: function(aItem) {
         if (!aItem.recurrenceInfo) {
             return this.isItemInFilters(aItem) ? aItem : null;
         }
@@ -776,7 +773,7 @@ calFilter.prototype = {
             while (count++ < this.mMaxIterations) {
                 let next = aItem.recurrenceInfo.getNextOccurrence(start);
                 if (!next) {
-                   // there are no more occurrences
+                    // there are no more occurrences
                     return null;
                 }
                 if (this.isItemInFilters(next)) {
@@ -794,15 +791,13 @@ calFilter.prototype = {
             let exMatch = null;
             aItem.recurrenceInfo.getExceptionIds({}).forEach(function(rID) {
                 let ex = aItem.recurrenceInfo.getExceptionFor(rID);
-                if (ex && cal.now().compare((ex.startDate || ex.entryDate)) < 0 &&
+                if (ex && cal.now().compare(ex.startDate || ex.entryDate) < 0 &&
                     this.isItemInFilters(ex)) {
                     exMatch = ex;
                 }
             }, this);
             return exMatch;
         }
-
-        return null;
     },
 
     /**
@@ -814,7 +809,7 @@ calFilter.prototype = {
      *                            match the filters, an empty array if there are no
      *                            matches, or null if the filter is not initialized.
      */
-    getOccurrences: function cF_getOccurrences(aItem) {
+    getOccurrences: function(aItem) {
         if (!this.mFilterProperties) {
             return null;
         }
@@ -854,7 +849,7 @@ calFilter.prototype = {
      * @param aListener           The calIOperationListener object to return results to.
      * @return                    the calIOperation handle to track the operation.
      */
-    getItems: function cF_getItems(aCalendar, aItemType, aListener) {
+    getItems: function(aCalendar, aItemType, aListener) {
         if (!this.mFilterProperties) {
             return null;
         }
@@ -865,16 +860,17 @@ calFilter.prototype = {
         // the listener passed in the aListener argument.
         let self = this;
         let listener = {
+            QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
             onOperationComplete: aListener.onOperationComplete.bind(aListener),
 
-            onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
+            onGetResult: function(aOpCalendar, aStatus, aOpItemType, aDetail, aCount, aItems) {
                 let items;
                 if (props.occurrences == props.FILTER_OCCURRENCES_PAST_AND_NEXT) {
                     // with the FILTER_OCCURRENCES_PAST_AND_NEXT occurrence filter we will
                     // get parent items returned here, so we need to let the getOccurrences
                     // function handle occurrence expansion.
                     items = [];
-                    for each (let item in aItems) {
+                    for (let item of aItems) {
                         items = items.concat(self.getOccurrences(item));
                     }
                 } else {
@@ -883,7 +879,7 @@ calFilter.prototype = {
                     items = self.filterItems(aItems);
                 }
 
-                aListener.onGetResult(aCalendar, aStatus, aItemType, aDetail, items.length, items);
+                aListener.onGetResult(aOpCalendar, aStatus, aOpItemType, aDetail, items.length, items);
             }
         };
 
@@ -891,11 +887,11 @@ calFilter.prototype = {
         let filter = aItemType || aCalendar.FILTER_TYPE_ALL;
         if (!props.status || (props.status & (props.FILTER_STATUS_COMPLETED_TODAY |
                                               props.FILTER_STATUS_COMPLETED_BEFORE))) {
-            filter |=  aCalendar.ITEM_FILTER_COMPLETED_YES;
+            filter |= aCalendar.ITEM_FILTER_COMPLETED_YES;
         }
         if (!props.status || (props.status & (props.FILTER_STATUS_INCOMPLETE |
                                               props.FILTER_STATUS_IN_PROGRESS))) {
-            filter |=  aCalendar.ITEM_FILTER_COMPLETED_NO;
+            filter |= aCalendar.ITEM_FILTER_COMPLETED_NO;
         }
 
         let startDate = this.startDate;

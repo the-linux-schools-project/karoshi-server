@@ -5,10 +5,11 @@
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-const CI = Components.interfaces;
+var Ci = Components.interfaces;
 
-const ITIP_HANDLER_MIMETYPE = "application/x-itip-internal";
-const ITIP_HANDLER_PROTOCOL = "moz-cal-handle-itip";
+var ITIP_HANDLER_MIMETYPE = "application/x-itip-internal";
+var ITIP_HANDLER_PROTOCOL = "moz-cal-handle-itip";
+var NS_ERROR_WONT_HANDLE_CONTENT = 0x805d0001;
 
 
 function NYI() {
@@ -16,10 +17,10 @@ function NYI() {
 }
 
 function ItipChannel(URI) {
-   this.URI = this.originalURI = URI;
+    this.URI = this.originalURI = URI;
 }
-const ItipChannelClassID = Components.ID("{643e0328-36f6-411d-a107-16238dff9cd7}");
-const ItipChannelInterfaces = [
+var ItipChannelClassID = Components.ID("{643e0328-36f6-411d-a107-16238dff9cd7}");
+var ItipChannelInterfaces = [
     Components.interfaces.nsIChannel,
     Components.interfaces.nsIRequest
 ];
@@ -40,18 +41,18 @@ ItipChannel.prototype = {
     loadGroup: null,
     notificationCallbacks: null,
     securityInfo: null,
-    
+
     open: NYI,
-    asyncOpen: function (observer, ctxt) {
+    asyncOpen: function(observer, ctxt) {
         observer.onStartRequest(this, ctxt);
     },
-    asyncRead: function (listener, ctxt) {
+    asyncRead: function(listener, ctxt) {
         return listener.onStartRequest(this, ctxt);
     },
-    
-    isPending: function () { return true; },
+
+    isPending: function() { return true; },
     status: Components.results.NS_OK,
-    cancel: function (status) { this.status = status; },
+    cancel: function(status) { this.status = status; },
     suspend: NYI,
     resume: NYI,
 };
@@ -59,8 +60,8 @@ ItipChannel.prototype = {
 function ItipProtocolHandler() {
     this.wrappedJSObject = this;
 }
-const ItipProtocolHandlerClassID = Components.ID("{6e957006-b4ce-11d9-b053-001124736B74}");
-const ItipProtocolHandlerInterfaces = [Components.interfaces.nsIProtocolHandler];
+var ItipProtocolHandlerClassID = Components.ID("{6e957006-b4ce-11d9-b053-001124736B74}");
+var ItipProtocolHandlerInterfaces = [Components.interfaces.nsIProtocolHandler];
 ItipProtocolHandler.prototype = {
     classID: ItipProtocolHandlerClassID,
     QueryInterface: XPCOMUtils.generateQI(ItipProtocolHandlerInterfaces),
@@ -71,23 +72,22 @@ ItipProtocolHandler.prototype = {
         interfaces: ItipProtocolHandlerInterfaces
     }),
 
-    protocolFlags: CI.nsIProtocolHandler.URI_NORELATIVE | CI.nsIProtocolHandler.URI_DANGEROUS_TO_LOAD,
-    allowPort: function () false,
+    protocolFlags: Ci.nsIProtocolHandler.URI_NORELATIVE | Ci.nsIProtocolHandler.URI_DANGEROUS_TO_LOAD,
+    allowPort: () => false,
     isSecure: false,
-    newURI: function (spec, charSet, baseURI) {
+    newURI: function(spec, charSet, baseURI) {
         let cls = Components.classes["@mozilla.org/network/standard-url;1"];
-        let url = cls.createInstance(CI.nsIStandardURL);
-        url.init(CI.nsIStandardURL.URLTYPE_STANDARD, 0, spec, charSet, baseURI);
+        let url = cls.createInstance(Ci.nsIStandardURL);
+        url.init(Ci.nsIStandardURL.URLTYPE_STANDARD, 0, spec, charSet, baseURI);
         dump("Creating new URI for " + spec + "\n");
-        return url.QueryInterface(CI.nsIURI);
+        return url.QueryInterface(Ci.nsIURI);
     },
-    
-    newChannel: function (URI) {
+
+    newChannel: function(URI) {
         return this.newChannel2(URI, null);
     },
 
-    newChannel2: function(URI, aLoadInfo)
-    {
+    newChannel2: function(URI, aLoadInfo) {
         dump("Creating new ItipChannel for " + URI + "\n");
         return new ItipChannel(URI);
     },
@@ -96,8 +96,8 @@ ItipProtocolHandler.prototype = {
 function ItipContentHandler() {
     this.wrappedJSObject = this;
 }
-const ItipContentHandlerClassID = Components.ID("{47c31f2b-b4de-11d9-bfe6-001124736B74}");
-const ItipContentHandlerInterfaces = [Components.interfaces.nsIContentHandler];
+var ItipContentHandlerClassID = Components.ID("{47c31f2b-b4de-11d9-bfe6-001124736B74}");
+var ItipContentHandlerInterfaces = [Components.interfaces.nsIContentHandler];
 ItipContentHandler.prototype = {
     classID: ItipContentHandlerClassID,
     QueryInterface: XPCOMUtils.generateQI(ItipContentHandlerInterfaces),
@@ -108,21 +108,21 @@ ItipContentHandler.prototype = {
         interfaces: ItipContentHandlerInterfaces
     }),
 
-    handleContent: function (contentType, windowTarget, request) {
-        let channel = request.QueryInterface(CI.nsIChannel);
+    handleContent: function(contentType, windowTarget, request) {
+        let channel = request.QueryInterface(Ci.nsIChannel);
         let uri = channel.URI.spec;
-        if (uri.indexOf(ITIP_HANDLER_PROTOCOL + ":") != 0) {
+        if (!uri.startsWith(ITIP_HANDLER_PROTOCOL + ":")) {
             cal.ERROR("Unexpected iTIP uri: " + uri + "\n");
-            return Components.results.NS_ERROR_FAILURE;
+            throw NS_ERROR_WONT_HANDLE_CONTENT;
         }
         // moz-cal-handle-itip:///?
         let paramString = uri.substring(ITIP_HANDLER_PROTOCOL.length + 4);
         let paramArray = paramString.split("&");
         let paramBlock = { };
-        paramArray.forEach(function (v) {
-            let parts = v.split("=");
+        paramArray.forEach((value) => {
+            let parts = value.split("=");
             paramBlock[parts[0]] = unescape(unescape(parts[1]));
-            });
+        });
         // dump("content-handler: have params " + paramBlock.toSource() + "\n");
         let event = cal.createEvent(paramBlock.data);
         dump("Processing iTIP event '" + event.title + "' from " +
@@ -134,4 +134,4 @@ ItipContentHandler.prototype = {
 };
 
 var components = [ItipChannel, ItipProtocolHandler, ItipContentHandler];
-var NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
+this.NSGetFactory = XPCOMUtils.generateNSGetFactory(components);

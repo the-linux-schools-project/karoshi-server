@@ -7,19 +7,17 @@ function calCalendarSearchListener(numOperations, finalListener) {
     this.mNumOperations = numOperations;
     this.mResults = [];
 
-    var this_ = this;
-    function cancelFunc() { // operation group has been cancelled
-        this_.notifyResult(null);
-    }
-    this.opGroup = new calOperationGroup(cancelFunc);
+    this.opGroup = new calOperationGroup(() => {
+        this.notifyResult(null);
+    });
 }
 calCalendarSearchListener.prototype = {
     mFinalListener: null,
     mNumOperations: 0,
     opGroup: null,
 
-    notifyResult: function calCalendarSearchListener_notifyResult(result) {
-        var listener = this.mFinalListener
+    notifyResult: function(result) {
+        let listener = this.mFinalListener;
         if (listener) {
             if (!this.opGroup.isPending) {
                 this.mFinalListener = null;
@@ -29,7 +27,7 @@ calCalendarSearchListener.prototype = {
     },
 
     // calIGenericOperationListener:
-    onResult: function calCalendarSearchListener_onResult(aOperation, aResult) {
+    onResult: function(aOperation, aResult) {
         if (this.mFinalListener) {
             if (!aOperation || !aOperation.isPending) {
                 --this.mNumOperations;
@@ -48,8 +46,8 @@ function calCalendarSearchService() {
     this.wrappedJSObject = this;
     this.mProviders = new calInterfaceBag(Components.interfaces.calICalendarSearchProvider);
 }
-const calCalendarSearchServiceClassID = Components.ID("{f5f743cd-8997-428e-bc1b-644e73f61203}");
-const calCalendarSearchServiceInterfaces = [
+var calCalendarSearchServiceClassID = Components.ID("{f5f743cd-8997-428e-bc1b-644e73f61203}");
+var calCalendarSearchServiceInterfaces = [
     Components.interfaces.calICalendarSearchProvider,
     Components.interfaces.calICalendarSearchService
 ];
@@ -67,11 +65,8 @@ calCalendarSearchService.prototype = {
     }),
 
     // calICalendarSearchProvider:
-    searchForCalendars: function calCalendarSearchService_searchForCalendars(aString,
-                                                                             aHints,
-                                                                             aMaxResults,
-                                                                             aListener) {
-        var groupListener = new calCalendarSearchListener(this.mProviders.size, aListener);
+    searchForCalendars: function(aString, aHints, aMaxResults, aListener) {
+        let groupListener = new calCalendarSearchListener(this.mProviders.size, aListener);
         function searchForCalendars_(provider) {
             try {
                 groupListener.opGroup.add(provider.searchForCalendars(aString,
@@ -88,15 +83,15 @@ calCalendarSearchService.prototype = {
     },
 
     // calICalendarSearchService:
-    getProviders: function calCalendarSearchService_getProviders(out_aCount) {
-        var ret = this.mProviders.interfaceArray;
+    getProviders: function(out_aCount) {
+        let ret = this.mProviders.interfaceArray;
         out_aCount.value = ret.length;
         return ret;
     },
-    addProvider: function calCalendarSearchService_addProvider(aProvider) {
+    addProvider: function(aProvider) {
         this.mProviders.add(aProvider);
     },
-    removeProvider: function calCalendarSearchService_removeProvider(aProvider) {
+    removeProvider: function(aProvider) {
         this.mProviders.remove(aProvider);
     }
 };

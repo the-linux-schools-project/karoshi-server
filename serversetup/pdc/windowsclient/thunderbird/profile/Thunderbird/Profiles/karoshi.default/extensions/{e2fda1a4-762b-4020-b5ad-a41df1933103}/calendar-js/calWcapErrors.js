@@ -2,13 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const NS_ERROR_INVALID_ARG = Components.results.NS_ERROR_INVALID_ARG;
+/* exported checkErrorCode, checkWcapXmlErrno, checkWcapIcalErrno,
+ *          errorToString
+ */
+
+var NS_ERROR_INVALID_ARG = Components.results.NS_ERROR_INVALID_ARG;
 
 //
 // Common netwerk errors:
 //
-const NS_ERROR_MODULE_BASE_OFFSET = 0x45;
-const NS_ERROR_MODULE_NETWORK = 6;
+var NS_ERROR_MODULE_BASE_OFFSET = 0x45;
+var NS_ERROR_MODULE_NETWORK = 6;
 
 function generateFailure(module, code) {
     // 1<<31 generates negative number, so use literal, don't use logical operators:
@@ -24,13 +28,13 @@ function getResultCode(err) {
         return NS_OK;
     }
     if (isNaN(err)) {
-        return ((err instanceof nsIException) ? err.result : Components.results.NS_ERROR_FAILURE);
+        return (err instanceof nsIException ? err.result : Components.results.NS_ERROR_FAILURE);
     }
     return err;
 }
 
 function getErrorModule(err) {
-    var rc = getResultCode(err);
+    let rc = getResultCode(err);
     return (((rc >>> 16) & 0x7fff) - NS_ERROR_MODULE_BASE_OFFSET);
 }
 
@@ -38,7 +42,7 @@ function checkErrorCode(err, rcBits, maskBits) {
     if (!maskBits) {
         maskBits = 0;
     }
-    var rc = getResultCode(err);
+    let rc = getResultCode(err);
     return ((rc ^ rcBits) >>> maskBits) == 0;
 }
 
@@ -49,17 +53,14 @@ function checkErrorCode(err, rcBits, maskBits) {
 
 // The requested action could not be completed while the networking
 // is in the offline state.
-const NS_ERROR_OFFLINE = generateNetFailure(16);
+var NS_ERROR_OFFLINE = generateNetFailure(16);
 
-// The async request completed successfully.
-const NS_BINDING_SUCCEEDED = NS_OK;
+var NS_BINDING_FAILED = generateNetFailure(1);
+var NS_BINDING_ABORTED = generateNetFailure(2);
+var NS_BINDING_REDIRECTED = generateNetFailure(3);
+var NS_BINDING_RETARGETED = generateNetFailure(4);
 
-const NS_BINDING_FAILED = generateNetFailure(1);
-const NS_BINDING_ABORTED = generateNetFailure(2);
-const NS_BINDING_REDIRECTED = generateNetFailure(3);
-const NS_BINDING_RETARGETED = generateNetFailure(4);
-
-const g_nsNetErrorCodes = [
+var g_nsNetErrorCodes = [
     NS_BINDING_FAILED,
     "The async request failed for some unknown reason.",
     NS_BINDING_ABORTED,
@@ -68,48 +69,49 @@ const g_nsNetErrorCodes = [
     "The async request has been redirected to a different async request.",
     NS_BINDING_RETARGETED,
     "The async request has been retargeted to a different handler.",
-    /*NS_ERROR_MALFORMED_URI*/ generateNetFailure(10),
+    /* NS_ERROR_MALFORMED_URI */ generateNetFailure(10),
     "The URI is malformed.",
-    /*NS_ERROR_UNKNOWN_PROTOCOL*/ generateNetFailure(18),
+    /* NS_ERROR_UNKNOWN_PROTOCOL */ generateNetFailure(18),
     "The URI scheme corresponds to an unknown protocol handler.",
-    /*NS_ERROR_CONNECTION_REFUSED*/ generateNetFailure(13),
+    /* NS_ERROR_CONNECTION_REFUSED */ generateNetFailure(13),
     "The connection attempt failed, for example, because no server was listening at specified host:port.",
-    /*NS_ERROR_PROXY_CONNECTION_REFUSED*/ generateNetFailure(72),
+    /* NS_ERROR_PROXY_CONNECTION_REFUSED */ generateNetFailure(72),
     "The connection attempt to a proxy failed.",
-    /*NS_ERROR_NET_TIMEOUT*/ generateNetFailure(14),
+    /* NS_ERROR_NET_TIMEOUT */ generateNetFailure(14),
     "The connection was lost due to a timeout error.",
     NS_ERROR_OFFLINE,
     "The requested action could not be completed while the networking library is in the offline state.",
-    /*NS_ERROR_PORT_ACCESS_NOT_ALLOWED*/ generateNetFailure(19),
+    /* NS_ERROR_PORT_ACCESS_NOT_ALLOWED */ generateNetFailure(19),
     "The requested action was prohibited because it would have caused the networking library to establish a connection to an unsafe or otherwise banned port.",
-    /*NS_ERROR_NET_RESET*/ generateNetFailure(20),
+    /* NS_ERROR_NET_RESET */ generateNetFailure(20),
     "The connection was established, but no data was ever received.",
-    /*NS_ERROR_NET_INTERRUPT*/ generateNetFailure(71),
+    /* NS_ERROR_NET_INTERRUPT */ generateNetFailure(71),
     "The connection was established, but the data transfer was interrupted.",
-    /*NS_ERROR_NOT_RESUMABLE*/ generateNetFailure(25),
+    /* NS_ERROR_NOT_RESUMABLE */ generateNetFailure(25),
     "This request is not resumable, but it was tried to resume it, or to request resume-specific data.",
-    /*NS_ERROR_ENTITY_CHANGED*/ generateNetFailure(32),
+    /* NS_ERROR_ENTITY_CHANGED */ generateNetFailure(32),
     "It was attempted to resume the request, but the entity has changed in the meantime.",
-    /*NS_ERROR_REDIRECT_LOOP*/ generateNetFailure(31),
+    /* NS_ERROR_REDIRECT_LOOP */ generateNetFailure(31),
     "The request failed as a result of a detected redirection loop.",
-    /*NS_ERROR_UNKNOWN_HOST*/ generateNetFailure(30),
+    /* NS_ERROR_UNKNOWN_HOST */ generateNetFailure(30),
     "The lookup of a hostname failed. This generally refers to the hostname from the URL being loaded.",
-    /*NS_ERROR_UNKNOWN_PROXY_HOST*/ generateNetFailure(42),
+    /* NS_ERROR_UNKNOWN_PROXY_HOST */ generateNetFailure(42),
     "The lookup of a proxy hostname failed.",
-    /*NS_ERROR_UNKNOWN_SOCKET_TYPE*/ generateNetFailure(51),
+    /* NS_ERROR_UNKNOWN_SOCKET_TYPE */ generateNetFailure(51),
     "The specified socket type does not exist.",
-    /*NS_ERROR_SOCKET_CREATE_FAILED*/ generateNetFailure(52),
+    /* NS_ERROR_SOCKET_CREATE_FAILED */ generateNetFailure(52),
     "The specified socket type could not be created."
-    ];
+];
 
 function netErrorToString(rc) {
     if (!isNaN(rc) && getErrorModule(rc) == NS_ERROR_MODULE_NETWORK) {
-        var i = 0;
+        let i = 0;
         while (i < g_nsNetErrorCodes.length) {
             // however rc is kept unsigned, our generated code signed,
             // so == won't work here:
-            if ((g_nsNetErrorCodes[i] ^ rc) == 0)
+            if ((g_nsNetErrorCodes[i] ^ rc) == 0) {
                 return g_nsNetErrorCodes[i + 1];
+            }
             i += 2;
         }
     }
@@ -121,7 +123,7 @@ function netErrorToString(rc) {
 // WCAP error handling helpers
 //
 
-const g_wcapErrorCodes = [
+var g_wcapErrorCodes = [
     /* -1 */ NS_OK, "Logout successful.",
     /*  0 */ NS_OK, "Command successful.",
     /*  1 */ calIWcapErrors.WCAP_LOGIN_FAILED, calGetString("wcap", "loginFailed.text"),
@@ -169,15 +171,15 @@ const g_wcapErrorCodes = [
     /* 43 */ calIWcapErrors.WCAP_ATTENDEE_GROUP_EXPANSION_CLIPPED, "An LDAP group being expanded was too large and exceeded the maximum number allowed in an expansion. The expansion stopped at the specified maximum limit. The maximum limit defaults to 200. To change the maximum limit, set the server configuration preference calstore.group.attendee.maxsize.",
     /* 44 */ calIWcapErrors.WCAP_USERPREFS_ACCESS_DENIED, "Either the server does not allow this administrator access to get or modify user preferences, or the requester is not an administrator.",
     /* 45 */ calIWcapErrors.WCAP_NOT_ALLOWED_TO_REQUEST_PUBLISH, "The requester was not an organizer of the event, and, therefore, is not allowed to edit the component using the PUBLISH or REQUEST method.",
-    /* 46 */ calIWcapErrors.WCAP_INSUFFICIENT_PARAMETERS, "The caller tried to invoke verifyevents_by_ids.wcap, or verifytodos_by_ids.wcap with insufficient arguments (mismatched number of uid’s and rid’s).",
+    /* 46 */ calIWcapErrors.WCAP_INSUFFICIENT_PARAMETERS, "The caller tried to invoke verifyevents_by_ids.wcap, or verifytodos_by_ids.wcap with insufficient arguments (mismatched number of uid's and rid's).",
     /* 47 */ calIWcapErrors.WCAP_MUSTBEOWNER_OPERATION, "The user needs to be an owner or co-owner of the calendar in questions to complete this operation. (Probably related to private or confidential component.)",
     /* 48 */ calIWcapErrors.WCAP_DWP_CONNECTION_FAILED, "GSE scheduling engine failed to make connection to DWP.",
     /* 49 */ calIWcapErrors.WCAP_DWP_MAX_CONNECTION_REACHED, "Reached the maximum number of connections. When some of the connections are freed, users can successfully connect. Same as error 11001.",
-    /* 50 */ calIWcapErrors.WCAP_DWP_CANNOT_RESOLVE_CALENDAR, "Front end can’t resolve to a particular back end. Same as error 11002.",
+    /* 50 */ calIWcapErrors.WCAP_DWP_CANNOT_RESOLVE_CALENDAR, "Front end can't resolve to a particular back end. Same as error 11002.",
     /* 51 */ calIWcapErrors.WCAP_DWP_BAD_DATA, "Generic response. Check all DWP servers. One might be down. Same as error 11003.",
     /* 52 */ calIWcapErrors.WCAP_BAD_COMMAND, "The command sent in was not recognized. This is an internal only error code. It should not appear in the error logs.",
     /* 53 */ calIWcapErrors.WCAP_NOT_FOUND, "Returned for all errors from a write to the Berkeley DB. This is an internal only error code. It should not appear in the error logs.",
-    /* 54 */ calIWcapErrors.WCAP_WRITE_IMPORT_CANT_EXPAND_CALID, "Can’t expand calid when importing file.",
+    /* 54 */ calIWcapErrors.WCAP_WRITE_IMPORT_CANT_EXPAND_CALID, "Can't expand calid when importing file.",
     /* 55 */ calIWcapErrors.WCAP_GETTIME_FAILED, "Get server time failed.",
     /* 56 */ calIWcapErrors.WCAP_FETCH_DELETEDCOMPONENTS_FAILED, "fetch_deletedcomponents.wcap failed.",
     /* 57 */ calIWcapErrors.WCAP_FETCH_DELETEDCOMPONENTS_PARTIAL_RESULT, "Success but partial result.",
@@ -185,12 +187,12 @@ const g_wcapErrorCodes = [
     /* 59 */ calIWcapErrors.WCAP_COMPONENT_NOT_FOUND, "Returned when a fetch or delete is attempted that does not exist.",
     /* 60 */ calIWcapErrors.WCAP_BAD_ARGUMENTS, "Currently used when attendee or organizer specified does not have a valid email address.",
     /* 61 */ calIWcapErrors.WCAP_GET_USERPREFS_FAILED, "get_userprefs.wcap failed. The following error conditions returns error code 61: LDAP access denied, no results found, LDAP limit exceeded, LDAP connection failed.",
-    /* 62 */ calIWcapErrors.WCAP_WCAP_MODIFY_NO_EVENT, "storeevents.wcap issued with storetype set to 2 (WCAP_STORE_TYPE_MODIFY) and the event doesn\’t exist.",
+    /* 62 */ calIWcapErrors.WCAP_WCAP_MODIFY_NO_EVENT, "storeevents.wcap issued with storetype set to 2 (WCAP_STORE_TYPE_MODIFY) and the event doesn't exist.",
     /* 63 */ calIWcapErrors.WCAP_WCAP_CREATE_EXISTS, "storeevents.wcap issued with storetype set to 1 (WCAP_STORE_TYPE_CREATE) and the event already exists.",
     /* 64 */ calIWcapErrors.WCAP_WCAP_MODIFY_CANT_MAKE_COPY, "storevents.wcap issued and copy of event failed during processing.",
     /* 65 */ calIWcapErrors.WCAP_STORE_FAILED_RECUR_SKIP, "One instance of a recurring event skips over another.",
-    /* 66 */ calIWcapErrors.WCAP_STORE_FAILED_RECUR_SAMEDAY, "Two instances of a recurring event can’t occur on the same day.",
-    /* 67 */ calIWcapErrors.WCAP_BAD_ORG_ARGUMENTS, "Bad organizer arguments. orgCalid or orgEmail must be passed if any other \"org\" parameter is sent. That is, orgUID can’t be sent alone on a storeevents.wcap or a storetodos.wcao command if it is trying about to \"create\" the event or task. Note, if no \"org\" information is passed, the organizer defaults to the calid being passed with the command.",
+    /* 66 */ calIWcapErrors.WCAP_STORE_FAILED_RECUR_SAMEDAY, "Two instances of a recurring event can't occur on the same day.",
+    /* 67 */ calIWcapErrors.WCAP_BAD_ORG_ARGUMENTS, "Bad organizer arguments. orgCalid or orgEmail must be passed if any other \"org\" parameter is sent. That is, orgUID can't be sent alone on a storeevents.wcap or a storetodos.wcao command if it is trying about to \"create\" the event or task. Note, if no \"org\" information is passed, the organizer defaults to the calid being passed with the command.",
     /* 68 */ calIWcapErrors.WCAP_STORE_FAILED_RECUR_PRIVACY, "Error returned if you try to change the privacy or transparency of a single instance in a recurring series.",
     /* 69 */ calIWcapErrors.WCAP_LDAP_ERROR, "For get_calprops.wcap, when there is an error is getting LDAP derived token values (X-S1CS-CALPROPS-FB-INCLUDE, X-S1CS-CALPROPS-COMMON-NAME).",
     /* 70 */ calIWcapErrors.WCAP_GET_INVITE_COUNT_FAILED, "Error in getting invite count (for get_calprops.wcap and fetchcomponents_by_range.wcap commands).",
@@ -233,14 +235,14 @@ const g_wcapErrorCodes = [
     /* 99 */ NS_ERROR_INVALID_ARG, "No WCAP error code.",
     /* 11000 */ calIWcapErrors.WCAP_CDWP_ERR_MAX_CONNECTION_REACHED, "Maximum connections to back-end database reached. As connections are freed up, users can connect to the back-end.",
     /* 11001 */ calIWcapErrors.WCAP_CDWP_ERR_CANNOT_CONNECT, "Cannot connect to back-end server. Back-end machine might be down or DWP server is not up and running.",
-    /* 11002 */ calIWcapErrors.WCAP_CDWP_ERR_CANNOT_RESOLVE_CALENDAR, "Front-end can’t resolve calendar to a particular back-end server.",
+    /* 11002 */ calIWcapErrors.WCAP_CDWP_ERR_CANNOT_RESOLVE_CALENDAR, "Front-end can't resolve calendar to a particular back-end server.",
     /* 11003 */ calIWcapErrors.WCAP_CDWP_ERR_BAD_DATA, "Bad data received from DWP connection. This is a generic formatting error. Check all DWP servers. One might be down.",
-    /* 11004 */ calIWcapErrors.WCAP_CDWP_ERR_DWPHOST_CTX_DOES_NOT_EXIST, "For the back-end host, context doesn\’t exist in the context table.",
+    /* 11004 */ calIWcapErrors.WCAP_CDWP_ERR_DWPHOST_CTX_DOES_NOT_EXIST, "For the back-end host, context doesn't exist in the context table.",
     /* 11005 */ calIWcapErrors.WCAP_CDWP_ERR_HOSTNAME_NOT_RESOLVABLE, "DNS or NIS files, or hostname resolver is not set up properly or machine does not exist.",
     /* 11006 */ calIWcapErrors.WCAP_CDWP_ERR_NO_DATA, "No data was received from reading the calendar properties from the DWP connection.",
     /* 11007 */ calIWcapErrors.WCAP_CDWP_ERR_AUTH_FAILED, "DWP authentication failed.",
     /* 11008 */ calIWcapErrors.WCAP_CDWP_ERR_CHECKVERSION_FAILED, "DWP version check failed."
-    ];
+];
 
 function wcapErrorToString(rc) {
     if (isNaN(rc)) {
@@ -250,7 +252,7 @@ function wcapErrorToString(rc) {
         return "No WCAP errno (missing X-NSCP-WCAP-ERRNO).";
     }
 
-    var index = (rc - calIWcapErrors.WCAP_ERROR_BASE + 1);
+    let index = (rc - calIWcapErrors.WCAP_ERROR_BASE + 1);
     if (index >= 1 && index <= 108 && g_wcapErrorCodes[index * 2] != NS_ERROR_INVALID_ARG) {
         return g_wcapErrorCodes[(index * 2) + 1];
     }
@@ -261,7 +263,7 @@ function getWcapErrorCode(errno) {
     if (errno == -5000) { // semantically same error
         errno = 59;
     }
-    var index = -1;
+    let index = -1;
     if (errno >= -1 && errno <= 81) {
         index = (errno + 1);
     } else if (errno >= 11000 && errno <= 11008) {
@@ -274,11 +276,11 @@ function getWcapErrorCode(errno) {
 }
 
 function getWcapXmlErrno(xml) {
-    var elem = xml.getElementsByTagName("X-NSCP-WCAP-ERRNO");
+    let elem = xml.getElementsByTagName("X-NSCP-WCAP-ERRNO");
     if (elem) {
         elem = elem.item(0);
         if (elem) {
-            return parseInt(elem.textContent);
+            return parseInt(elem.textContent, 10);
         }
     }
     // some commands just respond with an empty calendar, no errno. WTF.
@@ -287,9 +289,9 @@ function getWcapXmlErrno(xml) {
 }
 
 function getWcapIcalErrno(icalRootComp) {
-    var prop = icalRootComp.getFirstProperty("X-NSCP-WCAP-ERRNO");
+    let prop = icalRootComp.getFirstProperty("X-NSCP-WCAP-ERRNO");
     if (prop) {
-        return parseInt(prop.value);
+        return parseInt(prop.value, 10);
     }
     // some commands just respond with an empty calendar, no errno. WTF.
     // assume success:
@@ -301,7 +303,7 @@ function checkWcapErrno(errno, expectedErrno) {
         expectedErrno = 0; // i.e. Command successful.
     }
     if (errno !== undefined && errno != expectedErrno) {
-        var rc = getWcapErrorCode(errno);
+        let rc = getWcapErrorCode(errno);
         throw new Components.Exception(wcapErrorToString(rc), rc);
     }
 }
@@ -316,7 +318,7 @@ function checkWcapIcalErrno(icalRootComp, expectedErrno) {
 
 function errorToString(err) {
     if (err) {
-        if (typeof(err) == "string") {
+        if (typeof err == "string") {
             return err;
         }
         if (err instanceof Error) {
@@ -326,7 +328,7 @@ function errorToString(err) {
             return err.toString(); // xxx todo: or just message?
         }
         if (isNaN(err)) {
-            return ("[" + err + "] unknown error.");
+            return "[" + err + "] unknown error.";
         }
     }
     // numeric codes:
@@ -368,19 +370,16 @@ function errorToString(err) {
             } catch (exc) { // probe for netwerk error:
                 try {
                     return netErrorToString(err);
-                } catch (exc) {
+                } catch (exc2) {
                     if (err & calIErrors.ERROR_BASE) {
-                        for (var err_ in calIErrors) {
+                        for (let err_ in calIErrors) {
                             if (calIErrors[err_] == err) {
                                 return err_;
                             }
                         }
                     }
-                    return ("[0x" + err.toString(0x10) + "] unknown error.");
+                    return "[0x" + err.toString(0x10) + "] unknown error.";
                 }
             }
-            break;
     }
-    return ("[" + err + "] unknown error."); // dummy to avoid js warning
 }
-

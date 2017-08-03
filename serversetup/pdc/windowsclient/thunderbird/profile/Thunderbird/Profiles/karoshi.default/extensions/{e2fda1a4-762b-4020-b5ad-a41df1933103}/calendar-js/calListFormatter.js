@@ -12,8 +12,8 @@ function calListFormatter() {
     this.wrappedJSObject = this;
 }
 
-const calListFormatterClassID = Components.ID("{9ae04413-fee3-45b9-8bbb-1eb39a4cbd1b}");
-const calListFormatterInterfaces = [Components.interfaces.calIPrintFormatter];
+var calListFormatterClassID = Components.ID("{9ae04413-fee3-45b9-8bbb-1eb39a4cbd1b}");
+var calListFormatterInterfaces = [Components.interfaces.calIPrintFormatter];
 calListFormatter.prototype = {
     classID: calListFormatterClassID,
     QueryInterface: XPCOMUtils.generateQI(calListFormatterInterfaces),
@@ -25,9 +25,9 @@ calListFormatter.prototype = {
         interfaces: calListFormatterInterfaces
     }),
 
-    get name() cal.calGetString("calendar", "formatListName"),
+    get name() { return cal.calGetString("calendar", "formatListName"); },
 
-    formatToHtml: function list_formatToHtml(aStream, aStart, aEnd, aCount, aItems, aTitle) {
+    formatToHtml: function(aStream, aStart, aEnd, aCount, aItems, aTitle) {
         let htmlexporter = Components.classes["@mozilla.org/calendar/export;1?type=htmllist"]
                                      .createInstance(Components.interfaces.calIExporter);
         htmlexporter.exportToStream(aStream, aCount, aItems, aTitle);

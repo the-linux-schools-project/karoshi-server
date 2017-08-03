@@ -9,8 +9,8 @@ function calRecurrenceDate() {
     this.wrappedJSObject = this;
 }
 
-const calRecurrenceDateClassID = Components.ID("{806b6423-3aaa-4b26-afa3-de60563e9cec}");
-const calRecurrenceDateInterfaces = [Components.interfaces.calIRecurrenceDate];
+var calRecurrenceDateClassID = Components.ID("{806b6423-3aaa-4b26-afa3-de60563e9cec}");
+var calRecurrenceDateInterfaces = [Components.interfaces.calIRecurrenceDate];
 calRecurrenceDate.prototype = {
     isMutable: true,
 
@@ -25,38 +25,38 @@ calRecurrenceDate.prototype = {
         classDescription: "The date of an occurrence of a recurring item",
         interfaces: calRecurrenceDateInterfaces
     }),
-    makeImmutable: function makeImmutable() {
+    makeImmutable: function() {
         this.isMutable = false;
     },
 
-    ensureMutable: function ensureMutable() {
+    ensureMutable: function() {
         if (!this.isMutable) {
             throw Components.results.NS_ERROR_OBJECT_IS_MUTABLE;
         }
     },
 
-    clone: function clone() {
+    clone: function() {
         let other = new calRecurrenceDate();
         other.mDate = (this.mDate ? this.mDate.clone() : null);
         other.mIsNegative = this.mIsNegative;
         return other;
     },
 
-    get isNegative() this.mIsNegative,
+    get isNegative() { return this.mIsNegative; },
     set isNegative(val) {
         this.ensureMutable();
         return (this.mIsNegative = val);
     },
 
-    get isFinite() true,
+    get isFinite() { return true; },
 
-    get date() this.mDate,
+    get date() { return this.mDate; },
     set date(val) {
         this.ensureMutable();
         return (this.mDate = val);
     },
 
-    getNextOccurrence: function getNextOccurrence(aStartTime, aOccurrenceTime) {
+    getNextOccurrence: function(aStartTime, aOccurrenceTime) {
         if (this.mDate && this.mDate.compare(aStartTime) > 0) {
             return this.mDate;
         } else {
@@ -64,7 +64,7 @@ calRecurrenceDate.prototype = {
         }
     },
 
-    getOccurrences: function getOccurrences(aStartTime, aRangeStart, aRangeEnd, aMaxCount, aCount) {
+    getOccurrences: function(aStartTime, aRangeStart, aRangeEnd, aMaxCount, aCount) {
         if (this.mDate &&
             this.mDate.compare(aRangeStart) >= 0 &&
             (!aRangeEnd || this.mDate.compare(aRangeEnd) < 0)) {

@@ -14,8 +14,8 @@ function calTransactionManager() {
     }
 }
 
-const calTransactionManagerClassID = Components.ID("{40a1ccf4-5f54-4815-b842-abf06f84dbfd}");
-const calTransactionManagerInterfaces = [Components.interfaces.calITransactionManager];
+var calTransactionManagerClassID = Components.ID("{40a1ccf4-5f54-4815-b842-abf06f84dbfd}");
+var calTransactionManagerInterfaces = [Components.interfaces.calITransactionManager];
 calTransactionManager.prototype = {
 
     classID: calTransactionManagerClassID,
@@ -29,12 +29,8 @@ calTransactionManager.prototype = {
     }),
 
     transactionManager: null,
-    createAndCommitTxn: function cTM_createAndCommitTxn(aAction,
-                                                        aItem,
-                                                        aCalendar,
-                                                        aOldItem,
-                                                        aListener) {
-        var txn = new calTransaction(aAction,
+    createAndCommitTxn: function(aAction, aItem, aCalendar, aOldItem, aListener) {
+        let txn = new calTransaction(aAction,
                                      aItem,
                                      aCalendar,
                                      aOldItem,
@@ -42,53 +38,41 @@ calTransactionManager.prototype = {
         this.transactionManager.doTransaction(txn);
     },
 
-    beginBatch: function cTM_beginBatch() {
+    beginBatch: function() {
         this.transactionManager.beginBatch(null);
     },
 
-    endBatch: function cTM_endBatch() {
+    endBatch: function() {
         this.transactionManager.endBatch(false);
     },
 
-    checkWritable: function cTM_checkWritable(transaction) {
-        if (transaction) {
-            transaction = transaction.wrappedJSObject;
-            if (transaction) {
-                function checkItem(item) {
-                    if (item) {
-                        var calendar = item.calendar;
-                        if (calendar && (!isCalendarWritable(calendar) || !userCanAddItemsToCalendar(calendar))) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-                if (!checkItem(transaction.mItem) ||
-                    !checkItem(transaction.mOldItem)) {
-                    return false;
-                }
-            }
+    checkWritable: function(transaction) {
+        function checkItem(item) {
+            return item && item.calendar &&
+                   isCalendarWritable(item.calendar) &&
+                   userCanAddItemsToCalendar(item.calendar);
         }
-        return true;
+
+        let trans = transaction && transaction.wrappedJSObject;
+        return trans && checkItem(trans.mItem) && checkItem(trans.mOldItem);
     },
 
-    undo: function cTM_undo() {
+    undo: function() {
         this.transactionManager.undoTransaction();
     },
 
-    canUndo: function cTM_canUndo() {
-        return ((this.transactionManager.numberOfUndoItems > 0) &&
-                this.checkWritable(this.transactionManager.peekUndoStack()));
+    canUndo: function() {
+        return this.transactionManager.numberOfUndoItems > 0 &&
+               this.checkWritable(this.transactionManager.peekUndoStack());
     },
 
-    redo: function cTM_redo() {
+    redo: function() {
         this.transactionManager.redoTransaction();
     },
 
-    canRedo: function cTM_canRedo() {
-        return ((this.transactionManager.numberOfRedoItems > 0) &&
-                this.checkWritable(this.transactionManager.peekRedoStack()));
+    canRedo: function() {
+        return this.transactionManager.numberOfRedoItems > 0 &&
+               this.checkWritable(this.transactionManager.peekRedoStack());
     }
 };
 
@@ -101,8 +85,8 @@ function calTransaction(aAction, aItem, aCalendar, aOldItem, aListener) {
     this.mListener = aListener;
 }
 
-const calTransactionClassID = Components.ID("{fcb54c82-2fb9-42cb-bf44-1e197a55e520}");
-const calTransactionInterfaces = [
+var calTransactionClassID = Components.ID("{fcb54c82-2fb9-42cb-bf44-1e197a55e520}");
+var calTransactionInterfaces = [
     Components.interfaces.nsITransaction,
     Components.interfaces.calIOperationListener
 ];
@@ -124,13 +108,8 @@ calTransaction.prototype = {
     mListener: null,
     mIsDoTransaction: false,
 
-    onOperationComplete: function cT_onOperationComplete(aCalendar,
-                                                         aStatus,
-                                                         aOperationType,
-                                                         aId,
-                                                         aDetail) {
+    onOperationComplete: function(aCalendar, aStatus, aOperationType, aId, aDetail) {
         if (Components.isSuccessCode(aStatus)) {
-
             cal.itip.checkAndSend(aOperationType,
                                   aDetail,
                                   this.mIsDoTransaction ? this.mOldItem : this.mItem);
@@ -153,12 +132,7 @@ calTransaction.prototype = {
         }
     },
 
-    onGetResult: function cT_onGetResult(aCalendar,
-                                         aStatus,
-                                         aItemType,
-                                         aDetail,
-                                         aCount,
-                                         aItems) {
+    onGetResult: function(aCalendar, aStatus, aItemType, aDetail, aCount, aItems) {
         if (this.mListener) {
             this.mListener.onGetResult(aCalendar,
                                        aStatus,
@@ -169,22 +143,22 @@ calTransaction.prototype = {
         }
     },
 
-    doTransaction: function cT_doTransaction() {
+    doTransaction: function() {
         this.mIsDoTransaction = true;
         switch (this.mAction) {
-            case 'add':
+            case "add":
                 this.mCalendar.addItem(this.mItem, this);
                 break;
-            case 'modify':
-                if (this.mItem.calendar.id != this.mOldItem.calendar.id) {
+            case "modify":
+                if (this.mItem.calendar.id == this.mOldItem.calendar.id) {
+                    this.mCalendar.modifyItem(cal.itip.prepareSequence(this.mItem, this.mOldItem),
+                                              this.mOldItem,
+                                              this);
+                } else {
                     let self = this;
                     let addListener = {
-                        onOperationComplete: function cT_onOperationComplete(aCalendar,
-                                                                             aStatus,
-                                                                             aOperationType,
-                                                                             aId,
-                                                                             aDetail) {
-                            self.onOperationComplete.apply(self, arguments);
+                        onOperationComplete: function(aCalendar, aStatus, aOperationType, aId, aDetail) {
+                            self.onOperationComplete(...arguments);
                             if (Components.isSuccessCode(aStatus)) {
                                 self.mOldItem.calendar.deleteItem(self.mOldItem, self);
                             }
@@ -193,54 +167,48 @@ calTransaction.prototype = {
 
                     this.mOldCalendar = this.mOldItem.calendar;
                     this.mCalendar.addItem(this.mItem, addListener);
-                } else {
-                    this.mCalendar.modifyItem(cal.itip.prepareSequence(this.mItem, this.mOldItem),
-                                              this.mOldItem,
-                                              this);
                 }
                 break;
-            case 'delete':
+            case "delete":
                 this.mCalendar.deleteItem(this.mItem, this);
                 break;
             default:
                 throw new Components.Exception("Invalid action specified",
                                                Components.results.NS_ERROR_ILLEGAL_VALUE);
-                break;
         }
     },
 
-    undoTransaction: function cT_undoTransaction() {
+    undoTransaction: function() {
         this.mIsDoTransaction = false;
         switch (this.mAction) {
-            case 'add':
+            case "add":
                 this.mCalendar.deleteItem(this.mItem, this);
                 break;
-            case 'modify':
-                if (this.mOldItem.calendar.id != this.mItem.calendar.id) {
-                    this.mCalendar.deleteItem(this.mItem, this);
-                    this.mOldCalendar.addItem(this.mOldItem, this);
-                } else {
+            case "modify":
+                if (this.mOldItem.calendar.id == this.mItem.calendar.id) {
                     this.mCalendar.modifyItem(cal.itip.prepareSequence(this.mOldItem, this.mItem),
                                               this.mItem, this);
+                } else {
+                    this.mCalendar.deleteItem(this.mItem, this);
+                    this.mOldCalendar.addItem(this.mOldItem, this);
                 }
                 break;
-            case 'delete':
+            case "delete":
                 this.mCalendar.addItem(this.mItem, this);
                 break;
             default:
                 throw new Components.Exception("Invalid action specified",
                                                Components.results.NS_ERROR_ILLEGAL_VALUE);
-                break;
         }
     },
 
-    redoTransaction: function cT_redoTransaction() {
+    redoTransaction: function() {
         this.doTransaction();
     },
 
     isTransient: false,
 
-    merge: function cT_merge(aTransaction) {
+    merge: function(aTransaction) {
         // No support for merging
         return false;
     }

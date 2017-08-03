@@ -17,14 +17,14 @@ function calDeletedItems() {
     this.wrappedJSObject = this;
 
     this.completedNotifier = {
-      handleResult: function() {},
-      handleError: function() {},
-      handleCompletion: function() {},
+        handleResult: function() {},
+        handleError: function() {},
+        handleCompletion: function() {},
     };
 }
 
-const calDeletedItemsClassID = Components.ID("{8e6799af-e7e9-4e6c-9a82-a2413e86d8c3}");
-const calDeletedItemsInterfaces = [
+var calDeletedItemsClassID = Components.ID("{8e6799af-e7e9-4e6c-9a82-a2413e86d8c3}");
+var calDeletedItemsInterfaces = [
     Components.interfaces.calIDeletedItems,
     Components.interfaces.nsIObserver,
     Components.interfaces.calIObserver
@@ -49,13 +49,13 @@ calDeletedItems.prototype = {
     // be used in real code.
     completedNotifier: null,
 
-    flush: function flush() {
+    flush: function() {
         this.ensureStatements();
         this.stmtFlush.params.stale_time = cal.now().nativeTime - this.STALE_TIME;
         this.stmtFlush.executeAsync(this.completedNotifier);
     },
 
-    getDeletedDate: function calDeletedItems_getDeleted(aId, aCalId) {
+    getDeletedDate: function(aId, aCalId) {
         this.ensureStatements();
         let stmt;
         if (aCalId) {
@@ -68,9 +68,9 @@ calDeletedItems.prototype = {
         stmt.params.id = aId;
         try {
             if (stmt.executeStep()) {
-                let dt = cal.createDateTime();
-                dt.nativeTime = stmt.row.time_deleted;
-                return dt.getInTimezone(cal.calendarDefaultTimezone());
+                let date = cal.createDateTime();
+                date.nativeTime = stmt.row.time_deleted;
+                return date.getInTimezone(cal.calendarDefaultTimezone());
             }
         } catch (e) {
             cal.ERROR(e);
@@ -80,7 +80,7 @@ calDeletedItems.prototype = {
         return null;
     },
 
-    markDeleted: function calDeletedItems_markDeleted(aItem) {
+    markDeleted: function(aItem) {
         this.ensureStatements();
         this.stmtMarkDelete.params.calId = aItem.calendar.id;
         this.stmtMarkDelete.params.id = aItem.id;
@@ -89,13 +89,13 @@ calDeletedItems.prototype = {
         this.stmtMarkDelete.executeAsync(this.completedNotifier);
     },
 
-    unmarkDeleted: function calDeletedItems_unmarkDeleted(aItem) {
+    unmarkDeleted: function(aItem) {
         this.ensureStatements();
         this.stmtUnmarkDelete.params.id = aItem.id;
         this.stmtUnmarkDelete.executeAsync(this.completedNotifier);
     },
 
-    initDB: function initDB() {
+    initDB: function() {
         if (this.mDB) {
             // Looks like we've already initialized, exit early
             return;
@@ -121,7 +121,7 @@ calDeletedItems.prototype = {
         cal.addShutdownObserver(this.shutdown.bind(this));
     },
 
-    observe: function observe(aSubject, aTopic, aData) {
+    observe: function(aSubject, aTopic, aData) {
         if (aTopic == "profile-after-change") {
             // Make sure to observe calendar changes so we know when things are
             // deleted. We don't initialize the statements until first use.
@@ -129,8 +129,10 @@ calDeletedItems.prototype = {
         }
     },
 
-    ensureStatements: function ensureStatements() {
-        if (!this.mDB) this.initDB();
+    ensureStatements: function() {
+        if (!this.mDB) {
+            this.initDB();
+        }
 
         if (!this.stmtMarkDelete) {
             let stmt = "INSERT OR REPLACE INTO cal_deleted_items (cal_id, id, time_deleted, recurrence_id) VALUES(:calId, :id, :time, :rid)";
@@ -154,15 +156,20 @@ calDeletedItems.prototype = {
         }
     },
 
-    shutdown: function shutdown() {
+    shutdown: function() {
         try {
-            if (this.stmtMarkDelete) this.stmtMarkDelete.finalize();
-            if (this.stmtUnmarkDelete) this.stmtUnmarkDelete.finalize();
-            if (this.stmtGet) this.stmtGet.finalize();
-            if (this.stmtGetWithCal) this.stmtGetWithCal.finalize();
-            if (this.stmtFlush) this.stmtFlush.finalize();
+            let stmts = [
+                this.stmtMarkDelete, this.stmtUnmarkDelete, this.stmtGet,
+                this.stmtGetWithCal, this.stmtFlush
+            ];
+            for (let stmt of stmts) {
+                stmt.finalize();
+            }
 
-            if (this.mDB) { this.mDB.asyncClose(); this.mDB = null; }
+            if (this.mDB) {
+                this.mDB.asyncClose();
+                this.mDB = null;
+            }
         } catch (e) {
             cal.ERROR("Error closing deleted items database: " + e);
         }
@@ -182,11 +189,11 @@ calDeletedItems.prototype = {
         this.unmarkDeleted(aItem);
     },
 
-    onDeleteItem: function onDeleteItem(aItem) {
+    onDeleteItem: function(aItem) {
         this.markDeleted(aItem);
     },
 
-    onLoad: function onLoad() {
+    onLoad: function() {
         this.flush();
     }
 };

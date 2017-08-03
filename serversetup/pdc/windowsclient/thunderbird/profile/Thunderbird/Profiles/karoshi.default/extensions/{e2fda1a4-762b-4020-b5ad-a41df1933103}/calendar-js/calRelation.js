@@ -16,8 +16,8 @@ function calRelation() {
     this.wrappedJSObject = this;
     this.mProperties = new calPropertyBag();
 }
-const calRelationClassID = Components.ID("{76810fae-abad-4019-917a-08e95d5bbd68}");
-const calRelationInterfaces = [Components.interfaces.calIRelation];
+var calRelationClassID = Components.ID("{76810fae-abad-4019-917a-08e95d5bbd68}");
+var calRelationInterfaces = [Components.interfaces.calIRelation];
 calRelation.prototype = {
     mType: null,
     mId: null,
@@ -60,13 +60,17 @@ calRelation.prototype = {
             icalatt.setParameter("RELTYPE", this.mType);
         }
 
-        for each (let [key, value] in this.mProperties) {
+        for (let [key, value] of this.mProperties) {
             try {
                 icalatt.setParameter(key, value);
-            } catch (e if e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
-                // Illegal values should be ignored, but we could log them if
-                // the user has enabled logging.
-                cal.LOG("Warning: Invalid relation property value " + key + "=" + value);
+            } catch (e) {
+                if (e.result == Components.results.NS_ERROR_ILLEGAL_VALUE) {
+                    // Illegal values should be ignored, but we could log them if
+                    // the user has enabled logging.
+                    cal.LOG("Warning: Invalid relation property value " + key + "=" + value);
+                } else {
+                    throw e;
+                }
             }
         }
         return icalatt;
@@ -80,7 +84,7 @@ calRelation.prototype = {
         if (attProp.value) {
             this.mId = attProp.value;
         }
-        for each (let [name, value] in cal.ical.paramIterator(attProp)) {
+        for (let [name, value] of cal.ical.paramIterator(attProp)) {
             if (name == "RELTYPE") {
                 this.mType = value;
                 continue;
@@ -103,23 +107,23 @@ calRelation.prototype = {
         return val;
     },
 
-    getParameter: function (aName) {
+    getParameter: function(aName) {
         return this.mProperties.getProperty(aName);
     },
 
-    setParameter: function (aName, aValue) {
+    setParameter: function(aName, aValue) {
         return this.mProperties.setProperty(aName, aValue);
     },
 
-    deleteParameter: function (aName) {
+    deleteParameter: function(aName) {
         return this.mProperties.deleteProperty(aName);
     },
 
-    clone: function cR_clone() {
+    clone: function() {
         let newRelation = new calRelation();
         newRelation.mId = this.mId;
         newRelation.mType = this.mType;
-        for each (let [name, value] in this.mProperties) {
+        for (let [name, value] of this.mProperties) {
             newRelation.mProperties.setProperty(name, value);
         }
         return newRelation;

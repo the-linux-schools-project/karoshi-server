@@ -2,6 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* exported getCalendarSearchService, getDomParser, isParent, filterXmlNodes,
+ *          getIcalUTC, getDatetimeFromIcalProp
+ */
+
 Components.utils.import("resource://calendar/modules/calIteratorUtils.jsm");
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
@@ -19,22 +23,22 @@ function initLogging() {
         }
         initLogging.mLogFilestream = null;
     }
-    
+
     LOG_LEVEL = getPref("calendar.wcap.log_level", 0);
     if (LOG_LEVEL < 1 && getPref("calendar.debug.log", false)) {
         LOG_LEVEL = 1; // at least basic logging when calendar.debug.log is set
     }
 
     if (LOG_LEVEL > 0) {
-        var logFileName = getPref("calendar.wcap.log_file", null);
+        let logFileName = getPref("calendar.wcap.log_file", null);
         if (logFileName) {
             try {
                 // set up file:
-                var logFile = Components.classes["@mozilla.org/file/local;1"]
+                let logFile = Components.classes["@mozilla.org/file/local;1"]
                                         .createInstance(Components.interfaces.nsILocalFile);
                 logFile.initWithPath(logFileName);
                 // create output stream:
-                var logFileStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+                let logFileStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
                                               .createInstance(Components.interfaces.nsIFileOutputStream);
                 logFileStream.init(logFile,
                                    0x02 /* PR_WRONLY */ |
@@ -54,7 +58,7 @@ function initLogging() {
     }
     if (!initLogging.mLogPrefObserver) {
         initLogging.mLogPrefObserver = { // nsIObserver:
-            observe: function logPrefObserver_observe(subject, topic, data) {
+            observe: function(subject, topic, data) {
                 if (topic == "nsPref:changed") {
                     switch (data) {
                         case "calendar.wcap.log_level":
@@ -70,8 +74,8 @@ function initLogging() {
         Services.prefs.addObserver("calendar.wcap.log_file", initLogging.mLogPrefObserver, false);
         Services.prefs.addObserver("calendar.debug.log", initLogging.mLogPrefObserver, false);
 
-        var appObserver = { // nsIObserver:
-            observe: function app_observe(subject, topic, data) {
+        let appObserver = { // nsIObserver:
+            observe: function(subject, topic, data) {
                 if (topic == "quit-application") {
                     Services.prefs.removeObserver("calendar.", initLogging.mLogPrefObserver);
                 }
@@ -83,21 +87,21 @@ function initLogging() {
 
 function log(msg, context, bForce) {
     if (bForce || LOG_LEVEL > 0) {
-        var ret = "";
+        let ret = "";
         if (context) {
-            ret += ("[" + context + "]");
+            ret += "[" + context + "]";
         }
         if (ret.length > 0) {
             ret += "\n";
         }
         ret += msg;
-        var now = getTime();
+        let now = getTime();
         if (now && initLogging.mLogTimezone) {
             now = now.getInTimezone(initLogging.mLogTimezone);
         }
-        var str = ("### WCAP log entry: " + now + "\n" + ret);
+        let str = "### WCAP log entry: " + now + "\n" + ret;
         Services.console.logStringMessage(str);
-        str = ("\n" + str + "\n");
+        str = "\n" + str + "\n";
         dump(str);
         if (initLogging.mLogFilestream) {
             try {
@@ -105,10 +109,10 @@ function log(msg, context, bForce) {
                 // assuming ANSI chars here, for logging sufficient:
                 initLogging.mLogFilestream.write(str, str.length);
             } catch (exc) { // catching any io errors here:
-                var err = ("error writing log file: " + errorToString(exc));
+                let err = "error writing log file: " + errorToString(exc);
                 Components.utils.reportError(exc);
                 Services.console.logStringMessage(err);
-                dump(err  + "\n\n");
+                dump(err + "\n\n");
             }
         }
         return ret;
@@ -118,8 +122,8 @@ function log(msg, context, bForce) {
 }
 
 function logWarning(err, context) {
-    var msg = errorToString(err);
-    var scriptError = Components.classes["@mozilla.org/scripterror;1"]
+    let msg = errorToString(err);
+    let scriptError = Components.classes["@mozilla.org/scripterror;1"]
                                 .createInstance(Components.interfaces.nsIScriptError);
     scriptError.init(log("warning: " + msg, context, true),
                      null, null, 0, 0,
@@ -130,9 +134,8 @@ function logWarning(err, context) {
 }
 
 function logError(err, context) {
-    var msg = errorToString(err);
+    let msg = errorToString(err);
     Components.utils.reportError(log("error: " + msg + "\nstack:\n" + STACK(10), context, true));
-    debugger;
     return msg;
 }
 
@@ -158,15 +161,15 @@ function isParent(item) {
     if (item.id != item.parentItem.id) {
         throw new Components.Exception("proxy has different id than its parent!");
     }
-    return (!item.recurrenceId);
+    return !item.recurrenceId;
 }
 
 function filterXmlNodes(name, rootNode) {
-    var ret = [];
+    let ret = [];
     if (rootNode) {
-        var nodeList = rootNode.getElementsByTagName(name);
-        for (var i = 0; i < nodeList.length; ++i) {
-            var node = nodeList.item(i);
+        let nodeList = rootNode.getElementsByTagName(name);
+        for (let i = 0; i < nodeList.length; ++i) {
+            let node = nodeList.item(i);
             ret.push(node.textContent.trim());
         }
     }
@@ -180,15 +183,15 @@ function getTime() {
     return cal.jsDateToDateTime(new Date());
 }
 
-function getIcalUTC(dt) {
-    if (!dt || !dt.isValid) {
+function getIcalUTC(date) {
+    if (!date || !date.isValid) {
         return "0";
     } else {
-        var dtz = dt.timezone;
+        let dtz = date.timezone;
         if (dtz.isUTC || dtz.isFloating) {
-            return dt.icalString;
+            return date.icalString;
         } else {
-            return dt.getInTimezone(UTC()).icalString;
+            return date.getInTimezone(UTC()).icalString;
         }
     }
 }
@@ -198,9 +201,9 @@ function getDatetimeFromIcalString(val) {
         return null;
     }
     // assuming timezone is known:
-    var dt = createDateTime();
-    dt.icalString = val;
-    return dt;
+    let date = createDateTime();
+    date.icalString = val;
+    return date;
 }
 
 function getDatetimeFromIcalProp(prop) {
@@ -211,8 +214,7 @@ function getDatetimeFromIcalProp(prop) {
 }
 
 function getPref(prefName, defaultValue) {
-    var ret = Preferences.get(prefName, defaultValue);
+    let ret = Preferences.get(prefName, defaultValue);
     log(ret, "getPref(): prefName=" + prefName);
     return ret;
 }
-

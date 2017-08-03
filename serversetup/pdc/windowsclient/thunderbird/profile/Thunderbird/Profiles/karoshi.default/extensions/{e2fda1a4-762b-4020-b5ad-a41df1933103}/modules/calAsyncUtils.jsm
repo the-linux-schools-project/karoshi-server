@@ -5,21 +5,22 @@
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 Components.utils.import("resource://gre/modules/Promise.jsm");
 Components.utils.import("resource://gre/modules/PromiseUtils.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 /*
  * Asynchronous tools for handling calendar operations.
  */
 
-EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
-const cIOL = Components.interfaces.calIOperationListener;
-const cIC = Components.interfaces.calICalendar;
+this.EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
+var cIOL = Components.interfaces.calIOperationListener;
+var cIC = Components.interfaces.calICalendar;
 
-const promisifyProxyHandler = {
+var promisifyProxyHandler = {
     promiseOperation: function(target, name, args) {
         let deferred = PromiseUtils.defer();
         let listener = cal.async.promiseOperationListener(deferred);
         args.push(listener);
-        target[name].apply(target, args);
+        target[name](...args);
         return deferred.promise;
     },
     get: function(target, name) {
@@ -92,6 +93,7 @@ cal.async = {
      */
     promiseOperationListener: function(deferred) {
         return {
+            QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIOperationListener]),
             items: [],
             itemStatus: Components.results.NS_OK,
             onGetResult: function(aCalendar, aStatus, aItemType, aDetail,
@@ -107,7 +109,7 @@ cal.async = {
             onOperationComplete: function(aCalendar, aStatus, aOpType, aId, aDetail) {
                 if (!Components.isSuccessCode(aStatus)) {
                     // This function has failed, reject with the status
-                    deferred.reject(aStatus)
+                    deferred.reject(aStatus);
                 } else if (!Components.isSuccessCode(this.itemStatus)) {
                     // onGetResult has failed, reject with its status
                     deferred.reject(this.itemStatus);
@@ -118,9 +120,9 @@ cal.async = {
                 } else { /* ADD,MODIFY,DELETE: resolve with 1 item */
                     // Success of an ADD MODIFY or DELETE operation, resolve
                     // with the one item that was processed.
-                    deferred.resolve(aDetail)
+                    deferred.resolve(aDetail);
                 }
             }
-        }
+        };
     }
 };

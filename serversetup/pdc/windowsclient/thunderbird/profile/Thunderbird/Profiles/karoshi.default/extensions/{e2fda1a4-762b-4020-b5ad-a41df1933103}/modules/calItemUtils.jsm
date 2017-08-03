@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var EXPORTED_SYMBOLS = ["itemDiff"];
 "use strict";
+
+this.EXPORTED_SYMBOLS = ["itemDiff"];
 
 Components.utils.import("resource://calendar/modules/calHashedArray.jsm");
 
@@ -41,10 +42,11 @@ itemDiff.prototype = {
      * Expect the difference engine to be in the given state.
      *
      * @param aState    The state to be in
+     * @param aMethod   The method name expecting the state
      */
-    _expectState: function _expectState(aState) {
+    _expectState: function(aState, aMethod) {
         if ((this.state & aState) == 0) {
-            throw new Error("itemDiff method " + arguments.callee.caller.name +
+            throw new Error("itemDiff method " + aMethod +
                             " called while in unexpected state " + this.state);
         }
     },
@@ -54,7 +56,7 @@ itemDiff.prototype = {
      *
      * @param item      The item to load
      */
-    load1: function load1(item) {
+    load1: function(item) {
         this.load([item]);
     },
 
@@ -64,10 +66,10 @@ itemDiff.prototype = {
      *
      * @param items     The array of items to load
      */
-    load: function load(items) {
-        this._expectState(this.STATE_INITIAL | this.STATE_LOADING);
+    load: function(items) {
+        this._expectState(this.STATE_INITIAL | this.STATE_LOADING, "load");
 
-        for each (let item in items) {
+        for (let item of items) {
             this.mInitialItems[item.hashId] = item;
         }
 
@@ -79,7 +81,7 @@ itemDiff.prototype = {
      *
      * @param item      The item to calculate difference with
      */
-    difference1: function difference1(item) {
+    difference1: function(item) {
         this.difference([item]);
     },
 
@@ -89,14 +91,14 @@ itemDiff.prototype = {
      *
      * @param items     The array of items to calculate difference with
      */
-    difference: function difference(items) {
-        this._expectState(this.STATE_INITIAL | this.STATE_LOADING | this.STATE_DIFFERING);
+    difference: function(items) {
+        this._expectState(this.STATE_INITIAL | this.STATE_LOADING | this.STATE_DIFFERING, "difference");
 
         this.mModifiedOldItems.startBatch();
         this.mModifiedItems.startBatch();
         this.mAddedItems.startBatch();
 
-        for each (let item in items) {
+        for (let item of items) {
             if (item.hashId in this.mInitialItems) {
                 let oldItem = this.mInitialItems[item.hashId];
                 this.mModifiedOldItems.addItem(oldItem);
@@ -118,12 +120,13 @@ itemDiff.prototype = {
      * Tell the engine that all load and difference calls have been made, this
      * makes sure that all item states are correctly returned.
      */
-    complete: function complete() {
-        this._expectState(this.STATE_INITIAL | this.STATE_LOADING | this.STATE_DIFFERING);
+    complete: function() {
+        this._expectState(this.STATE_INITIAL | this.STATE_LOADING | this.STATE_DIFFERING, "complete");
 
         this.mDeletedItems.startBatch();
 
-        for each (let item in this.mInitialItems) {
+        for (let hashId in this.mInitialItems) {
+            let item = this.mInitialItems[hashId];
             this.mDeletedItems.addItem(item);
         }
 
@@ -135,25 +138,25 @@ itemDiff.prototype = {
 
     /** @return a HashedArray containing the new version of the modified items */
     get modifiedItems() {
-        this._expectState(this.STATE_COMPLETED);
+        this._expectState(this.STATE_COMPLETED, "get modifiedItems");
         return this.mModifiedItems;
     },
 
     /** @return a HashedArray containing the old version of the modified items */
     get modifiedOldItems() {
-        this._expectState(this.STATE_COMPLETED);
+        this._expectState(this.STATE_COMPLETED, "get modifiedOldItems");
         return this.mModifiedOldItems;
     },
 
     /** @return a HashedArray containing added items */
     get addedItems() {
-        this._expectState(this.STATE_COMPLETED);
+        this._expectState(this.STATE_COMPLETED, "get addedItems");
         return this.mAddedItems;
     },
 
     /** @return a HashedArray containing deleted items */
     get deletedItems() {
-        this._expectState(this.STATE_COMPLETED);
+        this._expectState(this.STATE_COMPLETED, "get deletedItems");
         return this.mDeletedItems;
     },
 
@@ -165,7 +168,7 @@ itemDiff.prototype = {
     /**
      * Resets the difference engine to its initial state.
      */
-    reset: function reset() {
+    reset: function() {
         this.mInitialItems = {};
         this.mModifiedItems = new cal.HashedArray();
         this.mModifiedOldItems = new cal.HashedArray();

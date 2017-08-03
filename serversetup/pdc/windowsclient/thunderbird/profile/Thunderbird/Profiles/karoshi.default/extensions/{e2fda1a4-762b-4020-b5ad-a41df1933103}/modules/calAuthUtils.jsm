@@ -10,12 +10,12 @@ Components.utils.import("resource://gre/modules/Preferences.jsm");
  * Authentication helper code
  */
 
-EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
+this.EXPORTED_SYMBOLS = ["cal"]; // even though it's defined in calUtils.jsm, import needs this
 cal.auth = {
     /**
      * Auth prompt implementation - Uses password manager if at all possible.
      */
-    Prompt: function calPrompt() {
+    Prompt: function() {
         this.mWindow = cal.getCalendarWindow();
         this.mReturnedLogins = {};
     },
@@ -32,13 +32,8 @@ cal.auth = {
      * @param   in aFixedUsername   Whether the user name is fixed or editable
      * @return  Could a password be retrieved?
      */
-    getCredentials: function calGetCredentials(aTitle,
-                                               aCalendarName,
-                                               aUsername,
-                                               aPassword,
-                                               aSavePassword,
-                                               aFixedUsername) {
-
+    getCredentials: function(aTitle, aCalendarName, aUsername, aPassword,
+                             aSavePassword, aFixedUsername) {
         if (typeof aUsername != "object" ||
             typeof aPassword != "object" ||
             typeof aSavePassword != "object") {
@@ -62,7 +57,7 @@ cal.auth = {
                                            savepassword,
                                            aSavePassword);
         } else {
-            aText = cal.calGetString("commonDialogs", "EnterUserPasswordFor", [aCalendarName], "global");
+            aText = cal.calGetString("commonDialogs", "EnterUserPasswordFor2", [aCalendarName], "global");
             return prompter.promptUsernameAndPassword(aTitle,
                                                       aText,
                                                       aUsername,
@@ -73,23 +68,41 @@ cal.auth = {
     },
 
     /**
+     * Make sure the passed origin is actually an uri string, because password
+     * manager functions require it. This is a fallback for compatibility only
+     * and should be removed a few versions after Lightning 5.5
+     *
+     * @param aOrigin       The hostname or origin to check
+     * @return              The origin uri
+     */
+    _ensureOrigin: function(aOrigin) {
+        try {
+            return Services.io.newURI(aOrigin, null, null).spec;
+        } catch (e) {
+            return "https://" + aOrigin;
+        }
+    },
+
+    /**
      * Helper to insert/update an entry to the password manager.
      *
      * @param aUserName     The username
      * @param aPassword     The corresponding password
-     * @param aHostName     The corresponding hostname
+     * @param aOrigin       The corresponding origin
      * @param aRealm        The password realm (unused on branch)
      */
-    passwordManagerSave: function calPasswordManagerSave(aUsername, aPassword, aHostName, aRealm) {
+    passwordManagerSave: function(aUsername, aPassword, aOrigin, aRealm) {
         cal.ASSERT(aUsername);
         cal.ASSERT(aPassword);
 
+        let origin = this._ensureOrigin(aOrigin);
+
         try {
-            let logins = Services.logins.findLogins({}, aHostName, null, aRealm);
+            let logins = Services.logins.findLogins({}, origin, null, aRealm);
 
             let newLoginInfo = Components.classes["@mozilla.org/login-manager/loginInfo;1"]
                                          .createInstance(Components.interfaces.nsILoginInfo);
-            newLoginInfo.init(aHostName, null, aRealm, aUsername, aPassword, "", "");
+            newLoginInfo.init(origin, null, aRealm, aUsername, aPassword, "", "");
             if (logins.length > 0) {
                 Services.logins.modifyLogin(logins[0], newLoginInfo);
             } else {
@@ -107,24 +120,26 @@ cal.auth = {
      *
      * @param in  aUsername     The username to search
      * @param out aPassword     The corresponding password
-     * @param aHostName         The corresponding hostname
+     * @param aOrigin           The corresponding origin
      * @param aRealm            The password realm (unused on branch)
      * @return                  Does an entry exist in the password manager
      */
-    passwordManagerGet: function calPasswordManagerGet(aUsername, aPassword, aHostName, aRealm) {
+    passwordManagerGet: function(aUsername, aPassword, aOrigin, aRealm) {
         cal.ASSERT(aUsername);
 
         if (typeof aPassword != "object") {
             throw new Components.Exception("", Components.results.NS_ERROR_XPC_NEED_OUT_OBJECT);
         }
 
+        let origin = this._ensureOrigin(aOrigin);
+
         try {
-            if (!Services.logins.getLoginSavingEnabled(aUsername)) {
+            if (!Services.logins.getLoginSavingEnabled(origin)) {
                 return false;
             }
 
-            let logins = Services.logins.findLogins({}, aHostName, null, aRealm);
-            for each (let loginInfo in logins) {
+            let logins = Services.logins.findLogins({}, origin, null, aRealm);
+            for (let loginInfo of logins) {
                 if (loginInfo.username == aUsername) {
                     aPassword.value = loginInfo.password;
                     return true;
@@ -140,22 +155,25 @@ cal.auth = {
      * Helper to remove an entry from the password manager
      *
      * @param aUsername     The username to remove.
-     * @param aHostName     The corresponding hostname
+     * @param aOrigin       The corresponding origin
      * @param aRealm        The password realm (unused on branch)
      * @return              Could the user be removed?
      */
-    passwordManagerRemove: function calPasswordManagerRemove(aUsername, aHostName, aRealm) {
+    passwordManagerRemove: function(aUsername, aOrigin, aRealm) {
         cal.ASSERT(aUsername);
 
+        let origin = this._ensureOrigin(aOrigin);
+
         try {
-            let logins = Services.logins.findLogins({}, aHostName, null, aRealm);
-            for each (let loginInfo in logins) {
+            let logins = Services.logins.findLogins({}, origin, null, aRealm);
+            for (let loginInfo of logins) {
                 if (loginInfo.username == aUsername) {
                     Services.logins.removeLogin(loginInfo);
                     return true;
                 }
             }
         } catch (exc) {
+            // If no logins are found, fall through to the return statement below.
         }
         return false;
     }
@@ -174,7 +192,7 @@ cal.auth = {
 cal.auth.Prompt.prototype = {
     mProvider: null,
 
-    getPasswordInfo: function capGPI(aPasswordRealm) {
+    getPasswordInfo: function(aPasswordRealm) {
         let username;
         let password;
         let found = false;
@@ -186,7 +204,7 @@ cal.auth.Prompt.prototype = {
             found = true;
         }
         if (found) {
-            let keyStr = aPasswordRealm.prePath +":" + aPasswordRealm.realm;
+            let keyStr = aPasswordRealm.prePath + ":" + aPasswordRealm.realm;
             let now = new Date();
             // Remove the saved password if it was already returned less
             // than 60 seconds ago. The reason for the timestamp check is that
@@ -195,18 +213,18 @@ cal.auth.Prompt.prototype = {
             // expires.
             if (this.mReturnedLogins[keyStr] &&
                 now.getTime() - this.mReturnedLogins[keyStr].getTime() < 60000) {
-                cal.LOG("Credentials removed for: user=" + username + ", host="+aPasswordRealm.prePath+", realm="+aPasswordRealm.realm);
+                cal.LOG("Credentials removed for: user=" + username + ", host=" + aPasswordRealm.prePath + ", realm=" + aPasswordRealm.realm)
+;
                 delete this.mReturnedLogins[keyStr];
                 cal.auth.passwordManagerRemove(username,
                                                aPasswordRealm.prePath,
                                                aPasswordRealm.realm);
-                return {found: false, username: username};
-            }
-            else {
+                return { found: false, username: username };
+            } else {
                 this.mReturnedLogins[keyStr] = now;
             }
         }
-        return {found: found, username: username, password: password};
+        return { found: found, username: username, password: password };
     },
 
     /**
@@ -233,7 +251,7 @@ cal.auth.Prompt.prototype = {
      * @note   Exceptions thrown from this function will be treated like a
      *         return value of false.
      */
-    promptAuth: function capPA(aChannel, aLevel, aAuthInfo) {
+    promptAuth: function(aChannel, aLevel, aAuthInfo) {
         let hostRealm = {};
         hostRealm.prePath = aChannel.URI.prePath;
         hostRealm.realm = aAuthInfo.realm;
@@ -245,10 +263,10 @@ cal.auth.Prompt.prototype = {
         }
         hostRealm.passwordRealm = aChannel.URI.host + ":" + port + " (" + aAuthInfo.realm + ")";
 
-        let pw = this.getPasswordInfo(hostRealm);
-        aAuthInfo.username = pw.username;
-        if (pw && pw.found) {
-            aAuthInfo.password = pw.password;
+        let pwInfo = this.getPasswordInfo(hostRealm);
+        aAuthInfo.username = pwInfo.username;
+        if (pwInfo && pwInfo.found) {
+            aAuthInfo.password = pwInfo.password;
             return true;
         } else {
             let prompter2 = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
@@ -275,16 +293,15 @@ cal.auth.Prompt.prototype = {
      *        Asynchronous authentication prompts are not supported;
      *        the caller should fall back to promptUsernameAndPassword().
      */
-    asyncPromptAuth : function capAPA(aChannel,   // nsIChannel
-                                      aCallback,  // nsIAuthPromptCallback
-                                      aContext,   // nsISupports
-                                      aLevel,     // PRUint32
-                                      aAuthInfo   // nsIAuthInformation
-                                ) {
-        var self = this;
+    asyncPromptAuth: function(aChannel,     // nsIChannel
+                              aCallback,    // nsIAuthPromptCallback
+                              aContext,     // nsISupports
+                              aLevel,       // PRUint32
+                              aAuthInfo) {  // nsIAuthInformation
+        let self = this;
         let promptlistener = {
             onPromptStart: function() {
-                res=self.promptAuth(aChannel, aLevel, aAuthInfo);
+                res = self.promptAuth(aChannel, aLevel, aAuthInfo);
 
                 if (res) {
                     gAuthCache.setAuthInfo(hostKey, aAuthInfo);
@@ -296,7 +313,7 @@ cal.auth.Prompt.prototype = {
                 return false;
             },
 
-            onPromptAuthAvailable : function() {
+            onPromptAuthAvailable: function() {
                 let authInfo = gAuthCache.retrieveAuthInfo(hostKey);
                 if (authInfo) {
                     aAuthInfo.username = authInfo.username;
@@ -305,7 +322,7 @@ cal.auth.Prompt.prototype = {
                 aCallback.onAuthAvailable(aContext, aAuthInfo);
             },
 
-            onPromptCanceled : function() {
+            onPromptCanceled: function() {
                 gAuthCache.retrieveAuthInfo(hostKey);
                 aCallback.onAuthCancelled(aContext, true);
             }
@@ -323,10 +340,10 @@ cal.auth.Prompt.prototype = {
         self.mWindow = cal.getCalendarWindow();
 
         // the prompt will fail if we are too early
-        if (self.mWindow.document.readyState != "complete") {
-            self.mWindow.addEventListener("load", queuePrompt, true);
-        } else {
+        if (self.mWindow.document.readyState == "complete") {
             queuePrompt();
+        } else {
+            self.mWindow.addEventListener("load", queuePrompt, true);
         }
     }
 };
@@ -335,7 +352,7 @@ cal.auth.Prompt.prototype = {
 // listener is called without further information. If the password is not
 // saved, there is no way to retrieve it. We use ref counting to avoid keeping
 // the password in memory longer than needed.
-let gAuthCache = {
+var gAuthCache = {
     _authInfoCache: new Map(),
     planForAuthInfo: function(hostKey) {
         let authInfo = this._authInfoCache.get(hostKey);

@@ -4,7 +4,7 @@
 
 Components.utils.import("resource://calendar/modules/calUtils.jsm");
 
-const scriptLoadOrder = [
+var scriptLoadOrder = [
     "calIcsImportExport.js",
     "calHtmlExport.js",
     "calOutlookCSVImportExport.js",
@@ -28,4 +28,4 @@ function getComponents() {
     ];
 }
 
-var NSGetFactory = cal.loadingNSGetFactory(scriptLoadOrder, getComponents, this);
+this.NSGetFactory = cal.loadingNSGetFactory(scriptLoadOrder, getComponents, this);
