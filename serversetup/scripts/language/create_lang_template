@@ -41,32 +41,43 @@ fi
 
 function translatetxt {
 
-TRANSDATA=`trans -brief -s en -t "$LANGLIST" "$MSGIDTEXT"`
-if [ $? != 0 ]
+TRANSDATA=$(trans -brief -s en -t "$LANGLIST" "$MSGIDTEXT")
+if [ "$?" != 0 ]
 then
 	echo An error has been detected.
 	sleep 1
 	echo Translating each string individually
 
 	#Translate each language in turn
-	for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
+	for KLANG in $(echo "$LANGLIST" | sed 's/+/ /g')
 	do
-		TRANSDATA=`trans -brief -s en -t "$KLANG" "$MSGIDTEXT"`
-		echo msgid \""$MSGIDTEXT"\"  >> /opt/karoshi/serversetup/language/$KLANG.po
-		echo msgstr \"`echo -e "$TRANSDATA"`\" >> /opt/karoshi/serversetup/language/$KLANG.po
-		echo >> /opt/karoshi/serversetup/language/$KLANG.po	
+		TRANSDATA=$(trans -brief -s en -t "$KLANG" "$MSGIDTEXT")
+		echo "msgid \"$MSGIDTEXT\""  >> "/opt/karoshi/serversetup/language/$KLANG.po"
+		echo "msgstr \"$TRANSDATA\"" >> "/opt/karoshi/serversetup/language/$KLANG.po"
+		echo >> "/opt/karoshi/serversetup/language/$KLANG.po"
+
+		#Create en.po
+		echo "msgid \"$MSGIDTEXT\""  >> /opt/karoshi/serversetup/language/en.po
+		echo "msgstr $MSGIDTEXT\"" >> /opt/karoshi/serversetup/language/en.po
+		echo >> /opt/karoshi/serversetup/language/en.po
 	done
 else
 
 	COUNTER=1
-	for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
+	for KLANG in $(echo "$LANGLIST" | sed 's/+/ /g')
 	do
-		echo msgid \""$MSGIDTEXT"\"  >> /opt/karoshi/serversetup/language/$KLANG.po
-		echo msgstr \"`echo -e "$TRANSDATA" | sed -n $COUNTER,$COUNTER"p"`\" >> /opt/karoshi/serversetup/language/$KLANG.po
-		echo >> /opt/karoshi/serversetup/language/$KLANG.po
+		echo "msgid \"$MSGIDTEXT\""  >> "/opt/karoshi/serversetup/language/$KLANG.po"
+		echo "msgstr \"$(echo -e "$TRANSDATA" | sed -n $COUNTER,$COUNTER"p")\"" >> "/opt/karoshi/serversetup/language/$KLANG.po"
+		echo >> "/opt/karoshi/serversetup/language/$KLANG.po"
 		let COUNTER=$COUNTER+1
 	done
-	fi
+
+	#Create en.po
+	echo "msgid \"$MSGIDTEXT\""  >> /opt/karoshi/serversetup/language/en.po
+	echo "msgstr \"$MSGIDTEXT\"" >> /opt/karoshi/serversetup/language/en.po
+	echo >> /opt/karoshi/serversetup/language/en.po
+
+fi
 }
 
 function createpofiles {
@@ -76,35 +87,38 @@ then
 	rm -f /opt/karoshi/serversetup/language/*.po
 
 	#Create header for each language
-	for KLANG in `echo $LANGLIST | sed 's/+/ /g'`
+	for KLANG in $(echo "$LANGLIST" | sed 's/+/ /g')
 	do
-		[ ! -f /opt/karoshi/serversetup/language/$KLANG.po ] && sed -n 1,19p /opt/karoshi/serversetup/language/karoshi-server.pot > /opt/karoshi/serversetup/language/$KLANG.po
-		sed -i 's/Language:/Language: '$KLANG'/g' /opt/karoshi/serversetup/language/$KLANG.po
+		[ ! -f "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" ] && sed -n 1,19p /opt/karoshi/serversetup/language/karoshi-server.pot > /opt/karoshi/serversetup/language/"$KLANG".po
+		sed -i 's/Language:/Language: '"$KLANG"'/g' /opt/karoshi/serversetup/language/"$KLANG".po
 	done
+	
+	[ ! -f /opt/karoshi/serversetup/language/en.po ] && sed -n 1,19p /opt/karoshi/serversetup/language/karoshi-server.pot > /opt/karoshi/serversetup/language/en.po
+	sed -i 's/Language:/Language: en/g' /opt/karoshi/serversetup/language/en.po
 else
 	#Remove any redundant language from the po files.
 	if [ -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove ]
 	then
-		for OLDMSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot.remove | sed 's/ /___/g'`
+		for OLDMSGIDDATA in $(grep ^msgid /opt/karoshi/serversetup/language/karoshi-server.pot.remove | sed 's/ /___/g')
 		do
-			OLDMSGIDTEXT=`echo "$OLDMSGIDDATA" | cut -d'"' -f2 | sed 's/___/ /g'`
+			OLDMSGIDTEXT=$(echo "$OLDMSGIDDATA" | cut -d'"' -f2 | sed 's/___/ /g')
 			if [[ ! -z "$OLDMSGIDTEXT" ]]
 			then
 				#Remove String
 				echo Removing language string - "$OLDMSGIDTEXT"
-				for LANGFILE in `ls -1 /opt/karoshi/serversetup/language/*.po`
+				for LANGFILE in $(ls -1 /opt/karoshi/serversetup/language/*.po)
 				do
 					STARTLINE=""
 					ENDLINE=""
 					echo "Checking $LANGFILE for $OLDMSGIDTEXT"
 					#get line number
-					STARTLINE=`grep -n ^"msgid \"$OLDMSGIDTEXT\"" "$LANGFILE" | cut -d: -f1`
+					STARTLINE=$(grep -n ^"msgid \"$OLDMSGIDTEXT\"" "$LANGFILE" | cut -d: -f1)
 					if [ ! -z "$STARTLINE" ]
 					then
 						let ENDLINE="$STARTLINE"+2
-						echo Removing lines $STARTLINE - $ENDLINE from $LANGFILE
+						echo Removing lines "$STARTLINE - $ENDLINE from $LANGFILE"
 						#sed -i '/msgid "'$OLDMSGIDTEXT'"/d' $LANGFILE
-						sed -i ''$STARTLINE','$ENDLINE'd' $LANGFILE
+						sed -i ''"$STARTLINE"','"$ENDLINE"'d' "$LANGFILE"
 					fi
 				done
 			fi
@@ -112,12 +126,12 @@ else
 	fi	
 fi
 
-for MSGIDDATA in `grep ^msgid /opt/karoshi/serversetup/language/$POTFILE | sed 's/ /___/g'`
+for MSGIDDATA in $(grep ^msgid /opt/karoshi/serversetup/language/$POTFILE | sed 's/ /___/g')
 do
-	MSGIDTEXT=`echo $MSGIDDATA | cut -d'"' -f2 | sed 's/___/ /g'`
+	MSGIDTEXT=$(echo "$MSGIDDATA" | cut -d'"' -f2 | sed 's/___/ /g')
 	if [[ ! -z "$MSGIDTEXT" ]]
 	then
-		echo $MSGIDTEXT
+		echo "$MSGIDTEXT"
 		translatetxt
 		sleep 0.2
 	fi
@@ -135,11 +149,5 @@ then
 	[ -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove ] && rm -f /opt/karoshi/serversetup/language/karoshi-server.pot.remove
 fi
 exit
-
-
-
-
-
-
 
 
