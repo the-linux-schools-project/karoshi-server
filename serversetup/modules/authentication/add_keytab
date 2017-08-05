@@ -82,7 +82,7 @@ then
 echo -e "dn: CN=karoshi-krb5,OU=karoshi,OU=other,OU=People,$LDAPBASE
 changetype: modify
 replace: userAccountControl
-userAccountControl: 66112
+userAccountControl: 66048
 -
 add: gidNumber
 gidNumber: 65534
