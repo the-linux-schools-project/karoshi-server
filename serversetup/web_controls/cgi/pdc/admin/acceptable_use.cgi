@@ -262,7 +262,7 @@ echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td>'$"Reset Status"'</td><td>'
 
 #Show list of groups to reset the acceptable use grace time for
-/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/'"$WIDTH4"'/g'
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option label="blank"><\/option>/<option value="allusers">'$"All Users"'<\/option>/g' | sed 's/200/'"$WIDTH4"'/g'
 
 echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
 </tbody></table><br>'

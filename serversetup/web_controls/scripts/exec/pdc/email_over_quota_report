@@ -23,23 +23,23 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_over_quota_report_cgi
 then
-echo `date`: email_over_quota_report - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_over_quota_report_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_over_quota_report.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_over_quota_report_cgi'check' ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_over_quota_report.cgi | cut -d' ' -f1)
+[ "$MD5SUM"'null' = null ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$email_over_quota_report_cgi"'check' ]
 then
-echo `date`: email_over_quota_report - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 ########################
@@ -48,112 +48,111 @@ fi
 numArgs=$#
 if [ $numArgs != 1 ]
 then
-echo `date`: email_over_quota_report - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+REMOTE_USER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
 ########################
 #Check data
 ########################
 if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
 then
-echo `date`: email_over_quota_report - Not called by email_over_quota_report.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - Not called by email_over_quota_report.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: email_over_quota_report - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - Blank remote use"r >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: email_over_quota_report - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]
 then
-echo `date`: email_over_quota_report - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-echo `date`: email_over_quota_report - viewing by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): email_over_quota_report - viewing by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 ############################
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 ############################
 #View over quota log
 ############################
 
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 
-if [ `echo $EMAILSERVER'null' | sed 's/ //g'` = null ] 
+if [ -z "$EMAILSERVER" ] 
 then
-echo `date`: email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): email_over_quota_report - blank email server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-if [ $EMAILSERVER != `hostname-fqdn` ]
+if [ "$EMAILSERVER" != $(hostname-fqdn) ]
 then
-ssh -x -o PasswordAuthentication=no $EMAILSERVER '
-if [ -f /opt/karoshi/postfixdata/quota_warnings ]
-then
-LINECOUNT=`cat /opt/karoshi/postfixdata/quota_warnings | wc -l`
-if [ $LINECOUNT = 0 ]
-then
-echo "<b>"'$"No users are over quota."'"</b>"
-exit
-fi
-echo \<table class=\"standard\"\>\<tbody\>\<tr\>\<td style=\"width: 200px\;\"\>\<b\>"'$"Username"'"\</b\>\</td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Threshold Level"'"\</b\>\<td\>\<td style=\"width: 150px\;\"\>\<b\>"'$"Inbox Size"' "(MB)"\</b\>\<td\>\<td\>\<b\>"'$"Days to next warning"'"\</b\>\<td\>\</tr\>
-COUNTER=1
-while [ $COUNTER -le $LINECOUNT ]
-do
-DATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/postfixdata/quota_warnings`
-EMAILADDRESS=`echo $DATA | cut -d, -f1`
-LEVEL=`echo $DATA | cut -d, -f2`
-MBOXSIZE=`echo $DATA | cut -d, -f3`
-DAYS=`echo $DATA | cut -d, -f4`
-echo \<tr\>\<td\>"$EMAILADDRESS"\</td\>\<td\>"$LEVEL"\<td\>\<td\>"$MBOXSIZE"\<td\>\<td\>"$DAYS"\<td\>\</tr\>
-let COUNTER=$COUNTER+1
-done
-echo \</tbody\>\</table\>
+	ssh -x -o PasswordAuthentication=no "$EMAILSERVER" '
+	if [ -f /opt/karoshi/postfixdata/quota_warnings ]
+	then
+		LINECOUNT=$(cat /opt/karoshi/postfixdata/quota_warnings | wc -l)
+		if [ "$LINECOUNT" = 0 ]
+		then
+			echo '$"No users are over quota."'
+			exit
+		fi
+		echo "<table class=\"standard\"><tbody><tr><td style=\"width: 200px;\"><b>'$"Username"'</b></td><td style=\"width: 150px;\"><b>'$"Threshold Level"'</b><td><td style=\"width: 150px;\"><b>'$"Inbox Size"' (MB)</b></td><td><b>'$"Days to next warning"'</b></td></tr>"
+		COUNTER=1
+		while [ "$COUNTER" -le "$LINECOUNT" ]
+		do
+			DATA=$(sed -n "$COUNTER,$COUNTER""p" /opt/karoshi/postfixdata/quota_warnings)
+			EMAILADDRESS=$(echo "$DATA" | cut -d, -f1)
+			LEVEL=$(echo "$DATA" | cut -d, -f2)
+			MBOXSIZE=$(echo "$DATA" | cut -d, -f3)
+			DAYS=$(echo "$DATA" | cut -d, -f4)
+			echo "<tr><td>'"$EMAILADDRESS"'</td><td>'"$LEVEL"'</td><td>'"$MBOXSIZE"'</td><td>'"$DAYS"'</td></tr>"
+			let COUNTER="$COUNTER"+1
+		done
+		echo "</tbody></table>"
+	else
+		echo '$"The quota log does not exist."'
+		exit
+	fi
+	'
 else
-echo "<b>"'$"The quota log does not exist."'"</b>"
-exit
-fi
-'
-else
-if [ -f /opt/karoshi/postfixdata/quota_warnings ]
-then
-LINECOUNT=`cat /opt/karoshi/postfixdata/quota_warnings | wc -l`
-if [ $LINECOUNT = 0 ]
-then
-echo '<b>'$"No users are over quota."'</b>'
-exit
-fi
-echo '<table class="standard"><tbody><tr><td style="width: 200px;"><b>'$"Username"'</b></td><td style="width: 150px;"><b>'$"Threshold Level"'</b><td><td style="width: 150px;"><b>'$"Inbox Size"' (MB)</b></td><td><b>'$"Days to next warning"'</b></td></tr>'
-COUNTER=1
-while [ $COUNTER -le $LINECOUNT ]
-do
-DATA=`sed -n $COUNTER,$COUNTER"p" /opt/karoshi/postfixdata/quota_warnings`
-EMAILADDRESS=`echo $DATA | cut -d, -f1`
-LEVEL=`echo $DATA | cut -d, -f2`
-MBOXSIZE=`echo $DATA | cut -d, -f3`
-DAYS=`echo $DATA | cut -d, -f4`
-echo \<tr\>\<td\>"$EMAILADDRESS"\</td\>\<td\>"$LEVEL"\<td\>\<td\>"$MBOXSIZE"\<td\>\<td\>"$DAYS"\<td\>\</tr\>
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table>'
-else
-echo '<b>'$"The quota log does not exist."'</b>'
-exit
-fi
+	if [ -f /opt/karoshi/postfixdata/quota_warnings ]
+	then
+		LINECOUNT=$(cat /opt/karoshi/postfixdata/quota_warnings | wc -l)
+		if [ "$LINECOUNT" = 0 ]
+		then
+			echo $"No users are over quota."
+			exit
+		fi
+		echo '<table class="standard"><tbody><tr><td style="width: 200px;"><b>'$"Username"'</b></td><td style="width: 150px;"><b>'$"Threshold Level"'</b><td><td style="width: 150px;"><b>'$"Inbox Size"' (MB)</b></td><td><b>'$"Days to next warning"'</b></td></tr>'
+		COUNTER=1
+		while [ "$COUNTER" -le "$LINECOUNT" ]
+		do
+			DATA=$(sed -n "$COUNTER,$COUNTER""p" /opt/karoshi/postfixdata/quota_warnings)
+			EMAILADDRESS=$(echo "$DATA" | cut -d, -f1)
+			LEVEL=$(echo "$DATA" | cut -d, -f2)
+			MBOXSIZE=$(echo "$DATA" | cut -d, -f3)
+			DAYS=$(echo "$DATA" | cut -d, -f4)
+			echo '<tr><td>"'"$EMAILADDRESS"'"</td><td>"'"$LEVEL"'"</td><td>"'"$MBOXSIZE"'"</td><td>"'"$DAYS"'"</td></tr>'
+			let COUNTER="$COUNTER"+1
+		done
+		echo '</tbody></table>'
+	else
+		echo $"The quota log does not exist."
+		exit
+	fi
 fi
 exit
 

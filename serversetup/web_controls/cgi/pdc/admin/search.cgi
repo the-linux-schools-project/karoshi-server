@@ -32,7 +32,7 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER "] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 ############################
 #Show page

@@ -191,7 +191,7 @@ else
 	ICON=$ICON2
 	MESSAGE=$"Add"
 	MESSAGE2=$"Add an entry to whitelist."
-	HELPMSG=$"These are the email whitelists addresses that are currently active for your email system."
+	HELPMSG=$"E-Mails from addresses listed here are not checked for spam."
 fi
 
 echo '<form action="/cgi-bin/admin/email_whitelists.cgi" method="post">'
