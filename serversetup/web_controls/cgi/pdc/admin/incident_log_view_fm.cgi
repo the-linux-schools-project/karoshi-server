@@ -59,7 +59,7 @@ ICON1=/images/submenus/system/add.png
 echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" method="post">
 <div id="actionbox">
 
-<div class="sectiontitle">'$"View Incident Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></div>
+<div class="sectiontitle">'$"View Incident Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"View the incident logs for a user."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">

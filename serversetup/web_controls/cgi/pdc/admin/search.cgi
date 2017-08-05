@@ -32,15 +32,14 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
-
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER "] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 ############################
 #Show page
 ############################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -49,7 +48,7 @@ exit
 #Get data input
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\%._:\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\%._:\-+')
 #########################
 #Assign data to variables
 #########################
@@ -70,14 +69,14 @@ done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search Karoshi Web Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Search Karoshi Web Management"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -88,12 +87,12 @@ fi
 #########################
 
 #Sort out spaces
-SEARCH=`echo $SEARCH | sed 's/+/ /g'`
+SEARCH=$(echo "$SEARCH" | sed 's/+/ /g')
 
 echo '<div id="actionbox3"><div id="titlebox">'
 
 echo '<table class="standard" style="text-align: left;" >
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Search"' '$"Web Management"' - '$SEARCH'</div></td></tr></tbody></table><br>
+<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Search"' '$"Web Management"' - '"$SEARCH"'</div></td></tr></tbody></table><br>
 </div><div id="infobox">'
 
 #Check to see that SEARCH is not blank
@@ -104,38 +103,30 @@ then
 fi
 
 #make sure that the search criteria has at least three spaces
-if [ ${#SEARCH} -le 2 ]
+if [ "${#SEARCH}" -le 2 ]
 then
 	echo $"Enter in more that two characters to search.""</div></div></div></body></html>"
 	exit
 fi
 
-echo '<table class="standard"><tbody><tr>'
-
 COUNTER=1
-
-SEARCHRESULT=$(/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v singletext | grep -v 'class="top"' | sed 's/">/" class="simbutton simbuttonwide">/g' | sed 's/<li>//g' | sed 's/<\/li>//g' | sed 's/ /SPACE/g')
-
-if [ ! -z "$SEARCHRESULT" ]
-then
-
-	for SEARCHLIST in $SEARCHRESULT
-	do
-		if [ $COUNTER = 5 ]
-		then
-			echo "</tr><tr>"
-			COUNTER=1
-		fi
-		echo "<td>"$SEARCHLIST"</td>" | sed 's/SPACE/ /g'
-		let COUNTER=$COUNTER+1
-	done
-else
-	echo $"No results found."
-fi
+WIDTH=100
+ICON1="/images/search.png"
 
 
+for SEARCHRESULT in $(/opt/karoshi/web_controls/generate_navbar_admin | grep "href=" | grep -i \"*"$SEARCH" | grep -v 'class="mid"' | grep -v singletext | grep -v 'class="top"' | sed 's% %SPACE%g')
+do 
+	URL=$(echo "$SEARCHRESULT" | cut -d= -f2 | cut -d'"' -f2)
+	TITLE=$(echo "$SEARCHRESULT" | cut -d">" -f3 | cut -d"<" -f1 | sed 's%SPACE% %g')
+	#Try and get some help info for the page
+	HELPINFO=$(echo "$SEARCHRESULT" | cut -s -d"!" -f2 | sed 's%SPACE% %g' | sed 's%--%%g' | sed 's%>%%g')
 
+	echo '<b><a href="'"$URL"'">'"$TITLE"'</a></b><p class="search-result">'"https://$HTTP_HOST/$URL"'</p>'
+	[ ! -z "$HELPINFO" ] && echo ''"$HELPINFO"''
 
-echo '</tr></tbody></table></div></div></div></body></html>'
+	echo '<br><br>'
+done
+echo '</div></div></div></body></html>'
 exit
+
 

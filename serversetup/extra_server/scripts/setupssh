@@ -25,15 +25,15 @@
 #aloughlin@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ ! -d "$HOME"/.tempdata ] && mkdir "$HOME"/.tempdata
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/extra_server/software
 
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupssh'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupssh##############" >> /opt/karoshi/serversetup/install_log
 
 #Create ssh folder
 [ ! -d /root/.ssh ] && mkdir /root/.ssh
@@ -42,7 +42,7 @@ chmod 0700 /root/.ssh
 #############################
 #copy in config file
 #############################
-echo `date`: "Configuring ssh" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Configuring ssh" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ssh_stop
 mv /etc/ssh/sshd_config /etc/ssh/sshd_configbackup
 cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/configfiles/sshd_config /etc/ssh/
@@ -77,25 +77,25 @@ echo `date`: "Opening shorewall port for ssh" >> /opt/karoshi/serversetup/instal
 MODCHECK=`grep -c ACCEPT'	'net'	'fw'	'tcp'	'22'	'- /etc/shorewall/rules`
 if [ $MODCHECK = 0 ]
 then
-LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'SSH-Access-PDC /etc/shorewall/rules > /etc/shorewall/rulestemp
-rm -f /etc/shorewall/rules
-mv /etc/shorewall/rulestemp /etc/shorewall/rules
-echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-######################
-#Restart shorewall
-######################
-echo `date`: "Restarting shorewall" >> /opt/karoshi/serversetup/install_log
-/etc/init.d/$SHOREWALLVER restart 
+	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
+	sed $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'22'	'-'#'SSH-Access-PDC /etc/shorewall/rules > /etc/shorewall/rulestemp
+	rm -f /etc/shorewall/rules
+	mv /etc/shorewall/rulestemp /etc/shorewall/rules
+	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	######################
+	#Restart shorewall
+	######################
+	echo `date`: "Restarting shorewall" >> /opt/karoshi/serversetup/install_log
+	/etc/init.d/$SHOREWALLVER restart 
 fi
 
 ######################
 #Add ssh line to hosts.allow
 ######################
-MODCHECK=`grep -c sshd':' /etc/hosts.allow`
-if [ $MODCHECK = 0 ]
+MODCHECK=$(grep -c sshd':' /etc/hosts.allow)
+if [ "$MODCHECK" = 0 ]
 then
-echo sshd: 127.0.0.1 , $PDC >> /etc/hosts.allow
+	echo sshd: 127.0.0.1 , "$PDC" >> /etc/hosts.allow
 fi
 exit
 

@@ -34,8 +34,7 @@ export TEXTDOMAIN=karoshi-server
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
-<input name="_SEARCH_" tabindex= "1" style="width: 200px; height: 25px;" size="20" type="text">
-<input name="_SEARCH_" type="submit" class="button" value="Search">
+<input class="search-query" name="_SEARCH_" placeholder="'$"Search"'" tabindex= "1" style="width: 200px; height: 25px;" size="20" type="text">
 </form></div>'
 
 #Check for warning messages
@@ -102,7 +101,7 @@ echo '</div><div id="navbar">
 <span class="preload2"></span>
 
 <ul id="nav">
-	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>'
+	<li class="top"><a href="'"$DEFAULTPAGE"'" class="top_link"><span>Home</span></a></li>'
 
 #Show any warning messages
 if [ "$SHOW_WARNINGS" = yes ]
@@ -161,10 +160,10 @@ if [ "$HELPDESKCTRL" = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/helpdesk_add_fm.cgi" id="helpdesk" class="top_link"><span class="down">'$"Technical Support"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li>
-			<li><a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a></li>
-			<li><a href="/cgi-bin/admin/helpdesk_view_completed_fm.cgi">'$"View Completed Requests"'</a></li>
-			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set Defaults"'</a></li>
+			<li><a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a></li><!-- '$"Add a request to the helpdesk."' -->
+			<li><a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a></li><!-- '$"View pending requests."' -->
+			<li><a href="/cgi-bin/admin/helpdesk_view_completed_fm.cgi">'$"View Completed Requests"'</a></li><!-- '$"View jobs that have been completed."' -->
+			<li><a href="/cgi-bin/admin/helpdesk_set_defaults_fm.cgi">'$"Set Defaults"'</a></li><!-- '$"Set default settings for the helpdesk."' -->
 		</ul>
 	</li>'
 fi
@@ -174,30 +173,30 @@ echo 	'<li class="top"><a href="/cgi-bin/admin/change_password_fm.cgi" id="users
 
 if [ "$ADDUSERCTRL" = yes ]
 then
-echo '			<li><a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change User Password"'</a></li>
-			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a></li>
-			<li><a href="/cgi-bin/admin/show_user_info_fm.cgi">'$"Edit User"'</a></li>
-			<li><a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a></li>
-			<li><a href="/cgi-bin/admin/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>
-			<li><a href="/cgi-bin/admin/groups.cgi">'$"Group Management"'</a></li>
-			<li><a href="/cgi-bin/admin/default_user_settings_fm.cgi">'$"Default User Settings"'</a></li>
-			<li><a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
+echo '			<li><a href="/cgi-bin/admin/change_password_fm.cgi">'$"Change User Password"'</a></li><!-- '$"Change a user's password."' -->
+			<li><a href="/cgi-bin/admin/add_user_fm.cgi">'$"Add User"'</a></li><!-- '$"Add a new user to the syatem"' -->
+			<li><a href="/cgi-bin/admin/show_user_info_fm.cgi">'$"Edit User"'</a></li><!-- '$"This will show the LDAP information for that user."' -->
+			<li><a href="/cgi-bin/admin/delete_user_fm.cgi">'$"Delete User"'</a></li><!-- '$"Delete users from your system."' -->
+			<li><a href="/cgi-bin/admin/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li><!-- '$"This will reset the lockout attempts for a user after too many login attempts."' -->
+			<li><a href="/cgi-bin/admin/groups.cgi">'$"Group Management"'</a></li><!-- '$"This page lets you add and remove groups from your system."' -->
+			<li><a href="/cgi-bin/admin/default_user_settings_fm.cgi">'$"Default User Settings"'</a></li><!-- '$"Sets the default settings for user accounts."' -->
+			<li><a href="/cgi-bin/admin/acceptable_use.cgi">'$"Acceptable Use"'</a></li><!-- '$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' -->
 '
 fi
-echo '			<li><a href="/cgi-bin/admin/ban_user_account.cgi">'$"Ban User Accounts"'</a></li>
-			<li><a href="/cgi-bin/admin/incident_log_add.cgi">'$"Record User Incident"'</a></li>
-			<li><a href="/cgi-bin/admin/incident_log_view_fm.cgi">'$"View User Incident Logs"'</a></li>'
+echo '			<li><a href="/cgi-bin/admin/ban_user_account.cgi">'$"Ban User Accounts"'</a></li><!-- '$"Ban a user from logging into the system"' -->
+			<li><a href="/cgi-bin/admin/incident_log_add.cgi">'$"Record User Incident"'</a></li><!-- '$"Record an incident that has occured."' -->
+			<li><a href="/cgi-bin/admin/incident_log_view_fm.cgi">'$"View User Incident Logs"'</a></li><!-- '$"View the incident logs for a user."' -->'
 
 if [ "$EXAMCTRL" = yes ]
 then
 echo '			<li class="mid"><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi" class="fly">'$"Exam Accounts"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/exam_accounts_change_passwords_fm.cgi">'$"Change Exam Password"'</a></li>
-					<li><a href="/cgi-bin/admin/exam_accounts_reset_passwords_fm.cgi">'$"Reset Password"'</a></li>
-					<li><a href="/cgi-bin/admin/exam_accounts_view_reset_passwords.cgi">'$"View Reset Passwords"'</a></li>
-					<li><a href="/cgi-bin/admin/exam_accounts_archive_fm.cgi">'$"Archive Exam Accounts"'</a></li>
-					<li><a href="/cgi-bin/admin/exam_accounts_upload_fm.cgi">'$"Copy Data to Accounts"'</a></li>
-					<li><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi">'$"Enable - Disable Accounts"'</a></li>
+					<li><a href="/cgi-bin/admin/exam_accounts_change_passwords_fm.cgi">'$"Change Exam Passwords"'</a></li><!-- '$"Change passwords for the exam accounts."' -->
+					<li><a href="/cgi-bin/admin/exam_accounts_reset_passwords_fm.cgi">'$"Reset Password"'</a></li><!-- '$"Reset passwords for the exam accounts."' -->
+					<li><a href="/cgi-bin/admin/exam_accounts_view_reset_passwords.cgi">'$"View Reset Passwords"'</a></li><!-- '$"View the passwords that have been reset for the exam accounts."' -->
+					<li><a href="/cgi-bin/admin/exam_accounts_archive_fm.cgi">'$"Archive Exam Accounts"'</a></li><!-- '$"Archve the exam accounts so that they can be used for a new exam."' -->
+					<li><a href="/cgi-bin/admin/exam_accounts_upload_fm.cgi">'$"Copy Data to Accounts"'</a></li><!-- '$"Copy files to the exam accounts."' -->
+					<li><a href="/cgi-bin/admin/exam_accounts_enable_disable_fm.cgi">'$"Enable - Disable Accounts"'</a></li><!-- '$"Enable or disable the exam accounts."' -->
 					<li><a href="/cgi-bin/admin/exam_accounts_create_fm.cgi">'$"Create extra accounts"'</a></li>
 				</ul>
 			</li>'
@@ -205,11 +204,11 @@ fi
 
 echo '			<li class="mid"><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi" class="fly">'$"Bulk User Actions"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"User Creation"'</a></li>
-					<li><a href="/cgi-bin/admin/user_image_upload_fm.cgi">'$"User Images"'</a></li>
-					<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi">'$"Import Enrollment Numbers"'</a></li>
-					<li><a href="/cgi-bin/admin/csv_set_passwords_fm.cgi">'$"Set User Passwords"'</a></li>
-					<li><a href="/cgi-bin/admin/modify_groups_fm.cgi">'$"User Actions"'</a></li>
+					<li><a href="/cgi-bin/admin/bulk_user_creation_upload_fm.cgi">'$"User Creation"'</a></li><!-- '$"Create user accounts from a CSV file."' -->
+					<li><a href="/cgi-bin/admin/user_image_upload_fm.cgi">'$"User Images"'</a></li><!-- '$"Upload images of your users from an archived file."' -->
+					<li><a href="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers_fm.cgi">'$"Import Enrollment Numbers"'</a></li><!-- '$"Import enrollment numbers or staff codes from a CSV file."' -->
+					<li><a href="/cgi-bin/admin/csv_set_passwords_fm.cgi">'$"Set User Passwords"'</a></li><!-- '$"Set user's passwords from a CSV file."' -->
+					<li><a href="/cgi-bin/admin/modify_groups_fm.cgi">'$"User Actions"'</a></li><!-- '$"Carry out actions on a group of user accounts."' -->
 				</ul>
 			</li>'
 
@@ -220,36 +219,36 @@ echo '
 		<ul class="sub">
 			<li class="mid"><a href="/cgi-bin/admin/karoshi_servers_view.cgi" class="fly">'$"Servers"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/karoshi_servers_add_fm.cgi">'$"Add Server"'</a></li>
-					<li><a href="/cgi-bin/admin/karoshi_servers_view.cgi">'$"Add / Remove Server Role"'</a></li>
-					<li><a href="/cgi-bin/admin/karoshi_servers_view.cgi">'$"View Servers"'</a></li>
-					<li><a href="/cgi-bin/admin/services_view_fm.cgi">'$"Control Services"'</a></li>
-					<li><a href="/cgi-bin/admin/firewall.cgi">'$"Firewall Rules"'</a></li>
-					<li><a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$"Management Passwords"'</a></li>
-					<li><a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Custom Command"'</a></li>
-					<li><a href="/cgi-bin/admin/server_info_fm.cgi">'$"Server Information"'</a>
+					<li><a href="/cgi-bin/admin/karoshi_servers_add_fm.cgi">'$"Add Server"'</a></li><!-- '$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."' -->
+					<li><a href="/cgi-bin/admin/karoshi_servers_view.cgi">'$"Add / Remove Server Role"'</a></li><!-- '$"Add or remove a role from a server."' -->
+					<li><a href="/cgi-bin/admin/karoshi_servers_view.cgi">'$"View Servers"'</a></li><!-- '$"View servers that are connected to your system."' -->
+					<li><a href="/cgi-bin/admin/services_view_fm.cgi">'$"Control Services"'</a></li><!-- '$"View the services that are running on a server."' -->
+					<li><a href="/cgi-bin/admin/firewall.cgi">'$"Firewall Rules"'</a></li><!-- '$"View the firewall rules that are set on your server."' -->
+					<li><a href="/cgi-bin/admin/change_management_passwords_fm.cgi">'$"Management Passwords"'</a></li><!-- '$"Change management passwords on a server."' -->
+					<li><a href="/cgi-bin/admin/custom_command_fm.cgi">'$"Custom Command"'</a></li><!-- '$"Run a custom command on a server."' -->
+					<li><a href="/cgi-bin/admin/server_info_fm.cgi">'$"Server Information"'</a><!-- '$"Show server information."' -->
 					<li><a href="/cgi-bin/admin/windows_servers_add_fm.cgi">'$"Add Windows Server"'</a></li>
 					<li><a href="/cgi-bin/admin/windows_machine_commands_fm.cgi">'$"Windows Commands"'</a></li>
-					<li><a href="/cgi-bin/admin/shutdown_fm.cgi">'$"Shutdown"'</a></li>
+					<li><a href="/cgi-bin/admin/shutdown_fm.cgi">'$"Shutdown"'</a></li><!-- '$"Shutdown a server."' -->
 				</ul>
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/karoshi_servers_view.cgi" class="fly">'$"Storage"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/home_folders_fm.cgi">'$"Home Folders"'</a></li>
-					<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a></li>
-					<li><a href="/cgi-bin/admin/samba_shares.cgi">'$"Network Shares"'</a></li>
-					<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"ZFS Raid"'</a></li>
-					<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$"Software Raid"'</a></li>
-					<li><a href="/cgi-bin/admin/gluster_control.cgi">'$"Gluster Volumes"'</a></li>
-					<li><a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Disk Information"'</a></li>
-					<li><a href="/cgi-bin/admin/disk_usage_fm.cgi">'$"Disk Usage"'</a></li>
-					<li><a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Disk Usage Logs"'</a></li>
+					<li><a href="/cgi-bin/admin/home_folders_fm.cgi">'$"Home Folders"'</a></li><!-- '$"This displays the server that hosts the home folders for each group."' -->
+					<li><a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a></li><!-- '$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."' -->
+					<li><a href="/cgi-bin/admin/samba_shares.cgi">'$"Network Shares"'</a></li><!-- '$"View the network shares that are configured on your server."' -->
+					<li><a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"ZFS Raid"'</a></li><!-- '$"View ZFS share that have been set up on your servers."' -->
+					<li><a href="/cgi-bin/admin/software_raid_control_fm.cgi">'$"Software Raid"'</a></li><!-- '$"View software raids that have been set up on your servers."' -->
+					<li><a href="/cgi-bin/admin/gluster_control.cgi">'$"Gluster Volumes"'</a></li><!-- '$"View gluster volumes that have been set up on your servers."' -->
+					<li><a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Disk Information"'</a></li><!-- '$"View disk information on your servers."' -->
+					<li><a href="/cgi-bin/admin/disk_usage_fm.cgi">'$"Disk Usage"'</a></li><!-- '$"View disk usage on your servers."' -->
+					<li><a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Disk Usage Logs"'</a></li><!-- '$"View disk usage logs on your servers."' -->
 					<li class="mid"><a href="/cgi-bin/admin/quotas_enable_fm.cgi" class="fly">'$"Disk Quotas"'</a>
 					<ul>
-						<li><a href="/cgi-bin/admin/quotas_enable_fm.cgi">'$"Enable Quotas"'</a></li>
-						<li><a href="/cgi-bin/admin/quotas_view_partitions.cgi">'$"View enabled partitions"'</a></li>
-						<li><a href="/cgi-bin/admin/quotas_view_usage_fm.cgi">'$"View Quota Usage"'</a></li>
-						<li><a href="/cgi-bin/admin/quotas_set_fm.cgi">'$"Apply Quota settings"'</a></li>
+						<li><a href="/cgi-bin/admin/quotas_enable_fm.cgi">'$"Enable Quotas"'</a></li><!-- '$"Enable user quotas on your servers."' -->
+						<li><a href="/cgi-bin/admin/quotas_view_partitions.cgi">'$"View enabled partitions"'</a></li><!-- '$"View quota enabled partitions on your servers."' -->
+						<li><a href="/cgi-bin/admin/quotas_view_usage_fm.cgi">'$"View Quota Usage"'</a></li><!-- '$"View quota usage on your servers."' -->
+						<li><a href="/cgi-bin/admin/quotas_set_fm.cgi">'$"Apply Quota settings"'</a></li><!-- '$"Apply quota settings on your servers."' -->
 				</ul>
 				<li><a href="/cgi-bin/admin/find_student_files_fm.cgi">'$"Find Student Files"'</a></li>'
 if [ "$FEDERATEDCTL" = yes ]
@@ -261,32 +260,32 @@ echo '
 		</li>'
 if [ "$SHELLCTRL" = yes ]
 then
-	echo '			<li><a href="/cgi-bin/admin/shell.cgi">'$"Shell Access"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/shell.cgi">'$"Shell Access"'</a></li><!-- '$"Open a shell to your main server in the Web Management."' -->'
 fi
 echo '		<li><a href="/cgi-bin/admin/file_manager.cgi">'$"File Manager"'</a></li>
 		<li class="mid"><a href="/cgi-bin/admin/remote_management_view.cgi" class="fly">'$"Web Management"'</a>
 			<ul>
-				<li><a href="/cgi-bin/admin/remote_management_view.cgi">'$"Web Management Users"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_password_fm.cgi">'$"Web Management Password"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_restrict.cgi">'$"Restrict Access"'</a></li>
-				<li><a href="/cgi-bin/admin/staff_restrictions.cgi">'$"Restrict Staff Access"'</a></li>
-				<li><a href="/cgi-bin/admin/set_default_page_fm.cgi">'$"Set Default Page"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_language.cgi">'$"Change Language"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$"Change Theme"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_global_language.cgi">'$"Change Global Language"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_global_theme.cgi">'$"Change Global Theme"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_change_timeout_fm.cgi">'$"Change Timeout"'</a></li>
-				<li><a href="/cgi-bin/admin/remote_management_name_fm.cgi">'$"Web Management Name"'</a></li>
-				<li><a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$"Web Management logs"'</a></li>
+				<li><a href="/cgi-bin/admin/remote_management_view.cgi">'$"Web Management Users"'</a></li><!-- '$"View Web Management users."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_password_fm.cgi">'$"Web Management Password"'</a></li><!-- '$"Change Web Management passwords."' -->
+				<li><a href="/cgi-bin/admin/remote_management_restrict.cgi">'$"Restrict Access"'</a></li><!-- '$"Restrict access to the Web Management."' -->
+				<li><a href="/cgi-bin/admin/staff_restrictions.cgi">'$"Restrict Staff Access"'</a></li><!-- '$"Restrict staff access to the Web Management."' -->
+				<li><a href="/cgi-bin/admin/set_default_page_fm.cgi">'$"Set Default Page"'</a></li><!-- '$"Set your default page in the Web Management."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_language.cgi">'$"Change Language"'</a></li><!-- '$"Change the language setting for the Web Management."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_theme.cgi">'$"Change Theme"'</a></li><!-- '$"Change the theme for the Web Management."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_global_language.cgi">'$"Change Global Language"'</a></li><!-- '$"Change the global language setting for the Web Management."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_global_theme.cgi">'$"Change Global Theme"'</a></li><!-- '$"Change the global theme for the Web Management."' -->
+				<li><a href="/cgi-bin/admin/remote_management_change_timeout_fm.cgi">'$"Change Timeout"'</a></li><!-- '$"Change the Web Management timeout."' -->
+				<li><a href="/cgi-bin/admin/remote_management_name_fm.cgi">'$"Web Management Name"'</a></li><!-- '$"Set the site name that apepars at the top of the Web Management."' -->
+				<li><a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$"Web Management logs"'</a></li><!-- '$"View the Web Management logs."' -->
 			</ul>
 		</li>
 		<li class="mid"><a href="/cgi-bin/admin/update_karoshi_fm.cgi" class="fly">'$"System Updates"'</a>
 			<ul>
-				<li><a href="/cgi-bin/admin/update_servers_fm.cgi">'$"Update Servers"'</a></li>
-				<li><a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$"Update Logs"'</a></li>
-				<li><a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a></li>
-				<li><a href="/cgi-bin/admin/update_karoshi_upload_fm.cgi">'$"Upload Patch"'</a></li>
-				<li><a href="/cgi-bin/admin/update_server_proxy_settings_choose_server_fm.cgi">'$"Upstream Proxy"'</a></li>'
+				<li><a href="/cgi-bin/admin/update_servers_fm.cgi">'$"Update Servers"'</a></li><!-- '$"Set the date and time that you want your servers to update."' -->
+				<li><a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$"Update Logs"'</a></li><!-- '$"View the update logs for your servers."' -->
+				<li><a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a></li><!-- '$"Apply Web Management patches."' -->
+				<li><a href="/cgi-bin/admin/update_karoshi_upload_fm.cgi">'$"Upload Patch"'</a></li><!-- '$"Upload a patch to the Web Management."' -->
+				<li><a href="/cgi-bin/admin/update_server_proxy_settings_choose_server_fm.cgi">'$"Upstream Proxy"'</a></li><!-- '$"Configure a server to use an upstream proxy."' -->'
 #Moodle
 if [ "$MOODLECTRL" = yes ]
 then
@@ -299,10 +298,10 @@ echo '			</ul>
 
 echo '		<li class="mid"><a href="/cgi-bin/admin/ntp.cgi" class="fly">'$"Time"'</a>
 			<ul>
-				<li><a href="/cgi-bin/admin/ntp.cgi">'$"Configure NTP"'</a></li>
-				<li><a href="/cgi-bin/admin/time_fm.cgi">'$"Set Server Time"'</a></li>
-				<li><a href="/cgi-bin/admin/uptime_fm.cgi">'$"Uptime"'</a>
-				<li><a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Scheduled Jobs"'</a></li>
+				<li><a href="/cgi-bin/admin/ntp.cgi">'$"Configure NTP"'</a></li><!-- '$"Configure the NTP settings for your servers."' -->
+				<li><a href="/cgi-bin/admin/time_fm.cgi">'$"Set Server Time"'</a></li><!-- '$"Set the server time on your servers."' -->
+				<li><a href="/cgi-bin/admin/uptime_fm.cgi">'$"Uptime"'</a><!-- '$"Show the uptime for your servers."' -->
+				<li><a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Scheduled Jobs"'</a></li><!-- '$"Show the scheduled jobs for your servers."' -->
 			</ul>
 		</li>
 			<li class="mid"><a href="/cgi-bin/admin/backup_essentials_fm.cgi" class="fly">'$"Backup"'</a>
@@ -311,87 +310,87 @@ echo '		<li class="mid"><a href="/cgi-bin/admin/ntp.cgi" class="fly">'$"Time"'</
 if [ "$BACKUPCTRL" = yes ]
 then
 	echo '
-				<li><a href="/cgi-bin/admin/backup_configure_fm.cgi">'$"Configure Backup"'</a></li>
-				<li><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi">'$"Enable - Disable Backup"'</a></li>
-				<li><a href="/cgi-bin/admin/backup_view_logs_fm.cgi">'$"View Backup Logs"'</a></li>
-				<li><a href="/cgi-bin/admin/backup_now_fm.cgi">'$"Run Network Backup Now"'</a></li>
-				<li><a href="/cgi-bin/admin/restore_files_fm.cgi">'$"Restore Files"'</a></li>
+				<li><a href="/cgi-bin/admin/backup_configure_fm.cgi">'$"Configure Backup"'</a></li><!-- '$"Configure a backup for a server."' -->
+				<li><a href="/cgi-bin/admin/backup_enable_disable_fm.cgi">'$"Enable - Disable Backup"'</a></li><!-- '$"Enable or disable a backup for a server."' -->
+				<li><a href="/cgi-bin/admin/backup_view_logs_fm.cgi">'$"View Backup Logs"'</a></li><!-- '$"View the backup log for a server."' -->
+				<li><a href="/cgi-bin/admin/backup_now_fm.cgi">'$"Run Network Backup Now"'</a></li><!-- '$"Run a backup for a server."' -->
+				<li><a href="/cgi-bin/admin/restore_files_fm.cgi">'$"Restore Files"'</a></li><!-- '$"Restore files from a backup server."' -->
 					'
 fi
-echo '				<li><a href="/cgi-bin/admin/backup_configure_offsite_fm.cgi">'$"Configure Offsite Backup"'</a></li>
-				<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Essential data"'</a></li>
+echo '				<li><a href="/cgi-bin/admin/backup_configure_offsite_fm.cgi">'$"Configure Offsite Backup"'</a></li><!-- '$"Configure an offsite backup for a server."' -->
+				<li><a href="/cgi-bin/admin/backup_essentials_fm.cgi">'$"Backup Essential data"'</a></li><!-- '$"Backup essential data to a portable medium."' -->
 			</ul>
 		</li>
-			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$"SSL Certificate"'</a></li>
-			<li><a href="/cgi-bin/admin/ssl_lets_encrypt.cgi">'$"SSL Let's Encrypt"'</a></li>
-			<li><a href="/cgi-bin/admin/ssl_commercial_certs_fm.cgi">'$"Commercial SSL Certificate"'</a></li>
-			<li><a href="/admin/phpldapadmin/" target="_blank">'$"LDAP Administration"'</a></li>
-			<li><a href="/cgi-bin/admin/view_logs.cgi">'$"Event Logs"'</a></li>
-			<li><a href="/cgi-bin/admin/clear_warnings_fm.cgi">'$"Clear Warning Messages"'</a></li>
+			<li><a href="/cgi-bin/admin/apply_ssl_certificate_fm.cgi">'$"SSL Certificate"'</a></li><!-- '$"Apply a self signed SSL certificate on a server."' -->
+			<li><a href="/cgi-bin/admin/ssl_lets_encrypt.cgi">'$"SSL Let's Encrypt"'</a></li><!-- '$"Apply a Let's Encrypt SSL certificate on a server."' -->
+			<li><a href="/cgi-bin/admin/ssl_commercial_certs_fm.cgi">'$"Commercial SSL Certificate"'</a></li><!-- '$"Apply a commercial SSL certificate on a server."' -->
+			<li><a href="/admin/phpldapadmin/" target="_blank">'$"LDAP Administration"'</a></li><!-- '$"View the Active Directory LDAP data."' -->
+			<li><a href="/cgi-bin/admin/view_logs.cgi">'$"Event Logs"'</a></li><!-- '$"View event logs for a server."' -->
+			<li><a href="/cgi-bin/admin/clear_warnings_fm.cgi">'$"Clear Warning Messages"'</a></li><!-- '$"Clear all warning messages."' -->
 		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/asset_register_view.cgi" id="infrastucture" class="top_link"><span class="down">'$"Infrastructure"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a></li>'
+			<li><a href="/cgi-bin/admin/asset_register_view.cgi">'$"Asset Register"'</a></li><!-- '$"View the asset register information."' -->'
 #DHCP
 if [ "$DHCPCTRL" = yes ]
 then
-	echo '		<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$"DHCP"'</a></li>'
+	echo '		<li><a href="/cgi-bin/admin/dhcp_view_leases.cgi">'$"DHCP"'</a></li><!-- '$"View and configure yout DHCP server."' -->'
 fi
 
-echo '<li><a href="/cgi-bin/admin/dnsview.cgi">'$"DNS"'</a></li>
-<li><a href="/cgi-bin/admin/arp_control.cgi">'$"ARP Control"'</a></li>'
+echo '<li><a href="/cgi-bin/admin/dnsview.cgi">'$"DNS"'</a></li><!-- '$"View DNS entries."' -->
+<li><a href="/cgi-bin/admin/arp_control.cgi">'$"ARP Control"'</a></li><!-- '$"Add and delete ARP entries."' -->'
 #VPN
 if [ "$VPNCTRL" = yes ]
 then
-	echo '<li><a href="/cgi-bin/admin/vpn_certificates.cgi">'$"VPN Certificates"'</a></li>'
+	echo '<li><a href="/cgi-bin/admin/vpn_certificates.cgi">'$"VPN Certificates"'</a></li><!-- '$"Add and view VPN certificates."' -->'
 fi
-echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$"System Monitoring"'</a></li>'
+echo '<li><a href="/cgi-bin/admin/monitorix_fm.cgi">'$"System Monitoring"'</a></li><!-- '$"View system monitoring information on a server."' -->'
 
 
 #Monitoring
 if [ "$MONITORINGCTRL" = yes ]
 then
-	echo '			<li><a href="/cgi-bin/admin/mon_status.cgi">'$"Network Monitoring"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/mon_status.cgi">'$"Network Monitoring"'</a></li><!-- '$"View the network monitoring system."' -->'
 fi
-echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a></li>'
+echo '						<li><a href="/cgi-bin/admin/ups_status.cgi">'$"UPS"'</a></li><!-- '$"View the UPS status."' -->'
 if [ "$RADIUSCTRL" = yes ]
 then
-	echo '			<li><a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a></li>'
+	echo '			<li><a href="/cgi-bin/admin/radius_access_points.cgi">'$"Radius Access Points"'</a></li><!-- '$"Configure Radius access points."' -->'
 fi
 
 echo '		</ul>
 	</li>
 	<li class="top"><a href="/cgi-bin/admin/domain_information.cgi" id="Client" class="top_link"><span class="down">'$"Client"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/samba_status_fm.cgi">'$"Client Connections"'</a></li>
-			<li><a href="/cgi-bin/admin/domain_information.cgi">'$"Domain Information"'</a></li>'
+			<li><a href="/cgi-bin/admin/samba_status_fm.cgi">'$"Client Connections"'</a></li><!-- '$"Show client connections to a server."' -->
+			<li><a href="/cgi-bin/admin/domain_information.cgi">'$"Domain Information"'</a></li><!-- '$"Show the domain information."' -->'
 #OCS Inventory
 if [ "$OCSCTRL" = yes ]
 then
 	echo '		<li><a href="/cgi-bin/admin/ocs.cgi" target="_blank">'$"OCS-Inventory"'</a></li>'
 fi
-echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$"Client Locations"'</a></li>
-			<li><a href="/cgi-bin/admin/wake_on_lan_view.cgi">'$"Wake on LAN"'</a></li>
+echo '			<li><a href="/cgi-bin/admin/locations.cgi">'$"Client Locations"'</a></li><!-- '$"Show client locations."' -->
+			<li><a href="/cgi-bin/admin/wake_on_lan_view.cgi">'$"Wake on LAN"'</a></li><!-- '$"Send wake-on-lan packets to client computers."' -->
 			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi" class="fly">'$"Linux Client"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a></li>
-					<li><a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$"Linux Client Software Controls"'</a></li>
-					<li><a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$"Linux Client Software Packages"'</a></li>
-					<li><a href="/cgi-bin/admin/linux_client_upload_skel_fm.cgi">'$"Upload Skel Archive"'</a></li>
-					<li><a href="/cgi-bin/admin/linux_client_download_skel.cgi">'$"Download Skel Archive"'</a></li>
+					<li><a href="/cgi-bin/admin/linux_client_choose_background_fm.cgi">'$"Linux Client Background"'</a></li><!-- '$"Set the Linux client desktop background."' -->
+					<li><a href="/cgi-bin/admin/linux_client_software_controls_fm.cgi">'$"Linux Client Software Controls"'</a></li><!-- '$"Set the Linux client software controls."' -->
+					<li><a href="/cgi-bin/admin/linux_client_install_software_packages_fm.cgi">'$"Linux Client Software Packages"'</a></li><!-- '$"Install software packages on the Linux clients."' -->
+					<li><a href="/cgi-bin/admin/linux_client_upload_skel_fm.cgi">'$"Upload Skel Archive"'</a></li><!-- '$"Upload a skel archive for the Linux clients."' -->
+					<li><a href="/cgi-bin/admin/linux_client_download_skel.cgi">'$"Download Skel Archive"'</a></li><!-- '$"Download a Linux client skel archive from the server."' -->
 				</ul>
 			</li>
 			<li class="mid"><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi" class="fly">'$"Windows Client"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi">'$"Upload a new profile"'</a></li>
-					<li><a href="/cgi-bin/admin/windows_client_application_data_upload_fm.cgi">'$"Upload application data"'</a></li>
-					<li><a href="/cgi-bin/admin/windows_client_icon_upload_fm.cgi">'$"Upload desktop icons"'</a></li>
-					<li><a href="/cgi-bin/admin/windows_client_startmenu_upload_fm.cgi">'$"Upload start menu"'</a></li>'
+					<li><a href="/cgi-bin/admin/windows_client_profile_upload_fm.cgi">'$"Upload a new profile"'</a></li><!-- '$"Upload a new Windows client profile."' -->
+					<li><a href="/cgi-bin/admin/windows_client_application_data_upload_fm.cgi">'$"Upload application data"'</a></li><!-- '$"Upload new Windows client application data."' -->
+					<li><a href="/cgi-bin/admin/windows_client_icon_upload_fm.cgi">'$"Upload desktop icons"'</a></li><!-- '$"Upload Windows client desktop icons."' -->
+					<li><a href="/cgi-bin/admin/windows_client_startmenu_upload_fm.cgi">'$"Upload start menu"'</a></li><!-- '$"Upload a new Windows client start menu."' -->'
 
 if [ "$ADDUSERCTRL" = yes ]
 then
-	echo '				<li><a href="/cgi-bin/admin/windows_client_roaming_profiles.cgi">'$"Roaming profiles"'</a></li>'
+	echo '				<li><a href="/cgi-bin/admin/windows_client_roaming_profiles.cgi">'$"Roaming profiles"'</a></li><!-- '$"Configure user accounts to use either mandatory or roaming profiles."' -->'
 fi
 echo '				</ul>
 			</li>'
@@ -409,18 +408,18 @@ if [ "$DISTROCTRL" = yes ]
 then
 	echo '			<li class="mid"><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi" class="fly">'$"Distribution Controls"'</a>
 				<ul>
-					<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$"Distribution Controls"'</a></li>
-					<li><a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a></li>
+					<li><a href="/cgi-bin/admin/linux_client_choose_distro_fm.cgi">'$"Distribution Controls"'</a></li><!-- '$"Configure and upload iso images on the distribution server."' -->
+					<li><a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a></li><!-- '$"Set clients to network boot so that client operating systems can be installed from the distribution server."' -->
 				</ul>
 			</li>'
 fi
 
 if [ "$INTERNETCTRL" = yes ]
 then
-	echo '<li><a href="/cgi-bin/admin/package_cache_control.cgi">'$"Package Cache Control"'</a></li>'
+	echo '<li><a href="/cgi-bin/admin/package_cache_control.cgi">'$"Package Cache Control"'</a></li><!-- '$"Configure repositories that are available through the proxy servers."' -->'
 fi
 echo '				<li><a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a></li>			
-				<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a></li>
+				<li><a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a></li><!-- '$"Configure time that the Linux clients automatically shutdown."' -->
 		</ul>		
 	</li>
 '
@@ -430,12 +429,12 @@ if [ "$PRINTERCTRL" = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a></li>
-			<li><a href="/cgi-bin/admin/printers_add_fm.cgi">'$"Add Network Printer"'</a></li>
-			<li><a href="/cgi-bin/admin/printers_delete.cgi">'$"Delete Network Printer"'</a></li>
-			<li><a href="http://savapage:8631/admin" target="_blank">Savapage</a></li>
-			<li><a href="/cgi-bin/admin/printers_view_assigned_fm.cgi">'$"View Assigned Printers"'</a></li>
-			<li><a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a></li>
+			<li><a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a></li><!-- '$"View the status of the printer queues."' -->
+			<li><a href="/cgi-bin/admin/printers_add_fm.cgi">'$"Add Network Printer"'</a></li><!-- '$"Add a network printer queue."' -->
+			<li><a href="/cgi-bin/admin/printers_delete.cgi">'$"Delete Network Printer"'</a></li><!-- '$"Delete a network printer queue."' -->
+			<li><a href="http://savapage:8631/admin" target="_blank">Savapage</a></li><!-- '$"Configure Savapage."' -->
+			<li><a href="/cgi-bin/admin/printers_view_assigned_fm.cgi">'$"View Assigned Printers"'</a></li><!-- '$"View assigned printers."' -->
+			<li><a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a></li><!-- '$"Generate Windows printer drivers."' -->
 		</ul>
 	</li>'
 fi
@@ -445,22 +444,22 @@ if [ "$EMAILCTRL" = yes ]
 then
 echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$"E-Mail"'</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Domain Controls"'</a></li>
-			<li><a href="/cgi-bin/admin/email_access.cgi">'$"Access Controls"'</a></li>
-			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$"Aliases"'</a></li>
-			<li><a href="/cgi-bin/admin/email_domains.cgi">'$"Hosted Domains"'</a></li>
-			<li><a href="/cgi-bin/admin/email_protected_distribution_lists.cgi">'$"Protected Distribution Lists"'</a></li>
-			<li><a href="/cgi-bin/admin/email_relay.cgi">'$"E-Mail relay"'</a></li>
-			<li><a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a></li>
-			<li><a href="/cgi-bin/admin/email_authentication.cgi">'$"Authentication Controls"'</a></li>
-			<li><a href="/cgi-bin/admin/email_limits.cgi">'$"Limits"'</a></li>
-			<li><a href="/cgi-bin/admin/email_custom_spam_rules.cgi">'$"Custom Spam Rules"'</a></li>
-			<li><a href="/cgi-bin/admin/email_search_logs.cgi">'$"Search E-Mail Logs"'</a></li>
-			<li><a href="/cgi-bin/admin/email_over_quota_report.cgi">'$"Over Quota Report"'</a></li>
-			<li><a href="/cgi-bin/admin/email_quota_settings.cgi">'$"Quota Warning Settings"'</a></li>
-			<li><a href="/cgi-bin/admin/email_quota_messages.cgi">'$"Quota Warning Messages"'</a></li>
-			<li><a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$"E-Mail queue"'</a></li>
-			<li><a href="/cgi-bin/admin/email_statistics_fm.cgi">'$"E-Mail Statistics"'</a></li>
+			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Domain Controls"'</a></li><!-- '$"Allow or ban domains for E-Mails."' -->
+			<li><a href="/cgi-bin/admin/email_access.cgi">'$"Access Controls"'</a></li><!-- '$"Allow or deny users from sending and receiving E-Mails."' -->
+			<li><a href="/cgi-bin/admin/email_aliases.cgi">'$"Aliases"'</a></li><!-- '$"Configure E-Mail aliases for your users."' -->
+			<li><a href="/cgi-bin/admin/email_domains.cgi">'$"Hosted Domains"'</a></li><!-- '$"Configure domains that are hosted for E-Mails."' -->
+			<li><a href="/cgi-bin/admin/email_protected_distribution_lists.cgi">'$"Protected Distribution Lists"'</a></li><!-- '$"Restrict E-Mail access to E-Mail groups."' -->
+			<li><a href="/cgi-bin/admin/email_relay.cgi">'$"E-Mail relay"'</a></li><!-- '$"Configure the E-Mail server to send out going E-Mail via an E-Mail relay."' -->
+			<li><a href="/cgi-bin/admin/email_whitelists.cgi">'$"Whitelists"'</a></li><!-- '$"Add E-Mails or domains to a whitelist that bypasses spam checks."' -->
+			<li><a href="/cgi-bin/admin/email_authentication.cgi">'$"Authentication Controls"'</a></li><!-- '$"Configure TCP-IP addresses that can send E-Mail without user authentication."' -->
+			<li><a href="/cgi-bin/admin/email_limits.cgi">'$"Limits"'</a></li><!-- '$"Set E-Mail limits for user accounts."' -->
+			<li><a href="/cgi-bin/admin/email_custom_spam_rules.cgi">'$"Custom Spam Rules"'</a></li><!-- '$"Configure custom spam rules."' -->
+			<li><a href="/cgi-bin/admin/email_search_logs.cgi">'$"Search E-Mail Logs"'</a></li><!-- '$"Search the E-Mail logs for details of E-Mails sent or received."' -->
+			<li><a href="/cgi-bin/admin/email_over_quota_report.cgi">'$"Over Quota Report"'</a></li><!-- '$"Show users that are over their E-Mail quota."' -->
+			<li><a href="/cgi-bin/admin/email_quota_settings.cgi">'$"Quota Warning Settings"'</a></li><!-- '$"Set the warning settings for the quota system."' -->
+			<li><a href="/cgi-bin/admin/email_quota_messages.cgi">'$"Quota Warning Messages"'</a></li><!-- '$"Set the warning messages for the quota system."' -->
+			<li><a href="/cgi-bin/admin/email_show_queue_fm.cgi">'$"E-Mail queue"'</a></li><!-- '$"Show any E-Mails that are currently in the E-Mail queue."' -->
+			<li><a href="/cgi-bin/admin/email_statistics_fm.cgi">'$"E-Mail Statistics"'</a></li><!-- '$"Show E-Mail statistics."' -->
 		</ul>
 	</li>'
 fi
@@ -472,19 +471,19 @@ echo '	<li class="top"><a href="/cgi-bin/admin/e2g_filtergroups.cgi" id="Interne
 		<ul class="sub">
 			<li class="mid"><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi" class="fly">'$"Logs"'</a>
 					<ul>
-						<li><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$"User logs"'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_user_usage_fm.cgi">'$"User Usage"'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_global_usage_fm.cgi">'$"Global Internet Usage"'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$"Site Logs"'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$"Computer Logs"'</a></li>
-						<li><a href="/cgi-bin/admin/dg_view_top_sites_fm.cgi">'$"Top Sites"'</a></li>
+						<li><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi">'$"User logs"'</a></li><!-- '$"Show user internet logs."' -->
+						<li><a href="/cgi-bin/admin/dg_view_user_usage_fm.cgi">'$"User Usage"'</a></li><!-- '$"Show user internet usage."' -->
+						<li><a href="/cgi-bin/admin/dg_view_global_usage_fm.cgi">'$"Global Internet Usage"'</a></li><!-- '$"Show global internet usage."' -->
+						<li><a href="/cgi-bin/admin/dg_view_site_logs_fm.cgi">'$"Site Logs"'</a></li><!-- '$"Show internet logs for a website."' -->
+						<li><a href="/cgi-bin/admin/dg_view_computer_logs_fm.cgi">'$"Computer Logs"'</a></li><!-- '$"Show internet logs for a computer."' -->
+						<li><a href="/cgi-bin/admin/dg_view_top_sites_fm.cgi">'$"Top Sites"'</a></li><!-- '$"Show the most popular internet sites."' -->
 					</ul>
 			</li>
-			<li><a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$"Filter Management"'</a></li>
-			<li><a href="/cgi-bin/admin/user_internet_access.cgi">'$"Ban User"'</a></li>
-			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$"Client Bypass Controls"'</a></li>
-			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Room controls"'</a></li>
-			<li><a href="/cgi-bin/admin/ist.cgi">'$"Internet Usage Trends"'</a></li>
+			<li><a href="/cgi-bin/admin/e2g_filtergroups.cgi">'$"Filter Management"'</a></li><!-- '$"Configure Internet filtering."' -->
+			<li><a href="/cgi-bin/admin/user_internet_access.cgi">'$"Ban User"'</a></li><!-- '$"Ban a user from accessing the Internet."' -->
+			<li><a href="/cgi-bin/admin/dg_bypass.cgi">'$"Client Bypass Controls"'</a></li><!-- '$"Configure a client to bypass the Internet Filtering."' -->
+			<li><a href="/cgi-bin/admin/dg_room_controls_fm.cgi">'$"Room controls"'</a></li><!-- '$"Configure Internet access for computers in a location."' -->
+			<li><a href="/cgi-bin/admin/ist.cgi">'$"Internet Usage Trends"'</a></li><!-- '$"Show Internet usage trends."' -->
 </ul></li>
 '
 fi
@@ -494,7 +493,7 @@ if [ "$REVERSEPROXYCTRL" = yes ]
 then
 	echo '	<li class="top"><a href="#nogo53" id="Web" class="top_link"><span class="down">Web</span></a>
 		<ul class="sub">
-			<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$"Reverse Proxy Sites"'</a></li>
+			<li><a href="/cgi-bin/admin/reverse_proxy_view_fm.cgi">'$"Reverse Proxy Sites"'</a></li><!-- '$"Configure reverse proxy sites."' -->
 		</ul>
 		</li>'
 fi

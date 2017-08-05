@@ -13,6 +13,17 @@ body {
 	left:0;
 }
 
+.search-query{
+	background: url(/images/search.png) no-repeat right ;
+	background-color: #FFF;
+}
+
+.search-result{
+	font-size: 8pt;	
+	color:green;
+	margin: 2px 0px 5px 0px;
+}
+
 input, select {
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
@@ -155,7 +166,7 @@ table.tablesorter thead tr .header {
 	background-image: url(/all/js/jquery.tablesorter/images/bg.gif);
 	background-repeat: no-repeat;
 	background-position: center right;
-	cursor: pointer;
+	cursor:pointer;
 }
 table.tablesorter tbody td {
 	color: #3D3D3D;
@@ -511,6 +522,7 @@ a.searchlink:hover
         .info:hover {
         z-index:25;
         background-color: inherit;
+	cursor: grab;
         }
 
         .info span{
