@@ -92,7 +92,7 @@ echo '<div class="sectiontitle">'$"Edit User Information"'</div>
       <tr>
         <td style="width: 180px;">
 '$"Username"'</td>
-        <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+        <td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: 200px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the LDAP information for that user."'</span></a>
       </td></tr>
     </tbody>

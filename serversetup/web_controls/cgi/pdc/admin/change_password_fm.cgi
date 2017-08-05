@@ -29,7 +29,7 @@
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
-
+source /opt/karoshi/server_network/security/password_settings
 ############################
 #Language
 ############################
@@ -165,12 +165,12 @@ then
 echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
 '$"Username"'<br>
-<input tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
+<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
  value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"New Password"'<br>
-<input tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
+<input minlength="'"$MINPASSLENGTH"'" tabindex= "2" style="width: 160px; height: 30px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br>
+<input minlength="'"$MINPASSLENGTH"'" tabindex= "3" style="width: 160px; height: 30px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br>
 '$"Change at next logon"'<br>
 <input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'><br><br>
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
@@ -182,7 +182,7 @@ echo '<table class="standard" style="text-align: left;" >
         <td style="width: 180px;">
 '$"Username"'</td>
         <td><div id="suggestions"></div>
-<input tabindex= "1" style="width: 200px;" name="____USERNAME____" 
+<input required="required" tabindex= "1" style="width: 200px;" name="____USERNAME____" 
  value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change the password for."'</span></a>
 </td>'
@@ -195,7 +195,7 @@ echo '</td></tr>
       <tr>
         <td>
 '$"New Password"'</td>
-        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
+        <td><input minlength="'"$MINPASSLENGTH"'" tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"Leave the password fields blank if you want a random password."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~<br><br>'
 
@@ -206,7 +206,7 @@ echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a>
       <tr>
         <td style="vertical-align: top;">
 '$"Confirm New Password"'</td>
-        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td><td></td>
+        <td style="vertical-align: top;"><input minlength="'"$MINPASSLENGTH"'" tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td><td></td>
       </tr>
 	<tr><td style="vertical-align: top;">'$"Change at next logon"'</td><td><input type="checkbox" name="____NEXTLOGON____" value="yes" '"$CHECKED"'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 <tr>

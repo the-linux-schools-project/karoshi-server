@@ -277,13 +277,13 @@ if [ "$MOBILE" = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
 	'$"Password"'<br>
-	<input tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
+	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
 
 	if [ "$INSTALL_TYPE" != home ]
 	then
@@ -292,7 +292,7 @@ then
 	fi
 
 	echo '	'$"Change at next logon"'<br>
-	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
+	<select tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
 	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
 	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
 	</select><br>'
@@ -324,17 +324,17 @@ else
 
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
 	<tr><td>'$"Surname"'</td>
-        <td><input tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
+        <td><input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
+	<tr><td>'$"Password"'</td><td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
 	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
 	echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
+      <tr><td>'$"Confirm Password"'</td><td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
 
 	if [ "$INSTALL_TYPE" != home ]
 	then

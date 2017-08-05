@@ -32,6 +32,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
 TEXTDOMAIN=karoshi-server
+source /opt/karoshi/server_network/security/password_settings
 
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
@@ -60,13 +61,13 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
       <tr>
         <td style="width: 180px;">
 '$"Password"'</td>
-        <td><input tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the password that you want all of the exam accounts changed to."'</span></a>
 </td></tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
+        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
       </tr>
 <tr><td style="width: 180px;">
 '$"Exceptions"'

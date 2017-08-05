@@ -181,7 +181,7 @@ echo '<table class="tablesorter" style="text-align: left; top: 207px; left: 232p
 #Students involved
 echo '<table class="tablesorter" style="text-align: left; width: 674px;"><tbody>
 <tr><td>'$"Enter the usernames involved separated by spaces:"'</td></tr>
-<tr><td><input value="'"$STUDENTS"'" name="_STUDENTS_" size="78" type="text"></td></tr>
+<tr><td><input required="required" value="'"$STUDENTS"'" name="_STUDENTS_" size="78" type="text"></td></tr>
 <tr><td>Incident Report</td></tr>
 <tr><td><textarea cols="90" rows="4" name="_INCIDENT_">'"$INCIDENT"'</textarea></td></tr>
 <tr><td>Action Taken</td></tr>

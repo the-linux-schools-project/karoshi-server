@@ -133,6 +133,16 @@ echo '</div></body></html>'
 exit
 }
 
+function show_status2 {
+echo '<script>
+window.location = "/cgi-bin/admin/'$STARTCGI'";
+</script>'
+[ "$MOBILE" = no ] && echo '</div>'
+echo '</div></body></html>'
+exit
+}
+
+
 #Detect mobile browser
 MOBILE=no
 source /opt/karoshi/web_controls/detect_mobile_browser
@@ -464,26 +474,40 @@ EXEC_STATUS="$?"
 	if [ "$EXEC_STATUS" = 101 ]
 	then
 		MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''
+		show_status
 	fi
 
 	if [ "$EXEC_STATUS" = 103 ]
 	then
 		MESSAGE=''"$MESSAGE"' '$"The enrolment number entered is already in use and has been left blank for this user."''
+		show_status
 	fi
 
 	if [ "$EXEC_STATUS" = 105 ]
 	then
 		MESSAGE=''$"A server required for this action was offline."' '$"Please check the karoshi web administration logs for more details."''
+		show_status
 	fi
 
 	if [ "$EXEC_STATUS" -eq 106 ]
 	then
 		MESSAGE=''"$USERNAME"' - '$"A group with the same name as this user already exists, not creating user"''
+		show_status
 	fi
+
+	echo '
+	<ul><li>'$"User created"'</li></ul>
+	<ul><li>'$"Forename"': '"${FIRSTNAME^}"'</li></ul>
+	<ul><li>'$"Surname"': '"${SURNAME^}"'</li></ul>
+	<ul><li>'$"Username"': '"$USERNAME"'</li></ul>
+	<ul><li>'$"Primary Group"': '"$GROUP"'</li></ul>	
+	'
 	if [ "$SHOW_PASSWORD" = yes ]
 	then
 		MESSAGE=''"$MESSAGE"'\n\n'$"Password"': '"$PASSWORD1"''
 	fi
-	show_status
+
+	sleep 5
+	show_status2
 fi
 exit

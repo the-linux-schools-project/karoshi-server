@@ -188,10 +188,10 @@ then
 	echo '<div id="mobileactionbox">'
 	echo '<div id="suggestions"></div>
 	'$"Username"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
+	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
 	'$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
 	'$"Confirm"'<br>
-	<input tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br>
+	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br>
 	<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
 	'
 else
@@ -203,7 +203,7 @@ else
         <td style="width: 180px;">
 	  '$"Username"'
 	</td>
-        <td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
+        <td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
 	</td>
 	<td>
 	  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the username that you want to delete. This WILL delete all of the user files and their home folder."'</span></a>
@@ -216,7 +216,7 @@ else
 	<td>
 	  '$"Confirm"'
 	</td>
-        <td style="vertical-align: top; text-align: left;"><input tabindex= "2" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text">
+        <td style="vertical-align: top; text-align: left;"><input required="required" tabindex= "2" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text">
 	</td>
 	<td>
 	  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to confirm that you want to delete the user."'</span></a>

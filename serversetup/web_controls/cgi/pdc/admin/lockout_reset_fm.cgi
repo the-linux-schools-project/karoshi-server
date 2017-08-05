@@ -114,14 +114,14 @@ if [ "$MOBILE" = no ]
 then
 	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Username"'</td>
- <td><div id="suggestions"></div><input tabindex= "1" style="width: '"$WIDTH2"'px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+ <td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: '"$WIDTH2"'px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to reset the user lockout for."'</span></a>
 </td></tr>
 </tbody></table><br><br>'
 else
 	echo '<div id="suggestions"></div>
 	'$"Username"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
+	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
  	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>'
 fi
 
