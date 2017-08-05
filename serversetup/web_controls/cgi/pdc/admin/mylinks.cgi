@@ -39,15 +39,15 @@ source /opt/karoshi/web_controls/version
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Quick Links"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/js/jquery.js"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Quick Links"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -61,7 +61,7 @@ $(document).ready(function()
 
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -86,13 +86,12 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%+-' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/mylinks.cgi"
 </script>
 </div></div></form></body></html>'
@@ -156,7 +155,7 @@ fi
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -170,7 +169,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ `grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin` != 1 ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -230,7 +229,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -258,7 +257,7 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
@@ -267,27 +266,27 @@ then
 	</div></div><div id="mobileactionbox">
 	'
 	else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 fi
 
 echo '<div class="sectiontitle">'$"Quick Links"'</div>'
 
 #Show box to add link
 echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><tbody>
-<tr><td style="width: '$WIDTH1'px;">'$"Link Style"'</td>
-<td style="width: '$WIDTH2'px; text-align:center">
+<tr><td style="width: '"$WIDTH1"'px;">'$"Link Style"'</td>
+<td style="width: '"$WIDTH2"'px; text-align:center">
 <select name="____QUICKLINKSTYLE" style="width: 200px;">
-<option value="____quick____">'$"Quick Link"'</option>
 <option value="____sub____">'$"Navigation Sub Link"'</option>
 <option value="____inline____">'$"Navigation Main Link"'</option>
+<option value="____quick____">'$"Bookmark"'</option>
 </select>
 </td><td></td></tr>
-<tr><td style="width: '$WIDTH1'px;">'$"Add link"'</td>
-<td style="width: '$WIDTH2'px; text-align:center">'
+<tr><td style="width: '"$WIDTH1"'px;">'$"Add link"'</td>
+<td style="width: '"$WIDTH2"'px; text-align:center">'
 #Show a drop down of all available links
 echo '<select name="____ACTION____add________HYPERLINK____" style="width: 200px;">'
 /opt/karoshi/web_controls/generate_navbar_admin | grep -v ^singletext | grep -v '<li class="top"' |  grep -v '<li class="mid"' | grep 'a href=' | sed 's/\t//g' | sed 's/<li>//g' | sed 's%</li>%%g' | sed 's$<a href=$<option value=$g' | sed 's$</a>$</option>$g' | sed 's$;$$g' | sed 's%target="_blank"%%g' | sort --unique
-echo '</select></td><td style="width: '$WIDTH3'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
+echo '</select></td><td style="width: '"$WIDTH3"'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
 </tbody></table></form>
 '
 
@@ -297,54 +296,54 @@ function show_current_links {
 #Show current sub links
 if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE ]
 then
-	if [ $QUICKLINKSTYLE = sub ]
+	if [ "$QUICKLINKSTYLE" = sub ]
 	then
-		MAX_LINKS=$MAX_SUB_LINKS
-	elif [ $QUICKLINKSTYLE = inline ]
+		MAX_LINKS="$MAX_SUB_LINKS"
+	elif [ "$QUICKLINKSTYLE" = inline ]
 	then
-		MAX_LINKS=$MAX_INLINE_LINKS
+		MAX_LINKS="$MAX_INLINE_LINKS"
 	else
-		MAX_LINKS=$MAX_QUICK_LINKS
+		MAX_LINKS="$MAX_QUICK_LINKS"
 	fi
 	LINK_COUNT=$(cat "/opt/karoshi/web_controls/user_prefs/$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
 
 	COUNTER=1
-	echo '<a name="'$QUICKLINKSTYLE'"></a><form name="myform" action="/cgi-bin/admin/mylinks.cgi#'$QUICKLINKSTYLE'" method="post"> <input type="hidden" name="____Quicklinks____" value="____QUICKLINKSTYLE____'$QUICKLINKSTYLE'____"><table class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '$WIDTH4'px;">'$QUICKLNKTITLE' '$LINK_COUNT'/'$MAX_LINKS'</th><th style="width: '$WIDTH5'px;text-align:center">'$"Move"'</th><th style="width: '$WIDTH5'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
-	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | wc -l)
-	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links.$QUICKLINKSTYLE | sed 's% %SPACE%g')
+	echo '<a name="'"$QUICKLINKSTYLE"'"></a><form name="myform" action="/cgi-bin/admin/mylinks.cgi#'"$QUICKLINKSTYLE"'" method="post"> <input type="hidden" name="____Quicklinks____" value="____QUICKLINKSTYLE____'"$QUICKLINKSTYLE"'____"><table class="tablesorter" style="text-align: left;" >
+	<thead><tr><th style="width: '$WIDTH4'px;">'"$QUICKLNKTITLE"' '"$LINK_COUNT"'/'"$MAX_LINKS"'</th><th style="width: '"$WIDTH5"'px;text-align:center">'$"Move"'</th><th style="width: '"$WIDTH5"'px; text-align:center">'$"Delete"'</th></tr></thead><tbody>'
+	LINKCOUNT=$(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER.links.$QUICKLINKSTYLE" | wc -l)
+	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER.links.$QUICKLINKSTYLE" | sed 's% %SPACE%g')
 	do
-		HYPERLINK=$(echo $LINKDATA | cut -d, -f1)
-		LINKTITLE=$(echo $LINKDATA | cut -d, -f2 | sed 's%SPACE% %g')
-		echo '<tr><td><a href="'$HYPERLINK'">'$LINKTITLE'</a></td><td style="text-align:center">'
+		HYPERLINK=$(echo "$LINKDATA" | cut -d, -f1)
+		LINKTITLE=$(echo "$LINKDATA" | cut -d, -f2 | sed 's%SPACE% %g')
+		echo '<tr><td><a href="'"$HYPERLINK"'">'"$LINKTITLE"'</a></td><td style="text-align:center">'
 		if [ $COUNTER != 1 ]
 		then
-			echo '<button class="info" name="____Up____" value="____ACTION____up____HYPERLINK____'$HYPERLINK'____">
-			<img src="'$ICON1'" alt="'$"Up"'">
-			<span>'$"Move Up"'<br>'$LINKTITLE'</span>
+			echo '<button class="info" name="____Up____" value="____ACTION____up____HYPERLINK____'"$HYPERLINK"'____">
+			<img src="'"$ICON1"'" alt="'$"Up"'">
+			<span>'$"Move Up"'<br>'"$LINKTITLE"'</span>
 			</button>'
 		fi
-		if [ $COUNTER != $LINKCOUNT ]
+		if [ "$COUNTER" != "$LINKCOUNT" ]
 		then
-			echo '<button class="info" name="____Down____" value="____ACTION____down____HYPERLINK____'$HYPERLINK'____">
-			<img src="'$ICON2'" alt="'$"Down"'">
-			<span>'$"Move Down"'<br>'$LINKTITLE'</span>
+			echo '<button class="info" name="____Down____" value="____ACTION____down____HYPERLINK____'"$HYPERLINK"'____">
+			<img src="'"$ICON2"'" alt="'$"Down"'">
+			<span>'$"Move Down"'<br>'"$LINKTITLE"'</span>
 			</button>'
 		fi
 
 		echo '</td><td style="text-align:center">
-		<button class="info" name="____Delete____" value="____ACTION____delete____HYPERLINK____'$HYPERLINK'____">
-		<img src="'$ICON3'" alt="'$"Delete"'">
-		<span>'$"Delete"'<br>'$LINKTITLE'</span>
+		<button class="info" name="____Delete____" value="____ACTION____delete____HYPERLINK____'"$HYPERLINK"'____">
+		<img src="'"$ICON3"'" alt="'$"Delete"'">
+		<span>'$"Delete"'<br>'"$LINKTITLE"'</span>
 		</button>
 		</td></tr>'
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 	echo '</tbody></table></form>'
 fi
 }
 
-QUICKLNKTITLE=$"My Navigation Quick Links"
+QUICKLNKTITLE=$"My Navigation Bookmarks"
 QUICKLINKSTYLE=quick
 show_current_links
 
