@@ -184,7 +184,7 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 [ "$MOBILE" = no ] && echo '<th style="width: 80px;">'$"Protocol"'</th>'
 echo '<th style="width: 70px;">'$"Port"'</th>'
 [ "$MOBILE" = no ] && echo '<th style="width: 250px;">'$"Comment"'</th>'
-[ "$MOBILE" = no ] && echo '<th style="width: 120px;">'$"Rule Set"'</th>'
+[ "$MOBILE" = no ] && echo '<th style="width: 250px;">'$"Rule Set"'</th>'
 if [ "$ACTION" = view ]
 then
 	echo '<th style="width: 80px;">'$"Edit"'</th><th style="width: 80px;">'$"Delete"'</th>'
