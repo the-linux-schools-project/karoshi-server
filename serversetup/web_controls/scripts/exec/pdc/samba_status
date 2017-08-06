@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,42 +31,42 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_status_cgi
 then
-	echo `date`: samba_status - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/samba_status_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_status.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/samba_status.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $samba_status_cgi'check' ]
+if [ "$MD5SUM"'check' != "$samba_status_cgi"'check' ]
 then
-	echo `date`: samba_status - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: samba_status - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: samba_status - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -d: -f3`
-OPTION=`echo "$DATA" | cut -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
-MOBILE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -d: -f3)
+OPTION=$(echo "$DATA" | cut -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f6)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f7)
+#MOBILE=$(echo "$DATA" | cut -s -d: -f8)
 WIDTH1=80
 WIDTH2=100
 WIDTH3=100
@@ -94,71 +94,71 @@ WIDTH23=200
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: samba_status - Not called by samba_status.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Not called by samba_status.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: samba_status - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: samba_status - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$OPTION" ]
 then
-	echo `date`: samba_status - No option by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - No option by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: samba_status - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: samba_status - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: samba_status - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): samba_status - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: samba_status - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): samba_status - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: samba_status $OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): samba_status $OPTION $SERVERNAME - by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 if [ "$OPTION" = connectedusers ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"Process ID"'</th><th style="width: '$WIDTH2'px;">'$"Username"'</th><th style="width: '$WIDTH3'px;">'$"Group"'</th><th style="width: '$WIDTH4'px;">'$"Connection"'</th><th style="width: '$WIDTH5'px;">'$"Information"'</th><th style="width: '$WIDTH6'px;">'$"Protocol Version"'</th><th style="width: '$WIDTH7'px;">'$"Additional"'</th></tr></thead><tbody>
+	<tr><th style="width: '"$WIDTH1"'px;">'$"Process ID"'</th><th style="width: '"$WIDTH2"'px;">'$"Username"'</th><th style="width: '"$WIDTH3"'px;">'$"Group"'</th><th style="width: '"$WIDTH4"'px;">'$"Connection"'</th><th style="width: '"$WIDTH5"'px;">'$"Information"'</th><th style="width: '"$WIDTH6"'px;">'$"Protocol Version"'</th><th style="width: '"$WIDTH7"'px;">'$"Additional"'</th></tr></thead><tbody>
 	'
 
-	if [ $SERVERNAME = $(hostname-fqdn) ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		smbstatus -b | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 	else
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		smbstatus -b | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 		'
 	echo '</tbody></table>'
@@ -168,13 +168,13 @@ fi
 if [ "$OPTION" = connectedshares ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-	<tr><th style="width: '$WIDTH8'px;">'$"Service"'</th><th style="width: '$WIDTH9'px;">'$"Process ID"'</th><th style="width: '$WIDTH10'px;">'$"Machine"'</th><th style="width: '$WIDTH11'px;">'$"Day"'</th><th style="width: '$WIDTH12'px;">'$"Month"'</th><th style="width: '$WIDTH13'px;">'$"Day of Month"'</th><th style="width: '$WIDTH14'px;">'$"Time"'</th><th style="width: '$WIDTH15'px;">'$"Year"'</th></tr></thead><tbody>'
+	<tr><th style="width: '"$WIDTH8"'px;">'$"Service"'</th><th style="width: '"$WIDTH9"'px;">'$"Process ID"'</th><th style="width: '"$WIDTH10"'px;">'$"Machine"'</th><th style="width: '"$WIDTH11"'px;">'$"Day"'</th><th style="width: '"$WIDTH12"'px;">'$"Month"'</th><th style="width: '"$WIDTH13"'px;">'$"Day of Month"'</th><th style="width: '"$WIDTH14"'px;">'$"Time"'</th><th style="width: '"$WIDTH15"'px;">'$"Year"'</th></tr></thead><tbody>'
 
-	if [ $SERVERNAME = $(hostname-fqdn) ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		smbstatus --shares | sed 1,3d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 	else	
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		smbstatus --shares | sed 1,4d | sed "s% * %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 		'
 	echo '</tbody></table>'
@@ -184,13 +184,13 @@ fi
 if [ "$OPTION" = openfiles ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-	<tr><th style="width: '$WIDTH16'px;">'$"Process ID"'</th><th style="width: '$WIDTH17'px;">'$"UID"'</th><th style="width: '$WIDTH18'px;">'$"Deny Mode"'</th><th style="width: '$WIDTH19'px;">'$"R/W"'</th><th style="width: '$WIDTH20'px;">'$"Oplock"'</th><th style="width: '$WIDTH21'px;">'$"Sharepath"'</th><th style="width: '$WIDTH22'px;">'$"Name"'</th><th style="width: '$WIDTH23'px;">'$"Time"'</th></tr></thead><tbody>'
+	<tr><th style="width: '"$WIDTH16"'px;">'$"Process ID"'</th><th style="width: '"$WIDTH17"'px;">'$"UID"'</th><th style="width: '"$WIDTH18"'px;">'$"Deny Mode"'</th><th style="width: '"$WIDTH19"'px;">'$"R/W"'</th><th style="width: '"$WIDTH20"'px;">'$"Oplock"'</th><th style="width: '"$WIDTH21"'px;">'$"Sharepath"'</th><th style="width: '"$WIDTH22"'px;">'$"Name"'</th><th style="width: '"$WIDTH23"'px;">'$"Time"'</th></tr></thead><tbody>'
 
-	if [ $SERVERNAME = $(hostname-fqdn) ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		smbstatus -L | grep -v NONE | sed 1,3d | sed "s% \+ %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 	else
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3  $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		smbstatus -L | grep -v NONE | sed 1,3d | sed "s% \+ %</td><td>%g" | sed "s%^%<tr><td>%g" | sed "s%$%</td></tr>%g"
 		'
 	fi
