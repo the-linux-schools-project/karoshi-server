@@ -180,17 +180,31 @@ then
 echo '</div></div><div id="mobileactionbox">
 '
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Windows Roaming Profiles"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></td>'
+	WIDTH=100
+	ICON1=/images/submenus/user/users.png
 
-if [ "$ACTION" = status ]
-then
-	echo '<td><button class="button" name="_Menu_" value="_">
-	'$"Show Menu"'
-	</button></td>'
-fi
+	echo '
+	<div class="sectiontitle">'$"Windows Roaming Profiles"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Roaming_Profiles"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></div>
+	'
 
-echo '</tr></tbody></table><br></div><div id="infobox">'
+	if [ "$ACTION" = status ]
+	then
+		echo '
+		<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<button class="info" name="_Menu_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Show Menu"'">
+				<span>'$"Choose a different group to view."'</span><br>
+				'$"Show Menu"'
+			</button>
+		</td>
+
+		</tr></tbody></table>
+		'
+	fi
+
+echo '</div><div id="infobox">'
 fi
 
 function show_status {
