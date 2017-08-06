@@ -54,7 +54,7 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 WIDTH=100
-ICON1=/images/submenus/system/groups.png
+ICON1=/images/submenus/user/groups.png
 
 echo '
 <form action="/cgi-bin/admin/remote_management_add.cgi" method="post">
