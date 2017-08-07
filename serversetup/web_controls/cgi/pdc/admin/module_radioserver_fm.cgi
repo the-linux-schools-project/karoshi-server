@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -47,17 +47,15 @@ echo '
 <!DOCTYPE html>
 <html>
 <head>
-  <title>'$"Setup Internet Radio Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Setup Internet Radio Server"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
@@ -65,21 +63,21 @@ END_POINT=5
 #Assign SERVERNAME
 
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [ $(echo "$DATAHEADER"'check') = SERVERNAMEcheck ]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		SERVERNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -107,15 +105,15 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_radioserver.cgi" method="post">
-<div id="actionbox">
-<div class="sectiontitle">'$"Setup Internet Radio Server" - $SERVERNAME'</div><br>
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
+<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Setup Internet Radio Server"' - '"$SERVERNAME"'</div><br>
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
 <b>'$"Description"'</b><br><br>
 '$"This will set up an Internet Radio Server for your network."'<br><br>'
 
 if [ ! -z "$STATUSMSG" ]
 then
-	echo ''$STATUSMSG'<br><br>'
+	echo ''"$STATUSMSG"'<br><br>'
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
@@ -124,30 +122,27 @@ echo '<b>'$"Parameters"'</b><br><br>
       <tr>
         <td style="width: 180px;">
 '$"Admin Password"'</td>
-        <td><input tabindex= "1"  name="_ADMINPASS_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input required="required" tabindex= "1"  name="_ADMINPASS_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to access the icecast server as the admin user."'</span></a>
       </td></tr>
       <tr>
         <td style="width: 180px;">
 '$"Source Password"'</td>
-        <td><input tabindex= "1"  name="_SOURCEPASS_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input required="required" tabindex= "2"  name="_SOURCEPASS_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is needed by the program that you are using to stream your sound to the icecast server."'</span></a>
       </td></tr>
       <tr>
         <td style="width: 180px;">
 '$"Relay Password"'</td>
-        <td><input tabindex= "1" name="_RELAYPASS_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input required="required" tabindex= "3" name="_RELAYPASS_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is needed if you want to use your icecast server as a relay."'</span></a>
       </td></tr>
 
 
 </tbody></table>
-
-'
-echo '</div>
-<div id="submitbox">
+<br><br>
 <input value="'$"Submit"'" class="button" type="submit">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

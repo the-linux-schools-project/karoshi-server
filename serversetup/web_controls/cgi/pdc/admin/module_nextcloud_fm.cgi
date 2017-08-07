@@ -30,15 +30,15 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/web_controls/version
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo $REMOTE_ADDR | grep -c $NOTIMEOUT) = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,17 +49,15 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Setup Nextcloud"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Setup Nextcloud"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
@@ -67,21 +65,21 @@ END_POINT=5
 #Assign SERVERNAME
 
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [ $(echo "$DATAHEADER"'check') = SERVERNAMEcheck ]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		SERVERNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -99,7 +97,7 @@ then
 fi
 
 #Check to see if this module has already been installed on the server
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/nextcloud ]
+if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/nextcloud ]
 then
 	STATUSMSG=$"This module has already been set up on this server."
 fi
@@ -107,19 +105,19 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_nextcloud.cgi" method="post"><div id="actionbox">
+echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_nextcloud.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Nextcloud"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Nextcloud"' - '"$SERVERNAME"'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Nextcloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"Nextcloud allows you to access and synchronise your data from multiple devices."'</span></a>
 </td></tr></tbody></table><br>
 
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
 <b>'$"Description"'</b><br><br>
 '$"This will setup the Nextcloud storage system and Collabora Online for your users."'<br><br>'
 
 if [ ! -z "$STATUSMSG" ]
 then
-	echo ''$STATUSMSG'<br><br>'
+	echo ''"$STATUSMSG"'<br><br>'
 fi
 
 echo '<b>'$"Parameters"'</b><br><br>
@@ -128,19 +126,19 @@ echo '<b>'$"Parameters"'</b><br><br>
       <tr>
         <td style="width: 180px;">'$"Nextcloud Domain"'</td><td>'
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Nextcloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td>.'"$REALM"'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Nextcloud"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
 <option label="selected" value="" selected="selected"></option>'
             
 #Show alias choice
 
-if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
 then
 	#Show any custom aliases that have been assigned
 	echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
-	for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+	for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
 	do
-		echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
+		echo '<option style="color:green">'"$CUSTOM_ALIAS"'</option>'
 	done
 	echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
@@ -148,14 +146,14 @@ fi
 #Get a set of available aliases to check
 
 #Check www.realm
-[ `nslookup www.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www</option>'
+[[ $(nslookup www."$REALM" 127.0.0.1 | grep -c ^Name:) = 0 ]] && echo '<option>www</option>'
 COUNTER=1
-while [ $COUNTER -le 10 ]
+while [ "$COUNTER" -le 10 ]
 do
-	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
-	let COUNTER=$COUNTER+1
+	[[ $(nslookup www"$COUNTER.$REALM" 127.0.0.1 | grep -c ^Name:) = 0 ]] && echo '<option>www'"$COUNTER"'</option>'
+	let COUNTER="$COUNTER"+1
 done
 echo '</select></td><td></td><td></td></tr>
-</tbody></table><br><br></div><div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
+</tbody></table><br><br><input value="'$"Submit"'" class="button" type="submit"></div></div></form></div></body></html>'
 exit
 

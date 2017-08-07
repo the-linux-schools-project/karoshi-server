@@ -30,15 +30,15 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/web_controls/version
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,8 +49,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Setup E-mail"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Setup E-mail"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -58,9 +58,8 @@ echo '
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
 #DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
@@ -68,21 +67,21 @@ END_POINT=5
 #Assign SERVERNAME
 
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [ $(echo "$DATAHEADER"'check') = SERVERNAMEcheck ]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		SERVERNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -108,14 +107,14 @@ then
 	STATUSMSG=$"This module has already been set up on this server."
 fi
 
-echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox">
+echo '<form id="form1" name="combobox" action="/cgi-bin/admin/module_email.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup E-mail"' - '$SERVERNAME'</div></td><td style="vertical-align: top;">
+<table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup E-mail"' - '"$SERVERNAME"'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam. Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$" Emails can also be accessed via an imap or pop3 email client."'</span></a>
 </td></tr></tbody></table><br>
 
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
-<input name="_DOMAINPATH_" value="'$REALM'" type="hidden">
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
+<input name="_DOMAINPATH_" value="'"$REALM"'" type="hidden">
 <b>'$"Description"'</b><br><br>
 '$"This will set up an email server for your network."' '$"The email system uses clamav and spamassasin for anti virus and anti spam."' '$"Access to the email system is through a web browser using SOGo which is automatically set up as part of the setup."' '$"Emails can also be accessed via an imap or pop3 email client."'<br><br>'
 
@@ -131,35 +130,35 @@ echo '<b>'$"Parameters"'</b><br><br>
 #Check to see if an email server has already been assigned
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-	CURRENTEMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver | sed 's/ //g'`
-	if [ $CURRENTEMAILSERVER != $SERVERNAME ]
+	CURRENTEMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver | sed 's/ //g')
+	if [ "$CURRENTEMAILSERVER" != "$SERVERNAME" ]
 	then
-		echo '<tr><td style="width: 180px;">'$"Current Email Server"'</td><td>'$CURRENTEMAILSERVER'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A server is already being used for E-Mail."'</span></a></td></tr>
+		echo '<tr><td style="width: 180px;">'$"Current Email Server"'</td><td>'"$CURRENTEMAILSERVER"'</td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A server is already being used for E-Mail."'</span></a></td></tr>
 	<tr><td>'$"Copy existing E-Mail"'</td><td><input name="_COPYEMAIL_" value="yes" type="checkbox"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enabling this will migrate your existing email, Egroupware, and Squirrrelmail to the new server."'</span></a></td></tr>'
 	fi
 fi
 
 echo '<tr><td style="width: 180px;">
 '$"E-Mail domain"'</td>
-        <td style="vertical-align: top; text-align: right;">mail</td><td>.'$REALM'</td><td>
+        <td style="vertical-align: top; text-align: right;">mail</td><td>.'"$REALM"'</td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in your choice of mail domain without http://www. Example myemaildomain.com"'</span></a>
       </td></tr>
 <tr><td>Web Mail Access</td><td>'
 
 
-echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td>.'$REALM'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
+echo '<input type="text" name="_ALIAS_" style="width: 200px;" value="" size="10"></td><td>.'"$REALM"'</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"You will need to choose an alias for this server for web access. Either enter in a custom alias or choose one from the dropdown list."'</span></a></td></tr>
 <tr><td></td><td><select name="_ALIASLIST_" style="width: 200px;" size="1" onchange="document.combobox._ALIAS_.value = document.combobox._ALIASLIST_.options[document.combobox._ALIASLIST_.selectedIndex].value;document.combobox._ALIASLIST_.value=&#39;&#39;">
-<option label="selected" value="" selected="selected"></option>'
+<option label="selected" value="" selected="selected"></option><option value="">'$"Custom Alias"'</option>'
             
 #Show alias choice
 
-if [ -f /opt/karoshi/server_network/aliases/$SERVERNAME ]
+if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
 then
 	#Show any custom aliases that have been assigned
 	echo '<option style="color:black ; font-weight:bold" value="">'$"Assigned Aliases"'</option>'
-	for CUSTOM_ALIAS in `cat /opt/karoshi/server_network/aliases/$SERVERNAME`
+	for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
 	do
-		echo '<option style="color:green">'$CUSTOM_ALIAS'</option>'
+		echo '<option style="color:green">'"$CUSTOM_ALIAS"'</option>'
 	done
 	echo '<option style="color:black ; font-weight:bold" value="">'$"Unassigned Aliases"'</option>'
 fi
@@ -167,21 +166,19 @@ fi
 #Get a set of available aliases to check
 
 #Check www.realm
-[ `nslookup www.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www</option>'
+[[ $(nslookup www."$REALM" 127.0.0.1 | grep -c ^Name:) = 0 ]] && echo '<option>www</option>'
 COUNTER=1
-while [ $COUNTER -le 10 ]
+while [ "$COUNTER" -le 10 ]
 do
-	[ `nslookup www$COUNTER.$REALM 127.0.0.1 | grep -c ^Name:` = 0 ] && echo '<option>www'$COUNTER'</option>'
-	let COUNTER=$COUNTER+1
+	[[ $(nslookup www"$COUNTER.$REALM" 127.0.0.1 | grep -c ^Name:) = 0 ]] && echo '<option>www'"$COUNTER"'</option>'
+	let COUNTER="$COUNTER"+1
 done
 echo '</select></td><td></td><td></td></tr>'
 echo 
 
 echo '</tbody></table><br><br>
-</div>
-<div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

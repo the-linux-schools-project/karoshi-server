@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -47,17 +47,15 @@ echo '
 <!DOCTYPE html>
 <html>
 <head>
-  <title>'$"Setup Radius Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Setup Radius Server"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
@@ -65,21 +63,21 @@ END_POINT=5
 #Assign SERVERNAME
 
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [ $(echo "$DATAHEADER"'check') = SERVERNAMEcheck ]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		SERVERNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -107,22 +105,20 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_radius.cgi" method="post">
-<div id="actionbox">
-<div class="sectiontitle">'$"Setup Radius Server"' - '$SERVERNAME'</div><br>
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
+<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Setup Radius Server"' - '"$SERVERNAME"'</div><br>
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
 <b>'$"Description"'</b><br><br>
 '$"This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."'<br><br>
 '
 
 if [ ! -z "$STATUSMSG" ]
 then
-	echo ''$STATUSMSG'<br><br>'
+	echo ''"$STATUSMSG"'<br><br>'
 fi
 
-echo '</div>
-<div id="submitbox">
-<input value="'$"Submit"'" class="button" type="submit">
-</div>
+echo '<input value="'$"Submit"'" class="button" type="submit">
+</div></div>
 </form>
 </div></body>
 </html>

@@ -34,7 +34,7 @@ export TEXTDOMAIN=karoshi-server
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
-<input class="search-query" name="_SEARCH_" placeholder="'$"Search"'" tabindex= "1" style="width: 200px; height: 25px;" size="20" type="text">
+<input required="required" class="search-query" name="_SEARCH_" placeholder="'$"Search"'" tabindex= "1" style="width: 200px; height: 25px;" size="20" type="text">
 </form></div>'
 
 #Check for warning messages

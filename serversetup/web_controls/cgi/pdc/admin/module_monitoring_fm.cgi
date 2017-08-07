@@ -110,7 +110,7 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_monitoring.cgi" method="post">
-<div id="actionbox">
+<div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" ><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Setup Server Monitoring"' - '"$SERVERNAME"'</div></td><td style="vertical-align: top;">
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will provide a monitoring server for your network."' '$"The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the web management."'</span></a>
@@ -125,10 +125,9 @@ then
 	echo ''"$STATUSMSG"'<br><br>'
 fi
 
-echo '</div>
-<div id="submitbox">
+echo '<br><br>
 <input value="'$"Submit"'" class="button" type="submit">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>
