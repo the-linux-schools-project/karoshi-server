@@ -114,7 +114,7 @@ fi
 if [ $MOBILE = no ]
 then
 	TOOLTIPCLASS="info"
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=400
@@ -132,7 +132,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -165,12 +165,8 @@ echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td sty
 <tr><td style="width: 180px;">'$"Idle time"'</td><td></td><td><input maxlength="2" size="2" value="'$IDLETIME'" name="_IDLETIME_"></td><td>
 <a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time to wait before shutting down if not in use."'</span></a>
 </td></tr>
-</tbody></table>'
-
-
-[ $MOBILE = no ] && echo '</div><div id="submitbox">'
-
-echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"></div>'
+</tbody></table><br><br>
+<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"></div>'
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

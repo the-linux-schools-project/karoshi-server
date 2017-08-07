@@ -124,7 +124,7 @@ fi
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=200
 	#Generate navigation bar
@@ -147,7 +147,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'"$DIV_ID"'"><div class="sectiontitle">'$"View E-Mail Statistics"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the email statistics for."'</span></a></div><br>'
+echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"View E-Mail Statistics"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the date that you want to view the email statistics for."'</span></a></div><br>'
 fi
 
 if [ "$MOBILE" = yes ]
@@ -192,6 +192,8 @@ fi
 
 #Show list of email servers
 /opt/karoshi/web_controls/show_servers "$MOBILE" email $"Email Statistics"
+
+[ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></form></div></body></html>'
 exit

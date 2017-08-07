@@ -193,7 +193,7 @@ then
 
 			while [ "$LOCCOUNTER" -le "$ROWCOUNT" ]
 			do
-				echo '<td></td>'
+				echo '<td style="width: '"$WIDTH"'px;"></td>'
 				let LOCCOUNTER="$LOCCOUNTER"+1
 			done
 

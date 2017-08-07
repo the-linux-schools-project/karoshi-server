@@ -220,7 +220,7 @@ then
 
 	if [ "$EDITMODE" = no ]
 	then
-		echo '<input tabindex="1" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
+		echo '<input required="required" tabindex="1" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
 	else
 		echo '<b>'"$MONITOR"'</b>'
 		echo '<input name="_GROUPNAME_" value="'"$MONITOR"'" type="hidden">'
@@ -233,7 +233,7 @@ then
 	<tr>
 		<td>
 	'$"Alert after"'</td>
-		<td><input tabindex="2" name="_ALERTAFTER_" value="'"$ALERTAFTER"'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
+		<td><input required="required" tabindex="2" name="_ALERTAFTER_" value="'"$ALERTAFTER"'" maxlength="1" size="1" type="text" style="width: 80px;"></td>
 		<td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of times a failure is detected before sending an alert."'</span></a>
 	      </td>
@@ -241,7 +241,7 @@ then
 	      <tr>
 		<td>
 	'$"Monitor check interval"'</td>
-		<td><input tabindex="2" name="_INTERVAL_" value="'"$INTERVAL"'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
+		<td><input required="required" tabindex="3" name="_INTERVAL_" value="'"$INTERVAL"'" maxlength="2" size="2" type="text" style="width: 80px;"></td>
 		<td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"The monitoring service will wait this amount of time in minutes between each check for this group."'</span></a>
 	      </td>
@@ -304,7 +304,7 @@ then
 	<option>12pm</option>
 	</select>
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the hour start and end times."'</span></a></td></tr>
-	<tr><td>'$"TCPIP numbers"'</td><td><input tabindex="2" name="_TCPIP_" value="'"$TCPIPS"'" type="text" style="width: 300px;"></td><td>
+	<tr><td>'$"TCPIP numbers"'</td><td><input required="required" tabindex="4" name="_TCPIP_" value="'"$TCPIPS"'" type="text" style="width: 300px;"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to enter in the TCPIP numbers separated by spaces of the devices that you want to monitor."'</span></a></td></tr></tbody></table>
 	<br><br><b>'$"Services to monitor"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Pick the services that you want monitored for this group."'</span></a><br><br>
 	<table class="standard" style="text-align: left;" ><tbody>

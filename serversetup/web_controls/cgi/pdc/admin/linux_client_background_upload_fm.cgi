@@ -81,7 +81,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH1=180
 	#Generate navigation bar
@@ -93,7 +93,7 @@ else
 fi
 
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -144,8 +144,9 @@ echo '</tr>
 </table>
 <br><br>
 <input value="'$"Submit"'" class="button" type="submit">
-</form></div></div>
-</body>
-</html>
-'
+</form></div></div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</body></html>'
 exit

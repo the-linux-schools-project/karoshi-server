@@ -101,7 +101,7 @@ fi
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -120,14 +120,14 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/add.png
-	echo '<div id="'"$DIV_ID"'">
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
 	<div class="sectiontitle">'$"UPS Status"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></div>
 
 	<table class="tablesorter"><tbody><tr>
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="ups_add_fm.cgi" method="post">
 				<button class="info" name="_AddUPS" value="_">
-					<img src="'$ICON1'" alt="'$"Add a UPS"'">
+					<img src="'"$ICON1"'" alt="'$"Add a UPS"'">
 					<span>'$"Add a UPS"'</span><br>
 					'$"Add"'
 				</button>

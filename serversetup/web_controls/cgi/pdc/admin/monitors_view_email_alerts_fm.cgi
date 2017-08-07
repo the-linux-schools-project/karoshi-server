@@ -66,7 +66,7 @@ WIDTH=100
 ICON1=/images/submenus/system/add.png
 ICON2=/images/submenus/system/monitor_status.png
 
-echo '<div id="actionbox">
+echo '<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"View E-Mail - SMS Alerts"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following accounts will be sent details of any network failures."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
@@ -91,7 +91,7 @@ echo '<div id="actionbox">
 	</td>
 
 </tr></tbody></table>
-<br>'
+<br></div><div id="infobox">'
 
 SHOWENABLEDLAERTS=no
 if [ -d /opt/karoshi/server_network/mon/email_alerts/ ]
@@ -214,5 +214,5 @@ if [ "$SHOWENABLEDLAERTS" = yes ] || [ "$SHOWDISABLEDLAERTS" = yes ]
 then
 	echo ' </tbody></table>'
 fi
-echo '<br><br></div></div></body></html>'
+echo '<br><br></div></div></div></body></html>'
 exit

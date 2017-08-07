@@ -89,7 +89,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 	TABLECLASS="standard"
-	echo '<div id="actionbox"><div id="titlebox">'
+	echo '<div id="actionbox3"><div id="titlebox">'
 else
 	#Show back button for mobiles
 	echo '<div style="float: center" id="my_menu" class="sdmenu">

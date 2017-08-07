@@ -306,7 +306,7 @@ then
 		echo '<tr><td>'$"DNS Server"' 1</td><td>'
 		if [ "$FORMACTION" = reallyedit ]
 		then
-			echo '<input tabindex= "'"$COUNTER1"'" style="width: 120px;" name="_DNS'"$COUNTER1"'_" value="'"${DNSLIST[$COUNTER]}"'"  type="text">'
+			echo '<input required="required" tabindex= "'"$COUNTER1"'" style="width: 120px;" name="_DNS'"$COUNTER1"'_" value="'"${DNSLIST[$COUNTER]}"'"  type="text">'
 		else
 			echo "${DNSLIST[$COUNTER]}"
 		fi

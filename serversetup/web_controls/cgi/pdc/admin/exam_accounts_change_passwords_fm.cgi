@@ -37,7 +37,7 @@ source /opt/karoshi/server_network/security/password_settings
 #Check if timout should be disabled
 if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -53,7 +53,7 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Exam Accounts - Change Passwords"'</div>
   <br>
   <table class="standard" style="text-align: left;" >
@@ -78,10 +78,9 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
 </td></tr>
     </tbody>
   </table>
-</div>
-<div id="submitbox">
+<br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div><div>
 </form>
 </div></body>
 </html>

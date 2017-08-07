@@ -52,7 +52,7 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_reset_passwords.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/exam_accounts_reset_passwords.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <b>'$"Exam Accounts - Reset Passwords"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The password for each exam account will be changed to a different random number."'</span></a><br>
   <br>
 '$"This will change all exam passwords to a random password."'<br><br>
@@ -66,10 +66,9 @@ echo '<form action="/cgi-bin/admin/exam_accounts_reset_passwords.cgi" method="po
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to have the passwords reset for separated by spaces."'</span></a>
 
 </td></tr></tbody></table>
-</div>
-<div id="submitbox">
+<br><br>
   <input value="'$"Submit"'" class="button" type="submit">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

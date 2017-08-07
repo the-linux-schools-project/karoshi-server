@@ -107,66 +107,68 @@ then
 	ICON1=/images/submenus/email/mail.png
 	ICON2=/images/submenus/system/monitor_status.png
 
-	echo '<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post"><div id="actionbox">
+	echo '<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"E-Mail - SMS Alerts"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_eMail_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to send e-mail alerts in the event of a network failure."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="monitors_view_email_alerts_fm.cgi" name="_ViewAlerts_" value="_">
-			<img src="'$ICON1'" alt="'$"E-Mail Alerts"'">
-			<span>'$"View E-Mail alerts"'</span><br>
-			'$"View"'
-		</button>
+		<form action="monitors_view_email_alerts_fm.cgi" method="post">
+			<button class="info" name="_ViewAlerts_" value="_">
+				<img src="'$ICON1'" alt="'$"E-Mail Alerts"'">
+				<span>'$"View E-Mail alerts"'</span><br>
+				'$"View"'
+			</button>
+		</form>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="mon_status.cgi" name="_MonStatus_" value="_">
-			<img src="'$ICON2'" alt="'$"Network Status"'">
-			<span>'$"View network status"'</span><br>
-			'$"Network Status"'
-		</button>
+		<form action="mon_status.cgi" method="post">
+			<button class="info" name="_MonStatus_" value="_">
+				<img src="'$ICON2'" alt="'$"Network Status"'">
+				<span>'$"View network status"'</span><br>
+				'$"Network Status"'
+			</button>
+		</form>
 	</td>
-</tr></tbody></table><br>
 
+</tr></tbody></table><br>
 <br>
+<form action="/cgi-bin/admin/monitors_add_email_alert.cgi" method="post">
   <table class="standard" style="text-align: left;" >
     <tbody>
 	<tr>
         <td style="width: 180px;">
 '$"Contact Name"'</td>
-        <td><input tabindex= "1" name="_NAME_" value="'"$NAME"'" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "1" name="_NAME_" value="'"$NAME"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a short name for this E-Mail alert."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"Send E-Mail to"'</td>
-        <td><input tabindex= "1" name="_EMAILTO_" value="'"$EMAILTO"'" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "2" name="_EMAILTO_" value="'"$EMAILTO"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address you want the alert sent to."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail from"'</td>
-        <td><input tabindex= "2" name="_EMAILFROM_" value="'"$EMAILFROM"'" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "3" name="_EMAILFROM_" value="'"$EMAILFROM"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the email address of the sender."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"E-Mail Server"'</td>
-        <td><input tabindex= "3" name="_MAILSERVER_" value="'"$MAILSERVER"'" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "4" name="_MAILSERVER_" value="'"$MAILSERVER"'" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_E-Mail_-_SMS_Alerts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the address of the mail server that you want to send the email to."'</span></a>
       </td></tr>
     </tbody>
   </table><br><br>
-</div>
-<div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
 </form>'
 else
 	echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail - SMS Alerts"'</div><br>'$"A monitoring server has not been setup."'<br><br></div>'
 fi
-echo '</div></body>
+echo '</div></div></div></body>
 </html>
 '
 exit

@@ -105,7 +105,7 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_squid.cgi" method="post">
-<div id="actionbox">
+<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Setup Internet Proxy Server"' - '$SERVERNAME'</div><br>
 <input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
 <b>'$"Description"'</b><br><br>
@@ -116,10 +116,9 @@ then
 	echo ''$STATUSMSG'<br><br>'
 fi
 
-echo '</div>
-<div id="submitbox">
+echo '<br><br>
 <input value="'$"Submit"'" class="button" type="submit">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

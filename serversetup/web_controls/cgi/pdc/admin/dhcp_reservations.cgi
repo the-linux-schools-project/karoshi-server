@@ -501,11 +501,11 @@ checkIpNotInRange
 
 echo '<form name="addreservervation" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><input type="hidden" name="_ACTION_'"$FORMACTION"'_" value="English"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Host name"'</td>
-<td><input tabindex= "1" style="width: '"$WIDTH5"'px;" name="_CLIENTHOSTNAME_" value="'"$CLIENTHOSTNAME"'" 
+<td><input required="required" tabindex= "1" style="width: '"$WIDTH5"'px;" name="_CLIENTHOSTNAME_" value="'"$CLIENTHOSTNAME"'" 
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"Mac Address"'</td><td><input tabindex= "2" style="width: '"$WIDTH5"'px;" name="_MACADDRESS_" value="'"$MACADDRESS"'"
+<tr><td>'$"Mac Address"'</td><td><input required="required" tabindex= "2" style="width: '"$WIDTH5"'px;" name="_MACADDRESS_" value="'"$MACADDRESS"'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mac address of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"TCPIP address"'</td><td><input tabindex= "2" style="width: '"$WIDTH5"'px;" name="_TCPIPADDRESS_"  value="'"$TCPIPADDRESS"'"
+<tr><td>'$"TCPIP address"'</td><td><input required="required" tabindex= "3" style="width: '"$WIDTH5"'px;" name="_TCPIPADDRESS_"  value="'"$TCPIPADDRESS"'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address that you want the client computer or device to have."'</span></a></td></tr> 
 </tbody></table><br>'
 

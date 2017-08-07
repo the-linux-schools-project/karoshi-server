@@ -61,7 +61,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_top_sites.cgi" name="testform" method="post">
-  <div id="actionbox"><div id="titlebox"><div class="sectiontitle">'$"Top Sites"'</div>
+  <div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Top Sites"'</div>
   <br>
 <table class="standard" style="text-align: left;" >
     <tbody><tr><td style="width: 180px;">'$"Log Date"'</td><td>'

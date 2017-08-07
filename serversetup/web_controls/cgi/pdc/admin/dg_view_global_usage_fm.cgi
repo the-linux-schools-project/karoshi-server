@@ -59,7 +59,7 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_global_usage.cgi" name="testform" method="post"><b></b>
-  <div id="actionbox"><div id="titlebox"><div class="sectiontitle">'$"Global Internet Usage"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage logs are updated at the end of every day."'</span></a>
+  <div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Global Internet Usage"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Internet Usage logs are updated at the end of every day."'</span></a>
 </div><br>
 
 <table class="standard" style="text-align: left;" >
@@ -80,7 +80,7 @@ echo "<!-- calendar attaches to existing form element -->
 
 
 
-echo '</tbody></table><br>
+echo '</tbody></table><br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></div>
 </form>

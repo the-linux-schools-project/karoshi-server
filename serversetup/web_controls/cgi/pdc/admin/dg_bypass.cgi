@@ -152,7 +152,7 @@ TCPIP="$DATAENTRY"
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	WIDTH=100
 	ICON1=/images/submenus/system/add.png
 	ICON2=/images/submenus/system/computer.png
@@ -164,8 +164,6 @@ else
 	ICON1=/images/submenus/system/addm.png
 	ICON2=/images/submenus/system/computerm.png
 fi
-
-echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><b></b>'
 
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
@@ -203,11 +201,13 @@ echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_Add_" value="_ACTION_'"$BUTTONACTION"'_">
-			<img src="'$ICON'" alt="'"$BUTTONMSG"'">
-			<span>'"$BUTTONMSG"'</span><br>
-			'"$BUTTONMSG"'
-		</button>
+		<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post">
+			<button class="info" name="_Add_" value="_ACTION_'"$BUTTONACTION"'_">
+				<img src="'$ICON'" alt="'"$BUTTONMSG"'">
+				<span>'"$BUTTONMSG"'</span><br>
+				'"$BUTTONMSG"'
+			</button>
+		</form>
 	</td>
 
 </tr></tbody></table><br>'
@@ -224,7 +224,7 @@ fi
 
 if [ "$ACTION" = add ]
 then 
-	echo '<input type="hidden" name="_ACTION_" value="reallyadd">'
+	echo '<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post"><input type="hidden" name="_ACTION_" value="reallyadd">'
 	if [ "$MOBILE" = yes ]
 	then
 		echo '
@@ -236,14 +236,14 @@ then
 	    <tbody>
 	      <tr>
 		<td style="width: 200px;">'$"TCPIP Number"'</td>
-		<td><input name="_TCPIP_" value="'"$TCPIP_ADDR"'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
+		<td><input required="required" name="_TCPIP_" value="'"$TCPIP_ADDR"'" style="width: 200px;" size="20"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the client computer that you want to set to bypass the filtering."'</span></a></td>
 	      </tr>
 	    </tbody>
 	  </table>
-	  <br>'
+	  <br><br>'
 	fi
-	echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+	echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
 fi
 [ "$MOBILE" = no ] && echo '</div>'
-echo '</div></form></div></body></html>'
+echo '</div></div></body></html>'
 exit
