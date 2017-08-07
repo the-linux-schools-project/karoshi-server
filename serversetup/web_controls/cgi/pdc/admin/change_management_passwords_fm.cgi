@@ -144,12 +144,12 @@ echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 echo '<option>root</option>
 </select></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span><b>Karoshi</b> - '$"This is the account used to log in locally to the servers."'<br><br><b>administrator</b> - '$"This password is needed to join the clients to the domain."'<br><br><b>Root</b> - '$"You should not normally need to use this password."'</span></a>
 </td></tr>
-<tr><td>'$"New Password"'</td><td><input name="____PASSWORD1____"  tabindex="2" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td>
+<tr><td>'$"New Password"'</td><td><input required="required" name="____PASSWORD1____"  tabindex="2" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Management_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the pasword that you want to use."'<br><br><b>'$"Special Characters"'</b><br><br>'"$CHARACTERHELP"' space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~
 </span></a>
 </td></tr>
-<tr><td>'$"Confirm Password"'</td><td><input name="____PASSWORD2____"  tabindex="3" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td></td></tr>
+<tr><td>'$"Confirm Password"'</td><td><input required="required" name="____PASSWORD2____"  tabindex="3" size="20" style="width: '"$WIDTH1"'px;" type="password"></td><td></td></tr>
 </tbody></table><br><br>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'

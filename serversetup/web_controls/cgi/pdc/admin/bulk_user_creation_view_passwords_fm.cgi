@@ -56,7 +56,7 @@ WIDTH=100
 ICON1=/images/submenus/user/bulk_user_creation.png
 ICON2=/images/submenus/user/password.png
 
-echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Bulk User Creation - View Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"username, enrollment number or staff code"'</span></a></div>
 <table class="tablesorter"><tbody><tr>
@@ -91,10 +91,9 @@ echo '
         </td>
       </tr>
     </tbody>
-  </table>
-</div>
-<div id="submitbox">
+  </table><br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div>
 </div>
 </form>
 </div></body>

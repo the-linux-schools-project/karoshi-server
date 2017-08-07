@@ -65,7 +65,7 @@ $(document).ready(function()
 WIDTH=100
 ICON1=/images/submenus/user/ban_user.png
 
-echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" method="post"><div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Banned User Accounts"'</div>
 <table class="tablesorter"><tbody><tr>
@@ -115,10 +115,8 @@ echo '<form action="/cgi-bin/admin/banned_users_view.cgi" name="selectedsites" m
 </select>
 </td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Ban_User_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose ALL to display all banned users or choose a letter to display the corresponding usernames."'</span></a>
 </td></tr></tbody></table>
-
-  <br>
-  </div>
-  <div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div>
+<br><br>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></div>
 </form>
 </div></body>
 </html>

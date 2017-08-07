@@ -155,21 +155,24 @@ fi
 WIDTH=100
 ICON1=/images/submenus/user/ban_user.png
 
-echo '<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post"><div id="actionbox">
+echo '<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Record User Incident"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"Record an incident that has occured."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="incident_log_view_fm.cgi" name="_ViewIncidentLogs_" value="_">
-			<img src="'"$ICON1"'" alt="'$"View Incident Logs"'">
-			<span>'$"View Incident Logs"'</span><br>
-			'$"Incident Logs"'
-		</button>
+		<form action="incident_log_view_fm.cgi" method="post">
+			<button class="info" formaction="incident_log_view_fm.cgi" name="_ViewIncidentLogs_" value="_">
+				<img src="'"$ICON1"'" alt="'$"View Incident Logs"'">
+				<span>'$"View Incident Logs"'</span><br>
+				'$"Incident Logs"'
+			</button>
+		</form>
 	</td>
 
-</tr></tbody></table><br>'
-echo '<table class="tablesorter" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" >
+</tr></tbody></table><br>
+<form action="/cgi-bin/admin/incident_log_add2.cgi" method="post">
+<table class="tablesorter" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;" >
 <tbody><tr><td>'$"Incident Time and Date"'</td><td>
 <input name="_HOUR_" value="'"$HOUR"'" size="2" maxlength="2" type="text">:
 <input name="_MINUTES_" value="'"$MINUTES"'" size="2" maxlength="2" type="text">
@@ -187,5 +190,5 @@ echo '<table class="tablesorter" style="text-align: left; width: 674px;"><tbody>
 <tr><td>Action Taken</td></tr>
 <tr><td><textarea cols="90" rows="4" name="_ACTIONTAKEN_"></textarea></td></tr>
 </tbody></table>
-</div><div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div></form></div></body></html>'
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form></div></div></div></body></html>'
 exit

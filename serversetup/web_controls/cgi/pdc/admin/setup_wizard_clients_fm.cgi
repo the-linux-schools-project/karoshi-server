@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Wizard"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Wizard"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -53,24 +53,24 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<table class="standard" style="text-align: left;">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+	echo '<table class="standard" style="text-align: left;">
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Join a client to the domain"'</b><br><br><b>'$"Windows Clients"'</b><br><br>'$"Windows client computers are joined to the domain in the same way as for a windows network. "'<br>'$"The username required to do this is Administrator. The password will be the system password that you chose earlier."'<br>'$"You can also join client computers to the domain using any accounts that are members of the itadmin group."'<br><br>'$"Once you have successfully joined a client you can test it with the new user that you have just created."'<br><br>'
+	echo '<b>'$"Join a client to the domain"'</b><br><br><b>'$"Windows Clients"'</b><br><br>'$"Windows client computers are joined to the domain in the same way as for a windows network. "'<br>'$"The username required to do this is Administrator. The password will be the system password that you chose earlier."'<br>'$"You can also join client computers to the domain using any accounts that are members of the itadmin group."'<br><br>'$"Once you have successfully joined a client you can test it with the new user that you have just created."'<br><br>'
 
 
 echo '<b>'$"Karoshi Linux Clients"'</b><br><br>'$"Karoshi linux clients can be joined to the domain using the icons provided on the desktop for the local administrator user account on the linux client."'<br><br>'
@@ -78,8 +78,9 @@ echo '<b>'$"Karoshi Linux Clients"'</b><br><br>'$"Karoshi linux clients can be j
 fi
 
 
-echo '
-'$OPENINGMSG'
-</div></div></body></html>
-'
+echo ''$OPENINGMSG'</div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></body></html>'
 exit

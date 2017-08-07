@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -45,8 +45,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Default User Settings"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Default User Settings"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -58,21 +58,15 @@ echo '
 #Get current settings
 ##########################
 
-echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/default_user_settings.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Default User Settings"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Sets the default settings for user accounts."'</span></a></td></tr></tbody></table><br>'
 #Get lockout settings
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings_fm.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:GETDATA" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 
 
 echo '<br><br>
-</div>
-<div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
-</form>
-</div></body>
-</html>
-'
+</div></div></form></div></body></html>'
 exit

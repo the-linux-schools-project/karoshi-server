@@ -55,19 +55,19 @@ source /opt/karoshi/web_controls/version
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
+DIV_ID=actionbox3
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 DIV_ID=menubox
 fi
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
 echo '<table class="standard" style="text-align: left;">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
 echo '<b>'$"Setup Printers"'</b><br><br>'$"If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."'<br><br>'$"The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."'<br><br><br><br>
@@ -99,6 +99,6 @@ fi
 
 echo '
 '$OPENINGMSG'
-</div></div></body></html>
+</div></div></div></body></html>
 '
 exit

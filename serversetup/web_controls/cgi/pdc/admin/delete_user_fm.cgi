@@ -123,7 +123,7 @@ done
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -135,7 +135,7 @@ echo '
 <form action="/cgi-bin/admin/delete_user.cgi" method="post">
 <input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">'
 
-[ $MOBILE = no ]  && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ]  && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -259,12 +259,11 @@ fi
 #then
 #	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
 #fi
-if [ $MOBILE = no ]
-then
-	echo '</div><div id="submitbox">'
-else
-	echo '<br>'
-fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+
+echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit
 

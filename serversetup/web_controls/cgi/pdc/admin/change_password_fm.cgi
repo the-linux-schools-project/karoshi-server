@@ -133,7 +133,7 @@ CHECKED=""
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -145,7 +145,7 @@ source /opt/karoshi/server_network/security/password_settings
 
 echo '<form action="/cgi-bin/admin/change_password.cgi" method="post">'
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -176,7 +176,7 @@ echo '<div id="mobileactionbox">
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
 '
 else
-echo '<table class="standard" style="text-align: left;" >
+	echo '<table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
@@ -216,13 +216,10 @@ echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a>
   </table>'
 fi
 
-if [ "$MOBILE" = no ]
-then
-	echo '</div><div id="submitbox">'
-else
-	echo '<br>'
-fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
 echo '</form></div></body></html>'
 exit
 

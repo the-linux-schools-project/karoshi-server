@@ -99,7 +99,7 @@ fi
 echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Log Date"'</b></td><td>'
 echo "	<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
+	<input required=\"required\" type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxsize=10 name=\"_DATE_\" /></td><td style=\"vertical-align: top; text-align: center;\">
 	<script language=\"JavaScript\">
 	new tcal ({
 		// form name

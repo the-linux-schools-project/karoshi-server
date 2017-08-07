@@ -160,23 +160,23 @@ fi
 WIDTH=100
 ICON1=/images/submenus/user/ban_user.png
 
-echo '<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">
-<div id="actionbox">'
-
-echo '
+echo '<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Ban User Account"'</div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="banned_users_view_fm.cgi" name="_ViewBannedUsers_" value="_">
-			<img src="'"$ICON1"'" alt="'$"View Banned Users"'">
-			<span>'$"View Banned Users"'</span><br>
-			'$"Banned Users"'
-		</button>
+		<form action="banned_users_view_fm.cgi" method="post">
+			<button class="info" name="_ViewBannedUsers_" value="_">
+				<img src="'"$ICON1"'" alt="'$"View Banned Users"'">
+				<span>'$"View Banned Users"'</span><br>
+				'$"Banned Users"'
+			</button>
+		</form>
 	</td>
 
 </tr></tbody></table>
 <br>
+<form action="/cgi-bin/admin/ban_user_account2.cgi" method="post">
 <table class="tablesorter" style="text-align: left; top: 207px; left: 232px; width: 674px; height: 61px;">
 <tbody><tr><td>'$"Incident Time and Date"'</td><td>'
 #HOUR
@@ -199,5 +199,5 @@ echo '<table class="tablesorter" style="text-align: left; width: 674px;"><tbody>
 <tr><td>Action Taken</td></tr>
 <tr><td><textarea cols="90" rows="4" name="_ACTIONTAKEN_">'$"User account banned."'</textarea></td></tr>
 </tbody></table>
-</div><div id="submitbox"> <input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"> </div></form></div></body></html>'
+<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"></form></div></div></div></body></html>'
 exit

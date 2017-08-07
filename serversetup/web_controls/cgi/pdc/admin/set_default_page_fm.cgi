@@ -55,13 +55,13 @@ source /opt/karoshi/web_controls/version
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=menubox
 fi
-echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -104,12 +104,9 @@ echo '
 [ -f /opt/karoshi/server_network/proxyserver ] && echo '<option value="dg_view_top_sites_fm.cgi">'$"Top User Internet Sites"'</option>'
 
 echo '</select></td></tr></tbody></table>
-'
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></body></html>
-'
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
+
+[ $MOBILE = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit

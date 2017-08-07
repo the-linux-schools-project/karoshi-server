@@ -129,7 +129,7 @@ echo '<form action="/cgi-bin/admin/ntp2.cgi" name="selectservers" method="post">
 <tbody><tr><td style="width: 180px;">'$"NTP Server"' 1</td>
 <td><input tabindex= "1" name="_NTPSERVER1_" size="25" type="text" value="'$NTPSERVER1'"></td><td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=Configure_NTP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the NTP server addresses that you want the servers to get the time from."'</span></a>
 </td></tr>
-<tr><td>'$"NTP Server"' 2</td><td><input tabindex= "2" name="_NTPSERVER2_" size="25" type="text" value="'$NTPSERVER2'"></td><td></td></tr>
+<tr><td>'$"NTP Server"' 2</td><td><input required="required" tabindex= "2" name="_NTPSERVER2_" size="25" type="text" value="'$NTPSERVER2'"></td><td></td></tr>
 <tr><td>'$"NTP Server"' 3</td><td><input tabindex= "3" name="_NTPSERVER3_" size="25" type="text" value="'$NTPSERVER3'"></td><td></td></tr>
 <tr><td>'$"NTP Server"' 4</td><td><input tabindex= "4" name="_NTPSERVER4_" size="25" type="text" value="'$NTPSERVER4'"></td><td></td></tr>
 </tbody></table></div><div id="infobox">'

@@ -49,7 +49,7 @@ echo '
 <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<body onLoad="start()"<div id="pagecontainer">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -57,7 +57,7 @@ WIDTH=100
 ICON1=/images/submenus/user/bulk_user_creation.png
 ICON2=/images/submenus/user/password.png
 
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Import Enrollment Numbers or staff codes"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"username, enrollment number or staff code"'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
@@ -88,11 +88,9 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 
             </TD>
         </TR>
-        </TABLE>
-  </div>
-<div id="submitbox">
+        </TABLE><br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
         </FORM>
 </div></BODY>
 </HTML>

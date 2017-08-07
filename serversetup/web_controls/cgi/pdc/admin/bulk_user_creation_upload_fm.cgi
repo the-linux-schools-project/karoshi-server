@@ -60,7 +60,7 @@ WIDTH=100
 ICON1=/images/submenus/user/password.png
 ICON2=/images/submenus/user/users.png
 
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Bulk User Creation"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"'</span></a></div>
 <table class="tablesorter"><tbody><tr>
@@ -96,10 +96,8 @@ echo '<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>
         </table>
   
 <br><br>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
-
-<div id="submitbox">
- 	<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
 </div>

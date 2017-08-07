@@ -88,7 +88,7 @@ echo '</head>
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
@@ -107,7 +107,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<div id="'"$DIV_ID"'"><table class="standard" style="text-align: left;" ><tbody>
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Reset User Lockout"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will reset the lockout attempts for a user after too many login attempts."'</span></a></td></tr></tbody></table><br>'
 fi
 if [ "$MOBILE" = no ]
@@ -125,8 +125,9 @@ else
  	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>'
 fi
 
-[ "$MOBILE" = no ] && echo '</div><div id="submitbox">'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit

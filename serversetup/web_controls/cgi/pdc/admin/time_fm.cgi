@@ -103,7 +103,7 @@ echo '<form action="/cgi-bin/admin/time.cgi" name="tstest" method="post"><div id
 
 
 echo $"Select the Date and Time":"<br>"
-echo "<input type=\"Text\" name=\"timestamp\" value=\"$DAY-$MONTH-$YEAR $HOUR:$MINUTES:$SECONDS\">
+echo "<input required=\"required\" type=\"Text\" name=\"timestamp\" value=\"$DAY-$MONTH-$YEAR $HOUR:$MINUTES:$SECONDS\">
 <a href=\"javascript:show_calendar('document.tstest.timestamp', document.tstest.timestamp.value);\"><img src=\"/all/calendar/cal.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"Click Here to Pick up the timestamp\"></a><br><br></div><div id=\"infobox\">
 
                 <!--- End European Date and Time -->"

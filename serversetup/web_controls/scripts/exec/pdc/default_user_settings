@@ -161,18 +161,18 @@ then
 	#Show table for data choice
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 200px;">'$"Account lockout duration"'</td>
-        <td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
+        <td><input required="required" style="width: 200px;" tabindex= "1" name="_LOCKOUTDURATION_" maxlength="3" size="3" type="text" value="'$LOCKOUTDURATION'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in minutes that you want a user to be locked out."'</span></a>
 	</td></tr>
-	<tr><td>'$"Account lockout threshold"'</td><td><input style="width: 200px;" tabindex= "1" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
+	<tr><td>'$"Account lockout threshold"'</td><td><input required="required" style="width: 200px;" tabindex= "2" name="_LOCKOUTTHRESHOLD_" maxlength="3" size="3" type="text" value="'$LOCKOUTTHRESHOLD'"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Number of login attempts to trigger the lockout."'</span></a></td></tr>
-	<tr><td>'$"Reset account lockout after"'</td><td><input style="width: 200px;" tabindex= "2" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
+	<tr><td>'$"Reset account lockout after"'</td><td><input required="required" style="width: 200px;" tabindex= "3" name="_LOCKOUTOBS_" maxlength="3" size="3" type="text" value="'$LOCKOUTOBS'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time duration that the login attempts are monitored over."'</span></a></td></tr>
-	<tr><td>'$"Password history length"'</td><td><input style="width: 200px;" tabindex= "2" name="_PASSWORDHISTORYLENGTH_" maxlength="3" size="3" type="text" value="'$PASSWORDHISTORYLENGTH'"></td>
+	<tr><td>'$"Password history length"'</td><td><input required="required" style="width: 200px;" tabindex= "4" name="_PASSWORDHISTORYLENGTH_" maxlength="3" size="3" type="text" value="'$PASSWORDHISTORYLENGTH'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of old passwords that are stored and not allowed to be re-used. This must be between 0 and 24."'</span></a></td></tr>
-	<tr><td>'$"Minimum password length"'</td><td><input style="width: 200px;" tabindex= "2" name="_MINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$MINPASSWORDLENGTH'"></td>
+	<tr><td>'$"Minimum password length"'</td><td><input required="required" style="width: 200px;" tabindex= "5" name="_MINPASSWORDLENGTH_" maxlength="4" size="3" type="text" value="'$MINPASSWORDLENGTH'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"The minimum password length for a password. This must be between 0 and 14."'</span></a></td></tr>
-	<tr><td>'$"Maximum password age"'</td><td><input style="width: 200px;" tabindex= "2" name="_MAXIMUMPASSWORDAGE_" maxlength="3" size="3" type="text" value="'$MAXIMUMPASSWORDAGE'"></td>
+	<tr><td>'$"Maximum password age"'</td><td><input required="required" style="width: 200px;" tabindex= "6" name="_MAXIMUMPASSWORDAGE_" maxlength="3" size="3" type="text" value="'$MAXIMUMPASSWORDAGE'"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php/Default_User_Settings"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time in days until a user needs to change a password."'</span></a></td></tr>
 	<tr><td>'$"Password Complexity"'</td><td>
 	<select name="_PASSWORDCOMPLEXITY_" style="width: 200px;">

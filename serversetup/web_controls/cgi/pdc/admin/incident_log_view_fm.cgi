@@ -57,7 +57,7 @@ WIDTH=100
 ICON1=/images/submenus/system/add.png
 
 echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" method="post">
-<div id="actionbox">
+<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"View Incident Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Record_Incident"><img class="images" alt="" src="/images/help/info.png"><span>'$"View the incident logs for a user."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
@@ -105,9 +105,9 @@ echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" m
 </select>
 </td></tr></tbody></table>
 <br>
-</div>
-<div id="submitbox"> <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"> </div>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>
 </form>
+</div>
 </div></body>
 </html>
 '

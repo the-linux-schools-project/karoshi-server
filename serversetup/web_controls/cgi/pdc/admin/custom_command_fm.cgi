@@ -140,7 +140,7 @@ echo '<div id="'$DIV_ID'"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" >
 <tbody><tr><td><div class="sectiontitle">'$"Custom Command"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Custom_Commands"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please use this feature with care."'</span></a></td></tr></tbody></table><br><br><b>'$"Command"'</b><br>'$"Allowed special keys /+ -"'<br>
-<input name="_CUSTOMCOMMAND_" size="60" type="text"><br><br></div><div id="infobox">'
+<input required="required" name="_CUSTOMCOMMAND_" size="60" type="text"><br><br></div><div id="infobox">'
 fi
 
 #Show list of servers

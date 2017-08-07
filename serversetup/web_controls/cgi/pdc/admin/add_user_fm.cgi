@@ -230,7 +230,7 @@ FILE=$(echo "$DATA" | cut -s -d_ -f3)
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -248,7 +248,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-	echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Add a New User"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add new users to your system."'</span></a></td></tr></tbody></table><br>'
 fi
 
@@ -377,10 +377,12 @@ else
 	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
 	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
 	</tbody></table><br>
-	</div><div id="submitbox">'
+	'
 fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></body></html>
-'
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</form></div></body></html>'
 exit
 

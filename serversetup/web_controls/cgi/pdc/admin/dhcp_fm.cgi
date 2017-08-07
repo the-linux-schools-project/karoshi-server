@@ -59,27 +59,31 @@ WIDTH=100
 ICON1=/images/submenus/system/dhcp.png
 ICON2=/images/submenus/system/lock.png
 
-echo '<form action="/cgi-bin/admin/dhcp.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+echo '<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Configure DHCP"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the settings that you want to use for your client devices."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
-			<img src="'"$ICON1"'" alt="'$"View DHCP Leases"'">
-			<span>'$"View DHCP Leases"'</span><br>
-			'$"DHCP Leases"'
-		</button>
+		<form action="dhcp_view_leases.cgi" method="post">
+			<button class="info" name="_ConfigureDHCP_" value="_">
+				<img src="'"$ICON1"'" alt="'$"View DHCP Leases"'">
+				<span>'$"View DHCP Leases"'</span><br>
+				'$"DHCP Leases"'
+			</button>
+		</form>
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
-			<img src="'"$ICON2"'" alt="'$"DHCP Reservations"'">
-			<span>'$"View and edit DHCP Reservations"'</span><br>
-			'$"Reservations"'
-		</button>
+		<form action="dhcp_reservations.cgi" method="post">
+			<button class="info" name="_DoDHCPReservations_" value="_">
+				<img src="'"$ICON2"'" alt="'$"DHCP Reservations"'">
+				<span>'$"View and edit DHCP Reservations"'</span><br>
+				'$"Reservations"'
+			</button>
+		</form>
 	</td>
-</tbody></table><br></div><div id="infobox">
+</tbody></table><br></div><div id="infobox"><form action="/cgi-bin/admin/dhcp.cgi" method="post">
 '
 
 #Get current dhcp data
@@ -120,48 +124,48 @@ echo '
       <tr>
         <td style="width: 180px;">
 '$"DNS Servers"'</td>
-        <td><input value="'"$DOMAINNAMESERVER"'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text" readonly="readonly"></td><td>
+        <td><input required="required" value="'"$DOMAINNAMESERVER"'" name="_DOMAINNAMESERVER_" tabindex= "1" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
 	<tr>
         <td>
 '$"Netbios Name Servers"'</td>
-        <td><input tabindex= "1" value="'"$NETBIOSSERVER"'" name="_NETBIOSSERVER_" size="20" type="text" readonly="readonly"></td><td>
+        <td><input required="required" tabindex= "1" value="'"$NETBIOSSERVER"'" name="_NETBIOSSERVER_" size="20" type="text" readonly="readonly"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"Gateway"'</td>
-        <td><input tabindex= "2" value="'"$ROUTER"'" name="_ROUTER_" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "2" value="'"$ROUTER"'" name="_ROUTER_" size="20" type="text"></td><td>
       </td></tr>
 	<tr>
         <td>
 '$"Subnet"'</td>
-        <td><input value="'"$SUBNET"'" name="_SUBNET_" size="20" tabindex= "3" type="text"></td><td>
+        <td><input required="required" value="'"$SUBNET"'" name="_SUBNET_" size="20" tabindex= "3" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"Subnet Mask"'</td>
-        <td><input value="'"$SUBNETMASK"'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text"></td><td>
+        <td><input required="required" value="'"$SUBNETMASK"'" name="_SUBNETMASK_" size="20" tabindex= "3" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"Start Address"'</td>
-        <td><input tabindex= "4" value="'"$STARTADDRESS"'" name="_STARTADDRESS_" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "4" value="'"$STARTADDRESS"'" name="_STARTADDRESS_" size="20" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"End Address"'</td>
-        <td><input tabindex= "5" value="'"$ENDADDRESS"'" name="_ENDADDRESS_" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "5" value="'"$ENDADDRESS"'" name="_ENDADDRESS_" size="20" type="text"></td><td>
       </td></tr>
       <tr>
         <td>
 '$"Default Lease Time"'</td>
-        <td><input tabindex= "6" value="'"$DEFAULTLEASETIME"'" name="_DEFAULTLEASETIME_" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "6" value="'"$DEFAULTLEASETIME"'" name="_DEFAULTLEASETIME_" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the default lease time in seconds."'</span></a>
       </td></tr>
       <tr>
         <td>
 '$"Max Lease Time"'</td>
-        <td><input tabindex= "7" value="'"$MAXLEASETIME"'" name="_MAXLEASETIME_" size="20" type="text"></td><td>
+        <td><input required="required" tabindex= "7" value="'"$MAXLEASETIME"'" name="_MAXLEASETIME_" size="20" type="text"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_DHCP"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the maximum lease time in seconds."'</span></a>
       </td></tr>'
 
@@ -179,6 +183,6 @@ then
 fi
 
 echo '<br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></div></form></div></body></html>'
+</form></div></div></div></body></html>'
 exit
 
