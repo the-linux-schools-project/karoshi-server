@@ -37,15 +37,15 @@
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
@@ -53,72 +53,50 @@ echo '<div id="actionbox3"><div id="titlebox">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=12
-#Assign USERNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-		fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERMASTER
+get_data
+SERVERMASTER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/show_user_info_fm.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -127,7 +105,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -135,13 +113,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -171,7 +149,7 @@ then
 fi
 
 #Check to see that SERVERMASTER is not blank
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
@@ -182,8 +160,7 @@ fi
 
 #Check to see that the user exists
 echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
-USEREXISTSTATUS=`echo $?`
-if [ $USEREXISTSTATUS = 111 ]
+if [ "$?" = 111 ]
 then
 	MESSAGE=$"This username does not exist."
 	show_status
@@ -194,40 +171,59 @@ fi
 #MESSAGE=$"The display name name cannot be blank."
 #show_status
 #fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1)
 #Show User info
 
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><div class="sectiontitle">'$"User Information"'</div></td>
-<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
-	<button class="button" name="_ChangeUsername_" value="_USERNAME_'$USERNAME'_">
-	'$"Change Username"'
-	</button>
-	</form>
-</td>
-<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
-	<button class="button" name="_ChangePrimaryGroup_" value="_USERNAME_'$USERNAME'_">
-	'$"Change Primary Group"'
-	</button>
-	</form>
-</td>
-<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/group_membership.cgi" method="post">
-	<button class="button" name="____GroupMembership____" value="____USERNAME____'$USERNAME'____">
-	'$"Group Membership"'
-	</button>
-	</form>
-</td>
-<td style="vertical-align: top;">
-	<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
-	<button class="button" name="_ChooseUser_" value="_">
-	'$"Choose user"'
-	</button>
-	</form>
-</td>
+WIDTH=100
+ICON1=/images/submenus/user/edit_user_info.png
+ICON2=/images/submenus/user/change_primary_group.png
+ICON3=/images/submenus/user/groups.png
+ICON4=/images/submenus/user/adduser.png
+
+echo '
+<div class="sectiontitle">'$"User Information"'</div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
+			<button class="info" name="_ChangeUsername_" value="_USERNAME_'"$USERNAME"'_">
+				<img src="'"$ICON1"'" alt="'$"Change Username"'">
+				<span>'$"Change the username for this user."'</span><br>
+				'$"Change Username"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
+			<button class="info" name="_ChangePrimaryGroup_" value="_USERNAME_'"$USERNAME"'_">
+				<img src="'"$ICON2"'" alt="'$"Change Primary Group"'">
+				<span>'$"Change the primary group for this user."'</span><br>
+				'$"Change Primary Group"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/group_membership.cgi" method="post">
+			<button class="info" name="____GroupMembership____" value="____USERNAME____'"$USERNAME"'____">
+				<img src="'"$ICON3"'" alt="'$"Group Membership"'">
+				<span>'$"Change the groups that this user is a member of."'</span><br>
+				'$"Group Membership"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
+			<button class="info" name="_ChooseUser_" value="_">
+				<img src="'"$ICON4"'" alt="'$"Select user"'">
+				<span>'$"Select the user you want to view."'</span><br>
+				'$"Select user"'
+			</button>
+		</form>
+	</td>
+
 </tr></table></div><div id="infobox">'
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info

@@ -112,7 +112,7 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 if [ "$MOBILE" = no ]
 then
 	TOOLTIPCLASS="info"
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH1=180
 	WIDTH2=200
@@ -126,7 +126,6 @@ else
 	WIDTH2=150
 fi
 
-echo '<form action="/cgi-bin/admin/change_username.cgi" method="post">'
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -138,28 +137,47 @@ then
 </div></div><div id="'"$DIV_ID"'">
 '
 else
-	echo '<div id="'"$DIV_ID"'">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td><div class="sectiontitle">'$"Change a Username"'</div></td>'
 
-if [ ! -z "$USERNAME" ]
-then
-	echo '<td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/show_user_info.cgi" name="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_" value="'"$USERNAME"'">
-	'$"Edit User"'
-	</button>
-	</td>'
+	WIDTH=100
+	ICON1=/images/submenus/user/edit_user_info.png
+	ICON2=/images/submenus/user/groups.png
+
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	<div class="sectiontitle">'$"Change a Username"'</div>
+	<table class="tablesorter"><tbody><tr>
+	'
+
+	if [ ! -z "$USERNAME" ]
+	then
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/show_user_info.cgi" method="post">
+				<button class="info" name="_ShowUserInfo_" value="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_'"$USERNAME"'">
+					<img src="'"$ICON1"'" alt="'$"Edit User"'">
+					<span>'$"Edit the user's information."'</span><br>
+					'$"Edit User"'
+				</button>
+			</form>
+		</td>
+		'
+	fi
+
+	echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/groups.cgi" method="post">
+				<button class="info" name="____GroupManagement____" value="____GroupManagement____">
+					<img src="'"$ICON2"'" alt="'$"Group Management"'">
+					<span>'$"Group Management"'</span><br>
+					'$"Group Management"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+	<br>'
 fi
 
-echo '<td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/groups.cgi" name="____GroupManagement____">
-	'$"Group Management"'
-	</button>
-</td>
-</tr></table>
-<br>'
-fi
+echo '<form action="/cgi-bin/admin/change_username.cgi" method="post">'
 
 if [ "$MOBILE" = no ]
 then
@@ -168,16 +186,16 @@ then
 	<tr>
 	<td style="width: '"$WIDTH1"'px;">
 	'$"Current Username"'</td>
-	<td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" value="'"$USERNAME"'" size="20" style="width: '"$WIDTH2"'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
+	<td><div id="suggestions"></div><input required="required" tabindex= "1" name="_USERNAME_" value="'"$USERNAME"'" size="20" style="width: '"$WIDTH2"'px;" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
 	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change."'</span></a>
 	</td></tr>
-	<tr><td>'$"New username"'</td><td><input tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '"$WIDTH2"'px;" type="text"></td><td>
+	<tr><td>'$"New username"'</td><td><input required="required" tabindex= "2" name="_NEWUSERNAME_" size="20" style="width: '"$WIDTH2"'px;" type="text"></td><td>
 	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
 	</tr>
-	<tr><td>'$"New forename"'</td><td><input tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '"$WIDTH2"'px;" type="text"></td><td>
+	<tr><td>'$"New forename"'</td><td><input required="required" tabindex= "3" name="_FIRSTNAME_" size="20"  style="width: '"$WIDTH2"'px;" type="text"></td><td>
 	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
 	      </tr>
-	<tr><td>'$"New surname"'</td><td><input tabindex= "4" name="_SURNAME_" size="20"  style="width: '"$WIDTH2"'px;" type="text"></td><td>
+	<tr><td>'$"New surname"'</td><td><input required="required" tabindex= "4" name="_SURNAME_" size="20"  style="width: '"$WIDTH2"'px;" type="text"></td><td>
 	<a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Username"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new username for this user."'</span></a></td>
 	</tr>
 	</tbody>
@@ -186,19 +204,22 @@ then
 else
 	echo '<div id="suggestions"></div>
 	'$"Current username"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
+	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
 	 value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 	'$"New username"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_NEWUSERNAME_" size="20" type="text"><br>
+	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_NEWUSERNAME_" size="20" type="text"><br>
 	'$"New forename"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_FIRSTNAME_" size="20" type="text"><br>
+	<input required="required" tabindex= "3" style="width: 160px; height: 30px;" name="_FIRSTNAME_" size="20" type="text"><br>
 	'$"New surname"'<br>
-	<input tabindex= "1" style="width: 160px; height: 30px;" name="_SURNAME_" size="20" type="text"><br>
+	<input required="required" tabindex= "4" style="width: 160px; height: 30px;" name="_SURNAME_" size="20" type="text"><br>
 	<br>'
 fi
 
-[ "$MOBILE" = no ] && echo '</div><div id="submitbox">'
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></body></html>
-'
+echo '<br>'
+
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></form>'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></div></body></html>'
 exit
