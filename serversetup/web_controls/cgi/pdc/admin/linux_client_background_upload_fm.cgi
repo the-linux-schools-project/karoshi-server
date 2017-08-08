@@ -125,7 +125,7 @@ else
 fi
 
 echo '<p>
-'$"Select the background that you want to upload."':
+'$"Select the background that you want to upload."'
 <p>
         <FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/linux_client_background_upload.cgi" METHOD="POST">
         <table class="'"$TABLECLASS"'">
