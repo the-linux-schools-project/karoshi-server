@@ -134,8 +134,10 @@ echo '
 </tbody></table><br>'
 
 
+echo '<input value="'$"Submit"'" class="button" type="submit">'
+
 [ "$MOBILE" = no ] && echo '</div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit
 

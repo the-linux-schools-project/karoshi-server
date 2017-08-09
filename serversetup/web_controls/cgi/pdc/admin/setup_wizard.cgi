@@ -212,7 +212,7 @@ echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info infocenter" name="_DoAction_" value="_ACTION_5_">
 			<img src="'"$IMAGE5"'" alt="'$"Add a User"'">
-			<span>'$"Add a User"'</span><br>
+			<span>'$"Add a User."'</span><br>
 			'$"Add a User"'
 		</button>
 	</td>
