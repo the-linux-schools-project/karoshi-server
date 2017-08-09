@@ -23,89 +23,89 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_view_logs_cgi
 then
-	echo `date`: backup_view_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_view_logs_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_view_logs.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $backup_view_logs_cgi'check' ]
+if [ "$MD5SUM"'check' != "$backup_view_logs_cgi"'check' ]
 then
-	echo `date`: backup_view_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: backup_view_logs - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: backup_view_logs - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-DAY=`echo "$DATA" | cut -s -d: -f4`
-MONTH=`echo "$DATA" | cut -s -d: -f5`
-YEAR=`echo "$DATA" | cut -s -d: -f6`
-KAROSHI_SERVER=`echo "$DATA" | cut -s -d: -f7`
-LOGTYPE=`echo "$DATA" | cut -s -d: -f8`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+DAY=$(echo "$DATA" | cut -s -d: -f4)
+MONTH=$(echo "$DATA" | cut -s -d: -f5)
+YEAR=$(echo "$DATA" | cut -s -d: -f6)
+KAROSHI_SERVER=$(echo "$DATA" | cut -s -d: -f7)
+LOGTYPE=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: backup_view_logs - Not called by backup_view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Not called by backup_view_logs.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: backup_view_logs - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: backup_view_logs - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$DAY" ]
 then
-	echo `date`: backup_view_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank day by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$MONTH" ]
 then
-	echo `date`: backup_view_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank month by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$YEAR" ]
 then
-	echo `date`: backup_view_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank year by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$KAROSHI_SERVER" ]
 then
-	echo `date`: backup_view_logs - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: backup_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): backup_view_logs - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$LOGTYPE" ]
@@ -120,22 +120,22 @@ else
 	LOGFILE=backup_log
 fi
 
-BACKUP_LOG_DATE=`echo $YEAR-$MONTH-$DAY`
+BACKUP_LOG_DATE="$YEAR-$MONTH-$DAY"
 ############################
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
 [ -d /opt/karoshi/backup_server/ ] || ( mkdir /opt/karoshi/backup_server/ ; chmod 0700 /opt/karoshi/backup_server/ )
 
 function view_logs_pdc {
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/$LOGFILE ]
+if [ -f /opt/karoshi/logs/backup_servers/"$BACKUP_LOG_DATE/$LOGFILE" ]
 then
 	echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
-	cat /opt/karoshi/logs/backup_servers/$BACKUP_LOG_DATE/$LOGFILE
+	cat /opt/karoshi/logs/backup_servers/"$BACKUP_LOG_DATE/$LOGFILE"
 	echo "</pre>"
 else
 	echo '<br>'$"No log avaiable."'<br>'
@@ -145,28 +145,27 @@ fi
 function view_logs_other_servers {
 #View logs
 echo '<PRE STYLE="font-size: small; font-family:'Arial, Times, Georgia, Times New Roman, Times, serif'">'
-ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+ssh -x -o PasswordAuthentication=no "$KAROSHI_SERVER" '
 #View logs
-if [ -f /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/'$LOGFILE' ]
+if [ -f /opt/karoshi/logs/backup_servers/'"$BACKUP_LOG_DATE"'/'"$LOGFILE"' ]
 then
-	cat /opt/karoshi/logs/backup_servers/'$BACKUP_LOG_DATE'/'$LOGFILE'
+	cat /opt/karoshi/logs/backup_servers/'"$BACKUP_LOG_DATE"'/'"$LOGFILE"'
 else
 	echo '$"No log avaiable."'\<br\>
 fi
-' 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+' 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 echo "</pre>"
 }
 
-echo `date`: backup_view_logs - $KAROSHI_SERVER : view logs by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): backup_view_logs - $KAROSHI_SERVER : view logs by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $KAROSHI_SERVER = `hostname-fqdn` ]
+if [[ "$KAROSHI_SERVER" = $(hostname-fqdn) ]]
 then
 	view_logs_pdc
 else
 	#ssh to other servers to view the logs
 	view_logs_other_servers
 fi
-
 
 exit
 

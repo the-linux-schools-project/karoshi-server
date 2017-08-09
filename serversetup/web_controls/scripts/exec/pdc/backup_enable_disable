@@ -92,13 +92,13 @@ then
 	exit 101
 fi
 
-if [ -f "/opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER" ]
+if [ -f "/opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER/stop_backup" ]
 then
 	echo "$(date): backup_enable_disable - enabling $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-	rm -f /opt/karoshi/server_network/backup_servers/stop_backup_"$KAROSHI_SERVER"
+	rm -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/stop_backup
 else
 	echo "$(date): backup_enable_disable - disabling $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
-	touch /opt/karoshi/server_network/backup_servers/stop_backup_"$KAROSHI_SERVER"
+	touch /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/stop_backup
 fi
 exit
 

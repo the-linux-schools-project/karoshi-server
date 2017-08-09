@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-07-11 17:37+0100\n"
+"POT-Creation-Date: 2017-08-08 10:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -390,27 +390,6 @@ msgid "Clear Queue"
 msgstr ""
 
 msgid "No Printer queues have been added"
-msgstr ""
-
-msgid "This module currently does not work on php 7 and cannot be applied to this server."
-msgstr ""
-
-msgid "Extracting files and setting permissions."
-msgstr ""
-
-msgid "Modifying shorewall rules to allow port 50000."
-msgstr ""
-
-msgid "Configuring apache to run a virtual server on port 50000."
-msgstr ""
-
-msgid "smbwebclient can be accessed from the following address"
-msgstr ""
-
-msgid "You will need to add a port forwarding rule to your firewall for users to be able to access smbwebclient over the internet."
-msgstr ""
-
-msgid "Setup smbwebclient completed."
 msgstr ""
 
 msgid "Creating the xerte database in mysql"
@@ -857,16 +836,31 @@ msgstr ""
 msgid "Associated Groups"
 msgstr ""
 
+msgid "This page lets you add and remove groups from your system."
+msgstr ""
+
+msgid "Primary groups are used when creating users. All users are assigned to a primary group."
+msgstr ""
+
+msgid "Secondary groups can be used when creating sub folders and restricting access to certain groups."
+msgstr ""
+
 msgid "Categories"
 msgstr ""
 
-msgid "New primary group"
+msgid "View Categories"
 msgstr ""
 
-msgid "New secondary group"
+msgid "Create a new primary group."
+msgstr ""
+
+msgid "Create a new secondary group."
 msgstr ""
 
 msgid "Dynamic Groups"
+msgstr ""
+
+msgid "View dynamic groups."
 msgstr ""
 
 msgid "Label Groups"
@@ -875,16 +869,16 @@ msgstr ""
 msgid "Copy Files"
 msgstr ""
 
+msgid "Copy files to user home areas."
+msgstr ""
+
 msgid "Delete all dynamic groups"
 msgstr ""
 
-msgid "This page lets you add and remove groups from your system."
+msgid "Delete all dynamic groups."
 msgstr ""
 
-msgid "Primary groups are used when creating users. All users are assigned to a primary group."
-msgstr ""
-
-msgid "Secondary groups can be used when creating sub folders and restricting access to certain groups."
+msgid "Manage groups."
 msgstr ""
 
 msgid "Secondary group"
@@ -1130,6 +1124,9 @@ msgstr ""
 msgid "Select server"
 msgstr ""
 
+msgid "Select the server you want to view."
+msgstr ""
+
 msgid "Windows Desktop Icons - Select"
 msgstr ""
 
@@ -1268,10 +1265,16 @@ msgstr ""
 msgid "Add Server"
 msgstr ""
 
-msgid "Show servers"
+msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
 msgstr ""
 
-msgid "Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."
+msgid "Show Servers"
+msgstr ""
+
+msgid "Show the servers and roles."
+msgstr ""
+
+msgid "Server name"
 msgstr ""
 
 msgid "Enter in the name of the server you want to enable ssh for."
@@ -1682,7 +1685,16 @@ msgstr ""
 msgid "This allows stop a MAC address from being assigned a tcpip number."
 msgstr ""
 
+msgid "Add"
+msgstr ""
+
+msgid "View banned DHCP devices"
+msgstr ""
+
 msgid "View DHCP Leases"
+msgstr ""
+
+msgid "DHCP Leases"
 msgstr ""
 
 msgid "Configure DHCP"
@@ -1787,16 +1799,25 @@ msgstr ""
 msgid "Wake a location"
 msgstr ""
 
-msgid "Schedule a location"
+msgid "This will turn on all of the computers in your selected location."
+msgstr ""
+
+msgid "The computers have to be declared in the asset register with a valid mac address."
+msgstr ""
+
+msgid "Schedule Location"
+msgstr ""
+
+msgid "Schedule a location to wake on lan."
 msgstr ""
 
 msgid "View scheduled locations"
 msgstr ""
 
-msgid "This will turn on all of the computers in your selected location."
+msgid "View locations that are scheduled for wake on lan."
 msgstr ""
 
-msgid "The computers have to be declared in the asset register with a valid mac address."
+msgid "Scheduled Locations"
 msgstr ""
 
 msgid "Select the location that you want. All computers in this location will be turned on."
@@ -1853,10 +1874,22 @@ msgstr ""
 msgid "Bulk User Creation - View Passwords"
 msgstr ""
 
+msgid "The CSV file format is"
+msgstr ""
+
+msgid "username, enrollment number or staff code"
+msgstr ""
+
 msgid "Bulk User Creation"
 msgstr ""
 
-msgid "Import enrolment numbers"
+msgid "Create user accounts from a CSV file."
+msgstr ""
+
+msgid "Import enrollment numbers"
+msgstr ""
+
+msgid "Import enrollment numbers for your user accounts."
 msgstr ""
 
 msgid "View the new passwords for a group of users."
@@ -1962,13 +1995,16 @@ msgstr ""
 msgid "You cannot have zero as a port number."
 msgstr ""
 
-msgid "Choose Server"
-msgstr ""
-
 msgid "Add Rule"
 msgstr ""
 
+msgid "Add a firewall rule."
+msgstr ""
+
 msgid "View Rules"
+msgstr ""
+
+msgid "View firewall rules."
 msgstr ""
 
 msgid "Edit Karoshi Monitors"
@@ -1986,13 +2022,10 @@ msgstr ""
 msgid "A monitoring server has not been setup."
 msgstr ""
 
-msgid "Setup Home Access"
-msgstr ""
-
-msgid "The alias cannot be blank."
-msgstr ""
-
 msgid "E-Mail Policy Rules"
+msgstr ""
+
+msgid "Choose Server"
 msgstr ""
 
 msgid "Change Home Server"
@@ -2022,16 +2055,16 @@ msgstr ""
 msgid "You have not entered an email address."
 msgstr ""
 
-msgid "View Whitelists"
+msgid "View the whitelist."
 msgstr ""
 
 msgid "Adding a whitelist will allow emails to be recieved from the alias address without them being checked for spam."
 msgstr ""
 
-msgid "Add a Whitelist"
+msgid "Add an entry to whitelist."
 msgstr ""
 
-msgid "These are the email whitelists addresses that are currently active for your email system."
+msgid "E-Mails from addresses listed here are not checked for spam."
 msgstr ""
 
 msgid "E-Mail Whitelists"
@@ -2086,9 +2119,6 @@ msgid "You have not entered a correct action."
 msgstr ""
 
 msgid "Add Category"
-msgstr ""
-
-msgid "View Categories"
 msgstr ""
 
 msgid "Add an Internet Trend Category"
@@ -2217,7 +2247,13 @@ msgstr ""
 msgid "Add Domain"
 msgstr ""
 
-msgid "View Domains"
+msgid "Add a domain."
+msgstr ""
+
+msgid "Domains"
+msgstr ""
+
+msgid "View the E-Mail domains."
 msgstr ""
 
 msgid "The domain must not be blank."
@@ -2229,10 +2265,13 @@ msgstr ""
 msgid "You have not entered in a valid domain."
 msgstr ""
 
+msgid "This shows any domains that you have set up for your E-Mail system."
+msgstr ""
+
 msgid "Aliases"
 msgstr ""
 
-msgid "This shows any domains that you have set up for your E-Mail system."
+msgid "View user aliases."
 msgstr ""
 
 msgid "Each Primary Group has a limit set for the amount of printing that each user can do in that group."
@@ -2398,9 +2437,6 @@ msgid "No option."
 msgstr ""
 
 msgid "DHCP Reservations"
-msgstr ""
-
-msgid "The CSV file format is"
 msgstr ""
 
 msgid "Hostname, Mac Address, TCPIP Address"
@@ -2835,9 +2871,6 @@ msgstr ""
 msgid "This will add the details required to remotely run commands on a windows server."
 msgstr ""
 
-msgid "Server name"
-msgstr ""
-
 msgid "Enter in the name of the windows server you want to add."
 msgstr ""
 
@@ -2886,7 +2919,10 @@ msgstr ""
 msgid "View DHCP Reservations"
 msgstr ""
 
-msgid "This allows you to add in reserved tcpip addresses for client devices."
+msgid "Import"
+msgstr ""
+
+msgid "Leases"
 msgstr ""
 
 msgid "Delete DHCP reservations"
@@ -2976,10 +3012,13 @@ msgstr ""
 msgid "Linux Client Software Controls"
 msgstr ""
 
+msgid "Choose the locations that you want to enable updates and software installs for."
+msgstr ""
+
 msgid "Software Packages"
 msgstr ""
 
-msgid "Choose the locations that you want to enable updates and software installs for."
+msgid "View software packages."
 msgstr ""
 
 msgid "Enable software install"
@@ -3093,6 +3132,9 @@ msgstr ""
 msgid "Choose the servers you want to view the scheduled commands on."
 msgstr ""
 
+msgid "View the scheduled jobs for this server."
+msgstr ""
+
 msgid "Minutes"
 msgstr ""
 
@@ -3102,10 +3144,16 @@ msgstr ""
 msgid "Every"
 msgstr ""
 
+msgid "Choose the minute you want the job to start on."
+msgstr ""
+
 msgid "Hour"
 msgstr ""
 
 msgid "Every hour"
+msgstr ""
+
+msgid "Choose the hour you want the job to start on."
 msgstr ""
 
 msgid "Day"
@@ -3114,7 +3162,13 @@ msgstr ""
 msgid "Every day"
 msgstr ""
 
+msgid "Choose the day of the month you want the job to start on."
+msgstr ""
+
 msgid "Every Month"
+msgstr ""
+
+msgid "Choose the month you want the job to start on."
 msgstr ""
 
 msgid "Day of week"
@@ -3192,13 +3246,22 @@ msgstr ""
 msgid "Enter in your choice of mail domain without http://www. Example myemaildomain.com"
 msgstr ""
 
+msgid "Custom Alias"
+msgstr ""
+
 msgid "Client Internet Controls"
 msgstr ""
 
-msgid "Reset times"
+msgid "Choose the location that you want to allow or deny internet access for."
 msgstr ""
 
-msgid "Choose the location that you want to allow or deny internet access for."
+msgid "Reset Times"
+msgstr ""
+
+msgid "Set reset times."
+msgstr ""
+
+msgid "View the asset register."
 msgstr ""
 
 msgid "Choose Location"
@@ -3286,6 +3349,12 @@ msgid "Schedule Wake on Lan"
 msgstr ""
 
 msgid "This will schedule all of the computers in your selected location to be turned on."
+msgstr ""
+
+msgid "Wake a location."
+msgstr ""
+
+msgid "Wake Location"
 msgstr ""
 
 msgid "Please enter in the time that you want the computers in your selected location to be turned on."
@@ -3447,9 +3516,6 @@ msgstr ""
 msgid "Requested by"
 msgstr ""
 
-msgid "Add"
-msgstr ""
-
 msgid "Remove"
 msgstr ""
 
@@ -3462,13 +3528,10 @@ msgstr ""
 msgid "Gluster Volume Control"
 msgstr ""
 
-msgid "Create Gluster Volume"
-msgstr ""
-
-msgid "View Gluster Volumes"
-msgstr ""
-
 msgid "Create Volume"
+msgstr ""
+
+msgid "View Volumes"
 msgstr ""
 
 msgid "Creating Volume"
@@ -3504,13 +3567,19 @@ msgstr ""
 msgid "Gluster Controls"
 msgstr ""
 
+msgid "Gluster Volumes"
+msgstr ""
+
 msgid "Home Folders"
+msgstr ""
+
+msgid "Configure user home folders"
 msgstr ""
 
 msgid "Network Shares"
 msgstr ""
 
-msgid "Gluster Volumes"
+msgid "Configure network shares"
 msgstr ""
 
 msgid "Setup Moodle"
@@ -3556,6 +3625,9 @@ msgid "The enrolment number entered is already in use and has been left blank fo
 msgstr ""
 
 msgid "A group with the same name as this user already exists, not creating user"
+msgstr ""
+
+msgid "User created"
 msgstr ""
 
 msgid "Add a new Web Management User"
@@ -3639,7 +3711,10 @@ msgstr ""
 msgid "This allows you to schedule updates for your servers."
 msgstr ""
 
-msgid "View Update Logs"
+msgid "Update Logs"
+msgstr ""
+
+msgid "View the update logs for this server."
 msgstr ""
 
 msgid "Never"
@@ -3687,6 +3762,9 @@ msgstr ""
 msgid "The locations below are scheduled for wake on lan."
 msgstr ""
 
+msgid "Schedule a location"
+msgstr ""
+
 msgid "You have not entered in an NTP server address to get the time from."
 msgstr ""
 
@@ -3709,6 +3787,12 @@ msgid "Use the create subfolders option to create extra locations."
 msgstr ""
 
 msgid "Please choose the files that you want to upload to the web area."
+msgstr ""
+
+msgid "Configure user home folders."
+msgstr ""
+
+msgid "Configure gluster volumes."
 msgstr ""
 
 msgid "No other Karoshi servers have been set up."
@@ -3744,10 +3828,13 @@ msgstr ""
 msgid "The disk usage logs show the overall usage for each partition on your server."
 msgstr ""
 
-msgid "Bulk User Creation - Import Enrolment Numbers or staff codes"
+msgid "Import Enrollment Numbers or staff codes"
 msgstr ""
 
-msgid "View new passwords"
+msgid "View New Passwords"
+msgstr ""
+
+msgid "View the passwords set for newly created accounts."
 msgstr ""
 
 msgid "CSV file"
@@ -3774,7 +3861,10 @@ msgstr ""
 msgid "View Backgrounds"
 msgstr ""
 
-msgid "Please select the background that you want to upload."
+msgid "View uploaded backgrounds."
+msgstr ""
+
+msgid "Select the background that you want to upload."
 msgstr ""
 
 msgid "Background"
@@ -3966,7 +4056,19 @@ msgstr ""
 msgid "Change Username"
 msgstr ""
 
-msgid "Choose user"
+msgid "Change the username for this user."
+msgstr ""
+
+msgid "Change the primary group for this user."
+msgstr ""
+
+msgid "Change the groups that this user is a member of."
+msgstr ""
+
+msgid "Select user"
+msgstr ""
+
+msgid "Select the user you want to view."
 msgstr ""
 
 msgid "You have not entered an alias."
@@ -3981,7 +4083,7 @@ msgstr ""
 msgid "The domain cannot be blank."
 msgstr ""
 
-msgid "View Aliases"
+msgid "View the current aliases."
 msgstr ""
 
 msgid "Adding an alias will allow emails to be sent to the alias address rather than the actual username."
@@ -3990,10 +4092,13 @@ msgstr ""
 msgid "Add Alias"
 msgstr ""
 
+msgid "Add an alias."
+msgstr ""
+
 msgid "These are the email aliases that are currently active for your email system."
 msgstr ""
 
-msgid "Domains"
+msgid "View the defailt domains."
 msgstr ""
 
 msgid "This will setup richdocuments for Owncloud. An ownCloud application which integrates LibreOffice Online."
@@ -4125,6 +4230,9 @@ msgstr ""
 msgid "View Banned User Accounts"
 msgstr ""
 
+msgid "Banned User Accounts"
+msgstr ""
+
 msgid "No users listed."
 msgstr ""
 
@@ -4218,16 +4326,37 @@ msgstr ""
 msgid "Choose the client computers that you want to allow or deny internet access to."
 msgstr ""
 
-msgid "Allow all"
+msgid "Choose location."
 msgstr ""
 
-msgid "Deny all"
+msgid "Reset times"
 msgstr ""
 
-msgid "Allow all media"
+msgid "View the scheduled reset times."
 msgstr ""
 
-msgid "Deny all media"
+msgid "Allow All"
+msgstr ""
+
+msgid "Allow internet access for all assets."
+msgstr ""
+
+msgid "Deny All"
+msgstr ""
+
+msgid "Deny internet access for all assets."
+msgstr ""
+
+msgid "Allow All Media"
+msgstr ""
+
+msgid "Allow media access for all assets."
+msgstr ""
+
+msgid "Deny All Media"
+msgstr ""
+
+msgid "Deny media access for all assets."
 msgstr ""
 
 msgid "Asset"
@@ -4302,10 +4431,13 @@ msgstr ""
 msgid "Reset Room Controls"
 msgstr ""
 
+msgid "This will schedule times when all internet room controls are reset to allow internet access."
+msgstr ""
+
 msgid "Room Controls"
 msgstr ""
 
-msgid "This will schedule times when all internet room controls are reset to allow internet access."
+msgid "View room controls."
 msgstr ""
 
 msgid "Add reset time"
@@ -4362,7 +4494,16 @@ msgstr ""
 msgid "Add Monitor"
 msgstr ""
 
+msgid "Add monitor"
+msgstr ""
+
+msgid "View existing monitors"
+msgstr ""
+
 msgid "E-Mail Alerts"
+msgstr ""
+
+msgid "View and add E-Mail Alerts"
 msgstr ""
 
 msgid "This shows the printers that have been assigned to locations."
@@ -4393,6 +4534,9 @@ msgid "Remove Printer"
 msgstr ""
 
 msgid "Locations are used to assign printers."
+msgstr ""
+
+msgid "Show all configured printers"
 msgstr ""
 
 msgid "New location"
@@ -4557,7 +4701,19 @@ msgstr ""
 msgid "Delete Zone"
 msgstr ""
 
+msgid "Add a DNS Entry"
+msgstr ""
+
 msgid "Zones"
+msgstr ""
+
+msgid "View DNS Zones"
+msgstr ""
+
+msgid "Add a DNS Zone"
+msgstr ""
+
+msgid "View server DNS Settings"
 msgstr ""
 
 msgid "Change a Username"
@@ -4638,10 +4794,16 @@ msgstr ""
 msgid "Blank version"
 msgstr ""
 
-msgid "Software Controls"
+msgid "Linux Client Software Packages"
 msgstr ""
 
 msgid "The software shown below will be installed by your linux client computers on boot."
+msgstr ""
+
+msgid "Software Controls"
+msgstr ""
+
+msgid "View software controls."
 msgstr ""
 
 msgid "Add software package"
@@ -4707,6 +4869,9 @@ msgstr ""
 msgid "Quota values are set in the E-mail limits section."
 msgstr ""
 
+msgid "Ban a user account."
+msgstr ""
+
 msgid "Filter"
 msgstr ""
 
@@ -4756,6 +4921,12 @@ msgid "Blank action"
 msgstr ""
 
 msgid "You have not entered in a software package."
+msgstr ""
+
+msgid "Create ZFS volume"
+msgstr ""
+
+msgid "Create a ZFS volume."
 msgstr ""
 
 msgid "ZFS status"
@@ -4810,6 +4981,12 @@ msgid "Enter in any exam accounts that you do not want to have the passwords res
 msgstr ""
 
 msgid "Top Sites"
+msgstr ""
+
+msgid "Change Date"
+msgstr ""
+
+msgid "View the top sites for a different date."
 msgstr ""
 
 msgid "Network Share Logs"
@@ -4983,6 +5160,12 @@ msgstr ""
 msgid "This allows you to send e-mail alerts in the event of a network failure."
 msgstr ""
 
+msgid "View E-Mail alerts"
+msgstr ""
+
+msgid "View network status"
+msgstr ""
+
 msgid "Enter a short name for this E-Mail alert."
 msgstr ""
 
@@ -5007,16 +5190,16 @@ msgstr ""
 msgid "Banned E-mail Domains"
 msgstr ""
 
-msgid "Ban Domain"
-msgstr ""
-
-msgid "Any E-mail domains shown in the list below are banned from e-mailing to your server."
+msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr ""
 
 msgid "Allow"
 msgstr ""
 
-msgid "Any E-mail domains shown in the list below are allowed and do not have any DNS checks placed on them or banned from e-mailing to your server."
+msgid "Ban Domain"
+msgstr ""
+
+msgid "Allow or ban an E-Mail domain."
 msgstr ""
 
 msgid "This will change your password for logging into the web management."
@@ -5127,6 +5310,9 @@ msgstr ""
 msgid "Show Menu"
 msgstr ""
 
+msgid "Choose a different group to view."
+msgstr ""
+
 msgid "You have not entered in a username or a group."
 msgstr ""
 
@@ -5170,9 +5356,6 @@ msgid "Setup a File Server"
 msgstr ""
 
 msgid "Add IP number"
-msgstr ""
-
-msgid "Add Bypass"
 msgstr ""
 
 msgid "View IP numbers"
@@ -5334,7 +5517,7 @@ msgstr ""
 msgid "This drive letter is already in use for"
 msgstr ""
 
-msgid "View Network Shares"
+msgid "View Shares"
 msgstr ""
 
 msgid "Add Network Share"
@@ -5346,10 +5529,22 @@ msgstr ""
 msgid "Delete Network Share"
 msgstr ""
 
+msgid "Add Share"
+msgstr ""
+
+msgid "View Network Shares"
+msgstr ""
+
+msgid "Configure gluster volumes"
+msgstr ""
+
 msgid "A folder with this name already exists."
 msgstr ""
 
 msgid "This share already exits in samba."
+msgstr ""
+
+msgid "Bulk User Creation - Import Enrolment Numbers or staff codes"
 msgstr ""
 
 msgid "The CSV file you have chosen is not formatted correctly."
@@ -5595,7 +5790,13 @@ msgstr ""
 msgid "Add Offsite Backup"
 msgstr ""
 
+msgid "Add an offsite backup."
+msgstr ""
+
 msgid "View Offsite Backups"
+msgstr ""
+
+msgid "View configured offsite backups."
 msgstr ""
 
 msgid "Show raid"
@@ -5796,6 +5997,12 @@ msgstr ""
 msgid "View Server Update Logs"
 msgstr ""
 
+msgid "Choose the date that you want to view the update logs for."
+msgstr ""
+
+msgid "Select a server to view the logs on."
+msgstr ""
+
 msgid "Exam Accounts - Upload Files"
 msgstr ""
 
@@ -5844,6 +6051,9 @@ msgstr ""
 msgid "This will replace the standard backgrounds with one of your choice. The backgrounds are applied by kixtart when the user logs into the client computer."
 msgstr ""
 
+msgid "Please select the background that you want to upload."
+msgstr ""
+
 msgid "You must use a bmp format."
 msgstr ""
 
@@ -5869,6 +6079,15 @@ msgid "Restricted - limit the user to sending and receiving E-Mails from domains
 msgstr ""
 
 msgid "No Access - the user will not be able to send or receive any E-Mails."
+msgstr ""
+
+msgid "View the restriction list."
+msgstr ""
+
+msgid "Choose User / Group"
+msgstr ""
+
+msgid "Choose a user or group to change their E-Mail access."
 msgstr ""
 
 msgid "Set Proxy"
@@ -5913,13 +6132,16 @@ msgstr ""
 msgid "Protected Distribution Lists"
 msgstr ""
 
-msgid "View Protected Distribution Lists"
+msgid "View the protected distribution lists."
 msgstr ""
 
 msgid "Adding a protected domain restricts which internal users can send to it."
 msgstr ""
 
-msgid "View Allowed Users"
+msgid "Allowed Users"
+msgstr ""
+
+msgid "View allowed users."
 msgstr ""
 
 msgid "Only users added to the list can send E-mails to these distribution lists."
@@ -6033,7 +6255,10 @@ msgstr ""
 msgid "Choose the background that you want for your linux clients."
 msgstr ""
 
-msgid "Upload background"
+msgid "Upload Background"
+msgstr ""
+
+msgid "Upload a new background."
 msgstr ""
 
 msgid "No client backgrounds have been uploaded."
@@ -6042,7 +6267,7 @@ msgstr ""
 msgid "Default Background"
 msgstr ""
 
-msgid "Please select the skel archive file you want to upload:"
+msgid "Select the skel archive file you want to upload:"
 msgstr ""
 
 msgid "The surname cannot be blank."
@@ -6108,15 +6333,6 @@ msgstr ""
 msgid "View Event Logs"
 msgstr ""
 
-msgid "System Log"
-msgstr ""
-
-msgid "Backup Log"
-msgstr ""
-
-msgid "Restore Log"
-msgstr ""
-
 msgid "Update Locations"
 msgstr ""
 
@@ -6177,9 +6393,6 @@ msgstr ""
 msgid "Client Shutdown Time"
 msgstr ""
 
-msgid "Linux Client Software Packages"
-msgstr ""
-
 msgid "Windows Roaming profiles"
 msgstr ""
 
@@ -6210,16 +6423,25 @@ msgstr ""
 msgid "E-Mail Statistics"
 msgstr ""
 
+msgid "Add a spam rule."
+msgstr ""
+
+msgid "View existing spam rules."
+msgstr ""
+
 msgid "Custom E-Mail Spam Rules"
 msgstr ""
 
 msgid "This allows you to set custom spam rules for your E-Mail system."
 msgstr ""
 
-msgid "Add Incident Log"
+msgid "Activate the changes."
 msgstr ""
 
-msgid "Record an incident that has occured."
+msgid "View the incident logs for a user."
+msgstr ""
+
+msgid "Add Incident Log"
 msgstr ""
 
 msgid "Proxy settings have been removed."
@@ -6241,6 +6463,9 @@ msgid "View asset"
 msgstr ""
 
 msgid "View internet logs"
+msgstr ""
+
+msgid "Show the status of your ZFS volumes."
 msgstr ""
 
 msgid "Create zfs raid"
@@ -6366,6 +6591,9 @@ msgstr ""
 msgid "The Commercial SSl Certificate has now been created. Please proceed to step two."
 msgstr ""
 
+msgid "Edit the user's information."
+msgstr ""
+
 msgid "Current Username"
 msgstr ""
 
@@ -6402,13 +6630,16 @@ msgstr ""
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr ""
 
-msgid "Show Servers"
-msgstr ""
-
 msgid "Control Printers"
 msgstr ""
 
 msgid "Enter in the settings that you want to use for your client devices."
+msgstr ""
+
+msgid "View and edit DHCP Reservations"
+msgstr ""
+
+msgid "Reservations"
 msgstr ""
 
 msgid "DNS Servers"
@@ -6468,7 +6699,7 @@ msgstr ""
 msgid "This will copy files into all of the user home areas for the group that you choose."
 msgstr ""
 
-msgid "Please select the files that you want to upload to a group"
+msgid "Select the files that you want to upload to a group"
 msgstr ""
 
 msgid "Upload PPD file"
@@ -6513,13 +6744,16 @@ msgstr ""
 msgid "You have not entered a comment for the TCPIP address."
 msgstr ""
 
-msgid "View TCPIP Addresses"
+msgid "View TCPIP addresses."
 msgstr ""
 
 msgid "Add TCPIP Address"
 msgstr ""
 
 msgid "Delete TCPIP Address"
+msgstr ""
+
+msgid "Add a TCPIP address."
 msgstr ""
 
 msgid "Bypass E-Mail Authentication"
@@ -6597,6 +6831,9 @@ msgstr ""
 msgid "These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."
 msgstr ""
 
+msgid "View Web Management users."
+msgstr ""
+
 msgid "Access Level"
 msgstr ""
 
@@ -6619,6 +6856,9 @@ msgid "Technicians can access a limited set of controls for day to day running o
 msgstr ""
 
 msgid "Incident Logs"
+msgstr ""
+
+msgid "Record an incident that has occured."
 msgstr ""
 
 msgid "Add Network Printer"
@@ -6675,16 +6915,25 @@ msgstr ""
 msgid "This module cannot be applied to your main server."
 msgstr ""
 
+msgid "Moodle"
+msgstr ""
+
 msgid "This will setup the moodle E-Learning system."
 msgstr ""
 
 msgid "This module cannot be applied to a server running the reverse proxy module."
 msgstr ""
 
+msgid "DHCP"
+msgstr ""
+
 msgid "This will provide a DHCP server for your network."
 msgstr ""
 
 msgid "This module can only be applied to the main server or an Additional Domain Controller."
+msgstr ""
+
+msgid "Nextcloud"
 msgstr ""
 
 msgid "Nextcloud Server"
@@ -6711,6 +6960,9 @@ msgstr ""
 msgid "E-MailServer"
 msgstr ""
 
+msgid "Radius"
+msgstr ""
+
 msgid "This will setup a radius server which can be used for your wireless access points."
 msgstr ""
 
@@ -6729,6 +6981,9 @@ msgstr ""
 msgid "The main server already acts as a file server."
 msgstr ""
 
+msgid "Reverse Proxy"
+msgstr ""
+
 msgid "This will setup a reverse proxy server that allows incoming web traffic to be redirected to other servers on your network."
 msgstr ""
 
@@ -6736,6 +6991,9 @@ msgid "The redirect is based on the trailing slash after the end of the domain o
 msgstr ""
 
 msgid "This module cannot be applied to a server running modules that use the apache web server."
+msgstr ""
+
+msgid "Gitlab"
 msgstr ""
 
 msgid "Git Server"
@@ -6751,6 +7009,9 @@ msgid "Savapage"
 msgstr ""
 
 msgid "This module can only be applied to a server that already has the print server module applied."
+msgstr ""
+
+msgid "Internet Radio"
 msgstr ""
 
 msgid "Radio Server"
@@ -6786,10 +7047,16 @@ msgstr ""
 msgid "This will setup Kanboard which is a web based project management system."
 msgstr ""
 
+msgid "Xibo"
+msgstr ""
+
 msgid "Xibo Server"
 msgstr ""
 
 msgid "This will setup the Xibo Digital Signage system."
+msgstr ""
+
+msgid "Monitoring"
 msgstr ""
 
 msgid "Monitoring Server"
@@ -6810,7 +7077,7 @@ msgstr ""
 msgid "This will add in a name of a non Karoshi application for your server."
 msgstr ""
 
-msgid "VPN Server"
+msgid "VPN"
 msgstr ""
 
 msgid "This will setup a VPN server for client devices to connect to your network."
@@ -6829,6 +7096,9 @@ msgid "This will allow remote ssh access to your main server."
 msgstr ""
 
 msgid "This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
+msgstr ""
+
+msgid "Web Hosting"
 msgstr ""
 
 msgid "Lamp Server"
@@ -6939,7 +7209,13 @@ msgstr ""
 msgid "This shows the jobs that are scheduled to run on this server."
 msgstr ""
 
+msgid "Schedule a job for this server."
+msgstr ""
+
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
+msgstr ""
+
+msgid "Import Enrollment Numbers"
 msgstr ""
 
 msgid "This will set up a radius server for your network which can be used for setting up wireless access points using WPA2 enterprise."
@@ -6949,6 +7225,9 @@ msgid "You must choose a monitor."
 msgstr ""
 
 msgid "Deleting a monitor will stop the monitoring server from monitoring the monitor group."
+msgstr ""
+
+msgid "Add a network monitor"
 msgstr ""
 
 msgid "No monitors available."
@@ -7032,6 +7311,9 @@ msgstr ""
 msgid "Leave the date blank to search for all dates."
 msgstr ""
 
+msgid "Banned Users"
+msgstr ""
+
 msgid "Incident Time and Date"
 msgstr ""
 
@@ -7041,7 +7323,7 @@ msgstr ""
 msgid "Users are automatically allowed after their ban duration is up. The ban duration will include weekends and holidays."
 msgstr ""
 
-msgid "Please enter the usernames you want to ban from the system separated by spaces:"
+msgid "Enter the usernames you want to ban from the system separated by spaces:"
 msgstr ""
 
 msgid "This will set up a print server for your network allowing printer queues to be created and controlled."
@@ -7083,7 +7365,7 @@ msgstr ""
 msgid "This drive letter is already in use."
 msgstr ""
 
-msgid "Choose the date that you want to view the update logs for."
+msgid "Schedule a server to update"
 msgstr ""
 
 msgid "The language choice must not be blank."
@@ -7108,6 +7390,12 @@ msgid "Creating an SSl certificate for the following domain entries"
 msgstr ""
 
 msgid "The log search cannot be blank."
+msgstr ""
+
+msgid "Choose Website"
+msgstr ""
+
+msgid "Choose a website to view the logs for."
 msgstr ""
 
 msgid "Profiles"
@@ -7149,7 +7437,16 @@ msgstr ""
 msgid "Add Server Roles"
 msgstr ""
 
+msgid "Add addtional server roles."
+msgstr ""
+
 msgid "Management Users"
+msgstr ""
+
+msgid "Create additional Web Management users."
+msgstr ""
+
+msgid "Label existing groups."
 msgstr ""
 
 msgid "Add a User"
@@ -7158,19 +7455,43 @@ msgstr ""
 msgid "Room Locations"
 msgstr ""
 
+msgid "Add room locations for client computers."
+msgstr ""
+
 msgid "Join Clients"
+msgstr ""
+
+msgid "Join client computers to the domain."
+msgstr ""
+
+msgid "Edit Windows client profiles."
 msgstr ""
 
 msgid "Add Assets"
 msgstr ""
 
+msgid "Add client computers to the asset register."
+msgstr ""
+
+msgid "Setup printer queues."
+msgstr ""
+
 msgid "User Settings"
+msgstr ""
+
+msgid "Set the default user settings."
+msgstr ""
+
+msgid "Bulk create users from a CSV file."
+msgstr ""
+
+msgid "Set your default Web Management page."
 msgstr ""
 
 msgid "Record User Incident"
 msgstr ""
 
-msgid "Please enter the usernames involved separated by spaces."
+msgid "Enter the usernames involved separated by spaces:"
 msgstr ""
 
 msgid "There was an error with the certificate option type."
@@ -7195,6 +7516,15 @@ msgid "You have not entered in a valid E-Mail address sender."
 msgstr ""
 
 msgid "You have not entered in a valid E-Mail server."
+msgstr ""
+
+msgid "Set Passwords"
+msgstr ""
+
+msgid "changing password"
+msgstr ""
+
+msgid "Set passwords completed."
 msgstr ""
 
 msgid "Setup Reverse Proxy"
@@ -7239,7 +7569,10 @@ msgstr ""
 msgid "Ban E-Mail Domain"
 msgstr ""
 
-msgid "Banned Domains"
+msgid "View Domains"
+msgstr ""
+
+msgid "View allowed or banned E-Mail domains."
 msgstr ""
 
 msgid "E-Mail Domain"
@@ -7278,13 +7611,13 @@ msgstr ""
 msgid "Link Style"
 msgstr ""
 
-msgid "Quick Link"
-msgstr ""
-
 msgid "Navigation Sub Link"
 msgstr ""
 
 msgid "Navigation Main Link"
+msgstr ""
+
+msgid "Bookmark"
 msgstr ""
 
 msgid "Add link"
@@ -7305,7 +7638,7 @@ msgstr ""
 msgid "Move Down"
 msgstr ""
 
-msgid "My Navigation Quick Links"
+msgid "My Navigation Bookmarks"
 msgstr ""
 
 msgid "My Navigation Main Links"
@@ -7359,16 +7692,37 @@ msgstr ""
 msgid "This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."
 msgstr ""
 
+msgid "View and edit the DHCP setttings"
+msgstr ""
+
 msgid "DHCP bans"
+msgstr ""
+
+msgid "View and edit DHCP bans"
+msgstr ""
+
+msgid "Bans"
 msgstr ""
 
 msgid "Show Active Leases"
 msgstr ""
 
+msgid "Active Leases"
+msgstr ""
+
 msgid "Show Backup Leases"
 msgstr ""
 
+msgid "Backup Leases"
+msgstr ""
+
 msgid "Show Free Leases"
+msgstr ""
+
+msgid "Free Leases"
+msgstr ""
+
+msgid "Restart DHCP to activate changes"
 msgstr ""
 
 msgid "Completed Requests"
@@ -7393,9 +7747,6 @@ msgid "Default priority"
 msgstr ""
 
 msgid "Choose the default priority that you want."
-msgstr ""
-
-msgid "This will allow users to access their files from home. Access is via a web browser and allows users to view, upload and download files to their home areas."
 msgstr ""
 
 msgid "The selected profile has been copied to all of the chosen groups."
@@ -7519,6 +7870,12 @@ msgid "Press submit to auto regenerate the DNS settings."
 msgstr ""
 
 msgid "Set DNS Forwarder"
+msgstr ""
+
+msgid "This allows you to upload a CSV file to change user passwords."
+msgstr ""
+
+msgid "CSV format"
 msgstr ""
 
 msgid "This shows the status of your ups devices."
@@ -8082,28 +8439,58 @@ msgstr ""
 msgid "Sharepath"
 msgstr ""
 
+msgid "Go up one directory."
+msgstr ""
+
+msgid "Go back to the previous folder."
+msgstr ""
+
+msgid "Select another server."
+msgstr ""
+
 msgid "Top Directory"
+msgstr ""
+
+msgid "Go to the top level of the file system."
 msgstr ""
 
 msgid "New Folder"
 msgstr ""
 
+msgid "Create a new folder."
+msgstr ""
+
 msgid "New File"
 msgstr ""
 
-msgid "Search Backup"
+msgid "Create a new file."
 msgstr ""
 
 msgid "Move here?"
 msgstr ""
 
+msgid "Move to this location?"
+msgstr ""
+
 msgid "Copy here?"
+msgstr ""
+
+msgid "Copy to this location?"
 msgstr ""
 
 msgid "Cancel"
 msgstr ""
 
+msgid "Cancel copying this item."
+msgstr ""
+
 msgid "This item is protected and cannot be moved or copied."
+msgstr ""
+
+msgid "Search Backup"
+msgstr ""
+
+msgid "Search the backup for an item."
 msgstr ""
 
 msgid "Restore"
@@ -8376,13 +8763,13 @@ msgstr ""
 msgid "Enter in a username or choose a group from the dropdown list."
 msgstr ""
 
-msgid "Allowed Users"
-msgstr ""
-
 msgid "Distribution List / Group"
 msgstr ""
 
 msgid "Available Groups"
+msgstr ""
+
+msgid "This module currently does not work on php 7 and cannot be applied to this server."
 msgstr ""
 
 msgid "Xibo has already been installed on this server."
@@ -8392,12 +8779,6 @@ msgid "Copying module"
 msgstr ""
 
 msgid "Xibo Digital Signage Server"
-msgstr ""
-
-msgid "This server does not have the correct authentication set up on it."
-msgstr ""
-
-msgid "Home Access"
 msgstr ""
 
 msgid "This printer does not support accounting."
@@ -8685,6 +9066,9 @@ msgstr ""
 msgid "Delete the iso from the distribution server."
 msgstr ""
 
+msgid "This server does not have the correct authentication set up on it."
+msgstr ""
+
 msgid "You cannot setup a reverse proxy on the main server."
 msgstr ""
 
@@ -8886,9 +9270,6 @@ msgid "Action Taken"
 msgstr ""
 
 msgid "Internet Access banned."
-msgstr ""
-
-msgid "Banned Users"
 msgstr ""
 
 msgid "Users"
@@ -9164,28 +9545,25 @@ msgstr ""
 msgid "Change the parameters for the scheduled job."
 msgstr ""
 
-msgid "Choose the minute you want the job to start on."
-msgstr ""
-
-msgid "Choose the hour you want the job to start on."
-msgstr ""
-
-msgid "Choose the day of the month you want the job to start on."
-msgstr ""
-
-msgid "Choose the month you want the job to start on."
-msgstr ""
-
 msgid "Edit Filter Group"
+msgstr ""
+
+msgid "Edit this filter group."
 msgstr ""
 
 msgid "View Filter Groups"
 msgstr ""
 
-msgid "Add Filter Group"
+msgid "View the filter groups."
 msgstr ""
 
 msgid "This shows the internet filter groups that are available and the groups that are assigned to them."
+msgstr ""
+
+msgid "Add Filter Group"
+msgstr ""
+
+msgid "Add a new filter group."
 msgstr ""
 
 msgid "Assigned Groups"
@@ -9392,6 +9770,15 @@ msgstr ""
 msgid "Copying icons to"
 msgstr ""
 
+msgid "Web Management Users"
+msgstr ""
+
+msgid "Web Management users are able to configure your servers using the Web Management."
+msgstr ""
+
+msgid "Add a Web Management user."
+msgstr ""
+
 msgid "Web Management Access"
 msgstr ""
 
@@ -9563,16 +9950,16 @@ msgstr ""
 msgid "Audio Visual"
 msgstr ""
 
-msgid "Allocated TCPIP Numbers"
+msgid "TCPIP Addresses"
+msgstr ""
+
+msgid "Areas where you have computer equipment."
 msgstr ""
 
 msgid "View Assets"
 msgstr ""
 
-msgid "Export"
-msgstr ""
-
-msgid "Add Asset"
+msgid "Export data"
 msgstr ""
 
 msgid "ID Number"
@@ -9617,6 +10004,9 @@ msgstr ""
 msgid "Add Supplier"
 msgstr ""
 
+msgid "Where you purchase your equipment from."
+msgstr ""
+
 msgid "Delete supplier"
 msgstr ""
 
@@ -9632,6 +10022,9 @@ msgstr ""
 msgid "Add Budget"
 msgstr ""
 
+msgid "Budgets that your purchases are paid from."
+msgstr ""
+
 msgid "Delete budget"
 msgstr ""
 
@@ -9641,10 +10034,37 @@ msgstr ""
 msgid "Totals"
 msgstr ""
 
-msgid "Import"
+msgid "Search the asset register."
+msgstr ""
+
+msgid "Add Asset"
+msgstr ""
+
+msgid "Add an asset to the asset register."
+msgstr ""
+
+msgid "Import assets to the asset register."
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Export assets from the asset register."
+msgstr ""
+
+msgid "Descriptions of computer hardware and software that you want to use in your asset register."
 msgstr ""
 
 msgid "View Allocated TCPIP Addresses"
+msgstr ""
+
+msgid "View Allocated TCPIP Addresses."
+msgstr ""
+
+msgid "View and add areas where you have computer equipment."
+msgstr ""
+
+msgid "Asset register statistics"
 msgstr ""
 
 msgid "Delete Assets"
@@ -9677,13 +10097,19 @@ msgstr ""
 msgid "There are no assets allocated to this location."
 msgstr ""
 
-msgid "Search Assets"
-msgstr ""
-
 msgid "Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."
 msgstr ""
 
+msgid "Search Assets"
+msgstr ""
+
 msgid "Import data"
+msgstr ""
+
+msgid "Import Assets"
+msgstr ""
+
+msgid "Import Assets from the list provided."
 msgstr ""
 
 msgid "Number of assets to add"
@@ -9734,7 +10160,7 @@ msgstr ""
 msgid "A server has not been configured for this server to backup to."
 msgstr ""
 
-msgid "Add server"
+msgid "Add a server."
 msgstr ""
 
 msgid "Server Roles"
@@ -9851,6 +10277,9 @@ msgstr ""
 msgid "remove this user from the group."
 msgstr ""
 
+msgid "VPN Server"
+msgstr ""
+
 msgid "Wireless Zones"
 msgstr ""
 
@@ -9950,7 +10379,28 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
+msgid "Add a request to the helpdesk."
+msgstr ""
+
+msgid "View pending requests."
+msgstr ""
+
 msgid "View Completed Requests"
+msgstr ""
+
+msgid "View jobs that have been completed."
+msgstr ""
+
+msgid "Set default settings for the helpdesk."
+msgstr ""
+
+msgid "Change a user's password."
+msgstr ""
+
+msgid "Add a new user to the syatem"
+msgstr ""
+
+msgid "Ban a user from logging into the system"
 msgstr ""
 
 msgid "View User Incident Logs"
@@ -9959,19 +10409,37 @@ msgstr ""
 msgid "Exam Accounts"
 msgstr ""
 
-msgid "Change Exam Password"
+msgid "Change Exam Passwords"
+msgstr ""
+
+msgid "Change passwords for the exam accounts."
+msgstr ""
+
+msgid "Reset passwords for the exam accounts."
 msgstr ""
 
 msgid "View Reset Passwords"
 msgstr ""
 
+msgid "View the passwords that have been reset for the exam accounts."
+msgstr ""
+
 msgid "Archive Exam Accounts"
+msgstr ""
+
+msgid "Archve the exam accounts so that they can be used for a new exam."
 msgstr ""
 
 msgid "Copy Data to Accounts"
 msgstr ""
 
+msgid "Copy files to the exam accounts."
+msgstr ""
+
 msgid "Enable - Disable Accounts"
+msgstr ""
+
+msgid "Enable or disable the exam accounts."
 msgstr ""
 
 msgid "Create extra accounts"
@@ -9980,22 +10448,94 @@ msgstr ""
 msgid "User Creation"
 msgstr ""
 
+msgid "Upload images of your users from an archived file."
+msgstr ""
+
+msgid "Import enrollment numbers or staff codes from a CSV file."
+msgstr ""
+
+msgid "Set User Passwords"
+msgstr ""
+
+msgid "Set user's passwords from a CSV file."
+msgstr ""
+
 msgid "User Actions"
+msgstr ""
+
+msgid "Carry out actions on a group of user accounts."
 msgstr ""
 
 msgid "Add / Remove Server Role"
 msgstr ""
 
+msgid "Add or remove a role from a server."
+msgstr ""
+
+msgid "View servers that are connected to your system."
+msgstr ""
+
+msgid "View the services that are running on a server."
+msgstr ""
+
+msgid "View the firewall rules that are set on your server."
+msgstr ""
+
+msgid "Change management passwords on a server."
+msgstr ""
+
+msgid "Run a custom command on a server."
+msgstr ""
+
+msgid "Show server information."
+msgstr ""
+
+msgid "Shutdown a server."
+msgstr ""
+
+msgid "View the network shares that are configured on your server."
+msgstr ""
+
 msgid "ZFS Raid"
+msgstr ""
+
+msgid "View ZFS share that have been set up on your servers."
+msgstr ""
+
+msgid "View software raids that have been set up on your servers."
+msgstr ""
+
+msgid "View gluster volumes that have been set up on your servers."
+msgstr ""
+
+msgid "View disk information on your servers."
+msgstr ""
+
+msgid "View disk usage on your servers."
+msgstr ""
+
+msgid "View disk usage logs on your servers."
 msgstr ""
 
 msgid "Disk Quotas"
 msgstr ""
 
+msgid "Enable user quotas on your servers."
+msgstr ""
+
 msgid "View enabled partitions"
 msgstr ""
 
+msgid "View quota enabled partitions on your servers."
+msgstr ""
+
+msgid "View quota usage on your servers."
+msgstr ""
+
 msgid "Apply Quota settings"
+msgstr ""
+
+msgid "Apply quota settings on your servers."
 msgstr ""
 
 msgid "Find Student Files"
@@ -10004,61 +10544,208 @@ msgstr ""
 msgid "Federated File Sync"
 msgstr ""
 
-msgid "Web Management Users"
+msgid "Open a shell to your main server in the Web Management."
+msgstr ""
+
+msgid "Change Web Management passwords."
 msgstr ""
 
 msgid "Restrict Access"
 msgstr ""
 
+msgid "Restrict access to the Web Management."
+msgstr ""
+
 msgid "Restrict Staff Access"
+msgstr ""
+
+msgid "Restrict staff access to the Web Management."
+msgstr ""
+
+msgid "Set your default page in the Web Management."
+msgstr ""
+
+msgid "Change the language setting for the Web Management."
+msgstr ""
+
+msgid "Change the theme for the Web Management."
+msgstr ""
+
+msgid "Change the global language setting for the Web Management."
+msgstr ""
+
+msgid "Change the global theme for the Web Management."
+msgstr ""
+
+msgid "Change the Web Management timeout."
+msgstr ""
+
+msgid "Set the site name that apepars at the top of the Web Management."
 msgstr ""
 
 msgid "Web Management logs"
 msgstr ""
 
+msgid "View the Web Management logs."
+msgstr ""
+
 msgid "System Updates"
 msgstr ""
 
-msgid "Update Logs"
+msgid "Set the date and time that you want your servers to update."
+msgstr ""
+
+msgid "View the update logs for your servers."
+msgstr ""
+
+msgid "Apply Web Management patches."
 msgstr ""
 
 msgid "Upload Patch"
 msgstr ""
 
+msgid "Upload a patch to the Web Management."
+msgstr ""
+
 msgid "Upstream Proxy"
+msgstr ""
+
+msgid "Configure a server to use an upstream proxy."
 msgstr ""
 
 msgid "Upload Moodle Theme"
 msgstr ""
 
+msgid "Configure the NTP settings for your servers."
+msgstr ""
+
+msgid "Set the server time on your servers."
+msgstr ""
+
+msgid "Show the uptime for your servers."
+msgstr ""
+
+msgid "Show the scheduled jobs for your servers."
+msgstr ""
+
 msgid "Backup"
+msgstr ""
+
+msgid "Configure a backup for a server."
+msgstr ""
+
+msgid "Enable or disable a backup for a server."
+msgstr ""
+
+msgid "View the backup log for a server."
+msgstr ""
+
+msgid "Run a backup for a server."
+msgstr ""
+
+msgid "Restore files from a backup server."
+msgstr ""
+
+msgid "Configure an offsite backup for a server."
 msgstr ""
 
 msgid "Backup Essential data"
 msgstr ""
 
+msgid "Backup essential data to a portable medium."
+msgstr ""
+
+msgid "Apply a self signed SSL certificate on a server."
+msgstr ""
+
 msgid "SSL Let's Encrypt"
+msgstr ""
+
+msgid "Apply a Let's Encrypt SSL certificate on a server."
 msgstr ""
 
 msgid "Commercial SSL Certificate"
 msgstr ""
 
+msgid "Apply a commercial SSL certificate on a server."
+msgstr ""
+
 msgid "LDAP Administration"
 msgstr ""
 
-msgid "DHCP"
+msgid "View the Active Directory LDAP data."
+msgstr ""
+
+msgid "View event logs for a server."
+msgstr ""
+
+msgid "Clear all warning messages."
+msgstr ""
+
+msgid "View the asset register information."
+msgstr ""
+
+msgid "View and configure yout DHCP server."
+msgstr ""
+
+msgid "View DNS entries."
+msgstr ""
+
+msgid "Add and delete ARP entries."
+msgstr ""
+
+msgid "Add and view VPN certificates."
+msgstr ""
+
+msgid "View system monitoring information on a server."
+msgstr ""
+
+msgid "View the network monitoring system."
+msgstr ""
+
+msgid "View the UPS status."
+msgstr ""
+
+msgid "Configure Radius access points."
+msgstr ""
+
+msgid "Show client connections to a server."
+msgstr ""
+
+msgid "Show the domain information."
+msgstr ""
+
+msgid "Show client locations."
 msgstr ""
 
 msgid "Wake on LAN"
 msgstr ""
 
+msgid "Send wake-on-lan packets to client computers."
+msgstr ""
+
 msgid "Linux Client"
+msgstr ""
+
+msgid "Set the Linux client desktop background."
+msgstr ""
+
+msgid "Set the Linux client software controls."
+msgstr ""
+
+msgid "Install software packages on the Linux clients."
 msgstr ""
 
 msgid "Upload Skel Archive"
 msgstr ""
 
+msgid "Upload a skel archive for the Linux clients."
+msgstr ""
+
 msgid "Download Skel Archive"
+msgstr ""
+
+msgid "Download a Linux client skel archive from the server."
 msgstr ""
 
 msgid "Windows Client"
@@ -10067,46 +10754,175 @@ msgstr ""
 msgid "Upload a new profile"
 msgstr ""
 
+msgid "Upload a new Windows client profile."
+msgstr ""
+
 msgid "Upload application data"
+msgstr ""
+
+msgid "Upload new Windows client application data."
 msgstr ""
 
 msgid "Upload desktop icons"
 msgstr ""
 
+msgid "Upload Windows client desktop icons."
+msgstr ""
+
 msgid "Upload start menu"
+msgstr ""
+
+msgid "Upload a new Windows client start menu."
 msgstr ""
 
 msgid "Roaming profiles"
 msgstr ""
 
+msgid "Configure user accounts to use either mandatory or roaming profiles."
+msgstr ""
+
 msgid "Distribution Controls"
+msgstr ""
+
+msgid "Configure and upload iso images on the distribution server."
+msgstr ""
+
+msgid "Set clients to network boot so that client operating systems can be installed from the distribution server."
+msgstr ""
+
+msgid "Configure repositories that are available through the proxy servers."
+msgstr ""
+
+msgid "Configure time that the Linux clients automatically shutdown."
+msgstr ""
+
+msgid "View the status of the printer queues."
+msgstr ""
+
+msgid "Add a network printer queue."
 msgstr ""
 
 msgid "Delete Network Printer"
 msgstr ""
 
+msgid "Delete a network printer queue."
+msgstr ""
+
+msgid "Configure Savapage."
+msgstr ""
+
+msgid "View assigned printers."
+msgstr ""
+
+msgid "Generate Windows printer drivers."
+msgstr ""
+
 msgid "Domain Controls"
+msgstr ""
+
+msgid "Allow or ban domains for E-Mails."
+msgstr ""
+
+msgid "Allow or deny users from sending and receiving E-Mails."
+msgstr ""
+
+msgid "Configure E-Mail aliases for your users."
 msgstr ""
 
 msgid "Hosted Domains"
 msgstr ""
 
+msgid "Configure domains that are hosted for E-Mails."
+msgstr ""
+
+msgid "Restrict E-Mail access to E-Mail groups."
+msgstr ""
+
 msgid "E-Mail relay"
+msgstr ""
+
+msgid "Configure the E-Mail server to send out going E-Mail via an E-Mail relay."
+msgstr ""
+
+msgid "Add E-Mails or domains to a whitelist that bypasses spam checks."
+msgstr ""
+
+msgid "Configure TCP-IP addresses that can send E-Mail without user authentication."
 msgstr ""
 
 msgid "Limits"
 msgstr ""
 
+msgid "Set E-Mail limits for user accounts."
+msgstr ""
+
+msgid "Configure custom spam rules."
+msgstr ""
+
 msgid "Search E-Mail Logs"
+msgstr ""
+
+msgid "Search the E-Mail logs for details of E-Mails sent or received."
 msgstr ""
 
 msgid "Over Quota Report"
 msgstr ""
 
+msgid "Show users that are over their E-Mail quota."
+msgstr ""
+
 msgid "Quota Warning Settings"
 msgstr ""
 
+msgid "Set the warning settings for the quota system."
+msgstr ""
+
 msgid "Quota Warning Messages"
+msgstr ""
+
+msgid "Set the warning messages for the quota system."
+msgstr ""
+
+msgid "Show any E-Mails that are currently in the E-Mail queue."
+msgstr ""
+
+msgid "Show E-Mail statistics."
+msgstr ""
+
+msgid "Show user internet logs."
+msgstr ""
+
+msgid "Show user internet usage."
+msgstr ""
+
+msgid "Show global internet usage."
+msgstr ""
+
+msgid "Show internet logs for a website."
+msgstr ""
+
+msgid "Show internet logs for a computer."
+msgstr ""
+
+msgid "Show the most popular internet sites."
+msgstr ""
+
+msgid "Configure Internet filtering."
+msgstr ""
+
+msgid "Ban a user from accessing the Internet."
+msgstr ""
+
+msgid "Configure a client to bypass the Internet Filtering."
+msgstr ""
+
+msgid "Configure Internet access for computers in a location."
+msgstr ""
+
+msgid "Show Internet usage trends."
+msgstr ""
+
+msgid "Configure reverse proxy sites."
 msgstr ""
 
 msgid "Creating an SSL certificate"

@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]
 then
 	TIMEOUT=86400
 fi
@@ -46,7 +46,7 @@ echo ""
 echo '
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enable - Disable Network Backup"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enable - Disable Network Backup"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -60,7 +60,7 @@ $(document).ready(function()
 </head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
+echo '<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server that you want to enable or disable the backup server for."'</span></a></td></tr></tbody></table><br>'
 
 #Check if any backup servers have been enabled.
@@ -82,9 +82,7 @@ echo '<tr><th style="width: 180px;"><b>'$"Server"'</b></th><th style="width: 180
 
 #Get backup status for the servers
 
-
-
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l` = 0 ]
+if [ $(ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l) = 0 ]
 then
 	echo $"No karoshi backup servers have been enabled."
 	echo '</div></div></body></html>'
@@ -93,24 +91,22 @@ fi
 
 for KAROSHI_SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
-	KAROSHI_SERVER=`basename $KAROSHI_SERVERS`
-	BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER/backupserver`
+	KAROSHI_SERVER=$(basename "$KAROSHI_SERVERS")
+	BACKUPSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/backupserver)
 	BACKUPSTATUS=$"Disable Backup"
 	BACKUP_ICON=/images/submenus/system/backup_enabled.png
-	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$KAROSHI_SERVER ]
+	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/stop_backup ]
 	then
 		BACKUPSTATUS=$"Enable Backup"
 		BACKUP_ICON=/images/submenus/system/backup_disabled.png
 	fi
-	echo '<tr><td>'$KAROSHI_SERVER'</td><td>'$BACKUPSERVER'</td><td>
-	<button class="info" name="_'$KAROSHI_SERVER'_" value="_'$KAROSHI_SERVER'_">
-	<img src="'$BACKUP_ICON'" alt="'$BACKUPSTATUS'">
-	<span>'$BACKUPSTATUS'</span>
+	echo '<tr><td>'"$KAROSHI_SERVER"'</td><td>'"$BACKUPSERVER"'</td><td>
+	<button class="info" name="_'"$KAROSHI_SERVER"'_" value="_'"$KAROSHI_SERVER"'_">
+	<img src="'"$BACKUP_ICON"'" alt="'"$BACKUPSTATUS"'">
+	<span>'"$BACKUPSTATUS"'</span>
 	</button>
 	</td></tr>'
 
 done
-echo '</tbody></table><br></form>
-</div>
-</div></body></html>'
+echo '</tbody></table><br></form></div></div></div></body></html>'
 exit

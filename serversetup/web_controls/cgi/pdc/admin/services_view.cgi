@@ -210,7 +210,7 @@ else
 			</form>
 		</td>
 
-		</tr></tbody></table>
+	</tr></tbody></table>
 	</div><div id="infobox">
 '
 fi

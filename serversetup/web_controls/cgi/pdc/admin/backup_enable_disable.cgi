@@ -33,35 +33,30 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$"Enable - Disable Network Backup"</title>"
-echo "<link rel="stylesheet" href="/css/$STYLESHEET"><script src=\"/all/stuHover.js\" type=\"text/javascript\"></script>"
-echo '<meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/backup_enable_disable_fm.cgi">'
-echo "</head>"
-echo "<body><div id='pagecontainer'>"
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Enable - Disable Network Backup"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><meta http-equiv="REFRESH" content="0;url=/cgi-bin/admin/backup_enable_disable_fm.cgi"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 #########################
 #Assign data to variables
 #########################
-END_POINT=6
+
 #Assign _KAROSHI_SERVER_
-KAROSHI_SERVER=`echo $DATA | cut -d_ -f2`
+KAROSHI_SERVER=$(echo "$DATA" | cut -d_ -f2)
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/backup_enable_disable_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -70,41 +65,37 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that the server is not blank
-if [ $KAROSHI_SERVER'null' = null ]
+if [ -z "$KAROSHI_SERVER" ]
 then
-MESSAGE=$"You have not chosen a server to enable or disable."
-show_status
+	MESSAGE=$"You have not chosen a server to enable or disable."
+	show_status
 fi
 
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$"Enable - Disable Network Backup"'</div><br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_enable_disable.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_enable_disable.cgi | cut -d' ' -f1)
 #Enable - disable backup
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$KAROSHI_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_enable_disable
-echo "</div>"
 echo "</div></body></html>"
 exit

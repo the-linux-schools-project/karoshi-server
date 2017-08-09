@@ -28,15 +28,15 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Backup"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Configure Backup"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -51,7 +51,7 @@ $(document).ready(function()
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/backup_configure_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -61,161 +61,95 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=22
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 [ -z "$ACTION" ] && ACTION=view
 
 if [ "$ACTION" = delete ] || [ "$ACTION" = edit ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallydelete ]
 then
 	#Assign BACKUPNAME
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPNAMEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPNAME
+	get_data
+	BACKUPNAME="${DATAENTRY//12345UNDERSCORE12345/_}"
 
 	if [ "$ACTION" = reallyedit ]
 	then
 		#Assign BACKUPFOLDER
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = BACKUPFOLDERcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				BACKUPFOLDER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=BACKUPFOLDER
+		get_data
+		BACKUPFOLDER="${DATAENTRY//12345UNDERSCORE12345/_}"
 
 		#Assign DURATION
-		COUNTER=2
-		while [ $COUNTER -le $END_POINT ]
-		do
-			DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			if [ `echo $DATAHEADER'check'` = DURATIONcheck ]
-			then
-				let COUNTER=$COUNTER+1
-				DURATION=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-				break
-			fi
-			let COUNTER=$COUNTER+1
-		done
+		DATANAME=DURATION
+		get_data
+		DURATION=$(echo "$DATAENTRY" | tr -cd '0-9')
 	fi
 fi
 
 if [ "$ACTION" = reallyschedule ]
 then
 	#Assign HOURS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = HOURScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=HOURS
+	get_data
+	HOURS=$(echo "$DATAENTRY" | tr -cd '0-9')
+
 
 	#Assign MINUTES
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=MINUTES
+	get_data
+	MINUTES=$(echo "$DATAENTRY" | tr -cd '0-9')
 fi
 
 if [ "$ACTION" = assignbackupserver ]
 then
 	#Assign BACKUPSERVER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPSERVERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPSERVER
+	get_data
+	BACKUPSERVER=$"${DATAENTRY//12345UNDERSCORE12345/_}"
 fi
 
 if [ "$ACTION" = setbackupstatus ]
 then
 	#Assign BACKUPSTATUS
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = BACKUPSTATUScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			BACKUPSTATUS=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=BACKUPSTATUS
+	get_data
+	BACKUPSTATUS="${DATAENTRY//12345UNDERSCORE12345/_}"
 fi
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -229,7 +163,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -288,24 +222,46 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/system/computer.png
+ICON2=/images/submenus/system/backup/config.png
+
 echo '<div id="actionbox3"><div id="titlebox">
-<table class="standard" style="text-align: left;" ><tr><td><div class="sectiontitle">'$"Configure Backup"' - '$SERVERNAME'</div></td><td>
-<form action="/cgi-bin/admin/backup_configure_fm.cgi" method="post">
-<button class="button" name="ChooseServer_" value="_">
-'$"Select server"'
-</button>
-</form>
-</td>'
+<div class="sectiontitle">'$"Configure Backup"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/backup_configure_fm.cgi" method="post">
+			<button class="info" name="SelectServer" value="_">
+				<img src="'"$ICON1"'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
+	</td>
+
+'
 
 if [ "$ACTION" = edit ] || [ "$ACTION" = add ] || [ "$ACTION" = schedule ]
 then
-	echo '<td><form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-	<input name="____SERVERNAME____'$SERVERNAME'____" type="submit" class="button" value="'$"View Backups"'"></form></td>'
-fi
-echo '<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Configure_Backup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the folders you want to backup."'</span></a></td></tr></tbody></table>
-</div><br><div id="infobox">'
+	echo '
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1`
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
+			<button class="info" name="____ViewBackups____" value="____SERVERNAME____'"$SERVERNAME"'____">
+				<img src="'"$ICON2"'" alt="'$"View Backups"'">
+				<span>'$"View backups for this server."'</span><br>
+				'$"View Backups"'
+			</button>
+		</form>
+	</td>
+	'
+fi
+echo '</tr></tbody></table></div><div id="infobox">'
+
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1)
 #View logs
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$BACKUPSERVER:$BACKUPSTATUS:$HOURS:$MINUTES:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure
 echo "</div></div></div></body></html>"
