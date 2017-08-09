@@ -1,7 +1,7 @@
 #!/bin/bash
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 #Make log folder
-[ ! -d /opt/karoshi/logs/backup_servers/$LOG_DATE ] && mkdir -p /opt/karoshi/logs/backup_servers/$LOG_DATE
+[ ! -d /opt/karoshi/logs/backup_servers/"$LOG_DATE" ] && mkdir -p /opt/karoshi/logs/backup_servers/"$LOG_DATE"
 
 if [ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ]
 then
@@ -9,51 +9,60 @@ then
 	exit
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l` = 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | wc -l) = 0 ]]
 then
 	echo No Servers have been configured to backup.
 	exit
 fi
 
+function copyfiles {
+if [[ "$KAROSHI_SERVER" != $(hostname-fqdn) ]]
+then
+	ssh -x -o PasswordAuthentication=no "$KAROSHI_SERVER" '
+	[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/'
+
+	echo Copying backup configuration data to "$KAROSHI_SERVER"
+	scp -r /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER" root@"$KAROSHI_SERVER:/opt/karoshi/server_network/backup_servers/backup_settings/"
+
+	#Copy in backup script
+	echo Copying backup backup script to "$KAROSHI_SERVER"
+	scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@"$KAROSHI_SERVER:/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
+fi
+}
+
 for KAROSHI_SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
-	KAROSHI_SERVER=`basename $KAROSHI_SERVERS`
+	KAROSHI_SERVER=$(basename "$KAROSHI_SERVERS")
 	#############################
 	#Backup Servers
 	#############################
-	echo Backing up $KAROSHI_SERVER
+	echo Backing up "$KAROSHI_SERVER"
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/stop_backup ]
 	then
-		echo `date` - Backups are disabled "for" $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+		echo "$(date) - Backups are disabled for $KAROSHI_SERVER" >> /opt/karoshi/logs/backup_servers/"$LOG_DATE"/master_backup_log
 	elif [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$KAROSHI_SERVER"/backuptime ]
 	then
-		echo `date` - Manual backup scheduled "for" $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+		#Copy in configuration file
+		copyfiles
+		echo "$(date) - Manual backup scheduled for $KAROSHI_SERVER" >> /opt/karoshi/logs/backup_servers/"$LOG_DATE"/master_backup_log
 	else
-		echo `date` - Backing up $KAROSHI_SERVER >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+		echo "$(date) - Backing up $KAROSHI_SERVER" >> /opt/karoshi/logs/backup_servers/"$LOG_DATE"/master_backup_log
 
 		#Do backup
-		if [ $KAROSHI_SERVER != `hostname-fqdn` ]
+		if [[ "$KAROSHI_SERVER" != $(hostname-fqdn) ]]
 		then
 			#Copy in configuration file
+			copyfiles
 
-			ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
-			[ ! -d /opt/karoshi/server_network/backup_servers/backup_settings/ ] && mkdir -p /opt/karoshi/server_network/backup_servers/backup_settings/
-			'
-			echo Copying backup configuration data to $KAROSHI_SERVER
-			scp -r /opt/karoshi/server_network/backup_servers/backup_settings/$KAROSHI_SERVER root@$KAROSHI_SERVER:"/opt/karoshi/server_network/backup_servers/backup_settings/"
-
-			#Copy in backup script
-			echo Copying backup backup script to $KAROSHI_SERVER
-			scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@$KAROSHI_SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
-			ssh -x -o PasswordAuthentication=no $KAROSHI_SERVER '
+			ssh -x -o PasswordAuthentication=no "$KAROSHI_SERVER" '
 			#Backup folders
 			/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers
-			' 2>> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_errors
+			' 2>> /opt/karoshi/logs/backup_servers/"$LOG_DATE"/master_backup_errors
 		else
 			#Backup folders
 			/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/backup_servers
 		fi
-		echo `date` - Completed $KAROSHI_SERVER - Please check "for" any errors >> /opt/karoshi/logs/backup_servers/$LOG_DATE/master_backup_log
+		echo "$(date) - Completed $KAROSHI_SERVER - Please check for any errors" >> /opt/karoshi/logs/backup_servers/"$LOG_DATE"/master_backup_log
 	fi
 done
 exit
