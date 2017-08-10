@@ -154,36 +154,37 @@ ICON1=/images/submenus/system/computer.png
 PRI_GROUP_COUNT=$(ls -1 /opt/karoshi/server_network/group_information/ | wc -l)
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
-	PRI_GROUP=`basename $PRI_GROUP`
-	source /opt/karoshi/server_network/group_information/$PRI_GROUP
-
-
-	if [ -d /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/ ]
-	then
-		#Get backup server
-		BACKUPSERVER=`sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/$SERVER/backupserver`
-		#Get backup path
-		[ $PRI_GROUP = itadmin ] && PRI_GROUP=itadminstaff
-		BACKUPPATH=/home/backups/$SERVER/$PRI_GROUP
-		if [ $START_LINE = yes ]
+	PRI_GROUP=$(basename "$PRI_GROUP")
+	source /opt/karoshi/server_network/group_information/"$PRI_GROUP"
+	for SERVERNAME in $(echo "$SERVER" | sed 's%,% %g')
+	do
+		if [ $(ls -1 /opt/karoshi/server_network/backup_servers/backup_settings/ | grep -c -w "$SERVERNAME") -gt 0 ]
 		then
-			echo '<tr>'
-		fi
+			#Get backup server
+			BACKUPSERVER=$(sed -n 1,1p /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backupserver)
+			#Get backup path
+			[ "$PRI_GROUP" = itadmin ] && PRI_GROUP=itadminstaff
+			BACKUPPATH=/home/backups/"$SERVERNAME/$PRI_GROUP"
+			if [ "$START_LINE" = yes ]
+			then
+				echo '<tr>'
+			fi
 
-		echo '<td>'$PRI_GROUP'</td><td>'$SERVER'</td><td>
-		<button class="info" name="_Goto_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_">
-		<img src="'$ICON1'" alt="'$"Rename"'">
-		<span>'$"View Folders"'<br>'$SERVER' - '$PRI_GROUP'</span>
-		</button>
-		</td>'
-		if [ $START_LINE = no ]
-		then
-			START_LINE=yes
-			echo '</tr>'
-		else
-			START_LINE=no
+			echo '<td>'"$PRI_GROUP"'</td><td>'"$SERVERNAME"'</td><td>
+			<button class="info" name="_Goto_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'$BACKUPSERVER'_LOCATION_'$BACKUPPATH'_">
+			<img src="'"$ICON1"'" alt="'$"Rename"'">
+			<span>'$"View Folders"'<br>'"$SERVERNAME"' - '"$PRI_GROUP"'</span>
+			</button>
+			</td>'
+			if [ "$START_LINE" = no ]
+			then
+				START_LINE=yes
+				echo '</tr>'
+			else
+				START_LINE=no
+			fi
 		fi
-	fi
+	done
 done
 echo '</tbody></table><br>
 </div></div></form></div></body></html>'

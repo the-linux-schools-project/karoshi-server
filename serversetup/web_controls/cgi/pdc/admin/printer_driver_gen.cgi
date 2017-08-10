@@ -161,7 +161,7 @@ then
 else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
-	WIDTH=90
+	WIDTH=145
 	ICON1=/images/submenus/printer/enable_printerm.png
 	ICON2=/images/submenus/printer/disable_printerm.png
 	ICON3=/images/submenus/printer/printer_assignedm.png
@@ -191,15 +191,8 @@ if [ "$MOBILE" = yes ]
 </div></div><div id="mobileactionbox">
 '
 fi
-if [ "$MOBILE" = yes ]
+if [ "$MOBILE" = no ]
 then
-	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-<tr><td>
-<b>'$"Windows Printer Drivers"'</b></td><td><a class="info infoleft" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated Windows printer driver generation for your print queues."'</span></a></td></tr>
-</tbody></table><br>
-<input name="_ACTION_gendrivers_PRINTQUEUE_all_" type="submit" class="button" value="'$"Generate Drivers"'"><br><br>
-'
-else
 	echo '
 	<div class="sectiontitle">'$"Windows Printer Drivers"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Printer_Driver_Generation"><img class="images" alt="" src="/images/help/info.png"><span>'$"This is used to enable or disable automated Windows printer driver generation for your print queues."'</span></a></div>'
 fi
@@ -221,8 +214,11 @@ echo '
 			<span>'$"Disable auto generation for all printers."'</span><br>
 			'$"Disable all"'
 		</button>
-	</td>
+	</td>'
 
+[ "$MOBILE" = yes ] && echo "</tr><tr>"
+
+echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info" name="_GenerateDrivers_" value="_ACTION_gendrivers_PRINTQUEUE_all_">
 			<img src="'"$ICON3"'" alt="'$"Generate Drivers"'">
@@ -230,9 +226,11 @@ echo '
 			'$"Generate Drivers"'
 		</button>
 	</td>
-
-</tr></tbody></table>
 '
+
+[ "$MOBILE" = yes ] && echo "<td></td>"
+
+echo '</tr></tbody></table>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 

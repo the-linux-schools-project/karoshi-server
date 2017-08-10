@@ -155,9 +155,13 @@ echo '	<a href="/cgi-bin/admin/group_membership_fm.cgi">'$"Group Membership"'</a
 	<a href="/cgi-bin/admin/user_web_folders.cgi">'$"User Web Folders"'</a>
       </div>
       <div class="collapsed">
-        <span>'$"Client"'</span>
-	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a>
-	<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a>
+        <span>'$"Client"'</span>'
+
+	if [ "$DISTROCTRL" = yes ]
+	then
+		echo '<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a>'
+	fi
+	echo '<a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client Wireless Settings"'</a>
 	<a href="/cgi-bin/admin/client_shutdown_time.cgi">'$"Client Shutdown Time"'</a>'
 	if [ $INTERNETCTRL = yes ]
 	then
@@ -185,11 +189,6 @@ then
 echo '      <div class="collapsed">
         <span>'$"Printer"'</span>
         <a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a>
-        <a href="/cgi-bin/admin/printer_accounting_view_group_usage_fm.cgi">'$"Group Printer Usage"'</a>
-        <a href="/cgi-bin/admin/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a>
-        <a href="/cgi-bin/admin/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a>
-        <a href="/cgi-bin/admin/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a>
         <a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a>
       </div>'
 fi

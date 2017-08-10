@@ -2164,8 +2164,12 @@ TOPRESTOREPATH2=`basename "$TOPRESTOREPATH"`
 TOPRESTOREPATH=`echo "$TOPRESTOREPATH" | sed "s/\/$TOPRESTOREPATH2$//g"`
 RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
 
+show_title
 #Check info
 restore_check_info
+
+
+
 if [ $ENABLE_RESTORE = yes ]
 then
 	echo '<table class="tablesorter" style="text-align: left;" ><tbody>
@@ -2224,7 +2228,7 @@ RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
 #Convert underscores
 LOCATION=`echo "$LOCATION" | sed "s/Z%%%%%Z/_/g"`
 RESTOREPATH=`echo "$RESTOREPATH" | sed "s/Z%%%%%Z/_/g"`
-
+show_title
 echo `date`: file_manager - restoring "$LOCATIONFOLDER" from $SERVERNAME to $RESTORESERVER $RESTOREPATH by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 echo '<table class="'$TABLECLASS'" style="text-align: left; height: 91px;" ><tbody>

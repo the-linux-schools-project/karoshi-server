@@ -118,8 +118,8 @@ echo "$(date): printer_driver_gen - action $ACTION Queue $QUEUE by $REMOTE_USER 
 PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 ICON1=/images/submenus/printer/enable_printer.png
 ICON2=/images/submenus/printer/disable_printer.png
-WIDTH1=180
-WIDTH2=130
+WIDTH1=200
+WIDTH2=120
 if [ "$MOBILE" = yes ]
 then
 	ICON1=/images/submenus/printer/enable_printerm.png
