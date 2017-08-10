@@ -36,8 +36,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
-<input name="_SEARCH_" tabindex= "1" style="width: 200px;" size="20" type="text">
-<input name="_SEARCH_" type="submit" class="button" value="Search">
+<input required="required" class="search-query" name="_SEARCH_" placeholder="'$"Search"'" style="width: 200px; height: 25px;" size="20" type="text">
 </form></div>'
 
 
@@ -55,7 +54,6 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 	<li class="top"><a href="/cgi-bin/staff/change_student_password_fm.cgi" id="menu" class="top_link"><span class="down">'$"Users and Groups"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/staff/change_student_password_fm.cgi">'$"Change Password"'</a></li>
-			<li><a href="/cgi-bin/staff/reset_student_password_fm.cgi">'$"Reset Password"'</a></li>
 			<li><a href="/cgi-bin/staff/request_new_users_fm.cgi">'$"Request New Users"'</a></li>
 			<li><a href="/cgi-bin/staff/request_delete_users_fm.cgi">'$"Request Delete Users"'</a></li>
 		</ul>

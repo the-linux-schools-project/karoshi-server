@@ -35,7 +35,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,15 +51,15 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Technical Support"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 </head>
 <body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_staff
 else
@@ -67,16 +67,16 @@ else
 fi
 
 
-echo '<form action="/cgi-bin/staff/helpdesk_add.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/staff/helpdesk_add.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0">
 	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/staff/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 	<td style="vertical-align: middle;"><a href="/cgi-bin/staff/mobile_user_menu.cgi"><b>'$"Technical Support"'</b></a></td></tr></tbody></table><br>'
 else
-	echo '<b>'$"Technical Support"' - '$"Add Request"'</b><br><br>'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Technical Support"' - '$"Add Request"'</div><br><br>'
 fi
 
 echo '<table class="standard" style="text-align: left; height: 91px;" >
@@ -91,18 +91,18 @@ echo '<table class="standard" style="text-align: left; height: 91px;" >
 ###############################
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=$(cat /var/lib/samba/netlogon/locations.txt | wc -l)
 else
-LOCATION_COUNT=0
+	LOCATION_COUNT=0
 fi
 
 echo '<select tabindex= "2" style="width: 200px;" name="_LOCATION_"><option label="blank" value=""></option>'
 COUNTER=1
-while [ $COUNTER -lt $LOCATION_COUNT ]
+while [ "$COUNTER" -lt "$LOCATION_COUNT" ]
 do
-LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-echo '<option>'$LOCATION'</option>'
-let COUNTER=$COUNTER+1
+	LOCATION=$(sed -n "$COUNTER,$COUNTER"'p' /var/lib/samba/netlogon/locations.txt)
+	echo '<option>'"$LOCATION"'</option>'
+	let COUNTER="$COUNTER"+1
 done
 echo '</select></td></tr>'
 echo '<tr><td>'$"Department"'</td>
@@ -151,12 +151,10 @@ echo '<tr><td>'$"Department"'</td>
 </td></tr>
 <tr><td>'$"Extended Details"'</td><td><textarea tabindex= "5" cols="70" rows="8" name="_REQUEST_"></textarea></td>
 <td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the details for the help request."'</span></a></td></tr>
-</tbody></table><br>'
+</tbody></table><br><br>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+[ "$MOBILE" = no ] && echo '</div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

@@ -37,7 +37,7 @@ STYLESHEET=defaultstyle.css
 ############################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/karoshi/admin/printers.html";'
 echo '</script>'
 echo "</div></body></html>"
@@ -46,10 +46,9 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -61,7 +60,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -88,28 +87,34 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=2
-#Assign PRINTER
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRINTERcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		PRINTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign PRINTER
+DATANAME=USERNAME
+get_data
+PRINTER="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -118,11 +123,11 @@ else
 	DIV_ID=actionbox2
 fi
 
-echo '<div id="'$DIV_ID'">'
+echo '<div id="'"$DIV_ID"'">'
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -136,7 +141,7 @@ then
 	echo '</div></div>'
 else
 		echo '<div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top; height:30px"><b>'$"Manage Print Queues"'</b></td>
+<tr><td style="vertical-align: top; height:30px"><div class="sectiontitle">'$"Manage Print Queues"'</div></td>
 <td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></td>'
 
 	if [ ! -z "$PRINTER" ]
@@ -148,8 +153,8 @@ else
 '
 fi
 
-sudo -H /opt/karoshi/web_controls/exec/printers_staff $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:
+sudo -H /opt/karoshi/web_controls/exec/printers_staff "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:"
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

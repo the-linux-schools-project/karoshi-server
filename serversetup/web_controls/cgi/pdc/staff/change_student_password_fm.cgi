@@ -74,59 +74,46 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=10
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign USERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
 #Assign PASSWORD1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
+
 #Assign PASSWORD2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-then
-let COUNTER=$COUNTER+1
-PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
-
-
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_staff
 else
@@ -139,34 +126,34 @@ source /opt/karoshi/server_network/security/password_settings
 echo '<form action="/cgi-bin/staff/change_student_password.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Change a Student's Password"'</span>
 <a href="/cgi-bin/staff/mobile_menu.cgi">'$"User Menu"'</a>
 </div></div>
 '
 else
-echo '<div id="'$DIV_ID'"><table class="standard" style="text-align: left;" ><tbody>
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Change a Student's Password"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change the password of the user for access to all servers on the Karoshi system."'</span></a></td></tr></tbody></table><br>'
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div id="mobileactionbox">
+	echo '<div id="mobileactionbox">
 <div id="suggestions"></div>
 '$"Username"'<br>
 <input tabindex= "1" style="width: 160px;" name="____USERNAME____" 
- value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+ value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"New Password"'<br>
-<input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"><br>
+<input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"><br><br>
+<input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br><br>
 <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
 '
 else
-echo '<table class="standard" style="text-align: left;" >
+	echo '<table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
@@ -185,38 +172,31 @@ echo '</td></tr>
       <tr>
         <td>
 '$"New Password"'</td>
-        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'$PASSWORD1'" size="20" type="password"></td><td>
+        <td><input tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'
 [ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
 </td>
       </tr>
       <tr>
         <td style="vertical-align: top;">
 '$"Confirm New Password"'</td>
-        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'$PASSWORD2'" size="20" type="password"></td>
+        <td style="vertical-align: top;"><input tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td>
       </tr>
 <tr>
      <td style="vertical-align: top; height: 120px;">
 </td>
       </tr>
     </tbody>
-  </table>
+  </table><br><br>
 '
 fi
 
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-else
-echo '<br>'
-fi
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit
 
-########################
-#Unique key
-########################
-#mLh65dMUNZnij-A2A5deQLiCd

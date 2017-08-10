@@ -36,7 +36,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Request Delete Users"'</title>
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
@@ -45,8 +45,8 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_staff
 echo '
 <form action="/cgi-bin/staff/request_delete_users.cgi" method="post">
-  <div id="actionbox">
-<b>'$"Request Delete Users"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will forward a request to the network manager for users to be deleted with the details that you provide."'</span></a><br><br>
+  <div id="actionbox"><div id="titlebox">
+<div class="sectiontitle">'$"Request Delete Users"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will forward a request to the network manager for users to be deleted with the details that you provide."'</span></a></div><br>
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td>'$"Forename"'</td><td>'$"Surname"'</td><td>'$"Primary Group"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the year group if this is a student or the role if it is a member of staff."'</span></a></td><td>'$"Admission Number"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the admission number for a student or leave blank for a member of staff."'</span></a></td></tr>
 <tr><td><input tabindex= "3" size="10" name="_FORENAME1_"></td><td><input tabindex= "4" size="15" name="_SURNAME1_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP1/g"`'</td><td><input tabindex= "6" size="18" name="_ADNO1_"></td></tr>
@@ -59,8 +59,7 @@ echo '
 <tr><td><input tabindex= "30" size="10" name="_FORENAME8_"></td><td><input tabindex= "31" size="15" name="_SURNAME8_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP8/g"`'</td><td><input tabindex= "33" size="18" name="_ADNO8_"></td></tr>
 <tr><td><input tabindex= "34" size="10" name="_FORENAME9_"></td><td><input tabindex= "35" size="15" name="_SURNAME9_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP9/g"`'</td><td><input tabindex= "37" size="18" name="_ADNO9_"></td></tr>
 <tr><td><input tabindex= "38" size="10" name="_FORENAME10_"></td><td><input tabindex= "39" size="15" name="_SURNAME10_"></td><td>'`/opt/karoshi/web_controls/group_dropdown_list | sed "s/GROUP/GROUP10/g"`'</td><td><input tabindex= "41" size="18" name="_ADNO10_"></td></tr>
-</tbody></table><br></div>
-<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>
-</form></div></body></html>
-'
+</tbody></table><br><br>
+<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
+</div></div></form></div></body></html>'
 exit

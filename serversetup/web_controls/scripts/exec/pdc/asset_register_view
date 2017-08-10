@@ -1209,14 +1209,14 @@ echo '<tr><td>TCPIP 3</td><td><input maxlength="15" size="17" name="_TCPIP3_" va
 #MAC address3
 echo '<td>'$"Mac Address"' 3</td><td><input maxlength="17" size="17" name="_MAC3_" value="'$MAC3'" style="width: 200px;" tabindex= "16"></td></tr>'
 #Extra information
-echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 200px;" tabindex= "17" cols="100" rows="1" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
+echo '<tr><td style="vertical-align: top;">'$"Extra Information"'</td><td colspan="3" rowspan="1" style="vertical-align: top;"><textarea style="width: 196px;" tabindex= "17" cols="100" rows="3" name="_EXTRAINFO_">'$EXTRAINFO'</textarea>
 </td></tr>'
 echo '</tbody></table><br>
 
 <button class="button" name="_Submit_" value="_">
 '$"Submit"'
 </button>
-</form><form action="asset_register_view.cgi" id="foo" method="post">
+</form><form <form style="display:inline;" action="asset_register_view.cgi" id="foo" method="post">
 <button class="button" name="_DoViewLocation_" value="_ACTION_view_LOCATION_'$LOCATION'_">
 <span>'$"Cancel"'</span>
 </button>'

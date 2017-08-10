@@ -29,7 +29,7 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -44,7 +44,7 @@ echo '
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Technical Support"' - '$"Requests"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -82,7 +82,7 @@ done
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
-echo '<div id="actionbox"><b>'$"Technical Support"' - '$"Requests"'</b><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Technical Support"' - '$"Requests"'</div><br><br>'
 [ -z "$SEARCHCRITERIA" ] && SEARCHCRITERIA=ASSIGNED
 #Check to see if there are any new jobs
 if [ ! -d /opt/karoshi/server_network/helpdesk/todo/ ]
@@ -155,7 +155,7 @@ do
 
 	echo '<tr><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td><form action="/cgi-bin/staff/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
 done
-echo '</tbody></table></div></html>'
+echo '</tbody></table></div></div></div></html>'
 
 exit
 
