@@ -34,15 +34,15 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/printers_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -51,7 +51,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js1">
@@ -81,7 +81,7 @@ $(document).ready(function()
 );
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -106,30 +106,36 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign PRINTER
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRINTERcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		PRINTER=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign PRINTER
+DATANAME=PRINTER
+get_data
+PRINTER="${DATAENTRY//12345UNDERSCORE12345/_}"
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -143,14 +149,14 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -172,10 +178,10 @@ exit
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
@@ -189,45 +195,116 @@ then
 	fi
 	echo '</div></div>'
 else
-	echo '<div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Manage Print Queues"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></td>
-<td>
-<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post"><input name="ADDPRINTER" type="submit" class="button" value="'$"Add Printer"'"></form>
-</td>
-<td><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
-<input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'"></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
-<input name="VIEWASSIGNED" type="submit" class="button" value="'$"View Assigned Printers"'"></form></td>
-<td style="vertical-align: top;"><form action="/cgi-bin/admin/file_manager.cgi" name="printers" method="post">
-<input name="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_" type="submit" class="button" value="'$"Edit PPD"'"></form></td>'
+
+	WIDTH=100
+	ICON1=/images/submenus/printer/add_printer.png
+	ICON2=/images/submenus/printer/delete_printer.png
+	ICON3=/images/submenus/printer/assign_ppd.png
+	ICON4=/images/submenus/printer/edit_ppd.png
+	ICON5=/images/submenus/printer/savapage.png
+	ICON6=/images/submenus/file/folder.png
+	ICON7=/images/submenus/printer/view_print_queues.png
+
+	echo '<div id="titlebox">
+	<div class="sectiontitle">'$"Manage Print Queues"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post">
+				<button class="info" name="_AddPrinter_" value="_">
+					<img src="'"$ICON1"'" alt="'$"Add Printer"'">
+					<span>'$"Add a new printer queue."'</span><br>
+					'$"Add Printer"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
+				<button class="info" name="_DeletePrinter_" value="_">
+					<img src="'"$ICON2"'" alt="'$"Delete Printer"'">
+					<span>'$"Delete a new printer queue."'</span><br>
+					'$"Delete Printer"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
+				<button class="info" name="_AssignedPrinter_" value="_">
+					<img src="'"$ICON3"'" alt="'$"Assigned Printers"'">
+					<span>'$"View Assigned Printers"'</span><br>
+					'$"Assigned Printers"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/file_manager.cgi" name="printers" method="post">
+				<button class="info" name="_EditPPD_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_">
+					<img src="'"$ICON4"'" alt="'$"Edit PPD"'">
+					<span>'$"Edit a printer driver."'</span><br>
+					'$"Edit PPD"'
+				</button>
+			</form>
+		</td>
+
+	'
 
 
-if [ -f /opt/karoshi/server_network/servers/"$PRINTSERVER"/savapage ]
-then
-	echo '<td style="vertical-align: top;">
-<a href="http://savapage:8631/admin" target="_blank"><input class="button" type="button" name="" value="Savapage"></a>
-</td>'
-fi
+	if [ -f /opt/karoshi/server_network/servers/"$PRINTSERVER"/savapage ]
+	then
+		echo '
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+				<form action="http://savapage:8631/admin" name="printers" method="post">
+					<button class="info" name="_Savapage_" value="_">
+						<img src="'"$ICON5"'" alt="Savapage">
+						<span>'$"Configure printing with Savapage."'</span><br>
+						Savapage
+					</button>
+				</form>
+			</td>
 
-echo '<td style="vertical-align: top;"><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$"Locations"'"></form></td>
-'
+		'
+	fi
+
+	echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+				<button class="info" name="_ViewLocations_" value="_">
+					<img src="'"$ICON6"'" alt="'$"Locations"'">
+					<span>'$"View locations."'</span><br>
+					'$"Locations"'
+				</button>
+			</form>
+		</td>
+
+	'
 
 
 	if [ ! -z "$PRINTER" ]
 	then
-		echo '<td><a href="printers.cgi"><input class="button" type="button" name="" value="'$"View Print Queues"'"></a></td>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+				<button class="info" name="_ShowPrinters_" value="_">
+					<img src="'"$ICON7"'" alt="'$"Show Printers"'">
+					<span>'$"Show network printer queues."'</span><br>
+					'$"Show Printers"'
+				</button>
+			</form>
+		</td>
+
+		'
 	fi
 
-	echo '</tr></tbody></table></div>
-'
+	echo '</tr></tbody></table></div>'
 fi
 
-[ $MOBILE = no ] && echo '<div id="infobox">'
+[ "$MOBILE" = no ] && echo '<div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/printers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:
-[ $MOBILE = no ] && echo '</div>'
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/printers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:"
+[ "$MOBILE" = no ] && echo '</div>'
 echo "</div></div></body></html>"
 exit

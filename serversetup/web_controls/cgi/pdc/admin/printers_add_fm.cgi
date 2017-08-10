@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,8 +45,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Add Network Printer"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Add Network Printer"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -65,21 +65,47 @@ exit
 
 [ ! -f /opt/karoshi/server_network/printserver ] && show_status
 
-echo '<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Add Network Printer"'</div></td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></td>
-<td><form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-<input name="SHOWPRINTERS" type="submit" class="button" value="'$"Show Printers"'">
-</form></td>
-<td><form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
-<input name="DELETEPRINTER" type="submit" class="button" value="'$"Delete Printer"'">
-</form></td>
-<td><form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-<input name="ADDLOCATION" type="submit" class="button" value="'$"Locations"'">
-</form></td>
+WIDTH=100
+ICON1=/images/submenus/printer/view_print_queues.png
+ICON2=/images/submenus/printer/delete_printer.png
+ICON3=/images/submenus/file/folder.png
+
+echo '<div id="actionbox3"><div id ="titlebox">
+<div class="sectiontitle">'$"Add Network Printer"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add a network printer for your client computers."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
+			<button class="info" name="_ShowPrinters_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Show Printers"'">
+				<span>'$"Show network printer queues."'</span><br>
+				'$"Show Printers"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
+			<button class="info" name="_DeletePrinters_" value="_">
+				<img src="'"$ICON2"'" alt="'$"Delete Printers"'">
+				<span>'$"Delete network printer queues."'</span><br>
+				'$"Delete Printers"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
+			<button class="info" name="_ViewLocations_" value="_">
+				<img src="'"$ICON3"'" alt="'$"Locations"'">
+				<span>'$"View locations."'</span><br>
+				'$"Locations"'
+			</button>
+		</form>
+	</td>
+
 </tr></tbody></table><br>
 '
-
 
 echo '<form action="/cgi-bin/admin/printers_add.cgi" method="post">'
 #Check that a print server has been assigned
@@ -112,19 +138,19 @@ echo '<table class="standard" style="text-align: left;" >
 ###############################
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=$(wc -l < /var/lib/samba/netlogon/locations.txt)
 else
 	LOCATION_COUNT=0
 fi
 #Show current rooms
 echo '<select tabindex= "5" name="____LOCATION____" style="width: 200px;">'
-echo '<option label="defaultlocation" value="'$NO_LOCATION'">'$NO_LOCATION'</option>'
+echo '<option label="defaultlocation" value="'"$NO_LOCATION"'">'"$NO_LOCATION"'</option>'
 COUNTER=1
-while [ $COUNTER -lt $LOCATION_COUNT ]
+while [ "$COUNTER" -lt "$LOCATION_COUNT" ]
 do
-	LOCATION=`sed -n $COUNTER,$COUNTER'p' /var/lib/samba/netlogon/locations.txt`
-	echo '<option value="'$LOCATION'">'$LOCATION'</option>'
-	let COUNTER=$COUNTER+1
+	LOCATION=$(sed -n "$COUNTER,$COUNTER""p" /var/lib/samba/netlogon/locations.txt)
+	echo '<option value="'"$LOCATION"'">'"$LOCATION"'</option>'
+	let COUNTER="$COUNTER"+1
 done
 echo '</select></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the location of this printer. Click on the add locations icon above to add locations."'</span></a>
@@ -150,8 +176,5 @@ echo '</select></td><td>
   </table><br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form>
-</div>
-</div></body>
-</html>
-'
+</div></div></div></body></html>'
 exit

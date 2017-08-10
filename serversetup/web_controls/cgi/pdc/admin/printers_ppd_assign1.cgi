@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -43,36 +43,41 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=3
-#Assign PRINTERNAME
-
-COUNTER=1
-while [ $COUNTER -le $END_POINT ]
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/12345UNDERSCORE12345/_/g'`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign PRINTERNAME
+DATANAME=PRINTERNAME
+get_data
+PRINTERNAME="${DATAENTRY//12345UNDERSCORE12345/_}"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/printers.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -81,7 +86,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -100,13 +105,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -118,22 +123,22 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
 
-echo '<form action="/cgi-bin/admin/printers_ppd_assign2.cgi" method="post"><div id="'$DIV_ID'">'
+echo '<form action="/cgi-bin/admin/printers_ppd_assign2.cgi" method="post"><div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<table class="standard" style="text-align: left;" >
-	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign PPD File"'</b></a></td>'
 else
 	echo '<table class="standard" style="text-align: left;" >
@@ -141,9 +146,9 @@ else
 fi
 
 echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."'</span></a></tr></tbody></table>
-<br><input type="hidden" name="____PRINTERNAME____" value="'$PRINTERNAME'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
+<br><input type="hidden" name="____PRINTERNAME____" value="'"$PRINTERNAME"'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
 #Show Printername
-echo '<tr><td style="width: 180px;">'$"Printer"'</td><td>'$PRINTERNAME'</td></tr>'
+echo '<tr><td style="width: 180px;">'$"Printer"'</td><td>'"$PRINTERNAME"'</td></tr>'
 
 #######################
 #Guess default paper size
@@ -157,8 +162,8 @@ echo '
 <select style="width: 200px;" name="____PAGESIZE____">
 <option value="A2">A2</option>
 <option value="A3">A3</option>
-<option value="Letter" '$LETTERSELECTED'>Letter</option>
-<option value="A4" '$A4SELECTED'>A4</option>
+<option value="Letter" '"$LETTERSELECTED"'>Letter</option>
+<option value="A4" '"$A4SELECTED"'>A4</option>
 <option value="A5" >A5</option>
 <option value="A6">A6</option>
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page size for this printer."'</span></a></td></tr>
@@ -170,21 +175,16 @@ echo '
 
 #Show printer manufacturer list to choose from
 echo '<tr><td>'$"Printer Make"'</td><td><select style="width: 200px;" name="____PRINTERPPD____">'
-echo '<option value=""></option>'
+echo '<option value="" label="blank"></option>'
 echo '<option value="uploadppd">'$"Upload PPD File"'</option>'
 #Get list of printer drivers
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERMAKE
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERMAKE"
 
-echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."'</span></a></td></tr>'
-echo '</tbody></table><br>'
+echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+[ "$MOBILE" = no ] && echo '</div>' 
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
-echo '</form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit
 
