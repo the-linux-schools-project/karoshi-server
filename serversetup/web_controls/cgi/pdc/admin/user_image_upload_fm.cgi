@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,17 +45,16 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <TITLE>'$"Upload User Image"'</TITLE><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+    <TITLE>'$"Upload User Image"'</TITLE><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_upload.cgi" METHOD="POST"><div id="actionbox">
-<B>'$"Upload User Image"'</B>
-<P>
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Upload User Image"'</div>
 <P>
         
         <table class="standard">
@@ -74,10 +73,9 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_uplo
 </td>
 </tr>
 </table>
-  </div>
-<div id="submitbox">
+<br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
         </form>
 </div></body>
 </html>

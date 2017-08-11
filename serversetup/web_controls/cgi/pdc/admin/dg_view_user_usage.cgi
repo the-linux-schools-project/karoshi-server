@@ -126,7 +126,7 @@ USERNAME="$DATAENTRY"
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'"$MESSAGE"'")';
-echo '                window.location = "/cgi-bin/admin/dg_view_user_logs_fm.cgi";'
+echo '                window.location = "/cgi-bin/admin/dg_view_user_usage_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
 exit

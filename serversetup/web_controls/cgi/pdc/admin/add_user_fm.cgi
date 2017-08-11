@@ -302,7 +302,7 @@ then
 	then
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option required="required" selected="selected">'"$GROUP"'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
 	fi
 	echo '<br>
 	'$"Username style"'<br>
@@ -355,9 +355,9 @@ else
 	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select required="required" tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select required="required" tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>

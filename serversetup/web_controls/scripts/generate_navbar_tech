@@ -118,15 +118,6 @@ then
 echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
-			<li class="mid"><a href="/cgi-bin/tech/printer_accounting_status_fm.cgi" class="fly">'$"Printer Accounting"'</a>
-					<ul>
-					<li><a href="/cgi-bin/tech/printer_accounting_view_user_usage_fm.cgi">'$"User Printer Usage"'</a></li>
-					<li><a href="/cgi-bin/tech/printer_accounting_view_group_usage_fm.cgi">'$"Group Printer Usage"'</a></li>
-					<li><a href="/cgi-bin/tech/printer_accounting_add_user_limit_fm.cgi">'$"Add User Limit"'</a></li>
-					<li><a href="/cgi-bin/tech/printer_accounting_user_limits_fm.cgi">'$"User Printer Limits"'</a></li>
-					<li><a href="/cgi-bin/tech/printer_accounting_group_limits_fm.cgi">'$"Group Printer Limits"'</a></li>
-					</ul>
-			</li>
 		</ul>
 	</li>'
 fi

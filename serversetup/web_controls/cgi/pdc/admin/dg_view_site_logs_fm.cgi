@@ -116,10 +116,10 @@ fi
 if [ "$MOBILE" = yes ]
 then
 	echo ''$"Search Criteria"'<br>
-	<input tabindex= "1" name="_SEARCH_" size="14" style="width: 160px;" type="text"><br>
+	<input required="required" tabindex="1" name="_SEARCH_" size="14" style="width: 160px;" type="text"><br>
 	'$"Log Date"'<br>'
 	echo "<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 style=\"width: 160px;\" maxlength=10 name=\"_DATE_\">
+	<input required=\"required\" tabindex=\"2\" type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 style=\"width: 160px;\" maxlength=10 name=\"_DATE_\">
 	<script language=\"JavaScript\"  type=\"text/javascript\">
 	new tcal ({
 		// form name
@@ -132,15 +132,15 @@ then
 	"
 	echo '
 	'$"Number of days to view"'<br>
-	<input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"><br><br>
+	<input required="required" tabindex="3" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"><br><br>
 	'
 else
 	echo '<table class="standard" style="text-align: left; " >
 	    <tbody>
-	<tr><td style="width: 180px;">'$"Search Criteria"'</td><td><input tabindex= "1" name="_SEARCH_" size="14" style="width: 180px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the start of the web address you want to search for."'</span></a></td></tr>'
+	<tr><td style="width: 180px;">'$"Search Criteria"'</td><td><input required="required" tabindex="1" name="_SEARCH_" size="14" style="width: 180px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the start of the web address you want to search for."'</span></a></td></tr>'
 	echo '<tr><td>'$"Log Date"'</td><td>'
 	echo "<!-- calendar attaches to existing form element -->
-		<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 style=\"width: 180px;\" maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+		<input required=\"required\" tabindex=\"2\" type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 style=\"width: 180px;\" maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 		<script>
 		new tcal ({
 			// form name
@@ -151,7 +151,7 @@ else
 
 		</script></td></tr>"
 
-	echo '<tr><td>'$"Number of days to view"'</td><td><input tabindex= "1" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
+	echo '<tr><td>'$"Number of days to view"'</td><td><input required="required" tabindex="3" name="_DAYCOUNT_" maxlength="2" size="2" value="1" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the number of sites a user has visited."'</span></a></td></tr>
 	</tbody></table>
 	<br><br>'
 fi

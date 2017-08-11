@@ -151,7 +151,7 @@ source /opt/karoshi/web_controls/version
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -169,7 +169,7 @@ then
 </div></div>
 '
 else
-	echo '<div id="'$DIV_ID'"><div class="sectiontitle">'$"Add a New User"'</div><br>'
+	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"Add a New User"'</div><br>'
 fi
 
 #########################

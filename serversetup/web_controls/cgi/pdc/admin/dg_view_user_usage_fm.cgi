@@ -106,7 +106,7 @@ echo '<form action="/cgi-bin/admin/dg_view_user_usage.cgi" name="testform" metho
 </div><br>
 <table class="'"$TABLECLASS"'" style="text-align: left;" >
 <tbody>
-<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input tabindex= "1" name="_USERNAME_" style="width: 200px;" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr></tbody></table><br><br>
+<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input required="required" tabindex= "1" name="_USERNAME_" style="width: 200px;" size="14" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to check the internet logs for."'</span></a></td></tr></tbody></table><br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form>
 </div></div>

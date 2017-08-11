@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,15 +45,15 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Web Management Password"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Web Management Password"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method="post">
-<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody><tr>
+<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;">
 <div class="sectiontitle">'$"Web Management Password"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change your password for logging into the web management."'</span></a></td></tr></tbody></table><br>
   <br>
@@ -62,20 +62,19 @@ echo '<form action="/cgi-bin/admin/remote_management_change_password.cgi" method
       <tr>
         <td style="width: 180px;">
 '$"Password"'</td>
-        <td><input tabindex="1" name="____PASSWORD1____" size="20" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want and confirm it on the line below."'</span></a></td></tr>
+        <td><input required="required" tabindex="1" name="____PASSWORD1____" size="20" type="password"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want and confirm it on the line below."'</span></a></td></tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input tabindex="2" name="____PASSWORD2____" size="20" type="password"></td><td></td>
+        <td><input required="required" tabindex="2" name="____PASSWORD2____" size="20" type="password"></td><td></td>
       </tr>
     </tbody>
   </table>
-</div>
-<div id="submitbox">
+<br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div>
 </form>
-</div></body>
+</div></div></body>
 </html>
 '
 exit

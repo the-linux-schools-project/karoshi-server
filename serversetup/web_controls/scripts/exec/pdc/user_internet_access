@@ -220,7 +220,7 @@ BANLENGTH=7
 echo '<div class="sectiontitle">'$"Ban User Internet Access"' <a class="'"$HELPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Internet_Access"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page allows you to ban or allow user internet access."'</span></a></div><br><form name="myform" action="user_internet_access.cgi" method="post">
 <input type="hidden" name="_ACTION_" value="banusers">
 <table class="'"$TABLECLASS"'" style="text-align: left;" >
-<tr><td style="width: '"$WIDTH1"'px;">'$"Usernames"'</td><td style="width: 140px;"><input value="'"$USERNAMES"'" name="_USERNAMES_" style="width: '"$WIDTH2"'px;" type="text"></td>'
+<tr><td style="width: '"$WIDTH1"'px;">'$"Usernames"'</td><td style="width: 140px;"><input required="required" value="'"$USERNAMES"'" name="_USERNAMES_" style="width: '"$WIDTH2"'px;" type="text"></td>'
 
 if [ "$MOBILE" = no ]
 then

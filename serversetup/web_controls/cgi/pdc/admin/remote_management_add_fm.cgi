@@ -77,32 +77,32 @@ echo '
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
 	<td style="width: 180px;">Job Title</td>
-	<td><input name="_JOBTITLE_" style="width: 200px;" size="20"></td><td></td>
+	<td><input name="_JOBTITLE_" tabindex="1" style="width: 200px;" size="20"></td><td></td>
 </tr>
 <tr>
 	<td>Forename</td>
-	<td><input name="_FORENAME_" style="width: 200px;" size="20"></td><td></td>
+	<td><input name="_FORENAME_" tabindex="2" style="width: 200px;" size="20"></td><td></td>
 </tr>
 <tr>
 	<td>Surname</td>
-	<td><input name="_SURNAME_" style="width: 200px;" size="20"></td><td></td>
+	<td><input name="_SURNAME_" tabindex="3" style="width: 200px;" size="20"></td><td></td>
 </tr>
 <tr>
 	<td>'$"Username"'</td>
-        <td><input name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
+        <td><input required="required" tabindex="4" name="_USERNAME_" style="width: 200px;" size="20" type="text"></td>
 	<td></td>
 </tr>
 <tr>
 	<td>'$"Password"'</td>
-	<td><input name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td></td>
+	<td><input required="required" tabindex="5" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td></td>
 </tr>
 <tr>
 	<td>'$"Confirm"'</td>
-	<td><input name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
+	<td><input required="required" tabindex="6" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
 </tr>
 <tr>
 	<td>'$"Access Level"'</td><td>
-	<select name="_PRIMARYADMIN_" style="width: 200px;">
+	<select required="required" tabindex="7" name="_PRIMARYADMIN_" style="width: 200px;">
 		<option label="blank" value=""></option>
 		<option value="1">'$"Primary Admin"'</option>
 		<option value="2">'$"Admin"'</option>

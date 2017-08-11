@@ -70,8 +70,7 @@ then
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Set Default Page"'</b></a> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table>'
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody><tr>
-<td style="vertical-align: top;"><div class="sectiontitle">'$"Set Default Page"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table><br>'
+	echo '<div class="sectiontitle">'$"Set Default Page"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></div><br>'
 fi
 
 echo '
@@ -83,7 +82,7 @@ echo '
 '$"Default Page"'</td>
         <td>
 
-<select name="_DEFAULTPAGE_" style="width: 200px;">
+<select required="required" name="_DEFAULTPAGE_" style="width: 200px;">
 	<option label="blank"></option>
         <option value="add_user_fm.cgi">'$"Add Users"'</option>
         <option value="change_password_fm.cgi">'$"Change User Passwords"'</option>
