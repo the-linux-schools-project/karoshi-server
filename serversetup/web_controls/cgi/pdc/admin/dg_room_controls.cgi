@@ -203,15 +203,6 @@ echo '
 		</form>
 	</td>
 
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
-		<form action="dg_reset_room_controls_fm.cgi" method="post">
-			<button class="info" name="_ResetTimes_" value="_">
-				<img src="'$ICON2'" alt="'$"Reset times"'">
-				<span>'$"View the scheduled reset times."'</span><br>
-				'$"Reset times"'
-			</button>
-		</form>
-	</td>
 '
 
 [ "$MOBILE" = yes ] && echo '</tr><tr>'
