@@ -378,8 +378,8 @@ then
 	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
 	<tbody>
-	<tr><td style="width: 180px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_'$NAME'-" value="'$NAME'" style="width: '$WIDTH7'px;" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>DNS Entry</td><td><input tabindex= "2" name="_ACTION_reallyedit_DNSENTRY_'$DNSENTRY'-" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td style="width: 180px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_'$NAME'-" value="'$NAME'" style="width: '$WIDTH7'px;" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
+	<tr><td>DNS Entry</td><td><input required="required" tabindex= "2" name="_ACTION_reallyedit_DNSENTRY_'$DNSENTRY'-" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td style="width: 180px;">DNS Type</td><td>'$DNSTYPE'</td><td><input type = "hidden" name="_DNSTYPE_" value="'$DNSTYPE'"></td></tr>
 	</tbody></table><br><br>
 	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_ZONE_'$ZONE'_" type="submit" class="button" value="'$"Edit entry"'">
@@ -429,7 +429,7 @@ if [ $ACTION = addzone ]
 then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 	<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH8'px;">'$"Add DNS Zone"'</td><td><input tabindex= "2" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
+	<tr><td style="width: '$WIDTH8'px;">'$"Add DNS Zone"'</td><td><input required="required" tabindex= "1" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
 	</tbody></table><br><br>
 	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Add zone"'">
 	</form><br>'
@@ -487,9 +487,9 @@ then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 	<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
 	
-	<tr><td style="width: '$WIDTH8'px;">'$"Name"'</td><td><input tabindex= "1" name="_NAME_"  style="width: '$WIDTH7'px;" size="25" type="text"></td><td>
+	<tr><td style="width: '$WIDTH8'px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_"  style="width: '$WIDTH7'px;" size="25" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Entry"'</td><td><input required="required" tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td>'$"DNS Type"'</td><td>'$DNSTYPE'
 	<select name="_DNSTYPE_" style="width: '$WIDTH7'px;">
 	<option value="CNAME">CNAME</option>

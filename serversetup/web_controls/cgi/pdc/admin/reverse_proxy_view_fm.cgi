@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -51,7 +51,7 @@ WIDTH3=300
 WIDTH4=80
 TABLECLASS=standard
 ICON1=/images/submenus/web/delete.png
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	WIDTH1=180
 	WIDTH2=90
@@ -68,8 +68,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Reverse Proxy Sites"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Reverse Proxy Sites"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -82,7 +82,7 @@ $(document).ready(function()
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -108,7 +108,7 @@ echo '</head>
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-[ ! -z "$MESSAGE" ] && echo 'alert("'$MESSAGE'")'
+[ ! -z "$MESSAGE" ] && echo 'alert("'"$MESSAGE"'")'
 echo 'window.location = "reverse_proxy_add_fm.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -121,13 +121,13 @@ then
 	show_status
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites/ | wc -l` = 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/reverseproxy/sites/ | wc -l) = 0 ]]
 then
 	show_status
 fi
 
 #Get reverse proxy server
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g'`
+PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/reverseproxyserver | sed 's/ //g')
 
 if [ -z "$PROXYSERVER" ]
 then
@@ -136,19 +136,21 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
 	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	WIDTH=90
+	ICON1=/images/submenus/system/addm.png
 	DIV_ID=actionbox
 fi
 
-echo '<form action="/cgi-bin/admin/reverse_proxy_view.cgi" method="post">'
-
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
@@ -157,45 +159,50 @@ then
 	</div></div><div id="mobileactionbox">
 '
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Reverse Proxy Sites"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></div>'
 fi
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tr>'
-[ $MOBILE = no ] && echo '<td style="width: '$WIDTH1'px;"><div class="sectiontitle">'$"Reverse Proxy Sites"'</div></td>'
-echo '<td>
-<button class="button" formaction="reverse_proxy_add_fm.cgi" name="AddReverseProxy" value="_">
-'$"Add Reverse Proxy"'
-</button>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reverse_Proxy_Server#Viewing_and_Deleting_Reverse_Proxy_Entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"The following sites are currently being redirected through this proxy server."'</span></a></td>
-</tr></tbody></table><br>'
+echo '
+<table class="tablesorter"><tbody><tr>
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="reverse_proxy_add_fm.cgi" method="post">
+			<button class="info infonavbutton" name="_AddReverseProxy_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Add"'">
+				<span>'$"Add a Reverse Proxy site."'</span><br>
+				'$"Add"'
+			</button>
+		</form>
+	</td>
 
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr>'
+</tbody></table>'
 
-[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Target"'</b></th>'
-echo '<th style="width: '$WIDTH3'px;"><b>'$"Destination"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
+
+echo '<form action="/cgi-bin/admin/reverse_proxy_view.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr>'
+
+[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Target"'</b></th>'
+echo '<th style="width: '"$WIDTH3"'px;"><b>'$"Destination"'</b></th><th style="width: '"$WIDTH4"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
 
 for SITES in /opt/karoshi/server_network/reverseproxy/sites/*
 do
-	SITE=`basename $SITES`
-	SITE2=`echo $SITE | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
-	REDIRECT=`sed -n 6,6p /opt/karoshi/server_network/reverseproxy/sites/$SITE | cut -d' ' -f2- | sed 's/;//g'`
+	SITE=$(basename "$SITES")
+	SITE2=$(echo "$SITE" | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g')
+	REDIRECT=$(sed -n 6,6p /opt/karoshi/server_network/reverseproxy/sites/"$SITE" | cut -d' ' -f2- | sed 's/;//g')
 	echo '<tr>'
-	[ $MOBILE = no ] && echo '<td>'$SITE2'</td>'
-	echo '<td>'$REDIRECT'</td><td>
-		<button class="info" name="_DoDelete_" value="_ACTION_DELETE_FOLDER_'$SITE'_">
-		<img src="'$ICON1'" alt="'$"Delete"'">
-		<span>'$"Delete" $SITE2'</span>
+	[ "$MOBILE" = no ] && echo '<td>'"$SITE2"'</td>'
+	echo '<td>'"$REDIRECT"'</td><td>
+		<button class="info" name="_DoDelete_" value="_ACTION_DELETE_FOLDER_'"$SITE"'_">
+		<img src="'"$ICON1"'" alt="'$"Delete"'">
+		<span>'$"Delete" "$SITE2"'</span>
 		</button>
 	</td></tr>'
 done
 
-echo '</tbody></table><br></div>'
+echo '</tbody></table></form><br></div>'
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 
-echo '</form></div></body></html>
+echo '</div></body></html>
 '
 exit

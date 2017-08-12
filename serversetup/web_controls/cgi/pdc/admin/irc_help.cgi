@@ -105,6 +105,6 @@ fi
 
 [ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
-echo '<iframe src="https://webchat.freenode.net?nick='$REALM2'_'$REMOTE_USER'&channels=%23karoshi&prompt=1&uio=MTE9MjM20f" width="100%" height="650px" frameBorder="0"></iframe></div></div></div></div></body></html>'
+echo '<iframe src="https://webchat.freenode.net?nick='$REALM2'_'$REMOTE_USER'&channels=%23karoshi&prompt=1&uio=MTE9MjM20f" width="100%" height="650px" frameBorder="0"></iframe></div></div></div></body></html>'
 exit
 

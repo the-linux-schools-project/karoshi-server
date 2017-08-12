@@ -159,8 +159,6 @@ else
 	WIDTH3=120
 fi
 
-echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post">'
-
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
@@ -180,14 +178,16 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info infonavbutton" formaction="update_servers_view_logs_fm.cgi" name="_ViewUpdateLogs_" value="_">
-				<img src="'$ICON1'" alt="'$"Update Logs"'">
-				<span>'$"View the update logs for this server."'</span><br>
-				'$"Update Logs"'
-			</button>
+			<form action="/cgi-bin/admin/update_servers_view_logs_fm.cgi" name="tstest" method="post">
+				<button class="info infonavbutton" formaction="update_servers_view_logs_fm.cgi" name="_ViewUpdateLogs_" value="_">
+					<img src="'$ICON1'" alt="'$"Update Logs"'">
+					<span>'$"View the update logs for this server."'</span><br>
+					'$"Update Logs"'
+				</button>
+			</form>
 		</td>
 
-	</tr></tbody></table><br><br>
+	</tr></tbody></table><br></div><div id="infobox">
 	'
 fi
 
@@ -204,9 +204,9 @@ then
 	[ "$DAY" = 8 ] && OP8='selected="selected"'
 fi
 
-echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+echo '<form action="/cgi-bin/admin/update_servers.cgi" name="tstest" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Day"'</td><td>
-<select style="width: '"$WIDTH3"'px;" name="_DAY_">
+<select required="required" tabindex= "2" style="width: '"$WIDTH3"'px;" name="_DAY_">
 <option label="blank" value=""></option>
 <option value="never">'$"Never"'</option>
 <option '"$OP1"' value="1">'$"Monday"'</option>
@@ -219,17 +219,18 @@ echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <option '"$OP8"' value="8">'$"Every day"'</option>
 </select>
 </td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the day that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Hour"'</td><td><input tabindex= "1" value="'"$HOUR"'" name="_HOURS_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
-<tr><td>'$"Minutes"'</td><td><input tabindex= "1" value="'"$MINUTES"'" name="_MINUTES_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Hour"'</td><td><input required="required" tabindex= "2" value="'"$HOUR"'" name="_HOURS_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
+<tr><td>'$"Minutes"'</td><td><input required="required" tabindex= "3" value="'"$MINUTES"'" name="_MINUTES_" style="width: '"$WIDTH2"'px;" size="3" type="text"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the time that you want your servers to update on."'</span></a></td></tr>
 <tr><td>'$"Force Reboot"'</td><td><input type="checkbox" name="_FORCEREBOOT_" value="yes"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Update_Servers#Scheduling_Server_Updates"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select this option only if you have a server that will not restart correctly if a reboot is required after system updates."'</span></a></td></tr>
 </tbody></table><br>'
-
-[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
 /opt/karoshi/web_controls/show_servers "$MOBILE" all $"Schedule Update" notset updateserver
 
+echo '</form>'
+
 [ "$MOBILE" = no ] && echo '</div>'
-echo '</div></form></div></body></html>'
+
+echo '</div></div></body></html>'
 exit
 
