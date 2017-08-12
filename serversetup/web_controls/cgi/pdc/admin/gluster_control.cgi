@@ -237,7 +237,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_GlusterAction_" value="_ACTION_'"$ACTION2"'_">
+			<button class="info infonavbutton" name="_GlusterAction_" value="_ACTION_'"$ACTION2"'_">
 				<img src="'$ICON1'" alt="'"$ACTIONMSG"'">
 				<span>'"$ACTIONMSG"'</span><br>
 				'"$ACTIONMSG"'
@@ -245,7 +245,7 @@ else
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
+			<button class="info infonavbutton" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
 				<img src="'$ICON2'" alt="'$"Home Folders"'">
 				<span>'$"Configure user home folders"'</span><br>
 				'$"Home Folders"'
@@ -253,7 +253,7 @@ else
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="samba_shares.cgi" name="NetworkShares" value="_">
+			<button class="info infonavbutton" formaction="samba_shares.cgi" name="NetworkShares" value="_">
 				<img src="'$ICON3'" alt="'$"Network Shares"'">
 				<span>'$"Configure network shares"'</span><br>
 				'$"Network Shares"'

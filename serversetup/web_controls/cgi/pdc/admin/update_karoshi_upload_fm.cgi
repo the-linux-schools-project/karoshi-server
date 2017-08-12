@@ -54,34 +54,34 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo ' <FORM ENCTYPE="multipart/form-data" action="/cgi-bin/admin/update_karoshi_upload.cgi" method="post"><div id="actionbox">
+echo ' <FORM ENCTYPE="multipart/form-data" action="/cgi-bin/admin/update_karoshi_upload.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Upload Web Management Patch"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will allow you to upload and apply a web management updates to your server. You will also need the signature file to verify that it is a legitamate update."'</span></a></td></tr></tbody></table>
 <P>
 '"$UPLOADMSG"'
 <P>
-        <table class="standard">
-        <tr>
-            <td>
-                '$"Patch file"':
-            </td>
-            <td>
-                <INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                '$"Sign file"':
-            </td>
-            <td>
-                <INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
-            </td>
-        </tr>
-        </table>
-</div><div id="submitbox">
+<table class="standard">
+	<tr>
+		<td>
+			'$"Patch file"':
+		</td>
+		<td>
+			<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			'$"Sign file"':
+		</td>
+		<td>
+			<INPUT TYPE="FILE" NAME="file-to-upload-02" SIZE="35">
+		</td>
+	</tr>
+</table>
+<br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
-        </form>
+</div></div>
+</form>
 </div>
 </BODY>
 </HTML>

@@ -95,7 +95,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="asset_register_view.cgi" name="AssetRegister" method="post">
-			<button class="info" name="AssetRegister" value="_">
+			<button class="info infonavbutton" name="AssetRegister" value="_">
 				<img src="'"$ICON1"'" alt="'$"Asset Register"'">
 				<span>'$"View the asset register."'</span><br>
 				'$"Asset Register"'
@@ -105,7 +105,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-			<button class="info" name="ShowPrinters" value="_">
+			<button class="info infonavbutton" name="ShowPrinters" value="_">
 				<img src="'"$ICON2"'" alt="'$"Show Printers"'">
 				<span>'$"Show all configured printers"'</span><br>
 				'$"Show Printers"'

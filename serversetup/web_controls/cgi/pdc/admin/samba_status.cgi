@@ -201,7 +201,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/samba_status_fm.cgi" method="post">
-				<button class="info" name="_SelectServer_" value="_">
+				<button class="info infonavbutton" name="_SelectServer_" value="_">
 					<img src="'"$ICON1"'" alt="'$"Select Server"'">
 					<span>'$"Select the server you want to view."'</span><br>
 					'$"Select Server"'

@@ -244,7 +244,7 @@ echo '
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" name="_DoAction_" value="_ACTION_'$ACTION2'_">
+			<button class="info infonavbutton" name="_DoAction_" value="_ACTION_'$ACTION2'_">
 				<img src="'"$ICON"'" alt="'$MESSAGE'">
 				<span>'$MESSAGE2'</span><br>
 				'$MESSAGE'
@@ -252,7 +252,7 @@ echo '
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" formaction="email_domains.cgi" name="_AddDomain_" value="_">
+			<button class="info infonavbutton" formaction="email_domains.cgi" name="_AddDomain_" value="_">
 				<img src="'"$ICON3"'" alt="'$"Domains"'">
 				<span>'$"View the defailt domains."'</span><br>
 				'$"Domains"'

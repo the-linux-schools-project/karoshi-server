@@ -279,7 +279,7 @@ else
 	then
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-				<button class="info" name="_BanDHCP_" value="_ACTION_add_ban_">
+				<button class="info infonavbutton" name="_BanDHCP_" value="_ACTION_add_ban_">
 					<img src="'$ICON1'" alt="'$"Add DHCP Ban"'">
 					<span>'$"Add DHCP Ban"'</span><br>
 					'$"Add"'
@@ -289,7 +289,7 @@ else
 	else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-				<button class="info" name="_ViewDHCPBans_" value="_ACTION_view_">
+				<button class="info infonavbutton" name="_ViewDHCPBans_" value="_ACTION_view_">
 					<img src="'$ICON2'" alt="'$"View banned DHCP devices"'">
 					<span>'$"View banned DHCP devices"'</span><br>
 					'$"View"'
@@ -303,7 +303,7 @@ else
 
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
+		<button class="info infonavbutton" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
 			<img src="'$ICON3'" alt="'$"View DHCP Leases"'">
 			<span>'$"View DHCP Leases"'</span><br>
 			'$"DHCP Leases"'
@@ -313,7 +313,7 @@ else
 
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+			<button class="info infonavbutton" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
 				<img src="'$ICON4'" alt="'$"Configure DHCP"'">
 				<span>'$"Configure DHCP"'</span><br>
 				'$"Configure"'
@@ -326,7 +326,7 @@ else
 	then
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DeleteAll_" value="_ACTION_reallydelete_">
+			<button class="info infonavbutton" name="_DeleteAll_" value="_ACTION_reallydelete_">
 				<img src="'$ICON5'" alt="'$"Delete DHCP bans"'">
 				<span>'$"Delete DHCP bans"'</span><br>
 				'$"Delete"'
@@ -337,7 +337,7 @@ else
 	then
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
+			<button class="info infonavbutton" name="_ActivateChanges_" value="_ACTION_restartdhcp_">
 				<img src="'$ICON6'" alt="'$"Activate Changes"'">
 				<span>'$"Activate Changes"'</span><br>
 				'$"Activate Changes"'

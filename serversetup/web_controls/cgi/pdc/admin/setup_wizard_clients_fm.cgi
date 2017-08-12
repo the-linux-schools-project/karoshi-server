@@ -70,7 +70,7 @@ then
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
-	echo '<b>'$"Join a client to the domain"'</b><br><br><b>'$"Windows Clients"'</b><br><br>'$"Windows client computers are joined to the domain in the same way as for a windows network. "'<br>'$"The username required to do this is Administrator. The password will be the system password that you chose earlier."'<br>'$"You can also join client computers to the domain using any accounts that are members of the itadmin group."'<br><br>'$"Once you have successfully joined a client you can test it with the new user that you have just created."'<br><br>'
+	echo '<div class="sectiontitle">'$"Join a client to the domain"'</div><br><b>'$"Windows Clients"'</b><br><br>'$"Windows client computers are joined to the domain in the same way as for a windows network. "'<br>'$"The username required to do this is Administrator. The password will be the system password that you chose earlier."'<br>'$"You can also join client computers to the domain using any accounts that are members of the itadmin group."'<br><br>'$"Once you have successfully joined a client you can test it with the new user that you have just created."'<br><br>'
 
 
 echo '<b>'$"Karoshi Linux Clients"'</b><br><br>'$"Karoshi linux clients can be joined to the domain using the icons provided on the desktop for the local administrator user account on the linux client."'<br><br>'

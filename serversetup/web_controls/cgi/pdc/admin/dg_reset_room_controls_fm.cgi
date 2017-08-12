@@ -122,7 +122,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="dg_room_controls_fm.cgi" method="post">
-			<button class="info" name="_ViewRoomControls_" value="_">
+			<button class="info infonavbutton" name="_ViewRoomControls_" value="_">
 				<img src="'$ICON1'" alt="'$"Room Controls"'">
 				<span>'$"View room controls."'</span><br>
 				'$"Room Controls"'

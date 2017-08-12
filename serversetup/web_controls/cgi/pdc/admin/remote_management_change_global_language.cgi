@@ -51,7 +51,7 @@ echo '
 <body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Change Global Language"'</div>
+echo '<form action="/cgi-bin/admin/remote_management_change_global_language2.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Change Global Language"'</div>
   <br>
   <table class="standard" style="text-align: left;" >
     <tbody>
@@ -84,11 +84,9 @@ echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="im
       </tr>
     </tbody>
   </table>
-  <br>
-</div>
-<div id="submitbox">
+  <br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

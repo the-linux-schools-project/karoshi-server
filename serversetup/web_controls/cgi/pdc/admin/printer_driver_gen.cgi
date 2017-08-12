@@ -201,7 +201,7 @@ echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" name="_EnableAll_" value="_ACTION_enableall_PRINTQUEUE_all_">
+		<button class="info infonavbutton" name="_EnableAll_" value="_ACTION_enableall_PRINTQUEUE_all_">
 			<img src="'"$ICON1"'" alt="'$"Enable All"'">
 			<span>'$"Enable auto generation for all printers."'</span><br>
 			'$"Enable All"'
@@ -209,7 +209,7 @@ echo '
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" name="_DisableAll_" value="_ACTION_disableall_PRINTQUEUE_all_">
+		<button class="info infonavbutton" name="_DisableAll_" value="_ACTION_disableall_PRINTQUEUE_all_">
 			<img src="'"$ICON2"'" alt="'$"Disable all"'">
 			<span>'$"Disable auto generation for all printers."'</span><br>
 			'$"Disable all"'
@@ -220,7 +220,7 @@ echo '
 
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" name="_GenerateDrivers_" value="_ACTION_gendrivers_PRINTQUEUE_all_">
+		<button class="info infonavbutton" name="_GenerateDrivers_" value="_ACTION_gendrivers_PRINTQUEUE_all_">
 			<img src="'"$ICON3"'" alt="'$"Generate Drivers"'">
 			<span>'$"Generate printer drivers for all enabled printers."'</span><br>
 			'$"Generate Drivers"'

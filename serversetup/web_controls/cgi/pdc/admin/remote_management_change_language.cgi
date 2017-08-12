@@ -82,7 +82,7 @@ echo '</head><body><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	HEIGHT=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
@@ -93,7 +93,7 @@ fi
 
 echo '<form action="/cgi-bin/admin/remote_management_change_language2.cgi" method="post">'
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -146,10 +146,9 @@ echo '</td><td><a class="info" href="javascript:void(0)"><img class="images" alt
 
 fi
 
-if [ $MOBILE = no ]
-then
-	echo '</div><div id="submitbox">'
-fi
+echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit

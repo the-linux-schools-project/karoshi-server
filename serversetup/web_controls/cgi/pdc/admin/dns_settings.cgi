@@ -247,7 +247,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-				<button class="info" name="_ChooseServer_" value="_">
+				<button class="info infonavbutton" name="_ChooseServer_" value="_">
 					<img src="'$ICON1'" alt="'$"Choose Server"'">
 					<span>'$"Choose Server"'</span><br>
 					'$"Choose Server"'
@@ -259,7 +259,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-				<button class="info" name="_ViewDNSEntries_" value="_">
+				<button class="info infonavbutton" name="_ViewDNSEntries_" value="_">
 					<img src="'$ICON2'" alt="'$"View DNS Entries"'">
 					<span>'$"View DNS Entries"'</span><br>
 					'$"View"'

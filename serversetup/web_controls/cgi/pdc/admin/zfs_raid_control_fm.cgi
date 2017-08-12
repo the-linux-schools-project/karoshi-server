@@ -142,7 +142,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="zfs_raid_create_fm.cgi" name="CreateRaid" value="_">
+			<button class="info infonavbutton" formaction="zfs_raid_create_fm.cgi" name="CreateRaid" value="_">
 				<img src="'$ICON1'" alt="'$"Create ZFS volume"'">
 				<span>'$"Create a ZFS volume."'</span><br>
 				'$"Create ZFS Raid"'

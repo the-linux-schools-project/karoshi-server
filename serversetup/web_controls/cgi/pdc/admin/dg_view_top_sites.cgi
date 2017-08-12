@@ -183,7 +183,7 @@ echo '<div class="sectiontitle">'$"Top Sites" "$DAY-$MONTH-$YEAR"'</div>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/dg_view_top_sites_fm.cgi" method="post">
-			<button class="info" name="_ChangeDate_" value="_">
+			<button class="info infonavbutton" name="_ChangeDate_" value="_">
 				<img src="'$ICON1'" alt="'$"Change Date"'">
 				<span>'$"View the top sites for a different date."'</span><br>
 				'$"Change Date"'

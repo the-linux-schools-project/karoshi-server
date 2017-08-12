@@ -263,7 +263,7 @@ echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
-		<button class="info" name="_" value="_">
+		<button class="info infonavbutton" name="_" value="_">
 			<img src="'"$ICON18"'" alt="'$"Select Server"'">
 			<span>'$"Select another server."'</span><br>
 			'$"Select Server"'
@@ -271,7 +271,7 @@ echo '
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
-		<button class="info" name="_Top_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_">
+		<button class="info infonavbutton" name="_Top_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_">
 			<img src="'"$ICON16"'" alt="'$"Top Directory"'">
 			<span>'$"Go to the top level of the file system."'</span><br>
 			'$"Top Directory"'
@@ -279,7 +279,7 @@ echo '
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">
-		<button class="info" name="_Up_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LASTLOCATION"'_">
+		<button class="info infonavbutton" name="_Up_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LASTLOCATION"'_">
 			<img src="'"$UPICON"'" alt="'"$UPMESG1"'">
 			<span>'"$UPMESG2"'</span><br>
 			'"$UPMESG1"'
@@ -292,7 +292,7 @@ then
 	[ "$MOBILE" = yes ] && echo '</tr><tr>'
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-		<button class="info" name="_NewFolder_" value="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+		<button class="info infonavbutton" name="_NewFolder_" value="_ACTION_CREATEDIR_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 			<img src="'"$ICON11"'" alt="'$"New Folder"'">
 			<span>'$"Create a new folder."'</span><br>
 			'$"New Folder"'
@@ -300,7 +300,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-		<button class="info" name="_NewFile_" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+		<button class="info infonavbutton" name="_NewFile_" value="_ACTION_CREATEFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 			<img src="'"$ICON15"'" alt="'$"New File"'">
 			<span>'$"Create a new file."'</span><br>
 			'$"New File"'
@@ -320,7 +320,7 @@ then
 
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-			<button class="info" name="_MoveFile_" value="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
+			<button class="info infonavbutton" name="_MoveFile_" value="_ACTION_REALLYMOVE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
 				<img src="'"$ICON9"'" alt="'$"Move here?"'">
 				<span>'$"Move to this location?"'</span><br>
 				'$"Move here?"'
@@ -328,14 +328,14 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-			<button class="info" name="_CopyFile_" value="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
+			<button class="info infonavbutton" name="_CopyFile_" value="_ACTION_REALLYCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$ITEMMOVE'_LOCATION_'$LOCATION2'_">
 				<img src="'"$ICON4"'" alt="'$"Copy here?"'">
 				<span>'$"Copy to this location?"'</span><br>
 				'$"Copy here?"'
 			</button>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-			<button class="info" name="_CancelCopy_" value="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<button class="info infonavbutton" name="_CancelCopy_" value="_ACTION_CANCELCOPY_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 				<img src="'"$ICON13"'" alt="'$"Cancel"'">
 				<span>'$"Cancel copying this item."'</span><br>
 				'$"Cancel"'
@@ -355,7 +355,7 @@ then
 
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
-		<button class="info" name="_Search_" value="_ACTION_SEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+		<button class="info infonavbutton" name="_Search_" value="_ACTION_SEARCHBACKUP_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
 			<img src="'"$ICON13"'" alt="'$"Search Backup"'">
 			<span>'$"Search the backup for an item."'</span><br>
 			'$"Search Backup"'

@@ -149,7 +149,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="update_servers_fm.cgi" name="_UpdateServers_" value="_">
+			<button class="info infonavbutton" formaction="update_servers_fm.cgi" name="_UpdateServers_" value="_">
 				<img src="'$ICON1'" alt="'$"Update Servers"'">
 				<span>'$"Schedule a server to update"'</span><br>
 				'$"Update Servers"'

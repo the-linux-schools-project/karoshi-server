@@ -152,7 +152,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/show_user_info.cgi" method="post">
-				<button class="info" name="_ShowUserInfo_" value="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_'"$USERNAME"'">
+				<button class="info infonavbutton" name="_ShowUserInfo_" value="_SERVERNAME_'"$(hostname-fqdn)"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_notset_USERNAME_'"$USERNAME"'">
 					<img src="'"$ICON1"'" alt="'$"Edit User"'">
 					<span>'$"Edit the user's information."'</span><br>
 					'$"Edit User"'
@@ -165,7 +165,7 @@ else
 	echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/groups.cgi" method="post">
-				<button class="info" name="____GroupManagement____" value="____GroupManagement____">
+				<button class="info infonavbutton" name="____GroupManagement____" value="____GroupManagement____">
 					<img src="'"$ICON2"'" alt="'$"Group Management"'">
 					<span>'$"Group Management"'</span><br>
 					'$"Group Management"'

@@ -273,7 +273,7 @@ else
 	echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/firewall.cgi" method="post">
-				<button class="info" name="SelectServer" value="_">
+				<button class="info infonavbutton" name="SelectServer" value="_">
 					<img src="'$ICON1'" alt="'$"Select server"'">
 					<span>'$"Select the server you want to view."'</span><br>
 					'$"Select Server"'
@@ -288,7 +288,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/firewall.cgi" method="post">
-				<button class="info" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
+				<button class="info infonavbutton" name="___AddRule___" value="___ACTION___add___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
 					<img src="'$ICON2'" alt="'$"Add Rule"'">
 					<span>'$"Add a firewall rule."'</span><br>
 					'$"Add Rule"'
@@ -303,7 +303,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/firewall.cgi" method="post">
-				<button class="info" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
+				<button class="info infonavbutton" name="___ViewRules___" value="___ACTION___view___SERVERTYPE___'"$SERVERTYPE"'___SERVERMASTER___'"$SERVERMASTER"'___SERVERNAME___'"$SERVERNAME"'___">
 					<img src="'$ICON3'" alt="'$"View Rules"'">
 					<span>'$"View firewall rules."'</span><br>
 					'$"View Rules"'

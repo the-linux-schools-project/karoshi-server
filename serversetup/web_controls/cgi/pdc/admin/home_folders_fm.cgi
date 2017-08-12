@@ -79,7 +79,7 @@ then
 	echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
+		<button class="info infonavbutton" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
 			<img src="'$ICON1'" alt="'$"Gluster Volumes"'">
 			<span>'$"Configure gluster volumes"'</span><br>
 			'$"Gluster Volumes"'
@@ -92,7 +92,7 @@ fi
 echo '
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" formaction="samba_shares.cgi" name="SambaShares" value="_">
+	<button class="info infonavbutton" formaction="samba_shares.cgi" name="SambaShares" value="_">
 		<img src="'$ICON2'" alt="'$"Network Shares"'">
 		<span>'$"Configure network shares"'</span><br>
 		'$"Network Shares"'

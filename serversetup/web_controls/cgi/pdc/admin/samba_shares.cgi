@@ -594,7 +594,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="____SambaAction____" value="____ACTION____'$ACTION2'____">
+		<button class="info infonavbutton" name="____SambaAction____" value="____ACTION____'$ACTION2'____">
 			<img src="'$ICON1'" alt="'$BUTTONTXT'">
 			<span>'$BUTTONTXT'</span><br>
 			'$BUTTONTXT'
@@ -602,7 +602,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
+		<button class="info infonavbutton" formaction="gluster_control.cgi" name="GlusterVolumeControl" value="_">
 			<img src="'$ICON2'" alt="'$"Gluster Volumes"'">
 			<span>'$"Configure gluster volumes"'</span><br>
 			'$"Gluster Volumes"'
@@ -610,7 +610,7 @@ echo '<form action="/cgi-bin/admin/samba_shares.cgi" method="post">
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
+		<button class="info infonavbutton" formaction="home_folders_fm.cgi" name="ViewHomeFolders" value="_">
 			<img src="'$ICON3'" alt="'$"Home Folders"'">
 			<span>'$"Configure user home folders"'</span><br>
 			'$"Home Folders"'

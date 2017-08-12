@@ -215,7 +215,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
+			<button class="info infonavbutton" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
 				<img src="'"$ICON1"'" alt="'$"Select server"'">
 				<span>'$"Select the server you want to view."'</span><br>
 				'$"Select Server"'
@@ -223,7 +223,7 @@ else
 		</td>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
+			<button class="info infonavbutton" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
 				<img src="'"$ICON2"'" alt="'$"Schedule Job"'">
 				<span>'$"Schedule a job for this server."'</span><br>
 				'$"Schedule Job"'

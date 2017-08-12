@@ -319,7 +319,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"TCPIP Addresses"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -402,7 +402,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Export data"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -519,7 +519,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Descriptions"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -527,7 +527,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoAddDesc_" value="_ACTION_adddesc_LOCATION_notset_">
+			<button class="info infonavbutton" name="_DoAddDesc_" value="_ACTION_adddesc_LOCATION_notset_">
 				'$"Add Description"'<br>
 				<img src="'$ICON4'" alt="'$"Add Description"'">
 				<span>'$"Add Description"'</span>
@@ -650,7 +650,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Suppliers"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -658,7 +658,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoAddSupplier_" value="_ACTION_addsupplier_LOCATION_notset_">
+			<button class="info infonavbutton" name="_DoAddSupplier_" value="_ACTION_addsupplier_LOCATION_notset_">
 				'$"Add Supplier"'<br>
 				<img src="'$ICON4'" alt="'$"Add Supplier"'">
 				<span>'$"Where you purchase your equipment from."'</span>
@@ -771,7 +771,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Budgets"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -779,7 +779,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoAddBudget_" value="_ACTION_addbudget_LOCATION_notset_">
+			<button class="info infonavbutton" name="_DoAddBudget_" value="_ACTION_addbudget_LOCATION_notset_">
 				'$"Add Budget"'<br>
 				<img src="'$ICON4'" alt="'$"Add Budget"'">
 				<span>'$"Budgets that your purchases are paid from."'</span>
@@ -799,7 +799,7 @@ then
 				BUDGETFILE=`basename $BUDGETFILES`
 				BUDGET=`cat /opt/karoshi/asset_register/budgets/$BUDGETFILE`
 				echo '<tr><td>'$BUDGET'</td><td style="vertical-align: top;">
-				<button class="info" name="_DoDeleteBudget_" value="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_">
+				<button class="info infonavbutton" name="_DoDeleteBudget_" value="_ACTION_deletebudget_LOCATION_notset_ASSET_'$BUDGETFILE'_">
 				<img src="'$ICON3'" alt="'$"Delete budget"'">
 				<span>'$"Delete budget"'</span>
 				</button>
@@ -818,7 +818,7 @@ then
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Statistics"'</div><table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -913,7 +913,7 @@ then
 	echo '<div class="sectiontitle">'$"Asset Register"'</div><table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoSearch_" value="_ACTION_search_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoSearch_" value="_ACTION_search_LOCATION_notset_">
 			<img src="'$ICON6'" alt="'$"Statistics"'">
 			<span>'$"Search the asset register."'</span><br>
 			'$"Search"'
@@ -921,7 +921,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoAddAsset_" value="_ACTION_add_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoAddAsset_" value="_ACTION_add_LOCATION_notset_">
 			<img src="'$ICON4'" alt="'$"Add Asset"'">
 			<span>'$"Add an asset to the asset register."'</span><br>
 			'$"Add"'
@@ -929,7 +929,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoImport_" value="_ACTION_import_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoImport_" value="_ACTION_import_LOCATION_notset_">
 			<img src="'$ICON16'" alt="'$"Import"'">
 			<span>'$"Import assets to the asset register."'</span><br>
 			'$"Import"'
@@ -941,7 +941,7 @@ then
 	
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoExport_" value="_ACTION_export_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoExport_" value="_ACTION_export_LOCATION_notset_">
 			<img src="'$ICON15'" alt="'$"Export"'">
 			<span>'$"Export assets from the asset register."'</span><br>
 			'$"Export"'
@@ -950,7 +950,7 @@ then
 	
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoViewDescriptions_" value="_ACTION_viewdescriptions_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoViewDescriptions_" value="_ACTION_viewdescriptions_LOCATION_notset_">
 			<img src="'$ICON7'" alt="'$"Description"'">
 			<span>'$"Descriptions of computer hardware and software that you want to use in your asset register."'</span><br>
 			'$"Descriptions"'
@@ -958,7 +958,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoViewSuppliers_" value="_ACTION_viewsuppliers_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoViewSuppliers_" value="_ACTION_viewsuppliers_LOCATION_notset_">
 			<img src="'$ICON7'" alt="'$"Suppliers"'">
 			<span>'$"Where you purchase your equipment from."'</span><br>
 			'$"Suppliers"'
@@ -970,7 +970,7 @@ then
 
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DoViewBudgets_" value="_ACTION_viewbudgets_LOCATION_notset_">
+		<button class="info infonavbutton" name="_DoViewBudgets_" value="_ACTION_viewbudgets_LOCATION_notset_">
 			<img src="'$ICON12'" alt="'$"Budgets"'">
 			<span>'$"Budgets that your purchases are paid from."'</span><br>
 			'$"Budgets"'
@@ -978,7 +978,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
+		<button class="info infonavbutton" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
 			<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
 			<span>'$"View Allocated TCPIP Addresses."'</span><br>
 			'$"TCPIP"'
@@ -986,7 +986,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button formaction="locations.cgi" class="info" name="_ViewLocations_" value="_Viewlocations_">
+		<button formaction="locations.cgi" class="info infonavbutton" name="_ViewLocations_" value="_Viewlocations_">
 			<img src="'$ICON19'" alt="'$"Locations"'">
 			<span>'$"View and add areas where you have computer equipment."'</span><br>
 			'$"Locations"'
@@ -997,7 +997,7 @@ then
 
 	echo '
 	<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info inforight" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
+		<button class="info inforight infonavbutton" name="_Statistics_" value="_ACTION_showstats_LOCATION_notset_">
 			<img src="'$ICON5'" alt="'$"Statistics"'">
 			<span>'$"Asset register statistics"'</span><br>
 			'$"Statistics"'
@@ -1579,7 +1579,7 @@ then
 	else
 		echo '<div class="sectiontitle">'$"Asset Register"' - '$LOCATION'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_">
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Choose Location"'</span><br>
 				'$"Choose Location"'
@@ -1587,7 +1587,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoAddAsset_" value="_ACTION_add_LOCATION_'$LOCATION'_">
+			<button class="info infonavbutton" name="_DoAddAsset_" value="_ACTION_add_LOCATION_'$LOCATION'_">
 				<img src="'$ICON4'" alt="'$"Add Asset"'">
 				<span>'$"Add Asset"'</span><br>
 				'$"Add Asset"'
@@ -1599,7 +1599,7 @@ then
 
 	echo '
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoQRCodes_" value="_ACTION_qrcodes_LOCATION_'$LOCATION'_">
+			<button class="info infonavbutton" name="_DoQRCodes_" value="_ACTION_qrcodes_LOCATION_'$LOCATION'_">
 				<img src="'$ICON18'" alt="'$"QR Codes"'">
 				<span>'$"QR Codes"'</span><br>
 				'$"QR Codes"'
@@ -1609,7 +1609,7 @@ then
 	then 
 		echo '
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="client_boot_controls.cgi" name="_ClientBootControls_" value="_LOCATION_'$LOCATION'_">
+			<button class="info infonavbutton" formaction="client_boot_controls.cgi" name="_ClientBootControls_" value="_LOCATION_'$LOCATION'_">
 				<img src="'$ICON17'" alt="'$"Client Boot Controls"'">
 				<span>'$"Client Boot Controls"'</span><br>
 				'$"Client Boot Controls"'
@@ -1702,7 +1702,7 @@ then
 
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Search"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -1710,7 +1710,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoSearch_" value="_ACTION_reallysearch_LOCATION_notset_">
+			<button class="info infonavbutton" name="_DoSearch_" value="_ACTION_reallysearch_LOCATION_notset_">
 				'$"Search"'<br>
 				<img src="'$ICON4'" alt="'$"Search"'">
 				<span>'$"Search the asset register."'</span>
@@ -1780,7 +1780,7 @@ then
 	echo '<div class="sectiontitle">'$"Asset Register"' - '$"Import data"'</div><table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
-			<button class="info" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
+			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
 				<img src="'$ICON1'" alt="'$"Choose Location"'">
 				<span>'$"Areas where you have computer equipment."'</span>
@@ -1788,7 +1788,7 @@ then
 		</td>
 
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_DoAddAsset_" value="_ACTION_reallyimport_">
+			<button class="info infonavbutton" name="_DoAddAsset_" value="_ACTION_reallyimport_">
 				'$"Import Assets"'<br>
 				<img src="'$ICON4'" alt="'$"Import Assets"'">
 				<span>'$"Import Assets from the list provided."'</span>

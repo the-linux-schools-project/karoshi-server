@@ -232,7 +232,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">
-				<button class="info" name="_DoAction_" value="_ACTION_'$ACTION2'_">
+				<button class="info infonavbutton" name="_DoAction_" value="_ACTION_'$ACTION2'_">
 					<img src="'$ICON1'" alt="'"$ACTIONMSG"'">
 					<span>'"$ACTIONMSG"'</span><br>
 					'"$ACTIONMSG2"'

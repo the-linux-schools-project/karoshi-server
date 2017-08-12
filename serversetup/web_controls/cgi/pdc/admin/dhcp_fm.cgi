@@ -66,7 +66,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="dhcp_view_leases.cgi" method="post">
-			<button class="info" name="_ConfigureDHCP_" value="_">
+			<button class="info infonavbutton" name="_ConfigureDHCP_" value="_">
 				<img src="'"$ICON1"'" alt="'$"View DHCP Leases"'">
 				<span>'$"View DHCP Leases"'</span><br>
 				'$"DHCP Leases"'
@@ -76,7 +76,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="dhcp_reservations.cgi" method="post">
-			<button class="info" name="_DoDHCPReservations_" value="_">
+			<button class="info infonavbutton" name="_DoDHCPReservations_" value="_">
 				<img src="'"$ICON2"'" alt="'$"DHCP Reservations"'">
 				<span>'$"View and edit DHCP Reservations"'</span><br>
 				'$"Reservations"'

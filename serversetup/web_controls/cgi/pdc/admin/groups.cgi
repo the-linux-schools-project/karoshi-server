@@ -398,7 +398,7 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
-			<button class="info" name="_Categories_" value="_">
+			<button class="info infonavbutton" name="_Categories_" value="_">
 				<img src="'"$ICON4"'" alt="'$"Categories"'">
 				<span>'$"View Categories"'</span><br>
 				'$"Categories"'
@@ -408,7 +408,7 @@ then
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-			<button class="info" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
+			<button class="info infonavbutton" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
 				<img src="'"$ICON5"'" alt="'$"New Primary Group"'">
 				<span>'$"Create a new primary group."'</span><br>
 				'$"New Primary Group"'
@@ -418,7 +418,7 @@ then
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-			<button class="info" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
+			<button class="info infonavbutton" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
 				<img src="'"$ICON6"'" alt="'$"New Secondary Group"'">
 				<span>'$"Create a new secondary group."'</span><br>
 				'$"New Secondary Group"'
@@ -431,7 +431,7 @@ then
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form name="DynamicGroups" action="/cgi-bin/admin/dynamic_groups_fm.cgi" method="post">
-				<button class="info" name="ViewGroups" value="__">
+				<button class="info infonavbutton" name="ViewGroups" value="__">
 					<img src="'"$ICON7"'" alt="'$"Dynamic Groups"'">
 					<span>'$"View dynamic groups."'</span><br>
 					'$"Dynamic Groups"'
@@ -441,7 +441,7 @@ then
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form name="LabelGroups" action="/cgi-bin/admin/label_groups_fm.cgi" method="post">
-				<button class="info" name="LabelGroups" value="__">
+				<button class="info infonavbutton" name="LabelGroups" value="__">
 					<img src="'"$ICON8"'" alt="'$"Label Groups"'">
 					<span>'$"Label Groups"'</span><br>
 					'$"Label Groups"'
@@ -451,7 +451,7 @@ then
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form name="CopyFiles" action="/cgi-bin/admin/copy_files_upload_fm.cgi" method="post">
-				<button class="info" name="CopyFiles" value="_">
+				<button class="info infonavbutton" name="CopyFiles" value="_">
 					<img src="'"$ICON9"'" alt="'$"Copy Files"'">
 					<span>'$"Copy files to user home areas."'</span><br>
 					'$"Copy Files"'
@@ -464,7 +464,7 @@ then
 			echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 				<form name="DynamicGroups" action="/cgi-bin/admin/groups.cgi" method="post">
-					<button class="info" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
+					<button class="info infonavbutton" name="____DeleteAllDynamicGroups____" value="____ACTION____delete____GROUPNAME____all____TYPE____dynamic____">
 						<img src="'"$ICON10"'" alt="'$"Delete all dynamic groups"'">
 						<span>'$"Delete all dynamic groups."'</span><br>
 						'$"Delete all dynamic groups"'
@@ -478,7 +478,7 @@ else
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
-			<button class="info" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
+			<button class="info infonavbutton" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
 				<img src="'"$ICON11"'" alt="'$"Group Management"'">
 				<span>'$"Manage groups."'</span><br>
 				'$"Group Management"'
@@ -509,7 +509,7 @@ echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><inpu
       <tr>
         <td style="width: '"$WIDTH3"'px;">
 '$"Secondary group"'</td>
-        <td><input name="____GROUPNAME____" style="width: '"$WIDTH3"'px;" type="text">
+        <td><input required="required" name="____GROUPNAME____" style="width: '"$WIDTH3"'px;" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Secondary_Goup"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new supplementary group that you want to create."'<br><br>'$"Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."'</span></a>
 </td>
@@ -525,11 +525,11 @@ if [ "$ACTION" = add ] && [ "$TYPE" = primary ]
 then
 	echo '<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post"><input type="hidden" name="____TYPE____primary____" value=""><input type="hidden" name="____ACTION____reallyadd____" value=""><table class="'"$TABLECLASS"'" style="text-align: left;" >
 	    <tbody>
-	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input name="____GROUPNAME____" style="width: '"$WIDTH6"'px;" size="20" type="text"></td><td>
+	<tr><td style="width: '$WIDTH3'px;">'$"Primary group name"'</td><td><input required="required" name="____GROUPNAME____" style="width: '"$WIDTH6"'px;" size="20" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the new primary group that you want to create."'<br><br>'$"This could be used where you need different profiles for staff and require more staff groups."'</span></a>
 
 	</td></tr>
-	<tr><td>'$"Home Server"'</td><td><select name="____HOMESERVER____" style="width: '"$WIDTH3"'px;">'
+	<tr><td>'$"Home Server"'</td><td><select required="required" name="____HOMESERVER____" style="width: '"$WIDTH3"'px;">'
 
 	#Generate a list of servers for the home folders
 	FILESERVERCOUNT=0
@@ -551,7 +551,7 @@ then
 	echo '</select></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management#New_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the server you require for the home areas to be stored on for this group."'</span></a></td></tr>'
 	#Show categories
-	echo '<tr><td>'$"Category"'</td><td><select name="____CATEGORY____" style="width: '$WIDTH3'px;">
+	echo '<tr><td>'$"Category"'</td><td><select required="required" name="____CATEGORY____" style="width: '$WIDTH3'px;">
 	<option value="" label="blank"></option>'
 	for CATEGORY in $(ls -1 /opt/karoshi/server_network/categories/ )
 	do

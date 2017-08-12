@@ -277,7 +277,7 @@ else
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-			<button class="info" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
+			<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
 				<img src="'$ICON3'" alt="'"$ALTTITLE3"'">
 				<span>'"$ALTDESC3"'</span><br>
 				'"$ALTTITLE3"'
@@ -287,7 +287,7 @@ else
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-			<button class="info" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_ZONE_'"$ZONE"'_">
+			<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_ZONE_'"$ZONE"'_">
 				<img src="'$ICON2'" alt="'"$ALTTITLE"'">
 				<span>'"$ALTDESC"'</span><br>
 				'"$ALTTITLE"'
@@ -297,7 +297,7 @@ else
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-			<button class="info" name="_ViewDNSSettings_" value="_">
+			<button class="info infonavbutton" name="_ViewDNSSettings_" value="_">
 				<img src="'$ICON1'" alt="'$"DNS Settings"'">
 				<span>'$"View server DNS Settings"'</span><br>
 				'$"DNS Settings"'

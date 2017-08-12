@@ -174,7 +174,7 @@ echo '	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/update_karoshi_fm.cgi" name="selectservers" method="post">
-				<button class="info" name="Updates" value="_ACTION_'"$ACTION"'_">
+				<button class="info infonavbutton" name="Updates" value="_ACTION_'"$ACTION"'_">
 					<img src="'$ICON1'" alt="'"$MESSAGE"'">
 					<span>'"$MESSAGE"'</span><br>
 					'"$MESSAGE"'
@@ -184,7 +184,7 @@ echo '	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/refresh_karoshi_update_list.cgi" name="selectservers" method="post">
-				<button class="info" name="Refresh" value="_">
+				<button class="info infonavbutton" name="Refresh" value="_">
 					<img src="'$ICON2'" alt="'$"Check for updates"'">
 					<span>'$"Check for updates"'</span><br>
 					'$"Check for updates"'

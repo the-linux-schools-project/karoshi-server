@@ -57,22 +57,23 @@ WIDTH=100
 ICON1=/images/submenus/user/groups.png
 
 echo '
-<form action="/cgi-bin/admin/remote_management_add.cgi" method="post">
-  <div id="actionbox3"><div id="titlebox">
+<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Add Web Management User"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_Remote_Admin"><img class="images" alt="" src="/images/help/info.png"><span>'$"These accounts are used by your technical staff to access the web managagement. The usernames and passwords used here are totally separate from normal network users."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="remote_management_view.cgi" name="_ViewUsers_" value="_">
-			<img src="'$ICON1'" alt="'$"View"'">
-			<span>'$"View Web Management users."'</span><br>
-			'$"View"'
-		</button>
+		<form action="/cgi-bin/admin/remote_management_view.cgi" method="post">
+			<button class="info infonavbutton" formaction="remote_management_view.cgi" name="_ViewUsers_" value="_">
+				<img src="'$ICON1'" alt="'$"View"'">
+				<span>'$"View Web Management users."'</span><br>
+				'$"View"'
+			</button>
+		</form>
 	</td>
 
 </tr></tbody></table>
-
+<form action="/cgi-bin/admin/remote_management_add.cgi" method="post">
 <br>
 <table class="standard" style="text-align: left;" ><tbody>
 <tr>
@@ -114,6 +115,7 @@ echo '
 </tbody></table>
 <br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></div></form></div></body></html>
+</form>
+</div></div></div></body></html>
 '
 exit

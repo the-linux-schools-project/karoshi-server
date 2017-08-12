@@ -117,7 +117,7 @@ echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="email_ban_domain_fm.cgi" name="_AddDomain_" value="_">
+		<button class="info infonavbutton" formaction="email_ban_domain_fm.cgi" name="_AddDomain_" value="_">
 			<img src="'"$ICON1"'" alt="'$"Allow"' - '$"Ban Domain"'">
 			<span>'$"Allow or ban an E-Mail domain."'</span><br>
 			'$"Allow"' - '$"Ban Domain"'

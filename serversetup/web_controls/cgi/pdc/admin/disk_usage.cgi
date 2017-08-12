@@ -212,7 +212,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="disk_usage_fm.cgi" name="SelectServer" value="__">
+			<button class="info infonavbutton" formaction="disk_usage_fm.cgi" name="SelectServer" value="__">
 				<img src="'$ICON1'" alt="'$"Select server"'">
 				<span>'$"Select the server you want to view."'</span><br>
 				'$"Select Server"'

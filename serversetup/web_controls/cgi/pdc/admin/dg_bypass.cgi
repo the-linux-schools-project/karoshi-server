@@ -202,7 +202,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/dg_bypass.cgi" name="selectedsites" method="post">
-			<button class="info" name="_Add_" value="_ACTION_'"$BUTTONACTION"'_">
+			<button class="info infonavbutton" name="_Add_" value="_ACTION_'"$BUTTONACTION"'_">
 				<img src="'$ICON'" alt="'"$BUTTONMSG"'">
 				<span>'"$BUTTONMSG"'</span><br>
 				'"$BUTTONMSG"'

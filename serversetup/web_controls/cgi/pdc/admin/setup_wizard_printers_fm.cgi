@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -44,7 +44,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Wizard"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Setup Wizard"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head>
 <body onLoad="start()"><div id="pagecontainer">'
 
 #Detect mobile browser
@@ -53,24 +53,24 @@ source /opt/karoshi/web_controls/detect_mobile_browser
 source /opt/karoshi/web_controls/version
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox3
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=menubox
+	DIV_ID=menubox
 fi
-echo '<div id="'$DIV_ID'"><div id="titlebox">'
+echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<table class="standard" style="text-align: left;">
+	echo '<table class="standard" style="text-align: left;">
 <tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Setup Wizard"'</b></a></td></tr></tbody></table>'
 else
-echo '<b>'$"Setup Printers"'</b><br><br>'$"If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."'<br><br>'$"The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."'<br><br><br><br>
+	echo '<div class="sectiontitle">'$"Setup Printers"'</div><br><br>'$"If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."'<br><br>'$"The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."'<br><br><br><br>
 
 <table class="standard" style="text-align: left;" >
 <tbody><tr VALIGN=TOP><td style="width: 30px;">
@@ -98,7 +98,7 @@ fi
 
 
 echo '
-'$OPENINGMSG'
+'"$OPENINGMSG"'
 </div></div></div></body></html>
 '
 exit

@@ -188,7 +188,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" name="_UPLOAD_" value="_">
+			<button class="info infonavbutton" name="_UPLOAD_" value="_">
 				<img src="'$ICON1'" alt="'$"Software Packages"'">
 				<span>'$"View software packages."'</span><br>
 				'$"Software Packages"'

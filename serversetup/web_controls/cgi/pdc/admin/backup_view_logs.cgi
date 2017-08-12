@@ -175,7 +175,7 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_view_logs.cgi" method="post">
-			<button class="info" name="_ViewDetailedLogs_" value="_SERVERNAME_'"$SERVERNAME"'_LOGTYPE_detailed_DATE_'"$DATE"'_">
+			<button class="info infonavbutton" name="_ViewDetailedLogs_" value="_SERVERNAME_'"$SERVERNAME"'_LOGTYPE_detailed_DATE_'"$DATE"'_">
 					<img src="'"$ICON1"'" alt="'$"Detailed logs"'">
 					<span>'$"View detailed backup logs."'</span><br>
 					'$"Detailed logs"'
@@ -187,7 +187,7 @@ else
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_view_logs.cgi" method="post">
-			<button class="info" name="_ViewSummaryLogs_" value="_LOGTYPE_summary_DATE_'"$DATE"'_">
+			<button class="info infonavbutton" name="_ViewSummaryLogs_" value="_LOGTYPE_summary_DATE_'"$DATE"'_">
 					<img src="'"$ICON2"'" alt="'$"Summary logs"'">
 					<span>'$"View a summary of the backup logs."'</span><br>
 					'$"Summary logs"'
@@ -200,7 +200,7 @@ fi
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_view_logs_fm.cgi" method="post">
-			<button class="info" name="SelectServer" value="_">
+			<button class="info infonavbutton" name="SelectServer" value="_">
 					<img src="'"$ICON3"'" alt="'$"Select server"'">
 					<span>'$"Select the server you want to view."'</span><br>
 					'$"Select Server"'

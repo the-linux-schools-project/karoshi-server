@@ -186,7 +186,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
-			<button class="info" name="_ChangeUsername_" value="_USERNAME_'"$USERNAME"'_">
+			<button class="info infonavbutton" name="_ChangeUsername_" value="_USERNAME_'"$USERNAME"'_">
 				<img src="'"$ICON1"'" alt="'$"Change Username"'">
 				<span>'$"Change the username for this user."'</span><br>
 				'$"Change Username"'
@@ -196,7 +196,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
-			<button class="info" name="_ChangePrimaryGroup_" value="_USERNAME_'"$USERNAME"'_">
+			<button class="info infonavbutton" name="_ChangePrimaryGroup_" value="_USERNAME_'"$USERNAME"'_">
 				<img src="'"$ICON2"'" alt="'$"Change Primary Group"'">
 				<span>'$"Change the primary group for this user."'</span><br>
 				'$"Change Primary Group"'
@@ -206,7 +206,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/group_membership.cgi" method="post">
-			<button class="info" name="____GroupMembership____" value="____USERNAME____'"$USERNAME"'____">
+			<button class="info infonavbutton" name="____GroupMembership____" value="____USERNAME____'"$USERNAME"'____">
 				<img src="'"$ICON3"'" alt="'$"Group Membership"'">
 				<span>'$"Change the groups that this user is a member of."'</span><br>
 				'$"Group Membership"'
@@ -216,7 +216,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
-			<button class="info" name="_ChooseUser_" value="_">
+			<button class="info infonavbutton" name="_ChooseUser_" value="_">
 				<img src="'"$ICON4"'" alt="'$"Select user"'">
 				<span>'$"Select the user you want to view."'</span><br>
 				'$"Select user"'

@@ -89,7 +89,7 @@ echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div
 
 	<table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="ups_status.cgi" name="_UPSStatus" value="_">
+			<button class="info infonavbutton" formaction="ups_status.cgi" name="_UPSStatus" value="_">
 				<img src="'$ICON1'" alt="'$"UPS Status"'">
 				<span>'$"UPS Status"'</span><br>
 				'$"Status"'

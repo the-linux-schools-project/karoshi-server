@@ -126,7 +126,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="ups_add_fm.cgi" method="post">
-				<button class="info" name="_AddUPS" value="_">
+				<button class="info infonavbutton" name="_AddUPS" value="_">
 					<img src="'"$ICON1"'" alt="'$"Add a UPS"'">
 					<span>'$"Add a UPS"'</span><br>
 					'$"Add"'

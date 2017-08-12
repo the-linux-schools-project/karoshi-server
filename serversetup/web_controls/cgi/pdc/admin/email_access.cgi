@@ -222,7 +222,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/email_access.cgi" method="post">
-				<button class="info" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
+				<button class="info infonavbutton" name="_ViewList_" value="_ACTION_viewrestrictionlist_">
 					<img src="'"$ICON1"'" alt="'$"View Restriction List"'">
 					<span>'$"View the restriction list."'</span><br>
 					'$"View Restriction List"'

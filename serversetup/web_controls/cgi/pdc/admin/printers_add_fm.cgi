@@ -76,7 +76,7 @@ echo '<div id="actionbox3"><div id ="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-			<button class="info" name="_ShowPrinters_" value="_">
+			<button class="info infonavbutton" name="_ShowPrinters_" value="_">
 				<img src="'"$ICON1"'" alt="'$"Show Printers"'">
 				<span>'$"Show network printer queues."'</span><br>
 				'$"Show Printers"'
@@ -86,7 +86,7 @@ echo '<div id="actionbox3"><div id ="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
-			<button class="info" name="_DeletePrinters_" value="_">
+			<button class="info infonavbutton" name="_DeletePrinters_" value="_">
 				<img src="'"$ICON2"'" alt="'$"Delete Printers"'">
 				<span>'$"Delete network printer queues."'</span><br>
 				'$"Delete Printers"'
@@ -96,7 +96,7 @@ echo '<div id="actionbox3"><div id ="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-			<button class="info" name="_ViewLocations_" value="_">
+			<button class="info infonavbutton" name="_ViewLocations_" value="_">
 				<img src="'"$ICON3"'" alt="'$"Locations"'">
 				<span>'$"View locations."'</span><br>
 				'$"Locations"'

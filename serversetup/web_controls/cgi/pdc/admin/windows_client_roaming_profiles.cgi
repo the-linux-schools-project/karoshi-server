@@ -193,7 +193,7 @@ else
 		<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" name="_Menu_" value="_">
+			<button class="info infonavbutton" name="_Menu_" value="_">
 				<img src="'"$ICON1"'" alt="'$"Show Menu"'">
 				<span>'$"Choose a different group to view."'</span><br>
 				'$"Show Menu"'

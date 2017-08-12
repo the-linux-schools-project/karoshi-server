@@ -150,7 +150,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="SelectServer" value="_">
+			<button class="info infonavbutton" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="SelectServer" value="_">
 				<img src="'"$ICON1"'" alt="'$"Scheduled Jobs"'">
 				<span>'$"View the scheduled jobs for this server."'</span><br>
 				'$"Scheduled Jobs"'

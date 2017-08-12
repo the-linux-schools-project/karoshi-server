@@ -328,7 +328,10 @@ font-weight: bold;
 	padding: 10px;
 	float: right;
 	right: 5px;
-	bottom: 5px;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
 }
 
 #submitbox {
@@ -537,6 +540,11 @@ a.searchlink:hover
         font-size: .8em;
         z-index:30;
         }
+	
+	.infonavbutton:hover {
+        	background-color: #F0F3F3;
+		min-width: 100%;
+	}
 
         .infoleft:hover span{ /*the span will display just on :hover state*/
         left: -10em;

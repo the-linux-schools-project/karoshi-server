@@ -74,7 +74,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="home_folders_fm.cgi" method="post">
-			<button class="info" name="ViewHomeFolders" value="_">
+			<button class="info infonavbutton" name="ViewHomeFolders" value="_">
 				<img src="'$ICON2'" alt="'$"Home Folders"'">
 				<span>'$"Configure user home folders."'</span><br>
 				'$"Home Folders"'
@@ -84,7 +84,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="gluster_control.cgi" method="post">
-			<button class="info" name="GlusterVolumeControl" value="_">
+			<button class="info infonavbutton" name="GlusterVolumeControl" value="_">
 				<img src="'$ICON2'" alt="'$"Gluster Volumes"'">
 				<span>'$"Configure gluster volumes."'</span><br>
 				'$"Gluster Volumes"'

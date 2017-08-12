@@ -233,7 +233,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_configure_fm.cgi" method="post">
-			<button class="info" name="SelectServer" value="_">
+			<button class="info infonavbutton" name="SelectServer" value="_">
 				<img src="'"$ICON1"'" alt="'$"Select server"'">
 				<span>'$"Select the server you want to view."'</span><br>
 				'$"Select Server"'
@@ -250,7 +250,7 @@ then
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_configure.cgi" name="testform" method="post">
-			<button class="info" name="____ViewBackups____" value="____SERVERNAME____'"$SERVERNAME"'____">
+			<button class="info infonavbutton" name="____ViewBackups____" value="____SERVERNAME____'"$SERVERNAME"'____">
 				<img src="'"$ICON2"'" alt="'$"View Backups"'">
 				<span>'$"View backups for this server."'</span><br>
 				'$"View Backups"'

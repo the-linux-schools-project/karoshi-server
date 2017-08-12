@@ -63,7 +63,7 @@ echo '<form action="/cgi-bin/admin/incident_log_view.cgi" name="selectedsites" m
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="incident_log_add.cgi" name="_ViewIncidentLogs_" value="_">
+		<button class="info infonavbutton" formaction="incident_log_add.cgi" name="_ViewIncidentLogs_" value="_">
 			<img src="'"$ICON1"'" alt="'$"Add Incident Log"'">
 			<span>'$"Add Incident Log"'</span><br>
 			'$"Add"'

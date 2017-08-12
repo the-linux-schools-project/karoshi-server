@@ -250,7 +250,7 @@ echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" name="____DoAction____" value="____ACTION____'"$ACTION2"'____">
+		<button class="info infonavbutton" name="____DoAction____" value="____ACTION____'"$ACTION2"'____">
 			<img src="'"$ICON"'" alt="'"$BUTTONTXT"'">
 			<span>'"$BUTTONTXT2"'</span><br>
 			'"$BUTTONTXT"'

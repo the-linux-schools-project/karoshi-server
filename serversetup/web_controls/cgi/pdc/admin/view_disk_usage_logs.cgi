@@ -235,7 +235,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="view_disk_usage_logs_fm.cgi" name="selectservers" method="post">
-				<button class="info" name="SelectServer" value="__">
+				<button class="info infonavbutton" name="SelectServer" value="__">
 					<img src="'$ICON1'" alt="'$"Select server"'">
 					<span>'$"Select the server you want to view."'</span><br>
 					'$"Select Server"'

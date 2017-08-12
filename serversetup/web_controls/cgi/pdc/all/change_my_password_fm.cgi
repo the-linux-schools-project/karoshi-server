@@ -39,7 +39,7 @@ echo '
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Change My Password"'</title>
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <META HTTP-EQUIV="refresh" CONTENT="300; URL=/cgi-bin/blank.cgi">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
@@ -67,13 +67,13 @@ fi
 echo '</head><body><div id="pagecontainer">'
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_all
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_all
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 echo '<form action="/cgi-bin/all/change_my_password.cgi" method="post">'
@@ -84,33 +84,31 @@ source /opt/karoshi/web_controls/version
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Change My Password"'</span>
 <a href="/cgi-bin/menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<div id="'$DIV_ID'"><b>'$"Change My Password"'</b><br><br>'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Change My Password"'</div><br>'
 fi
 
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-
-echo ''$"Username"'<br>
+	echo ''$"Username"'<br>
 <input tabindex= "1" name="_USERNAME_" size="20" type="text"><br>
 '$"Current Password"'<br>
 <input tabindex= "2" name="_PASSWORD1_" size="20" type="password"><br>
 '$"New Password"'<br>
-<input tabindex= "3" name="_PASSWORD2_" size="20" type="password"><br><br>
+<input tabindex= "3" name="_PASSWORD2_" size="20" type="password">
 '
-
 else
 
-echo '<table class="standard" style="text-align: left; width: 399px; height: 76px;">
+	echo '<table class="standard" style="text-align: left; width: 399px; height: 76px;">
     <tbody>
       <tr>
         <td>
@@ -128,7 +126,7 @@ echo '<table class="standard" style="text-align: left; width: 399px; height: 76p
 '$"New Password"'</td>
         <td><input tabindex= "3" name="____PASSWORD2____" size="20" type="password"></td><td><a class="info2" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want to have."'<br><br>'
 [ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+	echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br><br><b>'$"Allowed Special Characters"'</b><br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a></td>
       </tr>
        <tr>
@@ -138,13 +136,11 @@ echo ''$"The Minimum password length is "''$MINPASSLENGTH'.<br><br><b>'$"Allowed
       </tr>
     </tbody>
   </table>
-  <br>'
+'
 fi
+echo '<br><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+[ "$MOBILE" = no ] && echo '</div>'
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div></form></div></body></html>'
+echo '</div></form></div></body></html>'
 exit

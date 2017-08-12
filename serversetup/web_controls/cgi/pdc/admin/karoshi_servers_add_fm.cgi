@@ -189,21 +189,24 @@ fi
 WIDTH=100
 ICON1=/images/submenus/system/computer.png
 
-echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+echo '<div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Add Server"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Setup an ssh connection to a Karoshi server so that it can be controlled by the web management."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="karoshi_servers_view.cgi" name="ShowServers" value="_">
-			<img src="'$ICON1'" alt="'$"Show Servers"'">
-			<span>'$"Show the servers and roles."'</span><br>
-			'$"Show Servers"'
-		</button>
+		<form id="ViewServers" action="/cgi-bin/admin/karoshi_servers_view.cgi" method="post">
+			<button class="info infonavbutton" name="ShowServers" value="_">
+				<img src="'$ICON1'" alt="'$"Show Servers"'">
+				<span>'$"Show the servers and roles."'</span><br>
+				'$"Show Servers"'
+			</button>
+		</form>
 	</td>
 
 </tr></tbody></table>
 <br>
+<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method="post">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Server name"'</td><td><input required="required" tabindex= "1" style="width: 200px;" name="____SERVERNAME____" value="'$SERVERNAME'" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the server you want to enable ssh for."'</span></a>
 </td></tr><tr><td style="width: 180px;">'$"TCPIP number"'</td><td><input required="required" tabindex= "2" style="width: 200px;" name="____TCPIPNUMBER____" size="23" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Extra_Server"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number of the server that you are connecting to."'</span></a>
@@ -251,8 +254,7 @@ echo '<form id="FormName" action="/cgi-bin/admin/karoshi_servers_add.cgi" method
 
 <br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></div>
 </form>
-</div></body></html>'
+</div></div></div></body></html>'
 exit
 

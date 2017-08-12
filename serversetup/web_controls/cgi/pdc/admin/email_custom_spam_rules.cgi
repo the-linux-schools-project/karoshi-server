@@ -208,7 +208,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-			<button class="info" name="_DoAction_" value="_ACTION_'"$ACTION2"'_">
+			<button class="info infonavbutton" name="_DoAction_" value="_ACTION_'"$ACTION2"'_">
 				<img src="'"$ICON"'" alt="'"$ACTIONTEXT"'">
 				<span>'"$ACTIONTEXT2"'</span><br>
 				'"$ACTIONTEXT"'
@@ -223,7 +223,7 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/email_custom_spam_rules.cgi" method="post">
-			<button class="info" name="_DoAction_" value="_ACTION_activatechanges_">
+			<button class="info infonavbutton" name="_DoAction_" value="_ACTION_activatechanges_">
 				<img src="'"$ICON3"'" alt="'$"Activate Changes"'">
 				<span>'$"Activate the changes."'</span><br>
 				'$"Activate Changes"'

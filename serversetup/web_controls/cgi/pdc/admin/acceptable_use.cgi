@@ -223,9 +223,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 	echo '<form action="/cgi-bin/admin/acceptable_use.cgi" name="acceptableuse" method="post"><div id="actionbox3"><div id="titlebox">
-	<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Acceptable Use"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td></tr></tbody></table>
-	<br>'
+	<div class="sectiontitle">'$"Acceptable Use"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></div><br>'
 
 else
 	#Show back button for mobiles

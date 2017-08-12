@@ -162,7 +162,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="incident_log_view_fm.cgi" method="post">
-			<button class="info" formaction="incident_log_view_fm.cgi" name="_ViewIncidentLogs_" value="_">
+			<button class="info infonavbutton" formaction="incident_log_view_fm.cgi" name="_ViewIncidentLogs_" value="_">
 				<img src="'"$ICON1"'" alt="'$"View Incident Logs"'">
 				<span>'$"View Incident Logs"'</span><br>
 				'$"Incident Logs"'

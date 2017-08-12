@@ -244,7 +244,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="dg_view_site_logs_fm.cgi" name="_ChooseSite_" value="_">
+		<button class="info infonavbutton" formaction="dg_view_site_logs_fm.cgi" name="_ChooseSite_" value="_">
 			<img src="'$ICON1'" alt="'$"Choose Website"'">
 			<span>'$"Choose a website to view the logs for."'</span><br>
 			'$"Choose Website"'

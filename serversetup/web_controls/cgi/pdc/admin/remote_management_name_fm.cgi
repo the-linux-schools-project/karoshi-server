@@ -62,15 +62,15 @@ SERVERICON="/images/submenus/system/computer.png"
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/web_controls/version
 
-echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox">
+echo '<form action="/cgi-bin/admin/remote_management_name.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Web Management Name"'</div></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will add the name of your institution to the top of the web management and to the show servers page."'</span></a></td></tr></tbody></table><br>
 
   <table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: 180px;">'$"Site Name"'</td><td><input tabindex= "1" value="'$LONGNAME'" name="_LONGNAME_" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"Site Name"'</td><td><input required="required" tabindex= "1" value="'$LONGNAME'" name="_LONGNAME_" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the site name."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"Short Site Name"'</td><td><input tabindex= "2" value="'$SHORTNAME'" name="_SHORTNAME_" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"Short Site Name"'</td><td><input required="required" tabindex= "2" value="'$SHORTNAME'" name="_SHORTNAME_" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the short site name. This will be displayed in the web management."'</span></a></td></tr>
 </tbody></table><br><br>'
 
@@ -106,6 +106,6 @@ then
 		done
 	fi
 fi
-echo '</div></form></div></body></html>
+echo '</div></div></form></div></body></html>
 '
 exit

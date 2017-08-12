@@ -211,7 +211,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/printers_add_fm.cgi" name="printers" method="post">
-				<button class="info" name="_AddPrinter_" value="_">
+				<button class="info infonavbutton" name="_AddPrinter_" value="_">
 					<img src="'"$ICON1"'" alt="'$"Add Printer"'">
 					<span>'$"Add a new printer queue."'</span><br>
 					'$"Add Printer"'
@@ -221,7 +221,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/printers_delete.cgi" name="printers" method="post">
-				<button class="info" name="_DeletePrinter_" value="_">
+				<button class="info infonavbutton" name="_DeletePrinter_" value="_">
 					<img src="'"$ICON2"'" alt="'$"Delete Printer"'">
 					<span>'$"Delete a new printer queue."'</span><br>
 					'$"Delete Printer"'
@@ -231,7 +231,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
-				<button class="info" name="_AssignedPrinter_" value="_">
+				<button class="info infonavbutton" name="_AssignedPrinter_" value="_">
 					<img src="'"$ICON3"'" alt="'$"Assigned Printers"'">
 					<span>'$"View Assigned Printers"'</span><br>
 					'$"Assigned Printers"'
@@ -241,7 +241,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/file_manager.cgi" name="printers" method="post">
-				<button class="info" name="_EditPPD_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_">
+				<button class="info infonavbutton" name="_EditPPD_" value="_SERVERTYPE_network_ACTION_ENTER_SERVERNAME_'"$PRINTSERVER"'_LOCATION_/etc/cups/ppd_">
 					<img src="'"$ICON4"'" alt="'$"Edit PPD"'">
 					<span>'$"Edit a printer driver."'</span><br>
 					'$"Edit PPD"'
@@ -257,7 +257,7 @@ else
 		echo '
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 				<form action="http://savapage:8631/admin" name="printers" method="post">
-					<button class="info" name="_Savapage_" value="_">
+					<button class="info infonavbutton" name="_Savapage_" value="_">
 						<img src="'"$ICON5"'" alt="Savapage">
 						<span>'$"Configure printing with Savapage."'</span><br>
 						Savapage
@@ -271,7 +271,7 @@ else
 	echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
-				<button class="info" name="_ViewLocations_" value="_">
+				<button class="info infonavbutton" name="_ViewLocations_" value="_">
 					<img src="'"$ICON6"'" alt="'$"Locations"'">
 					<span>'$"View locations."'</span><br>
 					'$"Locations"'
@@ -287,7 +287,7 @@ else
 		echo '
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
-				<button class="info" name="_ShowPrinters_" value="_">
+				<button class="info infonavbutton" name="_ShowPrinters_" value="_">
 					<img src="'"$ICON7"'" alt="'$"Show Printers"'">
 					<span>'$"Show network printer queues."'</span><br>
 					'$"Show Printers"'

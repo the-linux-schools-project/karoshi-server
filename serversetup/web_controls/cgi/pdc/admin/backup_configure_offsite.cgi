@@ -421,7 +421,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_configure_offsite_fm.cgi" method="post">
-			<button class="info" name="SelectServer" value="_">
+			<button class="info infonavbutton" name="SelectServer" value="_">
 				<img src="'"$ICON1"'" alt="'$"Select server"'">
 				<span>'$"Select the server you want to view."'</span><br>
 				'$"Select Server"'
@@ -435,7 +435,7 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-			<button class="info" name="____AddOffsiteBackup____" value="____ACTION____add____SERVERNAME____'"$SERVERNAME"'____">
+			<button class="info infonavbutton" name="____AddOffsiteBackup____" value="____ACTION____add____SERVERNAME____'"$SERVERNAME"'____">
 				<img src="'"$ICON2"'" alt="'$"Add Offsite Backup"'">
 				<span>'$"Add an offsite backup."'</span><br>
 				'$"Add Offsite Backup"'
@@ -450,7 +450,7 @@ then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/backup_configure_offsite.cgi" name="testform" method="post">
-			<button class="info" name="____ViewOffsiteBackup____" value="____SERVERNAME____'"$SERVERNAME"'____">
+			<button class="info infonavbutton" name="____ViewOffsiteBackup____" value="____SERVERNAME____'"$SERVERNAME"'____">
 				<img src="'"$ICON3"'" alt="'$"View Offsite Backups"'">
 				<span>'$"View configured offsite backups."'</span><br>
 				'$"View Offsite Backups"'

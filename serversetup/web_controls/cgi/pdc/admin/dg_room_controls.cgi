@@ -195,7 +195,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
 		<form action="dg_room_controls_fm.cgi" method="post">
-			<button class="info" name="_Location_" value="_">
+			<button class="info infonavbutton" name="_Location_" value="_">
 				<img src="'$ICON1'" alt="'$"Location"'">
 				<span>'$"Choose location."'</span><br>
 				'$"Location"'
@@ -210,7 +210,7 @@ echo '
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
 		<form action="dg_room_controls2.cgi" method="post">
-			<button class="info" name="_AllowAll_" value="_LOCATION_'"$LOCATION"'_ACTION_allowall_ASSET_na_">
+			<button class="info infonavbutton" name="_AllowAll_" value="_LOCATION_'"$LOCATION"'_ACTION_allowall_ASSET_na_">
 				<img src="'$ICON3'" alt="'$"Allow All"'">
 				<span>'$"Allow internet access for all assets."'</span><br>
 				'$"Allow All"'
@@ -220,7 +220,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
 		<form action="dg_room_controls2.cgi" method="post">
-			<button class="info" name="_DenyAll_" value="_LOCATION_'"$LOCATION"'_ACTION_denyall_ASSET_na_">
+			<button class="info infonavbutton" name="_DenyAll_" value="_LOCATION_'"$LOCATION"'_ACTION_denyall_ASSET_na_">
 				<img src="'$ICON4'" alt="'$"Deny All"'">
 				<span>'$"Deny internet access for all assets."'</span><br>
 				'$"Deny All"'
@@ -235,7 +235,7 @@ echo '
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
 		<form action="dg_room_controls2.cgi" method="post">
-			<button class="info" name="_AllowAllMedia_" value="_LOCATION_'"$LOCATION"'_ACTION_allowallmedia_ASSET_na_">
+			<button class="info infonavbutton" name="_AllowAllMedia_" value="_LOCATION_'"$LOCATION"'_ACTION_allowallmedia_ASSET_na_">
 				<img src="'$ICON5'" alt="'$"Allow All Media"'">
 				<span>'$"Allow media access for all assets."'</span><br>
 				'$"Allow All Media"'
@@ -245,7 +245,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH4'px; text-align:center;">
 		<form action="dg_room_controls2.cgi" method="post">
-			<button class="info" name="_DenyAllMedia_" value="_LOCATION_'"$LOCATION"'_ACTION_denyallmedia_ASSET_na_">
+			<button class="info infonavbutton" name="_DenyAllMedia_" value="_LOCATION_'"$LOCATION"'_ACTION_denyallmedia_ASSET_na_">
 				<img src="'$ICON6'" alt="'$"Deny All Media"'">
 				<span>'$"Deny media access for all assets."'</span><br>
 				'$"Deny All Media"'

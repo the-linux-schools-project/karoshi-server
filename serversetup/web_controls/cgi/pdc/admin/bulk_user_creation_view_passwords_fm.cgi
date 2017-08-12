@@ -62,7 +62,7 @@ echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
+		<button class="info infonavbutton" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
 			<img src="'"$ICON1"'" alt="'$"Bulk User Creation"'">
 			<span>'$"Create user accounts from a CSV file."'</span><br>
 			'$"Bulk User Creation"'
@@ -70,7 +70,7 @@ echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
+		<button class="info infonavbutton" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
 			<img src="'"$ICON2"'" alt="'$"Import enrollment numbers"'">
 			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
 			'$"Import enrollment numbers"'

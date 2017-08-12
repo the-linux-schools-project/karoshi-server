@@ -40,69 +40,52 @@ STYLESHEET=defaultstyle.css
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change My Password"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change My Password"'</title><meta http-equiv="REFRESH" content="0; URL='"$HTTP_REFERER"'"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUADRUPLEUNDERSCORE/g' | sed 's/_/REPLACEUNDERSCORE/g' | sed 's/QUADRUPLEUNDERSCORE/_/g')
 END_POINT=9
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
+
 #Assign USERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
 #Assign PASSWORD1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
+
 #Assign PASSWORD2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
+
 #Assign PASSWORD3
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD3check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD3=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD3
+get_data
+PASSWORD3="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 </script>
 </div></body></html>'
 exit
@@ -119,8 +102,7 @@ then
 fi
 #Check to see that the user exists
 getent passwd "$USERNAME" 1>/dev/null 2>/dev/null
-USERSTATUS=`echo $?`
-if [ $USERSTATUS != 0 ]
+if [ "$?" != 0 ]
 then
 	MESSAGE=$"This username does not exist."
 	show_status
@@ -132,47 +114,39 @@ then
 	show_status
 fi
 #Check that password has been entered correctly
-if [ $PASSWORD2 != $PASSWORD3 ]
+if [ "$PASSWORD2" != "$PASSWORD3" ]
 then
 	MESSAGE=$"The passwords do not match."
 	show_status
 fi
 
 #Check that the password is strong enough
-USERPRIGROUP=`id -g -n $USERNAME`
+USERPRIGROUP=$(id -g -n "$USERNAME")
 
 #Get password strength settings
 source /opt/karoshi/server_network/security/password_settings
 source /opt/karoshi/web_controls/version
-if [ $USERPRIGROUP = staff ] || [ $USERPRIGROUP = staff2 ] || [ $USERPRIGROUP = staff3 ] || [ $USERPRIGROUP = staff4 ] || [ $USERPRIGROUP = officestaff ] || [ $USERPRIGROUP = itadmin ] || [ $USERPRIGROUP = tech ]
+if [ "$USERPRIGROUP" = staff ] || [ "$USERPRIGROUP" = staff2 ] || [ "$USERPRIGROUP" = staff3 ] || [ "$USERPRIGROUP" = staff4 ] || [ "$USERPRIGROUP" = officestaff ] || [ "$USERPRIGROUP" = itadmin ] || [ "$USERPRIGROUP" = tech ]
 then
-	CHARS_AND_NUMBERS=$STAFF_CHARS_AND_NUMBERS
-	UPPER_AND_LOWER_CASE=$STAFF_UPPER_AND_LOWER_CASE
 	MINPASSLENGTH=$STAFF_MINPASSLENGTH
 else
-	CHARS_AND_NUMBERS=$STUDENT_CHARS_AND_NUMBERS
-	UPPER_AND_LOWER_CASE=$STUDENT_UPPER_AND_LOWER_CASE
 	MINPASSLENGTH=$STUDENT_MINPASSLENGTH
 fi
 
-LENGTHCHECK=ok
 CASECHECK=ok
 CHARCHECK=ok
-LENGTHCHECK2=$"Ok"
-CASECHECK2=$"Ok"
-CHARCHECK2=$"Ok"
 
 ########################
 #Convert special characters back for new password to check password strength
 ########################
 
-NEW_PASSWORD=`echo "$PASSWORD2" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g'`
+NEW_PASSWORD=$(echo "$PASSWORD2" | sed 's/+/ /g; s/%21/!/g; s/%3F/?/g; s/%2C/,/g; s/%3A/:/g; s/%7E/~/g; s/%40/@/g; s/%23/#/g; s/%24/$/g; s/%26/\&/g; s/%2B/+/g; s/%3D/=/g; s/%28/(/g; s/%29/)/g; s/%5E/^/g; s/%7B/{/g; s/%7D/}/g; s/%3C/</g; s/%3E/>/g; s/%5B/[/g; s/%5D/]/g; s/%7C/|/g; s/%22/"/g; s/%1123/*/g' | sed "s/%27/'/g" | sed 's/%3B/;/g' | sed 's/%60/\`/g' | sed 's/%5C/\\\/g' | sed 's/%2F/\//g' | sed 's/%25/%/g')
 
 #Check password settings
 source /opt/karoshi/server_network/security/password_settings
 
 #Check to see that password has the required number of characters
-PASSLENGTH=${#NEW_PASSWORD}
+PASSLENGTH="${#NEW_PASSWORD}"
 
 if [ "$PASSLENGTH" -lt "$MINPASSLENGTH" ]
 then
@@ -186,21 +160,20 @@ then
 	CHARCHECK=ok
 
 	#Check that the password has a combination of characters and numbers
-	if [ `echo "$PASSWORD2"'1' | tr -cd '0-9\n'` = 1 ]
+	if [[ $(echo "$PASSWORD2"'1' | tr -cd '0-9\n') = 1 ]]
 	then
 		CHARCHECK=fail
 	fi
-	if [ `echo "$PASSWORD2"'A' | tr -cd 'A-Za-z\n'` = A ]
+	if [[ $(echo "$PASSWORD2"'A' | tr -cd 'A-Za-z\n') = A ]]
 	then
 		CHARCHECK=fail
 	fi
 
-	if [ `echo "$PASSWORD2"'A' | tr -cd 'A-Z\n'` = A ]
+	if [[ $(echo "$PASSWORD2"'A' | tr -cd 'A-Z\n') = A ]]
 	then
 		CASECHECK=fail
-		CASECHECK2=$"Failed"
 	fi
-	if [ `echo "$PASSWORD2"'a' | tr -cd 'a-z\n'` = a ]
+	if [[ $(echo "$PASSWORD2"'a' | tr -cd 'a-z\n') = a ]]
 	then
 		CASECHECK=fail
 	fi
@@ -213,27 +186,27 @@ then
 fi
 
 #Check to see that the user is not in acceptable use category
-if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME ]
+if [ -f /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME" ]
 then
 	#Check to see how many days of trial are left
-	GRACE_TIME=`sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/$USERNAME | cut -d, -f1 | tr -cd 0-9`
+	GRACE_TIME=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/pending/"$USERNAME" | cut -d, -f1 | tr -cd 0-9)
 	[ -z "$GRACE_TIME" ] && GRACE_TIME=0
-	if [ $GRACE_TIME = 0 ]
+	if [ "$GRACE_TIME" = 0 ]
 		then
-		MESSAGE=`echo $USERNAME - $"This user has not signed an acceptable use policy and their account has now been suspended."`
+		MESSAGE="$USERNAME - "$"This user has not signed an acceptable use policy and their account has now been suspended."
 		show_status
 	fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -f1)
 #Change password
 echo "$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$PASSWORD2" | sudo -H /opt/karoshi/web_controls/exec/change_my_password
-EXEC_STATUS=`echo $?`
-MESSAGE=`echo $"Password changed for" $USERNAME.`
-if [ $EXEC_STATUS = 102 ]
+if [ "$?" = 102 ]
 then
 	sleep 4
-	MESSAGE=`echo $"Incorrect username or password supplied for" $USERNAME.`
+	MESSAGE=$"Incorrect username or password supplied for"" $USERNAME."
+else
+	MESSAGE=$"Password changed for"" $USERNAME."
 fi
 
 show_status

@@ -286,7 +286,7 @@ if [ "$ACTION" = editfilterlists ] || [ "$ACTION" = bannedextensionlists ] || [ 
 then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="____EditFilterGroup____" value="____ACTION____editfiltergroup____FILTERNAME____'"$FILTERNAME"'____">
+		<button class="info infonavbutton" name="____EditFilterGroup____" value="____ACTION____editfiltergroup____FILTERNAME____'"$FILTERNAME"'____">
 			<img src="'$ICON4'" alt="'$"Edit Filter Group"'">
 			<span>'$"Edit this filter group."'</span><br>
 			'$"Edit Filter Group"'
@@ -298,7 +298,7 @@ fi
 
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="____ViewFilterGroups____" value="____ACTION____view____">
+		<button class="info infonavbutton" name="____ViewFilterGroups____" value="____ACTION____view____">
 			<img src="'$ICON6'" alt="'$"View Filter Groups"'">
 			<span>'$"View the filter groups."'</span><br>
 			'$"View Filter Groups"'

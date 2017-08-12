@@ -165,7 +165,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
-				<button class="info" name="_AddMonitor_" value="_">
+				<button class="info infonavbutton" name="_AddMonitor_" value="_">
 					<img src="'$ICON1'" alt="'$"Add Monitor"'">
 					<span>'$"Add monitor"'</span><br>
 					'$"Add Monitor"'
@@ -175,7 +175,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/monitors_view.cgi" method="post">
-				<button class="info" name="_ViewMonitors_" value="_">
+				<button class="info infonavbutton" name="_ViewMonitors_" value="_">
 					<img src="'$ICON2'" alt="'$"View Monitors"'">
 					<span>'$"View existing monitors"'</span><br>
 					'$"View Monitors"'
@@ -185,7 +185,7 @@ else
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 			<form action="/cgi-bin/admin/monitors_view_email_alerts_fm.cgi" method="post">
-				<button class="info" name="_ViewEmailAlerts_" value="_">
+				<button class="info infonavbutton" name="_ViewEmailAlerts_" value="_">
 					<img src="'$ICON3'" alt="'$"E-Mail Alerts"'">
 					<span>'$"View and add E-Mail Alerts"'</span><br>
 					'$"E-Mail Alerts"'

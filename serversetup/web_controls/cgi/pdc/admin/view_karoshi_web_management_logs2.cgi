@@ -46,21 +46,21 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 
 echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Web Management Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Web Management Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ $MOBILE = yes ]
 then
@@ -86,41 +86,40 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=6
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOGVIEWcheck ]
-then
-let COUNTER=$COUNTER+1
-LOGVIEW=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign LOGVIEW
+DATANAME=LOGVIEW
+get_data
+LOGVIEW="$DATAENTRY"
+
 #Assign DATE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DATEcheck ]
-then
-let COUNTER=$COUNTER+1
-DATE=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9-'`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=DATE
+get_data
+DATE=$(echo "$DATAENTRY" | tr -cd '0-9-')
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_management_logs.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -129,125 +128,125 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that LOGVIEW is not blank
-if [ $LOGVIEW'null' = null ]
+if [ -z "$LOGVIEW" ]
 then
-MESSAGE=$"The log view must not be blank."
-show_status
+	MESSAGE=$"The log view must not be blank."
+	show_status
 fi
 #Check to see that DATE is not blank
-if [ $DATE'null' = null ]
+if [ -z "$DATE" ]
 then
-MESSAGE=$"The date must not be blank."
-show_status
+	MESSAGE=$"The date must not be blank."
+	show_status
 fi
 
 #Check that date is valid
-DAY=`echo $DATE | cut -d- -f1`
-MONTH=`echo $DATE | cut -d- -f2`
-YEAR=`echo $DATE | cut -d- -f3`
+DAY=$(echo "$DATE" | cut -d- -f1)
+MONTH=$(echo "$DATE" | cut -d- -f2)
+YEAR=$(echo "$DATE" | cut -d- -f3)
 
-if [ $DAY'null' = null ]
+if [ -z "$DAY" ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $MONTH'null' = null ]
+if [ -z "$MONTH" ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $YEAR'null' = null ]
+if [ -z "$YEAR" ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $DAY -gt 31 ]
+if [ "$DAY" -gt 31 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $MONTH -gt 12 ]
+if [ "$MONTH" -gt 12 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
-if [ $YEAR -lt 2006 ] || [ $YEAR -gt 3006 ]
+if [ "$YEAR" -lt 2006 ] || [ "$YEAR" -gt 3006 ]
 then
-MESSAGE=$"Incorrect date format."
-show_status
+	MESSAGE=$"Incorrect date format."
+	show_status
 fi
 
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox">'
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+	echo '<div id="actionbox3"><div id="titlebox">'
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1)
 #Show logs
 
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Web Management Logs"'</span>
-<a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'$DAY:$MONTH:$YEAR'</a>
-</div></div><div id="mobileactionbox">
-'
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+		<div class="expanded">
+		<span>'$"Web Management Logs"'</span>
+	<a href="/cgi-bin/admin/view_karoshi_web_management_logs.cgi">'"$DAY:$MONTH:$YEAR"'</a>
+	</div></div><div id="mobileactionbox">
+	'
 else
-if [ $LOGVIEW = today ]
-then
-echo '<b>'$"Web Management Logs" : $DAY-$MONTH-$YEAR'</b><br><br>'
-else
-echo '<b>'$"Web Management Logs" : $MONTH-$YEAR'</b><br><br>'
-fi
+	if [ "$LOGVIEW" = today ]
+	then
+		echo '<div class="sectiontitle">'$"Web Management Logs" : "$DAY-$MONTH-$YEAR"'</div><br>'
+	else
+		echo '<div class="sectiontitle">'$"Web Management Logs" : "$MONTH-$YEAR"'</div><br>'
+	fi
 fi
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-sudo -H /opt/karoshi/web_controls/exec/view_karoshi_web_management_logs $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$MOBILE:
-LOG_STATUS=`echo $?`
-if [ $LOG_STATUS = 101 ]
+sudo -H /opt/karoshi/web_controls/exec/view_karoshi_web_management_logs "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$MOBILE:"
+LOG_STATUS="$?"
+if [ "$LOG_STATUS" = 101 ]
 then
-MESSAGE=$"There is no log available for this date."
-show_status
+	MESSAGE=$"There is no log available for this date."
+	show_status
 fi
-if [ $LOG_STATUS = 102 ]
+if [ "$LOG_STATUS" = 102 ]
 then
-MESSAGE=$"There are no logs available for this month."
-show_status
+	MESSAGE=$"There are no logs available for this month."
+	show_status
 fi
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

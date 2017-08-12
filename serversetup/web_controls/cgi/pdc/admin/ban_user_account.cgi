@@ -166,7 +166,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="banned_users_view_fm.cgi" method="post">
-			<button class="info" name="_ViewBannedUsers_" value="_">
+			<button class="info infonavbutton" name="_ViewBannedUsers_" value="_">
 				<img src="'"$ICON1"'" alt="'$"View Banned Users"'">
 				<span>'$"View Banned Users"'</span><br>
 				'$"Banned Users"'

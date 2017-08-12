@@ -118,7 +118,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
-			<button class="info" name="_AddMonitor_" value="_">
+			<button class="info infonavbutton" name="_AddMonitor_" value="_">
 				<img src="'$ICON1'" alt="'$"Add Monitor"'">
 				<span>'$"Add a network monitor"'</span><br>
 				'$"Add Monitor"'
@@ -128,7 +128,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="/cgi-bin/admin/mon_status.cgi" method="post">
-			<button class="info" name="_NetworkStatus_" value="_">
+			<button class="info infonavbutton" name="_NetworkStatus_" value="_">
 				<img src="'$ICON2'" alt="'$"Network Status"'">
 				<span>'$"Network Status"'</span><br>
 				'$"Status"'

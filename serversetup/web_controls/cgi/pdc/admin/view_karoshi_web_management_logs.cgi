@@ -37,27 +37,27 @@ STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 #Get current date and time
-DAY=`date +%d`
-MONTH=`date +%m`
-YEAR=`date +%Y`
+DAY=$(date +%d)
+MONTH=$(date +%m)
+YEAR=$(date +%Y)
 
-HOUR=`date +%H`
-MINUTES=`date +%M`
-SECONDS=`date +%S`
+HOUR=$(date +%H)
+MINUTES=$(date +%M)
+SECONDS=$(date +%S)
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">'
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/calendar2/calendar_eu.js"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management Logs"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">'
+echo '<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/calendar2/calendar_eu.js"></script>
         <!-- Timestamp input popup (European Format) --><link rel="stylesheet" href="/all/calendar2/calendar.css"><script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ $MOBILE = yes ]
@@ -85,17 +85,16 @@ echo "</head><body><div id='pagecontainer'>"
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
-DATE_INFO=`date +%F`
-DAY=`echo $DATE_INFO | cut -d- -f3`
-MONTH=`echo $DATE_INFO | cut -d- -f2`
-YEAR=`echo $DATE_INFO | cut -d- -f1`
+DATE_INFO=$(date +%F)
+DAY=$(echo "$DATE_INFO" | cut -d- -f3)
+MONTH=$(echo "$DATE_INFO" | cut -d- -f2)
+YEAR=$(echo "$DATE_INFO" | cut -d- -f1)
 
 function show_status {
 echo '<SCRIPT>'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/incident_log_add.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -104,41 +103,41 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-DIV_ID=actionbox
-#Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+	DIV_ID=actionbox3
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
 else
-DIV_ID=actionbox2
+	DIV_ID=actionbox2
 fi
 
 echo '<form action="/cgi-bin/admin/view_karoshi_web_management_logs2.cgi" name="testform" method="post">'
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -149,11 +148,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 else
 echo '<div class="sectiontitle">'$"Web Management Logs"'</div><br>'
 fi
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo ''$"Log Date"'<br>'
+	echo ''$"Log Date"'<br>'
 
-echo "	<!-- calendar attaches to existing form element -->
+	echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" style=\"height: 30px;\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
 	<script>
 	new tcal ({
@@ -165,15 +164,15 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script><br>"
 
-echo ''$"View logs by date"'<br>
+	echo ''$"View logs by date"'<br>
 <input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
 '$"View logs by month"'<br>
 <input name="_LOGVIEW_" value="month" type="radio"><br><br>'
 
 else
-echo '<table class="standard" style="text-align: left;" ><tbody>
+	echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Log Date"'</td><td>'
-echo "	<!-- calendar attaches to existing form element -->
+	echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script>
 	new tcal ({
@@ -185,13 +184,12 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script>"
 
-echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>'$"View logs by month"'</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br>'
+	echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>'$"View logs by month"'</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br><br>'
 fi
 
-if [ $MOBILE = no ]
-then
-echo '</div><div id="submitbox">'
-fi
+echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset">'
 
-echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset"> </div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit

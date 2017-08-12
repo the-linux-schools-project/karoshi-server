@@ -103,7 +103,7 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 <div class="sectiontitle">'$"DHCP Leases"'</div><table class="tablesorter"><tbody><tr>
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
+	<button class="info infonavbutton" formaction="dhcp_fm.cgi" name="_ConfigureDHCP_" value="_">
 		<img src="'$ICON1'" alt="'$"Configure DHCP"'">
 		<span>'$"View and edit the DHCP setttings"'</span><br>
 		'$"Configure"'
@@ -111,7 +111,7 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 </td>
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
+	<button class="info infonavbutton" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
 		<img src="'$ICON2'" alt="'$"DHCP Reservations"'">
 		<span>'$"View and edit DHCP Reservations"'</span><br>
 		'$"Reservations"'
@@ -119,7 +119,7 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 </td>
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" formaction="dhcp_bans.cgi" name="_DHCPBans_" value="_">
+	<button class="info infonavbutton" formaction="dhcp_bans.cgi" name="_DHCPBans_" value="_">
 		<img src="'$ICON3'" alt="'$"DHCP bans"'">
 		<span>'$"View and edit DHCP bans"'</span><br>
 		'$"Bans"'
@@ -127,7 +127,7 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 </td>
 
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" name="_DHCPActiveLeases_" value="_OPTION_active_">
+	<button class="info infonavbutton" name="_DHCPActiveLeases_" value="_OPTION_active_">
 		<img src="'$ICON4'" alt="'$"Show Active Leases"'">
 		<span>'$"Show Active Leases"'</span><br>
 		'$"Active Leases"'
@@ -140,7 +140,7 @@ echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/dhcp_
 if [ -d /opt/karoshi/server_network/dhcp_servers ]
 then
 	echo '<td style="vertical-align: top; white-space: nowrap; height: 30px; width: '$WIDTH'px; text-align:center;">
-		<button class="info" name="_DHCPBackupLeases_" value="_OPTION_backup_">
+		<button class="info infonavbutton" name="_DHCPBackupLeases_" value="_OPTION_backup_">
 			<img src="'$ICON4'" alt="'$"Show Backup Leases"'">
 			<span>'$"Show Backup Leases"'</span><br>
 			'$"Backup Leases"'
@@ -150,7 +150,7 @@ fi
 
 echo '
 <td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-	<button class="info" name="_DHCPFreeLeases_" value="_OPTION_free_">
+	<button class="info infonavbutton" name="_DHCPFreeLeases_" value="_OPTION_free_">
 		<img src="'$ICON5'" alt="'$"Show Free Leases"'">
 		<span>'$"Show Free Leases"'</span><br>
 		'$"Free Leases"'
@@ -162,7 +162,7 @@ if [ -f /opt/karoshi/server_network/dhcp/restart_required ]
 then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<button class="info" formaction="dhcp_bans.cgi" name="_DHCPRestart_" value="_OPTION_restartdhcp_">
+		<button class="info infonavbutton" formaction="dhcp_bans.cgi" name="_DHCPRestart_" value="_OPTION_restartdhcp_">
 			<img src="'$ICON6'" alt="'$"Activate Changes"'">
 			<span>'$"Restart DHCP to activate changes"'</span><br>
 			'$"Activate Changes"'

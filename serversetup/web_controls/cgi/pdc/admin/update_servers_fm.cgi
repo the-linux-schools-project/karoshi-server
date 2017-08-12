@@ -180,7 +180,7 @@ else
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info" formaction="update_servers_view_logs_fm.cgi" name="_ViewUpdateLogs_" value="_">
+			<button class="info infonavbutton" formaction="update_servers_view_logs_fm.cgi" name="_ViewUpdateLogs_" value="_">
 				<img src="'$ICON1'" alt="'$"Update Logs"'">
 				<span>'$"View the update logs for this server."'</span><br>
 				'$"Update Logs"'

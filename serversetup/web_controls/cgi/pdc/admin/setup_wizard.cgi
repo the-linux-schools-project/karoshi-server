@@ -173,9 +173,9 @@ echo '<div id="wizard">
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_2_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_2_">
 			<img src="'"$IMAGE2"'" alt="'$"Add Server Roles"'">
-			<span>'$"Add addtional server roles."'</span><br>
+			<br>
 			'$"Add Server Roles"'
 		</button>
 	</td>
@@ -183,9 +183,9 @@ echo '<div id="wizard">
 	</tr><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_3_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_3_">
 			<img src="'"$IMAGE3"'" alt="'$"Management Users"'">
-			<span>'$"Create additional Web Management users."'</span><br>
+			<br>
 			'$"Management Users"'
 		</button>
 	</td>
@@ -197,9 +197,9 @@ if [ "$INSTALL_TYPE" != home ]
 then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_4_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_4_">
 			<img src="'"$IMAGE4"'" alt="'$"Label Groups"'">
-			<span>'$"Label existing groups."'</span><br>
+			<br>
 			'$"Label Groups"'
 		</button>
 	</td>
@@ -210,9 +210,9 @@ fi
 
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_5_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_5_">
 			<img src="'"$IMAGE5"'" alt="'$"Add a User"'">
-			<span>'$"Add a User."'</span><br>
+			<br>
 			'$"Add a User"'
 		</button>
 	</td>
@@ -224,9 +224,9 @@ if [ "$INSTALL_TYPE" != home ]
 then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_6_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_6_">
 			<img src="'"$IMAGE6"'" alt="'$"Room Locations"'">
-			<span>'$"Add room locations for client computers."'</span><br>
+			<br>
 			'$"Room Locations"'
 		</button>
 	</td>
@@ -234,9 +234,9 @@ then
 	</tr><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_7_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_7_">
 			<img src="'"$IMAGE7"'" alt="'$"Join Clients"'">
-			<span>'$"Join client computers to the domain."'</span><br>
+			<br>
 			'$"Join Clients"'
 		</button>
 	</td>
@@ -244,9 +244,9 @@ then
 	</tr><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_8_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_8_">
 			<img src="'$IMAGE8'" alt="'$"Profiles"'">
-			<span>'$"Edit Windows client profiles."'</span><br>
+			<br>
 			'$"Profiles"'
 		</button>
 	</td>
@@ -254,9 +254,9 @@ then
 	</tr><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_9_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_9_">
 			<img src="'"$IMAGE9"'" alt="'$"Add Assets"'">
-			<span>'$"Add client computers to the asset register."'</span><br>
+			<br>
 			'$"Add Assets"'
 		</button>
 	</td>
@@ -267,9 +267,9 @@ fi
 
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_a_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_a_">
 			<img src="'$IMAGEa'" alt="'$"Setup Printers"'">
-			<span>'$"Setup printer queues."'</span><br>
+			<br>
 			'$"Setup Printers"'
 		</button>
 	</td>
@@ -277,9 +277,9 @@ echo '
 	</tr><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_b_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_b_">
 			<img src="'"$IMAGEb"'" alt="'$"User Settings"'">
-			<span>'$"Set the default user settings."'</span><br>
+			<br>
 			'$"User Settings"'
 		</button>
 	</td>
@@ -291,9 +291,9 @@ if [ "$INSTALL_TYPE" != home ]
 then
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_c_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_c_">
 			<img src="'"$IMAGEc"'" alt="'$"Bulk User Creation"'">
-			<span>'$"Bulk create users from a CSV file."'</span><br>
+			<br>
 			'$"Bulk User Creation"'
 		</button>
 	</td>
@@ -304,9 +304,9 @@ fi
 
 echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infocenter" name="_DoAction_" value="_ACTION_d_">
+		<button class="info infonavbutton" name="_DoAction_" value="_ACTION_d_">
 			<img src="'"$IMAGEd"'" alt="'$"Set Default Page"'">
-			<span>'$"Set your default Web Management page."'</span><br>
+			<br>
 			'$"Set Default Page"'
 		</button>
 	</td>

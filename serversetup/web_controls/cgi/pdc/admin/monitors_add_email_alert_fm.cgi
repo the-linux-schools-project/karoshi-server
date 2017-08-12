@@ -114,7 +114,7 @@ then
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="monitors_view_email_alerts_fm.cgi" method="post">
-			<button class="info" name="_ViewAlerts_" value="_">
+			<button class="info infonavbutton" name="_ViewAlerts_" value="_">
 				<img src="'$ICON1'" alt="'$"E-Mail Alerts"'">
 				<span>'$"View E-Mail alerts"'</span><br>
 				'$"View"'
@@ -124,7 +124,7 @@ then
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="mon_status.cgi" method="post">
-			<button class="info" name="_MonStatus_" value="_">
+			<button class="info infonavbutton" name="_MonStatus_" value="_">
 				<img src="'$ICON2'" alt="'$"Network Status"'">
 				<span>'$"View network status"'</span><br>
 				'$"Network Status"'

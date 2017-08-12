@@ -85,7 +85,7 @@ echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><di
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button formaction="/cgi-bin/admin/printers.cgi" class="info" name="_ShowPrinters_" value="_">
+		<button formaction="/cgi-bin/admin/printers.cgi" class="info infonavbutton" name="_ShowPrinters_" value="_">
 			<img src="'"$ICON1"'" alt="'$"Show Printers"'">
 			<span>'$"Show network printer queues."'</span><br>
 			'$"Show Printers"'
@@ -93,7 +93,7 @@ echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><di
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button formaction="/cgi-bin/admin/printers_delete.cgi" class="info" name="_DeletePrinters_" value="_">
+		<button formaction="/cgi-bin/admin/printers_delete.cgi" class="info infonavbutton" name="_DeletePrinters_" value="_">
 			<img src="'"$ICON2"'" alt="'$"Delete Printer"'">
 			<span>'$"Delete network printer queues."'</span><br>
 			'$"Delete Printer"'
@@ -101,7 +101,7 @@ echo '<form action="/cgi-bin/admin/printers_view_assigned.cgi" method="post"><di
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button formaction="/cgi-bin/admin/locations.cgi" class="info" name="_ViewLocations_" value="_">
+		<button formaction="/cgi-bin/admin/locations.cgi" class="info infonavbutton" name="_ViewLocations_" value="_">
 			<img src="'"$ICON3"'" alt="'$"Locations"'">
 			<span>'$"View locations."'</span><br>
 			'$"Locations"'

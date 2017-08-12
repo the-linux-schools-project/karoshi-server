@@ -216,7 +216,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/email_domains.cgi" method="post">
-			<button class="info" name="_DoAction_" value="_ACTION_'"$ALTACTION"'_">
+			<button class="info infonavbutton" name="_DoAction_" value="_ACTION_'"$ALTACTION"'_">
 				<img src="'"$ICON"'" alt="'"$ALTMESSAGE"'">
 				<span>'"$ALTMESSAGE2"'</span><br>
 				'"$ALTMESSAGE"'
@@ -226,7 +226,7 @@ echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/email_aliases.cgi" method="post">
-			<button class="info" name="_ViewAliases_" value="_">
+			<button class="info infonavbutton" name="_ViewAliases_" value="_">
 				<img src="'"$ICON3"'" alt="'$"Aliases"'">
 				<span>'$"View user aliases."'</span><br>
 				'$"Aliases"'

@@ -140,7 +140,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<b>'$"Client Boot Controls"'</b><br><br></div><div id="infobox">'
+	echo '<div class="sectiontitle">'$"Client Boot Controls"'</div><br></div><div id="infobox">'
 fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
