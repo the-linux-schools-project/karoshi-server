@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "Předložit"
 msgid "Reset"
 msgstr "Resetovat"
 
+msgid "Client Internet Controls"
+msgstr "Klientské internetové ovládání"
+
+msgid "Menu"
+msgstr "Jídelní lístek"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Vyberte umístění, které chcete povolit nebo zakázat přístup k internetu."
+
+msgid "Choose Location"
+msgstr "Zvolte Umístění"
+
+msgid "You have not chosen a location."
+msgstr "Nevybrali jste místo."
+
+msgid "No locations have been created."
+msgstr "Nebyly vytvořeny žádné umístění."
+
 msgid "Manage Print Queues"
 msgstr "Spravujte tiskové fronty"
 
 msgid "A print server has not yet been set up."
 msgstr "Tiskový server dosud nebyl nastaven."
-
-msgid "Menu"
-msgstr "Jídelní lístek"
 
 msgid "View Print Queues"
 msgstr "Zobrazit fronty tisku"
@@ -888,7 +903,7 @@ msgid "Enter in the name of a new supplementary group that you want to create."
 msgstr "Zadejte do názvu novou doplňkovou skupinu, kterou chcete vytvořit."
 
 msgid "Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."
-msgstr "Sekundární skupiny mohou být použity pro podsložky ve stávajících akcích, které omezují přístup k členům skupiny."
+msgstr "Sekundární skupiny mohou být použity pro podsložky ve stávajících akcích za účelem omezení přístupu k členům skupiny."
 
 msgid "Primary group name"
 msgstr "Jméno primární skupiny"
@@ -1404,7 +1419,7 @@ msgid "This will upload a linux client iso for use in installing linux clients o
 msgstr "Tím se nahraje linux client iso pro použití při instalaci klientů linuxu přes síť."
 
 msgid "Choose the linux client iso that you want to distribute to your linux clients over the network."
-msgstr "Vyberte linuxový klient iso, který chcete distribuovat klientům linuxu po síti."
+msgstr "Vyberte linuxový klient iso, který chcete distribuovat klientům linuxu přes síť."
 
 msgid "You can copy in extra iso images to /home/itadminshare/distributions."
 msgstr "Můžete kopírovat extra iso obrazy na / home / itadminshare / distribuce."
@@ -1965,7 +1980,7 @@ msgid "Year"
 msgstr "Rok"
 
 msgid "Choose the primary group that you want to view the printer data for."
-msgstr "Zvolte primární skupinu, pro kterou chcete zobrazit data tiskárny."
+msgstr "Zvolte primární skupinu, pro kterou chcete zobrazit údaje tiskárny."
 
 msgid "Choose the month that you want to view. Leave this blank to view the whole year."
 msgstr "Vyberte měsíc, který chcete zobrazit. Nechte prázdné zobrazení celého roku."
@@ -2283,7 +2298,7 @@ msgid "Limit"
 msgstr "Omezit"
 
 msgid "Set the page limits that you want for each user or group."
-msgstr "Nastavte požadované limity stránky pro každého uživatele nebo skupinu."
+msgstr "Nastavte požadované omezení stránky pro každého uživatele nebo skupinu."
 
 msgid "Edit Printer Limit"
 msgstr "Upravit limit tiskárny"
@@ -2345,14 +2360,20 @@ msgstr "Nesprávný formát data."
 msgid "Backup logs"
 msgstr "Zálohovací protokoly"
 
+msgid "These are the backup logs for your server."
+msgstr "Toto jsou záložní protokoly pro váš server."
+
 msgid "Detailed logs"
 msgstr "Podrobné protokoly"
+
+msgid "View detailed backup logs."
+msgstr "Zobrazení podrobných protokolů záloh."
 
 msgid "Summary logs"
 msgstr "Souhrnné protokoly"
 
-msgid "These are the backup logs for your server."
-msgstr "Toto jsou záložní protokoly pro váš server."
+msgid "View a summary of the backup logs."
+msgstr "Zobrazení souhrnu protokolů zálohování."
 
 msgid "Custom Command"
 msgstr "Vlastní příkaz"
@@ -2796,7 +2817,7 @@ msgid "Admin Password"
 msgstr "Heslo správce"
 
 msgid "This is used to access the icecast server as the admin user."
-msgstr "Používá se k přístupu na server Icecast jako administrátor."
+msgstr "Používá se k přístupu k serveru Icecast jako administrátorovi."
 
 msgid "Source Password"
 msgstr "Zdrojové heslo"
@@ -3248,12 +3269,6 @@ msgstr "Zadejte do své volby poštovní domény bez http: // www. Příklad mye
 msgid "Custom Alias"
 msgstr "Vlastní alias"
 
-msgid "Client Internet Controls"
-msgstr "Klientské internetové ovládání"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Vyberte umístění, které chcete povolit nebo zakázat přístup k internetu."
-
 msgid "Reset Times"
 msgstr "Obnovit časy"
 
@@ -3262,15 +3277,6 @@ msgstr "Nastavte časy obnovení."
 
 msgid "View the asset register."
 msgstr "Zobrazení registru aktiv."
-
-msgid "Choose Location"
-msgstr "Zvolte Umístění"
-
-msgid "You have not chosen a location."
-msgstr "Nevybrali jste místo."
-
-msgid "No locations have been created."
-msgstr "Nebyly vytvořeny žádné umístění."
 
 msgid "Upload image error."
 msgstr "Nahrát chybu obrázku."
@@ -3294,7 +3300,7 @@ msgid "The TCPIP number is not corrrect."
 msgstr "Číslo IP TCP není správné."
 
 msgid "This allows you to add a domain trust so that users from other domains can log into this domain."
-msgstr "Umožňuje vám přidat důvěru domény tak, aby se uživatelé z jiných domén mohli přihlásit do této domény."
+msgstr "To vám umožní přidat důvěru domény tak, aby se uživatelé z jiných domén mohli přihlásit do této domény."
 
 msgid "Add a domain trust"
 msgstr "Přidat důvěru domény"
@@ -3348,7 +3354,7 @@ msgid "Schedule Wake on Lan"
 msgstr "Rozvrh Wake on Lan"
 
 msgid "This will schedule all of the computers in your selected location to be turned on."
-msgstr "Tím naplánujete zapnutí všech počítačů ve zvoleném umístění."
+msgstr "Tím naplánujete zapnutí všech počítačů ve vybraném umístění."
 
 msgid "Wake a location."
 msgstr "Probuďte místo."
@@ -3378,7 +3384,7 @@ msgid "Site Internet Logs"
 msgstr "Záznamy internetových stránek"
 
 msgid "Enter in the start of the web address you want to search for."
-msgstr "Zadejte na začátku webové adresy, které chcete vyhledat."
+msgstr "Zadejte do začátku webové adresy, které chcete vyhledat."
 
 msgid "Custom Application"
 msgstr "Vlastní aplikace"
@@ -3388,6 +3394,9 @@ msgstr "Toto přidá název vlastní role, kterou jste přidali na tento server.
 
 msgid "Configure Backup"
 msgstr "Konfigurace zálohování"
+
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA ENTRY // 12345 UNDERSCORE 12345 / _}"
 
 msgid "Blank backup name."
 msgstr "Prázdný název zálohy."
@@ -3404,11 +3413,14 @@ msgstr "Prázdný název serveru zálohy."
 msgid "Blank backup status."
 msgstr "Prázdný stav zálohování."
 
+msgid "Choose the folders you want to backup."
+msgstr "Vyberte složky, které chcete zálohovat."
+
 msgid "View Backups"
 msgstr "Zobrazit zálohy"
 
-msgid "Choose the folders you want to backup."
-msgstr "Vyberte složky, které chcete zálohovat."
+msgid "View backups for this server."
+msgstr "Zobrazit zálohy pro tento server."
 
 msgid "View Monitor Logs"
 msgstr "Zobrazení protokolů monitoru"
@@ -3428,8 +3440,17 @@ msgstr "Nebyl nastaven žádný monitorovací server."
 msgid "Add Printer"
 msgstr "Přidat tiskárnu"
 
+msgid "Add a new printer queue."
+msgstr "Přidat novou frontu tiskárny."
+
 msgid "Delete Printer"
 msgstr "Odstranit tiskárnu"
+
+msgid "Delete a new printer queue."
+msgstr "Odstraňte novou frontu tiskárny."
+
+msgid "Assigned Printers"
+msgstr "Přiřazené tiskárny"
 
 msgid "View Assigned Printers"
 msgstr "Zobrazit přiřazené tiskárny"
@@ -3437,8 +3458,23 @@ msgstr "Zobrazit přiřazené tiskárny"
 msgid "Edit PPD"
 msgstr "Upravit PPD"
 
+msgid "Edit a printer driver."
+msgstr "Upravte ovladač tiskárny."
+
+msgid "Configure printing with Savapage."
+msgstr "Nakonfigurujte tisk se službou Savapage."
+
 msgid "Locations"
 msgstr "Místa"
+
+msgid "View locations."
+msgstr "Zobrazit místa."
+
+msgid "Show Printers"
+msgstr "Zobrazit tiskárny"
+
+msgid "Show network printer queues."
+msgstr "Zobrazit fronty síťových tiskáren."
 
 msgid "Windows Start menu - Select"
 msgstr "Nabídka Start systému Windows - Zvolte"
@@ -3729,7 +3765,7 @@ msgid "Force Reboot"
 msgstr "Vynucení restartu"
 
 msgid "Select this option only if you have a server that will not restart correctly if a reboot is required after system updates."
-msgstr "Tuto volbu vyberte, pouze pokud máte server, který se po aktualizaci systému nebude restartovat správně."
+msgstr "Tuto volbu vyberte, pouze pokud máte server, který se po aktualizacích systému nebude restartovat správně."
 
 msgid "Schedule Update"
 msgstr "Plán aktualizace"
@@ -3746,11 +3782,11 @@ msgstr "Nastavení Xerte"
 msgid "Allowed Mime Types"
 msgstr "Povolené typy MIME"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "Nevybrali jste server, který chcete zapnout nebo vypnout."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Povolit - Zakázat zálohování v síti"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "Nevybrali jste server, který chcete zapnout nebo vypnout."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on Lan - Zobrazit"
@@ -4151,8 +4187,11 @@ msgstr "Nezadali jste v názvu tohoto upozornění."
 msgid "An E-Mail alert has been sent."
 msgstr "Bylo odesláno upozornění e-mailem."
 
-msgid "Show Printers"
-msgstr "Zobrazit tiskárny"
+msgid "Add Printers"
+msgstr "Přidat tiskárny"
+
+msgid "Add a network printer queue."
+msgstr "Přidejte frontu síťové tiskárny."
 
 msgid "There are no printer queues to delete."
 msgstr "Neexistují žádné fronty tiskárny, které by bylo možné odstranit."
@@ -4218,7 +4257,7 @@ msgid "Setup Distribution Server"
 msgstr "Instalační server distribuce"
 
 msgid "This will setup a distribution server for centralised linux client installations."
-msgstr "Tímto nastavíte distribuční server pro centralizované instalace klientů linuxu."
+msgstr "Tímto nastavíte distribuční server pro centralizované instalace klientů linux."
 
 msgid " To use this feature you will need to add or import your client data into the asset register."
 msgstr "Chcete-li tuto funkci použít, budete muset přidat nebo importovat data klienta do registru aktiv."
@@ -4277,14 +4316,17 @@ msgstr "Vyčistěte frontu tiskárny."
 msgid "Deleting print job"
 msgstr "Smazání tiskové úlohy"
 
-msgid "View Reverse Proxies"
-msgstr "Zobrazit reverzní proxy"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "Funkce reverzního serveru proxy umožňuje příchozí webové spojení na portech 80 a 443 projít zpětným proxy serverem na jiné servery v síti."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Tím se vynechá potřeba subdomén a aliasů tcpip čísel pro externí přístup a také umožní všem externím přenosům ssl používat certifikát SSL k autentizaci stránek."
+
+msgid "Reverse Proxies"
+msgstr "Reverzní proxy"
+
+msgid "View Reverse Proxy entries."
+msgstr "Zobrazení položek Reverse Proxy."
 
 msgid "Target folder"
 msgstr "Cílová složka"
@@ -4327,12 +4369,6 @@ msgstr "Vyberte klientské počítače, které chcete povolit nebo zakázat př�
 
 msgid "Choose location."
 msgstr "Vyberte místo."
-
-msgid "Reset times"
-msgstr "Obnovit časy"
-
-msgid "View the scheduled reset times."
-msgstr "Zobrazení plánovaných časů obnovení."
 
 msgid "Allow All"
 msgstr "Povolit vše"
@@ -4442,6 +4478,9 @@ msgstr "Zobrazit ovládací prvky místnosti."
 msgid "Add reset time"
 msgstr "Přidat čas obnovení"
 
+msgid "Reset times"
+msgstr "Obnovit časy"
+
 msgid "Delete time"
 msgstr "Smazat čas"
 
@@ -4461,7 +4500,7 @@ msgid "Windows Profile - Upload"
 msgstr "Profil Windows - Nahrát"
 
 msgid "To create a windows profile you can use the profileuser account. This is the only user on the karoshi system that has a roaming profile by default. All other users use mandatory profiles."
-msgstr "Chcete-li vytvořit profil systému Windows, můžete použít účet profilu uživatele. Jedná se o jediného uživatele systému karoshi, který má ve výchozím nastavení roamingový profil. Všichni ostatní uživatelé používají povinné profily."
+msgstr "Chcete-li vytvořit profil systému Windows, můžete použít účet profilu uživatele. Jedná se o jediného uživatele systému karoshi, který má ve výchozím nastavení cestovní profil. Všichni ostatní uživatelé používají povinné profily."
 
 msgid "To create a windows profile you need to right click on My Computer - Properties - Advanced - User Profile Settings."
 msgstr "Chcete-li vytvořit profil systému Windows, musíte kliknout pravým tlačítkem myši na ikonu Tento počítač - Vlastnosti - Pokročilé - Nastavení profilu uživatele."
@@ -4508,17 +4547,11 @@ msgstr "Zobrazení a přidání upozornění e-mailem"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Zobrazují se tiskárny, které byly přiřazeny místům."
 
-msgid "Delete Printers"
-msgstr "Odstranit tiskárny"
-
-msgid "Add Location"
-msgstr "Přidat lokaci"
+msgid "Delete network printer queues."
+msgstr "Odstranit fronty síťových tiskáren."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Na místo nebyly přiřazeny žádné tiskárny."
-
-msgid "Assigned Printers"
-msgstr "Přiřazené tiskárny"
 
 msgid "Default"
 msgstr "Výchozí nastavení"
@@ -4937,6 +4970,9 @@ msgstr "Reverzní server proxy nebyl nastaven."
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Následující weby jsou právě přesměrovány přes tento proxy server."
 
+msgid "Add a Reverse Proxy site."
+msgstr "Přidejte stránku Reverse Proxy."
+
 msgid "Target"
 msgstr "cílová"
 
@@ -4968,7 +5004,7 @@ msgid "Wake on Lan Schedule completed."
 msgstr "Program Wake on Lan Schedule byl dokončen."
 
 msgid "There was an error scheduling this job. Please check that Karoshi Web Management logs."
-msgstr "Došlo k chybě plánování této úlohy. Zkontrolujte prosím, zda se Karoshi Web Management přihlásí."
+msgstr "Došlo k chybě plánování této úlohy. Zkontrolujte, zda se protokol Karoshi Web Management přihlásí."
 
 msgid "The password for each exam account will be changed to a different random number."
 msgstr "Heslo pro každý účet zkoušky bude změněno na jiné náhodné číslo."
@@ -5229,7 +5265,7 @@ msgid "This module can only be applied to a main server."
 msgstr "Tento modul lze použít pouze na hlavní server."
 
 msgid "Warning - this will delete all existing users from this server and import all of the users from your main server."
-msgstr "Upozornění - odstraní všechny stávající uživatele z tohoto serveru a importuje všechny uživatele z vašeho hlavního serveru."
+msgstr "Upozornění - odstraní všechny stávající uživatele z tohoto serveru a importují všechny uživatele z vašeho hlavního serveru."
 
 msgid "This will allow you to track printing usage for all of your users."
 msgstr "To vám umožní sledovat využití tisku pro všechny vaše uživatele."
@@ -5301,7 +5337,7 @@ msgid "Setup Print Server"
 msgstr "Nastavení tiskového serveru"
 
 msgid "The software shown below will either be installed or removed by your linux client computers on boot."
-msgstr "Níže uvedený software bude nainstalován nebo odebrán klientskými počítači linuxu při zavádění."
+msgstr "Níže uvedený software bude instalován nebo odebrán klientskými počítači linux při spuštění."
 
 msgid "Windows Roaming Profiles"
 msgstr "Windows Roaming Profiles"
@@ -5399,14 +5435,23 @@ msgstr "Windows Ovladače tiskárny"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Používá se k povolení nebo zakázání generování ovladačů tiskárny pro Windows pro tiskové fronty."
 
-msgid "Generate Drivers"
-msgstr "Generujte ovladače"
-
-msgid "Enable all"
+msgid "Enable All"
 msgstr "Povolit vše"
+
+msgid "Enable auto generation for all printers."
+msgstr "Povolte automatické generování pro všechny tiskárny."
 
 msgid "Disable all"
 msgstr "Vypnout vše"
+
+msgid "Disable auto generation for all printers."
+msgstr "Zakažte automatické generování pro všechny tiskárny."
+
+msgid "Generate Drivers"
+msgstr "Generujte ovladače"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Vygenerujte ovladače tiskárny pro všechny povolené tiskárny."
 
 msgid "Windows printer driver generation completed."
 msgstr "Produkce ovladače tiskárny systému Windows byla dokončena."
@@ -5730,7 +5775,7 @@ msgid "Be careful using this feature."
 msgstr "Buďte opatrní pomocí této funkce."
 
 msgid "If you need to change a network card remove the mac address from your static arps first."
-msgstr "Pokud potřebujete změnit síťovou kartu, nejprve odeberte adresu mac ze statických arpsů."
+msgstr "Pokud potřebujete změnit síťovou kartu, nejprve odeberte MAC adresu ze statických arpsů."
 
 msgid "View E-Mail Statistics"
 msgstr "Zobrazit statistiku e-mailu"
@@ -5919,7 +5964,7 @@ msgid "Choose the username style you require."
 msgstr "Vyberte požadovaný styl uživatelského jména."
 
 msgid "Record Incident"
-msgstr "Nahrávat incident"
+msgstr "Rekordní incident"
 
 msgid "The time must not be blank."
 msgstr "Čas nesmí být prázdný."
@@ -6230,9 +6275,6 @@ msgstr "Byly použity změny DHCP."
 msgid "The asset search cannot be blank."
 msgstr "Vyhledávání majetku nemusí být prázdné."
 
-msgid "Enable All"
-msgstr "Povolit vše"
-
 msgid "Reset All"
 msgstr "Resetovat vše"
 
@@ -6534,7 +6576,7 @@ msgid "Two digit Country Code"
 msgstr "Dvoumístný kód země"
 
 msgid "Enter in the two digit ISO country code for your country."
-msgstr "Zadejte dvoumístný kód ISO země pro vaši zemi."
+msgstr "Zadejte dvoumístný kód země ISO pro vaši zemi."
 
 msgid "Example *.yoursite.com"
 msgstr "Příklad * .yoursite.com"
@@ -6555,7 +6597,7 @@ msgid "Common name - URL"
 msgstr "Obecný název - adresa URL"
 
 msgid "This needs to be the fully qualified domain name of your website without the http or https. The *. wildcard will match all sub domains."
-msgstr "Musí to být úplné jméno domény vašeho webu bez http nebo https. *. Zástupné znaky budou odpovídat všem poddomím."
+msgstr "Musí to být úplné jméno domény vašeho webu bez http nebo https. *. Zástupné znaky se budou shodovat se všemi podřízenými doménami."
 
 msgid "Email contact address"
 msgstr "E-mailová kontaktní adresa"
@@ -6863,6 +6905,9 @@ msgstr "Zaznamenejte událost, která nastala."
 msgid "Add Network Printer"
 msgstr "Přidat síťovou tiskárnu"
 
+msgid "Delete Printers"
+msgstr "Odstranit tiskárny"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Zadejte požadované jméno pro tuto tiskárnu."
 
@@ -7089,13 +7134,13 @@ msgid "SSH Server"
 msgstr "SSH Server"
 
 msgid "This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "Umožní to vzdálený přístup na váš hlavní server. Toto lze také použít pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
+msgstr "Umožní to vzdálený přístup na váš hlavní server. Toto může být také použito pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeni i uživatelé vytvořeni na hlavním serveru."
 
 msgid "This will allow remote ssh access to your main server."
 msgstr "Umožní to vzdálený přístup na váš hlavní server."
 
 msgid "This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "Toto lze také použít pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeny také uživatelé vytvořené na hlavním serveru."
+msgstr "Toto může být také použito pro připojení k tomuto serveru až do jiného systému karoshi, takže zde budou vytvořeni i uživatelé vytvořeni na hlavním serveru."
 
 msgid "Web Hosting"
 msgstr "Web hosting"
@@ -7212,7 +7257,7 @@ msgid "Schedule a job for this server."
 msgstr "Naplánujte úlohu pro tento server."
 
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
-msgstr "Jméno, příjmení, číslo zápisu nebo kód zaměstnanců - volitelné, uživatelské jméno - volitelné, primární skupina - nepovinná, sekundární skupiny oddělené dvojtečkami - volitelné, změna hesla při prvním přihlášení -"
+msgstr "Jméno, příjmení, číslo zápisu nebo kód zaměstnanců - volitelné, uživatelské jméno - volitelné, primární skupina - volitelná, sekundární skupiny odděleny dvojtečkami - volitelné, změna hesla při prvním přihlášení -"
 
 msgid "Import Enrollment Numbers"
 msgstr "Importovat čísla zápisu"
@@ -7436,17 +7481,8 @@ msgstr "Nahrajte profil Karoshi Linux"
 msgid "Add Server Roles"
 msgstr "Přidat role serveru"
 
-msgid "Add addtional server roles."
-msgstr "Přidat další role serveru."
-
 msgid "Management Users"
 msgstr "Uživatelé správy"
-
-msgid "Create additional Web Management users."
-msgstr "Vytvořte další uživatele služby Web Management."
-
-msgid "Label existing groups."
-msgstr "Označit existující skupiny."
 
 msgid "Add a User"
 msgstr "Přidat uživatele"
@@ -7454,38 +7490,14 @@ msgstr "Přidat uživatele"
 msgid "Room Locations"
 msgstr "Místnosti místností"
 
-msgid "Add room locations for client computers."
-msgstr "Přidejte umístění míst pro klientské počítače."
-
 msgid "Join Clients"
 msgstr "Připojte se k zákazníkům"
-
-msgid "Join client computers to the domain."
-msgstr "Připojte klientské počítače k ​​doméně."
-
-msgid "Edit Windows client profiles."
-msgstr "Upravte klientské profily Windows."
 
 msgid "Add Assets"
 msgstr "Přidat majetek"
 
-msgid "Add client computers to the asset register."
-msgstr "Přidejte klientské počítače do registru aktiv."
-
-msgid "Setup printer queues."
-msgstr "Nastavte fronty tiskáren."
-
 msgid "User Settings"
 msgstr "Nastavení uživatele"
-
-msgid "Set the default user settings."
-msgstr "Nastavte výchozí nastavení uživatele."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Hromadné vytváření uživatelů z souboru CSV."
-
-msgid "Set your default Web Management page."
-msgstr "Nastavte výchozí stránku správy webu."
 
 msgid "Record User Incident"
 msgstr "Nahrát incident uživatele"
@@ -7779,7 +7791,7 @@ msgid "Upload PPD File"
 msgstr "Nahrát soubor PPD"
 
 msgid "Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."
-msgstr "Z tohoto seznamu vyberte značku své tiskárny. Pokud tiskárna není uvedena, budete muset získat PPD z internetu a použít volbu Upload PPD."
+msgstr "Z tohoto seznamu vyberte značku své tiskárny. Pokud tiskárna není uvedena na seznamu, budete muset získat PPD z internetu a použít volbu Upload PPD."
 
 msgid "This displays the server that hosts the home folders for each group."
 msgstr "Zobrazí server, který hostí domovské složky pro každou skupinu."
@@ -7863,7 +7875,7 @@ msgid "DNS Server"
 msgstr "DNS Server"
 
 msgid "This server uses your Domain Controllers for DNS."
-msgstr "Tento server používá vaše řadiče domény pro DNS."
+msgstr "Tento server používá řadiče domény pro DNS."
 
 msgid "Press submit to auto regenerate the DNS settings."
 msgstr "Stiskněte tlačítko Odeslat automatické obnovení nastavení DNS."
@@ -7887,7 +7899,7 @@ msgid "The reverse proxy allows incoming web traffic to be redirected to other s
 msgstr "Reverzní proxy umožňuje přesměrování příchozího webového provozu na jiné servery v síti."
 
 msgid "The redirect is based on the trailing slash and folder name after the end of the domain of your site."
-msgstr "Přesměrování je založeno na zadním lomítku a názvu složky po ukončení domény vašeho webu."
+msgstr "Přesměrování je založeno na koncovou lomítko a název složky po ukončení domény vašeho webu."
 
 msgid "Web sites to be redirected are added in on the web management."
 msgstr "Webové stránky, které mají být přesměrovány, se přidávají do správy webu."
@@ -8628,7 +8640,7 @@ msgid "Removing Icecast radio server"
 msgstr "Odstranění vysílacího serveru Icecast"
 
 msgid "Removing Radius server"
-msgstr "Odstranění serveru Radius"
+msgstr "Odstranění serveru radia"
 
 msgid "Removing ssh access."
 msgstr "Odstranění přístupu ssh."
@@ -8838,7 +8850,7 @@ msgid "Add this disk to a raid."
 msgstr "Přidejte tento disk do útoku."
 
 msgid "Raid Information"
-msgstr "Informace o nájezdech"
+msgstr "Raid Informace"
 
 msgid "Raid Name"
 msgstr "Jméno nájezdy"
@@ -9081,7 +9093,7 @@ msgid "Custom command"
 msgstr "Vlastní příkaz"
 
 msgid "Enter in a custom mdadm command to control your raid."
-msgstr "Zadejte do vlastního příkazu mdadm ovládací prvek."
+msgstr "Zadejte do vlastního příkazu mdadm kontrolu raidu."
 
 msgid "Raid UUID"
 msgstr "Raid UUID"
@@ -9213,7 +9225,7 @@ msgid "network settings for this server show that it should not be in the same z
 msgstr "Nastavení sítě pro tento server ukazují, že by nemělo být ve stejné zóně jako hlavní server."
 
 msgid "Network settings for this server show that it should not be in the same zone as the main server."
-msgstr "Síťová nastavení pro tento server ukazují, že by neměla být ve stejné zóně jako hlavní server."
+msgstr "Nastavení sítě pro tento server ukazují, že by nemělo být ve stejné zóně jako hlavní server."
 
 msgid "network settings for this server show that it should be in the same zone as the main server."
 msgstr "Nastavení sítě pro tento server ukazují, že by měl být ve stejné zóně jako hlavní server."
@@ -9378,7 +9390,7 @@ msgid "Full Audit Logs"
 msgstr "Úplné protokoly auditu"
 
 msgid "This will log the usernames and times of creation, deletion, and modification of files and folders on the share."
-msgstr "Tím se zaznamenávají uživatelská jména a časy vytváření, odstranění a modifikace souborů a složek na sdílené položce."
+msgstr "Tím se zaznamenávají uživatelská jména a časy vytvoření, odstranění a modifikace souborů a složek na sdílené položce."
 
 msgid "Recycle Bin"
 msgstr "Odpadkový koš"
@@ -9609,10 +9621,10 @@ msgid "This allows you to choose the domain categories that are added for filter
 msgstr "Umožňuje vám vybrat kategorie domén, které jsou přidány pro filtrování do skupiny filtrů."
 
 msgid "Banned URL Lists"
-msgstr "Zakázané seznamy adres URL"
+msgstr "Zakázané seznamy URL"
 
 msgid "This allows you to choose the url categories that are added for filtering to the filter group to block parts of websites."
-msgstr "Umožňuje vám vybrat kategorie adres URL, které jsou přidány pro filtrování do skupiny filtrů, aby blokovaly části webů."
+msgstr "Umožňuje vám vybrat kategorie adres URL, které jsou přidány pro filtrování do skupiny filtrů, aby blokovaly části webových stránek."
 
 msgid "This allows you to choose the phraselists that are added for filtering to the filter group to block parts of websites."
 msgstr "To vám umožňuje zvolit fráze, které jsou přidány pro filtrování do skupiny filtrů, aby blokovaly části webových stránek."
@@ -10205,8 +10217,20 @@ msgstr "Ponechte prázdný čas na automatické plánování."
 msgid "All servers backed up in turn starting at"
 msgstr "Všechny servery zálohované na řadě začínají"
 
+msgid "Select the server you want to backup to."
+msgstr "Vyberte server, na který chcete zálohovat."
+
 msgid "Change Time"
 msgstr "Změnit čas"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Změňte dobu, po kterou je tato záloha naplánována."
+
+msgid "Enable or disable the backup."
+msgstr "Aktivace nebo zakázání zálohy."
+
+msgid "Add a folder to the backup."
+msgstr "Přidejte do zálohy složku."
 
 msgid "Stopping NTP Service"
 msgstr "Zastavení služby NTP"
@@ -10310,9 +10334,6 @@ msgstr "Žádný přístup"
 msgid "Change Status"
 msgstr "Změnit stav"
 
-msgid "Reset Password"
-msgstr "Obnovit heslo"
-
 msgid "Internet Logs"
 msgstr "Internetové protokoly"
 
@@ -10345,9 +10366,6 @@ msgstr "Sledování sítě"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Inventory"
-
-msgid "Printer Accounting"
-msgstr "Účtování tiskárny"
 
 msgid "Logs"
 msgstr "Protokoly"
@@ -10383,7 +10401,7 @@ msgid "Add a new user to the syatem"
 msgstr "Přidejte nového uživatele do systému"
 
 msgid "Ban a user from logging into the system"
-msgstr "Zakázat uživatele přihlášení do systému"
+msgstr "Zakážete uživatele přihlášení do systému"
 
 msgid "View User Incident Logs"
 msgstr "Zobrazení protokolů událostí uživatelů"
@@ -10395,7 +10413,10 @@ msgid "Change Exam Passwords"
 msgstr "Změnit hesla zkoušek"
 
 msgid "Change passwords for the exam accounts."
-msgstr "Změňte hesla pro účty zkoušek."
+msgstr "Změňte hesla pro účty zkoušky."
+
+msgid "Reset Password"
+msgstr "Obnovit heslo"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Obnovení hesel pro účty zkoušky."
@@ -10781,9 +10802,6 @@ msgstr "Nakonfigurujte čas, kdy klienti Linuxu automaticky vypnou."
 msgid "View the status of the printer queues."
 msgstr "Zobrazení stavu fronty tiskáren."
 
-msgid "Add a network printer queue."
-msgstr "Přidejte frontu síťové tiskárny."
-
 msgid "Delete Network Printer"
 msgstr "Odstranit síťovou tiskárnu"
 
@@ -10797,7 +10815,7 @@ msgid "View assigned printers."
 msgstr "Zobrazení přiřazených tiskáren."
 
 msgid "Generate Windows printer drivers."
-msgstr "Vygenerujte ovladače tiskárny pro systém Windows."
+msgstr "Generujte ovladače tiskárny pro systém Windows."
 
 msgid "Domain Controls"
 msgstr "Ovládací prvky domény"
@@ -10899,7 +10917,7 @@ msgid "Configure a client to bypass the Internet Filtering."
 msgstr "Nakonfigurujte klienta tak, aby obcházel filtrování Internetu."
 
 msgid "Configure Internet access for computers in a location."
-msgstr "Nakonfigurujte přístup k Internetu pro počítače na daném místě."
+msgstr "Nakonfigurujte přístup k Internetu pro počítače v daném místě."
 
 msgid "Show Internet usage trends."
 msgstr "Zobrazit trendy používání internetu."
@@ -11001,7 +11019,7 @@ msgid "Please enter the root and administrator password."
 msgstr "Zadejte heslo root a administrátora."
 
 msgid "The password must be at least 8 characters long and have a combination of upper and lower case letters and numbers."
-msgstr "Heslo musí mít délku minimálně 8 znaků a má kombinaci velkých a malých písmen a číslic."
+msgstr "Heslo musí mít délku minimálně 8 znaků a má kombinaci malých a velkých písmen a číslic."
 
 msgid "Minimum 8 characters, numbers, upper and lower case letters."
 msgstr "Minimálně 8 znaků, čísla, velká a malá písmena."

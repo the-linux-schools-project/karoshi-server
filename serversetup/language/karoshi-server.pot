@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,13 +533,28 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
+msgid "Client Internet Controls"
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr ""
+
+msgid "Choose Location"
+msgstr ""
+
+msgid "You have not chosen a location."
+msgstr ""
+
+msgid "No locations have been created."
+msgstr ""
+
 msgid "Manage Print Queues"
 msgstr ""
 
 msgid "A print server has not yet been set up."
-msgstr ""
-
-msgid "Menu"
 msgstr ""
 
 msgid "View Print Queues"
@@ -2346,13 +2361,19 @@ msgstr ""
 msgid "Backup logs"
 msgstr ""
 
+msgid "These are the backup logs for your server."
+msgstr ""
+
 msgid "Detailed logs"
+msgstr ""
+
+msgid "View detailed backup logs."
 msgstr ""
 
 msgid "Summary logs"
 msgstr ""
 
-msgid "These are the backup logs for your server."
+msgid "View a summary of the backup logs."
 msgstr ""
 
 msgid "Custom Command"
@@ -3249,12 +3270,6 @@ msgstr ""
 msgid "Custom Alias"
 msgstr ""
 
-msgid "Client Internet Controls"
-msgstr ""
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr ""
-
 msgid "Reset Times"
 msgstr ""
 
@@ -3262,15 +3277,6 @@ msgid "Set reset times."
 msgstr ""
 
 msgid "View the asset register."
-msgstr ""
-
-msgid "Choose Location"
-msgstr ""
-
-msgid "You have not chosen a location."
-msgstr ""
-
-msgid "No locations have been created."
 msgstr ""
 
 msgid "Upload image error."
@@ -3390,6 +3396,9 @@ msgstr ""
 msgid "Configure Backup"
 msgstr ""
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr ""
+
 msgid "Blank backup name."
 msgstr ""
 
@@ -3405,10 +3414,13 @@ msgstr ""
 msgid "Blank backup status."
 msgstr ""
 
+msgid "Choose the folders you want to backup."
+msgstr ""
+
 msgid "View Backups"
 msgstr ""
 
-msgid "Choose the folders you want to backup."
+msgid "View backups for this server."
 msgstr ""
 
 msgid "View Monitor Logs"
@@ -3429,7 +3441,16 @@ msgstr ""
 msgid "Add Printer"
 msgstr ""
 
+msgid "Add a new printer queue."
+msgstr ""
+
 msgid "Delete Printer"
+msgstr ""
+
+msgid "Delete a new printer queue."
+msgstr ""
+
+msgid "Assigned Printers"
 msgstr ""
 
 msgid "View Assigned Printers"
@@ -3438,7 +3459,22 @@ msgstr ""
 msgid "Edit PPD"
 msgstr ""
 
+msgid "Edit a printer driver."
+msgstr ""
+
+msgid "Configure printing with Savapage."
+msgstr ""
+
 msgid "Locations"
+msgstr ""
+
+msgid "View locations."
+msgstr ""
+
+msgid "Show Printers"
+msgstr ""
+
+msgid "Show network printer queues."
 msgstr ""
 
 msgid "Windows Start menu - Select"
@@ -3747,10 +3783,10 @@ msgstr ""
 msgid "Allowed Mime Types"
 msgstr ""
 
-msgid "You have not chosen a server to enable or disable."
+msgid "Enable - Disable Network Backup"
 msgstr ""
 
-msgid "Enable - Disable Network Backup"
+msgid "You have not chosen a server to enable or disable."
 msgstr ""
 
 msgid "Wake on Lan - View"
@@ -4152,7 +4188,10 @@ msgstr ""
 msgid "An E-Mail alert has been sent."
 msgstr ""
 
-msgid "Show Printers"
+msgid "Add Printers"
+msgstr ""
+
+msgid "Add a network printer queue."
 msgstr ""
 
 msgid "There are no printer queues to delete."
@@ -4278,13 +4317,16 @@ msgstr ""
 msgid "Deleting print job"
 msgstr ""
 
-msgid "View Reverse Proxies"
-msgstr ""
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr ""
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
+msgstr ""
+
+msgid "Reverse Proxies"
+msgstr ""
+
+msgid "View Reverse Proxy entries."
 msgstr ""
 
 msgid "Target folder"
@@ -4327,12 +4369,6 @@ msgid "Choose the client computers that you want to allow or deny internet acces
 msgstr ""
 
 msgid "Choose location."
-msgstr ""
-
-msgid "Reset times"
-msgstr ""
-
-msgid "View the scheduled reset times."
 msgstr ""
 
 msgid "Allow All"
@@ -4443,6 +4479,9 @@ msgstr ""
 msgid "Add reset time"
 msgstr ""
 
+msgid "Reset times"
+msgstr ""
+
 msgid "Delete time"
 msgstr ""
 
@@ -4509,16 +4548,10 @@ msgstr ""
 msgid "This shows the printers that have been assigned to locations."
 msgstr ""
 
-msgid "Delete Printers"
-msgstr ""
-
-msgid "Add Location"
+msgid "Delete network printer queues."
 msgstr ""
 
 msgid "No Printers have been assigned to a location."
-msgstr ""
-
-msgid "Assigned Printers"
 msgstr ""
 
 msgid "Default"
@@ -4936,6 +4969,9 @@ msgid "A reverse proxy server has not been setup."
 msgstr ""
 
 msgid "The following sites are currently being redirected through this proxy server."
+msgstr ""
+
+msgid "Add a Reverse Proxy site."
 msgstr ""
 
 msgid "Target"
@@ -5400,13 +5436,22 @@ msgstr ""
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr ""
 
-msgid "Generate Drivers"
+msgid "Enable All"
 msgstr ""
 
-msgid "Enable all"
+msgid "Enable auto generation for all printers."
 msgstr ""
 
 msgid "Disable all"
+msgstr ""
+
+msgid "Disable auto generation for all printers."
+msgstr ""
+
+msgid "Generate Drivers"
+msgstr ""
+
+msgid "Generate printer drivers for all enabled printers."
 msgstr ""
 
 msgid "Windows printer driver generation completed."
@@ -6231,9 +6276,6 @@ msgstr ""
 msgid "The asset search cannot be blank."
 msgstr ""
 
-msgid "Enable All"
-msgstr ""
-
 msgid "Reset All"
 msgstr ""
 
@@ -6864,6 +6906,9 @@ msgstr ""
 msgid "Add Network Printer"
 msgstr ""
 
+msgid "Delete Printers"
+msgstr ""
+
 msgid "Enter in the name that you want for this printer."
 msgstr ""
 
@@ -7437,16 +7482,7 @@ msgstr ""
 msgid "Add Server Roles"
 msgstr ""
 
-msgid "Add addtional server roles."
-msgstr ""
-
 msgid "Management Users"
-msgstr ""
-
-msgid "Create additional Web Management users."
-msgstr ""
-
-msgid "Label existing groups."
 msgstr ""
 
 msgid "Add a User"
@@ -7455,37 +7491,13 @@ msgstr ""
 msgid "Room Locations"
 msgstr ""
 
-msgid "Add room locations for client computers."
-msgstr ""
-
 msgid "Join Clients"
-msgstr ""
-
-msgid "Join client computers to the domain."
-msgstr ""
-
-msgid "Edit Windows client profiles."
 msgstr ""
 
 msgid "Add Assets"
 msgstr ""
 
-msgid "Add client computers to the asset register."
-msgstr ""
-
-msgid "Setup printer queues."
-msgstr ""
-
 msgid "User Settings"
-msgstr ""
-
-msgid "Set the default user settings."
-msgstr ""
-
-msgid "Bulk create users from a CSV file."
-msgstr ""
-
-msgid "Set your default Web Management page."
 msgstr ""
 
 msgid "Record User Incident"
@@ -10223,7 +10235,19 @@ msgstr ""
 msgid "All servers backed up in turn starting at"
 msgstr ""
 
+msgid "Select the server you want to backup to."
+msgstr ""
+
 msgid "Change Time"
+msgstr ""
+
+msgid "Change the time that this backup is scheduled for."
+msgstr ""
+
+msgid "Enable or disable the backup."
+msgstr ""
+
+msgid "Add a folder to the backup."
 msgstr ""
 
 msgid "Stopping NTP Service"
@@ -10328,9 +10352,6 @@ msgstr ""
 msgid "Change Status"
 msgstr ""
 
-msgid "Reset Password"
-msgstr ""
-
 msgid "Internet Logs"
 msgstr ""
 
@@ -10362,9 +10383,6 @@ msgid "Network Monitoring"
 msgstr ""
 
 msgid "OCS-Inventory"
-msgstr ""
-
-msgid "Printer Accounting"
 msgstr ""
 
 msgid "Logs"
@@ -10413,6 +10431,9 @@ msgid "Change Exam Passwords"
 msgstr ""
 
 msgid "Change passwords for the exam accounts."
+msgstr ""
+
+msgid "Reset Password"
 msgstr ""
 
 msgid "Reset passwords for the exam accounts."
@@ -10797,9 +10818,6 @@ msgid "Configure time that the Linux clients automatically shutdown."
 msgstr ""
 
 msgid "View the status of the printer queues."
-msgstr ""
-
-msgid "Add a network printer queue."
 msgstr ""
 
 msgid "Delete Network Printer"

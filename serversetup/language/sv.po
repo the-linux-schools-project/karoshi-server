@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "Lämna"
 msgid "Reset"
 msgstr "Återställa"
 
+msgid "Client Internet Controls"
+msgstr "Client Internet Controls"
+
+msgid "Menu"
+msgstr "Meny"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Välj den plats som du vill tillåta eller neka internetåtkomst för."
+
+msgid "Choose Location"
+msgstr "Välj Plats"
+
+msgid "You have not chosen a location."
+msgstr "Du har inte valt en plats."
+
+msgid "No locations have been created."
+msgstr "Inga platser har skapats."
+
 msgid "Manage Print Queues"
 msgstr "Hantera utskriftsköer"
 
 msgid "A print server has not yet been set up."
 msgstr "En skrivarserver har ännu inte konfigurerats."
-
-msgid "Menu"
-msgstr "Meny"
 
 msgid "View Print Queues"
 msgstr "Visa utskriftsköer"
@@ -975,7 +990,7 @@ msgid "This will set up shell access via your Web Management to you main server.
 msgstr "Detta ställer in åtkomst till skal via din webbhantering till din huvudserver."
 
 msgid "This will reset the lockout attempts for a user after too many login attempts."
-msgstr "Detta återställer låsningsförsök för en användare efter alltför många inloggningsförsök."
+msgstr "Detta kommer att återställa låsningsförsök för en användare efter alltför många inloggningsförsök."
 
 msgid "Enter in the username that you want to reset the user lockout for."
 msgstr "Ange i användarnamnet som du vill återställa användarlåsningen för."
@@ -1485,7 +1500,7 @@ msgid "Delete Code"
 msgstr "Ta bort kod"
 
 msgid "Please enter the username that you want to delete. This WILL delete all of the user files and their home folder."
-msgstr "Ange användarnamnet som du vill radera. Detta kommer att radera alla användarfiler och deras hemmapp."
+msgstr "Ange användarnamnet som du vill radera. Detta kommer att ta bort alla användarfiler och deras hemmapp."
 
 msgid "Type in the number displayed to confirm that you want to delete the user."
 msgstr "Skriv in numret som visas för att bekräfta att du vill radera användaren."
@@ -2345,14 +2360,20 @@ msgstr "Felaktigt datumformat."
 msgid "Backup logs"
 msgstr "Backup loggar"
 
+msgid "These are the backup logs for your server."
+msgstr "Det här är säkerhetskopieringsloggen för din server."
+
 msgid "Detailed logs"
 msgstr "Detaljerade loggar"
+
+msgid "View detailed backup logs."
+msgstr "Visa detaljerade backuploggar."
 
 msgid "Summary logs"
 msgstr "Sammanfattningsloggar"
 
-msgid "These are the backup logs for your server."
-msgstr "Det här är säkerhetskopieringsloggen för din server."
+msgid "View a summary of the backup logs."
+msgstr "Visa en sammanfattning av säkerhetskopieringsloggen."
 
 msgid "Custom Command"
 msgstr "Anpassad kommando"
@@ -3248,12 +3269,6 @@ msgstr "Ange i ditt val av postdomän utan http: // www. Exempel myemaildomain.c
 msgid "Custom Alias"
 msgstr "Anpassat alias"
 
-msgid "Client Internet Controls"
-msgstr "Client Internet Controls"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Välj den plats som du vill tillåta eller neka internetåtkomst för."
-
 msgid "Reset Times"
 msgstr "Återställningstider"
 
@@ -3262,15 +3277,6 @@ msgstr "Ställ in återställda tider."
 
 msgid "View the asset register."
 msgstr "Visa tillgångsregistret."
-
-msgid "Choose Location"
-msgstr "Välj Plats"
-
-msgid "You have not chosen a location."
-msgstr "Du har inte valt en plats."
-
-msgid "No locations have been created."
-msgstr "Inga platser har skapats."
 
 msgid "Upload image error."
 msgstr "Ladda upp bildfel."
@@ -3389,6 +3395,9 @@ msgstr "Detta lägger till i namnet på en anpassad roll som du har lagt till p�
 msgid "Configure Backup"
 msgstr "Konfigurera säkerhetskopiering"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA ENTRY // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Blank backup namn."
 
@@ -3404,11 +3413,14 @@ msgstr "Blank backup servernamn."
 msgid "Blank backup status."
 msgstr "Blank backup status."
 
+msgid "Choose the folders you want to backup."
+msgstr "Välj de mappar du vill säkerhetskopiera."
+
 msgid "View Backups"
 msgstr "Visa säkerhetskopior"
 
-msgid "Choose the folders you want to backup."
-msgstr "Välj de mappar du vill säkerhetskopiera."
+msgid "View backups for this server."
+msgstr "Visa säkerhetskopior för den här servern."
 
 msgid "View Monitor Logs"
 msgstr "Visa övervakningsloggar"
@@ -3428,8 +3440,17 @@ msgstr "Ingen övervakningsserver har upprättats."
 msgid "Add Printer"
 msgstr "Lägg till skrivare"
 
+msgid "Add a new printer queue."
+msgstr "Lägg till en ny skrivarkö."
+
 msgid "Delete Printer"
 msgstr "Ta bort skrivare"
+
+msgid "Delete a new printer queue."
+msgstr "Ta bort en ny skrivarkö."
+
+msgid "Assigned Printers"
+msgstr "Tilldelade skrivare"
 
 msgid "View Assigned Printers"
 msgstr "Visa tilldelade skrivare"
@@ -3437,8 +3458,23 @@ msgstr "Visa tilldelade skrivare"
 msgid "Edit PPD"
 msgstr "Redigera PPD"
 
+msgid "Edit a printer driver."
+msgstr "Redigera en skrivardrivrutin."
+
+msgid "Configure printing with Savapage."
+msgstr "Konfigurera utskrift med Savapage."
+
 msgid "Locations"
 msgstr "platser"
+
+msgid "View locations."
+msgstr "Visa platser."
+
+msgid "Show Printers"
+msgstr "Visa skrivare"
+
+msgid "Show network printer queues."
+msgstr "Visa nätverksskrivarköer."
 
 msgid "Windows Start menu - Select"
 msgstr "Windows Start-meny - Välj"
@@ -3746,11 +3782,11 @@ msgstr "Setup Xerte"
 msgid "Allowed Mime Types"
 msgstr "Tillåtna Mime Typer"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "Du har inte valt en server för att aktivera eller inaktivera."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Aktivera - Inaktivera Nätverksbackup"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "Du har inte valt en server för att aktivera eller inaktivera."
 
 msgid "Wake on Lan - View"
 msgstr "Vakna på Lan - Utsikt"
@@ -3942,7 +3978,7 @@ msgid "No sites for this search exist in this log."
 msgstr "Inga sidor för denna sökning finns i den här loggen."
 
 msgid "This will setup up the CAS single sign on solution."
-msgstr "Detta ställer in CAS-enstegs på lösningen."
+msgstr "Detta kommer att konfigurera CAS-enstaka skyltlösning."
 
 msgid "WARNING - An internet connect is required to install this module."
 msgstr "VARNING - En internetanslutning krävs för att installera den här modulen."
@@ -4151,8 +4187,11 @@ msgstr "Du har inte angett ett namn för den här varningen."
 msgid "An E-Mail alert has been sent."
 msgstr "En e-postvarning har skickats."
 
-msgid "Show Printers"
-msgstr "Visa skrivare"
+msgid "Add Printers"
+msgstr "Lägg till skrivare"
+
+msgid "Add a network printer queue."
+msgstr "Lägg till en nätverksskrivarkö."
 
 msgid "There are no printer queues to delete."
 msgstr "Det finns inga skrivarköer att radera."
@@ -4277,14 +4316,17 @@ msgstr "Rensa skrivarkön."
 msgid "Deleting print job"
 msgstr "Radera utskriftsjobb"
 
-msgid "View Reverse Proxies"
-msgstr "Visa omvända proxies"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "Funktionen omvänd proxy tillåter inkommande webbanslutningar på port 80 och 443 att passera genom omvänd proxy till andra servrar i ditt nätverk."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Detta kringgår behovet av subdomäner och alias tcpip-nummer för extern åtkomst och kommer också att tillåta all extern ssl-trafik att använda ett ssl-certifikat för att autentisera webbplatser."
+
+msgid "Reverse Proxies"
+msgstr "Reverse Proxies"
+
+msgid "View Reverse Proxy entries."
+msgstr "Visa Reverse Proxy-poster."
 
 msgid "Target folder"
 msgstr "Målmapp"
@@ -4327,12 +4369,6 @@ msgstr "Välj de klientdatorer du vill tillåta eller neka åtkomst till."
 
 msgid "Choose location."
 msgstr "Välj plats."
-
-msgid "Reset times"
-msgstr "Återställningstider"
-
-msgid "View the scheduled reset times."
-msgstr "Visa de schemalagda återställningstiderna."
 
 msgid "Allow All"
 msgstr "Tillåt alla"
@@ -4442,6 +4478,9 @@ msgstr "Visa rumsregler."
 msgid "Add reset time"
 msgstr "Lägg till återställningstid"
 
+msgid "Reset times"
+msgstr "Återställningstider"
+
 msgid "Delete time"
 msgstr "Ta bort tid"
 
@@ -4508,17 +4547,11 @@ msgstr "Visa och lägg till e-postvarningar"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Detta visar skrivarna som har tilldelats platser."
 
-msgid "Delete Printers"
-msgstr "Ta bort skrivare"
-
-msgid "Add Location"
-msgstr "Lägg till plats"
+msgid "Delete network printer queues."
+msgstr "Ta bort nätverksskrivarköer."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Inga skrivare har tilldelats en plats."
-
-msgid "Assigned Printers"
-msgstr "Tilldelade skrivare"
 
 msgid "Default"
 msgstr "Standard"
@@ -4937,6 +4970,9 @@ msgstr "En omvänd proxyserver har inte installerats."
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Följande webbplatser omdirigeras för närvarande via denna proxyserver."
 
+msgid "Add a Reverse Proxy site."
+msgstr "Lägg till en omvänd proxy-webbplats."
+
 msgid "Target"
 msgstr "Mål"
 
@@ -5157,7 +5193,7 @@ msgid "Federated File Synchronisation"
 msgstr "Federated File Synchronization"
 
 msgid "This allows you to send e-mail alerts in the event of a network failure."
-msgstr "Det här låter dig skicka e-postmeddelanden om ett nätverksfel uppstår."
+msgstr "Det här låter dig skicka e-postmeddelanden vid ett nätverksfel."
 
 msgid "View E-Mail alerts"
 msgstr "Visa e-postvarningar"
@@ -5399,14 +5435,23 @@ msgstr "Windows skrivardrivrutiner"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Detta används för att aktivera eller inaktivera automatisk Windows-skrivardrivrutingenerering för dina utskriftsköer."
 
-msgid "Generate Drivers"
-msgstr "Generera drivrutiner"
-
-msgid "Enable all"
+msgid "Enable All"
 msgstr "Aktivera alla"
+
+msgid "Enable auto generation for all printers."
+msgstr "Aktivera automatisk generation för alla skrivare."
 
 msgid "Disable all"
 msgstr "Inaktivera alla"
+
+msgid "Disable auto generation for all printers."
+msgstr "Inaktivera automatisk generation för alla skrivare."
+
+msgid "Generate Drivers"
+msgstr "Generera drivrutiner"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Generera skrivardrivrutiner för alla aktiverade skrivare."
 
 msgid "Windows printer driver generation completed."
 msgstr "Windows skrivardrivrutin generation slutförd."
@@ -6230,9 +6275,6 @@ msgstr "DHCP-ändringarna har tillämpats."
 msgid "The asset search cannot be blank."
 msgstr "Aktivsökningen kan inte vara tom."
 
-msgid "Enable All"
-msgstr "Aktivera alla"
-
 msgid "Reset All"
 msgstr "Återställ allt"
 
@@ -6863,6 +6905,9 @@ msgstr "Spela in en händelse som inträffat."
 msgid "Add Network Printer"
 msgstr "Lägg till nätverksskrivare"
 
+msgid "Delete Printers"
+msgstr "Ta bort skrivare"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Skriv in det namn du vill ha för den här skrivaren."
 
@@ -7436,17 +7481,8 @@ msgstr "Ladda upp Karoshi Linux Profile"
 msgid "Add Server Roles"
 msgstr "Lägg till serverroller"
 
-msgid "Add addtional server roles."
-msgstr "Lägg till ytterligare serverroller."
-
 msgid "Management Users"
 msgstr "Management Användare"
-
-msgid "Create additional Web Management users."
-msgstr "Skapa ytterligare webbhanteringsanvändare."
-
-msgid "Label existing groups."
-msgstr "Märk befintliga grupper."
 
 msgid "Add a User"
 msgstr "Lägg till en användare"
@@ -7454,38 +7490,14 @@ msgstr "Lägg till en användare"
 msgid "Room Locations"
 msgstr "Rumsplatser"
 
-msgid "Add room locations for client computers."
-msgstr "Lägg till rumsplatser för klientdatorer."
-
 msgid "Join Clients"
 msgstr "Gå med i klienterna"
-
-msgid "Join client computers to the domain."
-msgstr "Gå med i klientdatorer till domänen."
-
-msgid "Edit Windows client profiles."
-msgstr "Redigera Windows-klientprofiler."
 
 msgid "Add Assets"
 msgstr "Lägg till tillgångar"
 
-msgid "Add client computers to the asset register."
-msgstr "Lägg till klientdatorer i tillgångsregistret."
-
-msgid "Setup printer queues."
-msgstr "Konfigurera skrivarköer."
-
 msgid "User Settings"
 msgstr "Användarinställningar"
-
-msgid "Set the default user settings."
-msgstr "Ange standardanvändarinställningarna."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Bulk skapar användare från en CSV-fil."
-
-msgid "Set your default Web Management page."
-msgstr "Ange din standard webbhanteringssida."
 
 msgid "Record User Incident"
 msgstr "Spela in användarincident"
@@ -10205,8 +10217,20 @@ msgstr "Lämna tiden tom för automatisk schema."
 msgid "All servers backed up in turn starting at"
 msgstr "Alla servrar som säkerhetskopieras i sin tur börjar vid"
 
+msgid "Select the server you want to backup to."
+msgstr "Välj den server du vill säkerhetskopiera till."
+
 msgid "Change Time"
 msgstr "Ändra tid"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Ändra den tid som denna säkerhetskopiering är planerad till."
+
+msgid "Enable or disable the backup."
+msgstr "Aktivera eller inaktivera säkerhetskopian."
+
+msgid "Add a folder to the backup."
+msgstr "Lägg till en mapp till säkerhetskopian."
 
 msgid "Stopping NTP Service"
 msgstr "Stoppar NTP-tjänsten"
@@ -10310,9 +10334,6 @@ msgstr "Ingen åtkomst"
 msgid "Change Status"
 msgstr "Ändra status"
 
-msgid "Reset Password"
-msgstr "Återställ lösenord"
-
 msgid "Internet Logs"
 msgstr "Internet-loggar"
 
@@ -10345,9 +10366,6 @@ msgstr "Nätverksövervakning"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Inventory"
-
-msgid "Printer Accounting"
-msgstr "Skrivarkonto"
 
 msgid "Logs"
 msgstr "loggar"
@@ -10396,6 +10414,9 @@ msgstr "Ändra examenslösenord"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Ändra lösenord för examenskonton."
+
+msgid "Reset Password"
+msgstr "Återställ lösenord"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Återställ lösenord för examenskonton."
@@ -10780,9 +10801,6 @@ msgstr "Konfigurera tiden att Linux-klienterna automatiskt stängs av."
 
 msgid "View the status of the printer queues."
 msgstr "Visa status för skrivarkön."
-
-msgid "Add a network printer queue."
-msgstr "Lägg till en nätverksskrivarkö."
 
 msgid "Delete Network Printer"
 msgstr "Ta bort nätverksskrivare"

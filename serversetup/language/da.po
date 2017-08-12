@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,7 +273,7 @@ msgid "Configuring the monitoring system"
 msgstr "Konfiguration af overvågningssystemet"
 
 msgid "Starting Mon"
-msgstr "Startende mån"
+msgstr "Starter kl"
 
 msgid "Creating the Xibo database in mysql"
 msgstr "Oprettelse af Xibo-databasen i mysql"
@@ -533,14 +533,29 @@ msgstr "Indsend"
 msgid "Reset"
 msgstr "Nulstille"
 
+msgid "Client Internet Controls"
+msgstr "Client Internet Controls"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Vælg den placering, du vil tillade eller nægte internetadgang til."
+
+msgid "Choose Location"
+msgstr "Vælg Placering"
+
+msgid "You have not chosen a location."
+msgstr "Du har ikke valgt en placering."
+
+msgid "No locations have been created."
+msgstr "Ingen placeringer er blevet oprettet."
+
 msgid "Manage Print Queues"
 msgstr "Administrer udskriftskøer"
 
 msgid "A print server has not yet been set up."
 msgstr "En printserver er endnu ikke oprettet."
-
-msgid "Menu"
-msgstr "Menu"
 
 msgid "View Print Queues"
 msgstr "Se udskriftskøer"
@@ -885,7 +900,7 @@ msgid "Secondary group"
 msgstr "Sekundær gruppe"
 
 msgid "Enter in the name of a new supplementary group that you want to create."
-msgstr "Indtast i navnet på en ny supplerende gruppe, du vil oprette."
+msgstr "Indtast i navnet på en ny supplerende gruppe, som du vil oprette."
 
 msgid "Secondary groups can be used for subfolders in existing shares to restrict access to memebers of the group."
 msgstr "Sekundære grupper kan bruges til undermapper i eksisterende aktier for at begrænse adgangen til medlemmer af gruppen."
@@ -1143,7 +1158,7 @@ msgid "Add Wireless Zone"
 msgstr "Tilføj Wireless Zone"
 
 msgid "This allows WPA II enterprise wireless access points to be used. This key will need to match the key supplied to the wireless access points."
-msgstr "Dette gør det muligt at bruge WPA II-virksomhedens trådløse adgangspunkter. Denne nøgle bliver nødt til at matche nøglen til de trådløse adgangspunkter."
+msgstr "Dette gør det muligt at bruge WPA II-virksomhedens trådløse adgangspunkter. Denne nøgle skal matche den nøgle, der leveres til de trådløse adgangspunkter."
 
 msgid "The wireless access points will authenticate using usernames and passwords via a radius server and LDAP on the PDC."
 msgstr "De trådløse adgangspunkter vil autentificere ved hjælp af brugernavne og adgangskoder via en radiusserver og LDAP på PDC."
@@ -1305,7 +1320,7 @@ msgid "Authentication type"
 msgstr "Godkendelsestype"
 
 msgid "In most cases your extra server will need to recognise your network users and groups."
-msgstr "I de fleste tilfælde skal din ekstra server genkende dine netværksbrugere og -grupper."
+msgstr "I de fleste tilfælde skal din ekstra server genkende dine netværksbrugere og grupper."
 
 msgid "Additional domain controller"
 msgstr "Yderligere domænecontroller"
@@ -2345,14 +2360,20 @@ msgstr "Forkert datoformat."
 msgid "Backup logs"
 msgstr "Backup logs"
 
+msgid "These are the backup logs for your server."
+msgstr "Dette er sikkerhedskopieringsloggen til din server."
+
 msgid "Detailed logs"
 msgstr "Detaljerede logfiler"
+
+msgid "View detailed backup logs."
+msgstr "Se detaljerede backup logfiler."
 
 msgid "Summary logs"
 msgstr "Sammendrag logs"
 
-msgid "These are the backup logs for your server."
-msgstr "Dette er sikkerhedskopieringsloggen til din server."
+msgid "View a summary of the backup logs."
+msgstr "Se et resumé af backup-logfilerne."
 
 msgid "Custom Command"
 msgstr "Brugerdefineret kommando"
@@ -3248,12 +3269,6 @@ msgstr "Indtast i dit valg af postdomæne uden http: // www. Eksempel myemaildom
 msgid "Custom Alias"
 msgstr "Brugerdefineret alias"
 
-msgid "Client Internet Controls"
-msgstr "Client Internet Controls"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Vælg den placering, du vil tillade eller nægte internetadgang til."
-
 msgid "Reset Times"
 msgstr "Reset Times"
 
@@ -3262,15 +3277,6 @@ msgstr "Indstil nulstilletider."
 
 msgid "View the asset register."
 msgstr "Se aktivregisteret."
-
-msgid "Choose Location"
-msgstr "Vælg Placering"
-
-msgid "You have not chosen a location."
-msgstr "Du har ikke valgt en placering."
-
-msgid "No locations have been created."
-msgstr "Ingen placeringer er blevet oprettet."
 
 msgid "Upload image error."
 msgstr "Upload billedfejl."
@@ -3389,6 +3395,9 @@ msgstr "Dette vil tilføjes i navnet på en brugerdefineret rolle, du har tilfø
 msgid "Configure Backup"
 msgstr "Konfigurer sikkerhedskopiering"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA ENTRY // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Blank backup navn."
 
@@ -3404,11 +3413,14 @@ msgstr "Blank backup servernavn."
 msgid "Blank backup status."
 msgstr "Blank backup status."
 
+msgid "Choose the folders you want to backup."
+msgstr "Vælg de mapper, du vil sikkerhedskopiere."
+
 msgid "View Backups"
 msgstr "Se sikkerhedskopier"
 
-msgid "Choose the folders you want to backup."
-msgstr "Vælg de mapper, du vil sikkerhedskopiere."
+msgid "View backups for this server."
+msgstr "Se sikkerhedskopier til denne server."
 
 msgid "View Monitor Logs"
 msgstr "Se Monitor Logs"
@@ -3428,8 +3440,17 @@ msgstr "Ingen overvågningsserver er blevet oprettet."
 msgid "Add Printer"
 msgstr "Tilføj printer"
 
+msgid "Add a new printer queue."
+msgstr "Tilføj en ny printerkø."
+
 msgid "Delete Printer"
 msgstr "Slet printer"
+
+msgid "Delete a new printer queue."
+msgstr "Slet en ny printerkø."
+
+msgid "Assigned Printers"
+msgstr "Tildelte printere"
 
 msgid "View Assigned Printers"
 msgstr "Se tildelte printere"
@@ -3437,8 +3458,23 @@ msgstr "Se tildelte printere"
 msgid "Edit PPD"
 msgstr "Rediger PPD"
 
+msgid "Edit a printer driver."
+msgstr "Rediger en printerdriver."
+
+msgid "Configure printing with Savapage."
+msgstr "Konfigurér udskrivning med Savapage."
+
 msgid "Locations"
 msgstr "Placeringer"
+
+msgid "View locations."
+msgstr "Se steder."
+
+msgid "Show Printers"
+msgstr "Vis printere"
+
+msgid "Show network printer queues."
+msgstr "Vis netværksprinterkøer."
 
 msgid "Windows Start menu - Select"
 msgstr "Windows Start menu - Vælg"
@@ -3746,11 +3782,11 @@ msgstr "Opsætning Xerte"
 msgid "Allowed Mime Types"
 msgstr "Tilladte Mime Typer"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "Du har ikke valgt en server til at aktivere eller deaktivere."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Aktivér - Deaktiver netværkssikkerhedskopiering"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "Du har ikke valgt en server til at aktivere eller deaktivere."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on Lan - View"
@@ -3936,7 +3972,7 @@ msgid "The log date must not be blank."
 msgstr "Log-datoen må ikke være tom."
 
 msgid "No log exists for this date."
-msgstr "Der er ingen log til denne dato."
+msgstr "Der findes ingen log til denne dato."
 
 msgid "No sites for this search exist in this log."
 msgstr "Der findes ingen websteder til denne søgning i denne logfil."
@@ -4151,8 +4187,11 @@ msgstr "Du har ikke indtastet et navn til denne advarsel."
 msgid "An E-Mail alert has been sent."
 msgstr "En e-mail-alarm er blevet sendt."
 
-msgid "Show Printers"
-msgstr "Vis printere"
+msgid "Add Printers"
+msgstr "Tilføj printere"
+
+msgid "Add a network printer queue."
+msgstr "Tilføj en netværksprinter kø."
 
 msgid "There are no printer queues to delete."
 msgstr "Der er ingen printerkøer at slette."
@@ -4277,14 +4316,17 @@ msgstr "Rydning af printerkøen."
 msgid "Deleting print job"
 msgstr "Sletter udskriftsjob"
 
-msgid "View Reverse Proxies"
-msgstr "Se Reverse Proxies"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "Den omvendte proxy-funktion tillader indkommende webforbindelser på port 80 og 443 at passere gennem omvendt proxy til andre servere på dit netværk."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Dette omgå behovet for underdomæner og alias tcpip numre til ekstern adgang og vil også tillade, at alle eksterne ssl-trafik bruger ét ssl-certifikat til at autentificere webstederne."
+
+msgid "Reverse Proxies"
+msgstr "Reverse Proxies"
+
+msgid "View Reverse Proxy entries."
+msgstr "Se Reverse Proxy-poster."
 
 msgid "Target folder"
 msgstr "Målmappe"
@@ -4327,12 +4369,6 @@ msgstr "Vælg de klientcomputere, du vil tillade eller nægte internetadgang til
 
 msgid "Choose location."
 msgstr "Vælg sted."
-
-msgid "Reset times"
-msgstr "Nulstil tider"
-
-msgid "View the scheduled reset times."
-msgstr "Se de planlagte nulstilletider."
 
 msgid "Allow All"
 msgstr "Tillad alt"
@@ -4442,6 +4478,9 @@ msgstr "Se værelse kontrol."
 msgid "Add reset time"
 msgstr "Tilføj reset tid"
 
+msgid "Reset times"
+msgstr "Nulstil tider"
+
 msgid "Delete time"
 msgstr "Slet tid"
 
@@ -4508,17 +4547,11 @@ msgstr "Se og tilføj E-mail Alerts"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Dette viser de printere, der er blevet tildelt til placeringer."
 
-msgid "Delete Printers"
-msgstr "Slet printere"
-
-msgid "Add Location"
-msgstr "Tilføj placering"
+msgid "Delete network printer queues."
+msgstr "Slet netværksprinterkøer."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Ingen printere er blevet tildelt til en placering."
-
-msgid "Assigned Printers"
-msgstr "Tildelte printere"
 
 msgid "Default"
 msgstr "Standard"
@@ -4937,6 +4970,9 @@ msgstr "En omvendt proxyserver er ikke konfigureret."
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Følgende websteder omdirigeres i øjeblikket via denne proxyserver."
 
+msgid "Add a Reverse Proxy site."
+msgstr "Tilføj et omvendt proxy-websted."
+
 msgid "Target"
 msgstr "Mål"
 
@@ -5010,7 +5046,7 @@ msgid "The monitor server provides visual, email, and text alerts for any device
 msgstr "Skærmserveren giver visuelle, e-mail- og tekstadvarsler til enheder, der er offline. Du kan tilføje enheder, der skal overvåges i webstyringen."
 
 msgid "The monitor server provides visual, email, and text alerts for any devices that are offline. You can add devices to be monitored in the Web Management."
-msgstr "Skærmserveren giver visuelle, e-mail- og tekstadvarsler til enheder, der er offline. Du kan tilføje enheder, der skal overvåges i Web Management."
+msgstr "Skærmserveren giver visuelle, e-mail- og tekstadvarsler til enheder, der er offline. Du kan tilføje enheder, som skal overvåges i Web Management."
 
 msgid "Web Management Information"
 msgstr "Web Management Information"
@@ -5399,14 +5435,23 @@ msgstr "Windows printerdrivere"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Dette bruges til at aktivere eller deaktivere automatisk Windows-printerdrivergenerering til dine udskriftskøer."
 
-msgid "Generate Drivers"
-msgstr "Generer drivere"
-
-msgid "Enable all"
+msgid "Enable All"
 msgstr "Aktivér alle"
+
+msgid "Enable auto generation for all printers."
+msgstr "Aktivér automatisk generation for alle printere."
 
 msgid "Disable all"
 msgstr "Slå alt fra"
+
+msgid "Disable auto generation for all printers."
+msgstr "Deaktiver automatisk generation for alle printere."
+
+msgid "Generate Drivers"
+msgstr "Generer drivere"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Generer printerdrivere til alle aktiverede printere."
 
 msgid "Windows printer driver generation completed."
 msgstr "Windows-printerdrivergenerering afsluttet."
@@ -6075,7 +6120,7 @@ msgid "Full access - allow the user to send and receive E-mails to all domains."
 msgstr "Fuld adgang - tillader brugeren at sende og modtage e-mails til alle domæner."
 
 msgid "Restricted - limit the user to sending and receiving E-Mails from domains on the restricted list. This list defaults to your domain."
-msgstr "Begrænset - Begræns brugeren til at sende og modtage e-mails fra domæner på den begrænsede liste. Denne liste er standard til dit domæne."
+msgstr "Begrænset - begræns brugeren til at sende og modtage e-mails fra domæner på den begrænsede liste. Denne liste er standard til dit domæne."
 
 msgid "No Access - the user will not be able to send or receive any E-Mails."
 msgstr "Ingen adgang - brugeren kan ikke sende eller modtage e-mails."
@@ -6229,9 +6274,6 @@ msgstr "DHCP-ændringerne er blevet anvendt."
 
 msgid "The asset search cannot be blank."
 msgstr "Aktivsøgningen kan ikke være tom."
-
-msgid "Enable All"
-msgstr "Aktivér alle"
 
 msgid "Reset All"
 msgstr "Nulstil alt"
@@ -6863,6 +6905,9 @@ msgstr "Optag en hændelse, der er opstået."
 msgid "Add Network Printer"
 msgstr "Tilføj netværksprinter"
 
+msgid "Delete Printers"
+msgstr "Slet printere"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Indtast det navn, du vil have til denne printer."
 
@@ -7089,13 +7134,13 @@ msgid "SSH Server"
 msgstr "SSH Server"
 
 msgid "This will allow remote ssh access to your main server. This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "Dette vil tillade remote ssh adgang til din primære server. Dette kan også bruges til at deltage i denne server op til et andet karoshi-system, så brugerne, der oprettes på master-serveren, også oprettes her."
+msgstr "Dette vil tillade remote ssh adgang til din primære server. Dette kan også bruges til at deltage i denne server op til et andet karoshi-system, så brugere, der oprettes på master-serveren, også oprettes her."
 
 msgid "This will allow remote ssh access to your main server."
 msgstr "Dette vil tillade remote ssh adgang til din primære server."
 
 msgid "This can also be used to join this server up to another karoshi system so that users created on the master server will also be created here."
-msgstr "Dette kan også bruges til at deltage i denne server op til et andet karoshi-system, så brugerne, der oprettes på master-serveren, også oprettes her."
+msgstr "Dette kan også bruges til at deltage i denne server op til et andet karoshi-system, så brugere, der oprettes på master-serveren, også oprettes her."
 
 msgid "Web Hosting"
 msgstr "Web Hosting"
@@ -7152,7 +7197,7 @@ msgid "Status not changed."
 msgstr "Status ikke ændret."
 
 msgid "OCS Inventory is a system that collects information about your client computers and stores it in a mysql database."
-msgstr "OCS Inventory er et system, der indsamler oplysninger om dine klientcomputere og gemmer det i en mysql-database."
+msgstr "OCS Inventory er et system, der indsamler oplysninger om dine klientcomputere og gemmer det i en mysql database."
 
 msgid "Apply SSL Certificate"
 msgstr "Anvend SSL-certifikat"
@@ -7436,17 +7481,8 @@ msgstr "Upload Karoshi Linux Profile"
 msgid "Add Server Roles"
 msgstr "Tilføj serverroller"
 
-msgid "Add addtional server roles."
-msgstr "Tilføj yderligere serverroller."
-
 msgid "Management Users"
 msgstr "Administrationsbrugere"
-
-msgid "Create additional Web Management users."
-msgstr "Opret yderligere Web Management brugere."
-
-msgid "Label existing groups."
-msgstr "Mærk eksisterende grupper."
 
 msgid "Add a User"
 msgstr "Tilføj en bruger"
@@ -7454,38 +7490,14 @@ msgstr "Tilføj en bruger"
 msgid "Room Locations"
 msgstr "Værelsessteder"
 
-msgid "Add room locations for client computers."
-msgstr "Tilføj pladslokaler til klientcomputere."
-
 msgid "Join Clients"
 msgstr "Tilmeld dig klienter"
-
-msgid "Join client computers to the domain."
-msgstr "Deltag klientcomputere i domænet."
-
-msgid "Edit Windows client profiles."
-msgstr "Rediger Windows klientprofiler."
 
 msgid "Add Assets"
 msgstr "Tilføj aktiver"
 
-msgid "Add client computers to the asset register."
-msgstr "Tilføj klientcomputere til aktivregisteret."
-
-msgid "Setup printer queues."
-msgstr "Indstil printerkøer."
-
 msgid "User Settings"
 msgstr "Brugerindstillinger"
-
-msgid "Set the default user settings."
-msgstr "Indstil standard brugerindstillinger."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Bulk opretter brugere fra en CSV-fil."
-
-msgid "Set your default Web Management page."
-msgstr "Indstil din standard Web Management side."
 
 msgid "Record User Incident"
 msgstr "Optag brugerhændelse"
@@ -9741,7 +9753,7 @@ msgid "Are you sure that you want to delete this alias?"
 msgstr "Er du sikker på, at du vil slette dette alias?"
 
 msgid "Enter in the username that you want to add an alias to. This username has to exist on the system."
-msgstr "Indtast det brugernavn, du vil tilføje et alias til. Dette brugernavn skal eksistere på systemet."
+msgstr "Indtast i brugernavnet, som du vil tilføje et alias til. Dette brugernavn skal eksistere på systemet."
 
 msgid "Enter in the alias that you want for the username."
 msgstr "Indtast i aliaset, du vil have til brugernavnet."
@@ -10205,8 +10217,20 @@ msgstr "Lad tid blinke til automatisk tidsplan."
 msgid "All servers backed up in turn starting at"
 msgstr "Alle servere sikkerhedskopieres igen og starter fra"
 
+msgid "Select the server you want to backup to."
+msgstr "Vælg den server, du vil sikkerhedskopiere til."
+
 msgid "Change Time"
 msgstr "Skift tid"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Skift tidspunktet for denne sikkerhedskopiering."
+
+msgid "Enable or disable the backup."
+msgstr "Aktivér eller deaktiver backupen."
+
+msgid "Add a folder to the backup."
+msgstr "Tilføj en mappe til backupen."
 
 msgid "Stopping NTP Service"
 msgstr "Stop NTP Service"
@@ -10310,9 +10334,6 @@ msgstr "Ingen adgang"
 msgid "Change Status"
 msgstr "Skift status"
 
-msgid "Reset Password"
-msgstr "Nulstille kodeord"
-
 msgid "Internet Logs"
 msgstr "Internet logfiler"
 
@@ -10345,9 +10366,6 @@ msgstr "Netværksovervågning"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Inventory"
-
-msgid "Printer Accounting"
-msgstr "Printerregnskab"
 
 msgid "Logs"
 msgstr "Logs"
@@ -10396,6 +10414,9 @@ msgstr "Ændre eksamensadgangskoder"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Skift adgangskoder til eksamenskonti."
+
+msgid "Reset Password"
+msgstr "Nulstille kodeord"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Nulstil adgangskoder til eksamenskonti."
@@ -10482,7 +10503,7 @@ msgid "ZFS Raid"
 msgstr "ZFS Raid"
 
 msgid "View ZFS share that have been set up on your servers."
-msgstr "Se ZFS-del, der er oprettet på dine servere."
+msgstr "Se ZFS-share, der er oprettet på dine servere."
 
 msgid "View software raids that have been set up on your servers."
 msgstr "Se software raids, der er oprettet på dine servere."
@@ -10614,7 +10635,7 @@ msgid "Backup"
 msgstr "Backup"
 
 msgid "Configure a backup for a server."
-msgstr "Konfiguration af en backup for en server."
+msgstr "Konfigurer en sikkerhedskopi til en server."
 
 msgid "Enable or disable a backup for a server."
 msgstr "Aktivér eller deaktiver en sikkerhedskopi til en server."
@@ -10780,9 +10801,6 @@ msgstr "Konfigurer tidspunkt, som Linux-klienterne automatisk lukker."
 
 msgid "View the status of the printer queues."
 msgstr "Se status for printerkøerne."
-
-msgid "Add a network printer queue."
-msgstr "Tilføj en netværksprinter kø."
 
 msgid "Delete Network Printer"
 msgstr "Slet netværksprinter"

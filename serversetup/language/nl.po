@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "voorleggen"
 msgid "Reset"
 msgstr "Reset"
 
+msgid "Client Internet Controls"
+msgstr "Client Internet Controls"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Kies de locatie die u wilt toestaan ​​of weigeren toegang tot internet voor."
+
+msgid "Choose Location"
+msgstr "Kies Locatie"
+
+msgid "You have not chosen a location."
+msgstr "U heeft geen locatie gekozen."
+
+msgid "No locations have been created."
+msgstr "Er zijn geen locaties gecreëerd."
+
 msgid "Manage Print Queues"
 msgstr "Beheer afdrukwachtrijen"
 
 msgid "A print server has not yet been set up."
 msgstr "Er is nog geen printerserver ingesteld."
-
-msgid "Menu"
-msgstr "Menu"
 
 msgid "View Print Queues"
 msgstr "Bekijk afdrukwachtrijen"
@@ -897,7 +912,7 @@ msgid "Enter in the name of the new primary group that you want to create."
 msgstr "Vul in de naam van de nieuwe primaire groep die u wilt maken."
 
 msgid "This could be used where you need different profiles for staff and require more staff groups."
-msgstr "Dit zou kunnen worden gebruikt waar u verschillende profielen voor personeel nodig hebt en meer personeelsgroepen nodig heeft."
+msgstr "Dit kan gebruikt worden waar u verschillende profielen voor personeel nodig hebt en meer personeelsgroepen nodig heeft."
 
 msgid "Home Server"
 msgstr "Home Server"
@@ -2345,14 +2360,20 @@ msgstr "Incorrect datumformaat."
 msgid "Backup logs"
 msgstr "Backup logboeken"
 
+msgid "These are the backup logs for your server."
+msgstr "Dit zijn de back-uplogboeken voor uw server."
+
 msgid "Detailed logs"
 msgstr "Gedetailleerde logs"
+
+msgid "View detailed backup logs."
+msgstr "Bekijk gedetailleerde back-uplogboeken."
 
 msgid "Summary logs"
 msgstr "Overzicht logboeken"
 
-msgid "These are the backup logs for your server."
-msgstr "Dit zijn de back-uplogboeken voor uw server."
+msgid "View a summary of the backup logs."
+msgstr "Bekijk een samenvatting van de back-uplogboeken."
 
 msgid "Custom Command"
 msgstr "Aangepaste opdracht"
@@ -2703,7 +2724,7 @@ msgid "DNS Settings"
 msgstr "DNS-instellingen"
 
 msgid "This allows you to view, edit, and delete the local dns entries on your system."
-msgstr "Hierdoor kunt u de lokale DNS-invoer op uw systeem bekijken, bewerken en verwijderen."
+msgstr "Hierdoor kunt u de lokale dns-vermeldingen op uw systeem bekijken, bewerken en verwijderen."
 
 msgid "View DNS entries"
 msgstr "Bekijk DNS-vermeldingen"
@@ -2763,7 +2784,7 @@ msgid "All Users"
 msgstr "Alle gebruikers"
 
 msgid "Choose the group that you want to reset the acceptable use status for."
-msgstr "Kies de groep waar u de aanvaardbare gebruiksstatus voor wilt resetten."
+msgstr "Kies de groep waarvoor u de aanvaardbare gebruiksstatus wilt resetten."
 
 msgid "Pending Users"
 msgstr "In afwachting van gebruikers"
@@ -3248,12 +3269,6 @@ msgstr "Vul in uw keuze van het maildomein zonder http: // www. Voorbeeld myemai
 msgid "Custom Alias"
 msgstr "Aangepaste alias"
 
-msgid "Client Internet Controls"
-msgstr "Client Internet Controls"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Kies de locatie die u wilt toestaan ​​of weigeren toegang tot internet voor."
-
 msgid "Reset Times"
 msgstr "Reset Times"
 
@@ -3263,20 +3278,11 @@ msgstr "Stel resetijden in."
 msgid "View the asset register."
 msgstr "Bekijk het activa register."
 
-msgid "Choose Location"
-msgstr "Kies Locatie"
-
-msgid "You have not chosen a location."
-msgstr "U heeft geen locatie gekozen."
-
-msgid "No locations have been created."
-msgstr "Er zijn geen locaties gecreëerd."
-
 msgid "Upload image error."
 msgstr "Upload beeldfout."
 
 msgid "The file you have uploaded does not have a suitable file extension."
-msgstr "Het bestand dat u heeft geüpload, heeft geen geschikte bestandsuitbreiding."
+msgstr "Het bestand dat u hebt geüpload, heeft geen geschikte bestandsuitbreiding."
 
 msgid "User Image uploaded."
 msgstr "Gebruikersbeeld geüpload."
@@ -3389,6 +3395,9 @@ msgstr "Dit zal toevoegen in de naam van een aangepaste rol die u hebt toegevoeg
 msgid "Configure Backup"
 msgstr "Back-up configureren"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA ENTRY // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Lege backup naam."
 
@@ -3404,11 +3413,14 @@ msgstr "Lege backup servernaam."
 msgid "Blank backup status."
 msgstr "Lege back-up status."
 
+msgid "Choose the folders you want to backup."
+msgstr "Kies de mappen die u wilt back-up."
+
 msgid "View Backups"
 msgstr "Bekijk backups"
 
-msgid "Choose the folders you want to backup."
-msgstr "Kies de mappen die u wilt back-up."
+msgid "View backups for this server."
+msgstr "Bekijk back-ups voor deze server."
 
 msgid "View Monitor Logs"
 msgstr "Bekijk monitorlogboeken"
@@ -3428,8 +3440,17 @@ msgstr "Er is geen Monitor Server ingesteld."
 msgid "Add Printer"
 msgstr "Voeg printer toe"
 
+msgid "Add a new printer queue."
+msgstr "Voeg een nieuwe printerwachtrij toe."
+
 msgid "Delete Printer"
 msgstr "Printer verwijderen"
+
+msgid "Delete a new printer queue."
+msgstr "Verwijder een nieuwe printerwachtrij."
+
+msgid "Assigned Printers"
+msgstr "Toegewezen printers"
 
 msgid "View Assigned Printers"
 msgstr "Bekijk toegewezen printers"
@@ -3437,8 +3458,23 @@ msgstr "Bekijk toegewezen printers"
 msgid "Edit PPD"
 msgstr "Bewerk PPD"
 
+msgid "Edit a printer driver."
+msgstr "Bewerk een printerdriver."
+
+msgid "Configure printing with Savapage."
+msgstr "Configureer afdrukken met Savapage."
+
 msgid "Locations"
 msgstr "locaties"
+
+msgid "View locations."
+msgstr "Bekijk locaties."
+
+msgid "Show Printers"
+msgstr "Toon printers"
+
+msgid "Show network printer queues."
+msgstr "Toon netwerk printerwachtrijen."
 
 msgid "Windows Start menu - Select"
 msgstr "Windows Start menu - Selecteer"
@@ -3746,11 +3782,11 @@ msgstr "Setup Xerte"
 msgid "Allowed Mime Types"
 msgstr "Toegestaan ​​Mime Types"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "U heeft geen server gekozen om in te schakelen of uit te schakelen."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Enable - Schakel netwerkbeveiliging uit"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "U heeft geen server gekozen om in te schakelen of uit te schakelen."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on Lan - Uitzicht"
@@ -4151,8 +4187,11 @@ msgstr "U heeft geen naam voor deze waarschuwing ingevoerd."
 msgid "An E-Mail alert has been sent."
 msgstr "Er is een e-mailwaarschuwing verzonden."
 
-msgid "Show Printers"
-msgstr "Toon printers"
+msgid "Add Printers"
+msgstr "Voeg printers toe"
+
+msgid "Add a network printer queue."
+msgstr "Voeg een wachtrij voor netwerkprinters toe."
 
 msgid "There are no printer queues to delete."
 msgstr "Er zijn geen printerwachtrijen om te verwijderen."
@@ -4277,14 +4316,17 @@ msgstr "De printerwachtrij wissen."
 msgid "Deleting print job"
 msgstr "Afdruktaak verwijderen"
 
-msgid "View Reverse Proxies"
-msgstr "Bekijk omgekeerde proxy's"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "De omgekeerde proxy-functie laat inkomende webverbindingen op poorten 80 en 443 toe via de omgekeerde proxy naar andere servers op uw netwerk."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Dit omzeilt de behoefte aan subdomeinen en alias tcpip-nummers voor externe toegang en zal ook toestaan ​​dat alle externe ssl-verkeer een ssl-certificaat gebruiken om de sites te authenticeren."
+
+msgid "Reverse Proxies"
+msgstr "Reverse Proxies"
+
+msgid "View Reverse Proxy entries."
+msgstr "Bekijk Reverse Proxy-inzendingen."
 
 msgid "Target folder"
 msgstr "Doelmap"
@@ -4327,12 +4369,6 @@ msgstr "Kies de client computers die u toegang wilt toestaan ​​of ontzeggen.
 
 msgid "Choose location."
 msgstr "Kies locatie."
-
-msgid "Reset times"
-msgstr "Reset tijden"
-
-msgid "View the scheduled reset times."
-msgstr "Bekijk de geplande resetijden."
 
 msgid "Allow All"
 msgstr "Sta alles toe"
@@ -4442,6 +4478,9 @@ msgstr "Bekijk kamerbeheersing."
 msgid "Add reset time"
 msgstr "Voeg reset time toe"
 
+msgid "Reset times"
+msgstr "Reset tijden"
+
 msgid "Delete time"
 msgstr "Tijd wissen"
 
@@ -4508,17 +4547,11 @@ msgstr "Bekijk en voeg E-mail Alerts toe"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Dit toont de printers die zijn toegewezen aan locaties."
 
-msgid "Delete Printers"
-msgstr "Verwijder printers"
-
-msgid "Add Location"
-msgstr "Voeg locatie toe"
+msgid "Delete network printer queues."
+msgstr "Verwijder netwerk printerwachtrijen."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Er zijn geen printers toegewezen aan een locatie."
-
-msgid "Assigned Printers"
-msgstr "Toegewezen printers"
 
 msgid "Default"
 msgstr "Standaard"
@@ -4936,6 +4969,9 @@ msgstr "Een omgekeerde proxy server is niet ingesteld."
 
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "De volgende sites worden momenteel door deze proxyserver doorgestuurd."
+
+msgid "Add a Reverse Proxy site."
+msgstr "Voeg een Reverse Proxy-site toe."
 
 msgid "Target"
 msgstr "Doel"
@@ -5373,7 +5409,7 @@ msgid "Enable - Disable all exam accounts"
 msgstr "Inschakelen - Schakel alle examenaccounts uit"
 
 msgid "Use this option to allow or deny access to all of the exam accounts."
-msgstr "Gebruik deze optie om toegang tot alle examenrekeningen toe te staan ​​of te weigeren."
+msgstr "Gebruik deze optie om toegang tot alle examenrekeningen toe te staan ​​of te ontzeggen."
 
 msgid "Enter in any exam accounts that you do not want to be enabled or disabled."
 msgstr "Voer in om het even welke examenaccounts die u niet wilt inschakelen of uitgeschakeld."
@@ -5399,14 +5435,23 @@ msgstr "Windows-printerstuurprogramma's"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Dit wordt gebruikt om de automatische Windows-printerdriver generatie in of uit te schakelen voor uw afdrukwachtrijen."
 
-msgid "Generate Drivers"
-msgstr "Genereren stuurprogramma's"
-
-msgid "Enable all"
+msgid "Enable All"
 msgstr "Schakel alles in"
+
+msgid "Enable auto generation for all printers."
+msgstr "Schakel automatische generatie in voor alle printers."
 
 msgid "Disable all"
 msgstr "Schakel alles uit"
+
+msgid "Disable auto generation for all printers."
+msgstr "Schakel automatische generatie uit voor alle printers."
+
+msgid "Generate Drivers"
+msgstr "Genereren stuurprogramma's"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Generate printer drivers voor alle actieve printers."
 
 msgid "Windows printer driver generation completed."
 msgstr "Windows-printer driver generatie is voltooid."
@@ -5418,7 +5463,7 @@ msgid "The windows dll files needed to generate the windows printer drivers are 
 msgstr "De Windows DLL-bestanden die nodig zijn om de Windows-printerdrivers te genereren, ontbreken. De dlls die nodig zijn in / usr / share / cups / drivers / zijn pscript5.dll, ps5ui.dll, pscript.hlp, pscript.ntf."
 
 msgid "Enter in the username that you want to view printer data for."
-msgstr "Voer in de gebruikersnaam in waarvoor u de printergegevens wilt bekijken."
+msgstr "Voer in de gebruikersnaam in waar u de printergegevens wilt bekijken."
 
 msgid "January"
 msgstr "januari-"
@@ -5973,7 +6018,7 @@ msgid "Select Group"
 msgstr "Selecteer Groep"
 
 msgid "This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."
-msgstr "Dit stelt gebruikers in staat om webmappen van hun thuisgebieden te huren. Alle bestanden en mappen in een map public_html in de thuisbuurt van de gebruiker zullen via apache op hun server beschikbaar zijn."
+msgstr "Dit stelt gebruikers in staat om webmappen van hun thuisgebieden te huren. Alle bestanden en mappen in een map public_html in de thuisbuurt van de gebruiker zijn beschikbaar via apache op hun server."
 
 msgid "Choose group"
 msgstr "Kies groep"
@@ -6229,9 +6274,6 @@ msgstr "De DHCP-wijzigingen zijn toegepast."
 
 msgid "The asset search cannot be blank."
 msgstr "De zoekactie kan niet leeg zijn."
-
-msgid "Enable All"
-msgstr "Schakel alles in"
 
 msgid "Reset All"
 msgstr "Alles resetten"
@@ -6863,6 +6905,9 @@ msgstr "Noteer een incident dat zich heeft voorgedaan."
 msgid "Add Network Printer"
 msgstr "Netwerkprinter toevoegen"
 
+msgid "Delete Printers"
+msgstr "Verwijder printers"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Vul in de naam die u wilt voor deze printer."
 
@@ -7436,17 +7481,8 @@ msgstr "Upload Karoshi Linux Profile"
 msgid "Add Server Roles"
 msgstr "Serverrollen toevoegen"
 
-msgid "Add addtional server roles."
-msgstr "Voeg extra serverrollen toe."
-
 msgid "Management Users"
 msgstr "Beheerders Gebruikers"
-
-msgid "Create additional Web Management users."
-msgstr "Creëer extra Web Management gebruikers."
-
-msgid "Label existing groups."
-msgstr "Label bestaande groepen."
 
 msgid "Add a User"
 msgstr "Voeg een gebruiker toe"
@@ -7454,38 +7490,14 @@ msgstr "Voeg een gebruiker toe"
 msgid "Room Locations"
 msgstr "Kamer Locaties"
 
-msgid "Add room locations for client computers."
-msgstr "Voeg kamerlocaties toe voor clientcomputers."
-
 msgid "Join Clients"
 msgstr "Word lid van klanten"
-
-msgid "Join client computers to the domain."
-msgstr "Sluit klantencomputers aan op het domein."
-
-msgid "Edit Windows client profiles."
-msgstr "Edit Windows-clientprofielen."
 
 msgid "Add Assets"
 msgstr "Asset toevoegen"
 
-msgid "Add client computers to the asset register."
-msgstr "Voeg clientcomputers toe aan het activa register."
-
-msgid "Setup printer queues."
-msgstr "Setup wachtrijen instellen."
-
 msgid "User Settings"
 msgstr "Gebruikersinstellingen"
-
-msgid "Set the default user settings."
-msgstr "Stel de standaard gebruikersinstellingen in."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Bulk maken gebruikers van een CSV-bestand."
-
-msgid "Set your default Web Management page."
-msgstr "Stel uw standaard webbeheerpagina in."
 
 msgid "Record User Incident"
 msgstr "Record User Incident"
@@ -7794,7 +7806,7 @@ msgid "Windows Client Application Data Upload"
 msgstr "Windows Client Application Data Upload"
 
 msgid "This will upload a compressed file containing a folder or folders from the application data folder in your profile."
-msgstr "Hiermee wordt een gecomprimeerd bestand dat een map of mappen bevat van de applicatiegegevensmap in je profiel uploaden."
+msgstr "Hiermee wordt een gecomprimeerd bestand dat een map of mappen bevat van de applicatiegegevensmap in uw profiel uploaden."
 
 msgid "Select the compressed folder that you want to upload in .zip or .tar.gz format."
 msgstr "Selecteer de gecomprimeerde map die u wilt uploaden in .zip of .tar.gz formaat."
@@ -8352,7 +8364,7 @@ msgid "Layout"
 msgstr "lay-out"
 
 msgid "Chunk Size"
-msgstr "Chunk Size"
+msgstr "Chunk Maat"
 
 msgid "Active Disks"
 msgstr "Actieve schijven"
@@ -8820,7 +8832,7 @@ msgid "Choose this option of you want to send your emails directly out to the in
 msgstr "Kies deze optie als u uw e-mail direct naar het internet wilt verzenden."
 
 msgid "This is address of the email relay that you want all the email sent to."
-msgstr "Dit is adres van het e-mailrelais waar u alle e-mail naar wilt verzenden."
+msgstr "Dit is adres van het e-mailreferaat waar u alle e-mail naar wilt verzenden."
 
 msgid "Relay"
 msgstr "Relais"
@@ -10205,8 +10217,20 @@ msgstr "Laat de tijd leeg in het automatische schema."
 msgid "All servers backed up in turn starting at"
 msgstr "Alle servers backed up op hun beurt beginnen bij"
 
+msgid "Select the server you want to backup to."
+msgstr "Selecteer de server die u wilt back-up maken."
+
 msgid "Change Time"
 msgstr "Verander tijd"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Verander de tijd waarop deze back-up is gepland."
+
+msgid "Enable or disable the backup."
+msgstr "Schakel de backup in of uit."
+
+msgid "Add a folder to the backup."
+msgstr "Voeg een map toe aan de back-up."
 
 msgid "Stopping NTP Service"
 msgstr "NTP-service stoppen"
@@ -10281,7 +10305,7 @@ msgid "Enter in a domain that you want to add to the restricted list."
 msgstr "Vul in een domein dat u wilt toevoegen aan de beperkte lijst."
 
 msgid "Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."
-msgstr "Gebruikers met beperkte toegang E-Mail kan alleen verzenden en ontvangen van e-mails uit in de beperking lijst genoemde gebieden."
+msgstr "Gebruikers met beperkte e-mail toegang kunnen alleen e-mails verzenden en ontvangen van domeinen die zijn vermeld in de beperkingslijst."
 
 msgid "Allowed Domains"
 msgstr "Toegestaan ​​Domeinen"
@@ -10309,9 +10333,6 @@ msgstr "Geen toegang"
 
 msgid "Change Status"
 msgstr "Verander status"
-
-msgid "Reset Password"
-msgstr "Wachtwoord opnieuw instellen"
 
 msgid "Internet Logs"
 msgstr "Internet logboeken"
@@ -10345,9 +10366,6 @@ msgstr "Netwerkmonitoring"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Inventory"
-
-msgid "Printer Accounting"
-msgstr "Printerboekhouding"
 
 msgid "Logs"
 msgstr "logs"
@@ -10396,6 +10414,9 @@ msgstr "Wijzig examenwachtwoorden"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Wijzig wachtwoorden voor de examenrekeningen."
+
+msgid "Reset Password"
+msgstr "Wachtwoord opnieuw instellen"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Reset wachtwoorden voor de examenrekeningen."
@@ -10780,9 +10801,6 @@ msgstr "Configureer de tijd dat de Linux clients automatisch uitschakelen."
 
 msgid "View the status of the printer queues."
 msgstr "Bekijk de status van de printerwachtrijen."
-
-msgid "Add a network printer queue."
-msgstr "Voeg een wachtrij voor netwerkprinters toe."
 
 msgid "Delete Network Printer"
 msgstr "Netwerkprinter verwijderen"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "Cyflwyno"
 msgid "Reset"
 msgstr "Ailosod"
 
+msgid "Client Internet Controls"
+msgstr "Rheolaethau Rhyngrwyd Cleient"
+
+msgid "Menu"
+msgstr "Dewislen"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Dewiswch y lleoliad yr ydych am ei ganiatáu neu wrthod mynediad i'r rhyngrwyd."
+
+msgid "Choose Location"
+msgstr "Dewis Lleoliad"
+
+msgid "You have not chosen a location."
+msgstr "Nid ydych chi wedi dewis lleoliad."
+
+msgid "No locations have been created."
+msgstr "Nid oes unrhyw leoliadau wedi'u creu."
+
 msgid "Manage Print Queues"
 msgstr "Rheoli Ciwiau Argraffu"
 
 msgid "A print server has not yet been set up."
 msgstr "Nid yw gweinydd argraffu wedi'i sefydlu eto."
-
-msgid "Menu"
-msgstr "Dewislen"
 
 msgid "View Print Queues"
 msgstr "Gweld Ciwiau Argraffu"
@@ -2316,7 +2331,7 @@ msgid "Upload Web Management Patch"
 msgstr "Llwythwch Wefan Rheoli Gwe"
 
 msgid "This will allow you to upload and apply a web management updates to your server. You will also need the signature file to verify that it is a legitamate update."
-msgstr "Bydd hyn yn eich galluogi i lwytho a diweddaru diweddariadau rheoli gwe i'ch gweinydd. Bydd angen y ffeil llofnod arnoch hefyd i wirio ei bod yn ddiweddariad dilys."
+msgstr "Bydd hyn yn eich galluogi i lwytho a diweddaru diweddariadau rheoli gwe i'ch gweinydd. Bydd angen y ffeil llofnod arnoch hefyd i wirio ei fod yn ddiweddariad dilys."
 
 msgid "Patch file"
 msgstr "Ffeil Patch"
@@ -2345,14 +2360,20 @@ msgstr "Fformat dyddiad anghywir."
 msgid "Backup logs"
 msgstr "Logiau wrth gefn"
 
+msgid "These are the backup logs for your server."
+msgstr "Dyma'r logiau wrth gefn i'ch gweinyddwr."
+
 msgid "Detailed logs"
 msgstr "Logiau manwl"
+
+msgid "View detailed backup logs."
+msgstr "Edrychwch ar logiau wrth gefn manwl."
 
 msgid "Summary logs"
 msgstr "Logiau cryno"
 
-msgid "These are the backup logs for your server."
-msgstr "Dyma'r logiau wrth gefn i'ch gweinyddwr."
+msgid "View a summary of the backup logs."
+msgstr "Gweld crynodeb o'r logiau wrth gefn."
 
 msgid "Custom Command"
 msgstr "Gorchmynion Custom"
@@ -2550,10 +2571,10 @@ msgid "A CSV file has not been uploaded."
 msgstr "Nid yw ffeil CSV wedi'i lwytho i fyny."
 
 msgid "Restrict access to Karoshi Remote Management"
-msgstr "Cyfyngu ar fynediad at Karoshi Remote Management"
+msgstr "Cyfyngu mynediad at Karoshi Remote Management"
 
 msgid "Access can be restricted by a complete tcpip number or by a partial number for a range."
-msgstr "Gellir cyfyngu ar fynediad gan rif tpip cyflawn neu gan rif rhannol ar gyfer ystod."
+msgstr "Gellir cyfyngu ar fynediad gan rif tpp cyflawn neu gan rif rhannol ar gyfer ystod."
 
 msgid "For example 172.30.4. will allow all computers from 172.30.4.1 to 172.30.4.254."
 msgstr "Er enghraifft, 172.30.4. Bydd yn caniatáu i bob cyfrifiadur 172.30.4.1 i 172.30.4.254."
@@ -3248,12 +3269,6 @@ msgstr "Nodwch yn eich parth dewis o bost heb http: // www. Enghraifft myemaildo
 msgid "Custom Alias"
 msgstr "Alias ​​Custom"
 
-msgid "Client Internet Controls"
-msgstr "Rheolaethau Rhyngrwyd Cleient"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Dewiswch y lleoliad yr ydych am ei ganiatáu neu wrthod mynediad i'r rhyngrwyd."
-
 msgid "Reset Times"
 msgstr "Ailsefydlu Amseroedd"
 
@@ -3262,15 +3277,6 @@ msgstr "Gosodwch amseroedd ailsefydlu."
 
 msgid "View the asset register."
 msgstr "Edrychwch ar y gofrestr asedau."
-
-msgid "Choose Location"
-msgstr "Dewis Lleoliad"
-
-msgid "You have not chosen a location."
-msgstr "Nid ydych chi wedi dewis lleoliad."
-
-msgid "No locations have been created."
-msgstr "Nid oes unrhyw leoliadau wedi'u creu."
 
 msgid "Upload image error."
 msgstr "Llwytho i fyny gwall delwedd."
@@ -3357,7 +3363,7 @@ msgid "Wake Location"
 msgstr "Lleoliad Wake"
 
 msgid "Please enter in the time that you want the computers in your selected location to be turned on."
-msgstr "Nodwch yn yr amser rydych chi am i'r cyfrifiaduron yn eich lleoliad dethol gael eu troi ymlaen."
+msgstr "Nodwch yn yr amser rydych chi eisiau i'r cyfrifiaduron yn eich lleoliad dethol gael eu troi ymlaen."
 
 msgid "Select the location that you want. All computers in this location will be turned on at the time you specify."
 msgstr "Dewiswch y lleoliad yr ydych ei eisiau. Bydd pob cyfrifiadur yn y lleoliad hwn yn cael ei droi ar yr adeg rydych chi'n pennu."
@@ -3389,6 +3395,9 @@ msgstr "Bydd hyn yn ychwanegu enw'r rôl arferol yr ydych wedi'i ychwanegu at y 
 msgid "Configure Backup"
 msgstr "Ffurfweddu wrth gefn"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA MYNEDIAD // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Enw copi gwag."
 
@@ -3404,11 +3413,14 @@ msgstr "Blank backup servername."
 msgid "Blank backup status."
 msgstr "Statws gwag wrth gefn."
 
+msgid "Choose the folders you want to backup."
+msgstr "Dewiswch y ffolderi rydych chi am eu cefnogi."
+
 msgid "View Backups"
 msgstr "Gweld Wrth Gefn"
 
-msgid "Choose the folders you want to backup."
-msgstr "Dewiswch y ffolderi rydych chi am eu cefnogi."
+msgid "View backups for this server."
+msgstr "Gweld copïau wrth gefn ar gyfer y gweinydd hwn."
 
 msgid "View Monitor Logs"
 msgstr "Gweld Logiau Monitro"
@@ -3428,8 +3440,17 @@ msgstr "Nid yw Gweinyddwr Monitor wedi'i sefydlu."
 msgid "Add Printer"
 msgstr "Ychwanegwch Argraffydd"
 
+msgid "Add a new printer queue."
+msgstr "Ychwanegwch ciw argraffydd newydd."
+
 msgid "Delete Printer"
 msgstr "Dileu Argraffydd"
+
+msgid "Delete a new printer queue."
+msgstr "Dileu ciw argraffydd newydd."
+
+msgid "Assigned Printers"
+msgstr "Argraffwyr Assigned"
 
 msgid "View Assigned Printers"
 msgstr "Gweld Argraffwyr Assigned"
@@ -3437,8 +3458,23 @@ msgstr "Gweld Argraffwyr Assigned"
 msgid "Edit PPD"
 msgstr "Golygu PPD"
 
+msgid "Edit a printer driver."
+msgstr "Golygu gyrrwr argraffydd."
+
+msgid "Configure printing with Savapage."
+msgstr "Ffurfweddu argraffu gyda Savapage."
+
 msgid "Locations"
 msgstr "Lleoliadau"
+
+msgid "View locations."
+msgstr "Gweld lleoliadau."
+
+msgid "Show Printers"
+msgstr "Dangos Argraffwyr"
+
+msgid "Show network printer queues."
+msgstr "Dangos ciwiau argraffydd rhwydwaith."
 
 msgid "Windows Start menu - Select"
 msgstr "Dewislen Windows Start - Dewiswch"
@@ -3746,11 +3782,11 @@ msgstr "Gosodiad Xerte"
 msgid "Allowed Mime Types"
 msgstr "Mathau o Fimau Cymeradwy"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "Nid ydych chi wedi dewis gweinydd i alluogi neu analluogi."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Galluogi - Analluoga'r Rhwydwaith wrth gefn"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "Nid ydych chi wedi dewis gweinydd i alluogi neu analluogi."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on Lan - Gweld"
@@ -3798,7 +3834,7 @@ msgid "No other Karoshi servers have been set up."
 msgstr "Nid oes unrhyw weinyddwyr Karoshi eraill wedi'u sefydlu."
 
 msgid "No other Karoshi servers have been enabled as file servers. You will need to add the file server module to an additional server."
-msgstr "Ni chefnogwyd gweinyddwyr Karoshi eraill fel gweinyddwyr ffeiliau. Bydd angen i chi ychwanegu'r modiwl gweinydd ffeil i weinydd ychwanegol."
+msgstr "Ni chefnogwyd gweinyddwyr Karoshi eraill fel gweinyddwyr ffeiliau. Bydd angen i chi ychwanegu'r modiwl gweinydd ffeil i weinyddwr ychwanegol."
 
 msgid "IMPORTANT - Please ensure that users are not logged to ensure that data is not lost."
 msgstr "PWYSIG - Sicrhewch nad yw defnyddwyr wedi mewngofnodi i sicrhau nad yw'r data'n cael ei golli."
@@ -3873,7 +3909,7 @@ msgid "You must use a png format."
 msgstr "Rhaid i chi ddefnyddio fformat png."
 
 msgid "Categories are sub containers in OU=People in the ldap structure."
-msgstr "Categorïau yw is-gynhwysyddion yn OU = Pobl yn y strwythur ldap."
+msgstr "Categorïau yw is-gynwysyddion yn OU = Pobl yn y strwythur ldap."
 
 msgid "New category"
 msgstr "Categori newydd"
@@ -4026,7 +4062,7 @@ msgid "This module is for advanced use for users that want ssh access to the mai
 msgstr "Mae'r modiwl hwn ar gyfer defnydd uwch ar gyfer defnyddwyr sydd eisiau mynediad ssh i'r prif weinyddwr."
 
 msgid "It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."
-msgstr "Gellir ei ddefnyddio hefyd i ymuno â'r gweinydd hwn i system Karoshi arall trwy'r modiwl gweinydd ffederal fel y bydd defnyddwyr yn cael eu creu ar y meistr system, a chânt eu creu yma hefyd."
+msgstr "Gellir ei ddefnyddio hefyd i ymuno â'r gweinydd hwn i system Karoshi arall trwy'r modiwl gweinydd ffederal fel y bydd defnyddwyr yn cael eu creu ar y meistr system hefyd, byddant hefyd yn cael eu creu yma."
 
 msgid "MAC"
 msgstr "MAC"
@@ -4151,8 +4187,11 @@ msgstr "Nid ydych chi wedi nodi enw ar gyfer y rhybudd hwn."
 msgid "An E-Mail alert has been sent."
 msgstr "Anfonwyd rhybudd e-bost."
 
-msgid "Show Printers"
-msgstr "Dangos Argraffwyr"
+msgid "Add Printers"
+msgstr "Ychwanegwch Argraffwyr"
+
+msgid "Add a network printer queue."
+msgstr "Ychwanegwch ciw argraffydd rhwydwaith."
 
 msgid "There are no printer queues to delete."
 msgstr "Nid oes ciwiau argraffydd i'w dileu."
@@ -4277,14 +4316,17 @@ msgstr "Clirio ciw yr argraffydd."
 msgid "Deleting print job"
 msgstr "Dileu swydd argraffu"
 
-msgid "View Reverse Proxies"
-msgstr "Edrychwch ar Dirprwyon Amdro"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "Mae'r nodwedd ddirprwy wrth gefn yn caniatáu i gysylltiadau gwe sy'n dod i mewn ar borthladd 80 a 443 fynd drwy'r dirprwy yn ôl i weinyddion eraill ar eich rhwydwaith."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Mae hyn yn osgoi'r angen am is-feysydd a rhifau tcpip alias ar gyfer mynediad allanol a bydd hefyd yn caniatáu i'r holl draffig sifil allanol ddefnyddio un tystysgrif sl i ddilysu'r safleoedd."
+
+msgid "Reverse Proxies"
+msgstr "Proxies yn ôl"
+
+msgid "View Reverse Proxy entries."
+msgstr "Edrychwch ar gofnodion Dirprwyol yn ôl."
 
 msgid "Target folder"
 msgstr "Ffolder Targed"
@@ -4327,12 +4369,6 @@ msgstr "Dewiswch y cyfrifiaduron cleient yr ydych am ganiatáu neu wrthod mynedi
 
 msgid "Choose location."
 msgstr "Dewiswch leoliad."
-
-msgid "Reset times"
-msgstr "Ailsefydlu amserau"
-
-msgid "View the scheduled reset times."
-msgstr "Edrychwch ar yr amseroedd ailsefydlu a drefnwyd."
 
 msgid "Allow All"
 msgstr "Caniatáu i Bawb"
@@ -4442,6 +4478,9 @@ msgstr "Gweld rheolaethau ystafell."
 msgid "Add reset time"
 msgstr "Ychwanegwch amser adsefydlu"
 
+msgid "Reset times"
+msgstr "Ailsefydlu amserau"
+
 msgid "Delete time"
 msgstr "Dileu amser"
 
@@ -4464,7 +4503,7 @@ msgid "To create a windows profile you can use the profileuser account. This is 
 msgstr "I greu proffil ffenestri, gallwch ddefnyddio'r cyfrif proffiliau. Dyma'r unig ddefnyddiwr ar y system karoshi sydd â phroffil crwydro yn ddiofyn. Mae pob defnyddiwr arall yn defnyddio proffiliau gorfodol."
 
 msgid "To create a windows profile you need to right click on My Computer - Properties - Advanced - User Profile Settings."
-msgstr "I greu proffil ffenestri, mae angen i chi glicio ar y Fy Chyfrifiadur - Eiddo - Uwch - Gosodiadau Proffil Defnyddiwr."
+msgstr "Er mwyn creu proffil ffenestri, mae angen i chi glicio ar y Fy Chyfrifiadur - Eiddo - Uwch - Gosodiadau Proffil Defnyddiwr."
 
 msgid "Copy your chosen profile to a suitable location."
 msgstr "Copïwch eich proffil a ddewiswyd i leoliad addas."
@@ -4508,17 +4547,11 @@ msgstr "Gweld ac ychwanegu Rhybuddion E-bost"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Mae hyn yn dangos yr argraffwyr sydd wedi'u neilltuo i leoliadau."
 
-msgid "Delete Printers"
-msgstr "Dileu Argraffwyr"
-
-msgid "Add Location"
-msgstr "Ychwanegu Lleoliad"
+msgid "Delete network printer queues."
+msgstr "Dileu ciwiau argraffydd rhwydwaith."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Ni roddwyd unrhyw Argraffwyr i leoliad."
-
-msgid "Assigned Printers"
-msgstr "Argraffwyr Assigned"
 
 msgid "Default"
 msgstr "Diofyn"
@@ -4605,7 +4638,7 @@ msgid "richdocuments"
 msgstr "Cyfoethogion"
 
 msgid "Removes the richdocuments plugin for Owncloud and removes the LibreOffice Online Server."
-msgstr "Yn dileu'r cyflenwad richdocuments ar gyfer Owncloud ac yn dileu Gweinyddwr Ar-lein LibreOffice."
+msgstr "Yn dileu'r cyflenwad richdocuments ar gyfer Owncloud ac yn dileu'r Gweinyddwr Ar-lein LibreOffice."
 
 msgid "OCS Inventory"
 msgstr "Rhestr OCS"
@@ -4936,6 +4969,9 @@ msgstr "Nid yw gweinydd dirprwy wrth gefn wedi'i sefydlu."
 
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Mae'r safleoedd canlynol yn cael eu hailgyfeirio ar hyn o bryd drwy'r gweinydd dirprwy hwn."
+
+msgid "Add a Reverse Proxy site."
+msgstr "Ychwanegu safle Proxy Reverse."
 
 msgid "Target"
 msgstr "Targed"
@@ -5399,14 +5435,23 @@ msgstr "Gyrwyr Argraffydd Windows"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Defnyddir hyn i alluogi neu analluogi generadur awtomatig argraffydd Windows ar gyfer eich ciwiau print."
 
-msgid "Generate Drivers"
-msgstr "Cynhyrchu Gyrwyr"
+msgid "Enable All"
+msgstr "Galluogi Pob"
 
-msgid "Enable all"
-msgstr "Galluogi pawb"
+msgid "Enable auto generation for all printers."
+msgstr "Galluogi genhedlaeth awtomatig ar gyfer pob argraffydd."
 
 msgid "Disable all"
 msgstr "Analluoga'r cyfan"
+
+msgid "Disable auto generation for all printers."
+msgstr "Analluogi cynhyrchu genhedlaeth ar gyfer pob argraffydd."
+
+msgid "Generate Drivers"
+msgstr "Cynhyrchu Gyrwyr"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Cynhyrchu gyrwyr argraffydd ar gyfer pob argraffydd sydd wedi'u galluogi."
 
 msgid "Windows printer driver generation completed."
 msgstr "Gwneuthurwr gyrrwr argraffydd Windows wedi'i gwblhau."
@@ -5730,7 +5775,7 @@ msgid "Be careful using this feature."
 msgstr "Byddwch yn ofalus gan ddefnyddio'r nodwedd hon."
 
 msgid "If you need to change a network card remove the mac address from your static arps first."
-msgstr "Os oes angen ichi newid cerdyn rhwydwaith, tynnwch y cyfeiriad mac oddi wrth eich arpau sefydlog yn gyntaf."
+msgstr "Os bydd angen i chi newid cerdyn rhwydwaith, tynnwch y cyfeiriad mac oddi wrth eich arpau sefydlog yn gyntaf."
 
 msgid "View E-Mail Statistics"
 msgstr "Edrychwch ar Ystadegau E-bost"
@@ -6230,9 +6275,6 @@ msgstr "Mae'r newidiadau DHCP wedi'u cymhwyso."
 msgid "The asset search cannot be blank."
 msgstr "Ni all y chwiliad asedau fod yn wag."
 
-msgid "Enable All"
-msgstr "Galluogi Pob"
-
 msgid "Reset All"
 msgstr "Ailosod Pob"
 
@@ -6474,7 +6516,7 @@ msgid "This will setup a a squid proxy server for providing access to the intern
 msgstr "Bydd hyn yn sefydlu gweinydd dirprwy sgwid am ddarparu mynediad i'r rhyngrwyd ar gyfer y cyfrifiaduron cleient ar y rhwydwaith."
 
 msgid "Internet filtering is provided by E2Guardian and all internet access through the system is logged."
-msgstr "Darperir hidlo Rhyngrwyd gan E2Guardian a chofnodir pob mynediad i'r rhyngrwyd drwy'r system."
+msgstr "Darperir hidlo Rhyngrwyd gan E2Guardian a chaiff yr holl fynediad i'r rhyngrwyd drwy'r system ei logio."
 
 msgid "Logs for all user internet access can be viewed in the web management."
 msgstr "Gellir gweld logiau ar gyfer pob mynediad i'r rhyngrwyd i ddefnyddwyr yn y we."
@@ -6863,6 +6905,9 @@ msgstr "Cofnodwch ddigwyddiad sydd wedi digwydd."
 msgid "Add Network Printer"
 msgstr "Ychwanegwch Argraffydd Rhwydwaith"
 
+msgid "Delete Printers"
+msgstr "Dileu Argraffwyr"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Rhowch yr enw rydych chi ei eisiau ar gyfer yr argraffydd hwn."
 
@@ -7212,7 +7257,7 @@ msgid "Schedule a job for this server."
 msgstr "Rhestrwch swydd ar gyfer y gweinydd hwn."
 
 msgid "Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"
-msgstr "Enw cyntaf, cyfenw, rhif cofrestru neu god staff - dewisol, enw defnyddiwr - dewisol, grŵp cynradd - grwpiau dewisol, eilaidd wedi'u gwahanu gan eiconau - dewisol, newid cyfrinair ar y logon cyntaf - dewisol (y / n), cyfrinair - dewisol"
+msgstr "Enw cyntaf, cyfenw, rhif cofrestru neu god staff - dewisol, enw defnyddiwr - dewisol, grŵp cynradd - grwpiau dewisol, eilaidd wedi'u gwahanu gan eiconau - dewisol, newid cyfrinair ar y tro cyntaf i mewn - dewisol (y / n), cyfrinair - dewisol"
 
 msgid "Import Enrollment Numbers"
 msgstr "Rhifau Cofrestru Mewnforio"
@@ -7436,17 +7481,8 @@ msgstr "Llwythwch Karoshi Linux Proffil"
 msgid "Add Server Roles"
 msgstr "Ychwanegwch Rolau Gweinyddwr"
 
-msgid "Add addtional server roles."
-msgstr "Ychwanegwch rolau gweinydd ychwanegol."
-
 msgid "Management Users"
 msgstr "Defnyddwyr Rheolaeth"
-
-msgid "Create additional Web Management users."
-msgstr "Creu defnyddwyr Rheoli Gwe ychwanegol."
-
-msgid "Label existing groups."
-msgstr "Labelu grwpiau presennol."
 
 msgid "Add a User"
 msgstr "Ychwanegu Defnyddiwr"
@@ -7454,38 +7490,14 @@ msgstr "Ychwanegu Defnyddiwr"
 msgid "Room Locations"
 msgstr "Lleoliadau Ystafelloedd"
 
-msgid "Add room locations for client computers."
-msgstr "Ychwanegu lleoliadau ystafell ar gyfer cyfrifiaduron cleientiaid."
-
 msgid "Join Clients"
 msgstr "Ymunwch â Chleientiaid"
-
-msgid "Join client computers to the domain."
-msgstr "Ymunwch â chyfrifiaduron cleient i'r maes."
-
-msgid "Edit Windows client profiles."
-msgstr "Golygu proffiliau cleient Windows."
 
 msgid "Add Assets"
 msgstr "Ychwanegwch Asedau"
 
-msgid "Add client computers to the asset register."
-msgstr "Ychwanegwch gyfrifiaduron cleient i'r gofrestr asedau."
-
-msgid "Setup printer queues."
-msgstr "Cau argraffydd gosod."
-
 msgid "User Settings"
 msgstr "Gosodiadau Defnyddiwr"
-
-msgid "Set the default user settings."
-msgstr "Gosodwch y gosodiadau defnyddwyr diofyn."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Yn llwyddo i greu defnyddwyr o ffeil CSV."
-
-msgid "Set your default Web Management page."
-msgstr "Gosodwch eich tudalen Rheoli Gwe ddiofyn."
 
 msgid "Record User Incident"
 msgstr "Cofnod Digwyddiad Defnyddwyr"
@@ -9117,7 +9129,7 @@ msgid "This is not case sensitive."
 msgstr "Nid yw hyn yn achos sensitif."
 
 msgid "Choose the spam score that you want for this rule."
-msgstr "Dewiswch y sgôr spam rydych chi ei eisiau ar gyfer y rheol hon."
+msgstr "Dewiswch y sgôr spam yr ydych ei eisiau ar gyfer y rheol hon."
 
 msgid "No custom spam rules have been added."
 msgstr "Ni chafodd unrhyw reolau sbam arferol eu hychwanegu."
@@ -10205,8 +10217,20 @@ msgstr "Gadewch yr amser yn wag i amserlen awtomatig."
 msgid "All servers backed up in turn starting at"
 msgstr "Pob gweinydd yn cael ei gefnogi yn ei dro yn dechrau yn"
 
+msgid "Select the server you want to backup to."
+msgstr "Dewiswch y gweinydd yr ydych am ei gefnogi."
+
 msgid "Change Time"
 msgstr "Newid Amser"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Newid yr amser y trefnir y copi wrth gefn."
+
+msgid "Enable or disable the backup."
+msgstr "Galluogi neu analluoga'r wrth gefn."
+
+msgid "Add a folder to the backup."
+msgstr "Ychwanegu ffolder i'r copi wrth gefn."
 
 msgid "Stopping NTP Service"
 msgstr "Stopio Gwasanaeth NTP"
@@ -10281,7 +10305,7 @@ msgid "Enter in a domain that you want to add to the restricted list."
 msgstr "Rhowch mewn parth yr ydych am ei ychwanegu at y rhestr gyfyngedig."
 
 msgid "Users with restricted E-Mail access can only send and receive E-Mails from domains listed in the restriction list."
-msgstr "Dim ond anfonir a derbyn E-Bost o feysydd a restrir yn y rhestr gyfyngu ar ddefnyddwyr sydd â mynediad cyfyngedig E-bost."
+msgstr "Dim ond anfonir a derbyn E-bost o barthau a restrir yn y rhestr gyfyngiadau i ddefnyddwyr sydd â mynediad cyfyngedig E-bost."
 
 msgid "Allowed Domains"
 msgstr "Parthau a Ganiateir"
@@ -10309,9 +10333,6 @@ msgstr "Dim mynediad"
 
 msgid "Change Status"
 msgstr "Statws Newid"
-
-msgid "Reset Password"
-msgstr "Ailosod cyfrinair"
 
 msgid "Internet Logs"
 msgstr "Logiau Rhyngrwyd"
@@ -10345,9 +10366,6 @@ msgstr "Monitro Rhwydwaith"
 
 msgid "OCS-Inventory"
 msgstr "Rhestr OCS"
-
-msgid "Printer Accounting"
-msgstr "Cyfrifyddu Argraffydd"
 
 msgid "Logs"
 msgstr "Logiau"
@@ -10396,6 +10414,9 @@ msgstr "Newid Cyfrineiriau Arholiad"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Newid cyfrineiriau ar gyfer y cyfrifon arholiad."
+
+msgid "Reset Password"
+msgstr "Ailosod cyfrinair"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Ailosod cyfrineiriau ar gyfer y cyfrifon arholiad."
@@ -10767,7 +10788,7 @@ msgid "Distribution Controls"
 msgstr "Rheolaethau Dosbarthu"
 
 msgid "Configure and upload iso images on the distribution server."
-msgstr "Ffurfweddu a llwytho i fyny delweddau iso ar y gweinydd dosbarthu."
+msgstr "Ffurfweddu a llwytho delweddau iso ar y gweinydd dosbarthu."
 
 msgid "Set clients to network boot so that client operating systems can be installed from the distribution server."
 msgstr "Gosodwch gleientiaid i gychwyn rhwydwaith fel bod modd gosod systemau gweithredu'r cleient o'r gweinydd dosbarthu."
@@ -10780,9 +10801,6 @@ msgstr "Ffurfweddwch yr amser y bydd y cleientiaid Linux yn cau'n awtomatig."
 
 msgid "View the status of the printer queues."
 msgstr "Gweld statws ciwiau'r argraffydd."
-
-msgid "Add a network printer queue."
-msgstr "Ychwanegwch ciw argraffydd rhwydwaith."
 
 msgid "Delete Network Printer"
 msgstr "Dileu Argraffydd Rhwydwaith"
@@ -10803,7 +10821,7 @@ msgid "Domain Controls"
 msgstr "Rheolau Parth"
 
 msgid "Allow or ban domains for E-Mails."
-msgstr "Caniatáu neu wahardd meysydd ar gyfer E-Mails."
+msgstr "Caniatáu neu wahardd parthau ar gyfer E-Mails."
 
 msgid "Allow or deny users from sending and receiving E-Mails."
 msgstr "Caniatáu neu wrthod defnyddwyr rhag anfon a derbyn E-Bost."
@@ -10857,7 +10875,7 @@ msgid "Quota Warning Settings"
 msgstr "Gosodiadau Rhybudd Cwota"
 
 msgid "Set the warning settings for the quota system."
-msgstr "Gosodwch y gosodiadau rhybudd ar gyfer y system gwota."
+msgstr "Gosodwch y lleoliadau rhybudd ar gyfer y system gwota."
 
 msgid "Quota Warning Messages"
 msgstr "Negeseuon Rhybudd Cwota"
@@ -11136,7 +11154,7 @@ msgid "Select the network card that you want to configure."
 msgstr "Dewiswch y cerdyn rhwydwaith yr ydych am ei ffurfweddu."
 
 msgid "Choose multiple cards if you want to bond the cards together."
-msgstr "Dewiswch gardiau lluosog os ydych chi eisiau bondio'r cardiau gyda'ch gilydd."
+msgstr "Dewiswch gerdyn lluosog os ydych chi eisiau bondio'r cardiau gyda'ch gilydd."
 
 msgid "No network cards have been selected."
 msgstr "Ni chafwyd unrhyw gardiau rhwydwaith."

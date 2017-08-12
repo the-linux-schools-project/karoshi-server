@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "Sende inn"
 msgid "Reset"
 msgstr "tilbakestille"
 
+msgid "Client Internet Controls"
+msgstr "Client Internet Controls"
+
+msgid "Menu"
+msgstr "Meny"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Velg plasseringen du vil tillate eller nekte internettilgang for."
+
+msgid "Choose Location"
+msgstr "Velg plassering"
+
+msgid "You have not chosen a location."
+msgstr "Du har ikke valgt et sted."
+
+msgid "No locations have been created."
+msgstr "Ingen steder har blitt opprettet."
+
 msgid "Manage Print Queues"
 msgstr "Administrer utskriftskøer"
 
 msgid "A print server has not yet been set up."
 msgstr "En utskriftsserver har ikke blitt konfigurert."
-
-msgid "Menu"
-msgstr "Meny"
 
 msgid "View Print Queues"
 msgstr "Se utskriftskøer"
@@ -2345,14 +2360,20 @@ msgstr "Feil datoformat."
 msgid "Backup logs"
 msgstr "Backup logger"
 
+msgid "These are the backup logs for your server."
+msgstr "Dette er backuploggene for serveren din."
+
 msgid "Detailed logs"
 msgstr "Detaljert logg"
+
+msgid "View detailed backup logs."
+msgstr "Se detaljerte sikkerhetskopieringslogger."
 
 msgid "Summary logs"
 msgstr "Sammendrag logger"
 
-msgid "These are the backup logs for your server."
-msgstr "Dette er backuploggene for serveren din."
+msgid "View a summary of the backup logs."
+msgstr "Se et sammendrag av backuploggene."
 
 msgid "Custom Command"
 msgstr "Tilpasset kommando"
@@ -3248,12 +3269,6 @@ msgstr "Skriv inn ditt valg av postdomen uten http: // www. Eksempel myemaildoma
 msgid "Custom Alias"
 msgstr "Tilpasset alias"
 
-msgid "Client Internet Controls"
-msgstr "Client Internet Controls"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Velg plasseringen du vil tillate eller nekte internettilgang for."
-
 msgid "Reset Times"
 msgstr "Reset Times"
 
@@ -3262,15 +3277,6 @@ msgstr "Angi tilbakestille ganger."
 
 msgid "View the asset register."
 msgstr "Se aktivitetsregisteret."
-
-msgid "Choose Location"
-msgstr "Velg plassering"
-
-msgid "You have not chosen a location."
-msgstr "Du har ikke valgt et sted."
-
-msgid "No locations have been created."
-msgstr "Ingen steder har blitt opprettet."
 
 msgid "Upload image error."
 msgstr "Last opp bildefeil."
@@ -3389,6 +3395,9 @@ msgstr "Dette vil legge til i navnet på en egendefinert rolle som du har lagt t
 msgid "Configure Backup"
 msgstr "Konfigurer sikkerhetskopiering"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {DATA ENTRY // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Blank backup navn."
 
@@ -3404,11 +3413,14 @@ msgstr "Blank backup servernavn."
 msgid "Blank backup status."
 msgstr "Blank backup status."
 
+msgid "Choose the folders you want to backup."
+msgstr "Velg mappene du vil sikkerhetskopiere."
+
 msgid "View Backups"
 msgstr "Se sikkerhetskopier"
 
-msgid "Choose the folders you want to backup."
-msgstr "Velg mappene du vil sikkerhetskopiere."
+msgid "View backups for this server."
+msgstr "Se sikkerhetskopier for denne serveren."
 
 msgid "View Monitor Logs"
 msgstr "Se overvåkingslogger"
@@ -3428,8 +3440,17 @@ msgstr "Ingen overvåkingsserver er konfigurert."
 msgid "Add Printer"
 msgstr "Legg til skriver"
 
+msgid "Add a new printer queue."
+msgstr "Legg til en ny skriverkø."
+
 msgid "Delete Printer"
 msgstr "Slett skriveren"
+
+msgid "Delete a new printer queue."
+msgstr "Slett en ny skriverkø."
+
+msgid "Assigned Printers"
+msgstr "Tilordnede skrivere"
 
 msgid "View Assigned Printers"
 msgstr "Se tilordnede skrivere"
@@ -3437,8 +3458,23 @@ msgstr "Se tilordnede skrivere"
 msgid "Edit PPD"
 msgstr "Rediger PPD"
 
+msgid "Edit a printer driver."
+msgstr "Rediger en skriverdriver."
+
+msgid "Configure printing with Savapage."
+msgstr "Konfigurer utskrift med Savapage."
+
 msgid "Locations"
 msgstr "steder"
+
+msgid "View locations."
+msgstr "Se steder."
+
+msgid "Show Printers"
+msgstr "Vis skrivere"
+
+msgid "Show network printer queues."
+msgstr "Vis nettverksskriverkøer."
 
 msgid "Windows Start menu - Select"
 msgstr "Windows Start-meny - Velg"
@@ -3746,11 +3782,11 @@ msgstr "Oppsett Xerte"
 msgid "Allowed Mime Types"
 msgstr "Tillatte Mime Typer"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "Du har ikke valgt en server for å aktivere eller deaktivere."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Aktiver - Deaktiver nettverkssikkerhetskopiering"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "Du har ikke valgt en server for å aktivere eller deaktivere."
 
 msgid "Wake on Lan - View"
 msgstr "Vekk på Lan - Utsikt"
@@ -4151,8 +4187,11 @@ msgstr "Du har ikke skrevet inn et navn for dette varselet."
 msgid "An E-Mail alert has been sent."
 msgstr "En e-postvarsling er sendt."
 
-msgid "Show Printers"
-msgstr "Vis skrivere"
+msgid "Add Printers"
+msgstr "Legg til skrivere"
+
+msgid "Add a network printer queue."
+msgstr "Legg til en nettverksskriverkø."
 
 msgid "There are no printer queues to delete."
 msgstr "Det er ingen skriverkøer å slette."
@@ -4221,7 +4260,7 @@ msgid "This will setup a distribution server for centralised linux client instal
 msgstr "Dette vil sette opp en distribusjonsserver for sentrale linux klientinstallasjoner."
 
 msgid " To use this feature you will need to add or import your client data into the asset register."
-msgstr "For å bruke denne funksjonen må du legge til eller importere klientdataene i aktivitetsregisteret."
+msgstr "For å bruke denne funksjonen må du legge til eller importere klientdataene dine i aktivitetsregisteret."
 
 msgid "IRC Help"
 msgstr "IRC Hjelp"
@@ -4277,14 +4316,17 @@ msgstr "Fjerne skriverkøen."
 msgid "Deleting print job"
 msgstr "Slette utskriftsjobben"
 
-msgid "View Reverse Proxies"
-msgstr "Se omvendt proxyer"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "Omvendt proxy-funksjonen tillater at innkommende nettforbindelser på port 80 og 443 passerer gjennom omvendt proxy til andre servere på nettverket ditt."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Dette omgår behovet for underdomener og alias tcpip-numre for ekstern tilgang, og vil også tillate all ekstern ssl-trafikk å bruke ett ssl-sertifikat for å autentisere nettstedene."
+
+msgid "Reverse Proxies"
+msgstr "Omvendt proxy"
+
+msgid "View Reverse Proxy entries."
+msgstr "Se omvendt proxyoppføringer."
 
 msgid "Target folder"
 msgstr "Målmappe"
@@ -4327,12 +4369,6 @@ msgstr "Velg klientdatamaskinene du vil tillate eller nekte internettilgang til.
 
 msgid "Choose location."
 msgstr "Velg sted."
-
-msgid "Reset times"
-msgstr "Tilbakestill ganger"
-
-msgid "View the scheduled reset times."
-msgstr "Se planlagte tilbakestillingstider."
 
 msgid "Allow All"
 msgstr "Tillat alt"
@@ -4442,6 +4478,9 @@ msgstr "Se romkontroller."
 msgid "Add reset time"
 msgstr "Legg til tilbakestillings tid"
 
+msgid "Reset times"
+msgstr "Tilbakestill ganger"
+
 msgid "Delete time"
 msgstr "Slett tid"
 
@@ -4508,17 +4547,11 @@ msgstr "Se og legg til e-postvarsler"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Dette viser skriverne som er tilordnet steder."
 
-msgid "Delete Printers"
-msgstr "Slett skrivere"
-
-msgid "Add Location"
-msgstr "Legg til plassering"
+msgid "Delete network printer queues."
+msgstr "Slett nettverksskriverkøer."
 
 msgid "No Printers have been assigned to a location."
 msgstr "Ingen skrivere har blitt tildelt til et sted."
-
-msgid "Assigned Printers"
-msgstr "Tilordnede skrivere"
 
 msgid "Default"
 msgstr "Misligholde"
@@ -4860,7 +4893,7 @@ msgid "E-Mail Over Quota Report"
 msgstr "E-post over kvoterapport"
 
 msgid "E-mail quota checks are run on E-mail inboxes for all users three times a day."
-msgstr "E-postkvotokontroller kjøres på e-postboksene for alle brukere tre ganger om dagen."
+msgstr "E-postkvotekontroller kjøres på e-postboksene for alle brukere tre ganger om dagen."
 
 msgid "Users who are over quota receive an E-mail warning them."
 msgstr "Brukere som er over kvote, mottar en e-postmelding."
@@ -4936,6 +4969,9 @@ msgstr "En omvendt proxy-server har ikke blitt konfigurert."
 
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Følgende nettsteder blir omdirigert via denne proxy-serveren."
+
+msgid "Add a Reverse Proxy site."
+msgstr "Legg til et omvendt proxy-nettsted."
 
 msgid "Target"
 msgstr "Mål"
@@ -5399,14 +5435,23 @@ msgstr "Windows skriverdrivere"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Dette brukes til å aktivere eller deaktivere automatisk Windows-skriverdrivergenerering for utskriftskøene dine."
 
-msgid "Generate Drivers"
-msgstr "Generer drivere"
+msgid "Enable All"
+msgstr "Aktiver alle"
 
-msgid "Enable all"
-msgstr "Aktiver alt"
+msgid "Enable auto generation for all printers."
+msgstr "Aktiver automatisk generering for alle skrivere."
 
 msgid "Disable all"
 msgstr "Deaktivere alle"
+
+msgid "Disable auto generation for all printers."
+msgstr "Deaktiver automatisk generering for alle skrivere."
+
+msgid "Generate Drivers"
+msgstr "Generer drivere"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Generer skriverdrivere for alle aktiverte skrivere."
 
 msgid "Windows printer driver generation completed."
 msgstr "Windows-skriverdrivergenerering fullført."
@@ -6230,9 +6275,6 @@ msgstr "DHCP-endringene har blitt brukt."
 msgid "The asset search cannot be blank."
 msgstr "Aktivitetssøkingen kan ikke være tom."
 
-msgid "Enable All"
-msgstr "Aktiver alle"
-
 msgid "Reset All"
 msgstr "Tilbakestill alt"
 
@@ -6863,6 +6905,9 @@ msgstr "Ta opp en hendelse som har skjedd."
 msgid "Add Network Printer"
 msgstr "Legg til nettverksskriver"
 
+msgid "Delete Printers"
+msgstr "Slett skrivere"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Skriv inn navnet du vil ha for denne skriveren."
 
@@ -7436,17 +7481,8 @@ msgstr "Last opp Karoshi Linux Profile"
 msgid "Add Server Roles"
 msgstr "Legg til serverroller"
 
-msgid "Add addtional server roles."
-msgstr "Legg til flere serverroller."
-
 msgid "Management Users"
 msgstr "Administrerende brukere"
-
-msgid "Create additional Web Management users."
-msgstr "Opprett flere Web Management-brukere."
-
-msgid "Label existing groups."
-msgstr "Merk eksisterende grupper."
 
 msgid "Add a User"
 msgstr "Legg til en bruker"
@@ -7454,38 +7490,14 @@ msgstr "Legg til en bruker"
 msgid "Room Locations"
 msgstr "Room Locations"
 
-msgid "Add room locations for client computers."
-msgstr "Legg til plasser for klientdatamaskiner."
-
 msgid "Join Clients"
 msgstr "Bli med Klienter"
-
-msgid "Join client computers to the domain."
-msgstr "Bli med klientdatamaskiner til domenet."
-
-msgid "Edit Windows client profiles."
-msgstr "Rediger Windows klientprofiler."
 
 msgid "Add Assets"
 msgstr "Legg til eiendeler"
 
-msgid "Add client computers to the asset register."
-msgstr "Legg til klientdatamaskiner i eiendomsregisteret."
-
-msgid "Setup printer queues."
-msgstr "Konfigurer skriverkøer."
-
 msgid "User Settings"
 msgstr "Brukerinnstillinger"
-
-msgid "Set the default user settings."
-msgstr "Angi standard brukerinnstillinger."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Bulk oppretter brukere fra en CSV-fil."
-
-msgid "Set your default Web Management page."
-msgstr "Angi standard webbehandlingsside."
 
 msgid "Record User Incident"
 msgstr "Registrer brukerhendelse"
@@ -10062,7 +10074,7 @@ msgid "Edit Asset"
 msgstr "Rediger ressurs"
 
 msgid "This is already in use in the asset register."
-msgstr "Dette er allerede i bruk i eiendomsregisteret."
+msgstr "Dette er allerede i bruk i aktivregisteret."
 
 msgid "The asset register is locked."
 msgstr "Aktivitetsregisteret er låst."
@@ -10205,8 +10217,20 @@ msgstr "La tiden være tom for automatisk tidsplan."
 msgid "All servers backed up in turn starting at"
 msgstr "Alle servere sikkerhetskopiert i sin tur starter på"
 
+msgid "Select the server you want to backup to."
+msgstr "Velg serveren du vil sikkerhetskopiere til."
+
 msgid "Change Time"
 msgstr "Endre tid"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Endre tidspunktet for denne sikkerhetskopien."
+
+msgid "Enable or disable the backup."
+msgstr "Aktiver eller deaktiver sikkerhetskopien."
+
+msgid "Add a folder to the backup."
+msgstr "Legg til en mappe til sikkerhetskopien."
 
 msgid "Stopping NTP Service"
 msgstr "Stoppe NTP-tjenesten"
@@ -10310,9 +10334,6 @@ msgstr "Ingen adgang"
 msgid "Change Status"
 msgstr "Endre status"
 
-msgid "Reset Password"
-msgstr "Tilbakestille passord"
-
 msgid "Internet Logs"
 msgstr "Internettlogger"
 
@@ -10345,9 +10366,6 @@ msgstr "Nettverksovervåking"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Varelager"
-
-msgid "Printer Accounting"
-msgstr "Skriverregnskap"
 
 msgid "Logs"
 msgstr "logger"
@@ -10396,6 +10414,9 @@ msgstr "Endre eksamenspassord"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Endre passord for eksamenskontoer."
+
+msgid "Reset Password"
+msgstr "Tilbakestille passord"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Tilbakestill passord for eksamenskontoer."
@@ -10780,9 +10801,6 @@ msgstr "Konfigurer tiden som Linux-klientene automatisk slår av."
 
 msgid "View the status of the printer queues."
 msgstr "Se statusen til skriverkøene."
-
-msgid "Add a network printer queue."
-msgstr "Legg til en nettverksskriverkø."
 
 msgid "Delete Network Printer"
 msgstr "Slett nettverksskriver"

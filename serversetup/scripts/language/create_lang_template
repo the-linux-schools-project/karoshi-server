@@ -5,7 +5,7 @@ CREATE_TEMPLATE=yes
 CREATEPOFILES=yes
 source /opt/karoshi/serversetup/variables/langlist
 
-LANGLIST=$(echo -e "$LANGLIST" | sed 's/ /\n/g' | cut -d"_" -f1)
+LANGLIST=$(echo -e "$LANGLIST" | sed 's/en_EN.UTF-8,English //g'| sed 's/ /\n/g' | cut -d"_" -f1)
 LANGLIST=$(echo $LANGLIST | sed 's/ /+/g')
 
 APPEND=no

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-08-08 10:18+0100\n"
+"POT-Creation-Date: 2017-08-12 17:14+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,14 +533,29 @@ msgstr "Enviar"
 msgid "Reset"
 msgstr "Reiniciar"
 
+msgid "Client Internet Controls"
+msgstr "Controles de Internet de cliente"
+
+msgid "Menu"
+msgstr "Menú"
+
+msgid "Choose the location that you want to allow or deny internet access for."
+msgstr "Elija la ubicación a la que desea permitir o denegar el acceso a Internet."
+
+msgid "Choose Location"
+msgstr "Elegir la ubicación"
+
+msgid "You have not chosen a location."
+msgstr "Usted no ha elegido un lugar."
+
+msgid "No locations have been created."
+msgstr "No se han creado ubicaciones."
+
 msgid "Manage Print Queues"
 msgstr "Administrar colas de impresión"
 
 msgid "A print server has not yet been set up."
 msgstr "Todavía no se ha configurado un servidor de impresión."
-
-msgid "Menu"
-msgstr "Menú"
 
 msgid "View Print Queues"
 msgstr "Ver colas de impresión"
@@ -1515,7 +1530,7 @@ msgid "Client Wireless Settings"
 msgstr "Configuración inalámbrica del cliente"
 
 msgid "No key has been entered."
-msgstr "No se ha introducido ninguna clave."
+msgstr "No se ha introducido ninguna tecla."
 
 msgid "No ssid has been entered."
 msgstr "No se ha ingresado ssid."
@@ -2345,14 +2360,20 @@ msgstr "Formato de fecha incorrecto."
 msgid "Backup logs"
 msgstr "Registros de copia de seguridad"
 
+msgid "These are the backup logs for your server."
+msgstr "Estos son los registros de copia de seguridad de su servidor."
+
 msgid "Detailed logs"
 msgstr "Registros detallados"
+
+msgid "View detailed backup logs."
+msgstr "Ver registros de copia de seguridad detallados."
 
 msgid "Summary logs"
 msgstr "Registros de resumen"
 
-msgid "These are the backup logs for your server."
-msgstr "Estos son los registros de copia de seguridad de su servidor."
+msgid "View a summary of the backup logs."
+msgstr "Ver un resumen de los registros de copia de seguridad."
 
 msgid "Custom Command"
 msgstr "Comando personalizado"
@@ -3144,7 +3165,7 @@ msgid "Every"
 msgstr "Cada"
 
 msgid "Choose the minute you want the job to start on."
-msgstr "Elija el minuto en el que desea que empiece el trabajo."
+msgstr "Elija el minuto en el que desea iniciar el trabajo."
 
 msgid "Hour"
 msgstr "Hora"
@@ -3248,12 +3269,6 @@ msgstr "Introduzca en su elección de dominio de correo sin http: // www. Ejempl
 msgid "Custom Alias"
 msgstr "Alias ​​personalizado"
 
-msgid "Client Internet Controls"
-msgstr "Controles de Internet de cliente"
-
-msgid "Choose the location that you want to allow or deny internet access for."
-msgstr "Elija la ubicación a la que desea permitir o denegar el acceso a Internet."
-
 msgid "Reset Times"
 msgstr "Tiempos de restablecimiento"
 
@@ -3263,20 +3278,11 @@ msgstr "Establezca los tiempos de reinicio."
 msgid "View the asset register."
 msgstr "Ver el registro de activos."
 
-msgid "Choose Location"
-msgstr "Elegir la ubicación"
-
-msgid "You have not chosen a location."
-msgstr "Usted no ha elegido un lugar."
-
-msgid "No locations have been created."
-msgstr "No se han creado ubicaciones."
-
 msgid "Upload image error."
 msgstr "Error de carga de la imagen."
 
 msgid "The file you have uploaded does not have a suitable file extension."
-msgstr "El archivo que has subido no tiene una extensión de archivo adecuada."
+msgstr "El archivo que ha subido no tiene una extensión de archivo adecuada."
 
 msgid "User Image uploaded."
 msgstr "Se ha subido la imagen del usuario."
@@ -3389,6 +3395,9 @@ msgstr "Esto agregará el nombre de un rol personalizado que haya agregado a est
 msgid "Configure Backup"
 msgstr "Configurar copia de seguridad"
 
+msgid "${DATAENTRY//12345UNDERSCORE12345/_}"
+msgstr "$ {ENTRADA DE DATOS // 12345 UNDERSCORE 12345 / _}"
+
 msgid "Blank backup name."
 msgstr "Nombre de respaldo en blanco."
 
@@ -3404,11 +3413,14 @@ msgstr "Nombre de servidor de copia de seguridad en blanco."
 msgid "Blank backup status."
 msgstr "Estado de copia de seguridad en blanco."
 
+msgid "Choose the folders you want to backup."
+msgstr "Elija las carpetas que desea copiar."
+
 msgid "View Backups"
 msgstr "Ver copias de seguridad"
 
-msgid "Choose the folders you want to backup."
-msgstr "Elija las carpetas que desea copiar."
+msgid "View backups for this server."
+msgstr "Ver copias de seguridad para este servidor."
 
 msgid "View Monitor Logs"
 msgstr "Ver registros de Monitor"
@@ -3428,8 +3440,17 @@ msgstr "No se ha configurado Monitor Server."
 msgid "Add Printer"
 msgstr "Añadir impresora"
 
+msgid "Add a new printer queue."
+msgstr "Agregar una nueva cola de impresora."
+
 msgid "Delete Printer"
 msgstr "Eliminar impresora"
+
+msgid "Delete a new printer queue."
+msgstr "Elimine una nueva cola de impresión."
+
+msgid "Assigned Printers"
+msgstr "Impresoras asignadas"
 
 msgid "View Assigned Printers"
 msgstr "Ver impresoras asignadas"
@@ -3437,8 +3458,23 @@ msgstr "Ver impresoras asignadas"
 msgid "Edit PPD"
 msgstr "Editar PPD"
 
+msgid "Edit a printer driver."
+msgstr "Edite un controlador de impresora."
+
+msgid "Configure printing with Savapage."
+msgstr "Configure la impresión con Savapage."
+
 msgid "Locations"
 msgstr "Ubicaciones"
+
+msgid "View locations."
+msgstr "Ver ubicaciones."
+
+msgid "Show Printers"
+msgstr "Mostrar impresoras"
+
+msgid "Show network printer queues."
+msgstr "Mostrar colas de impresora de red."
 
 msgid "Windows Start menu - Select"
 msgstr "Menú Inicio de Windows - Seleccionar"
@@ -3746,11 +3782,11 @@ msgstr "Configuración Xerte"
 msgid "Allowed Mime Types"
 msgstr "Tipos permitidos de Mime"
 
-msgid "You have not chosen a server to enable or disable."
-msgstr "No ha elegido un servidor para habilitar o deshabilitar."
-
 msgid "Enable - Disable Network Backup"
 msgstr "Habilitar - Deshabilitar copia de seguridad de red"
+
+msgid "You have not chosen a server to enable or disable."
+msgstr "No ha elegido un servidor para habilitar o deshabilitar."
 
 msgid "Wake on Lan - View"
 msgstr "Wake on Lan - Ver"
@@ -4151,8 +4187,11 @@ msgstr "No ha ingresado un nombre para esta alerta."
 msgid "An E-Mail alert has been sent."
 msgstr "Se ha enviado una alerta de correo electrónico."
 
-msgid "Show Printers"
-msgstr "Mostrar impresoras"
+msgid "Add Printers"
+msgstr "Añadir impresoras"
+
+msgid "Add a network printer queue."
+msgstr "Agregar una cola de impresora de red."
 
 msgid "There are no printer queues to delete."
 msgstr "No hay colas de impresora que desee eliminar."
@@ -4277,14 +4316,17 @@ msgstr "Borrado de la cola de impresión."
 msgid "Deleting print job"
 msgstr "Eliminación del trabajo de impresión"
 
-msgid "View Reverse Proxies"
-msgstr "Ver Proxies inversos"
-
 msgid "The reverse proxy feature allows incoming web connections on port 80 and 443 to pass through the reverse proxy to other servers on your network."
 msgstr "La función de proxy inverso permite que las conexiones web entrantes en los puertos 80 y 443 pasen a través del proxy inverso a otros servidores de su red."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
 msgstr "Esto evita la necesidad de subdominios y números de alias tcpip para el acceso externo y también permitirá que todo el tráfico ssl externo utilice un certificado ssl para autenticar los sitios."
+
+msgid "Reverse Proxies"
+msgstr "Proxies inversos"
+
+msgid "View Reverse Proxy entries."
+msgstr "Ver entradas de proxy inverso."
 
 msgid "Target folder"
 msgstr "Carpeta de destino"
@@ -4327,12 +4369,6 @@ msgstr "Elija los equipos cliente que desea permitir o denegar el acceso a Inter
 
 msgid "Choose location."
 msgstr "Elegir la ubicación."
-
-msgid "Reset times"
-msgstr "Tiempos de reinicio"
-
-msgid "View the scheduled reset times."
-msgstr "Ver los tiempos de reinicio programados."
 
 msgid "Allow All"
 msgstr "Permitir todo"
@@ -4442,6 +4478,9 @@ msgstr "Ver los controles de la habitación."
 msgid "Add reset time"
 msgstr "Añadir tiempo de reinicio"
 
+msgid "Reset times"
+msgstr "Tiempos de reinicio"
+
 msgid "Delete time"
 msgstr "Eliminar tiempo"
 
@@ -4508,17 +4547,11 @@ msgstr "Ver y agregar alertas de correo electrónico"
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Esto muestra las impresoras que han sido asignadas a ubicaciones."
 
-msgid "Delete Printers"
-msgstr "Eliminar impresoras"
-
-msgid "Add Location"
-msgstr "Agregar Direccion"
+msgid "Delete network printer queues."
+msgstr "Eliminar colas de impresora de red."
 
 msgid "No Printers have been assigned to a location."
 msgstr "No se ha asignado ninguna impresora a una ubicación."
-
-msgid "Assigned Printers"
-msgstr "Impresoras asignadas"
 
 msgid "Default"
 msgstr "Defecto"
@@ -4936,6 +4969,9 @@ msgstr "No se ha configurado un servidor proxy inverso."
 
 msgid "The following sites are currently being redirected through this proxy server."
 msgstr "Los siguientes sitios están siendo redirigidos a través de este servidor proxy."
+
+msgid "Add a Reverse Proxy site."
+msgstr "Agregue un sitio proxy inverso."
 
 msgid "Target"
 msgstr "Objetivo"
@@ -5399,14 +5435,23 @@ msgstr "Controladores de impresora de Windows"
 msgid "This is used to enable or disable automated Windows printer driver generation for your print queues."
 msgstr "Se utiliza para activar o desactivar la generación automática de controladores de impresora de Windows para sus colas de impresión."
 
-msgid "Generate Drivers"
-msgstr "Generar controladores"
-
-msgid "Enable all"
+msgid "Enable All"
 msgstr "Activar todo"
+
+msgid "Enable auto generation for all printers."
+msgstr "Habilitar generación automática para todas las impresoras."
 
 msgid "Disable all"
 msgstr "Desactivar todo"
+
+msgid "Disable auto generation for all printers."
+msgstr "Inhabilite la generación automática para todas las impresoras."
+
+msgid "Generate Drivers"
+msgstr "Generar controladores"
+
+msgid "Generate printer drivers for all enabled printers."
+msgstr "Genere controladores de impresora para todas las impresoras habilitadas."
 
 msgid "Windows printer driver generation completed."
 msgstr "Se completó la generación del controlador de impresora de Windows."
@@ -5808,7 +5853,7 @@ msgid "The site must not be blank."
 msgstr "El sitio no debe estar en blanco."
 
 msgid "This allows sites to be accessed via squid deb proxy for updating packages on client computers."
-msgstr "Esto permite que se acceda a los sitios a través de squid deb proxy para actualizar paquetes en equipos cliente."
+msgstr "Esto permite acceder a los sitios a través de squid deb proxy para actualizar paquetes en equipos cliente."
 
 msgid "Monitor Interval"
 msgstr "Intervalo del monitor"
@@ -6135,7 +6180,7 @@ msgid "View the protected distribution lists."
 msgstr "Ver las listas de distribución protegidas."
 
 msgid "Adding a protected domain restricts which internal users can send to it."
-msgstr "La adición de un dominio protegido restringe los usuarios internos que pueden enviarle."
+msgstr "La adición de un dominio protegido restringe los usuarios internos que pueden enviar a él."
 
 msgid "Allowed Users"
 msgstr "Usuarios permitidos"
@@ -6189,7 +6234,7 @@ msgid "The new primary group does not exist."
 msgstr "El nuevo grupo primario no existe."
 
 msgid "Primary group changed for"
-msgstr "El grupo primario cambió para"
+msgstr "El grupo principal cambió para"
 
 msgid "The user cannot be blank."
 msgstr "El usuario no puede estar en blanco."
@@ -6229,9 +6274,6 @@ msgstr "Se han aplicado los cambios DHCP."
 
 msgid "The asset search cannot be blank."
 msgstr "La búsqueda de activos no puede estar en blanco."
-
-msgid "Enable All"
-msgstr "Activar todo"
 
 msgid "Reset All"
 msgstr "Resetear todo"
@@ -6627,7 +6669,7 @@ msgid "If you have not already done so you may want to add a printer server to y
 msgstr "Si aún no lo ha hecho, puede agregar un servidor de impresión a su red para que pueda controlar la impresión para sus clientes."
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
-msgstr "El enlace de servidores de la demostración abajo demostrará todos los servidores disponibles. Seleccione el servidor al que desea agregar el módulo de impresora haciendo clic en el botón agregar función."
+msgstr "El enlace de los servidores de la demostración abajo demostrará todos los servidores disponibles. Elija el servidor al que desea agregar el módulo de impresora haciendo clic en el botón agregar función."
 
 msgid "Control Printers"
 msgstr "Impresoras de Control"
@@ -6863,6 +6905,9 @@ msgstr "Registre un incidente que ha ocurrido."
 msgid "Add Network Printer"
 msgstr "Añadir impresora de red"
 
+msgid "Delete Printers"
+msgstr "Eliminar impresoras"
+
 msgid "Enter in the name that you want for this printer."
 msgstr "Introduzca el nombre que desea para esta impresora."
 
@@ -6939,7 +6984,7 @@ msgid "Nextcloud Server"
 msgstr "Servidor Nextcloud"
 
 msgid "This will provide a cloud file storage and home access system for web access to files."
-msgstr "Esto proporcionará un almacenamiento de archivos en la nube y un sistema de acceso a casa para el acceso web a los archivos."
+msgstr "Esto proporcionará un almacenamiento de archivos en la nube y un sistema de acceso domiciliario para el acceso web a los archivos."
 
 msgid "Users will be able to access their network shares over the internet."
 msgstr "Los usuarios podrán acceder a sus recursos compartidos de red a través de Internet."
@@ -7436,17 +7481,8 @@ msgstr "Subir Perfil de Karoshi Linux"
 msgid "Add Server Roles"
 msgstr "Agregar funciones de servidor"
 
-msgid "Add addtional server roles."
-msgstr "Agregue funciones de servidor adicionales."
-
 msgid "Management Users"
 msgstr "Usuarios de la administración"
-
-msgid "Create additional Web Management users."
-msgstr "Cree usuarios adicionales de Web Management."
-
-msgid "Label existing groups."
-msgstr "Etiquetar los grupos existentes."
 
 msgid "Add a User"
 msgstr "Añadir un usuario"
@@ -7454,38 +7490,14 @@ msgstr "Añadir un usuario"
 msgid "Room Locations"
 msgstr "Ubicaciones de habitaciones"
 
-msgid "Add room locations for client computers."
-msgstr "Agregue ubicaciones de sala para equipos cliente."
-
 msgid "Join Clients"
 msgstr "Únete a los clientes"
-
-msgid "Join client computers to the domain."
-msgstr "Únete a los equipos cliente al dominio."
-
-msgid "Edit Windows client profiles."
-msgstr "Editar perfiles de cliente de Windows."
 
 msgid "Add Assets"
 msgstr "Agregar activos"
 
-msgid "Add client computers to the asset register."
-msgstr "Agregue equipos cliente al registro de activos."
-
-msgid "Setup printer queues."
-msgstr "Configurar las colas de la impresora."
-
 msgid "User Settings"
 msgstr "Ajustes de usuario"
-
-msgid "Set the default user settings."
-msgstr "Establezca la configuración predeterminada del usuario."
-
-msgid "Bulk create users from a CSV file."
-msgstr "Bulk crea usuarios desde un archivo CSV."
-
-msgid "Set your default Web Management page."
-msgstr "Establezca la página predeterminada de Administración Web."
 
 msgid "Record User Incident"
 msgstr "Registrar incidente de usuario"
@@ -7659,7 +7671,7 @@ msgid "Moodle update guide which this feature automates."
 msgstr "Guía de actualización de Moodle que esta función automatiza."
 
 msgid "IMPORTANT - Make sure that you have a working backup of the following areas on your moodle server before carrying out an upgrade"
-msgstr "IMPORTANTE - Asegúrese de que tiene una copia de seguridad de trabajo de las siguientes áreas en su servidor moodle antes de realizar una actualización"
+msgstr "IMPORTANTE: asegúrese de que tiene una copia de seguridad de trabajo de las siguientes áreas en su servidor moodle antes de realizar una actualización"
 
 msgid "Choose the moodle archive to upgrade from. The archive MUST be a .tgz."
 msgstr "Elige el archivo moodle para actualizar desde. El archivo DEBE ser un .tgz."
@@ -7719,7 +7731,7 @@ msgid "Show Free Leases"
 msgstr "Mostrar alquileres gratuitos"
 
 msgid "Free Leases"
-msgstr "Arrendamientos gratuitos"
+msgstr "Arrendamientos Gratis"
 
 msgid "Restart DHCP to activate changes"
 msgstr "Reiniciar DHCP para activar los cambios"
@@ -7887,7 +7899,7 @@ msgid "The reverse proxy allows incoming web traffic to be redirected to other s
 msgstr "El proxy inverso permite que el tráfico web entrante se redirija a otros servidores de la red."
 
 msgid "The redirect is based on the trailing slash and folder name after the end of the domain of your site."
-msgstr "La redirección se basa en la barra y el nombre de la carpeta al final del dominio de su sitio."
+msgstr "La redirección se basa en la barra y el nombre de la carpeta tras el final del dominio de su sitio."
 
 msgid "Web sites to be redirected are added in on the web management."
 msgstr "Los sitios web que se redireccionan se agregan a la administración web."
@@ -8736,7 +8748,7 @@ msgid "Full Backup"
 msgstr "Copia de seguridad completa"
 
 msgid "Delete old backups after"
-msgstr "Eliminar las copias de seguridad viejas después de"
+msgstr "Eliminar copias de seguridad viejas después de"
 
 msgid "Shutdown in progress"
 msgstr "Apagado en curso"
@@ -10205,8 +10217,20 @@ msgstr "Deje el tiempo en blanco para la programación automática."
 msgid "All servers backed up in turn starting at"
 msgstr "Todos los servidores respaldados a su vez a partir de"
 
+msgid "Select the server you want to backup to."
+msgstr "Seleccione el servidor al que desea realizar la copia de seguridad."
+
 msgid "Change Time"
 msgstr "Cambio de hora"
+
+msgid "Change the time that this backup is scheduled for."
+msgstr "Cambiar el tiempo que esta copia de seguridad está programada para."
+
+msgid "Enable or disable the backup."
+msgstr "Habilitar o deshabilitar la copia de seguridad."
+
+msgid "Add a folder to the backup."
+msgstr "Agregue una carpeta a la copia de seguridad."
 
 msgid "Stopping NTP Service"
 msgstr "Detención del servicio NTP"
@@ -10310,9 +10334,6 @@ msgstr "Sin acceso"
 msgid "Change Status"
 msgstr "Cambiar Estado"
 
-msgid "Reset Password"
-msgstr "Restablecer la contraseña"
-
 msgid "Internet Logs"
 msgstr "Registros de Internet"
 
@@ -10345,9 +10366,6 @@ msgstr "Monitorización de la red"
 
 msgid "OCS-Inventory"
 msgstr "OCS-Inventario"
-
-msgid "Printer Accounting"
-msgstr "Contabilidad de impresoras"
 
 msgid "Logs"
 msgstr "Registros"
@@ -10396,6 +10414,9 @@ msgstr "Cambiar contraseñas de examen"
 
 msgid "Change passwords for the exam accounts."
 msgstr "Cambiar contraseñas para las cuentas de examen."
+
+msgid "Reset Password"
+msgstr "Restablecer la contraseña"
 
 msgid "Reset passwords for the exam accounts."
 msgstr "Restablecer contraseñas para las cuentas de examen."
@@ -10780,9 +10801,6 @@ msgstr "Configure el tiempo que los clientes Linux cierran automáticamente."
 
 msgid "View the status of the printer queues."
 msgstr "Ver el estado de las colas de impresión."
-
-msgid "Add a network printer queue."
-msgstr "Agregar una cola de impresora de red."
 
 msgid "Delete Network Printer"
 msgstr "Eliminar impresora de red"
