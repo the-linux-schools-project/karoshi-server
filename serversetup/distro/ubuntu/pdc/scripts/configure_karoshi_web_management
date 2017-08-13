@@ -18,7 +18,7 @@ then
 	useradd -u 998 -g apache_karoshi -d /var/www -c "system user for apache_karoshi" -K PASS_MAX_DAYS=-1 -s /bin/sh -M apache_karoshi
 fi
 #Copy in init.d startup script
-cp -f $COPYPATH/apache2_karoshi /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2_karoshi /etc/init.d/
 chmod 0744 /etc/init.d/apache2_karoshi
 #Copy in apache configuration files
 [ ! -d /etc/apache2/sites-karoshi-enabled ] && mkdir -p /etc/apache2/sites-karoshi-enabled
