@@ -134,7 +134,7 @@ fi
 
 echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">System Password</td><td>
-<select name="____USERACCOUNT____"  tabindex="1" style="width: '"$WIDTH2"'px;">
+<select required="required" name="____USERACCOUNT____"  tabindex="1" style="width: '"$WIDTH2"'px;">
 <option label="blank"></option>
 <option>karoshi</option>
 <option>Administrator</option>

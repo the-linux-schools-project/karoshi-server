@@ -41,15 +41,15 @@ source /opt/karoshi/web_controls/version
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/update_servers_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -73,115 +73,68 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-%+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=16
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign _DAY_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DAYcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DAY=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=DAY
+get_data
+DAY="$DATAENTRY"
+
 #Assign HOURS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = HOURScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		HOURS=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=HOURS
+get_data
+HOURS=$(echo "$DATAENTRY" | tr -cd '0-9')
+
 
 #Assign MINUTES
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MINUTEScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MINUTES=`echo $DATA | cut -s -d'_' -f$COUNTER | tr -cd '0-9'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MINUTES
+get_data
+MINUTES=$(echo "$DATAENTRY" | tr -cd '0-9')
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign SERVERMASTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERMASTER
+get_data
+SERVERMASTER="$DATAENTRY"
 
 #Assign FORCEREBOOT
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FORCEREBOOTcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FORCEREBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=FORCEREBOOT
+get_data
+FORCEREBOOT="$DATAENTRY"
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Servers"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -204,34 +157,10 @@ fi
 
 echo '</head><body><div id="pagecontainer">'
 
-#Generate navigation bar
-if [ $MOBILE = no ]
-then
-	DIV_ID=actionbox
-	#Generate navigation bar
-	/opt/karoshi/web_controls/generate_navbar_admin
-else
-	DIV_ID=actionbox2
-fi
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
-
-#Show back button for mobiles
-if [ $MOBILE = yes ]
-then
-	echo '<div style="float: center" id="my_menu" class="sdmenu">
-	<div class="expanded">
-	<span>'$"Update Servers"'</span>
-<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div><div id="mobileactionbox">'
-	else
-echo '
-<div class="sectiontitle">'$"Update Servers"'</div><br>'
-fi
-
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -239,13 +168,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -276,7 +205,7 @@ then
 fi
 
 #Check to see that SERVERMASTER is not blank
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
@@ -303,36 +232,36 @@ then
 fi
 
 #Check that time is ok
-if [ $MINUTES -gt 59 ]
+if [ "$MINUTES" -gt 59 ]
 then
 	MESSAGE=$"Please enter a correct time."
 	show_status
 fi
 
 #Check that time is ok
-if [ $MINUTES -lt 0 ]
+if [ "$MINUTES" -lt 0 ]
 then
 	MESSAGE=$"Please enter a correct time."
 	show_status
 fi
 
 #Check that time is ok
-if [ $HOURS -gt 23 ]
+if [ "$HOURS" -gt 23 ]
 then
 	MESSAGE=$"Please enter a correct time."
 	show_status
 fi
 
 #Check that time is ok
-if [ $HOURS -lt 0 ]
+if [ "$HOURS" -lt 0 ]
 then
 	MESSAGE=$"Please enter a correct time."
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$FORCEREBOOT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
 show_page
 
-echo "</div></div></body></html>"
+echo "</div></body></html>"
 exit

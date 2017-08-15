@@ -134,19 +134,24 @@ then
 	</form><br>
 '
 else
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
+
 	echo '
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td style="height:30px;"><div class="sectiontitle">'$"Scheduled Jobs"'</div></td>
-	<td>
-	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></td>
-	<td>
-	<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-	<button class="button" name="ScheduleJob" value="_">
-	'$"Schedule Job"'
-	</button>
-	</form>
-	</td>
+
+	<div class="sectiontitle">'$"Scheduled Jobs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
+				<button class="info infonavbutton" name="_ScheduleJob_" value="_">
+					<img src="'"$ICON1"'" alt="'$"Schedule Job"'">
+					<span>'$"Schedule a job."'</span><br>
+					'$"Schedule Job"'
+				</button>
+			</form>
+		</td>
+
 	</tr></table>
 	<br></div><div id="infobox">'
 fi
