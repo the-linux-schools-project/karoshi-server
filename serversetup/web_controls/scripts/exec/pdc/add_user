@@ -436,20 +436,45 @@ then
 fi
 
 
-if [[ "$SERVER" = $(hostname-fqdn) ]] || [[ $(echo "$SERVER" | cut -d. -f2-) = $(hostname-fqdn) ]]
+#Create a home folder for the user - the SERVER variable is used to declare which server the user home area should be on
+function create_home_folder {
+[ ! -d "$HOMEPATH/$NEWUSERNAME/" ] && mkdir -p "$HOMEPATH/$NEWUSERNAME/"
+chown -R "$USERID":root "$HOMEPATH/$NEWUSERNAME/"
+chmod -R 0600 "$HOMEPATH/$NEWUSERNAME/"
+setfacl -m u::rwx,g::---,o::---,m::r-x "$HOMEPATH/$NEWUSERNAME/"
+[[ $(echo "$HOMEPATH" | grep -c students) -gt 0 ]] && setfacl -Rm group:staff:r-x,d:group:staff:r-x "$HOMEPATH/$NEWUSERNAME/"
+
+#Apply quota settings
+if [ "$APPLY_QUOTA" = yes ]
 then
-	#Create home folder
+	setquota -u "$NEWUSERNAME" "$MAXSIZE1" "$MAXSIZE2" "$MAXFILES1" "$MAXFILES2" -a /dev/loop0
+fi
+}
 
-	[ ! -d "$HOMEPATH/$NEWUSERNAME/" ] && mkdir -p "$HOMEPATH/$NEWUSERNAME/"
-	chown -R "$NEWUSERNAME":root "$HOMEPATH/$NEWUSERNAME/"
-	chmod -R 0600 "$HOMEPATH/$NEWUSERNAME/"
-	setfacl -m u::rwx,g::---,o::---,m::r-x "$HOMEPATH/$NEWUSERNAME/"
-	[[ $(echo "$HOMEPATH" | grep -c students) -gt 0 ]] && setfacl -Rm group:staff:r-x,d:group:staff:r-x "$HOMEPATH/$NEWUSERNAME/"
-
-	#Apply quota settings
-	if [ "$APPLY_QUOTA" = yes ]
+if [[ "$SERVER" = $(hostname-fqdn) ]]
+then
+	#Create home folder on main server
+	create_home_folder
+else
+	#Create user home area on an extra fileserver if the primary group for this user is assigned to a different server
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" "$(declare -f create_home_folder);
+	#Aasign variables as we are on the other side of the ssh and the declared function will not recognise the variables otherwise
+	NEWUSERNAME=$NEWUSERNAME
+	HOMEPATH=$HOMEPATH
+	USERID=$USERID
+	APPLY_QUOTA=$APPLY_QUOTA
+	MAXSIZE1=$MAXSIZE1
+	MAXSIZE2=$MAXSIZE2
+	MAXFILES1=$MAXFILES1
+	MAXFILES2=$MAXFILES2
+	create_home_folder"
+	SSHSTATUS="$?"
+	if [ "$SSHSTATUS" != 0 ]
 	then
-		setquota -u "$NEWUSERNAME" "$MAXSIZE1" "$MAXSIZE2" "$MAXFILES1" "$MAXFILES2" -a /dev/loop0
+		echo "$(date): add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		echo "$SERVER,fileserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
+		FAILED_SERVER=yes
+		FAILEDSERVERLIST="$FAILEDSERVERLIST,$SERVER"
 	fi
 fi
 
@@ -475,71 +500,59 @@ else
 	ln -s msdfs:"$SERVER2\\$NEWUSERNAME" "/var/lib/samba/dfs/homes/$NEWUSERNAME"
 fi
 
-############################
-#Create user home area on extra fileserver
-############################
-if [[ "$SERVER" != $(hostname-fqdn) ]] && [[ $(echo "$SERVER" | cut -d. -f2-) != $(hostname-fqdn) ]]
-then
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
-	[ ! -d '"$HOMEPATH"'/'"$NEWUSERNAME"' ] && mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'
-	chown -R '"$USERID"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'
-	chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'
-	[ `echo '"$HOMEPATH"' | grep -c students` -gt 0 ] && setfacl -Rm group:staff:r-x,d:group:staff:r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-	setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-	#Apply quota settings
-	if [ "'$APPLY_QUOTA'" = yes ]
-	then
-		setquota -u '"$USERID"' '"$MAXSIZE1"' '"$MAXSIZE2"' '"$MAXFILES1"' '"$MAXFILES2"' -a /dev/loop0
-	fi
-'
-SSHSTATUS=$?
-	if [ "$SSHSTATUS" != 0 ]
-	then
-		echo "$(date): add_user - $NEWUSERNAME ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		echo "$SERVER,fileserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
-		FAILED_SERVER=yes
-		FAILEDSERVERLIST="$FAILEDSERVERLIST,$SERVER"
-	fi
-fi
 
 ###########################
 #Create email folder on email server
 ###########################
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
+	#Get the name of the server that the E-Mail module has been applied to
 	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
-	if [[ "$EMAILSERVER" != $(hostname-fqdn) ]] && [[ $(echo "$EMAILSERVER" | cut -d. -f2-) != $(hostname-fqdn) ]]
-	then 
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" '
-		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-		[ ! -d /home/users/email/'"$NEWUSERNAME"' ] && mkdir /home/users/email/'"$NEWUSERNAME"'
 
-		chown -R '"$USERID"':root /home/users/email/'"$NEWUSERNAME"'
-		chmod -R 0600 /home/users/email/'"$NEWUSERNAME"'
-		chmod -R u+X /home/users/email/'"$NEWUSERNAME"'
+	function configure_email {
+	[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
+	mkdir "/home/users/email/$NEWUSERNAME"
+	chown "$USERID" -R "/home/users/email/$NEWUSERNAME"
+	chmod 0600 -R "/home/users/email/$NEWUSERNAME"
+	chmod u+X -R "/home/users/email/$NEWUSERNAME"
 
-		[ ! -d '"$HOMEPATH"''/''"$NEWUSERNAME"' ] && mkdir -p '"$HOMEPATH"''/''"$NEWUSERNAME"'
-			
-		chown -R '"$USERID"':root '"$HOMEPATH"''/''"$NEWUSERNAME"'
-		chmod -R 0600 '"$HOMEPATH"''/''"$NEWUSERNAME"'
-		setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
 
-		#Add in openchange data
-		#openchange_newuser --create '"$NEWUSERNAME"'
-
-		#Add staff user to the protected distribution list
-		if [ "'"$SUBUNIT"'" = personnel ]
+	if [ ! -d "$HOMEPATH/$NEWUSERNAME" ]
+	then
+		mkdir -p "$HOMEPATH/$NEWUSERNAME"
+		chown -R "$USERID":root "$HOMEPATH/$NEWUSERNAME"
+		chmod -R 0600 "$HOMEPATH/$NEWUSERNAME"
+		setfacl -m u::rwx,g::---,o::---,m::r-x "$HOMEPATH/$NEWUSERNAME"
+	fi
+		
+	#Add staff user to the protected distribution list
+	if [ "$SUBUNIT" = personnel ]
+	then
+		if [[ $(grep -c "$NEWUSERNAME@" /etc/postfix/distribution_list_users) = 0 ]]
 		then
-			if [ $(grep -c "'"$NEWUSERNAME"'@" /etc/postfix/distribution_list_users) = 0 ]
-			then
-				echo "'"$NEWUSERNAME"'@'"$REALM"' OK" >> /etc/postfix/distribution_list_users
-				cat /etc/postfix/distribution_list_users | sort > /etc/postfix/distribution_list_users1
-				rm /etc/postfix/distribution_list_users
-				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
-				postmap hash:/etc/postfix/distribution_list_users
-			fi
+			echo "$NEWUSERNAME@$REALM OK" >> /etc/postfix/distribution_list_users
+			sort /etc/postfix/distribution_list_users > /etc/postfix/distribution_list_users1
+			rm /etc/postfix/distribution_list_users
+			mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
+			postmap hash:/etc/postfix/distribution_list_users
 		fi
-		'
+	fi
+	}
+
+	if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
+	then 
+		#Create E-Mail folders for the user on the main server
+		configure_email
+	else
+		#Create E-Mail folders for the user on an additional user
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" "$(declare -f configure_email);
+		#Aasign variables as we are on the other side of the ssh and the declared function will not recognise the variables otherwise
+		NEWUSERNAME=$NEWUSERNAME
+		HOMEPATH=$HOMEPATH
+		USERID=$USERID
+		SUBUNIT=$SUBUNIT
+		REALM=$REALM
+		configure_email"
 		SSHSTATUS="$?"
 		if [ "$SSHSTATUS" != 0 ]
 		then
@@ -547,27 +560,6 @@ then
 			echo "$EMAILSERVER,emailserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
 			FAILED_SERVER=yes
 			FAILEDSERVERLIST="$FAILEDSERVERLIST,$EMAILSERVER"
-		fi
-	else
-		[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-		mkdir "/home/users/email/$NEWUSERNAME"
-		chown "$NEWUSERNAME" -R "/home/users/email/$NEWUSERNAME"
-		chmod 0600 -R "/home/users/email/$NEWUSERNAME"
-		chmod u+X -R "/home/users/email/$NEWUSERNAME"
-		#Add in openchange data
-		#openchange_newuser --create $NEWUSERNAME
-
-		#Add staff user to the protected distribution list
-		if [ "$SUBUNIT" = personnel ]
-		then
-			if [[ $(grep -c "$NEWUSERNAME@" /etc/postfix/distribution_list_users) = 0 ]]
-			then
-				echo "$NEWUSERNAME@$REALM OK" >> /etc/postfix/distribution_list_users
-				sort /etc/postfix/distribution_list_users > /etc/postfix/distribution_list_users1
-				rm /etc/postfix/distribution_list_users
-				mv /etc/postfix/distribution_list_users1 /etc/postfix/distribution_list_users
-				postmap hash:/etc/postfix/distribution_list_users
-			fi
 		fi
 	fi
 
@@ -577,187 +569,6 @@ then
 		MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
 		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 	fi
-fi
-
-######################
-#Add user to any federated servers
-######################
-if [ "$FEDERATED_LDAP_SERVERS" = yes ]
-then
-
-for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDSERVER=$(basename "$FEDERATEDSERVERS")
-######################
-#Export ldif file to add to the federated server
-######################
-echo "$(date): add_user \(federated mode\) - exporting $NEWUSERNAME to $FEDERATEDSERVER from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDSERVER" '
-######################
-#Create user on federated server
-######################
-
-SECONDARYGROUP=""
-source /opt/karoshi/server_network/group_information/'"$PRIMARYGROUP"'
-source /opt/karoshi/server_network/domain_information/domain_name
-GROUPLIST=$SECONDARYGROUP
-
-echo `date`: add_user \(federated mode\) - creating '"$NEWUSERNAME"', Primary group: '"$PRIMARYGROUP"' from '"$REMOTE_ADDR"' by '"$REMOTE_USER"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-
-#Add user to samba4 ldap
-samba-tool user add '"$NEWUSERNAME"' --userou="OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People" --profile-path=\\\\$HOSTNAME\\applications\\profiles\\'"$NEWUSERNAME"' --script-path=logon.bat --surname='"$SURNAME"' --given-name='"$FIRSTNAME"' --use-username-as-cn  --random-password --mail-address='"$NEWUSERNAME"'@$REALM 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-
-#Change password
-samba-tool user setpassword '"$NEWUSERNAME"' --newpassword="'"$NEWUSERPASSWORD"'" 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-
-#Add user to primary group
-samba-tool group addmembers "'"$PRIMARYGROUP"'" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-
-#Add user to supplementary groups
-if [ `echo "'"$SECONDARYGROUP"'"null | sed "s/ //g"` != null ]
-then
-SECONDARYGROUP=`echo '"$SECONDARYGROUP"' | sed "s/,/ /g"`
-for EXTRAGROUP in '"$SECONDARYGROUP"'
-do
-samba-tool group addmembers "'"$EXTRAGROUP"'" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-done
-fi
-
-#Add tech and itadmin users to the domain admins group
-if [ '"$PRIMARYGROUP"' = itadmin ] || [ '"$PRIMARYGROUP"' = tech ]
-then
-samba-tool group addmembers "Domain Admins" '"$NEWUSERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-fi
-
-#Get samba 4 database password
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-
-#Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
-#This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
-changetype: modify
-add: objectclass
-objectclass: posixaccount
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-PRIGROUPID=`getent group '"$PRIMARYGROUP"' | cut -d: -f3`
-
-echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
-changetype: modify
-add: gidnumber
-gidnumber: '"$PRIGROUPID"'
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-UIDNUMBER=`getent passwd '"$NEWUSERNAME"' | cut -d: -f3`
-
-echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
-changetype: modify
-add: uidnumber
-uidnumber: $UIDNUMBER
--
-add: division
-division: '"$PRIMARYGROUP"'
--
-add: loginshell
-loginshell: /bin/bash
--
-add: unixhomedirectory
-unixhomedirectory: '"$HOMEPATH"'/'"$NEWUSERNAME"'
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-#echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
-#changetype: modify
-#replace: primaryGroupID
-#primaryGroupID: $PRIGROUPID
-#-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-if [ ! -z $ENROLLMENTNUMBER ]
-then
-#Add in employee number if it has been set
-echo -e "dn: CN='"$NEWUSERNAME"',OU='"$PRIMARYGROUP"',OU='"$SUBUNIT"',OU=People,$LDAPBASE
-changetype: modify
-add: employeeNumber
-employeeNumber: '"$ENROLLMENTNUMBER"'
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w $LDAPPASS 1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-
-[ -d /opt/karoshi/.tempdata ] || mkdir /opt/karoshi/.tempdata
-/opt/karoshi/"useful scripts"/createmailfolders
-mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/Mail
-/opt/karoshi/"useful scripts"/createmailfolders
-cp /opt/karoshi/.tempdata/INBOX.* '"$HOMEPATH"'/'"$NEWUSERNAME"'/Mail/
-cp /opt/karoshi/.tempdata/.mailboxlist '"$HOMEPATH"'/'"$NEWUSERNAME"'
-chown -R '"$NEWUSERNAME:$PRIMARYGROUP"' '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-
-#Create home folder
-if [ $SERVER = `hostname-fqdn` ]
-then
-mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-chown -R '"$NEWUSERNAME"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-else
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER "
-mkdir -p '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-chown -R '"$NEWUSERNAME"':root '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-chmod -R 0600 '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-setfacl -m u::rwx,g::---,o::---,m::r-x '"$HOMEPATH"'/'"$NEWUSERNAME"'/
-"
-fi
-
-#Create folder on email server
-if [ -f /opt/karoshi/server_network/emailserver ]
-then
-EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-if [ $EMAILSERVER != `hostname-fqdn` ]
-then 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $EMAILSERVER '\''
-[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/'"$NEWUSERNAME"'
-chown '"$NEWUSERNAME"' /home/users/email/'"$NEWUSERNAME"'
-chmod 0700 /home/users/email/'"$NEWUSERNAME"'
-'\''
-
-SSHSTATUS=`echo $?`
-if [ $SSHSTATUS != 0 ]
-then
-echo `date`: add_user - '"$NEWUSERNAME"' ssh failure on $SERVER by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-echo $SERVER,emailserver >> /opt/karoshi/server_network/offline_servers/'"$NEWUSERNAME"'
-FAILED_SERVER=yes
-FAILEDSERVERLIST=$FAILEDSERVERLIST,$SERVER
-fi
-else
-[ ! -d /home/users/email/ ] && mkdir -p /home/users/email/
-mkdir /home/users/email/'"$NEWUSERNAME"'
-chown '"$NEWUSERNAME"' /home/users/email/'"$NEWUSERNAME"'
-chmod 0700 /home/users/email/'"$NEWUSERNAME"'
-fi
-fi
-
-#Allow new user to join clients to the domain if they are a member of the itadmin group
-if [ '"$PRIMARYGROUP"' = itadmin ]
-then
-echo `date`: add_user \(federated mode\) - allowing '"$NEWUSERNAME"' to "join" clients to the domain by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
-#Get domain name
-SAMBADOMAIN=`grep -w "workgroup = " /etc/samba/smb.conf | cut -d= -f2 | sed "s/ //g"`
-net rpc rights grant -U '"$NEWUSERNAME"'%"'"$NEWUSERPASSWORD"'" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
-fi
-
-#Add details to primarygroup.txt - workaround for windows 7 bug not getting primary group correctly causing kixtart login scripts to fail.
-echo '"$NEWUSERNAME"','"$PRIMARYGROUP"' >> /var/lib/samba/netlogon/primarygroups.txt
-' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-SSHSTATUS="$?"
-if [ "$SSHSTATUS" != 0 ]
-then
-	echo "$(date): add_user - $NEWUSERNAME ssh failure on $FEDERATEDSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	echo "$FEDERATEDSERVER,federatedserver" >> "/opt/karoshi/server_network/offline_servers/add_users/$NEWUSERNAME"
-	FAILED_SERVER=yes
-	FAILEDSERVERLIST="$FAILEDSERVERLIST,$FEDERATEDSERVER"
-fi
-done
 fi
 
 #Delete request file if this user has been requested by a member of staff

@@ -75,7 +75,7 @@ echo '<div id="actionbox3"><div id="titlebox">
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<form action="home_folders_fm.cgi" method="post">
 			<button class="info infonavbutton" name="ViewHomeFolders" value="_">
-				<img src="'$ICON2'" alt="'$"Home Folders"'">
+				<img src="'$ICON1'" alt="'$"Home Folders"'">
 				<span>'$"Configure user home folders."'</span><br>
 				'$"Home Folders"'
 			</button>

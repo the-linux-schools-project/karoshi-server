@@ -35,90 +35,69 @@
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Home Server"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Change Home Server"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Generate navigation bar
 #########################
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><b>'$"Change Home Server"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a><br><br></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Change Home Server"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Change the home server for this group of users."'</span></a></div><br></div><div id="infobox">'
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=12
-#Assign CURRENTSERVER
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = CURRENTSERVERcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		CURRENTSERVER=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign CURRENTSERVER
+DATANAME=CURRENTSERVER
+get_data
+CURRENTSERVER="$DATAENTRY"
 
 #Assign SERVERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign PRIGROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRIGROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PRIGROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PRIGROUP
+get_data
+PRIGROUP="$DATAENTRY"
 
 #Assign COPYHOMEAREAS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = COPYHOMEAREAScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		COPYHOMEAREAS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=COPYHOMEAREAS
+get_data
+COPYHOMEAREAS="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/home_folders_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -136,7 +115,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -144,13 +123,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -180,13 +159,13 @@ fi
 GLUSTER=no
 
 #Check to see that the new server is available
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-	if [ ! -f /opt/karoshi/server_network/servers/$SERVERNAME/fileserver ]
+	if [ ! -f /opt/karoshi/server_network/servers/"$SERVERNAME"/fileserver ]
 	then
 		#Check to see if this is a gluster volume
-		VOLUME=`echo $SERVERNAME | cut -d. -f1`
-		if [ ! -d /opt/karoshi/server_network/gluster-volumes/$VOLUME ]
+		VOLUME=$(echo "$SERVERNAME" | cut -d. -f1)
+		if [ ! -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME" ]
 		then
 			MESSAGE=$"The new server you have chosen is not configured as a Karoshi file server."
 			show_status
@@ -196,12 +175,12 @@ then
 	fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS:$GLUSTER" | sudo -H /opt/karoshi/web_controls/exec/home_folders
 
-if [ $? = 101 ]
+if [ "$?" = 101 ]
 then
-	MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`
+	MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''
 	show_status
 fi
 completed

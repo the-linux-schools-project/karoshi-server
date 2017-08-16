@@ -94,7 +94,7 @@ echo '<div id="actionbox3"><div id="titlebox">'
 if [ "$MOBILE" = yes ]
 then
 	echo '<table class="standard" style="text-align: left;">
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Update Web Management"'</b></a></td></tr></tbody></table><br>'
 else
 	echo '<div class="sectiontitle">'$"Update Web Management"'</div><br></div><div id="infobox">'

@@ -108,7 +108,7 @@ echo '
 </thead><tbody>
 '
 START_LINE=yes
-ICON£=/images/submenus/system/computermed.png
+ICON3=/images/submenus/system/computermed.png
 for PRI_GROUP in /opt/karoshi/server_network/group_information/*
 do
 	PRI_GROUP=$(basename "$PRI_GROUP")
