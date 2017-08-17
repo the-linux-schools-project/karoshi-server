@@ -458,7 +458,7 @@ then
 else
 	#Create user home area on an extra fileserver if the primary group for this user is assigned to a different server
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" "$(declare -f create_home_folder);
-	#Asign variables as we are on the other side of the ssh and the declared function will not recognise the variables otherwise
+	#Assign variables as we are on the other side of the ssh and the declared function will not recognise the variables otherwise
 	NEWUSERNAME=$NEWUSERNAME
 	HOMEPATH=$HOMEPATH
 	USERID=$USERID
