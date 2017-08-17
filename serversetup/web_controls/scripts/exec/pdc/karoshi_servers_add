@@ -521,7 +521,7 @@ SUBNET=$(ssh "$TCPIPNUMBER" '
 grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2
 ')
 echo "$(date): karoshi_servers_add - adding in reverse lookup for $SERVER to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add "$TCPIPNUMBER" "$SUBNET" "$SERVER.$REALM"
+/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add "$TCPIPNUMBER" "$SUBNET" "$SERVER.$REALM" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Configure replication for additional domain controllers
 if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ] 
