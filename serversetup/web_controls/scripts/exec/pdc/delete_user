@@ -246,11 +246,11 @@ then
 	echo "$(date): delete_user - deleting $DELETEUSER from Moodle on $MOODLESERVER by $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [[ "$MOODLESERVER" = $(hostname-fqdn) ]]
 	then
-		sudo -u www-data moosh -p /var/www/html/moodle user-delete "$DELETEUSER" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		sudo -u www-data moosh -p /var/www/html/moodle user-delete "$DELETEUSER" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	else
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$MOODLESERVER" '
 		sudo -u www-data moosh -p /var/www/html/moodle user-delete '"$DELETEUSER"'
-		' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		' 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 fi
 
