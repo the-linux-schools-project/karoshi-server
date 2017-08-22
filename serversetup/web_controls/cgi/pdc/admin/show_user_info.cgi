@@ -175,10 +175,10 @@ MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f
 #Show User info
 
 WIDTH=100
-ICON1=/images/submenus/user/edit_user_info.png
-ICON2=/images/submenus/user/change_primary_group.png
-ICON3=/images/submenus/user/groups.png
-ICON4=/images/submenus/user/adduser.png
+ICON1=/images/submenus/user/adduser.png
+ICON2=/images/submenus/user/edit_user_info.png
+ICON3=/images/submenus/user/change_primary_group.png
+ICON4=/images/submenus/user/groups.png
 ICON5=/images/submenus/user/preferences.png
 
 echo '
@@ -186,9 +186,19 @@ echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
+			<button class="info infonavbutton" name="_ChooseUser_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Select user"'">
+				<span>'$"Select the user you want to view."'</span><br>
+				'$"Select user"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
 			<button class="info infonavbutton" name="_ChangeUsername_" value="_USERNAME_'"$USERNAME"'_">
-				<img src="'"$ICON1"'" alt="'$"Change Username"'">
+				<img src="'"$ICON2"'" alt="'$"Change Username"'">
 				<span>'$"Change the username for this user."'</span><br>
 				'$"Change Username"'
 			</button>
@@ -198,7 +208,7 @@ echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
 			<button class="info infonavbutton" name="_ChangePrimaryGroup_" value="_USERNAME_'"$USERNAME"'_">
-				<img src="'"$ICON2"'" alt="'$"Change Primary Group"'">
+				<img src="'"$ICON3"'" alt="'$"Change Primary Group"'">
 				<span>'$"Change the primary group for this user."'</span><br>
 				'$"Change Primary Group"'
 			</button>
@@ -208,19 +218,9 @@ echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/group_membership.cgi" method="post">
 			<button class="info infonavbutton" name="____GroupMembership____" value="____USERNAME____'"$USERNAME"'____">
-				<img src="'"$ICON3"'" alt="'$"Group Membership"'">
+				<img src="'"$ICON4"'" alt="'$"Group Membership"'">
 				<span>'$"Change the groups that this user is a member of."'</span><br>
 				'$"Group Membership"'
-			</button>
-		</form>
-	</td>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form action="/cgi-bin/admin/show_user_info_fm.cgi" method="post">
-			<button class="info infonavbutton" name="_ChooseUser_" value="_">
-				<img src="'"$ICON4"'" alt="'$"Select user"'">
-				<span>'$"Select the user you want to view."'</span><br>
-				'$"Select user"'
 			</button>
 		</form>
 	</td>

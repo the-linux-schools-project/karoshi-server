@@ -206,7 +206,7 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
 <table class="tablesorter" style="text-align: left; height: 40px;" ><tbody>
 <tr><td style="max-width: 200px;" colspan="3"><b>'$"Basic Information"'</b></td></tr>
-<tr><td>'$"Username"'</td><td style="max-width: 200px;" colspan="2">'"$USERNAME"'<br></td></tr>
+<tr><td style="width: 270px;">'$"Username"'</td><td style="max-width: 200px;" colspan="2">'"$USERNAME"'<br></td></tr>
 <tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$SERVER"'</td></tr>
 <tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The internal path on the server to the user's home area."'</span></a></td></tr>
 <tr><td>'$"Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY2"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The external path used to access the user's home area."'</span></a></td></tr>

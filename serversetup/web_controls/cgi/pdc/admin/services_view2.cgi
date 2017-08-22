@@ -190,13 +190,13 @@ fi
 #Generate navigation bar
 if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
 fi
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -216,5 +216,6 @@ fi
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f1)
 #Show service status
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$SERVICE" | sudo -H /opt/karoshi/web_controls/exec/services_view2
+[ "$MOBILE" = no ] && echo '</div>'
 echo "</div></div></body></html>"
 exit
