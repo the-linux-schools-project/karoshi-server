@@ -179,6 +179,7 @@ ICON1=/images/submenus/user/edit_user_info.png
 ICON2=/images/submenus/user/change_primary_group.png
 ICON3=/images/submenus/user/groups.png
 ICON4=/images/submenus/user/adduser.png
+ICON5=/images/submenus/user/preferences.png
 
 echo '
 <div class="sectiontitle">'$"User Information"'</div>
@@ -220,6 +221,16 @@ echo '
 				<img src="'"$ICON4"'" alt="'$"Select user"'">
 				<span>'$"Select the user you want to view."'</span><br>
 				'$"Select user"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/default_user_settings_fm.cgi" method="post">
+			<button class="info infonavbutton" name="_DefaultUserSettings_" value="_">
+				<img src="'"$ICON5"'" alt="'$"Default User Settings"'">
+				<span>'$"The default user settings that affect all users."'</span><br>
+				'$"Default Settings"'
 			</button>
 		</form>
 	</td>

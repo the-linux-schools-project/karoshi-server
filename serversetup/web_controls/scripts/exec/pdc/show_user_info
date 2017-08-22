@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/show_user_info_cgi
 then
-	echo `date`: show_user_info - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/show_user_info_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $show_user_info_cgi'check' ]
+if [ "$MD5SUM"'check' != "$show_user_info_cgi"'check' ]
 then
-	echo `date`: show_user_info - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,231 +46,195 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: show_user_info - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: show_user_info - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-USERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f6`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+USERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f6)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f7)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: show_user_info - Not called by show_user_info.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Not called by show_user_info.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: show_user_info - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: show_user_info - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$USERNAME" ]
 then
-	echo `date`: show_user_info - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: show_user_info - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: show_user_info - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: show_user_info - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): show_user_info - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit
 	fi
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: show_user_info - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): show_user_info - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Show user information
 ########################
-echo `date`: show_user_info - "for" $USERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): show_user_info - for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-PRIMARYGROUP=`id -g -n $USERNAME`
-SECONDARYGROUPS=`id -G -n $USERNAME`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+PRIMARYGROUP=$(id -g -n "$USERNAME")
 
-source /opt/karoshi/server_network/group_information/$PRIMARYGROUP
+source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Get ldap information
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-	LDAPDATA=`ldapsearch -x -w $LDAPPASS -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn=$USERNAME | sed "s/[\]/BACKSLASH/g"`
+	LDAPDATA=$(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | sed "s/[\]/BACKSLASH/g")
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ]
+if [ "$SERVERTYPE" = network ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-	LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-	ldapsearch -x -w '$LDAPPASS' -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,'$LDAPBASE'" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
-	'`
+	LDAPDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+	ldapsearch -x -w '"$LDAPPASS"' -b "OU=People,'"$LDAPBASE"'" -D "cn=Administrator,cn=Users,'"$LDAPBASE"'" cn='"$USERNAME"' | sed "s/[\]/BACKSLASH/g"
+	')
 fi
 
-if [ $SERVERTYPE = federated ]
+if [ "$SERVERTYPE" = federated ]
 then
-	LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	LDAPDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	source /opt/karoshi/server_network/domain_information/domain_name
-	ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
-	'`
+	ldapsearch -x -w $LDAPPASS -b "OU=People,'"$LDAPBASE"'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='"$USERNAME"' | sed "s/[\]/BACKSLASH/g"
+	')
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
-	LDAPDATA=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+	LDAPDATA=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
 	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 	source /opt/karoshi/server_network/domain_information/domain_name
-	ldapsearch -x -w $LDAPPASS -b "OU=People,'$LDAPBASE'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='$USERNAME' | sed "s/[\]/BACKSLASH/g"
+	ldapsearch -x -w $LDAPPASS -b "OU=People,'"$LDAPBASE"'" -D "cn=Administrator,cn=Users,$LDAPBASE" cn='"$USERNAME"' | sed "s/[\]/BACKSLASH/g"
 	'\''
-	'`
+	')
 fi
 
-CN=`echo -e "$LDAPDATA" | grep ^cn: | cut -d: -f2 | sed 's/^ //g'`
-SN=`echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g'`
-GIVENNAME=`echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g'`
-LDAPUSERNAME=`echo -e "$LDAPDATA" | grep ^uid: | cut -d: -f2 | sed 's/^ //g'`
-UIDNUMBER=`echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g'`
-GIDNUMBER=`echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g'`
-EMPLOYEENUMBER=`echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g'`
-HOMEDIRECTORY=`echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g'`
-HOMEDIRECTORY2=`echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\\/g'`
-GECOS=`echo -e "$LDAPDATA" | grep ^gecos: | cut -d: -f2 | sed 's/^ //g'`
-SAMBALOGONTIME=`echo -e "$LDAPDATA" | grep ^sambaLogonTime: | cut -d: -f2 | sed 's/^ //g'`
-SAMBALOGOFFTIME=`echo -e "$LDAPDATA" | grep ^sambaLogoffTime: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPWDCANCHANGE=`echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g'`
-DISPLAYNAME=`echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g'`
-MAILLOCALADDRESS=`echo -e "$LDAPDATA" | grep ^mailLocalAddress: | cut -d: -f2 | sed 's/^ //g'`
-MAIL=`echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g'`
-SHADOWLASTCHANGE=`echo -e "$LDAPDATA" | grep ^shadowLastChange: | cut -d: -f2 | sed 's/^ //g'`
-SHADOWMAX=`echo -e "$LDAPDATA" | grep ^shadowMax: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPASSWORDHISTORY=`echo -e "$LDAPDATA" | grep ^sambaPasswordHistory: | cut -d: -f2 | sed 's/^ //g'`
-SAMBAPWDLASTSET=`echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g'`
-BADPASSWORDTIME=`echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g'`
-BADPASSWORDCOUNT=`echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g'`
-LOCKOUTTIME=`echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g'`
+CN=$(echo -e "$LDAPDATA" | grep ^cn: | cut -d: -f2 | sed 's/^ //g')
+SN=$(echo -e "$LDAPDATA" | grep ^sn: | cut -d: -f2 | sed 's/^ //g')
+GIVENNAME=$(echo -e "$LDAPDATA" | grep ^givenName: | cut -d: -f2 | sed 's/^ //g')
+UIDNUMBER=$(echo -e "$LDAPDATA" | grep ^uidNumber: | cut -d: -f2 | sed 's/^ //g')
+GIDNUMBER=$(echo -e "$LDAPDATA" | grep ^gidNumber: | cut -d: -f2 | sed 's/^ //g')
+EMPLOYEENUMBER=$(echo -e "$LDAPDATA" | grep ^employeeNumber: | cut -d: -f2 | sed 's/^ //g')
+HOMEDIRECTORY=$(echo -e "$LDAPDATA" | grep ^unixHomeDirectory: | cut -d: -f2 | sed 's/^ //g')
+HOMEDIRECTORY2=$(echo -e "$LDAPDATA" | grep ^homeDirectory: | cut -d: -f2 | sed 's/^ //g' | sed 's/BACKSLASH/\\/g')
+#SAMBAPWDCANCHANGE=$(echo -e "$LDAPDATA" | grep ^sambaPwdCanChange: | cut -d: -f2 | sed 's/^ //g')
+DISPLAYNAME=$(echo -e "$LDAPDATA" | grep ^displayName: | cut -d: -f2 | sed 's/^ //g')
+MAIL=$(echo -e "$LDAPDATA" | grep ^mail: | cut -d: -f2 | sed 's/^ //g')
+SAMBAPWDLASTSET=$(echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed 's/^ //g')
+BADPASSWORDTIME=$(echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g')
+BADPASSWORDCOUNT=$(echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g')
+LOCKOUTTIME=$(echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g')
 
 [ -z "$BADPASSWORDTIME" ] && BADPASSWORDTIME=0
 [ -z "$BADPASSWORDCOUNT" ] && BADPASSWORDCOUNT=0
 
 #Convert times
+if [ "$BADPASSWORDTIME" != 0 ]
+then
+	#Convert time from number of 100 nanosecond intervals since 1 January 1601 to epoch time
+	BADPASSWORDTIME=$(((BADPASSWORDTIME/10000000)-11644473600))
+	#Convert epoch to human readable
+	BADPASSWORDTIME=$(date -d @"$BADPASSWORDTIME")
+fi
+
+
 if [ -z "$LOCKOUTTIME" ] || [ "$LOCKOUTTIME" = 0 ]
 then
 	LOCKOUTTIME2=0
 else
-	LOCKOUTTIME2=$(date -d "1970-01-01 `echo $((($LOCKOUTTIME/10000000)-11644473600))` sec GMT")
+	LOCKOUTTIME2=$(date -d "1970-01-01 $(((LOCKOUTTIME/10000000)-11644473600)) sec GMT")
 fi
-SAMBAPWDLASTSET2=$(date -d "1970-01-01 `echo $((($SAMBAPWDLASTSET/10000000)-11644473600))` sec GMT")
+SAMBAPWDLASTSET2=$(date -d "1970-01-01 $(((SAMBAPWDLASTSET/10000000)-11644473600)) sec GMT")
 
 #Show user information
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
 echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="post">
-<input type="hidden" name="_USERNAME_" value="'$USERNAME'">
+<input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
 <table class="tablesorter" style="text-align: left; height: 40px;" ><tbody>
 <tr><td style="max-width: 200px;" colspan="3"><b>'$"Basic Information"'</b></td></tr>
-<tr><td>'$"Username"'</td><td style="max-width: 200px;" colspan="2">'$USERNAME'<br></td></tr>
-<tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$SERVER'</td></tr>
-<tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY'</td></tr>
-<tr><td>'$"Windows Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'$HOMEDIRECTORY2'</td></tr>
-<tr><td>'$"Primary Group"'</td><td colspan="2">'$PRIMARYGROUP'</td></tr>
-<tr><td>UID number</td><td colspan="2">'$UIDNUMBER'</td></tr>
-<tr><td>GID number</td><td colspan="2">'$GIDNUMBER'</td></tr>
-<tr><td>'$"Bad Password Time"'</td><td colspan="2">'$BADPASSWORDTIME'</td></tr>
-<tr><td>'$"Bad Password Count"'</td><td colspan="2">'$BADPASSWORDCOUNT'</td></tr>
-<tr><td>'$"Lockout Time"'</td><td colspan="2">'$LOCKOUTTIME2'</td></tr>
-<tr><td>'$"Password last changed"'</td><td colspan="2">'$SAMBAPWDLASTSET2'</td></tr>
-<tr><td>'$"Common Name"'</td><td colspan="2">'$CN'</td></tr>
-<tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'$SN'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
+<tr><td>'$"Username"'</td><td style="max-width: 200px;" colspan="2">'"$USERNAME"'<br></td></tr>
+<tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$SERVER"'</td></tr>
+<tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The internal path on the server to the user's home area."'</span></a></td></tr>
+<tr><td>'$"Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY2"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The external path used to access the user's home area."'</span></a></td></tr>
+<tr><td>'$"Primary Group"'</td><td colspan="2">'"$PRIMARYGROUP"'</td></tr>
+<tr><td>UID number</td><td colspan="2">'"$UIDNUMBER"'</td></tr>
+<tr><td>GID number</td><td colspan="2">'"$GIDNUMBER"'</td></tr>
+<tr><td>'$"Bad Password Time"'</td><td colspan="2">'"$BADPASSWORDTIME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"If this value is not zero it shows that last time that an incorrect password was used."'</span></a></td></tr>
+<tr><td>'$"Bad Password Count"'</td><td colspan="2">'"$BADPASSWORDCOUNT"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of incorrect password attempts that have occured for this user over the time period set on the default user settings page."'</span></a></td></tr>
+<tr><td>'$"Lockout Time"'</td><td colspan="2">'"$LOCKOUTTIME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"If this value is not zero it indicates that this account has been locked out from the date shown."'</span></a></td></tr>
+<tr><td>'$"Password last changed"'</td><td colspan="2">'"$SAMBAPWDLASTSET2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The date that the password was last changed for this user."'</span></a></td></tr>
+<tr><td>'$"Common Name"'</td><td colspan="2">'"$CN"'</td></tr>
+<tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'"$SN"'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
 <td style="max-width: 200px;" colspan="1" rowspan="5">'
-#Show user image
 
 #Show user image
-if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
+if [ -f /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP/$USERNAME".jpg ]
 then
-	echo '<div id="photobox"><img alt="'$USERNAME'.jpg" src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" style="width:140px;height:180px"></div>'
+	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/user_images/'"$PRIMARYGROUP"'/'"$USERNAME"'.jpg" style="width:140px;height:180px"></div>'
 else
-	echo '<div id="photobox"><img alt="'$USERNAME'.jpg" src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/blank_user_image.jpg" width="140" height="180"></div>'
 fi
-
 
 echo '</tr>
-<tr><td>'$"Given Name"'</td><td><input tabindex= "3" value="'$GIVENNAME'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>Employee / student number</td><td><input tabindex= "4" value="'$EMPLOYEENUMBER'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'$DISPLAYNAME'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"E-Mail address"'</td><td><input tabindex= "7" value="'$MAIL'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Given Name"'</td><td><input tabindex= "3" value="'"$GIVENNAME"'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>Employee / student number</td><td><input tabindex= "4" value="'"$EMPLOYEENUMBER"'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'"$DISPLAYNAME"'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"E-Mail address"'</td><td><input tabindex= "7" value="'"$MAIL"'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
 </tbody></table>
-'
-echo '<br><br><input value="Submit" type="submit" class="button"> <input value="Reset" type="reset" class="button"></form>'
-else
+<br><br><input value="Submit" type="submit" class="button"> <input value="Reset" type="reset" class="button"></form>'
 
-echo '<table class="standard" style="text-align: left; height: 40px;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td>
-<input type="hidden" name="_USERNAME_" value="'$USERNAME'" /><table class="standard" style="text-align: left; height: 40px;" ><tbody>
-<tr><td style="width: 200px;"><b>'$"Basic Information"'</b></td><td></td><td></td></tr>
-<tr><td>'$"Username"'</td><td>'$USERNAME'</td><td></td></tr>
-<tr><td>'$"Home Server"'</td><td>'$SERVER'</td><td></td></tr>
-<tr><td>'$"Unix Home Directory"'</td><td>'$HOMEDIRECTORY'</td><td></td></tr>
-<tr><td>'$"Windows Home Directory"'</td><td>'$HOMEDIRECTORY2'</td><td></td></tr>
-<tr><td>'$"Primary Group"'</td><td>'$PRIMARYGROUP'</td><td></td></tr>
-<tr><td>'$"Secondary Groups"'</td><td>'$SECONDARYGROUPS'</td><td></td></tr>
-<tr><td>UID number</td><td>'$UIDNUMBER'</td><td></td></tr>
-<tr><td>GID number</td><td>'$GIDNUMBER'</td><td></td></tr>
-<tr><td>'$"Common Name"'</td><td>'$CN'</td><td></td></tr>
-<tr><td>'$"Surname"'</td><td>'$SN'</td><td></td></tr>
-<tr><td>'$"Given Name"'</td><td>'$GIVENNAME'</td><td></td></tr>
-<tr><td>Employee / student number</td><td>'$EMPLOYEENUMBER'</td><td></td></tr>
-<tr><td>'$"Display Name"'</td><td>'$DISPLAYNAME'</td><td></td></tr>
-<tr><td>'$"E-Mail address"'</td><td>'$MAIL'</td><td></td></tr>
-<tr><td>'$"Samba account flags"'</td><td>'$SAMBAACCTFLAGS'</td><td></td></tr>
-<tr><td>'$"Password last changed"'</td><td>'$SAMBAPWDLASTSET2'</td><td></td></tr>
-</tbody></table>
-'
-echo '</td><td>'
-if [ -f /var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$USERNAME.jpg ]
-then
-echo '<p><img src="/images/user_images/'$PRIMARYGROUP'/'$USERNAME'.jpg" width="120" height="150"></p>'
-else
-echo '<p><img src="/images/blank_user_image.jpg" width="120" height="150"></p>'
-fi
-echo '</td></tr></tbody></table><br><br>'
-fi
 exit
