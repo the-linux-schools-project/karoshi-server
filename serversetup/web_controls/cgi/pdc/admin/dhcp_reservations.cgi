@@ -287,12 +287,14 @@ then
 	ICON8=/images/submenus/system/delete.png
 	ICON9=/images/submenus/system/reload.png
 	TABLECLASS=standard
+	MACTITLE=$"Mac Address"
+	TCPIPTITLE=$"TCPIP Address"
 
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	WIDTH=100
+	WIDTH=90
 	WIDTH1=80
 	WIDTH2=100
 	WIDTH3=80
@@ -308,6 +310,8 @@ else
 	ICON8=/images/submenus/system/delete.png
 	ICON9=/images/submenus/system/reload.png
 	TABLECLASS=mobilestandard
+	MACTITLE=$"Mac"
+	TCPIPTITLE=$"TCPIP"
 fi
 
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
@@ -321,13 +325,31 @@ then
 		<span>'$"DHCP Reservations"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
+	<table class="tablesorter"><tbody><tr>
 '
 	if [ "$ACTION" = view ]
 	then
-		echo '<input name="_ACTION_add_reservation_" type="submit" class="button" value="'$"Add DHCP Reservation"'"><br><br>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info infonavbutton" name="_AddDHCPReservation_" value="_ACTION_add_reservation_">
+				<img src="'$ICON4'" alt="'$"Add DHCP Reservation"'">
+				<span>'$"Add DHCP Reservation"'</span><br>
+				'$"Add"'
+			</button>
+		</td>
+		'
 	else
-		echo '<input name="_ACTION_view_" type="submit" class="button" value="'$"View DHCP Reservations"'"><br><br>'
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<button class="info infonavbutton" name="_ViewDHCPReservations_" value="_ACTION_view_">
+				<img src="'$ICON5'" alt="'$"View DHCP Reservations"'">
+				<span>'$"View DHCP Reservations"'</span><br>
+				'$"View"'
+			</button>
+		</td>
+		'
 	fi
+	echo '</tr></tbody></table></form>'
 else
 
 	echo '
@@ -428,7 +450,7 @@ then
 		echo '<form id="reservervations" name="reservervations" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 		<tr>'
 		[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH1"'px;"><b>'$"Host name"'</b></th>'
-		echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Mac Address"'</b></th><th style="width:'"$WIDTH3"'px;"><b>'$"TCPIP address"'</b></th><th style="width:'"$WIDTH4"'px;">'$"Edit"'</th><th style="width:'"$WIDTH4"'px;">'
+		echo '<th style="width: '"$WIDTH2"'px;"><b>'"$MACTITLE"'</b></th><th style="width:'"$WIDTH3"'px;"><b>'"$TCPIPTITLE"'</b></th><th style="width:'"$WIDTH4"'px;">'$"Edit"'</th><th style="width:'"$WIDTH4"'px;">'
 		if [ ! -d /opt/karoshi/server_network/dhcp/reservations_delete/ ]
 		then
 			echo '<button class="button" name="_DeleteAll_" value="_ACTION_deleteall_CLIENTHOSTNAME_deleteall_">
@@ -498,14 +520,15 @@ fi
 
 #Check that the ip address is outside of the dns reservation range
 checkIpNotInRange
-
+	MACTITLE=$"Mac"
+	TCPIPTITLE=$"TCPIP"
 echo '<form name="addreservervation" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><input type="hidden" name="_ACTION_'"$FORMACTION"'_" value="English"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Host name"'</td>
 <td><input required="required" tabindex= "1" style="width: '"$WIDTH5"'px;" name="_CLIENTHOSTNAME_" value="'"$CLIENTHOSTNAME"'" 
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the host name of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"Mac Address"'</td><td><input required="required" tabindex= "2" style="width: '"$WIDTH5"'px;" name="_MACADDRESS_" value="'"$MACADDRESS"'"
+<tr><td>'"$MACTITLE"'</td><td><input required="required" tabindex= "2" style="width: '"$WIDTH5"'px;" name="_MACADDRESS_" value="'"$MACADDRESS"'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the mac address of the client computer or device that you want to give a static tcpip address to."'</span></a></td></tr>
-<tr><td>'$"TCPIP address"'</td><td><input required="required" tabindex= "3" style="width: '"$WIDTH5"'px;" name="_TCPIPADDRESS_"  value="'"$TCPIPADDRESS"'"
+<tr><td>'"$TCPIPTITLE"'</td><td><input required="required" tabindex= "3" style="width: '"$WIDTH5"'px;" name="_TCPIPADDRESS_"  value="'"$TCPIPADDRESS"'"
  size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address that you want the client computer or device to have."'</span></a></td></tr> 
 </tbody></table><br>'
 

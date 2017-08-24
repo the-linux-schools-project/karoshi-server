@@ -258,55 +258,47 @@ then
 	<span>'$"View DNS Entries"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
-<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<button class="button" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
-'$ALTTITLE3'
-</button>
-</form>
-<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-<input name="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ALTTITLE"'">
-</form>
-<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-<button class="button" name="_ViewDNSSettings_">'$"DNS Settings"'</button>
-</form>
-<br>
+
 '
 else
-	echo '
-	<div class="sectiontitle">'"$TITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></div><table class="tablesorter"><tbody><tr>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-			<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
-				<img src="'$ICON3'" alt="'"$ALTTITLE3"'">
-				<span>'"$ALTDESC3"'</span><br>
-				'"$ALTTITLE3"'
-			</button>
-		</form>
-	</td>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-			<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_ZONE_'"$ZONE"'_">
-				<img src="'$ICON2'" alt="'"$ALTTITLE"'">
-				<span>'"$ALTDESC"'</span><br>
-				'"$ALTTITLE"'
-			</button>
-		</form>
-	</td>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-		<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
-			<button class="info infonavbutton" name="_ViewDNSSettings_" value="_">
-				<img src="'$ICON1'" alt="'$"DNS Settings"'">
-				<span>'$"View server DNS Settings"'</span><br>
-				'$"DNS Settings"'
-			</button>
-		</form>
-	</td>
-
-	</tr></tbody></table>'
+	echo '<div class="sectiontitle">'"$TITLE"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to view, edit, and delete the local dns entries on your system."'</span></a></div>'
 fi
+
+echo '
+<table class="tablesorter"><tbody><tr>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+		<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION3"'_ZONE_'"$ZONE"'_">
+			<img src="'$ICON3'" alt="'"$ALTTITLE3"'">
+			<span>'"$ALTDESC3"'</span><br>
+			'"$ALTTITLE3"'
+		</button>
+	</form>
+</td>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
+		<button class="info infonavbutton" name="_AltAction_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_'"$ACTION2"'_ZONE_'"$ZONE"'_">
+			<img src="'$ICON2'" alt="'"$ALTTITLE"'">
+			<span>'"$ALTDESC"'</span><br>
+			'"$ALTTITLE"'
+		</button>
+	</form>
+</td>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<form action="/cgi-bin/admin/dns_settings.cgi" method="post">
+		<button class="info infonavbutton" name="_ViewDNSSettings_" value="_">
+			<img src="'$ICON1'" alt="'$"DNS Settings"'">
+			<span>'$"View server DNS Settings"'</span><br>
+			'$"DNS Settings"'
+		</button>
+	</form>
+</td>
+
+</tr></tbody></table>'
+
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
@@ -324,6 +316,8 @@ then
 	show_dns
 fi
 
-echo '</div></div></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></div></body></html>'
 exit
 

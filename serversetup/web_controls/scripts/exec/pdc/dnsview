@@ -23,85 +23,85 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dnsview_cgi
 then
-	echo `date`: dnsview - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dnsview_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dnsview_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dnsview_cgi"'check' ]
 then
-	echo `date`: dnsview - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dnsview - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: dnsview - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
-ACTION=`echo "$DATA" | cut -s -d: -f6`
-NAME=`echo "$DATA" | cut -s -d: -f7`
-DNSENTRY=`echo "$DATA" | cut -s -d: -f8`
-DNSTYPE=`echo "$DATA" | cut -s -d: -f9`
-ZONE=`echo "$DATA" | cut -s -d: -f10`
-MOBILE=`echo "$DATA" | cut -s -d: -f11`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f5)
+ACTION=$(echo "$DATA" | cut -s -d: -f6)
+NAME=$(echo "$DATA" | cut -s -d: -f7)
+DNSENTRY=$(echo "$DATA" | cut -s -d: -f8)
+DNSTYPE=$(echo "$DATA" | cut -s -d: -f9)
+ZONE=$(echo "$DATA" | cut -s -d: -f10)
+MOBILE=$(echo "$DATA" | cut -s -d: -f11)
 ########################
 #Check data
 ########################
 
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: dnsview - Not called by dnsview.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Not called by dnsview.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dnsview - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dnsview - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: dnsview - Blank servername entry by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Blank servername entry by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: dnsview - Blank servertype entry by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Blank servertype entry by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: dnsview - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsview - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -109,16 +109,13 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-TIMEOUT=300
-NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 MONITORSERVER=no
 [ -f /opt/karoshi/server_network/monitoringserver ] && MONITORSERVER=yes
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	WIDTH1=150
 	WIDTH2=100
@@ -128,8 +125,6 @@ then
 	WIDTH6=70
 	WIDTH7=200
 	WIDTH8=150
-	HEIGHT=25
-	HEIGHT2=20
 	TABLECLASS=standard
 	ICON1=/images/submenus/system/edit.png
 	ICON2=/images/submenus/system/delete.png
@@ -143,38 +138,40 @@ else
 	WIDTH6=70
 	WIDTH7=120
 	WIDTH8=130
-	HEIGHT=30
-	HEIGHT2=30
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
 	ICON3=/images/submenus/monitoring/custom_monitorsm.png
 fi
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
 
 function showzonelist {
 #Show zone selection drop down
-DNSZONELIST=$(samba-tool dns zonelist 127.0.0.1 -U Administrator --password $LDAPPASS | grep pszZoneName | grep -v arpa | grep -v _msdcs. | cut -d: -f2 | sed "s/^ //g" | sort)
-if [ $ACTION = view ]
+DNSZONELIST=$(samba-tool dns zonelist 127.0.0.1 -U Administrator --password "$LDAPPASS" | grep pszZoneName | grep -v arpa | grep -v _msdcs. | cut -d: -f2 | sed "s/^ //g" | sort)
+if [ "$ACTION" = view ]
 then
 	SELECTOPTIONS='onchange="this.form.submit()"'
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">'
 fi
-echo '<input type="hidden" name="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_view_" value="">
-<select name="_ZONE_" style="width: '$WIDTH7'px;" '$SELECTOPTIONS'><option value="'$ZONE'">'$ZONE'</option><option class="select-dash" disabled="disabled">----------</option>'
+echo '<input type="hidden" name="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_view_" value="">
+<select name="_ZONE_" style="width: '"$WIDTH7"'px;" '"$SELECTOPTIONS"'><option value="'"$ZONE"'">'"$ZONE"'</option><option class="select-dash" disabled="disabled">----------</option>'
 for DNSZONE in $DNSZONELIST
 do
-	echo '<option value="'$DNSZONE'">'$DNSZONE'</option>'
+	echo '<option value="'"$DNSZONE"'">'"$DNSZONE"'</option>'
 done
 echo '</select>'
-[ $ACTION = view ] && echo '</form>'
+if [ "$ACTION" = view ]
+then
+	echo '</form>'
+	[ "$MOBILE" = no ] && echo '<br>'
+fi
 }
 
-if [ $ACTION = view ]
+if [ "$ACTION" = view ]
 then
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		PROCESS=no
 
@@ -182,19 +179,19 @@ then
 		DONTDISPLAY="_msdcs,_sites,_tcp,_udp,DomainDnsZones,ForestDnsZones"
 		[ -z "$ZONE" ] && ZONE="$REALM"
 		
-		DNSINFO=`samba-tool dns query 127.0.0.1 $ZONE $ZONE ALL -U Administrator --password $LDAPPASS | sed 's/ * //g' | sed 's/:/,/g' | sed 's/=/,/g' | sed 's/(/,/g' | sed 's/)/,/g'`
+		DNSINFO=$(samba-tool dns query 127.0.0.1 "$ZONE" "$ZONE" ALL -U Administrator --password "$LDAPPASS" | sed 's/ * //g' | sed 's/:/,/g' | sed 's/=/,/g' | sed 's/(/,/g' | sed 's/)/,/g')
 		showzonelist
 
 		function createtabletop {
 		#Create top of table
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '$WIDTH1'px;"><b>'$"DNS Name"'</b></th>'
+		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"DNS Name"'</b></th>'
 
-		[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;"><b>'$"Type"'</b></th>'
+		[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Type"'</b></th>'
 
-		echo '<th style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Edit"'</b></th><th style="width: '$WIDTH4'px;"><b>'$"Delete"'</b></th>'
+		echo '<th style="width: '"$WIDTH3"'px;"><b>'$"Entry"'</b></th><th style="width: '"$WIDTH4"'px;"><b>'$"Edit"'</b></th><th style="width: '"$WIDTH4"'px;"><b>'$"Delete"'</b></th>'
 
-		[ $MONITORSERVER = yes ] && echo '<th style="width: '$WIDTH4'px;"><b>'$"Monitor"'</b></th>'
+		[ "$MONITORSERVER" = yes ] && echo '<th style="width: '"$WIDTH4"'px;"><b>'$"Monitor"'</b></th>'
 		echo '</tr></thead><tbody>'
 		CREATETABLETOP=no
 		}
@@ -202,51 +199,51 @@ then
 	CREATETABLETOP=yes
 	for DNSDATA in $DNSINFO
 	do
-		COL1=$(echo $DNSDATA | cut -d, -f1)
-		COL2=$(echo $DNSDATA | cut -d, -f2 | sed 's/\.$//g' )
+		COL1=$(echo "$DNSDATA" | cut -d, -f1)
+		COL2=$(echo "$DNSDATA" | cut -d, -f2 | sed 's/\.$//g' )
 		[ -z "$COL2" ] && COL2=notset
-		if [ `echo $DONTDISPLAY | grep -c "$COL2"` = 0 ]
+		if [[ $(echo "$DONTDISPLAY" | grep -c "$COL2") = 0 ]]
 		then
 
-			if [ $COL1 = Name ]
+			if [ "$COL1" = Name ]
 			then
 				PROCESS=yes
-				NAME=$COL2
+				NAME="$COL2"
 			fi
-			if [ $PROCESS = yes ]
+			if [ "$PROCESS" = yes ]
 			then
-				if [ $COL1 = A ] || [ $COL1 = CNAME ] && [ $NAME != notset ]
+				if [ "$COL1" = A ] || [ "$COL1" = CNAME ] && [ "$NAME" != notset ]
 				then 
 					#echo $NAME - $COL2"<br>"
 
 					[ "$CREATETABLETOP" = yes ] && createtabletop
 					echo "<tr><td>$NAME</td>"
-					[ $MOBILE = no ] && echo "<td>$COL1</td>"
-					echo '<td>'$COL2'</td>
+					[ "$MOBILE" = no ] && echo "<td>$COL1</td>"
+					echo '<td>'"$COL2"'</td>
 					<td>
 					<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-						<button class="info" name="_Edit_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_edit_NAME_'$NAME'_DNSENTRY_'$COL2'_DNSTYPE_'$COL1'_ZONE_'$ZONE'_">
-						<img src="'$ICON1'" alt="'$"Edit"'">
-						<span>'$"Edit"'<br>'$NAME'<br>'$COL2'</span>
+						<button class="info" name="_Edit_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_edit_NAME_'"$NAME"'_DNSENTRY_'"$COL2"'_DNSTYPE_'"$COL1"'_ZONE_'"$ZONE"'_">
+						<img src="'"$ICON1"'" alt="'$"Edit"'">
+						<span>'$"Edit"'<br>'"$NAME"'<br>'"$COL2"'</span>
 						</button>
 					</form>
 					</td>
 					<td>
 					<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-						<button class="info" name="_Delete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_delete_NAME_'$NAME'_DNSENTRY_'$COL2'_DNSTYPE_'$COL1'_ZONE_'$ZONE'_">
-						<img src="'$ICON2'" alt="'$"Delete"'">
-						<span>'$"Delete"'<br>'$NAME'<br>'$COL2'</span>
+						<button class="info" name="_Delete_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_delete_NAME_'"$NAME"'_DNSENTRY_'"$COL2"'_DNSTYPE_'"$COL1"'_ZONE_'"$ZONE"'_">
+						<img src="'"$ICON2"'" alt="'$"Delete"'">
+						<span>'$"Delete"'<br>'"$NAME"'<br>'"$COL2"'</span>
 						</button>
 					</form>
 					</td>'
 
-					if [ $MONITORSERVER = yes ]
+					if [ "$MONITORSERVER" = yes ]
 					then
 						echo '<td>
 						<form action="/cgi-bin/admin/monitors_add_fm.cgi" method="post">
-							<button class="info" name="_Monitor_" value="_NAME_'$NAME'_TCPIP_'$COL2'_">
-							<img src="'$ICON3'" alt="'$"Delete"'">
-							<span>'$"Monitor"'<br>'$NAME'<br>'$COL2'</span>
+							<button class="info" name="_Monitor_" value="_NAME_'"$NAME"'_TCPIP_'"$COL2"'_">
+							<img src="'"$ICON3"'" alt="'$"Delete"'">
+							<span>'$"Monitor"'<br>'"$NAME"'<br>'"$COL2"'</span>
 							</button>
 						</form>
 						</td>'
@@ -268,57 +265,57 @@ then
 	else
 		echo '<br>'$"There are no dns entries to list for this zone."''
 	fi
-	else
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 	MONITORSERVER=no
 	[ -f /opt/karoshi/server_network/monitoringserver ] && MONITORSERVER=yes
 
-	LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	source /opt/karoshi/server_network/domain_information/domain_name
 
-	DNSINFO=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL -U Administrator --password $LDAPPASS`
+	DNSINFO=$(samba-tool dns query 127.0.0.1 "$REALM" "$REALM" ALL -U Administrator --password "$LDAPPASS")
 
 	#Create top of table
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
-	<tr><td style=\"width: '$WIDTH1'px;\"><b>'$"DNS Name"'</b></td>"
-	[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>'$"Type"'</b></td>"
-	echo "<td style="width: '$WIDTH3'px;"><b>'$"Entry"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td>"
+	echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\"><tbody>
+	<tr><td style=\"width: '"$WIDTH1"'px;\"><b>'$"DNS Name"'</b></td>"
+	[ '"$MOBILE"' = no ] && echo "<td style=\"width: '"$WIDTH2"'px;\"><b>'$"Type"'</b></td>"
+	echo "<td style="width: '"$WIDTH3"'px;"><b>'$"Entry"'</b></td><td><b>'$"Edit"'</b></td><td><b>'$"Delete"'</b></td>"
 
-	[ $MONITORSERVER = yes ] && echo "<td><b>'$"Monitor"'</b></td>"
+	[ "$MONITORSERVER" = yes ] && echo "<td><b>'$"Monitor"'</b></td>"
 	echo "</tr>"
 
 	#Get dns entry names
-	for NAME in `echo -e "$DNSINFO" | grep Name= | cut -d= -f2 | cut -d, -f1`
+	for NAME in $(echo -e "$DNSINFO" | grep Name= | cut -d= -f2 | cut -d, -f1)
 	do
-	if [ `echo $DONTDISPLAY | grep -c $NAME` = 0 ]
-	then
-	#Get data for name
-	DATA=`echo -e "$DNSINFO" | awk "/Name=$NAME/ { getline;print}"`
-	DNSTYPE=`echo $DATA | cut -d: -f1`
-	DNSENTRY=`echo $DATA | cut -d: -f2 | cut -d" " -f2 | sed "s/\.$//g"`
+		if [ $(echo "$DONTDISPLAY" | grep -c "$NAME") = 0 ]
+		then
+			#Get data for name
+			DATA=`echo -e "$DNSINFO" | awk "/Name=$NAME/ { getline;print}"`
+			DNSTYPE=`echo $DATA | cut -d: -f1`
+			DNSENTRY=`echo $DATA | cut -d: -f2 | cut -d" " -f2 | sed "s/\.$//g"`
 
-	if [ '$MOBILE' = no ]
-	then
-	NAME2=$NAME
-	DNSENTRY2=$DNSENTRY
-	else
-	NAME2=${NAME:0:10}
-	DNSENTRY2=${DNSENTRY:0:10}
-	fi
+			if [ '"$MOBILE"' = no ]
+			then
+				NAME2="$NAME"
+				DNSENTRY2="$DNSENTRY"
+			else
+				NAME2="${NAME:0:10}"
+				DNSENTRY2="${DNSENTRY:0:10}"
+			fi
 
-	#Add line to table
-	echo "<tr><td>$NAME2</td>"
-	[ '$MOBILE' = no ] && echo "<td>$DNSTYPE</td>"
-	echo "<td>$DNSENTRY2</td>
-	<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Edit"'<br>$NAME<br>$DNSENTRY</span></a></form></td>
-	<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete"'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
+			#Add line to table
+			echo "<tr><td>$NAME2</td>"
+			[ '"$MOBILE"' = no ] && echo "<td>$DNSTYPE</td>"
+			echo "<td>$DNSENTRY2</td>
+			<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_edit_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'"$ICON1"'\" value=\"\"><span>'$"Edit"'<br>$NAME<br>$DNSENTRY</span></a></form></td>
+			<td><form action=\"/cgi-bin/admin/dnsview.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_SERVERNAME_$SERVERNAME"_"SERVERTYPE_$SERVERTYPE"_"ACTION_delete_NAME_$NAME"_"_DNSENTRY_$DNSENTRY"_"DNSTYPE_$DNSTYPE"_"\" type=\"image\" class=\"images\" src=\"'"$ICON2"'\" value=\"\"><span>'$"Delete"'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
 
-	if [ $MONITORSERVER = yes ]
-	then
-	echo "<td><form action=\"/cgi-bin/admin/monitors_add_fm.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$DNSDATA2"_"TCPIP_$DNSENTRY"_"\" type=\"image\" class=\"images\" src=\"'$ICON3'\" value=\"\"><span>'$"Monitor"'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
-	fi
-	echo "</tr>"
-	fi
+			if [ "$MONITORSERVER" = yes ]
+			then
+				echo "<td><form action=\"/cgi-bin/admin/monitors_add_fm.cgi\" method=\"post\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_NAME_$DNSDATA2"_"TCPIP_$DNSENTRY"_"\" type=\"image\" class=\"images\" src=\"'"$ICON3"'\" value=\"\"><span>'$"Monitor"'<br>$NAME<br>$DNSENTRY</span></a></form></td>"
+			fi
+			echo "</tr>"
+		fi
 	done
 
 	#End table
@@ -330,39 +327,39 @@ fi
 #########################
 #Delete entry
 #########################
-if [ $ACTION = reallydelete ]
+if [ "$ACTION" = reallydelete ]
 then
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
-		echo `date`: dnsview - deleting $NAME $DNSENTRY from $ZONE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns delete 127.0.0.1 $ZONE $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dnsview - deleting $NAME $DNSENTRY from $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns delete 127.0.0.1 "$ZONE" "$NAME" "$DNSTYPE" "$DNSENTRY" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		source /opt/karoshi/server_network/domain_information/domain_name
 
-		echo `date`: dnsview \(federated mode\) - deleting '$NAME' '$DNSENTRY' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		echo $(date): dnsview \(federated mode\) - deleting '"$NAME"' '"$DNSENTRY"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
-		samba-tool dns delete 127.0.0.1 $REALM '$NAME' '$DNSTYPE' '$DNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+		samba-tool dns delete 127.0.0.1 "$REALM" '"$NAME"' '"$DNSTYPE"' '"$DNSENTRY"' --username=Administrator --password="$LDAPPASS" 1>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"' 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 		'
 	fi
 fi
 
-if [ $ACTION = delete ]
+if [ "$ACTION" = delete ]
 then
 	#Confirm that we want to delete the dns entry.
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
 	<tbody>
-	<tr><td style="width: 180px;">'$"Zone"'</td><td>'$ZONE'</td></tr>
-	<tr><td style="width: 180px;">'$"Name"'</td><td>'$NAME'</td></tr>
-	<tr><td>DNS Entry</td><td>'$DNSENTRY'</td></tr>
-	<tr><td style="width: 180px;">DNS Type</td><td>'$DNSTYPE'</td></tr>
+	<tr><td style="width: 180px;">'$"Zone"'</td><td>'"$ZONE"'</td></tr>
+	<tr><td style="width: 180px;">'$"Name"'</td><td>'"$NAME"'</td></tr>
+	<tr><td>DNS Entry</td><td>'"$DNSENTRY"'</td></tr>
+	<tr><td style="width: 180px;">DNS Type</td><td>'"$DNSTYPE"'</td></tr>
 	</tbody></table><br>'$"Are you sure that you want to delete this record?"'<br><br>
 	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-		<button class="button" name="_dodelete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_reallydelete_NAME_'$NAME'_DNSENTRY_'$DNSENTRY'_DNSTYPE_'$DNSTYPE'_ZONE_'$ZONE'_">
+		<button class="button" name="_dodelete_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_reallydelete_NAME_'"$NAME"'_DNSENTRY_'"$DNSENTRY"'_DNSTYPE_'"$DNSTYPE"'_ZONE_'"$ZONE"'_">
 		'$"Delete"'
 		</button>
-		<button class="button" name="_cancel_" value="_ACTION_view_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ZONE_'$ZONE'_">
+		<button class="button" name="_cancel_" value="_ACTION_view_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_ZONE_'"$ZONE"'_">
 		'$"Cancel"'
 		</button>
 	</form>
@@ -373,16 +370,15 @@ fi
 #########################
 #Edit entry
 #########################
-if [ $ACTION = edit ]
+if [ "$ACTION" = edit ]
 then
-	SERVERICON="/images/submenus/system/computer.png"
-	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" >
+	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" >
 	<tbody>
-	<tr><td style="width: 180px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_'$NAME'-" value="'$NAME'" style="width: '$WIDTH7'px;" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>DNS Entry</td><td><input required="required" tabindex= "2" name="_ACTION_reallyedit_DNSENTRY_'$DNSENTRY'-" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
-	<tr><td style="width: 180px;">DNS Type</td><td>'$DNSTYPE'</td><td><input type = "hidden" name="_DNSTYPE_" value="'$DNSTYPE'"></td></tr>
+	<tr><td style="width: 180px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_'"$NAME"'-" value="'"$NAME"'" style="width: '"$WIDTH7"'px;" size="25" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
+	<tr><td>DNS Entry</td><td><input required="required" tabindex= "2" name="_ACTION_reallyedit_DNSENTRY_'"$DNSENTRY"'-" value="'"$DNSENTRY"'" size="25" style="width: '"$WIDTH7"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td style="width: 180px;">DNS Type</td><td>'"$DNSTYPE"'</td><td><input type = "hidden" name="_DNSTYPE_" value="'"$DNSTYPE"'"></td></tr>
 	</tbody></table><br><br>
-	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_ZONE_'$ZONE'_" type="submit" class="button" value="'$"Edit entry"'">
+	<input name="_SERVERTYPE_network_SERVERNAME_'"$SERVERNAME"'_ZONE_'"$ZONE"'_" type="submit" class="button" value="'$"Edit entry"'">
 	</form>
 	'
 fi
@@ -394,27 +390,27 @@ if [ "$ACTION" = reallydeletezone ]
 then
 	if [ "$ZONE" != "$REALM" ] #Do not under any circumstances delete the realm
 	then
-		echo "`date`: dnsview - deleting zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns zonedelete 127.0.0.1 "$ZONE" --username=Administrator --password="$LDAPPASS" 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dnsview - deleting zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns zonedelete 127.0.0.1 "$ZONE" --username=Administrator --password="$LDAPPASS" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 fi
 
 #########################
 #Delete zone
 #########################
-if [ $ACTION = deletezone ]
+if [ "$ACTION" = deletezone ]
 then
 	#Confirm that we want to delete the dns zone
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
+	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
 	<tbody>
-	<tr><td style="width: 180px;">'$"Zone"'</td><td>'$ZONE'</td></tr>
+	<tr><td style="width: 180px;">'$"Zone"'</td><td>'"$ZONE"'</td></tr>
 	</tbody></table><br>'$"Are you sure that you want to delete this zone?"'<br><br>
 	'$"All DNS records from inside this zone will be deleted."'<br><br>
 	<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-		<button class="button" name="_dodelete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_reallydeletezone_ZONE_'$ZONE'_">
+		<button class="button" name="_dodelete_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_reallydeletezone_ZONE_'"$ZONE"'_">
 		'$"Delete"'
 		</button>
-		<button class="button" name="_cancel_" value="_ACTION_viewdnszones_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_ZONE_'$ZONE'_">
+		<button class="button" name="_cancel_" value="_ACTION_viewdnszones_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_ZONE_'"$ZONE"'_">
 		'$"Cancel"'
 		</button>
 	</form>
@@ -425,32 +421,31 @@ fi
 #View and add zones
 #########################
 
-if [ $ACTION = addzone ]
+if [ "$ACTION" = addzone ]
 then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-	<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH8'px;">'$"Add DNS Zone"'</td><td><input required="required" tabindex= "1" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
+	<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH8"'px;">'$"Add DNS Zone"'</td><td><input required="required" tabindex= "1" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '"$WIDTH7"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
 	</tbody></table><br><br>
-	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Add zone"'">
+	<input name="_SERVERTYPE_network_SERVERNAME_'"$SERVERNAME"'_" type="submit" class="button" value="'$"Add zone"'">
 	</form><br>'
 fi
 
-if [ $ACTION = viewdnszones ]
+if [ "$ACTION" = viewdnszones ]
 then
-	SERVERICON="/images/submenus/system/computer.png"
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH5'px;"><b>'$"Zone"'</b></th><th style="width: '$WIDTH6'px;">'$"Delete"'</th></thead><tbody>
+	<tr><th style="width: '"$WIDTH5"'px;"><b>'$"Zone"'</b></th><th style="width: '"$WIDTH6"'px;">'$"Delete"'</th></thead><tbody>
 	'
-	DNSZONELIST=$(samba-tool dns zonelist 127.0.0.1 -U Administrator --password $LDAPPASS | grep pszZoneName | grep -v arpa | grep -v _msdcs. | cut -d: -f2 | sed "s/^ //g" | sort)
+	DNSZONELIST=$(samba-tool dns zonelist 127.0.0.1 -U Administrator --password "$LDAPPASS" | grep pszZoneName | grep -v arpa | grep -v _msdcs. | cut -d: -f2 | sed "s/^ //g" | sort)
 	for DNSZONE in $DNSZONELIST
 	do
-		echo '<tr><td style="height:25px">'$DNSZONE'</td><td>'
+		echo '<tr><td style="height:25px">'"$DNSZONE"'</td><td>'
 		if [ "$DNSZONE" != "$REALM" ]
 		then
 			echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-			<button class="info" name="_Delete_" value="_SERVERNAME_'$SERVERNAME'_SERVERTYPE_'$SERVERTYPE'_ACTION_deletezone_ZONE_'$DNSZONE'_">
+			<button class="info" name="_Delete_" value="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_'"$SERVERTYPE"'_ACTION_deletezone_ZONE_'"$DNSZONE"'_">
 			<img src="'$ICON2'" alt="'$"Delete"'">
-			<span>'$"Delete"'<br>'$DNSZONE'</span>
+			<span>'$"Delete"'<br>'"$DNSZONE"'</span>
 			</button>
 			</form>'
 		fi
@@ -459,39 +454,37 @@ then
 	echo '</tbody></table>'
 fi
 
-if [ $ACTION = reallyaddzone ]
+if [ "$ACTION" = reallyaddzone ]
 then
 	#Make sure that the zone has a dot in it
-	if [ $(echo $ZONE | grep -c "\.") -gt 0 ]
+	if [[ $(echo "$ZONE" | grep -c "\.") -gt 0 ]]
 	then
-		echo "`date`: dnsview - creating zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-		samba-tool dns zonecreate 127.0.0.1 $ZONE --username=Administrator --password="$LDAPPASS" 1> /dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dnsview - creating zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		samba-tool dns zonecreate 127.0.0.1 "$ZONE" --username=Administrator --password="$LDAPPASS" 1> /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		#Restart samba if we are using internal dns
-		if [ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]
+		if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]]
 		then
 			service samba4 stop
 			service samba4 start
 		fi
 		
 	else
-		echo "`date`: dnsview - attempt to create zone $ZONE - but this is not fully qualified by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dnsview - attempt to create zone $ZONE - but this is not fully qualified by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	fi
 fi
 
 #########################
 #Add entry
 #########################
-if [ $ACTION = add ]
+if [ "$ACTION" = add ]
 then
-	SERVERICON="/images/submenus/system/computer.png"
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
-	<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	
-	<tr><td style="width: '$WIDTH8'px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_"  style="width: '$WIDTH7'px;" size="25" type="text"></td><td>
+	<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	<tr><td style="width: '"$WIDTH8"'px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_"  style="width: '"$WIDTH7"'px;" size="25" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input required="required" tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'$DNSENTRY'" size="25" style="width: '$WIDTH7'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
-	<tr><td>'$"DNS Type"'</td><td>'$DNSTYPE'
-	<select name="_DNSTYPE_" style="width: '$WIDTH7'px;">
+	<tr><td>'$"DNS Entry"'</td><td><input required="required" tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'"$DNSENTRY"'" size="25" style="width: '"$WIDTH7"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Type"'</td><td>'"$DNSTYPE"'
+	<select name="_DNSTYPE_" style="width: '"$WIDTH7"'px;">
 	<option value="CNAME">CNAME</option>
 	<option  selected="selected" value="A">A Record </option>
 	</select>
@@ -500,62 +493,62 @@ then
 	showzonelist
 	echo '</td><td></td></tr>
 	</tbody></table><br><br>
-	<input name="_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_" type="submit" class="button" value="'$"Add Entry"'">
+	<input name="_SERVERTYPE_network_SERVERNAME_'"$SERVERNAME"'_" type="submit" class="button" value="'$"Add Entry"'">
 	</form>
 	'
 fi
 
-if [ $ACTION = reallyadd ]
+if [ "$ACTION" = reallyadd ]
 then
-	NAME=`echo $NAME | tr -cd 'A-Za-z0-9.-'`
+	NAME=$(echo "$NAME" | tr -cd 'A-Za-z0-9.-')
 
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Check that this exact dns entry does not already exist
-		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $ZONE $NAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
+		ENTRYCOUNT=$(samba-tool dns query 127.0.0.1 "$ZONE" "$NAME" "$DNSTYPE" --username=Administrator --password="$LDAPPASS" | grep -c "$DNSENTRY")
 		if [ "$ENTRYCOUNT" = 0 ]
 		then
 			#Make sure that the dns entry has a dot in it if it is a cname - add in the current zone if it does not.
-			if [ $DNSTYPE = CNAME ]
+			if [ "$DNSTYPE" = CNAME ]
 			then
-				if [ $(echo "$DNSENTRY" | grep -c "\.") = 0 ]
+				if [[ $(echo "$DNSENTRY" | grep -c "\.") = 0 ]]
 				then
 					DNSENTRY="$DNSENTRY.$ZONE"
 				fi
 			fi
 
 
-			echo "`date`: dnsview - adding $NAME $DNSENTRY to the dns records in zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			samba-tool dns add 127.0.0.1 $ZONE $NAME $DNSTYPE $DNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): dnsview - adding $NAME $DNSENTRY to the dns records in zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			samba-tool dns add 127.0.0.1 "$ZONE" "$NAME" "$DNSTYPE" "$DNSENTRY" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 			#Add in the reverse entry for this record if it is an A record
-			if [ $DNSTYPE = bAAAAAAA ]
+			if [ "$DNSTYPE" = bAAAAAAA ]
 			then
 				SUBNET=$(grep "netmask " /etc/network/interfaces | sed -n 1,1p | cut -d" " -f2)
-				/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add $DNSENTRY $SUBNET $NAME.$REALM 1>/dev/null
+				/opt/karoshi/serversetup/pdc/"useful scripts"/reverse-dns add "$DNSENTRY" "$SUBNET" "$NAME.$REALM" 1>/dev/null
 			fi
 		else
-			echo $NAME $DNSENTRY  - $"This entry already exists."
-			echo `date`: dnsview - $NAME $DNSENTRY - this entry already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$NAME" "$DNSENTRY"  - $"This entry already exists."
+			echo "$(date): dnsview - $NAME $DNSENTRY - this entry already exists by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			sleep 3
 			exit 101
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 		source /opt/karoshi/server_network/domain_information/domain_name
 
 		#Check that this exact dns entry does not already exist
-		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 '$REALM' '$NAME' '$DNSTYPE' --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
+		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 '"$REALM"' '"$NAME"' '"$DNSTYPE"' --username=Administrator --password=$LDAPPASS | grep -c '"$DNSENTRY"'`
 		#Make sure that the ip address or cname has not already been added.
-		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
+		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c '"$DNSENTRY"'`
 		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
 		then
-			echo `date`: dnsview - adding '$NAME' '$DNSENTRY' to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-			samba-tool dns add 127.0.0.1 $REALM '$NAME' '$DNSTYPE' '$DNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			echo "$(date): dnsview - adding '"$NAME"' '"$DNSENTRY"' to the dns records by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool dns add 127.0.0.1 $REALM '"$NAME"' '"$DNSTYPE"' '"$DNSENTRY"' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"' 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 		else
-			echo '$NAME' '$DNSENTRY'  - $"This entry already exists."
-			echo `date`: dnsview - '$NAME' '$DNSENTRY' - this entry already exists by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo '"$NAME"' '"$DNSENTRY"'  - $"This entry already exists."
+			echo "$(date): dnsview - '"$NAME"' '"$DNSENTRY"' - this entry already exists by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> "/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'"
 			sleep 3
 			exit 101
 		fi
@@ -563,50 +556,50 @@ then
 	fi
 fi
 
-if [ $ACTION = reallyedit ]
+if [ "$ACTION" = reallyedit ]
 then
-	CURRENTNAME=`echo $NAME | cut -d"-" -f1`
-	NEWNAME=`echo $NAME | cut -d"-" -f2`
-	CURRENTDNSENTRY=`echo $DNSENTRY | cut -d"-" -f1`
-	NEWDNSENTRY=`echo $DNSENTRY | cut -d"-" -f2`
-	NEWNAME=`echo $NEWNAME | tr -cd 'A-Za-z0-9'`
+	CURRENTNAME=$(echo "$NAME" | cut -d"-" -f1)
+	NEWNAME=$(echo "$NAME" | cut -d"-" -f2)
+	CURRENTDNSENTRY=$(echo "$DNSENTRY" | cut -d"-" -f1)
+	NEWDNSENTRY=$(echo "$DNSENTRY" | cut -d"-" -f2)
+	NEWNAME=$(echo "$NEWNAME" | tr -cd 'A-Za-z0-9')
 
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Check that this exact dns entry does not already exist
-		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM $NEWNAME $DNSTYPE --username=Administrator --password=$LDAPPASS | grep -c $NEWDNSENTRY`
+		ENTRYCOUNT=$(samba-tool dns query 127.0.0.1 "$REALM" "$NEWNAME" "$DNSTYPE" --username=Administrator --password="$LDAPPASS" | grep -c "$NEWDNSENTRY")
 		#Make sure that the ip address or cname has not already been added.
-		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c $DNSENTRY`
+		ENTRYCOUNT2=$(samba-tool dns query 127.0.0.1 "$REALM" "$REALM" ALL --username=Administrator --password="$LDAPPASS" | grep -c "$DNSENTRY")
 		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
 		then
 			#Delete current entry
-			echo `date`: dnsview - deleting $CURRENTNAME $CURRENTDNSENTRY from $ZONE by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			samba-tool dns delete 127.0.0.1 $ZONE $CURRENTNAME $DNSTYPE $CURRENTDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): dnsview - deleting $CURRENTNAME $CURRENTDNSENTRY from $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			samba-tool dns delete 127.0.0.1 "$ZONE" "$CURRENTNAME" "$DNSTYPE" "$CURRENTDNSENTRY" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 			#Add revised entry to samba4 dns
 
-			echo `date`: dnsview - adding $NEWNAME $NEWDNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-			samba-tool dns add 127.0.0.1 $ZONE $NEWNAME $DNSTYPE $NEWDNSENTRY --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): dnsview - adding $NEWNAME $NEWDNSENTRY to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			samba-tool dns add 127.0.0.1 "$ZONE" "$NEWNAME" "$DNSTYPE" "$NEWDNSENTRY" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		fi
 
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-		LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+		LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 		source /opt/karoshi/server_network/domain_information/domain_name
 		#Check that this exact dns entry does not already exist
-		ENTRYCOUNT=`samba-tool dns query 127.0.0.1 $REALM '$NEWNAME' '$DNSTYPE' --username=Administrator --password=$LDAPPASS | grep -c '$NEWDNSENTRY'`
+		ENTRYCOUNT=$(samba-tool dns query 127.0.0.1 "$REALM" '"$NEWNAME"' '"$DNSTYPE"' --username=Administrator --password="$LDAPPASS" | grep -c '"$NEWDNSENTRY"')
 		#Make sure that the ip address or cname has not already been added.
-		ENTRYCOUNT2=`samba-tool dns query 127.0.0.1 $REALM $REALM ALL --username=Administrator --password=$LDAPPASS | grep -c '$DNSENTRY'`
+		ENTRYCOUNT2=$(samba-tool dns query 127.0.0.1 "$REALM" "$REALM" ALL --username=Administrator --password=$LDAPPASS | grep -c '"$DNSENTRY"')
 		if [ "$ENTRYCOUNT" = 0 ] && [ "$ENTRYCOUNT2" = 0 ]
 		then
 			#Delete current entry
-			echo `date`: dnsview - deleting '$CURRENTNAME' '$CURRENTDNSENTRY' from the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-			samba-tool dns delete 127.0.0.1 $REALM '$CURRENTNAME' '$DNSTYPE' '$CURRENTDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			echo "$(date): dnsview - deleting '"$CURRENTNAME"' '"$CURRENTDNSENTRY"' from the dns records by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool dns delete 127.0.0.1 "$REALM" '"$CURRENTNAME"' '"$DNSTYPE"' '"$CURRENTDNSENTRY"' --username=Administrator --password="$LDAPPASS" 1>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"' 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
 			#Add revised entry to samba4 dns
 
-			echo `date`: dnsview - adding '$NEWNAME' '$NEWDNSENTRY' to the dns records by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-			samba-tool dns add 127.0.0.1 $REALM '$NEWNAME' '$DNSTYPE' '$NEWDNSENTRY' --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE' 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			echo "$(date): dnsview - adding '"$NEWNAME"' '"$NEWDNSENTRY"' to the dns records by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool dns add 127.0.0.1 $REALM '"$NEWNAME"' '"$DNSTYPE"' '"$NEWDNSENTRY"' --username=Administrator --password="$LDAPPASS" 1>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"' 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 		fi
 		'
 	fi
