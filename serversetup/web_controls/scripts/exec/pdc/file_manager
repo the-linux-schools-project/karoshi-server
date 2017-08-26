@@ -256,10 +256,9 @@ then
 	UPMESG2=$"Go back to the previous folder."
 fi
 
-[ "$MOBILE" = no ] && echo '<div id="titlebox">' 
+[ "$MOBILE" = no ] && echo '<div id="titlebox"><div class="sectiontitle">'$"File Manager"' '"$SERVER2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></div>' 
 
 echo '
-<div class="sectiontitle">'$"File Manager"' '"$SERVER2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"File Manager"'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH8"'px; text-align:center;">

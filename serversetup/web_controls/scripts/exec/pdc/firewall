@@ -326,13 +326,13 @@ then
 	<tr><td style="width: '$WIDTH1'px;">'$"Ruleset Name"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
-		echo '<input tabindex= "1" value="'"$RULESET"'" name="___RULESET___" style="width: 200px;" size="20" type="text">'
+		echo '<input required="required" tabindex= "1" value="'"$RULESET"'" name="___RULESET___" style="width: 200px;" size="20" type="text">'
 	else
 		echo "$RULESET"'<input type="hidden" name="___HiddenData" value="___RULESET___'"$RULESET"'___PROTOCOL___'"$PROTOCOL"'___FIREWALLACTION___'"$FIREWALL_ACTION"'___">' 
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this ruleset."'</span></a></td></tr>
-	<tr><td>'$"Ports"'</td><td><input tabindex= "2" value="'"$PORTS"'" name="___PORTS___" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
-	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'"$TCPIP"'" name="___TCPIP___" style="width: '$WIDTH2'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
+	<tr><td>'$"Ports"'</td><td><input required="required" tabindex= "2" value="'"$PORTS"'" name="___PORTS___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
+	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'"$TCPIP"'" name="___TCPIP___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
 	<tr><td>'$"Action"'</td><td>'
 	if [ "$ACTION" = add ]
 	then

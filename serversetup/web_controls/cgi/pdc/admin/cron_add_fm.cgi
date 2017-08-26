@@ -129,38 +129,37 @@ echo '<form action="/cgi-bin/admin/cron_add.cgi" method="post">'
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Schedule Job"'</span>
-<a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Scheduled Jobs"'</a>
-</div>
-</div><div id="mobileactionbox">
-'
-
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div>
+	</div><div id="mobileactionbox">
+	'
 
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
 
-	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Schedule Job"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>'
 
-
-	<div class="sectiontitle">'$"Schedule Job"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info infonavbutton" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="SelectServer" value="_">
-				<img src="'"$ICON1"'" alt="'$"Scheduled Jobs"'">
-				<span>'$"View the scheduled jobs for this server."'</span><br>
-				'$"Scheduled Jobs"'
-			</button>
-		</td>
-
-	</tr></tbody></table>
-	
-	</div><div id ="infobox">'
 fi
+	
+echo '<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="/cgi-bin/admin/cron_view_fm.cgi" name="SelectServer" value="_">
+			<img src="'"$ICON1"'" alt="'$"Scheduled Jobs"'">
+			<span>'$"View the scheduled jobs for this server."'</span><br>
+			'$"Scheduled Jobs"'
+		</button>
+	</td>
+
+</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id ="infobox">'
 
 echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
     <tbody>

@@ -262,7 +262,7 @@ else
 
 	</tr></tbody></table></form>
 
-	<br></form></div><div id="infobox">'
+	</div><div id="infobox">'
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'

@@ -192,48 +192,44 @@ SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
+	ICON2=/images/submenus/system/cron/cron_editm.png
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Scheduled Jobs"' - '"$SERVERNAME2"'</span>'
-
-	if [ "$SERVERCOUNT" = 1 ]
-	then
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/cron_view_fm.cgi">'$"Select Server"'</a>'
-	fi
-	echo '</div></div><div id="mobileactionbox">'
+	<span>'$"Scheduled Jobs"' - '"$SERVERNAME2"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
 	ICON2=/images/submenus/system/cron/cron.png
+	echo '<div class="sectiontitle">'$"Scheduled Jobs"' - '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></div>'
 
-	echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">
-
-	<div class="sectiontitle">'$"Scheduled Jobs"' - '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the jobs that are scheduled to run on this server."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info infonavbutton" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
-				<img src="'"$ICON1"'" alt="'$"Select server"'">
-				<span>'$"Select the server you want to view."'</span><br>
-				'$"Select Server"'
-			</button>
-		</td>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<button class="info infonavbutton" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
-				<img src="'"$ICON2"'" alt="'$"Schedule Job"'">
-				<span>'$"Schedule a job for this server."'</span><br>
-				'$"Schedule Job"'
-			</button>
-		</td>
-
-	</tr></tbody></table>
-
-	<br></form></div><div id="infobox">'
 fi
+
+echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="cron_view_fm.cgi" name="_SelectServer_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Select server"'">
+			<span>'$"Select the server you want to view."'</span><br>
+			'$"Select Server"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="cron_add_fm.cgi" name="_ScheduleJob_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Schedule Job"'">
+			<span>'$"Schedule a job for this server."'</span><br>
+			'$"Schedule Job"'
+		</button>
+	</td>
+
+</tr></tbody></table></form>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">'
 

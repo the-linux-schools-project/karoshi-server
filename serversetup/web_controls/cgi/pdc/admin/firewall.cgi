@@ -141,7 +141,12 @@ if [ -z "$SERVERNAME" ]
 then
 	SERVERNAME=notset
 else
-	SERVERNAME2=$(echo "$SERVERNAME" | cut -d. -f1)
+	if [ "$MOBILE" = yes ]
+	then
+		SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
+	else
+		SERVERNAME2=$(echo "$SERVERNAME" | cut -d. -f1)
+	fi
 fi
 
 if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyedit ]
@@ -244,20 +249,16 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
-	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
+	ICON2=/images/submenus/system/addm.png
+	ICON3=/images/submenus/system/firewallm.png
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"Firewall Rules"' '"$SERVERNAME2"'</span>'
-	if [ "$SERVERNAME" != notset ] && [ "$SERVERCOUNT" != 1 ]
-	then
-		echo '<a href="/cgi-bin/admin/firewall.cgi">'$"Select Server"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	fi
-	echo '</div></div>
-	<div id="'"$DIV_ID"'">
-	'
+		<span>'$"Firewall Rules"' '"$SERVERNAME2"'</span>
+		<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+		</div></div>
+		<div id="'"$DIV_ID"'">'
 
 else
 	WIDTH=100
@@ -265,23 +266,23 @@ else
 	ICON2=/images/submenus/system/add.png
 	ICON3=/images/submenus/system/firewall.png
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
-	<div class="sectiontitle">'$"Firewall Rules"' '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Firewall Rules"'</span></a></div>
-	<table class="tablesorter"><tbody><tr>'
+	<div class="sectiontitle">'$"Firewall Rules"' '"$SERVERNAME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Firewall Rules"'</span></a></div>'
+fi
 
-	if [ "$SERVERNAME" != notset ]
-	then
-	echo '
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<form action="/cgi-bin/admin/firewall.cgi" method="post">
-				<button class="info infonavbutton" name="SelectServer" value="_">
-					<img src="'$ICON1'" alt="'$"Select server"'">
-					<span>'$"Select the server you want to view."'</span><br>
-					'$"Select Server"'
-				</button>
-			</form>
-		</td>
+if [ "$SERVERNAME" != notset ]
+then
+	echo '<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/firewall.cgi" method="post">
+			<button class="info infonavbutton" name="SelectServer" value="_">
+				<img src="'$ICON1'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
+	</td>
 	'
-	fi
 
 	if [ "$ACTION" = view ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallyadd ] && [ "$SERVERNAME" != notset ]
 	then
@@ -313,8 +314,10 @@ else
 	'
 	fi
 
-	echo '</tr></tbody></table></div><div id="infobox">'
+	echo '</tr></tbody></table>'
 fi
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<form action="/cgi-bin/admin/firewall.cgi" method="post">'
 

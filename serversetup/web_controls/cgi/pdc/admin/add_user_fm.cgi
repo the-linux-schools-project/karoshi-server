@@ -89,7 +89,7 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -355,9 +355,9 @@ else
 	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select required="required" tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select required="required" tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>

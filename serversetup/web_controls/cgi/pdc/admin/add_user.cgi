@@ -32,6 +32,12 @@
 #  _PASSWORD1_  Password used for new user
 #  _PASSWORD2_  Checked against PASSWORD1 for typos.
 #  _GROUP_      This is the primary group for the new user eg yr2000, staff, officestaff.
+
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+source /opt/karoshi/web_controls/version
+
 ##########################
 #Language
 ##########################
@@ -45,7 +51,30 @@ export TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a New User"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">'
+
+if [ "$MOBILE" = yes ]
+then
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
+		***********************************************/
+	</script>
+	<script>
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -158,7 +187,6 @@ else
 	DIV_ID=menubox
 fi
 
-
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
@@ -166,7 +194,7 @@ then
 	<div class="expanded">
 	<span>'$"Add a New User"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div>
+</div></div><div id="mobileactionbox">
 '
 else
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><div class="sectiontitle">'$"Add a New User"'</div><br>'
@@ -506,7 +534,6 @@ EXEC_STATUS="$?"
 	then
 		MESSAGE=''"$MESSAGE"'\n\n'$"Password"': '"$PASSWORD1"''
 	fi
-
 	sleep 5
 	show_status2
 fi

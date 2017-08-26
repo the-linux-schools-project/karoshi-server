@@ -118,43 +118,41 @@ else
 fi
 
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Scheduled Jobs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>'
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
+	WIDTH=90
+	ICON1=/images/submenus/system/addm.png
+
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Scheduled Jobs"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div>
-	</div><div id="mobileactionbox">
-	<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-	<input name="submit" type="submit" class="button" value="'$"Schedule Job"'">
-	</form><br>
-'
+	</div><div id="mobileactionbox">'
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/add.png
-
-	echo '
-
-	<div class="sectiontitle">'$"Scheduled Jobs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=View_Scheduled_Jobs"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the servers you want to view the scheduled commands on."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
-				<button class="info infonavbutton" name="_ScheduleJob_" value="_">
-					<img src="'"$ICON1"'" alt="'$"Schedule Job"'">
-					<span>'$"Schedule a job."'</span><br>
-					'$"Schedule Job"'
-				</button>
-			</form>
-		</td>
-
-	</tr></table>
-	<br></div><div id="infobox">'
 fi
+
+echo '
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/cron_add_fm.cgi" method="post">
+			<button class="info infonavbutton" name="_ScheduleJob_" value="_">
+				<img src="'"$ICON1"'" alt="'$"Schedule Job"'">
+				<span>'$"Schedule a job."'</span><br>
+				'$"Schedule Job"'
+			</button>
+		</form>
+	</td>
+
+</tr></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 echo '<form action="/cgi-bin/admin/cron_view.cgi" id="foo" name="selectservers" method="post">'
 

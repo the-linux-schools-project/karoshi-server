@@ -217,11 +217,13 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
 	SERVER2=$(echo "${SERVER:0:9}" | cut -d. -f1)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Disk Usage Logs"' - '"$SERVER2"'</span>
-<a href="/cgi-bin/admin/view_disk_usage_logs_fm.cgi">'$"Select Server"'</a>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 <div id="mobileactionbox">
 '
@@ -229,8 +231,10 @@ then
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
-	echo '
-	<div class="sectiontitle">'$"View Disk Usage Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"The disk usage logs show the overall usage for each partition on your server."'</span></a></div>
+	echo '<div class="sectiontitle">'$"View Disk Usage Logs"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage_Logs"><img class="images" alt="" src="/images/help/info.png"><span>'$"The disk usage logs show the overall usage for each partition on your server."'</span></a></div>'
+fi
+
+echo '
 	<table class="tablesorter"><tbody><tr>
 
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
@@ -243,9 +247,7 @@ else
 			</form>
 		</td>
 
-	</tr></tbody></table><br>
-'
-fi
+	</tr></tbody></table><br>'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_disk_usage_logs.cgi | cut -d' ' -f1)
 sudo -H /opt/karoshi/web_controls/exec/view_disk_usage_logs "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVER:$MOBILE:"

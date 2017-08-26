@@ -183,43 +183,40 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Display Uptime"'</span>'
-
-	if [ "$SERVERCOUNT" = 1 ]
-	then
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/uptime_fm.cgi">'$"Select Server"'</a>'
-	fi
-	echo '</div></div><div id="mobileactionbox">'
+	<span>'$"Display Uptime"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
-
 	echo '
-	<div class="sectiontitle">'$"Display Uptime"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">
-				<button class="info infonavbutton" name="SelectServer" value="_">
-					<img src="'"$ICON1"'" alt="'$"Select server"'">
-					<span>'$"Select the server you want to view."'</span><br>
-					'$"Select Server"'
-				</button>
-			</form>
-		</td>
-
-	</tr></tbody></table>
-<br></div><div id="infobox">'
+	<div class="sectiontitle">'$"Display Uptime"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></div>'
 fi
+
+echo '
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/uptime_fm.cgi" name="selectservers" method="post">
+			<button class="info infonavbutton" name="SelectServer" value="_">
+				<img src="'"$ICON1"'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/uptime.cgi | cut -d' ' -f1)
 #Get uptime
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/uptime
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

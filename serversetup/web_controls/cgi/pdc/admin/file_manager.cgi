@@ -641,23 +641,16 @@ if [ $MOBILE = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"File Manager"' '$SERVER2'</span>'
-	if [ $SERVERNAME != notset ]
-	then
-		echo '<a href="/cgi-bin/admin/file_manager.cgi">'$"Select Server"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	fi
-	echo '</div></div>
-	<div id="'$DIV_ID'">
-	'
-
+		<span>'$"File Manager"' '$SERVER2'</span>
+		<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+		</div></div>
+		<div id="'$DIV_ID'">'
 else
 	echo '<div id="'$DIV_ID'">'
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 [ $MOBILE = no ] && echo '</div>'

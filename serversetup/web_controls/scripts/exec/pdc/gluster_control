@@ -462,13 +462,13 @@ then
 	done	
 	VOLUME="glustervol$GLUSTERCOUNT"
 	#Show tick box of servers from zones to use
-	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><input type="hidden" name="_SERVERS_" value="'"$SERVERS"'"><br><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
+	echo '<input type="hidden" name="_VOLUME_" value="'"$VOLUME"'"><input type="hidden" name="_SERVERS_" value="'"$SERVERS"'"><table class="'"$TABLECLASS"'" style="text-align: left; " ><tbody>
 <tr><td style="width: '$WIDTH1'px;"><b>'$"Volume Name"'</b></td><td>'$VOLUME'
 </td></tr>'
 
 	if [ ! -z "$SERVERS" ]
 	then
-		echo '<tr><td style="height: 40px;"><b>'$"Servers"'</b></td><td>'
+		echo '<tr><td style="height: 40px; vertical-align:top"><b>'$"Servers"'</b></td><td style="vertical-align:top">'
 		for CHOSENSERVER in ${SERVERS//,/ }
 		do
 			echo "$CHOSENSERVER<br>"
@@ -488,7 +488,7 @@ echo '</tbody></table><br>'
 	then
 		if [[ $(echo "$SERVERS" | grep -c ",") -gt 0 ]]
 		then
-			echo '<br><br><input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
+			echo '<br><input name="_ACTION_reallycreate_" value="'$"Submit"'" class="button" type="submit">'
 		fi
 	fi
 fi

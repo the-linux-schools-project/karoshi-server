@@ -36,13 +36,13 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -52,7 +52,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"User Web Folders"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"User Web Folders"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js">
@@ -63,9 +63,9 @@ $(document).ready(function()
 );
 </script>
 '
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -88,148 +88,135 @@ echo '
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=11
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign group
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-#Assign action
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=GROUP
+get_data
+GROUP="$DATAENTRY"
+
+#Assign ACTION
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
+
 #Assign USERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
 #Assign SERVICECHECK
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVICECHECKcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVICECHECK=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVICECHECK
+get_data
+SERVICECHECK="$DATAENTRY"
 
 [ -z "$ACTION" ] && ACTION=check
 [ -z "$SERVICECHECK" ] && SERVICECHECK=yes
 [ -z "$USERNAME" ] && USERNAME=notset
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
+	ICON1=/images/submenus/user/groups.png
 	TOOLTIPCLASS="info"
 	DIV_ID=actionbox3
-	[ -z "$GROUP" ] && DIV_ID=actionbox
 	TABLECLASS=standard
-	WIDTH1=180
-	WIDTH2=200
+	WIDTH1=100
+	WIDTH2=180
+	WIDTH3=200
 	HEIGHT1=25
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
+	ICON1=/images/submenus/user/groupsm.png
 	TOOLTIPCLASS="info infoleft"
 	DIV_ID=actionbox
 	TABLECLASS=mobilestandard
-	WIDTH1=120
-	WIDTH2=140
+	WIDTH1=90
+	WIDTH2=120
+	WIDTH3=140
 	HEIGHT1=30
 fi
 echo '<form name="myform" action="/cgi-bin/admin/user_web_folders.cgi" method="post">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"User Web Folders"' '$GROUP'</span>' 
-
-	if [ -z "$GROUP" ]
-	then
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/user_web_folders.cgi">'$"Select Group"'</a>'
-	fi
-
-	echo '</div></div><div id="mobileactionbox">
-'
+	<span>'$"User Web Folders"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
-echo '<div id="'$DIV_ID'">'
-
-[ ! -z "$GROUP" ] && echo '<div id="titlebox">'
-
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr>
-<td>
-<div class="sectiontitle">'$"User Web Folders"'</div>
-</td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></td>
-<td>'
-[ ! -z "$GROUP" ] && echo '<button class="button" formaction="user_web_folders.cgi" name="ChooseGroup" value="_">
-'$"Choose group"'
-</button>
-'
-echo '</td>
-</tr></table><br>'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	<div class="sectiontitle">'$"User Web Folders"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows users to have web folders hosted from their home areas. Any files and folders in a public_html folder in the user's home area will be available via apache on their server."'</span></a></div>'
 fi
 
-#Show list of groups to check
-if [ -z "$GROUP" ]
+
+if [ ! -z "$GROUP" ]
 then
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
-	    <tbody><tr><td style="width: '$WIDTH1'px;">'$"Primary Group"'</td>
-	<td>'
-	/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '$WIDTH2'px; height: '$HEIGHT1'px;">/g'
-	echo '</td>
-	<td><a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a></td>
-	</tr></tbody></table><br><br>
-	'
-	[ $MOBILE = no ] && echo '</div><div id="submitbox">'
-	echo '<input value="'$"Submit"'" class="button" type="submit">
-	</div></form></div></body></html>
-	'
+	#Show a button to choose a group
+	echo '
+	<table class="tablesorter"><tbody>
+		<tr>
+			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH1"'px; text-align:center;">
+					<button class="info infonavbutton" name="_ChooseGroup_" value="_">
+						<img src="'"$ICON1"'" alt="'$"Choose Group"'">
+						<span>'$"Choose a user group."'</span><br>
+						'$"Choose Group"'
+					</button>
+			</td>
+		</tr>
+	</tbody></table>'
+else
+	#Show list of groups to check
+	echo '<br>
+	<table class="'"$TABLECLASS"'" style="text-align: left;"><tbody>
+		<tr>
+			<td style="width: '"$WIDTH2"'px;">
+				'$"Primary Group"'
+			</td>
+			<td>'
+				/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: '"$WIDTH3"'px; height: '"$HEIGHT1"'px;">/g'
+	echo '		</td>
+			<td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_web_folders"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to set the web folder status for."'</span></a>
+			</td>
+		</tr>
+	</tbody></table>
+	<br><br>
+	<input value="'$"Submit"'" class="button" type="submit">'
+
+	[ "$MOBILE" = no ] && echo '</div>'
+
+	echo '</div></form></div></body></html>'
 	exit
 fi
+
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/user_web_folders.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
 
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
+
 echo '</div></form></div></body></html>'
 exit
 

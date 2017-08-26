@@ -174,47 +174,45 @@ fi
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
 	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Disk Information"' - '"$SERVERNAME2"'</span>'
-	if [ "$SERVERCOUNT" = 1 ]
-	then
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/disk_information_fm.cgi">'$"Select Server"'</a>'
-	fi
-
-	echo '</div></div><div id="mobileactionbox">'
+	<span>'$"Disk Information"' - '"$SERVERNAME2"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
 
 	echo '
-	<div class="sectiontitle">'$"Disk Information"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<form action="disk_information_fm.cgi" name="selectservers" method="post">
-				<button class="info infonavbutton" name="SelectServer" value="__">
-					<img src="'"$ICON1"'" alt="'$"Select server"'">
-					<span>'$"Select the server you want to view."'</span><br>
-					'$"Select Server"'
-				</button>
-			</form>
-		</td>
-
-	</tr></tbody></table>
-	</div><div id="infobox">
-'
+	<div class="sectiontitle">'$"Disk Information"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Information"><img class="images" alt="" src="/images/help/info.png"><span>'$"Show information about the hard disk drives on the selected servers."'</span></a></div>'
 fi
+
+echo '
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="disk_information_fm.cgi" name="selectservers" method="post">
+			<button class="info infonavbutton" name="SelectServer" value="__">
+				<img src="'"$ICON1"'" alt="'$"Select server"'">
+				<span>'$"Select the server you want to view."'</span><br>
+				'$"Select Server"'
+			</button>
+		</form>
+	</td>
+
+</tr></tbody></table>
+'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/disk_information.cgi | cut -d' ' -f1)
 sudo -H /opt/karoshi/web_controls/exec/disk_information "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
-EXEC_STATUS="$?"
 
-if [ "$EXEC_STATUS" = 102 ]
+if [ "$?" = 102 ]
 then
 	MESSAGE=$"Please check the karoshi web administration logs for more details."
 	show_status

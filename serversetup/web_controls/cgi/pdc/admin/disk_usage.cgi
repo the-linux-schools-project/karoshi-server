@@ -189,41 +189,37 @@ echo '<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
+	WIDTH=90
+	ICON1=/images/submenus/system/computerm.png
+
 	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
-	SERVERCOUNT=$(ls -1 /opt/karoshi/server_network/servers/ | wc -l)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Disk Usage"' - '"$SERVERNAME2"'</span>'
-
-	if [ "$SERVERCOUNT" = 1 ]
-	then
-		echo '<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>'
-	else
-		echo '<a href="/cgi-bin/admin/disk_usage_fm.cgi">'$"Select Server"'</a>'
-	fi
-	echo '</div></div><div id="mobileactionbox">'
+	<span>'$"Disk Usage"' - '"$SERVERNAME2"'</span>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+	</div></div><div id="mobileactionbox">'
 else
 
 	WIDTH=100
 	ICON1=/images/submenus/system/computer.png
 
-	echo '
-	<div class="sectiontitle">'$"Disk Usage"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Disk usage data is generated once per week."'</span></a></div>
-	<table class="tablesorter"><tbody><tr>
-
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info infonavbutton" formaction="disk_usage_fm.cgi" name="SelectServer" value="__">
-				<img src="'$ICON1'" alt="'$"Select server"'">
-				<span>'$"Select the server you want to view."'</span><br>
-				'$"Select Server"'
-			</button>
-		</td>
-
-	</tr></tbody></table>
-
-</div><div id="infobox">
-'
+	echo '<div class="sectiontitle">'$"Disk Usage"' - '"$SERVERNAME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Disk_Usage"><img class="images" alt="" src="/images/help/info.png"><span>'$"Disk usage data is generated once per week."'</span></a></div>'
 fi
+
+echo '	
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info infonavbutton" formaction="disk_usage_fm.cgi" name="SelectServer" value="__">
+			<img src="'$ICON1'" alt="'$"Select server"'">
+			<span>'$"Select the server you want to view."'</span><br>
+			'$"Select Server"'
+		</button>
+	</td>
+
+</tr></tbody></table>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CHOICE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/disk_usage
