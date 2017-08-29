@@ -157,6 +157,7 @@ ICON1=/images/submenus/system/edit.png
 ICON2=/images/submenus/system/delete.png
 WIDTH1=200
 WIDTH2=200
+HEIGHT1=24
 TABLECLASS=standard
 if [ "$MOBILE" = yes ]
 then
@@ -164,6 +165,7 @@ then
 	ICON2=/images/submenus/system/deletem.png
 	WIDTH1=120
 	WIDTH2=160
+	HEIGHT1=30
 	TABLECLASS=mobilestandard
 fi
 
@@ -323,20 +325,20 @@ then
 	fi
 
 	echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '$WIDTH1'px;">'$"Ruleset Name"'</td><td>'
+	<tr><td style="width: '$WIDTH1'px;height: '"$HEIGHT1"'px">'$"Ruleset Name"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
-		echo '<input required="required" tabindex= "1" value="'"$RULESET"'" name="___RULESET___" style="width: 200px;" size="20" type="text">'
+		echo '<input required="required" tabindex= "1" value="'"$RULESET"'" name="___RULESET___" style="width: 200px; height: '"$HEIGHT1"'px" size="20" type="text">'
 	else
 		echo "$RULESET"'<input type="hidden" name="___HiddenData" value="___RULESET___'"$RULESET"'___PROTOCOL___'"$PROTOCOL"'___FIREWALLACTION___'"$FIREWALL_ACTION"'___">' 
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for this ruleset."'</span></a></td></tr>
-	<tr><td>'$"Ports"'</td><td><input required="required" tabindex= "2" value="'"$PORTS"'" name="___PORTS___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
-	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'"$TCPIP"'" name="___TCPIP___" style="width: 200px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
+	<tr><td>'$"Ports"'</td><td><input required="required" tabindex= "2" value="'"$PORTS"'" name="___PORTS___" style="width: 200px; height: '"$HEIGHT1"'px" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the ports that you want to allow or deny separated by commas."'</span></a></td></tr>
+	<tr><td>'$"TCPIP"'</td><td><input tabindex= "3" value="'"$TCPIP"'" name="___TCPIP___" style="width: 200px; height: '"$HEIGHT1"'px" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Firewall_Rules"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a TCPIP address that you want to allow or deny. Leave this blank if you want the rule to apply to all devices."'</span></a></td></tr>
 	<tr><td>'$"Action"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
-		echo '<select name="___FIREWALLACTION___" style="width: 200px;">
+		echo '<select name="___FIREWALLACTION___" style="width: 200px; height: '"$HEIGHT1"'px">
 	<option value="ACCEPT">'$"Accept"'</option>
 	<option value="DROP">'$"Drop"'</option>
 	</select>'
@@ -347,7 +349,7 @@ then
 	<tr><td>'$"Protocol"'</td><td>'
 	if [ "$ACTION" = add ]
 	then
-		echo '<select name="___PROTOCOL___" style="width: 200px;">
+		echo '<select name="___PROTOCOL___" style="width: 200px; height: '"$HEIGHT1"'px">
 	<option value="udp">udp</option>
 	<option value="tcp" selected="selected">tcp</option>
 	<option value="tcp,udp">tcp + udp</option>

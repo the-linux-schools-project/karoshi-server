@@ -100,19 +100,19 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 if [ $MOBILE = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
-	WIDTH=180
+	HEIGHT=24
 	#Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
-	WIDTH=160
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/linux_client_software_controls.cgi" name="selectservers" method="post"><b></b>'
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ $MOBILE = yes ]
@@ -129,21 +129,22 @@ else
 fi
 
 #Show list of supported linux client versions
-WIDTH=90
-[ $MOBILE = yes ] && WIDTH=70
 VERSIONICON="/images/submenus/client/version.png"
 if [ -f /opt/karoshi/server_network/info ]
 then
 	source /opt/karoshi/server_network/info
 	source /opt/karoshi/web_controls/version
 fi
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: 200px;">'$"Linux Client Version"'</td><td><select name="_VERSION_" style="width: 200px;">'
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: 200px;">'$"Linux Client Version"'</td><td><select name="_VERSION_" style="width: 200px; height: '"$HEIGHT"'px;">'
 
 for VERSION in `cat /var/lib/samba/netlogon/linuxclient/versions.txt`
 do
 	echo '<option value="'$VERSION'">'$VERSION'</option>'	
 done
 
-echo '</select></td></tr></tbody></table><br></div>
-<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"></div></form></div></body></html>'
+echo '</select></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit">'
+
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit

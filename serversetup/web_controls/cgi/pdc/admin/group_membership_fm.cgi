@@ -116,7 +116,7 @@ then
 <div id="suggestions"></div>
 '$"Username"'<br>
 <input tabindex= "1" style="width: 160px; height: 30px;" name="____USERNAME____" 
- value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
+ value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
 '
 else
 	echo '<table class="standard" style="text-align: left;" >

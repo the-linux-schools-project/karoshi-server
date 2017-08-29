@@ -151,6 +151,7 @@ then
 	TABLECLASS=standard
 	WIDTH1=200
 	WIDTH2=80
+	HEIGHT1=24
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -158,6 +159,7 @@ else
 	TABLECLASS=mobilestandard
 	WIDTH1=160
 	WIDTH2=50
+	HEIGHT1=30
 fi
 
 #########################
@@ -210,45 +212,36 @@ ICON3=/images/submenus/client/delete_software.png
 
 #Show input box
 echo '<form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'"$VERSION"'" type="hidden">
-<b>'$"Add software package"'</b><br><br>'
+<b>'$"Add software package"'</b><br><br>
 
-if [ "$MOBILE" = no ]
+<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;">'$"Location"'</td><td>'
+
+#Show current rooms
+echo '<select name="___LOCATION___" style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;">'
+echo '<option value="all">'$"All locations"'</option>'
+if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;">'$"Location"'</td><td>'
-
-	#Show current rooms
-	echo '<select name="___LOCATION___" style="width: 200px;">'
-	echo '<option value="all">'$"All locations"'</option>'
-	if [ -f /var/lib/samba/netlogon/locations.txt ]
-	then
-		for LOCATION in $(cat /var/lib/samba/netlogon/locations.txt)
-		do
-			echo '<option value="'"$LOCATION"'">'"$LOCATION"'</option>'
-		done
-	fi
-	echo '</select></td><td></td></tr>
-	<tr><td style="width: '"$WIDTH1"'px;">'$"Software Package"'</td><td><input style="width: '"$WIDTH1"'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td>
-	<td>
-	<button class="button" name="___Install___" value="___INSTALL___install___">
-	'$"Install"'
-	</button>
-	</td>
-	<td>
-	<button class="button" name="___Install___" value="___INSTALL___remove___">
-	'$"Remove"'
-	</button>
-	</td></tr>
-	</tbody></table></form></div><div id="infobox">'
-else
-	echo ''$"Software Package"' <input tabindex= "1" name="___ACTION___add___SOFTWARE___" style="width: '"$WIDTH1"'px;" size="20" type="text"><br>
-	<button class="button" name="___Install___" value="___INSTALL___install___">
-	'$"Install"'
-	</button> 
-	<button class="button" name="___Install___" value="___INSTALL___remove___">
-	'$"Remove"'
-	</button>
-	<br><br></form>'
+	for LOCATION in $(cat /var/lib/samba/netlogon/locations.txt)
+	do
+		echo '<option value="'"$LOCATION"'">'"$LOCATION"'</option>'
+	done
 fi
+echo '</select></td><td></td></tr>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Software Package"'</td><td><input style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;" tabindex= "1" name="___ACTION___add___SOFTWARE___"  size="20" type="text"></td></tr>
+</tbody></table><br><br>
+
+<button class="button" name="___Install___" value="___INSTALL___install___">
+'$"Install"'
+</button>
+ 
+<button class="button" name="___Install___" value="___INSTALL___remove___">
+'$"Remove"'
+</button>
+
+</form>'
+
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
+
 echo '<br><form action="/cgi-bin/admin/linux_client_install_software_packages2.cgi" name="selectservers" method="post"><input name="___VERSION___" value="'"$VERSION"'" type="hidden">'
 
 function show_software {

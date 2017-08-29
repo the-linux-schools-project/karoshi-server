@@ -125,10 +125,12 @@ fi
 if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
+	HEIGHT1=24
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
+	HEIGHT1=30
 fi
 
 echo '<form action="/cgi-bin/admin/view_disk_usage_logs.cgi" name="testform" method="post">'
@@ -154,9 +156,9 @@ fi
 
 if [ "$MOBILE" = yes ]
 then
-echo ''$"Log Date"'<br>'
-echo "<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">
+	echo ''$"Log Date"'<br>'
+	echo "<!-- calendar attaches to existing form element -->
+	<input style=\"height: $HEIGHT1\\px;\" type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\">
 	<script language=\"JavaScript\">
 	new tcal ({
 		// form name

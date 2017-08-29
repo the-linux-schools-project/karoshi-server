@@ -115,6 +115,7 @@ then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
 	WIDTH=180
+	HEIGHT=24
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -122,6 +123,7 @@ else
 	DIV_ID=actionbox2
 	TABLECLASS=mobilestandard
 	WIDTH=160
+	HEIGHT=30
 fi
 
 echo '<form action="/cgi-bin/admin/shutdown.cgi" name="selectservers" method="post">'
@@ -162,7 +164,7 @@ echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
         <td></td>
       </tr>
 <tr><td>'$"Confirm"'</td>
-        <td style="vertical-align: top; text-align: left;"><input name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td><td>
+        <td style="vertical-align: top; text-align: left;"><input style="height: '"$HEIGHT"'px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td><td>
 <a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to shutdown a server."'</span></a>
 </td></tr>
 <tr><td>'$"Force"'</td>

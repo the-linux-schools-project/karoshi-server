@@ -119,6 +119,7 @@ then
 	WIDTH1=180
 	WIDTH2=400
 	WIDTH3=300
+	HEIGHT1=24
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -128,6 +129,7 @@ else
 	WIDTH1=90
 	WIDTH2=160
 	WIDTH3=120
+	HEIGHT1=30
 fi
 
 echo '<form action="/cgi-bin/admin/client_shutdown_time2.cgi" method="post">'
@@ -159,10 +161,10 @@ fi
 IDLETIME=10
 [ -f /var/lib/samba/netlogon/domain_information/idletime ] && IDLETIME=`sed -n 1,1p /var/lib/samba/netlogon/domain_information/idletime`
 
-echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: 180px;">'$"Shutdown time"'</td><td><input maxlength="2" size="2" value="'$HOUR'" name="_HOUR_"></td><td><input maxlength="2" size="2" value="'$MINUTES'" name="_MINUTES_"></td><td>
+echo '<table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr><td style="width: 180px;">'$"Shutdown time"'</td><td><input style="height: '"$HEIGHT1"'px" maxlength="2" size="2" value="'$HOUR'" name="_HOUR_"></td><td><input style="height: '"$HEIGHT1"'px" maxlength="2" size="2" value="'$MINUTES'" name="_MINUTES_"></td><td>
 <a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the time in minutes that you want the clients to shutdown."'</span></a>
 </td></tr>
-<tr><td style="width: 180px;">'$"Idle time"'</td><td></td><td><input maxlength="2" size="2" value="'$IDLETIME'" name="_IDLETIME_"></td><td>
+<tr><td style="width: 180px;">'$"Idle time"'</td><td></td><td><input style="height: '"$HEIGHT1"'px" maxlength="2" size="2" value="'$IDLETIME'" name="_IDLETIME_"></td><td>
 <a class="'$TOOLTIPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Client_Shutdown_Time"><img class="images" alt="" src="/images/help/info.png"><span>'$"Time to wait before shutting down if not in use."'</span></a>
 </td></tr>
 </tbody></table><br><br>

@@ -300,7 +300,12 @@ echo '
 </tr></tbody></table>'
 
 
-[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
+if [ "$MOBILE" = no ]
+then
+	echo '</div><div id="infobox">'
+else
+	echo '<br>'
+fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dnsview.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$ACTION:$NAME:$DNSENTRY:$DNSTYPE:$ZONE:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dnsview

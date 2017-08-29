@@ -238,6 +238,7 @@ then
 	WIDTH3=130
 	WIDTH4=375
 	WIDTH5=80
+	HEIGHT1=25
 	ICON1=/images/submenus/file/moveup.png
 	ICON2=/images/submenus/file/movedown.png
 	ICON3=/images/submenus/file/delete.png
@@ -251,6 +252,7 @@ else
 	WIDTH3=80
 	WIDTH4=200
 	WIDTH5=40
+	HEIGHT1=30
 	ICON1=/images/submenus/file/moveupm.png
 	ICON2=/images/submenus/file/movedownm.png
 	ICON3=/images/submenus/file/deletem.png
@@ -275,7 +277,7 @@ echo '<div class="sectiontitle">'$"Quick Links"'</div>'
 echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Link Style"'</td>
 <td style="width: '"$WIDTH2"'px; text-align:center">
-<select name="____QUICKLINKSTYLE" style="width: 200px;">
+<select name="____QUICKLINKSTYLE" style="width: 200px; height: '"$HEIGHT1"'px;">
 <option value="____sub____">'$"Sub Link"'</option>
 <option value="____inline____">'$"Main Link"'</option>
 <option value="____quick____">'$"Bookmark"'</option>
@@ -284,7 +286,7 @@ echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><tab
 <tr><td style="width: '"$WIDTH1"'px;">'$"Add link"'</td>
 <td style="width: '"$WIDTH2"'px; text-align:center">'
 #Show a drop down of all available links
-echo '<select name="____ACTION____add________HYPERLINK____" style="width: 200px;">'
+echo '<select name="____ACTION____add________HYPERLINK____" style="width: 200px; height: '"$HEIGHT1"'px;">'
 /opt/karoshi/web_controls/generate_navbar_admin | grep -v ^singletext | grep -v '<li class="top"' |  grep -v '<li class="mid"' | grep 'a href=' | sed 's/\t//g' | sed 's/<li>//g' | sed 's%</li>%%g' | sed 's$<a href=$<option value=$g' | sed 's$</a>$</option>$g' | sed 's$;$$g' | sed 's%target="_blank"%%g' | sort --unique
 echo '</select></td><td style="width: '"$WIDTH3"'px; text-align:center"><input value="'$"Submit"'" class="button" type="submit"></td></tr>
 </tbody></table></form>

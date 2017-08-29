@@ -125,6 +125,7 @@ then
 	WIDTH6=70
 	WIDTH7=200
 	WIDTH8=150
+	HEIGHT1=24
 	TABLECLASS=standard
 	ICON1=/images/submenus/system/edit.png
 	ICON2=/images/submenus/system/delete.png
@@ -138,6 +139,7 @@ else
 	WIDTH6=70
 	WIDTH7=120
 	WIDTH8=130
+	HEIGHT1=30
 	TABLECLASS=mobilestandard
 	ICON1=/images/submenus/system/editm.png
 	ICON2=/images/submenus/system/deletem.png
@@ -156,7 +158,7 @@ then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">'
 fi
 echo '<input type="hidden" name="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_view_" value="">
-<select name="_ZONE_" style="width: '"$WIDTH7"'px;" '"$SELECTOPTIONS"'><option value="'"$ZONE"'">'"$ZONE"'</option><option class="select-dash" disabled="disabled">----------</option>'
+<select name="_ZONE_" style="width: '"$WIDTH7"'; height: '"$HEIGHT1"'px;" '"$SELECTOPTIONS"'><option value="'"$ZONE"'">'"$ZONE"'</option><option class="select-dash" disabled="disabled">----------</option>'
 for DNSZONE in $DNSZONELIST
 do
 	echo '<option value="'"$DNSZONE"'">'"$DNSZONE"'</option>'
@@ -164,8 +166,7 @@ done
 echo '</select>'
 if [ "$ACTION" = view ]
 then
-	echo '</form>'
-	[ "$MOBILE" = no ] && echo '<br>'
+	echo '</form><br>'
 fi
 }
 
@@ -185,7 +186,7 @@ then
 		function createtabletop {
 		#Create top of table
 		echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"DNS Name"'</b></th>'
+		<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Name"'</b></th>'
 
 		[ "$MOBILE" = no ] && echo '<th style="width: '"$WIDTH2"'px;"><b>'$"Type"'</b></th>'
 
@@ -425,7 +426,7 @@ if [ "$ACTION" = addzone ]
 then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 	<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '"$WIDTH8"'px;">'$"Add DNS Zone"'</td><td><input required="required" tabindex= "1" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '"$WIDTH7"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
+	<tr><td style="width: '"$WIDTH8"'px;">'$"Add DNS Zone"'</td><td><input required="required" tabindex= "1" name="_ACTION_reallyaddzone_ZONE_" size="25" style="width: '"$WIDTH7"'px; height: '"$HEIGHT1"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of a new DNS zone you want to create."'</span></a></td></tr>
 	</tbody></table><br><br>
 	<input name="_SERVERTYPE_network_SERVERNAME_'"$SERVERNAME"'_" type="submit" class="button" value="'$"Add zone"'">
 	</form><br>'
@@ -480,11 +481,11 @@ if [ "$ACTION" = add ]
 then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">
 	<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '"$WIDTH8"'px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_"  style="width: '"$WIDTH7"'px;" size="25" type="text"></td><td>
+	<tr><td style="width: '"$WIDTH8"'px;">'$"Name"'</td><td><input required="required" tabindex= "1" name="_NAME_"  style="width: '"$WIDTH7"'px; height: '"$HEIGHT1"'px;" size="25" type="text"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DNS#Adding_dns_entries"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name that you want. This can be the name of a server or an alias."'</span></a></td></tr>
-	<tr><td>'$"DNS Entry"'</td><td><input required="required" tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'"$DNSENTRY"'" size="25" style="width: '"$WIDTH7"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
+	<tr><td>'$"DNS Entry"'</td><td><input required="required" tabindex= "2" name="_ACTION_reallyadd_DNSENTRY_" value="'"$DNSENTRY"'" size="25" style="width: '"$WIDTH7"'px; height: '"$HEIGHT1"'px;" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the dns information that you want. This would be a tcpip number for an A record or it would be an alias entry for a CNAME."'</span></a></td></tr>
 	<tr><td>'$"DNS Type"'</td><td>'"$DNSTYPE"'
-	<select name="_DNSTYPE_" style="width: '"$WIDTH7"'px;">
+	<select name="_DNSTYPE_" style="width: '"$WIDTH7"'px; height: '"$HEIGHT1"'px;">
 	<option value="CNAME">CNAME</option>
 	<option  selected="selected" value="A">A Record </option>
 	</select>
