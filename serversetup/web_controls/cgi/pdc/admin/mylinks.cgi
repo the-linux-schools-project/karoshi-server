@@ -261,7 +261,7 @@ if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
-		<span>'$"Group Management"'</span>
+		<span>'$"Quick Links"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
 	'
@@ -276,8 +276,8 @@ echo '<form name="myform" action="/cgi-bin/admin/mylinks.cgi" method="post"><tab
 <tr><td style="width: '"$WIDTH1"'px;">'$"Link Style"'</td>
 <td style="width: '"$WIDTH2"'px; text-align:center">
 <select name="____QUICKLINKSTYLE" style="width: 200px;">
-<option value="____sub____">'$"Navigation Sub Link"'</option>
-<option value="____inline____">'$"Navigation Main Link"'</option>
+<option value="____sub____">'$"Sub Link"'</option>
+<option value="____inline____">'$"Main Link"'</option>
 <option value="____quick____">'$"Bookmark"'</option>
 </select>
 </td><td></td></tr>
@@ -343,15 +343,15 @@ then
 fi
 }
 
-QUICKLNKTITLE=$"My Navigation Bookmarks"
+QUICKLNKTITLE=$"Bookmarks"
 QUICKLINKSTYLE=quick
 show_current_links
 
-QUICKLNKTITLE=$"My Navigation Main Links"
+QUICKLNKTITLE=$"Main Links"
 QUICKLINKSTYLE=inline
 show_current_links
 
-QUICKLNKTITLE=$"My Navigation Sub Links"
+QUICKLNKTITLE=$"Sub Links"
 QUICKLINKSTYLE=sub
 show_current_links
 

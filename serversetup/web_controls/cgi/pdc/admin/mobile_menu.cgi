@@ -99,7 +99,56 @@ echo '
 		echo '</div>'
 	fi
 
-       echo '<div class="collapsed">
+
+#Show any custom links
+if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
+then
+	FIRSTLINK=yes
+	SUBENTRIES=no
+	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
+	do
+		LINK=$(echo "$LINKDATA" | cut -d, -f1)
+		LINKTITLE=$(echo "$LINKDATA" | cut -d, -f2 | sed 's%SPACE% %g')
+		QUICKLINKSTYLE=$(echo "$LINKDATA" | cut -d, -f3)
+
+		if [ "$FIRSTLINK" = yes ]
+		then
+			FIRSTLINK=no
+			#Check to see if there are any sub entries
+			if [ "$QUICKLINKSTYLE" = sub ]
+			then
+				SUBENTRIES=yes
+				echo '<div class="collapsed"><span>'$"Quick Links"'</span><a href="/cgi-bin/admin/mylinks.cgi">'$"Quick Links"'</a>'
+			else
+				echo '<div class="collapsed"><span>'$"Quick Links"'</span><a href="/cgi-bin/admin/mylinks.cgi">'$"Quick Links"'</a></div>'
+			fi
+		fi
+
+
+		if [ "$QUICKLINKSTYLE" = sub ]
+		then
+			echo '<a href="'"$LINK"'">'"$LINKTITLE"'</a>'
+		else
+			if [ "$SUBENTRIES" = yes ]
+			then
+				SUBENTRIES=no
+				echo '</div>'
+			fi
+			echo '<div class="collapsed"><span>'"$LINKTITLE"'</span><a href="'"$LINK"'">'"$LINKTITLE"'</a></div>'
+		fi
+
+
+	done
+	if [ "$SUBENTRIES" = yes ]
+	then
+		echo '</div>'
+	fi
+else
+	echo '<div class="collapsed"><span>'$"Quick Links"'</span><a href="/cgi-bin/admin/mylinks.cgi">'$"Quick Links"'</a></div>'
+fi
+
+        echo '
+	<div class="collapsed">
         <span>'$"Helpdesk"'</span>
         <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a>
         <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
@@ -246,3 +295,8 @@ exit
 #Unique key
 ########################
 #7,kpxjxbbF.NOLF1klJSCD4pf
+
+########################
+#Unique key
+########################
+#ZqCT/HPs-fgvpW_EhtzJGN4nL

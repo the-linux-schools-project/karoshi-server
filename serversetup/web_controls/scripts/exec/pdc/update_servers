@@ -347,11 +347,11 @@ then
 				scheduleupdate
 				copyscripts
 
-				let MINUTES="$MINUTES"+10
+				MINUTES=$(echo "$MINUTES + 10" | bc)
 				if [ "$MINUTES" -ge 60 ]
 				then
 					MINUTES=00
-					let HOURS="$HOURS"+1
+					HOURS=$(echo "$HOURS + 1" | bc)
 					[ "$HOURS" -ge 24 ] && HOURS=00
 				fi
 			fi
