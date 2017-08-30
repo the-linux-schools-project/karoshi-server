@@ -126,16 +126,16 @@ echo '<form id="foo" action="/cgi-bin/admin/uptime.cgi" name="selectservers" met
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Display Uptime"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
 else
-echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tr><td style="height:30px;"><div class="sectiontitle">'$"Display Uptime"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></td><td style="vertical-align: top;">
-</td></tr></tbody></table>
-<br></div><div id="infobox">'
+	echo '
+	<div class="sectiontitle">'$"Display Uptime"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Uptime"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will show the uptime for your servers."'</span></a></div>
+	</div><div id="infobox">'
 fi
 
 #Redirect to show the services if there is only one server

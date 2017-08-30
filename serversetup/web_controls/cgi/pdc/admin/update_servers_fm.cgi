@@ -187,7 +187,7 @@ else
 			</form>
 		</td>
 
-	</tr></tbody></table><br></div><div id="infobox">
+	</tr></tbody></table></div><div id="infobox">
 	'
 fi
 
@@ -232,5 +232,6 @@ echo '</form>'
 [ "$MOBILE" = no ] && echo '</div>'
 
 echo '</div></div></body></html>'
+
 exit
 

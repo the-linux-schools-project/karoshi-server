@@ -156,7 +156,7 @@ else
 			</button>
 		</td>
 
-	</tr></tbody></table><br><br>
+	</tr></tbody></table></div><div id="infobox">
 	'
 fi
 
@@ -164,29 +164,29 @@ fi
 
 if [ "$MOBILE" = yes ]
 then
-echo ''$"Log date"'<br>'
+	echo ''$"Log date"'<br>'
 
-echo "	<!-- calendar attaches to existing form element -->
-	<input type=\"text\" value=\""$DAY-$MONTH-$YEAR"\" size=14 maxlength=10 name=\"_DATE_\">
-	<script type=\"text/javascript\">
-	new tcal ({
-		// form name
-		'formname': 'testform',
-		// input name
-		'controlname': '_DATE_'
-	});
+	echo "	<!-- calendar attaches to existing form element -->
+		<input type=\"text\" value=\""$DAY-$MONTH-$YEAR"\" size=14 maxlength=10 name=\"_DATE_\">
+		<script type=\"text/javascript\">
+		new tcal ({
+			// form name
+			'formname': 'testform',
+			// input name
+			'controlname': '_DATE_'
+		});
 
-	</script><br>"
+		</script><br>"
 
-echo ''$"View logs by date"'<br>
-<input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
-'$"View logs by month"'<br>
-<input name="_LOGVIEW_" value="month" type="radio"><br><br>'
+	echo ''$"View logs by date"'<br>
+	<input checked="checked" name="_LOGVIEW_" value="today" type="radio"><br>
+	'$"View logs by month"'<br>
+	<input name="_LOGVIEW_" value="month" type="radio"><br><br>'
 
 else
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Log date"'</td><td>'
-echo "	<!-- calendar attaches to existing form element -->
+	echo "	<!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\" style=\"width: "$WIDTH2"px;\"></td><td style=\"vertical-align: top; text-align: center;\">
 	<script type=\"text/javascript\">
 	new tcal ({
@@ -198,10 +198,8 @@ echo "	<!-- calendar attaches to existing form element -->
 
 	</script>"
 
-echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>'$"View logs by month"'</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br><br>'
+	echo '</td></tr><tr><td>'$"View logs by date"'</td><td></td><td style="vertical-align: top; text-align: center;"><input checked="checked" name="_LOGVIEW_" value="today" type="radio"></td></tr><tr><td>'$"View logs by month"'</td><td></td><td style="vertical-align: top; text-align: center;"><input name="_LOGVIEW_" value="month" type="radio"></td></tr></tbody></table><br>'
 fi
-
-[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
 #Show list of servers
 /opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Show logs" notset updateserver
