@@ -183,7 +183,7 @@ then
 					<button class="info infonavbutton" name="_ChooseGroup_" value="_">
 						<img src="'"$ICON1"'" alt="'$"Choose Group"'">
 						<span>'$"Choose a user group."'</span><br>
-						'$"Choose Group"'
+						'$"Select Group"'
 					</button>
 			</td>
 		</tr>

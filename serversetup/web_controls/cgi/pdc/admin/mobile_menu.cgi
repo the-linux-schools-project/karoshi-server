@@ -149,7 +149,7 @@ fi
 
         echo '
 	<div class="collapsed">
-        <span>'$"Helpdesk"'</span>
+        <span>'$"Technical Support"'</span>
         <a href="/cgi-bin/admin/helpdesk_view_fm.cgi">'$"View Requests"'</a>
         <a href="/cgi-bin/admin/helpdesk_add_fm.cgi">'$"Add Request"'</a>
         </div>     

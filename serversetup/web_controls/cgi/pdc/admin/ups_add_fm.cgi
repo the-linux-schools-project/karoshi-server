@@ -24,6 +24,10 @@
 #
 #Website: http://www.karoshi.org.uk
 
+#Detect mobile browser
+MOBILE=no
+source /opt/karoshi/web_controls/detect_mobile_browser
+
 #Language
 ############################
 #Language
@@ -43,7 +47,7 @@ fi
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a UPS"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script language="JavaScript" src="/all/calendar/ts_picker.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add a UPS"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/calendar/ts_picker.js" type="text/javascript"></script>
 <!-- Timestamp input popup (European Format) --><script src="/all/stuHover.js" type="text/javascript"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -53,8 +57,30 @@ $(document).ready(function()
         $("#myTable").tablesorter(); 
     } 
 );
-</script>
-</head>
+</script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+
+if [ "$MOBILE" = yes ]
+then
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	<script src="/all/mobile_menu/sdmenu.js">
+		/***********************************************
+		* Slashdot Menu script- By DimX
+		* Submitted to Dynamic Drive DHTML code library: www.dynamicdrive.com
+		* Visit Dynamic Drive at www.dynamicdrive.com for full source code
+		***********************************************/
+	</script>
+	<script>
+	// <![CDATA[
+	var myMenu;
+	window.onload = function() {
+		myMenu = new SDMenu("my_menu");
+		myMenu.init();
+	};
+	// ]]>
+	</script>'
+fi
+
+echo '</head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Check https access
@@ -78,33 +104,64 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
+
 #Generate navigation bar
-/opt/karoshi/web_controls/generate_navbar_admin
+if [ "$MOBILE" = no ]
+then
+	DIV_ID=actionbox3
+	WIDTH=100
+	WIDTH2=200
+	HEIGHT=24
+	TABLECLASS=standard
+	ICON1=/images/submenus/system/battery.png
+	#Generate navigation bar
+	/opt/karoshi/web_controls/generate_navbar_admin
+else
+	DIV_ID=actionbox
+	WIDTH=90
+	WIDTH2=120
+	HEIGHT=30
+	TABLECLASS=mobilestandard
+	ICON1=/images/submenus/system/batterym.png
+fi
 
-WIDTH=100
-ICON1=/images/submenus/system/battery.png
+echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post">'
 
-echo '<form action="/cgi-bin/admin/ups_add.cgi" name="tstest" method="post"><div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$"Add a UPS"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></div>
+#Show back button for mobiles
+if [ "$MOBILE" = yes ]
+then
+echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"Add a UPS"'</span>
+<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">
+'
+else
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
+	<div class="sectiontitle">'$"Add a UPS"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will configure a UPS device connected to a server."'</span></a></div>'
+fi
 
-	<table class="tablesorter"><tbody><tr>
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
-			<button class="info infonavbutton" formaction="ups_status.cgi" name="_UPSStatus" value="_">
-				<img src="'$ICON1'" alt="'$"UPS Status"'">
-				<span>'$"UPS Status"'</span><br>
-				'$"Status"'
-			</button>
-		</td>
-	</tr></tbody></table>
+echo '
+<table class="tablesorter"><tbody><tr>
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button class="info infonavbutton" formaction="ups_status.cgi" name="_UPSStatus" value="_">
+			<img src="'$ICON1'" alt="'$"UPS Status"'">
+			<span>'$"UPS Status"'</span><br>
+			'$"Status"'
+		</button>
+	</td>
+</tr></tbody></table>
 
-<br></div><div id="infobox">'
+<br>'
 
 
-echo '<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="width: 180px;">'$"UPS Name"'</td>
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
+
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH2"'px;">'$"UPS Name"'</td>
         <td>'
 #Generate list of UPC data
-echo '<select name="_UPSDRIVER_" style="width: 200px;">'
+echo '<select name="_UPSDRIVER_" style="width: 200px; height: '"$HEIGHT"'px;">'
 UPSDATA_LENGTH=$(wc -l < /opt/karoshi/server_network/ups/ups-model-information.csv)
 
 COUNTER=1
@@ -119,12 +176,14 @@ do
 done
 
 echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose a UPS device from the list."'</span></a></td></tr>
-<tr><td>'$"Port"'</td><td><select name="_UPSPORT_" style="width: 200px;"><option value="auto">auto</option><option value="/dev/ttyS0">/dev/ttyS0</option><option value="/dev/ttyS1">/dev/ttyS1</option></select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose auto for UPS devices connected via usb."'</span></a></td></tr>
+<tr><td>'$"Port"'</td><td><select name="_UPSPORT_" style="width: 200px; height: '"$HEIGHT"'px;"><option value="auto">auto</option><option value="/dev/ttyS0">/dev/ttyS0</option><option value="/dev/ttyS1">/dev/ttyS1</option></select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_a_UPS"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose auto for UPS devices connected via usb."'</span></a></td></tr>
 </tbody></table><br><br>'
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers no servers $"Add UPS"
+/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Add UPS"
 
-echo '</div></div></form></div></body></html>'
+[ "$MOBILE" = no ] && echo '</div>'
+
+echo '</div></form></div></body></html>'
 exit
 

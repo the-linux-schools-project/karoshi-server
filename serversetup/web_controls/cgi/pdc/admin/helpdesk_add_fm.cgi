@@ -89,6 +89,7 @@ then
 	WIDTH1=200
 	WIDTH2=200
 	WIDTH3=400
+	HEIGHT1=24
 	COLS=70
 	ROWS=6
 	/opt/karoshi/web_controls/generate_navbar_admin
@@ -99,6 +100,7 @@ else
 	WIDTH1=140
 	WIDTH2=140
 	WIDTH3=140
+	HEIGHT1=30
 	COLS=18
 	ROWS=4
 fi
@@ -121,10 +123,10 @@ fi
 
 echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >
 <tbody>
-<tr><td style="width: '"$WIDTH1"'px;">'$"Name"'</td><td ><input value="'"$REMOTE_USER"'" tabindex="1" style="width: '"$WIDTH1"'px;" maxlength="22" size="20" name="_NAME_"></td><td></td></tr>
-<tr><td style="width: '"$WIDTH1"'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '"$WIDTH1"'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Name"'</td><td ><input value="'"$REMOTE_USER"'" tabindex="1" style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;" maxlength="22" size="20" name="_NAME_"></td><td></td></tr>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Request Summary"'</td><td style="vertical-align: top;"><input tabindex="2" maxlength="24" style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;" size="20" name="_JOBTITLE_"></td><td style="vertical-align: top;"><a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a title or summary for the job that you want completed."'</span></a></td>
 </tr>
-<tr><td style="width: '"$WIDTH1"'px;">'$"Computer Number"'</td><td><input tabindex="3" maxlength="30" style="width: '"$WIDTH1"'px;" size="20" name="_ASSETNUMBER_"></td><td style="vertical-align: top;"><a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td>
+<tr><td style="width: '"$WIDTH1"'px;">'$"Computer Number"'</td><td><input tabindex="3" maxlength="30" style="width: '"$WIDTH1"'px; height: '"$HEIGHT1"'px;" size="20" name="_ASSETNUMBER_"></td><td style="vertical-align: top;"><a class="'"$TOOLTIPCLASS"'" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"The computer number is used to help identify where it is situated in the room. This can be left blank."'</span></a></td>
 </tr>
 <tr><td>'$"Location"'</td><td>
 '
@@ -139,7 +141,7 @@ else
 	LOCATION_COUNT=0
 fi
 
-echo '<select tabindex="4" style="width: '"$WIDTH2"'px;" name="_LOCATION_"><option label="blank" value=""></option>'
+echo '<select tabindex="4" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" name="_LOCATION_"><option label="blank" value=""></option>'
 COUNTER=1
 while [ "$COUNTER" -lt "$LOCATION_COUNT" ]
 do
@@ -150,7 +152,7 @@ done
 echo '</select></td><td></td></tr>'
 echo '<tr><td>'$"Department"'</td>
 <td>
-<select tabindex="5" style="width: '"$WIDTH2"'px;" name="_DEPARTMENT_">
+<select tabindex="5" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" name="_DEPARTMENT_">
 <option label="blank" value=""></option>
 <option value="'$"Art"'">'$"Art"'</option>
 <option value="'$"Business Studies"'">'$"Business Studies"'</option>
@@ -175,7 +177,7 @@ echo '<tr><td>'$"Department"'</td>
 </td><td></td></tr>
 <tr><td>'$"Category"'</td>
 <td>
-<select tabindex= "6" style="width: '"$WIDTH2"'px;" name="_CATEGORY_">
+<select tabindex= "6" style="width: '"$WIDTH2"'px; height: '"$HEIGHT1"'px;" name="_CATEGORY_">
 <option label="blank" value=""></option>
 <option value="'$"Hardware"'">'$"Hardware"'</option>
 <option value="'$"Software"'">'$"Software"'</option>

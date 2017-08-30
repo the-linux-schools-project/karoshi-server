@@ -214,11 +214,13 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div><div id="mobileactionbox">
 '
+else
+	echo '<div class="sectiontitle">'"$TITLETXT"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a></div>'
 fi
 WIDTH=100
 
 echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
-<div class="sectiontitle">'"$TITLETXT"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"Access Points"'</span></a></div>
+
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
@@ -230,7 +232,7 @@ echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 	</td>
 
 </tr></tbody></table>
-</form><br>'
+</form>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 

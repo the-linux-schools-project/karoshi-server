@@ -125,7 +125,7 @@ else
  	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>'
 fi
 
-echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
+echo '<input value="'$"Submit"'" class="button" type="submit"></div>'
 
 [ "$MOBILE" = no ] && echo '</div>'
 

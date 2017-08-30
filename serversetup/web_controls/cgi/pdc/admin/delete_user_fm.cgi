@@ -191,7 +191,7 @@ then
 	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
 	'$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
 	'$"Confirm"'<br>
-	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br>
+	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
 	<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
 	'
 else

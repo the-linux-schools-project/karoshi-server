@@ -59,7 +59,7 @@ echo '
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX

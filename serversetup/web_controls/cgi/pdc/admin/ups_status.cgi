@@ -102,10 +102,14 @@ fi
 if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
+	WIDTH=100
+	ICON1=/images/submenus/system/add.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox
+	WIDTH=90
+	ICON1=/images/submenus/system/addm.png
 fi
 
 #Show back button for mobiles
@@ -115,35 +119,33 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"UPS Status"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div>
+</div></div><div id="mobileactionbox">
 '
 else
-	WIDTH=100
-	ICON1=/images/submenus/system/add.png
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">
-	<div class="sectiontitle">'$"UPS Status"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></div>
-
-	<table class="tablesorter"><tbody><tr>
-		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-			<form action="ups_add_fm.cgi" method="post">
-				<button class="info infonavbutton" name="_AddUPS" value="_">
-					<img src="'"$ICON1"'" alt="'$"Add a UPS"'">
-					<span>'$"Add a UPS"'</span><br>
-					'$"Add"'
-				</button>
-			</form>
-		</td>
-	</tr></tbody></table>
-<br>'
+	<div class="sectiontitle">'$"UPS Status"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=UPS_Status"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows the status of your ups devices."'</span></a></div>'
 fi
+echo '
+<table class="tablesorter"><tbody><tr>
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="ups_add_fm.cgi" method="post">
+			<button class="info infonavbutton" name="_AddUPS" value="_">
+				<img src="'"$ICON1"'" alt="'$"Add a UPS"'">
+				<span>'$"Add a UPS"'</span><br>
+				'$"Add"'
+			</button>
+		</form>
+	</td>
+</tr></tbody></table>
+<br>'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1)
 #Show UPS status
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
 if [ "$?" = 106 ]
 then
-	echo $"No UPS devices have been added."
+	echo $"No UPS devices have been added.""<br>"
 fi
 [ "$MOBILE" = no ] && echo '</div>'
-echo '</div></body></html>'
+echo '</div></div></body></html>'
 exit

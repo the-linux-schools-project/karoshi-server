@@ -396,15 +396,6 @@ if [ "$ACTION" = view ]
 then
 
 	echo '
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
-			<button class="info infonavbutton" name="_Categories_" value="_">
-				<img src="'"$ICON4"'" alt="'$"Categories"'">
-				<span>'$"View Categories"'</span><br>
-				'$"Categories"'
-			</button>
-		</form>
-	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
@@ -425,7 +416,26 @@ then
 			</button>
 		</form>
 	</td>
+
 	'
+
+	[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
+			<button class="info infonavbutton" name="_Categories_" value="_">
+				<img src="'"$ICON4"'" alt="'$"Categories"'">
+				<span>'$"View Categories"'</span><br>
+				'$"Categories"'
+			</button>
+		</form>
+	</td>
+
+	'
+
+	[ "$MOBILE" = yes ] && echo '<td></td>'
+
 	if [ "$MOBILE" = no ]
 	then
 		echo '
