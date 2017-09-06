@@ -280,6 +280,26 @@ then
 	check_reboot_required
 fi
 
+#Check to see if cups-daemon package has broken apt - this is a problem in Karoshi V11.1 which has shipped with a version of cups which will not update.
+if [ $(apt-get -s dist-upgrade 2>/dev/null | grep -c "cups-daemon : Depends: libcups") -gt 0 ]
+then
+	echo -e "$HOSTNAME: $(date) - Cups is currently broken." >>"/opt/karoshi/logs/server_upgrades/$LOG_DATE"
+	rm /var/lib/dpkg/info/cups*
+	apt purge cups*
+	apt-get install -y cups | tee -a "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
+	apt-get install -y -f | tee -a "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
+
+	#Make sure that all required cups packages are installed
+	apt-get install -y ghostscript-cups cups-bsd | tee -a "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
+
+	#Remove cups-browsed
+	apt-get remove -y cups-browsed tee -a "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
+
+	#We might need to reboot after this as the reboot-required flag file would not have been generated until apt was fixed
+	RESCHEDULE_UPDATE=yes
+	check_reboot_required
+fi
+
 echo -e "Checking that the upgrade will be successfull.\n" >> "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
 apt-get -s dist-upgrade >> "/opt/karoshi/logs/server_upgrades/$LOG_DATE"
 if [ $? != 0 ]
