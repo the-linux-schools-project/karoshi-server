@@ -1,0 +1,19 @@
+#!/bin/bash
+
+USER="root"
+PASSWORD=$(cat /etc/mysql.secret)
+BACKUP_PATH=/var/lib/mysql_backup
+
+if [ ! -d "$BACKUP_PATH" ]
+then
+	mkdir -p "$BACKUP_PATH"
+	chmod 0700 "$BACKUP_PATH"
+fi
+
+databases=$(mysql -u "$USER" -p"$PASSWORD" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+for db in $databases; do
+    if [[ "$db" != "information_schema" ]] && [[ "$db" != "performance_schema" ]] && [[ "$db" != "mysql" ]] && [[ "$db" != _* ]] ; then
+        echo "Dumping database: $db"
+        mysqldump -u "$USER" -p"$PASSWORD" --databases "$db" > "$BACKUP_PATH/$(date +%Y%m%d).$db.sql"
+    fi
+done
