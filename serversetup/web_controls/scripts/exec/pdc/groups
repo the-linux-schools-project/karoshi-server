@@ -375,6 +375,12 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 		##########################
 		#Create data files
 		##########################
+		if [ "$CATEGORY" = students ]
+		then
+			YEARSUFFIX=$(echo "$GROUPNAME" | tr -cd 0-9)
+			YEARSUFFIX=${YEARSUFFIX:(-2)}
+		fi
+
 		[ -e "/var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix" ] && cp -f "/var/lib/samba/netlogon/windows_settings/drives/$PROFILE.kix" "/var/lib/samba/netlogon/windows_settings/drives/$GROUPNAME.kix"
 		[ -e "/var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix" ] && cp -f "/var/lib/samba/netlogon/windows_settings/security/$PROFILE.kix" "/var/lib/samba/netlogon/windows_settings/security/$GROUPNAME.kix"
 		[[ $(grep -c "$GROUPNAME" /var/lib/samba/netlogon/groups.txt) = 0 ]] && echo "$GROUPNAME","$HOMESERVER" >> /var/lib/samba/netlogon/groups.txt
