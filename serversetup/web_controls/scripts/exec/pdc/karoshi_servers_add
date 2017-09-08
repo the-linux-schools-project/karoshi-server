@@ -725,6 +725,7 @@ then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
 fi
 
+
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
@@ -737,7 +738,13 @@ then
 	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq all
 
 	#Configure dhcp to use the extra domain controller
-
+	SECONDARY_DHCP_SERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p)
+	if [ "$SERVER.$REALM" = "$SECONDARY_DHCP_SERVER" ]
+	then
+		MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
+		source /opt/karoshi/server_network/dhcp/dhcp_settings
+		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARY_DHCP_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
+	fi
 else
 	#Configure dnsmasq for the server
 	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVER.$REALM"

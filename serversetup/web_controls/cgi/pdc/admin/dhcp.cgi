@@ -125,7 +125,15 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/dhcp_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
+exit
+}
+
+function show_status2 {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "/cgi-bin/admin/dhcp_fm.cgi";'
+echo '</script>'
+echo "</div></div></body></html>"
 exit
 }
 
@@ -299,11 +307,12 @@ fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$"Configure DHCP"'</div><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Configure DHCP"'</div><br>'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARYSERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
-MESSAGE=$"The DHCP changes have been applied."
-show_status
+echo '<ul><li>'$"The DHCP changes have been applied."'</li></ul>'
+sleep 3
+show_status2
 exit
 
