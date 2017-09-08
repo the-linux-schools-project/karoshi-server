@@ -30,11 +30,11 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -45,39 +45,43 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Setup Distribution Server"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Setup Distribution Server"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign SERVERNAME
-
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVERNAME
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -95,7 +99,7 @@ then
 fi
 
 #Check to see if this module has already been installed on the server
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ]
+if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver ]
 then
 	STATUSMSG=$"This module has already been set up on this server."
 fi
@@ -105,22 +109,17 @@ fi
 
 echo '
 <form action="/cgi-bin/admin/module_distributionserver.cgi" method="post">
-<div id="actionbox"><div class="sectiontitle">'$"Setup Distribution Server" - $SERVERNAME'</div><br>
-<input name="_SERVERNAME_" value="'$SERVERNAME'" type="hidden">
+<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Distribution Server"" - $SERVERNAME"'</div><br>
+<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
 <b>'$"Description"'</b><br><br>
 '$"This will setup a distribution server for centralised linux client installations."' '$" To use this feature you will need to add or import your client data into the asset register."'<br><br>'
 
 if [ ! -z "$STATUSMSG" ]
 then
-	echo ''$STATUSMSG'<br><br>'
+	echo ''"$STATUSMSG"'<br><br>'
 fi
 
-echo '</div>
-<div id="submitbox">
+echo '
 <input value="'$"Submit"'" class="button" type="submit">
-</div>
-</form>
-</div></body>
-</html>
-'
+</div></div></form></div></body></html>'
 exit
