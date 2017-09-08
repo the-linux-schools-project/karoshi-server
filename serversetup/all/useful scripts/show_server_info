@@ -5,14 +5,6 @@
 if [ -f /etc/hostname-fqdn ]
 then
 	SERVERNAME=$(hostname-fqdn)
-	#Reset genmon for karoshi_user
-	#Change update time on genmon
-	if [[ $(grep -c 30000 /opt/karoshi/karoshi_user/.config/xfce4/panel/genmon-3.rc) -gt 0 ]]
-	then
-		sed -i 's/UpdatePeriod=30000/UpdatePeriod=36000000/g' /opt/karoshi/karoshi_user/.config/xfce4/panel/genmon-3.rc
-		#Restart panel
-		xfce4-panel -r & 
-	fi
 else
 	SERVERNAME="$HOSTNAME"
 	[ "$SERVERNAME" = ubuntu ] && SERVERNAME="Karoshi Server"
