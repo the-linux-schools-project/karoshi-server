@@ -43,19 +43,19 @@ source /opt/karoshi/web_controls/version
 ##########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ##########################
 #Show page
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -82,111 +82,67 @@ echo '</head><body onload="submitForm()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-'`
+
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-')
 
 #########################
 #Assign data to variables
 #########################
 END_POINT=19
-#Assign _LOCATION_
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign LOCATION
+DATANAME=LOCATION
+get_data
+LOCATION="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-#Assign _ASSETTYPE_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ASSETTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ASSETTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
+
+#Assign ASSETTYPE
+DATANAME=ASSETTYPE
+get_data
+ASSETTYPE="$DATAENTRY"
+
 #Assign ASSET
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ASSETcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ASSET=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ASSET
+get_data
+ASSET="$DATAENTRY"
+
 #Assign TCPIP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=TCPIP
+get_data
+TCPIP="$DATAENTRY"
+
 #Assign MACADDRESS
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MACADDRESScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MACADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MACADDRESS
+get_data
+MACADDRESS="$DATAENTRY"
 
 #Assign NETBOOT
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NETBOOTcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NETBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
-
+DATANAME=NETBOOT
+get_data
+NETBOOT="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'");'
+echo 'alert("'"$MESSAGE"'");'
 echo 'window.location = "/cgi-bin/admin/client_boot_controls_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -203,13 +159,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -255,9 +211,9 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	DIV_ID=actionbox
+	DIV_ID=actionbox3
 	TABLECLASS=standard
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -265,10 +221,10 @@ else
 	TABLECLASS=mobilestandard
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -277,13 +233,16 @@ then
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<b>'$"Client Boot Controls"'</b><br><br>'
+	echo '<div class="sectiontitle">'$"Client Boot Controls"'</div></div><div id="infobox">'
 fi
 
-echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><input name="_LOCATION_" value="'$LOCATION'" type="hidden">''<input name="_ASSETTYPE_" value="'$ASSETTYPE'" type="hidden"><input name="_NETBOOT_" value="'$NETBOOT'" type="hidden"></form>
+echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><input name="_LOCATION_" value="'"$LOCATION"'" type="hidden">''<input name="_ASSETTYPE_" value="'"$ASSETTYPE"'" type="hidden"><input name="_NETBOOT_" value="'"$NETBOOT"'" type="hidden"></form>
 '
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1)
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$ACTION:$ASSET:$TCPIP:$MACADDRESS:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/client_boot_controls2
+
+[ "$MOBILE" = no ] && echo '</div>'
+
 echo "<script type='text/javascript'>document.myForm.submit();</script></div></div></body></html>"
 exit

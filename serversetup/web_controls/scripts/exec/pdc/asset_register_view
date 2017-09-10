@@ -1547,7 +1547,7 @@ then
 	then
 	ASSETTYPE=$ASSETCHOICE
 	assign_asset_labels
-	echo '<div class="sectiontitle">'$"Asset Register"' - '$LOCATION'</div><br><table class="'$TABLECLASS'"><tbody><tr>
+	echo '<div class="sectiontitle">'$"Asset Register"'</div><br><table class="'$TABLECLASS'"><tbody><tr>
 	<td style="vertical-align: top;">
 	<button class="button" name="_DoSHowAllAssets_" value="_ACTION_view_LOCATION_'$LOCATION'_ASSETCHOICE_'$ASSETTYPE'_OPTION_nofilter_">
 	'$"Show all assets"'
@@ -1622,6 +1622,8 @@ then
 	fi
 
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
+
+	echo '<div class="sectiontitle">'"$LOCATION"'</div>'
 
 	if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
 	then

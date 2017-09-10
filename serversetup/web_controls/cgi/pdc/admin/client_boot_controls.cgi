@@ -36,11 +36,13 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
+DISABLESORTCOL=4
+[ "$MOBILE" = yes ] && DISABLESORTCOL=2
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,7 +51,7 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
@@ -60,6 +62,7 @@ $(document).ready(function()
 	headers: {
 	1: { sorter: "MAC" },
 	2: { sorter: "ipAddress" },
+	'"$DISABLESORTCOL"': { sorter: false },
     		}
 		});
     } 
@@ -68,9 +71,9 @@ $(document).ready(function()
 
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -93,63 +96,50 @@ echo '</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=8
-
-#Assign _LOCATION_
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
 
-#Assign _NETBOOT_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = NETBOOTcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		NETBOOT=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign LOCATION
+DATANAME=LOCATION
+get_data
+LOCATION="$DATAENTRY"
+
+#Assign NETBOOT
+DATANAME=NETBOOT
+get_data
+NETBOOT="$DATAENTRY"
+
 
 #Assign _SEARCH_
-if [ $LOCATION'null' = SEARCHNOTVALIDnull ]
+if [ "$LOCATION"'null' = SEARCHNOTVALIDnull ]
 then
-END_POINT=8
-
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SEARCH=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-	done
+	END_POINT=8
+	DATANAME=SEARCH
+	get_data
+	SEARCH="$DATAENTRY"
 fi
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/client_boot_controls_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -158,7 +148,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You have not chosen a location."
 	show_status
@@ -172,7 +162,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -188,7 +178,7 @@ then
 	show_status
 fi
 
-if [ $LOCATION'null' = SEARCHNOTVALIDnull ]
+if [ "$LOCATION"'null' = SEARCHNOTVALIDnull ]
 then
 	#Check to see that SEARCH is not blank
 	if [ -z "$SEARCH" ]
@@ -200,103 +190,110 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
-	TABLECLASS=standard
+	WIDTH=100
+	ICON1=/images/assets/location.png
+	ICON2=/images/submenus/client/enable_all.png
+	ICON3=/images/submenus/client/reset_all.png
+	ICON4=/images/submenus/client/activate_changes.png
+	ICON5=/images/submenus/client/wakeupall.png
+	ICON6=/images/assets/curriculum_computer.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=actionbox2
-	TABLECLASS=mobilestandard
+	WIDTH=90
+	ICON1=/images/assets/locationm.png
+	ICON2=/images/submenus/client/enable_allm.png
+	ICON3=/images/submenus/client/reset_allm.png
+	ICON4=/images/submenus/client/activate_changesm.png
+	ICON5=/images/submenus/client/wakeupallm.png
+	ICON6=/images/assets/curriculum_computerm.png
 fi
 
 echo '<form action="/cgi-bin/admin/client_boot_controls2.cgi" method="post">'
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 		<div class="expanded">
 		<span>'$"Client Boot Controls"'</span>
-	<a href="/cgi-bin/admin/client_boot_controls_fm.cgi">'$LOCATION'</a>
+	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">
 	'
-	ICON1=/images/submenus/client/activate_changesm.png
-	ICON2=/images/submenus/client/wakeupallm.png
-	ICON3=/images/submenus/client/reset_allm.png
-	ICON4=/images/assets/locationm.png
-
-	echo '<table class="'$TABLECLASS'" style="text-align: left;" >
-	<tbody><tr>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_EnableAll_" value="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Enable All"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_ResetAll_" value="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Reset All"'
-	</button>
-	</td></tr>
-	<tr>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_ActivateChanges_" value="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Activate Changes"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/asset_register_view.cgi" name="_AssetRegister_" value="_ACTION_view_LOCATION_'$LOCATION'_">
-	'$"Asset Register"'
-	</button>
-	</td>
-	</tr></tbody></table>'
-
 else
-	ICON1=/images/submenus/client/activate_changes.png
-	ICON2=/images/submenus/client/wakeupall.png
-	ICON3=/images/submenus/client/reset_all.png
-	ICON4=/images/assets/location.png
-
-	echo '<b>'$"Client Boot Controls"' - '$LOCATION'</b><br><br><table class="'$TABLECLASS'" style="text-align: left;" >
-	<tr><td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/client_boot_controls_fm.cgi" name="_ChooseLocation_" value="_">
-	'$"Choose Location"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_ActivateChanges_" value="_ACTION_activatechanges_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Activate Changes"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_EnableAll_" value="_ACTION_enableall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Enable All"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_ResetAll_" value="_ACTION_resetall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Reset All"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button"  name="_WakeOnLanAll_" value="_ACTION_wakeonlanall_LOCATION_'$LOCATION'_ASSET_none_TCPIP_none_MACADDRESS_none_">
-	'$"Wake location"'
-	</button>
-	</td>
-	<td style="vertical-align: top;">
-	<button class="button" formaction="/cgi-bin/admin/asset_register_view.cgi" name="_AssetRegister_" value="_ACTION_view_LOCATION_'$LOCATION'_">
-	'$"Asset Register"'
-	</button>
-	</td>
-	</tr></table>'
+	echo '<div class="sectiontitle">'$"Client Boot Controls"'</div>'
 fi
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/client_boot_controls $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:$NETBOOT:
+echo '
+<table class="tablesorter"><tbody><tr>
 
-echo ''
-[ $MOBILE = no ] && echo '</div>'
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="client_boot_controls_fm.cgi" class="info infonavbutton" name="_ChooseLocation" value="_">
+			<img src="'"$ICON1"'" alt="'$"Choose Location"'">
+			<span>'$"Choose the location."'</span><br>
+			'$"Choose Location"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" name="_EnableAll_" value="_ACTION_enableall_LOCATION_'"$LOCATION"'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+			<img src="'"$ICON2"'" alt="'$"Enable All"'">
+			<span>'$"Enable all assets in this location."'</span><br>
+			'$"Enable All"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" name="_ResetAll_" value="_ACTION_resetall_LOCATION_'"$LOCATION"'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+			<img src="'"$ICON3"'" alt="'$"Reset All"'">
+			<span>'$"Reset all assets."'</span><br>
+			'$"Reset All"'
+		</button>
+	</td>
+
+	'
+
+	[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" name="_ActivateChanges_" value="_ACTION_activatechanges_LOCATION_'"$LOCATION"'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+			<img src="'"$ICON4"'" alt="'$"Activate Changes"'">
+			<span>'$"Activate Changes and reload the DHCP configuration."'</span><br>
+			'$"Activate Changes"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" name="_WakeOnLanAll_" value="_ACTION_wakeonlanall_LOCATION_'"$LOCATION"'_ASSET_none_TCPIP_none_MACADDRESS_none_">
+			<img src="'"$ICON5"'" alt="'$"Wake location"'">
+			<span>'$"Wake on lan all assets in this location."'</span><br>
+			'$"Wake location"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="/cgi-bin/admin/asset_register_view.cgi" class="info infonavbutton" name="_AssetRegister_" value="_ACTION_view_LOCATION_'"$LOCATION"'_">
+			<img src="'"$ICON6"'" alt="'$"Asset Register"'">
+			<span>'$"Asset Register"'</span><br>
+			'$"Asset Register"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+'
+
+if [ "$MOBILE" = no ]
+then
+	echo '</div><div id="infobox">'
+fi
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/client_boot_controls "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:$NETBOOT:"
+
+[ "$MOBILE" = no ] && echo '</div>'
 echo "</div></form></div></body></html>"
 exit

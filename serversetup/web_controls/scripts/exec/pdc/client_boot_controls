@@ -27,99 +27,97 @@
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER/language_choice
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"/language_choice
+export TEXTDOMAIN=karoshi-server
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls_cgi
 then
-	echo `date`: client_boot_controls - No Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - No Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $client_boot_controls_cgi'check' ]
+if [ "$MD5SUM"'check' != "$client_boot_controls_cgi"'check' ]
 then
-	echo `date`: client_boot_controls - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Incorrect Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi
 then
-	echo `date`: client_boot_controls - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/client_boot_controls.cgi | cut -d' ' -f1`
+MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/client_boot_controls.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $client_boot_controls_cgi'check' ]
+if [ "$MD5SUM2"'check' != "$client_boot_controls_cgi"'check' ]
 then
-	echo `date`: client_boot_controls - Incorrect Tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Incorrect Tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [ "$numArgs" != 1 ]
 then
-	echo `date`: client_boot_controls - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:%\+-'`
-REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:%\+-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:%\+-'`
-LOCATION=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:%\+-'`
-SEARCH=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:%\+-'`
-MOBILE=`echo $* | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:%\+-'`
-NETBOOT=`echo $* | cut -s -d: -f7 | tr -cd 'A-Za-z0-9\._:%\+-'`
+REMOTE_USER=$(echo "$*" | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:%\+-')
+REMOTE_ADDR=$(echo "$*" | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:%\+-')
+REMOTE_MD5=$(echo "$*" | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:%\+-')
+LOCATION=$(echo "$*" | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:%\+-')
+SEARCH=$(echo "$*" | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:%\+-')
+MOBILE=$(echo "$*" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:%\+-')
+NETBOOT=$(echo "$*" | cut -s -d: -f7 | tr -cd 'A-Za-z0-9\._:%\+-')
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
 then
-	echo `date`: client_boot_controls - Not called by client_boot_controls.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Not called by client_boot_controls.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: client_boot_controls - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: client_boot_controls - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$LOCATION" ]
 then
-	echo `date`: client_boot_controls - Blank asset type by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - Blank asset type by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
 then
-	echo `date`: client_boot_controls - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_boot_controls - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 [ -z "$NETBOOT" ] && NETBOOT=notset
 
-DISTROSERVER=`sed -n 1,1p /opt/karoshi/server_network/distribution_server`
-
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	ICON1=/images/submenus/client/install.png
-	ICON2=/images/submenus/client/memtest.png
+	#ICON2=/images/submenus/client/memtest.png
 	ICON3=/images/submenus/client/normal.png
 	ICON4=/images/submenus/client/wakeup.png
 	WIDTH1=150
 else
 	ICON1=/images/submenus/client/installm.png
-	ICON2=/images/submenus/client/memtestm.png
+	#ICON2=/images/submenus/client/memtestm.png
 	ICON3=/images/submenus/client/normalm.png
 	ICON4=/images/submenus/client/wakeupm.png
 	WIDTH1=100
@@ -133,207 +131,204 @@ then
 	chown -R root.apache_karoshi /opt/karoshi/server_network/dhcp/network_install/
 fi
 
-TABLECLASS=standard
-[ $MOBILE = yes ] && TABLECLASS=mobilestandard
-
 if [ -z "$SEARCH" ]
 then
-if [ -d /opt/karoshi/asset_register/locations/$LOCATION/ ]
-then
-if [ `ls -1 /opt/karoshi/asset_register/locations/$LOCATION/ | wc -l` -gt 0 ]
-then
-echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
-<thead><tr><th style="width: 60px;"><b>'$"Asset"'</b></th>'
+	echo '<div class="sectiontitle">'"$LOCATION"'</div>'
 
-if [ $MOBILE = no ]
-then
-	echo '<th style="width: 130px;"><b>'$"Mac Address"'</b></th><th style="width: 100px;"><b>'$"TCPIP"'</b></th>'
-fi
-echo '<th style="width: 120px;"><b>'$"Boot status"'</b></th><td style="width: 150px;">'
-echo '<select name="_NETBOOT_" style="width: '$WIDTH1'px; height: 30px;" onClick="rewriteselect();">'
-for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz | sort -r)
-do
-	DISTROVERSION=$(basename $DISTROVERSIONS | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
-	SELECTED=""
-	[ "$DISTROVERSION" = "$NETBOOT" ] && SELECTED="selected"
-	echo '<option value="'$DISTROVERSION'" '$SELECTED'>'$DISTROVERSION'</option>'
-done
-echo '</select></td>'
-echo '<th style="width: 20px;"></th><th style="width: 20px;"></th></tr></thead><tbody>'
-for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
-do
-	ASSET=`basename $ASSETS`
-	source /opt/karoshi/asset_register/locations/$LOCATION/$ASSET
-
-	#Check current boot status
-	if [ -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET ]
+	if [ -d /opt/karoshi/asset_register/locations/"$LOCATION"/ ]
 	then
-		BOOTSTATUS=install
+		if [[ $(ls -1 /opt/karoshi/asset_register/locations/"$LOCATION"/ | wc -l) -gt 0 ]]
+		then
+			echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
+			<thead><tr><th style="width: 60px;"><b>'$"Asset"'</b></th>'
+
+			if [ "$MOBILE" = no ]
+			then
+				echo '<th style="width: 130px;"><b>'$"Mac Address"'</b></th><th style="width: 100px;"><b>'$"TCPIP"'</b></th>'
+			fi
+			echo '<th style="width: 120px;"><b>'$"Boot status"'</b></th><td style="width: '"$WIDTH1px"';">'
+			echo '<select name="_NETBOOT_" style="width: '"$WIDTH1"'px; height: 30px;" onClick="rewriteselect();">'
+			for DISTROVERSIONS in $(ls -1 /opt/karoshi/serversetup/modules/distributionserver/tftpboot/netboot*.tar.gz | sort -r)
+			do
+				DISTROVERSION=$(basename "$DISTROVERSIONS" | sed 's/^netboot-//g' | sed 's/.tar.gz$//g')
+				SELECTED=""
+				[ "$DISTROVERSION" = "$NETBOOT" ] && SELECTED="selected"
+				echo '<option value="'"$DISTROVERSION"'" '"$SELECTED"'>'"$DISTROVERSION"'</option>'
+			done
+			echo '</select></td>'
+			echo '<th style="width: 20px;"></th><th style="width: 20px;"></th></tr></thead><tbody>'
+			for ASSETS in "/opt/karoshi/asset_register/locations/$LOCATION/"*
+			do
+				ASSET=$(basename "$ASSETS")
+				source /opt/karoshi/asset_register/locations/"$LOCATION/$ASSET"
+
+				#Check current boot status
+				if [ -f /opt/karoshi/server_network/dhcp/network_install/install/"$ASSET" ]
+				then
+					BOOTSTATUS=install
+				else
+					if [ -f /opt/karoshi/server_network/dhcp/network_install/memtest/"$ASSET" ]
+					then
+						BOOTSTATUS=memtest
+					else
+						BOOTSTATUS=normal
+					fi
+				fi
+
+				if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 2 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 4 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 6 ]
+				then
+					if [ "$MOBILE" = no ]
+					then
+						if [ "$BOOTSTATUS" = install ]
+						then
+							echo '<tr><td style="color:#11BE26"><b>'"$ASSET"'</b></td><td style="color:#11BE26"><b>'"$MAC1"'</b></td><td style="color:#11BE26"><b>'"$TCPIP1"'</b></td>'
+						else
+							echo '<tr><td>'"$ASSET"'</td><td>'"$MAC1"'</td><td>'"$TCPIP1"'</td>'
+						fi
+					else
+						if [ "$BOOTSTATUS" = install ]
+						then
+							echo '<tr><td style="color:#11BE26"><b>'"$ASSET"'</b></td>'
+						else
+							echo '<tr><td>'"$ASSET"'</td>'
+						fi
+					fi
+
+					if [ "$BOOTSTATUS" = normal ]
+					then
+						echo '<td>'$"Normal Boot"'</td><td style="width: 80px;"></td><td style="width: 20px;">
+						<button class="info infoleft" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_install_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+						<img src="'"$ICON1"'" alt="'$"Network Install"'">
+						<span>'$"Network Install"'</span>
+						</button>
+						</td>'
+					fi
+
+					if [ "$BOOTSTATUS" = memtest ]
+					then
+						echo '<td>'$"Memtest"'</td><td style="width: 20px;">
+						<button class="info infoleft" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_install_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+						<img src="'"$ICON1"'" alt="'$"Network Install"'">
+						<span>'$"Network Install"'</span>
+						</button>
+						</td></td>
+
+					<td><a class="info" href="javascript:void(0)"><input name="_LOCATION_'"$LOCATION"'_ACTION_normal_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP"'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'"$ICON3"'" value=""><span>'$"Normal Boot"'</span></a></td>'
+					fi
+
+					if [ "$BOOTSTATUS" = install ]
+					then
+						#Get netboot
+						CLIENT_DATA=$(sed -n 1,1p /opt/karoshi/server_network/dhcp/network_install/install/"$ASSET")
+						NETBOOT=$(echo "$CLIENT_DATA" | cut -d, -f3)
+						echo '<td style="color:#11BE26"><b>'$"Network Install"'</b></td><td style="width: 80px;">'"$NETBOOT"'</td><td style="width: 20px;">
+						<button class="info infoleft" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_normal_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+						<img src="'"$ICON3"'" alt="'$"Normal Boot"'">
+						<span>'$"Normal Boot"'</span>
+						</button>
+						</td>'
+					fi
+
+					echo '<td>
+					<button class="info infoleft" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_wakeonlan_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+					<img src="'"$ICON4"'" alt="'$"Wake on lan"'">
+					<span>'$"Wake on lan"'</span>
+					</button>
+					</td></tr>'
+				fi
+			done
+			echo '</tbody></table><br>'
+		else
+			echo $"No assets of this type."'<br><br>'
+		fi
 	else
-		if [ -f /opt/karoshi/server_network/dhcp/network_install/memtest/$ASSET ]
-		then
-			BOOTSTATUS=memtest
-		else
-			BOOTSTATUS=normal
-		fi
+		echo $"No assets of this type."'<br><br>'
 	fi
 
-	if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 2 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 4 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 6 ]
-	then
-	if [ $MOBILE = no ]
-	then
-		if [ $BOOTSTATUS = install ]
-		then
-			echo '<tr><td style="color:#11BE26"><b>'$ASSET'</b></td><td style="color:#11BE26"><b>'$MAC1'</b></td><td style="color:#11BE26"><b>'$TCPIP1'</b></td>'
-		else
-			echo '<tr><td>'$ASSET'</td><td>'$MAC1'</td><td>'$TCPIP1'</td>'
-		fi
-	else
-		if [ $BOOTSTATUS = install ]
-		then
-			echo '<tr><td style="color:#11BE26"><b>'$ASSET'</b></td>'
-		else
-			echo '<tr><td>'$ASSET'</td>'
-		fi
-	fi
-
-	if [ $BOOTSTATUS = normal ]
-	then
-		echo '<td>'$"Normal Boot"'</td><td style="width: 80px;"></td><td style="width: 20px;">
-		<button class="info infoleft" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON1'" alt="'$"Network Install"'">
-		<span>'$"Network Install"'</span>
-		</button>
-		</td>'
-	fi
-
-	if [ $BOOTSTATUS = memtest ]
-	then
-		echo '<td>'$"Memtest"'</td><td style="width: 20px;">
-		<button class="info infoleft" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON1'" alt="'$"Network Install"'">
-		<span>'$"Network Install"'</span>
-		</button>
-		</td></td>
-
-	<td><a class="info" href="javascript:void(0)"><input name="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_" type="image" class="images" src="'$ICON3'" value=""><span>'$"Normal Boot"'</span></a></td>'
-	fi
-
-	if [ $BOOTSTATUS = install ]
-	then
-		#Get netboot
-		CLIENT_DATA=`sed -n 1,1p /opt/karoshi/server_network/dhcp/network_install/install/$ASSET`
-		NETBOOT=`echo $CLIENT_DATA | cut -d, -f3`
-		echo '<td style="color:#11BE26"><b>'$"Network Install"'</b></td><td style="width: 80px;">'$NETBOOT'</td><td style="width: 20px;">
-		<button class="info infoleft" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON3'" alt="'$"Normal Boot"'">
-		<span>'$"Normal Boot"'</span>
-		</button>
-		</td>'
-	fi
-
-	echo '<td>
-	<button class="info infoleft" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-	<img src="'$ICON4'" alt="'$"Wake on lan"'">
-	<span>'$"Wake on lan"'</span>
-	</button>
-	</td></tr>'
-	fi
-done
-echo '</tbody></table><br>'
 else
-	echo $"No assets of this type."'<br><br>'
-fi
-else
-	echo $"No assets of this type."'<br><br>'
-fi
+	#Search
 
-else
+	echo '<table class="standard" style="text-align: left;" >
+	<tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
 
-#Search
-
-echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="width: 60px;"><b>'$"Asset"'</b></td>'
-
-if [ $MOBILE = no ]
-then
-	echo '<td style="width: 120px;"><b>'$"Mac Address"'</b></td><td style="width: 120px;"><b>'$TCPIP'</b></td>'
-fi
-echo '<td><b>'$"Boot status"'</b></td></tr>'
-
-for ASSETS in `grep -l -R $SEARCH /opt/karoshi/asset_register/locations/*`
-do
-	ASSET=`basename $ASSETS`
-	source $ASSETS
-	LOCATION=`echo $ASSETS | cut -d"/" -f6`
-
-	if [ $ASSETTYPE = 1 ] || [ $ASSETTYPE = 2 ] || [ $ASSETTYPE = 3 ] || [ $ASSETTYPE = 4 ] || [ $ASSETTYPE = 5 ] || [ $ASSETTYPE = 6 ]
+	if [ "$MOBILE" = no ]
 	then
-	if [ $MOBILE = no ]
-	then
-		echo '<tr><td>'$ASSET'</td><td>'$MAC1'</td><td>'$TCPIP1'</td>'
-	else
-		echo '<tr><td>'$ASSET'</td>'
+		echo '<td style="width: 120px;"><b>'$"Mac Address"'</b></td><td style="width: 120px;"><b>'"$TCPIP"'</b></td>'
 	fi
-	#Check current boot status
-	if [ -f /opt/karoshi/server_network/dhcp/network_install/install/$ASSET ]
-	then
-		BOOTSTATUS=install
-	else
-		if [ -f /opt/karoshi/server_network/dhcp/network_install/memtest/$ASSET ]
+	echo '<td><b>'$"Boot status"'</b></td></tr>'
+
+	for ASSETS in $(grep -l -R "$SEARCH" /opt/karoshi/asset_register/locations/*)
+	do
+		ASSET=$(basename "$ASSETS")
+		source "$ASSETS"
+		LOCATION=$(echo "$ASSETS" | cut -d"/" -f6)
+
+		if [ "$ASSETTYPE" = 1 ] || [ "$ASSETTYPE" = 2 ] || [ "$ASSETTYPE" = 3 ] || [ "$ASSETTYPE" = 4 ] || [ "$ASSETTYPE" = 5 ] || [ "$ASSETTYPE" = 6 ]
 		then
-			BOOTSTATUS=memtest
+		if [ "$MOBILE" = no ]
+		then
+			echo '<tr><td>'"$ASSET"'</td><td>'"$MAC1"'</td><td>'"$TCPIP1"'</td>'
 		else
-			BOOTSTATUS=normal
+			echo '<tr><td>'"$ASSET"'</td>'
 		fi
-	fi
+		#Check current boot status
+		if [ -f /opt/karoshi/server_network/dhcp/network_install/install/"$ASSET" ]
+		then
+			BOOTSTATUS=install
+		else
+			if [ -f /opt/karoshi/server_network/dhcp/network_install/memtest/"$ASSET" ]
+			then
+				BOOTSTATUS=memtest
+			else
+				BOOTSTATUS=normal
+			fi
+		fi
 
-	if [ $BOOTSTATUS = normal ]
-	then
-		echo '<td style="width: 100px;">'$"Normal Boot"'</td><td style="width: 20px;">
-		<button class="info" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON1'" alt="'$"Network Install"'">
-		<span>'$"Network Install"'</span>
-		</button>
-		</td>'
-	fi
+		if [ "$BOOTSTATUS" = normal ]
+		then
+			echo '<td style="width: 100px;">'$"Normal Boot"'</td><td style="width: 20px;">
+			<button class="info" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_install_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+			<img src="'"$ICON1"'" alt="'$"Network Install"'">
+			<span>'$"Network Install"'</span>
+			</button>
+			</td>'
+		fi
 
-	if [ $BOOTSTATUS = memtest ]
-	then
-		echo '<td style="width: 100px;">'$"Memtest"'</td><td style="width: 20px;">
-		<button class="info" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_install_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON1'" alt="'$"Network Install"'">
-		<span>'$"Network Install"'</span>
-		</button>
-		</td><td style="width: 20px;"></td>
-		<td style="width: 20px;">
-		<button class="info" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP'_MACADDRESS_'$"Mac Address"'_">
-		<img src="'$ICON3'" alt="'$"Normal Boot"'">
-		<span>'$"Normal Boot"'</span>
-		</button>
-		</td>'
-	fi
+		if [ "$BOOTSTATUS" = memtest ]
+		then
+			echo '<td style="width: 100px;">'$"Memtest"'</td><td style="width: 20px;">
+			<button class="info" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_install_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+			<img src="'"$ICON1"'" alt="'$"Network Install"'">
+			<span>'$"Network Install"'</span>
+			</button>
+			</td><td style="width: 20px;"></td>
+			<td style="width: 20px;">
+			<button class="info" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_normal_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP"'_MACADDRESS_'$"Mac Address"'_">
+			<img src="'"$ICON3"'" alt="'$"Normal Boot"'">
+			<span>'$"Normal Boot"'</span>
+			</button>
+			</td>'
+		fi
 
-	if [ $BOOTSTATUS = install ]
-	then
-		echo '<td style="width: 100px;">'$"Network Install"'</td><td style="width: 20px;">
-		<button class="info" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_normal_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON3'" alt="'$"Normal Boot"'">
-		<span>'$"Normal Boot"'</span>
-		</button>
-		</td>'
-	fi
+		if [ "$BOOTSTATUS" = install ]
+		then
+			echo '<td style="width: 100px;">'$"Network Install"'</td><td style="width: 20px;">
+			<button class="info" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_normal_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+			<img src="'"$ICON3"'" alt="'$"Normal Boot"'">
+			<span>'$"Normal Boot"'</span>
+			</button>
+			</td>'
+		fi
 
-	echo '<td style="width: 20px;">
-		<button class="info" name="_InstallData_" value="_LOCATION_'$LOCATION'_ACTION_wakeonlan_ASSET_'$ASSET'_TCPIP_'$TCPIP1'_MACADDRESS_'$MAC1'_">
-		<img src="'$ICON3'" alt="'$"Wake on lan"'">
-		<span>'$"Wake on lan"'</span>
-		</button>
-		</td></tr>'
-	fi
-done
-echo '</tbody></table><br>'
-
+		echo '<td style="width: 20px;">
+			<button class="info" name="_InstallData_" value="_LOCATION_'"$LOCATION"'_ACTION_wakeonlan_ASSET_'"$ASSET"'_TCPIP_'"$TCPIP1"'_MACADDRESS_'"$MAC1"'_">
+			<img src="'"$ICON3"'" alt="'$"Wake on lan"'">
+			<span>'$"Wake on lan"'</span>
+			</button>
+			</td></tr>'
+		fi
+	done
+	echo '</tbody></table><br>'
 
 fi
 

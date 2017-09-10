@@ -36,11 +36,11 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -49,11 +49,11 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Client Boot Controls"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -76,12 +76,10 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/view_karoshi_web_admin_log.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -90,7 +88,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -98,20 +96,20 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	TABLECLASS=standard
@@ -128,12 +126,12 @@ else
 	SEARCHW=150
 fi
 
-[ $MOBILE = no ] && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Client Boot Controls"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
@@ -145,50 +143,50 @@ fi
 
 if [ -f /var/lib/samba/netlogon/locations.txt ]
 then
-	LOCATION_COUNT=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
+	LOCATION_COUNT=$(wc -l < /var/lib/samba/netlogon/locations.txt)
 else
 	LOCATION_COUNT=0
 fi
 
-if [ $LOCATION_COUNT != 0 ]
+if [ "$LOCATION_COUNT" != 0 ]
 then
 	if [ -d /opt/karoshi/asset_register/locations/ ]
 	then
-		if [ `ls -1 /opt/karoshi/asset_register/locations/ | wc -l` -gt 0 ]
+		if [[ $(ls -1 /opt/karoshi/asset_register/locations/ | wc -l) -gt 0 ]]
 		then
-			ROWCOUNT=6
-			[ $MOBILE = yes ] && ROWCOUNT=3
+			ROWCOUNT=7
+			[ "$MOBILE" = yes ] && ROWCOUNT=4
 			WIDTH=90
-			[ $MOBILE = yes ] && WIDTH=70
+			[ "$MOBILE" = yes ] && WIDTH=70
 
-			echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody>
-			<tr><td style="width: '$WIDTH'px;">'$"Search"'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '$SEARCHW'px;" size="20" type="text"></td><td>
+			echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+			<tr><td style="width: '"$WIDTH"'px;">'$"Search"'</td><td><input tabindex= "1" name="_LOCATION_SEARCHNOTVALID_SEARCH_" style="width: '"$SEARCHW"'px;" size="20" type="text"></td><td>
 
 			<button class="info" name="_Search_" value="_BUTTON_">
-			<img src="'$ICON6'" alt="'$"Search"'">
+			<img src="'"$ICON6"'" alt="'$"Search"'">
 			<span>'$"Search"'</span>
 			</button>
 			</td></tr></tbody></table></form><br>'
 
 
-			echo ''$"Choose Location"'<br><form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="'$TABLECLASS'" style="text-align: left;" ><tbody><tr>'
+			echo '<form action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><table class="tablesorter" style="text-align: left;" ><tbody><tr>'
 			LOCCOUNTER=1
 
 			for LOCATIONS in /opt/karoshi/asset_register/locations/*
 			do
-				LOCATION=`basename "$LOCATIONS"`
+				LOCATION=$(basename "$LOCATIONS")
+				[ "$LOCCOUNTER" = "$ROWCOUNT" ] && echo '</tr><tr>'
+				let LOCCOUNTER="$LOCCOUNTER"+1
+				[ "$LOCCOUNTER" -gt "$ROWCOUNT" ] && LOCCOUNTER=1
+				echo '<td style="width: '"$WIDTH"'px; vertical-align: top; text-align: center;">
 
-				echo '<td style="width: '$WIDTH'px; vertical-align: top; text-align: center;">
-
-			<button class="info" name="_ShowLocation_" value="_LOCATION_'$LOCATION'_">
-			<img src="'$ICON1'" alt="'$LOCATION'">
-			<span>'$"Client Boot Controls"'<br>'$LOCATION'</span>
+			<button class="info" name="_ShowLocation_" value="_LOCATION_'"$LOCATION"'_">
+			<img src="'"$ICON1"'" alt="'"$LOCATION"'">
+			<span>'$"Client Boot Controls"'<br>'"$LOCATION"'</span>
 			</button>
-			<br>'$LOCATION'</td>'
-				[ $LOCCOUNTER = $ROWCOUNT ] && echo '</tr><tr>'
-				let LOCCOUNTER=$LOCCOUNTER+1
-				[ $LOCCOUNTER -gt $ROWCOUNT ] && LOCCOUNTER=1
-				done
+			<br>'"$LOCATION"'</td>'
+
+			done
 
 			echo "</tr></tbody></table></form><br>"
 		fi
@@ -198,6 +196,6 @@ then
 else
 	echo $"The asset register is not in use."
 fi
-[ $MOBILE = no ] && echo '</div>'
+[ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
