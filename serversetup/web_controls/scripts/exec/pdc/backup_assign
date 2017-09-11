@@ -222,7 +222,7 @@ then
 	echo /var/www/html,html,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /var/www/moodle-data,moodle-data,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	echo /var/lib/mysql,mysql,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
-
+	echo /var/lib/mysql,mysql_backup,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
 	#Add in home area paths from primary group information
 	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
 	do

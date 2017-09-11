@@ -52,6 +52,9 @@ then
 	exit
 fi
 
+#Backup any mysql / mariadb databases to /var/lib/mysql_backup so that they can be backed up to the backup server
+/opt/karoshi/serversetup/all/"useful scripts"/backup_servers/mysql_backup
+
 #backup folder
 function backup_folder {
 echo "$(date) $BACKUPNAME - "$"started" >> "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log"
