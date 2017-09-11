@@ -375,7 +375,7 @@ then
 	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/"$SERVERNAME" ]
 	then
 		echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;"><b>'$"Remove Server"'</b></td><td style="vertical-align: top; width: 600px;"></td><td style="vertical-align: top;">
-		<button class="button" name="___RemoveServer___" value="___MODULE___REMOVESERVER__">
+		<button class="button" name="___RemoveServer___" value="___MODULE___REMOVESERVER___">
 		'$"Remove"'
 		</button>
 		</td></tr>'
