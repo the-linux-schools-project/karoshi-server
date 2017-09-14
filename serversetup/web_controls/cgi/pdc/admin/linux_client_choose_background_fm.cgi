@@ -189,7 +189,7 @@ do
 		<span>'"$BACKGROUND"'</span>
 		</button>
 		</td><td style="width: '"$WIDTH1"'px; vertical-align: top;">
-		<button class="info" name="___DeleteBackground___" value="___delete___BACKGROUND___'"$BACKGROUND"'___">
+		<button class="info" name="___DeleteBackground___" value="___ACTION___delete___BACKGROUND___'"$BACKGROUND"'___">
 		<img src="/images/submenus/file/delete.png" alt="'$"Delete"'<br>'"$BACKGROUND"'">
 		<span>'$"Delete"'<br>'"$BACKGROUND"'</span>
 		</button>
