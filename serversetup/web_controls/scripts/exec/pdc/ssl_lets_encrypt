@@ -225,6 +225,9 @@ then
 		sed -i "/^$SSLCERTPARAM/c\\$SSLCERTPARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 
+		#Make sure that the headers module is enabled so that HSTS works correctly
+		a2enmod headers
+
 		#Restart the web server
 		echo "<ul><li>$SERVERNAME - "$"Restarting"" $WEBSERVER</li></ul>"
 
@@ -357,6 +360,9 @@ then
 		#Modify default-ssl - assume we are using the karoshi default-ssl
 		sed -i "/^$SSLCERTPARAM/c\\$SSLCERTPARAM /etc/letsencrypt/live/$PRIDOMAIN/fullchain.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
 		sed -i "/^$SSLCERTKEYPARAM/c\\$SSLCERTKEYPARAM /etc/letsencrypt/live/$PRIDOMAIN/privkey.pem" "$CONFIG_ENABLED_PATH/$CONFIG_FILE"
+
+		#Make sure that the headers module is enabled so that HSTS works correctly
+		a2enmod headers
 
 		#Restart the web server
 		echo "<ul><li>'"$SERVERNAME"' - '$"Restarting"' $WEBSERVER</li></ul>"
