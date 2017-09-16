@@ -54,9 +54,7 @@ $(document).ready(function()
     { 
         $("#myTable").tablesorter({
 	headers: {
-	1: { sorter: "ipAddress" },
-	2: { sorter: false},
-	3: { sorter: false}
+	2: { sorter: false}
     		}
 		});
     }
@@ -136,22 +134,34 @@ exit
 if [ "$MOBILE" = no ]
 then
 	WIDTH=100
+	WIDTH2=250
+	WIDTH3=140
 	ICON1=/images/submenus/system/wireless.png
 	ICON2=/images/submenus/user/group_yes.png
 	ICON3=/images/submenus/user/group_no.png
+	ICON4=/images/submenus/system/reload.png
 	DIV_ID=actionbox3
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 else
 	WIDTH=90
+	WIDTH2=250
+	WIDTH3=140
 	ICON1=/images/submenus/system/wirelessm.png
 	ICON2=/images/submenus/user/group_yes_m.png
 	ICON3=/images/submenus/user/group_no_m.png
+	ICON4=/images/submenus/system/reloadm.png
 fi
 
 #Check data
 [ -z "$ACTION" ] && ACTION=view
+
+if [ "$ACTION" = allow ] || [ "$ACTION" = allowall ] || [ "$ACTION" = deny ] || [ "$ACTION" = denyall ] || [ "$ACTION" = activatechanges ] && [ ! -z "$GROUP" ]
+then
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_controls	
+fi
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -166,50 +176,81 @@ else
 	echo '<div class="sectiontitle">'$"Radius Access Controls"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Controls"><img class="images" alt="" src="/images/help/info.png"><span>'$"Radius Access Controls"'</span></a></div>'
 fi
 
-echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
-
+echo '
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<button class="info infonavbutton" name="____RadiusAccessPoints____" value="____">
-			<img src="'"$ICON1"'" alt="'$"Access Points"'">
-			<span>'$"View Radius Access Points."'</span><br>
-			'$"Access Points"'
-		</button>
+		<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
+			<button class="info infonavbutton" name="____RadiusAccessPoints____" value="____">
+				<img src="'"$ICON1"'" alt="'$"Access Points"'">
+				<span>'$"View Radius Access Points."'</span><br>
+				'$"Access Points"'
+			</button>
+			</form>
 	</td>
 
-</tr></tbody></table>
-</form>'
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/radius_access_controls.cgi" method="post">
+			<button class="info infonavbutton" name="____RadiusAccessPoints____" value="____ACTION____allowall____GROUP____all____">
+				<img src="'"$ICON2"'" alt="'$"Allow all"'">
+				<span>'$"Allow all groups."'</span><br>
+				'$"Allow all"'
+			</button>
+		</form>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<form action="/cgi-bin/admin/radius_access_controls.cgi" method="post">
+			<button class="info infonavbutton" name="____RadiusAccessPoints____" value="____ACTION____denyall____GROUP____all____">
+				<img src="'"$ICON3"'" alt="'$"Allow all"'">
+				<span>'$"Deny all groups."'</span><br>
+				'$"Deny all"'
+			</button>
+		</form>
+	</td>'
+
+	if [ -f /opt/karoshi/server_network/radius/activate_changes ] 
+	then
+		echo '
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="/cgi-bin/admin/radius_access_controls.cgi" method="post">
+				<button class="info infonavbutton" name="____ActivateChanges____" value="____ACTION____activatechanges____GROUP____all____">
+					<img src="'"$ICON4"'" alt="'$"Activate changes"'">
+					<span>'$"Activate changes."'</span><br>
+					'$"Activate changes"'
+				</button>
+			</form>
+		</td>
+		'
+	fi
+
+echo '</tr></tbody></table>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
-
-if [ "$ACTION" = allow ] || [ "$ACTION" = deny ] && [ ! -z "$GROUP" ]
-then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_controls	
-fi
 
 echo '<form action="/cgi-bin/admin/radius_access_controls.cgi" method="post">
 '
 #Show all primary groups
-echo '<table class="tablesorter"><thead><tr><th style="width:200px"><b>'$"Group"'</b></th><th style="width:80px"><b>'$"Access"'</b></th><th></th></tr></thead><tbody>'
+echo '<table id="myTable" class="tablesorter"><thead><tr><th style="width:'"$WIDTH2"'px"><b>'$"Group"'</b></th><th style="width:'"$WIDTH3"'px"><b>'$"Access"'</b></th><th></th></tr></thead><tbody>'
 
 for PRI_GROUP in $(ls -1 /opt/karoshi/server_network/group_information)
 do
-	ACTION=deny
+	ACTION="deny"
+	COLOUR="#6EDE60"
 	STATUSICON="$ICON2"
 	STATUSMSG=$"Allowed"
 	LONGMSG=$"Deny access for this group of users."
 	
 	if [ -f /opt/karoshi/server_network/radius/denied_groups/"$PRI_GROUP" ]
 	then
-		ACTION=allow
+		ACTION="allow"
+		COLOUR="#FF0004"
 		STATUSICON="$ICON3"
 		STATUSMSG=$"Denied"
 		LONGMSG=$"Allow access for this group of users."
 	fi
 	
-	echo '<tr><td>'"$PRI_GROUP"'</td><td>'"$STATUSMSG"'</td><td>
+	echo '<tr><td>'"$PRI_GROUP"'</td><td style="color:'"$COLOUR"'">'"$STATUSMSG"'</td><td>
 
 		<button class="info infonavbutton" name="____DoAction____" value="____ACTION____'"$ACTION"'____GROUP____'"$PRI_GROUP"'____">
 			<img src="'"$STATUSICON"'" alt="'"$STATUSMSG"'">

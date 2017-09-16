@@ -103,9 +103,102 @@ then
 	exit 101
 fi
 
-echo "in exec and action is $ACTION group is $GROUP<br>"
 
+function activate_changes {
+#Create /etc/freeradius/denied_groups
+[ -f /etc/freeradius/denied_groups ] && rm -f /etc/freeradius/denied_groups
+touch /etc/freeradius/denied_groups
+for GROUP in $(ls -1 /opt/karoshi/server_network/radius/denied_groups/)
+do
+	echo -e 'DEFAULT Group == "'"$GROUP"'", Auth-Type := Reject\n\tReply-Message = "This group is not allowed to access radius"\n\n' >> /etc/freeradius/denied_groups
+done
+
+#Activate changes on all radius servers
+for RADIUS_SERVER in $(ls -1 /opt/karoshi/server_network/radius_servers/ )
+do
+	if [[ "$RADIUS_SERVER" = $(hostname-fqdn) ]]
+	then
+		#Make sure that denied_groups is included in /etc/freeradius/users
+		if [[ $(grep -c "INCLUDE denied_groups" /etc/freeradius/users) = 0 ]]
+		then
+			sed -i "1i \$INCLUDE denied_groups" /etc/freeradius/users
+		fi
+
+		#Reload radius
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop 1>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_start 1>/dev/null
+	else
+		#Copy /etc/freeradius/denied_groups
+		scp /etc/freeradius/denied_groups root@"$RADIUS_SERVER":/etc/freeradius/
+		ssh -x -o PasswordAuthentication=no "$RADIUS_SERVER" '
+		#Make sure that denied_groups is included in /etc/freeradius/users
+		if [[ $(grep -c "INCLUDE denied_groups" /etc/freeradius/users) = 0 ]]
+		then
+			sed -i "1i \$INCLUDE denied_groups" /etc/freeradius/users
+		fi
+
+		#Reload radius
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop 1>/dev/null
+		sleep 1
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_start 1>/dev/null
+		'
+	fi
+done
+#Remove active changes flag file
+[ -f /opt/karoshi/server_network/radius/activate_changes ] && rm -f /opt/karoshi/server_network/radius/activate_changes
+}
+
+function allow_group {
+echo "$(date): radius_access_controls allowing - $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+#Delete the flag file for the group if it exists
+[ -f /opt/karoshi/server_network/radius/denied_groups/"$GROUP" ] && rm -f /opt/karoshi/server_network/radius/denied_groups/"$GROUP"
+touch /opt/karoshi/server_network/radius/activate_changes
+}
+
+function deny_group {
+#Check that the group exists
+getent group "$GROUP" 1>/dev/null
+if [ "$?" = 0 ]
+then
+	echo "$(date): radius_access_controls - denying $GROUP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	[ ! -d /opt/karoshi/server_network/radius/denied_groups ] && mkdir -p /opt/karoshi/server_network/radius/denied_groups
+	#Create a flag file for the group
+	touch /opt/karoshi/server_network/radius/denied_groups/"$GROUP"
+else
+	echo "$(date): radius_access_controls - $GROUP does not exist by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+fi
+touch /opt/karoshi/server_network/radius/activate_changes
+}
+
+if [ "$ACTION" = allow ]
+then
+	allow_group
+fi
+
+if [ "$ACTION" = deny ]
+then
+	deny_group
+fi
+
+if [ "$ACTION" = allowall ] || [ "$ACTION" = denyall ]
+then
+	for GROUP in $(ls -1 /opt/karoshi/server_network/group_information)
+	do
+		if [ "$ACTION" = allowall ]
+		then
+			allow_group
+		else
+			deny_group
+		fi
+	done
+fi
+
+if [ "$ACTION" = activatechanges ]
+then
+	activate_changes
+fi
 exit
-echo "$(date): radius_access_controls by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-
 

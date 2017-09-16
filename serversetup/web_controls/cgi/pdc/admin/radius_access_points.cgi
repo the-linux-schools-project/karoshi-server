@@ -187,22 +187,24 @@ fi
 
 [ -z "$ACTION" ] && ACTION=view
 
+ICON1=/images/submenus/user/groups.png
+
 if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
 then
 	ACTION2=view
-	BUTTONTXT=$"View Access Points"
+	BUTTONTXT=$"View access points."
 	TITLETXT=$"Add Access Point"
 	BUTTONTXT2=$"View"
-	ICON1=/images/submenus/system/wireless.png
+	ICON2=/images/submenus/system/wireless.png
 fi
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
 then
 	ACTION2=add
-	BUTTONTXT=$"Add Access Point"
+	BUTTONTXT=$"Add an access point."
 	TITLETXT=$"Radius Access Points"
 	BUTTONTXT2=$"Add"
-	ICON1=/images/submenus/system/add.png
+	ICON2=/images/submenus/system/add.png
 fi
 
 #Show back button for mobiles
@@ -224,8 +226,16 @@ echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<button formaction="radius_access_controls.cgi" class="info infonavbutton" name="____ViewAccessControls____" value="____">
+			<img src="'$ICON1'" alt="'$"Radius Access Controls"'">
+			<span>'$"Radius user access controls."'</span><br>
+			'$"Access Controls"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<button class="info infonavbutton" name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
-			<img src="'$ICON1'" alt="'"$BUTTONTXT"'">
+			<img src="'$ICON2'" alt="'"$BUTTONTXT"'">
 			<span>'"$BUTTONTXT"'</span><br>
 			'"$BUTTONTXT2"'
 		</button>

@@ -115,10 +115,10 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:radius:radius:$SERVERNAME:fr
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Check that winbindd_priv group exists
-	getent group winbindd_priv freerad 1>/dev/null
+	getent group winbindd_priv 1>/dev/null
 	if [ "$?" != 0 ]
 	then
-		groupadd winbindd_priv freerad
+		groupadd winbindd_priv
 	fi
 
 	#Make sure permisisons are correct on winbind
@@ -172,8 +172,13 @@ else
 
 	#Copy in existing acccess point information
 	if [ "$COPYCLIENTS" = yes ]
-	then	
+	then
 		scp /etc/freeradius/clients.conf root@"$SERVERNAME":/etc/freeradius/ 1> /dev/null
+		if [[ $(grep -c INCLUDE denied_groups /etc/freeradius/users) -gt 0 ]]
+		then
+			scp /etc/freeradius/users root@"$SERVERNAME":/etc/freeradius/ 1> /dev/null
+			scp /etc/freeradius/denied_groups root@"$SERVERNAME":/etc/freeradius/ 1> /dev/null
+		fi
 	fi
 
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
@@ -188,10 +193,10 @@ else
 	chown freerad /etc/ssl/radius/radius.req
 
 	#Check that winbindd_priv group exists
-	getent group winbindd_priv freerad 1>/dev/null
+	getent group winbindd_priv 1>/dev/null
 	if [ $? != 0 ]
 	then
-		groupadd winbindd_priv freerad
+		groupadd winbindd_priv
 	fi
 
 	#Make sure permisisons are correct on winbind
