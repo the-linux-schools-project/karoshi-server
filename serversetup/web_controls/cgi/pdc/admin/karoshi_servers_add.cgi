@@ -236,11 +236,11 @@ fi
 function get_data {
 #Send data back to form and ask for tcpip number
 echo '
-<body onload="submitForm()"><div id="pagecontainer"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post" name="form">
-<input name="_SERVERNAME_" value="'"$SERVERNAME"'" type="hidden">
-<input name="_PASSWORD1_" value="'"$PASSWORD1"'" type="hidden">
-<input name="_PASSWORD2_" value="'"$PASSWORD2"'" type="hidden">
-<input name="_AUTHENTICATION_" value="'"$AUTHENTICATION"'" type="hidden">
+<body onload="submitForm()"><form action="/cgi-bin/admin/karoshi_servers_add_fm.cgi" method="post" name="form">
+<input name="____SERVERNAME____" value="'"$SERVERNAME"'" type="hidden">
+<input name="____PASSWORD1____" value="'"$PASSWORD1"'" type="hidden">
+<input name="____PASSWORD2____" value="'"$PASSWORD2"'" type="hidden">
+<input name="____AUTHENTICATION____" value="'"$AUTHENTICATION"'" type="hidden">
 <input name="_ZONE_" value="'"$ZONE"'" type="hidden">
 </form>
 <SCRIPT LANGUAGE="JavaScript">
@@ -261,17 +261,25 @@ then
 	[ "$?" != 0 ] && get_data
 fi
 
-if [ -z "$TCPIPNUMBER" ]
+if [ ! -z "$TCPIPNUMBER" ]
 then
 	########################
 	#Check that the tcpip number has been entered correctly
 	########################
 	#Check dots
-	[[ $(echo "$TCPIPNUMBER" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]] && get_data
+	if [[ $(echo "$TCPIPNUMBER" | sed 's/\./\n /g'  | sed /^$/d | wc -l) != 4 ]]
+	then
+		MESSAGE=$"You have entered in a valid TCPIP number."
+		show_status
+	fi
 
 	#Check that no number is greater than 255
 	HIGHESTNUMBER=$(echo "$TCPIPNUMBER" | sed 's/\./\n /g'  | sed /^$/d | sort -g -r | sed -n 1,1p)
-	[ "$HIGHESTNUMBER" -gt 255 ] && get_data
+	if [ "$HIGHESTNUMBER" -gt 255 ]
+	then
+		MESSAGE=$"You have entered in a valid TCPIP number."
+		show_status
+	fi
 fi
 
 #Check to see that this is not the tcpip number of the main server.
