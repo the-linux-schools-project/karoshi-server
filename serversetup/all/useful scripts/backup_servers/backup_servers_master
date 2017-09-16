@@ -27,6 +27,9 @@ then
 	#Copy in backup script
 	echo Copying backup backup script to "$KAROSHI_SERVER"
 	scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/backup_servers" root@"$KAROSHI_SERVER:/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
+
+	echo Copying backup backup script to "$KAROSHI_SERVER"
+	scp "/opt/karoshi/serversetup/all/useful scripts/backup_servers/mysql_backup" root@"$KAROSHI_SERVER:/opt/karoshi/serversetup/all/useful\ scripts/backup_servers/"
 fi
 }
 

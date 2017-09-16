@@ -13,7 +13,7 @@ BACKUP_PATH=/var/lib/mysql_backup
 if [ "$?" != 0 ]
 then
 	#mysql / mariadb is not running
-	echo "$(date): mysql_backup - mysql / mariadb is not running - the databases will not be backed up." | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log"
+	echo "$(date): mysql_backup - mysql / mariadb is not running - the databases will not be backed up." | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary"
 	exit
 fi
 
@@ -22,14 +22,14 @@ mysqladmin --password="$MYSQLPASS" version 1>/dev/null
 if [ "$?" != 0 ]
 then
 	#Cannot connect to mysql / mariadb
-	echo "$(date): mysql_backup - cannot connect to mysql / mariadb - the databases will not be backed up."  | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log"
+	echo "$(date): mysql_backup - cannot connect to mysql / mariadb - the databases will not be backed up."  | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary"
 	exit
 fi
 
 #Create a backup folder for the mysql databases
 if [ ! -d "$BACKUP_PATH" ]
 then
-	echo "$(date): mysql_backup - creating $BACKUP_PATH as a backup folder."  | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log"
+	echo "$(date): mysql_backup - creating $BACKUP_PATH as a backup folder."  | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary"
 	mkdir -p "$BACKUP_PATH"
 	chmod 0700 "$BACKUP_PATH"
 fi
@@ -37,7 +37,7 @@ fi
 databases=$(mysql -u "$USER" -p"$PASSWORD" -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
 for db in $databases; do
     if [[ "$db" != "information_schema" ]] && [[ "$db" != "performance_schema" ]] && [[ "$db" != "mysql" ]] && [[ "$db" != _* ]] ; then
-	echo "$(date): mysql_backup - dumping $db to $BACKUP_PATH" | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log"
+	echo "$(date): mysql_backup - dumping $db to $BACKUP_PATH" | tee -a "/opt/karoshi/logs/backup_servers/$LOG_DATE/backup_log_summary"
         mysqldump -u "$USER" -p"$PASSWORD" --databases "$db" > "$BACKUP_PATH/$db.sql"
     fi
 done
