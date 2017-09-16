@@ -250,7 +250,7 @@ do
 		LONGMSG=$"Allow access for this group of users."
 	fi
 	
-	echo '<tr><td>'"$PRI_GROUP"'</td><td style="color:'"$COLOUR"'">'"$STATUSMSG"'</td><td>
+	echo '<tr><td>'"$PRI_GROUP"'</td><td style="color:'"$COLOUR"'"><b>'"$STATUSMSG"'</b></td><td>
 
 		<button class="info infonavbutton" name="____DoAction____" value="____ACTION____'"$ACTION"'____GROUP____'"$PRI_GROUP"'____">
 			<img src="'"$STATUSICON"'" alt="'"$STATUSMSG"'">

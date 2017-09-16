@@ -415,6 +415,9 @@ scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem "$TCPIPNUMBER":/
 scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver "$TCPIPNUMBER":/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $TCPIPNUMBER:/opt/karoshi/serversetup/all/samba4/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
+#Copy in show_server_info
+scp /opt/karoshi/serversetup/all/"useful scripts"/show_server_info "$TCPIPNUMBER":/usr/sbin/
+
 echo "$(date): karoshi_servers_add - configuring initd scripts and uptime on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 source /opt/karoshi/serversetup/variables/distro
@@ -738,12 +741,15 @@ then
 	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq all
 
 	#Configure dhcp to use the extra domain controller
-	SECONDARY_DHCP_SERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p)
-	if [ "$SERVER.$REALM" = "$SECONDARY_DHCP_SERVER" ]
+	if [ -f /opt/karoshi/server_network/servers/$(hostname-fqdn)dhcpserver ]
 	then
-		MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
-		source /opt/karoshi/server_network/dhcp/dhcp_settings
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARY_DHCP_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
+		SECONDARY_DHCP_SERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p)
+		if [ "$SERVER.$REALM" = "$SECONDARY_DHCP_SERVER" ]
+		then
+			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
+			source /opt/karoshi/server_network/dhcp/dhcp_settings
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARY_DHCP_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
+		fi
 	fi
 else
 	#Configure dnsmasq for the server
