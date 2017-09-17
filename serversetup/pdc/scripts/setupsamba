@@ -29,7 +29,7 @@
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/serversetup/variables/years
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/software
 
 TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
@@ -37,15 +37,16 @@ locale 1>/dev/null
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupsamba'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupsamba##############" >> /opt/karoshi/serversetup/install_log
 
-THISYEAR=`date +%Y`
+THISYEAR=$(date +%Y)
 GUESTACCOUNTS=30
 TECHACCOUNTS=4
 EXAMACCOUNTS=40
 TRAININGACCOUNTS=30
-DAY=`date +%d`
-MONTH=`date +%m`
+DAY=$(date +%d)
+MONTH=$(date +%m)
+WP_VERSIONS="V2 V3 V4 V5 V6"
 LINUXCLIENTVERSION=karoshi5.0
 OLDERCLIENTVERSIONS="karoshi4.0 karoshi4.2 karoshi4.3 karoshi4.4 karoshi4.4"
 
@@ -53,16 +54,16 @@ OLDERCLIENTVERSIONS="karoshi4.0 karoshi4.2 karoshi4.3 karoshi4.4 karoshi4.4"
 INSTALL_TYPE=education
 if [ -f /opt/karoshi/server_network/install_type ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 fi
 #######################
 #Ensure that samba is running on boot
 #######################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/samba
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/samba
 #############################
 #Copy in security settings
 #############################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/serverlevelsecurity
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/scripts/serverlevelsecurity
 
 function show_info {
 yad --title ''$"Setup"' '$"Samba"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 800 --height 230 --tail --no-buttons --text-info 2>/dev/null
@@ -1560,61 +1561,45 @@ then
 	tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V5.tar.gz -C /home/applications/profiles/
 fi
 
-#We dont have a windows 10 aniversary mandatory profile so make an empty folder for it
-[ ! -d /home/applications/profiles/defaultprofile.V6 ] && mkdir -p /home/applications/profiles/defaultprofile.V6
+if [ -f /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V6.tar.gz ]
+then
+	echo $"Extracting Windows 10 Aniversary Profile"
+	tar -zxf /opt/karoshi/serversetup/pdc/profiles/defaultprofile.V6.tar.gz -C /home/applications/profiles/
+fi
 
 #Copy in windows icons
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile/Desktop/
 cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile/Desktop/
 
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V2/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V2/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V2/Desktop/
-
-#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V3/Desktop/
-#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V3/Desktop/
-#cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V3/Desktop/
-
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile.V4/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile.V4/Desktop/
-cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile.V4/Desktop/
-
 #Point default profile icons to correct realm
-[ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
-[ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
-[ -f /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
-
-[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Help Desk.url"
-[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Change My Password.url"
-[ -f /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V2/Desktop/"Karoshi Web Management.url"
-
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Help Desk.url"
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Change My Password.url"
-[ -f /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V3/Desktop/"Karoshi Web Management.url"
-
-[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Help Desk.url"
-[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Change My Password.url"
-[ -f /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'$REALM'@g' /home/applications/profiles/defaultprofile.V4/Desktop/"Karoshi Web Management.url"
-
-#Create tech profile
-
-cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
-cp -f -R /home/applications/profiles/defaultprofile.V2 /home/applications/profiles/tech.V2
-cp -f -R /home/applications/profiles/defaultprofile.V3 /home/applications/profiles/tech.V3
-cp -f -R /home/applications/profiles/defaultprofile.V4 /home/applications/profiles/tech.V4
-if [ -d  /home/applications/profiles/defaultprofile.V5 ]
-then
-	cp -f -R /home/applications/profiles/defaultprofile.V5 /home/applications/profiles/tech.V5
-fi
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile/Desktop/"Help Desk.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile/Desktop/"Change My Password.url"
+[ -f /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile/Desktop/"Karoshi Web Management.url"
 
 [ ! -d /home/applications/profiles/default_roaming_profile ] && mkdir /home/applications/profiles/default_roaming_profile
-for PROFILE_VERSION in V2 V3 V4 V5 V6
+
+#Create tech profile
+cp -f -R /home/applications/profiles/defaultprofile /home/applications/profiles/tech
+
+for WP_VERSION in $WP_VERSIONS
 do
-	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
-	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
-	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
-	[ ! -d /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION ] && mkdir /home/applications/profiles/default_roaming_profile.$PROFILE_VERSION
+	if [ -d /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/ ]
+	then
+		cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Change My Password.url" /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/
+		cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Help Desk.url" /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/
+		cp -f /opt/karoshi/serversetup/pdc/profiles/icons/"Karoshi Web Management.url" /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/
+
+		[ -f /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Help Desk.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Help Desk.url"
+		[ -f /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Change My Password.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Change My Password.url"
+		[ -f /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Karoshi Web Management.url" ] && sed -i 's@CHANGETHISREALM@'"$REALM"'@g' /home/applications/profiles/defaultprofile."$WP_VERSION"/Desktop/"Karoshi Web Management.url"
+	fi
+
+	[ ! -d /home/applications/profiles/default_roaming_profile."$WP_VERSION" ] && mkdir /home/applications/profiles/default_roaming_profile."$WP_VERSION"
+
+	#Create tech profile
+	cp -f -R /home/applications/profiles/defaultprofile."$WP_VERSION" /home/applications/profiles/tech."$WP_VERSION"
+
 done
 
 echo $"Setting profile permissions"

@@ -427,6 +427,9 @@ then
 	done
 fi
 
+#Modify logonform.kix to configure Thunderbird
+sed -i 's/;ConfigureThunderbird()/ConfigureThunderbird()/g' /var/lib/samba/netlogon/logonform.kix
+
 #Add groups to restricted_accounts and deny_sending
 /opt/karoshi/serversetup/modules/email/scripts/group_email_access
 

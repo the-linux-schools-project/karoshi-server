@@ -49,25 +49,21 @@ echo '
 <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </HEAD>
-<body onLoad="start()"<div id="pagecontainer">'
+<body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/csv_set_passwords_upload.cgi" METHOD="POST"><div id="actionbox">
-<div class="sectiontitle">'$"Set Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to upload a CSV file to change user passwords."'</span></a></div>
-<br>    
-<table class="standard" BORDER=0>
+echo '<div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Set Passwords"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to upload a CSV file to change user passwords."'</span></a></div></div><div id="infobox">
+<br>
+<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/csv_set_passwords_upload.cgi" METHOD="POST">  
+<table class="standard">
 <tr><td style="width: 180px;">'$"CSV file"'
 </td><td>
-<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" target="_blank" href=http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV format"'<br><br>'$"username"', '$"password"'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
+<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="35"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Set_User_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"CSV format"'<br><br>'$"username"', '$"password"'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~</span></a>
-</td></tr></table>
-  </div>
-<div id="submitbox">
-  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</td></tr></table><br><br>
+ <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </form>
-</div></body>
-</html>
-'
+</div></div></div></body></html>'
 exit

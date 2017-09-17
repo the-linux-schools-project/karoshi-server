@@ -23,87 +23,88 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
 then
-	echo `date`: modify_groups - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $modify_groups_cgi'check' ]
+if [ "$MD5SUM"'check' != "$modify_groups_cgi"'check' ]
 then
-	echo `date`: modify_groups - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: modify_groups - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+')
 if [ -z "$DATA" ]
 then
-	echo `date`: modify_groups - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-OPTIONCHOICE=`echo "$DATA" | cut -s -d: -f4`
-PRIMARYGROUP=`echo "$DATA" | cut -s -d: -f5`
-NEWPASSWORD=`echo "$DATA" | cut -s -d: -f6`
-EXCEPTIONLIST=`echo "$DATA" | cut -s -d: -f7`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+OPTIONCHOICE=$(echo "$DATA" | cut -s -d: -f4)
+PRIMARYGROUP=$(echo "$DATA" | cut -s -d: -f5)
+NEWPASSWORD=$(echo "$DATA" | cut -s -d: -f6)
+EXCEPTIONLIST=$(echo "$DATA" | cut -s -d: -f7)
+NEWGROUP=$(echo "$DATA" | cut -s -d: -f8)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: modify_groups - Not called by modify_groups.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Not called by modify_groups.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: modify_groups - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: modify_groups - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$OPTIONCHOICE" ]
 then
-	echo `date`: modify_groups - Blank optionchoice by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Blank optionchoice by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$PRIMARYGROUP" ]
 then
-	echo `date`: modify_groups - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - Blank group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $OPTIONCHOICE = changepasswords ]
-	then
+if [ "$OPTIONCHOICE" = changepasswords ]
+then
 	if [ -z "$NEWPASSWORD" ]
 	then
-		echo `date`: modify_groups - Blank password by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): modify_groups - Blank password by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: modify_groups - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): modify_groups - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -111,17 +112,16 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Get a list of users for the chosen group
 #########################
-[ $PRIMARYGROUP = tech ] && PRIMARYGROUP=techstaff
-[ $PRIMARYGROUP = itadmin ] && PRIMARYGROUP=itadminstaff
+[ "$PRIMARYGROUP" = tech ] && PRIMARYGROUP=techstaff
+[ "$PRIMARYGROUP" = itadmin ] && PRIMARYGROUP=itadminstaff
 
-USERLIST=( `getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1` )
+USERLIST=( $(getent passwd | grep /$PRIMARYGROUP/ | cut -d: -f1) )
 
 
 #Scroll the page
@@ -151,98 +151,99 @@ echo "    <script type = \"text/javascript\" >
 #########################
 #enable accounts
 #########################
-if [ $OPTIONCHOICE = enable ] || [ $OPTIONCHOICE = disable ]
+if [ "$OPTIONCHOICE" = enable ] || [ "$OPTIONCHOICE" = disable ]
 then
-	if [ $OPTIONCHOICE = enable ]
+	if [ "$OPTIONCHOICE" = enable ]
 	then
 		ACTION=enable
 		ACTIONLANG=Enabling
 	fi
-	if [ $OPTIONCHOICE = disable ]
+	if [ "$OPTIONCHOICE" = disable ]
 	then
 		ACTION=disable
 		ACTIONLANG=Disabling
 	fi
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo $ACTIONLANG $USERNAME '<br>'
+			echo "<ul><li>$ACTIONLANG $USERNAME</li></ul>"
 			#Enable account
-			samba-tool user $ACTION $USERNAME
+			samba-tool user "$ACTION" "$USERNAME"
 			echo '<br>'
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 fi
 
 #########################
 #Reset passwords
 #########################
-if [ $OPTIONCHOICE = resetpasswords ]
+if [ "$OPTIONCHOICE" = resetpasswords ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			PASSWORD1=$RANDOM
-			echo Reseting password "for" $USERNAME to $PASSWORD1'<br>'
+			PASSWORD1="$RANDOM"
+			echo "<ul><li>Reseting password for $USERNAME to $PASSWORD1</li></ul>"
 			#reset password
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | /opt/karoshi/web_controls/exec/change_password
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 fi
 
 #########################
 #Delete users
 #########################
-if [ $OPTIONCHOICE = deleteaccounts2 ]
+if [ "$OPTIONCHOICE" = deleteaccounts2 ]
 then
-ARCHIVE=yes
-OPTIONCHOICE=deleteaccounts
+	ARCHIVE=yes
+	OPTIONCHOICE=deleteaccounts
 fi
 
-if [ $OPTIONCHOICE = deleteaccounts ]
+if [ "$OPTIONCHOICE" = deleteaccounts ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1`
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo Deleting $USERNAME '<br>'
+			echo "<ul><li<Deleting $USERNAME</li></ul>"
 			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 fi
 
 #########################
 #Change password on next logon
 #########################
-if [ $OPTIONCHOICE = changepassnextlogon ]
+if [ "$OPTIONCHOICE" = changepassnextlogon ]
 then
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo ''$"Change password on next logon for"' '$USERNAME'<br>'
-			echo `date`: modify_groups - forcing "$USERNAME" to change password on first logon by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo '<ul><li>'$"Change password on next logon for"' '"$USERNAME"'</li></ul>'
+			echo "$(date): modify_groups - forcing $USERNAME to change password on first logon by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			net sam set pwdmustchangenow "$USERNAME" yes
 
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 fi
+
 
 #########################
 #Set passwords to never expire
@@ -253,13 +254,13 @@ then
 	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo ''$"Password never expires for"' '$USERNAME'<br>'
-			echo `date`: modify_groups - "setting password to never expire for $USERNAME  by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo '<ul><li>'$"Password never expires for"' '"$USERNAME"'</li></ul>'
+			echo "$(date): modify_groups - setting password to never expire for $USERNAME  by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 			echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
@@ -269,7 +270,7 @@ useraccountcontrol: 66048
 
 
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 fi
 
@@ -279,13 +280,13 @@ then
 	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	COUNTER=0
-	while [ $COUNTER -lt ${#USERLIST[@]} ]
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
-		USERNAME=`echo ${USERLIST[$COUNTER]}`
-		if [ `echo $EXCEPTIONLIST | grep -c -w $USERNAME` = 0 ]
+		USERNAME="${USERLIST[$COUNTER]}"
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo ''$"Password expires for"' '$USERNAME'<br>'
-			echo `date`: modify_groups - "setting password expire for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo ''$"Password expires for"' '"$USERNAME"'<br>'
+			echo "$(date): modify_groups - setting password expire for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 			echo -e "dn: CN=$USERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
 changetype: modify
@@ -295,7 +296,27 @@ useraccountcontrol: 512
 
 
 		fi
-		let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
+	done
+fi
+
+if [ "$OPTIONCHOICE" = changeprigroup ]
+then
+	source /opt/karoshi/server_network/domain_information/domain_name
+	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
+	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+	COUNTER=0
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_primary_group.cgi | cut -d' ' -f1)
+	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
+	do
+		USERNAME="${USERLIST[$COUNTER]}"
+
+		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
+		then
+			echo "<ul><li>moving $USERNAME from $PRIMARYGROUP to $NEWGROUP</ul></li>"
+			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWGROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group				
+		fi
+		let COUNTER="$COUNTER"+1
 	done
 fi
 

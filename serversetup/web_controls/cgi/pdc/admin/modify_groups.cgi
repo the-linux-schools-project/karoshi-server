@@ -34,15 +34,15 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk user actions"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk user actions"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
 <SCRIPT language=JavaScript1.2>
 //change 5 to another integer to alter the scroll speed. Greater is faster
 var speed=1
@@ -89,117 +89,79 @@ window.onload=initialize
 #########################
 #Get data input
 #########################
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+')
 #########################
 #Assign data to variables
 #########################
 END_POINT=15
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign OPTIONCHOICE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = OPTIONCHOICEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		OPTIONCHOICE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=OPTIONCHOICE
+get_data
+OPTIONCHOICE="$DATAENTRY"
+
 #Assign PASSWORD1
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD1check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD1=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD1
+get_data
+PASSWORD1="$DATAENTRY"
+
 #Assign PASSWORD2
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PASSWORD2check ]
-	then
-		let COUNTER=$COUNTER+1
-		PASSWORD2=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PASSWORD2
+get_data
+PASSWORD2="$DATAENTRY"
+
 #Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=GROUP
+get_data
+GROUP="$DATAENTRY"
+
+#Assign NEWGROUP
+DATANAME=NEWGROUP
+get_data
+NEWGROUP="$DATAENTRY"
 
 #Assign MODCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MODCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MODCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MODCODE
+get_data
+MODCODE="$DATAENTRY"
+
 #Assign FORMCODE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = FORMCODEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FORMCODE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=FORMCODE
+get_data
+FORMCODE="$DATAENTRY"
 
 #Assign EXCEPTIONLIST
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EXCEPTIONLISTcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		EXCEPTIONLIST=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=EXCEPTIONLIST
+get_data
+EXCEPTIONLIST="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/modify_groups_fm.cgi";'
 echo '</script>'
-echo "</div></body></html>"
+echo "</div></div></body></html>"
 exit
 }
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -207,13 +169,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -235,7 +197,7 @@ then
 fi
 
 #Check to see that the group exists
-getent group $GROUP 1>/dev/null
+getent group "$GROUP" 1>/dev/null
 if [ $? != 0 ]
 then
 	MESSAGE=$"This group does not exist."
@@ -243,7 +205,7 @@ then
 fi
 
 #Check to see that the option choice is correct
-if [ $OPTIONCHOICE != enable ] && [ $OPTIONCHOICE != disable ] && [ $OPTIONCHOICE != changepasswords ] && [ $OPTIONCHOICE != resetpasswords ] && [ $OPTIONCHOICE != deleteaccounts ] && [ $OPTIONCHOICE != deleteaccounts2 ] && [ $OPTIONCHOICE != changepassnextlogon ] && [ $OPTIONCHOICE != passwordsneverexpire ] && [ $OPTIONCHOICE != passwordsexpire ]
+if [ "$OPTIONCHOICE" != enable ] && [ "$OPTIONCHOICE" != disable ] && [ "$OPTIONCHOICE" != changepasswords ] && [ "$OPTIONCHOICE" != resetpasswords ] && [ "$OPTIONCHOICE" != deleteaccounts ] && [ "$OPTIONCHOICE" != deleteaccounts2 ] && [ "$OPTIONCHOICE" != changepassnextlogon ] && [ "$OPTIONCHOICE" != passwordsneverexpire ] && [ "$OPTIONCHOICE" != passwordsexpire ] && [ "$OPTIONCHOICE" != changeprigroup ]
 then
 	MESSAGE=$"Incorrect option chosen."
 	show_status
@@ -262,83 +224,83 @@ then
 	show_status
 fi
 #Make sure that FORMCODE and MODCODE matches
-if [ $FORMCODE != $MODCODE ]
+if [ "$FORMCODE" != "$MODCODE" ]
 then
 	MESSAGE=$"Incorrect modify code."
 	show_status
 fi
 
 #Check to see that passwords have been entered and are correct
-if [ $OPTIONCHOICE = changepasswords ]
+if [ "$OPTIONCHOICE" = changepasswords ]
 then
 	if [ -z "$PASSWORD1" ] || [ -z "$PASSWORD2" ]
 	then
 		MESSAGE=$"The passwords must not be blank."
 		show_status
 	fi
-	if [ $PASSWORD1 != $PASSWORD2 ]
+	if [ "$PASSWORD1" != "$PASSWORD2" ]
 	then
 		MESSAGE=$"The passwords do not match."
 		show_status
 	fi
 fi
 
-if [ $OPTIONCHOICE = enable ]
+if [ "$OPTIONCHOICE" = enable ]
 then
-	MESSAGE=`echo $"Enable all users in group" $GROUP`
+	MESSAGE=''$"Enable all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = disable ]
+if [ "$OPTIONCHOICE" = disable ]
 then
-	MESSAGE=`echo $"Disable all users in group" $GROUP`
+	MESSAGE=''$"Disable all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = changepasswords ]
+if [ "$OPTIONCHOICE" = changepasswords ]
 then
-	MESSAGE=`echo $"Change passwords for all users in group" $GROUP`
+	MESSAGE=''$"Change passwords for all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = resetpasswords ]
+if [ "$OPTIONCHOICE" = resetpasswords ]
 then
-	MESSAGE=`echo $"Reset passwords all users in group" $GROUP`
+	MESSAGE=''$"Reset passwords all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = deleteaccounts ]
+if [ "$OPTIONCHOICE" = deleteaccounts ]
 then
-	MESSAGE=`echo $"Delete all users in group" $GROUP`
+	MESSAGE=''$"Delete all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = deleteaccounts2 ]
+if [ "$OPTIONCHOICE" = deleteaccounts2 ]
 then
-	MESSAGE=`echo $"Archive and delete all users in group" $GROUP`
+	MESSAGE=''$"Archive and delete all users in group"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = changepassnextlogon ]
+if [ "$OPTIONCHOICE" = changepassnextlogon ]
 then
-	MESSAGE=`echo $"Change password on next logon" $GROUP`
+	MESSAGE=''$"Change password on next logon"' '"$GROUP"''
 fi
 
-if [ $OPTIONCHOICE = passwordsneverexpire ]
+if [ "$OPTIONCHOICE" = passwordsneverexpire ]
 then
-	MESSAGE=`echo $"Passwords never expire" $GROUP`
+	MESSAGE=''$"Passwords never expire"' '"$GROUP"''
 fi
-if [ $OPTIONCHOICE = passwordsexpire ]
+if [ "$OPTIONCHOICE" = passwordsexpire ]
 then
-	MESSAGE=`echo $"Passwords expire" $GROUP`
+	MESSAGE=''$"Passwords expire"' '"$GROUP"''
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo "<div id="actionbox">"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTIONCHOICE:$GROUP:$PASSWORD1:$EXCEPTIONLIST:" | sudo -H /opt/karoshi/web_controls/exec/modify_groups
-MODIFY_STATUS=`echo $?`
-if [ $MODIFY_STATUS = 102 ]
+echo '<div id="actionbox3"><div id="infobox">'
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTIONCHOICE:$GROUP:$PASSWORD1:$EXCEPTIONLIST:$NEWGROUP:" | sudo -H /opt/karoshi/web_controls/exec/modify_groups
+MODIFY_STATUS="$?"
+if [ "$MODIFY_STATUS" = 102 ]
 then
-MESSAGE=$"The form code must not be blank."
-show_status
+	MESSAGE=$"The form code must not be blank."
+	show_status
 fi
 
-if [ $OPTIONCHOICE != resetpasswords ]
+if [ "$OPTIONCHOICE" != resetpasswords ]
 then
-	MESSAGE=`echo $"Action completed for" $GROUP.`
+	MESSAGE=''$"Action completed for"' '"$GROUP"'.'
 	show_status
 else
-	echo '<br><br>'$"Action completed for" $GROUP'<br>'
+	echo '<br><br>'$"Action completed for" "$GROUP"'<br>'
 	echo "</div>"
 fi
 exit
