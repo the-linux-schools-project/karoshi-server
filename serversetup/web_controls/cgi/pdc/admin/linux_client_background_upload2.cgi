@@ -34,62 +34,19 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Background - Select"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
-
-#Check to see if any files have been uploaded
-FILECOUNT=0
-if [ -d /var/www/karoshi/linux_background_upload/ ]
-then
-FILECOUNT=`ls -1 /var/www/karoshi/linux_background_upload/ | wc -l`
-FILEDATA=`ls -1 /var/www/karoshi/linux_background_upload/ | sed -n 1,1p`
-FILENAME=`echo "$FILEDATA"`
-fi
-
-if [ $FILECOUNT != 1 ]
-then
-MESSAGE=$"An incorrect number of files have been uploaded."
-show_status
-exit
-fi
-
-#Check to see that FILENAME is not blank
-if [ $FILENAME'null' = null ]
-then
-MESSAGE=$"The filename cannot be blank."
-show_status
-fi
-
-
-#Check that file is a png
-if  [ `echo $FILENAME | grep -c .png$` = 0 ]
-then
-MESSAGE=$"You have not uploaded a png file."
-show_status
-exit
-else
-FILENAME=`ls -1 /var/www/karoshi/linux_background_upload/ | sed -n 1,1p`
-#replace spaces
-FILENAME2=`echo "$FILENAME" | sed 's/ /-/g'`
-[ ! -f /var/www/karoshi/linux_background_upload/$FILENAME2 ] && mv /var/www/karoshi/linux_background_upload/"$FILENAME" /var/www/karoshi/linux_background_upload/$FILENAME2
-fi
-
-if [ $FILECOUNT -lt 1 ]
-then
-echo ''$"You have not uploaded a png file."'</div></div></body></html>'
-exit
-fi
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Linux Background - Select"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "linux_client_background_upload_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -104,46 +61,81 @@ echo "</div></body></html>"
 exit
 }
 
+#Check to see if any files have been uploaded
+FILECOUNT=0
+if [ -d /var/www/karoshi/linux_background_upload/ ]
+then
+	FILECOUNT=$(ls -1 /var/www/karoshi/linux_background_upload/ | wc -l)
+	FILENAME=$(ls -1 /var/www/karoshi/linux_background_upload/ | sed -n 1,1p)
+fi
+
+if [ "$FILECOUNT" != 1 ]
+then
+	MESSAGE=$"An incorrect number of files have been uploaded."
+	show_status
+	exit
+fi
+
+#Check to see that FILENAME is not blank
+if [ -z "$FILENAME" ]
+then
+	MESSAGE=$"The filename cannot be blank."
+	show_status
+fi
+
+
+#Check that file is a png
+if [[ $(echo "$FILENAME" | grep -c .png$) = 0 ]]
+then
+	MESSAGE=$"You have not uploaded a png file."
+	show_status
+	exit
+else
+	FILENAME=$(ls -1 /var/www/karoshi/linux_background_upload/ | sed -n 1,1p)
+	#replace spaces
+	FILENAME2="${FILENAME// /-}"
+	
+	[ ! -f /var/www/karoshi/linux_background_upload/"$FILENAME2" ] && mv /var/www/karoshi/linux_background_upload/"$FILENAME" /var/www/karoshi/linux_background_upload/"$FILENAME2"
+fi
+
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
-
 
 #Check that background with this filename exists
-if [ ! -f /var/www/karoshi/linux_background_upload/$FILENAME2 ]
+if [ ! -f /var/www/karoshi/linux_background_upload/"$FILENAME2" ]
 then
-MESSAGE=$"You have not uploaded a png file."
-show_status
+	MESSAGE=$"You have not uploaded a png file."
+	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1)
 
-sudo -H /opt/karoshi/web_controls/exec/linux_client_background_upload2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME2:
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 0 ]
+sudo -H /opt/karoshi/web_controls/exec/linux_client_background_upload2 "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME2:"
+if [ "$?" = 0 ]
 then
-MESSAGE=''$"Uploaded file"': '$FILENAME'\n\n'$"The background has been uploaded."''
+	MESSAGE=''$"Uploaded file"': '$FILENAME'\n\n'$"The background has been uploaded."''
 else
-MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''
+	MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''
 fi
 show_backgrounds
 exit
