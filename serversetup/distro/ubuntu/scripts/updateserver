@@ -73,8 +73,8 @@ then
 # Default-Stop:      1
 # Short-Description: Record Reboot
 ### END INIT INFO
-LOG_DATE=`date +%F`
-echo  "`hostname-fqdn | cut -d. -f1`: `date` - This server has now rebooted.\n" >>""/opt/karoshi/logs/server_upgrades/$LOG_DATE""
+LOG_DATE=$(date +%F)
+echo  "$(hostname-fqdn | cut -d. -f1): $(date) - This server has now rebooted.\n" >>"/opt/karoshi/logs/server_upgrades/$LOG_DATE"
 /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status recordreboot off 1>/dev/null 2>/dev/null' > /etc/init.d/recordreboot
 
 
