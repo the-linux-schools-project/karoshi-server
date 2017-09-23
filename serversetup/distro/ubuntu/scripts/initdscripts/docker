@@ -5,7 +5,7 @@ set -e
 # Provides:           docker
 # Required-Start:     $syslog $remote_fs
 # Required-Stop:      $syslog $remote_fs
-# Should-Start:       cgroupfs-mount cgroup-lite
+# Should-Start:       cgroupfs-mount cgroup-lite reserveports
 # Should-Stop:        cgroupfs-mount cgroup-lite
 # Default-Start:      2 3 4 5
 # Default-Stop:       0 1 6

@@ -1,8 +1,10 @@
 #!/bin/bash
-#Start apache2 on boot
-[ -f /etc/rc5.d/S03apache2_karoshi ] && rm -f /etc/rc5.d/S03apache2_karoshi
-[ -f /etc/rc4.d/S03apache2_karoshi ] && rm -f /etc/rc4.d/S03apache2_karoshi
-[ -f /etc/rc3.d/S03apache2_karoshi ] && rm -f /etc/rc3.d/S03apache2_karoshi
-[ -f /etc/rc2.d/S03apache2_karoshi ] && rm -f /etc/rc2.d/S03apache2_karoshi
+#Stop apache2_karoshi on boot
 
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status apache2_karoshi off 1>/dev/null 2>/dev/null
+else
+	chkconfig -f apache2_karoshi off 1>/dev/null 2>/dev/null
+fi
 

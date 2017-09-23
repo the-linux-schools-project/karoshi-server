@@ -12,6 +12,7 @@
 # Provides:          e2guardian
 # Required-Start:    $remote_fs $network $syslog squid
 # Required-Stop:     $remote_fs $network $syslog
+# Should-Start:	     reserveports
 # Default-Start:     2 3 4 5 
 # Default-Stop:      0 1 6 
 # Description: Starts e2guardian content proxy 

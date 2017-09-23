@@ -3,6 +3,7 @@
 # Provides:       dnsmasq
 # Required-Start: $network $remote_fs $syslog
 # Required-Stop:  $network $remote_fs $syslog
+# Should-Start:	  reserveports
 # Default-Start:  2 3 4 5
 # Default-Stop:   1
 # Description:    DHCP and DNS server

@@ -4,7 +4,7 @@
 # Provides:          bind9
 # Required-Start:    $remote_fs
 # Required-Stop:     $remote_fs
-# Should-Start:      $network $syslog
+# Should-Start:      $network $syslog reserveports
 # Should-Stop:       $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

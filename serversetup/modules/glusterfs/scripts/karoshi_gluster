@@ -93,15 +93,6 @@ then
 	echo '<ul><li>'"$SERVER"' - '$"mounting"' '"$MOUNTBASE/$VOLUME"'</li></ul>'
 	mount -a
 
-	#Check to see if this server has zfs
-	if [[ $(mount | grep -c zfs) -gt 0 ]]
-	then
-		if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
-		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-		fi
-	fi
-
 	#Make sure the gluster volume gets mounted on boot
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mount-gluster-volumes
 
@@ -121,15 +112,6 @@ else
 	#Mount volume
 	echo "<ul><li>'"$SERVER"' - '$"mounting"' '"$MOUNTBASE"'/'"$VOLUME"'</li></ul>"
 	mount -a
-
-	#Check to see if this server has zfs
-	if [ $(mount | grep -c zfs) -gt 0 ]
-	then
-		if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
-		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-		fi
-	fi
 
 	#Make sure the gluster volume gets mounted on boot
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mount-gluster-volumes

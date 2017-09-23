@@ -272,7 +272,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n"
 sleep 1
-services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast2 mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
+services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
 for service in $services
 do
 	echo -e "\nStopping $service\n"

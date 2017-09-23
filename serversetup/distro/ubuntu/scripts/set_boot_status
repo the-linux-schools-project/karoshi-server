@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVICE=$(echo "$1" | tr -cd 'A-Za-z0-9\-')
+SERVICE=$(echo "$1" | tr -cd 'A-Za-z0-9\-_')
 ACTION=$(echo "$2" | tr -cd 'A-Za-z')
 
 function show_usage {

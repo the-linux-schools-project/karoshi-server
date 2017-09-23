@@ -4,7 +4,7 @@
 ### BEGIN INIT INFO
 # Provides:          freeradius
 # Required-Start:    $remote_fs $network $syslog
-# Should-Start:      $time mysql slapd postgresql samba krb5-kdc
+# Should-Start:      $time mysql slapd postgresql samba krb5-kdc reserveports
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

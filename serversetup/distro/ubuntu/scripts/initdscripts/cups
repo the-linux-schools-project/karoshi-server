@@ -3,7 +3,7 @@
 # Provides:          cups
 # Required-Start:    $syslog samba4
 # Required-Stop:     $syslog
-# Should-Start:      $network avahi
+# Should-Start:      $network avahi reserveports
 # Should-Stop:       $network
 # X-Start-Before:    samba
 # X-Stop-After:      samba
