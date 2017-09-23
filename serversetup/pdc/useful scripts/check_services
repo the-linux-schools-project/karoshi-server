@@ -32,23 +32,23 @@ function write_html_entry {
 FILLCOLOUR1="#00C000"
 FILLCOLOUR2="#009E00"
 
-if [ $STATUS = fail ]
+if [ "$STATUS" = fail ]
 then
 	FILLCOLOUR1="#FF0004"
 	FILLCOLOUR2="#DC0003"
 fi
 
-SERVERNAME_SHORT=`echo $SERVERNAME | cut -d. -f1`
+SERVERNAME_SHORT=$(echo "$SERVERNAME" | cut -d. -f1)
 
-echo '<tr><td style="text-align: center;">'$SERVERNAME_SHORT'</td><td style="text-align: center;">'$SERVICENAME'</td><td style="text-align: center;"><div style="margin-left: auto; margin-right: auto; border: 2px solid '$FILLCOLOUR2';padding: 6px 6px;background: '$FILLCOLOUR1';width: 30px;border-radius: 25px;"></div></td></tr>' >> $HTMLPATH1
+echo '<tr><td style="text-align: center;">'"$SERVERNAME_SHORT"'</td><td style="text-align: center;">'"$SERVICENAME"'</td><td style="text-align: center;"><div style="margin-left: auto; margin-right: auto; border: 2px solid '"$FILLCOLOUR2"';padding: 6px 6px;background: '"$FILLCOLOUR1"';width: 30px;border-radius: 25px;"></div></td></tr>' >> "$HTMLPATH1"
 }
 
 function check_data {
 #Check data for some services to create html output.
 
-if [ $EMAILSERVER = yes ]
+if [ "$EMAILSERVER" = yes ]
 then
-	if [ $DOVECOT = 0 ] && [ $DOVECOT = 0 ] && [ $MYSQL = 0 ] && [ $MAILSCANNER = 0 ] && [ $POSTFIX = 0 ] && [ $SOGO = 0 ]
+	if [ "$DOVECOT" = 0 ] && [ "$DOVECOT" = 0 ] && [ "$MYSQL" = 0 ] && [ "$MAILSCANNER" = 0 ] && [ "$POSTFIX" = 0 ] && [ "$SOGO" = 0 ]
 	then
 		STATUS=ok
 	else
@@ -58,9 +58,9 @@ then
 	write_html_entry
 fi
 
-if [ $PROXYSERVER = yes ]
+if [ "$PROXYSERVER" = yes ]
 then
-	if [ $E2GUARDIAN = 0 ] && [ $SQUID = 0 ]
+	if [ "$E2GUARDIAN" = 0 ] && [ "$SQUID" = 0 ]
 	then
 		STATUS=ok
 		#Enable proxy dns entry
@@ -74,9 +74,9 @@ then
 	write_html_entry
 fi
 
-if [ $PRINTSERVER = yes ]
+if [ "$PRINTSERVER" = yes ]
 then
-	if [ $CUPS = 0 ] && [ $SAMBA = 0 ]
+	if [ "$CUPS" = 0 ] && [ "$SAMBA" = 0 ]
 	then
 		STATUS=ok
 	else
@@ -87,9 +87,9 @@ then
 fi
 
 #Moodle server
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/moodle ]
+if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/moodle ]
 then
-	if [ $APACHE = 0 ] && [ $MYSQL = 0 ]
+	if [ "$APACHE" = 0 ] && [ "$MYSQL" = 0 ]
 	then
 		STATUS=ok
 	else
@@ -100,9 +100,9 @@ then
 fi
 
 #Owncloud
-if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/owncloud ]
+if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/owncloud ]
 then
-	if [ $APACHE = 0 ] && [ $MYSQL = 0 ]
+	if [ "$APACHE" = 0 ] && [ "$MYSQL" = 0 ]
 	then
 		STATUS=ok
 	else
@@ -115,7 +115,7 @@ fi
 #Home areas
 if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/fileserver ]
 then
-	if [ $SAMBA = 0 ]
+	if [ "$SAMBA" = 0 ]
 	then
 		STATUS=ok
 	else
@@ -137,47 +137,47 @@ do
 	PRINTSERVER=no
 	DSERVICES=cron
 
-	[ "$SERVERNAME" = "$HOSTNAME" ] && DSERVICES=cron,apache2_karoshi
+	[[ "$SERVERNAME" = $(hostname-fqdn) ]] && DSERVICES=cron,apache_karoshi
 
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1pdc ] && DSERVICES=$DSERVICES,dns,bind,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1dc ] && DSERVICES=$DSERVICES,dns,bind,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/1domainmember ] && DSERVICES=$DSERVICES,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/2users-groups ] && DSERVICES=$DSERVICES,nslcd
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver ] && DSERVICES=$DSERVICES,apache,mysql
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/casserver ] && DSERVICES=$DSERVICES,apache
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/distributionserver ] && DSERVICES=$DSERVICES,nfs,tftpd
-	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/emailserver ]
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",dns,bind,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ] && DSERVICES="$DSERVICES",dns,bind,samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/2users-groups ] && DSERVICES="$DSERVICES",nslcd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver ] && DSERVICES="$DSERVICES",apache,mysql
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/casserver ] && DSERVICES="$DSERVICES",apache
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/distributionserver ] && DSERVICES="$DSERVICES",nfs,tftpd
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/emailserver ]
 	then
-		DSERVICES=$DSERVICES,apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
+		DSERVICES="$DSERVICES",apache,mysql,mailscanner,postfix,dovecot,sogo,clamd
 		EMAILSERVER=yes
 	fi
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/homeaccess ] && DSERVICES=$DSERVICES,apache
-	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/squid ]
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/homeaccess ] && DSERVICES="$DSERVICES",apache
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/squid ]
 	then
-		DSERVICES=$DSERVICES,apache,e2guardian,squid,squiddebproxy
+		DSERVICES="$DSERVICES",apache,e2guardian,squid,squiddebproxy
 		PROXYSERVER=yes
 	fi
-	if [ -f /opt/karoshi/server_network/servers/$SERVERNAME/printserver ]
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/printserver ]
 	then
-		DSERVICES=$DSERVICES,cups,samba
+		DSERVICES="$DSERVICES",cups,samba
 		PRINTSERVER=yes
 	fi
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/radiusserver ] && DSERVICES=$DSERVICES,radius
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/reverseproxyserver ] && DSERVICES=$DSERVICES,nginx
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/monitoring ] && DSERVICES=$DSERVICES,apache,mon
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/dhcpserver ] && DSERVICES=$DSERVICES,dhcp
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/openvpn ] && DSERVICES=$DSERVICES,openvpn
-	[ -f /opt/karoshi/server_network/servers/$SERVERNAME/userwebhosting ] && DSERVICES=$DSERVICES,apache,mysql,vsftpd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/radiusserver ] && DSERVICES="$DSERVICES",radius
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/reverseproxyserver ] && DSERVICES="$DSERVICES",nginx
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/monitoring ] && DSERVICES="$DSERVICES",apache,mon
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/dhcpserver ] && DSERVICES="$DSERVICES",dhcp
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/openvpn ] && DSERVICES="$DSERVICES",openvpn
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/userwebhosting ] && DSERVICES="$DSERVICES",apache,mysql,vsftpd
 
 
 	#Check that the server is online
 	ONLINE=yes
-	if [ $SERVERNAME != `hostname-fqdn` ]
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 	then
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME ls 1>/dev/null
-		if [ $? != 0 ]
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" ls 1>/dev/null
+		if [ "$?" != 0 ]
 		then
-			echo `date`: check_services - $SERVERNAME is offline. >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			echo "$(date): check_services - $SERVERNAME is offline." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			ONLINE=no
 		fi
 	fi
@@ -204,58 +204,58 @@ do
 	SOGO=1
 	SQUID=1
 
-	if [ $ONLINE = yes ]
+	if [ "$ONLINE" = yes ]
 	then
 		echo -e "Servicecheck: $SERVERNAME\nServices: $DSERVICES"
 
-		DSERVICES=`echo -e "$DSERVICES" | sed "s/,/\n/g" | sort`
+		DSERVICES=$(echo -e "$DSERVICES" | sed "s/,/\n/g" | sort)
 
 		for SERVICE in $DSERVICES
 		do
 			#Check if the service is running
 			SERVICESTATUS=0
-			if [ $SERVERNAME = `hostname-fqdn` ]
+			if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 			then
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"status 1>/dev/null
-				SERVICESTATUS=$?
-				if [ $SERVICESTATUS != 0 ]
+				"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE""_status" 1>/dev/null
+				SERVICESTATUS="$?"
+				if [ "$SERVICESTATUS" != 0 ]
 				then
-					echo $SERVERNAME: $SERVICE is not running.
-					echo Attempting to start $SERVICE
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"start
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"status 1>/dev/null
+					echo "$SERVERNAME: $SERVICE is not running."
+					echo "Attempting to start $SERVICE"
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_start
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_status 1>/dev/null
 					SERVICESTATUS=$?
 				fi
 				else
-				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 					source /opt/karoshi/serversetup/variables/distro
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"status 1>/dev/null
-					SERVICESTATUS=$?
-					if [ $SERVICESTATUS != 0 ]
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"status 1>/dev/null
+					SERVICESTATUS="$?"
+					if [ "$SERVICESTATUS" != 0 ]
 					then
-						echo '$SERVERNAME:' '$SERVICE' is not running.
-						echo Attempting to start '$SERVICE'
-						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"start
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/'$SERVICE'"_"status 1>/dev/null
-					SERVICESTATUS=$?
+						echo '"$SERVERNAME":' '"$SERVICE"' is not running.
+						echo Attempting to start '"$SERVICE"'
+						/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"start
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"status 1>/dev/null
+					SERVICESTATUS="$?"
 					fi
-					exit $SERVICESTATUS
+					exit "$SERVICESTATUS"
 				'
-				SERVICESTATUS=$?
+				SERVICESTATUS="$?"
 			fi
 			#Log service failure
-			[ $SERVICESTATUS != 0 ] && echo `date`: check_services - service $SERVICE was not running on $SERVERNAME >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			[ "$SERVICESTATUS" != 0 ] && echo "$(date): check_services - service $SERVICE was not running on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-			[ $SERVICE = apache ] && APACHE=$SERVICESTATUS
-			[ $SERVICE = cups ] && CUPS=$SERVICESTATUS
-			[ $SERVICE = dovecot ] && DOVECOT=$SERVICESTATUS
-			[ $SERVICE = e2guardian ] && E2GUARDIAN=$SERVICESTATUS
-			[ $SERVICE = mysql ] && MYSQL=$SERVICESTATUS
-			[ $SERVICE = mailscanner ] && MAILSCANNER=$SERVICESTATUS
-			[ $SERVICE = postfix ] && POSTFIX=$SERVICESTATUS
-			[ $SERVICE = samba ] && SAMBA=$SERVICESTATUS
-			[ $SERVICE = sogo ] && SOGO=$SERVICESTATUS
-			[ $SERVICE = squid ] && SQUID=$SERVICESTATUS
+			[ "$SERVICE" = apache ] && APACHE="$SERVICESTATUS"
+			[ "$SERVICE" = cups ] && CUPS="$SERVICESTATUS"
+			[ "$SERVICE" = dovecot ] && DOVECOT="$SERVICESTATUS"
+			[ "$SERVICE" = e2guardian ] && E2GUARDIAN="$SERVICESTATUS"
+			[ "$SERVICE" = mysql ] && MYSQL="$SERVICESTATUS"
+			[ "$SERVICE" = mailscanner ] && MAILSCANNER="$SERVICESTATUS"
+			[ "$SERVICE" = postfix ] && POSTFIX="$SERVICESTATUS"
+			[ "$SERVICE" = samba ] && SAMBA="$SERVICESTATUS"
+			[ "$SERVICE" = sogo ] && SOGO="$SERVICESTATUS"
+			[ "$SERVICE" = squid ] && SQUID="$SERVICESTATUS"
 
 
 		done
@@ -267,67 +267,67 @@ done
 function copy_htmldata {
 #Create table top
 echo '<table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2"><tbody>
-<tr><td style="width: 25%; text-align: center;"><b>Server</b></td><td style="width: 25%; text-align: center;"><b>Service</b></td><td style="text-align: center;"><b>Status</b></td></tr>' > $HTMLPATH2
+<tr><td style="width: 25%; text-align: center;"><b>Server</b></td><td style="width: 25%; text-align: center;"><b>Service</b></td><td style="text-align: center;"><b>Status</b></td></tr>' > "$HTMLPATH2"
 #Sort the html data
-sort -t">" -s -k 4 $HTMLPATH1 >> $HTMLPATH2
+sort -t">" -s -k 4 "$HTMLPATH1" >> "$HTMLPATH2"
 #End the html table
-echo '</tbody></table>' >> $HTMLPATH2
+echo '</tbody></table>' >> "$HTMLPATH2"
 
-if [ $PROXYSERVER != `hostname-fqdn` ]
+if [[ $PROXYSERVER != $(hostname-fqdn) ]]
 then
-	scp $HTMLPATH2 root@$PROXYSERVER:/$HTMLPATH2
+	scp "$HTMLPATH2" root@"$PROXYSERVER:/$HTMLPATH2"
 fi
 }
 
 if [ -d /opt/karoshi/server_network/proxyservers/ ]
 then
-	for PROXYSERVER in `ls -1 /opt/karoshi/server_network/proxyservers`
+	for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
 	do
 		copy_htmldata
 	done
 else 
 	if [ -f /opt/karoshi/server_network/proxyserver ]
 	then
-		PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
+		PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 		copy_htmldata
 	fi
 fi
 
 #Check that dnsmasq is not running on domain controllers
-SERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/` `[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/`"
+SERVERLIST="$(hostname-fqdn) $([ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/) $([ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/)"
 
 for SERVERNAME in $SERVERLIST
 do
-	if [ $SERVERNAME = $(hostname-fqdn) ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"status 1>/dev/null
-		SERVICESTATUS=$?
-		if [ $SERVICESTATUS != 1 ]
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/dnsmasq"_status 1>/dev/null
+		SERVICESTATUS="$?"
+		if [ "$SERVICESTATUS" != 1 ]
 		then
-			echo $SERVERNAME: dnsmasq is running.
+			echo "$SERVERNAME: dnsmasq is running."
 			echo Attempting to stop dnsmasq
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"stop
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/dnsmasq"_stop
 			/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dnsmasq
 			#Restart samba4
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"stop
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/samba"_stop
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"start
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/samba"_start
 		fi
 	else
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"status 1>/dev/null
-		SERVICESTATUS=$?
-		if [ $SERVICESTATUS != 1 ]
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/dnsmasq"_status 1>/dev/null
+		SERVICESTATUS="$?"
+		if [ "$SERVICESTATUS" != 1 ]
 		then
-			echo $SERVERNAME: dnsmasq is running.
+			echo "$SERVERNAME: dnsmasq is running."
 			echo Attempting to stop dnsmasq
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/dnsmasq"_"stop
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/dnsmasq"_stop
 			/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dnsmasq
 			#Restart samba4
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"stop
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/samba"_stop
 			sleep 1
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba"_"start
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/samba"_start
 		fi
 		'
 	fi
