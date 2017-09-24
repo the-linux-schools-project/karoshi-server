@@ -23,163 +23,163 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/group_membership2_cgi
 then
-echo `date`: group_membership2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/group_membership2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $group_membership2_cgi'check' ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1)
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$group_membership2_cgi"'check' ]
 then
-echo `date`: group_membership2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-echo `date`: group_membership2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
-if [ $DATA'null' = null ]
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g')
+if [ -z "$DATA" ]
 then
-echo `date`: group_membership2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-USERNAME=`echo "$DATA" | cut -s -d: -f4`
-ACTION=`echo "$DATA" | cut -s -d: -f5`
-GROUP=`echo "$DATA" | cut -s -d: -f6 | sed 's/+/ /g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+USERNAME=$(echo "$DATA" | cut -s -d: -f4)
+ACTION=$(echo "$DATA" | cut -s -d: -f5)
+GROUP=$(echo "$DATA" | cut -s -d: -f6 | sed 's/+/ /g')
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-echo `date`: group_membership2 - Not called by group_membership2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Not called by group_membership2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: group_membership2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: group_membership2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $USERNAME'null' = null ]
+if [ -z "$USERNAME" ]
 then
-echo `date`: group_membership2 - Blank username by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-
-if [ $ACTION'null' = null ]
-then
-echo `date`: group_membership2 - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
-fi
-if [ $ACTION != ADD ] && [ $ACTION != REMOVE ]
-then
-echo `date`: group_membership2 - Incorrect action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Blank username by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-if [ `echo $GROUP'null' | sed 's/ //g'` = null ]
+if [ -z "$ACTION" ]
 then
-echo `date`: group_membership2 - Blank group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ "$ACTION" != ADD ] && [ "$ACTION" != REMOVE ]
+then
+	echo "$(date): group_membership2 - Incorrect action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ -z "$GROUP" ]
+then
+	echo "$(date): group_membership2 - Blank group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 #Make sure that the groupid is greater than 1000
-GROUPID=`getent group "$GROUP" | cut -d: -f3`
-if [ $GROUPID -lt 1000 ] && [ $GROUPID != 512 ]
+GROUPID=$(getent group "$GROUP" | cut -d: -f3)
+if [ "$GROUPID" -lt 1000 ] && [ "$GROUPID" != 512 ]
 then
-echo `date`: group_membership2 - group "id" is under 1000 by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - group id is under 1000 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-echo `date`: group_membership2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): group_membership2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $ACTION = ADD ]
+if [ "$ACTION" = ADD ]
 then
-ACTION2=adding
+	ACTION2=adding
 else
-ACTION2=removing
+	ACTION2=removing
 fi
-echo `date`: group_membership2 - "$GROUP": $ACTION2 $USERNAME  by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): group_membership2 - $GROUP: $ACTION2 $USERNAME  by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $ACTION = ADD ]
+if [ "$ACTION" = ADD ]
 then
-samba-tool group addmembers "$GROUP" $USERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	samba-tool group addmembers "$GROUP" "$USERNAME" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ $GROUP = itadmin ] || [ $GROUP = tech ]
-then
-samba-tool group addmembers "Domain Admins" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
+	if [ "$GROUP" = itadmin ] || [ "$GROUP" = tech ]
+	then
+		samba-tool group addmembers "Domain Admins" "$USERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	fi
 
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
-then
-for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-echo `date`: group_membership2 \(federated mode\) - "'$GROUP'" : '$ACTION2' '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-samba-tool group addmembers "'$GROUP'" '$USERNAME' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+	then
+		for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			FEDERATEDLDAPSERVER=$(basename "$FEDERATEDSERVERS")
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDLDAPSERVER" '
+			echo "$(date): group_membership2 \(federated mode\) - '"$GROUP"'" : '"$ACTION2"' '"$USERNAME"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool group addmembers "'"$GROUP"'" '"$USERNAME"' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
 
-if [ '$GROUP' = itadmin ] || [ '$GROUP' = tech ]
-then
-samba-tool group addmembers "Domain Admins" '$USERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-fi
-'
-done
-fi
-fi
-
-if [ $ACTION = REMOVE ]
-then
-samba-tool group removemembers "$GROUP" $USERNAME 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-
-if [ $GROUP = itadmin ] || [ $GROUP = tech ]
-then
-samba-tool group removemembers "Domain Admins" $USERNAME  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+			if [ '"$GROUP"' = itadmin ] || [ '"$GROUP"' = tech ]
+			then
+				samba-tool group addmembers "Domain Admins" '"$USERNAME"'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			fi
+			'
+		done
+	fi
 fi
 
-if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+if [ "$ACTION" = REMOVE ]
 then
-for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
-do
-FEDERATEDLDAPSERVER=`basename $FEDERATEDSERVERS`
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $FEDERATEDLDAPSERVER '
-echo `date`: group_membership2 \(federated mode\) - "'$GROUP'" : '$ACTION2' '$USERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-samba-tool group removemembers "'$GROUP'" '$USERNAME' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+	samba-tool group removemembers "$GROUP" "$USERNAME" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-if [ '$GROUP' = itadmin ] || [ '$GROUP' = tech ]
-then
-samba-tool group removemembers "Domain Admins" '$USERNAME'  1>/dev/null 2>>/opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-fi
-'
-done
-fi
+	if [ "$GROUP" = itadmin ] || [ "$GROUP" = tech ]
+	then
+		samba-tool group removemembers "Domain Admins" "$USERNAME"  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	fi
+
+	if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
+	then
+		for FEDERATEDSERVERS in /opt/karoshi/server_network/federated_ldap_servers/*
+		do
+			FEDERATEDLDAPSERVER=$(basename "$FEDERATEDSERVERS")
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$FEDERATEDLDAPSERVER" '
+			echo "$(date): group_membership2 \(federated mode\) - '"$GROUP"'" : '"$ACTION2"' '"$USERNAME"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+			samba-tool group removemembers "'"$GROUP"'" '"$USERNAME"' 1>/dev/null 2>> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+
+			if [ '"$GROUP"' = itadmin ] || [ '"$GROUP"' = tech ]
+			then
+				samba-tool group removemembers "Domain Admins" '"$USERNAME"'  1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			fi
+			'
+		done
+	fi
 fi
 
 exit
