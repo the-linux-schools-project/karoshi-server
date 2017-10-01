@@ -194,7 +194,7 @@ then
 	else
 		echo '<tr>
 		<td style="height: 26px;">'$"Custom Alias"'</td>
-		<td><input tabindex="1" name="_CUSTOMWEBADDRESS_" size="20" type="text"></td><td style="vertical-align:bottom"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"This field should normally be left blank to automtically create the certificate for the server. Enter in a web address if you want to override the default web addresses of the server."'</span></a></td>
+		<td><input tabindex="1" name="_CUSTOMWEBADDRESS_" size="20" type="text"></td><td style="vertical-align:bottom"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"This field should normally be left blank to automtically create the certificate for the server. Enter in a web address if you want to override the default web addresses of the server. Multiple web addresses can be entered separated by spaces."'</span></a></td>
 	</tr>'
 	fi
 	echo '</tbody></table>'
