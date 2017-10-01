@@ -995,7 +995,13 @@ echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
 for FILTERGROUPS in /etc/e2guardian/lists/filtergroups/*
 do
 	FILTERGROUP=$(basename "$FILTERGROUPS")
-	echo "$FILTERGROUP<input type=\"checkbox\" name=\"____FILTERDATA4____\" value=\"$FILTERGROUP\" checked>"
+	if [ "$FILTERNAME" = "$FILTERGROUP" ]
+	then
+		CHECKED=checked
+	else
+		CHECKED=""
+	fi
+	echo "$FILTERGROUP<input type=\"checkbox\" name=\"____FILTERDATA4____\" value=\"$FILTERGROUP\" $CHECKED>"
 done
 
 echo '</td><td></td></tr></tbody></table></form>
