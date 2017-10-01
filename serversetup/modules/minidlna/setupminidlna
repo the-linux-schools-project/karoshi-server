@@ -31,6 +31,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 
 #Edit minidlna.conf
 sed -i 's%/var/lib/minidlna%/home/multimedia%g' /etc/minidlna.conf
+sed -i 's%inotify=no%inotify=yes%g' /etc/minidlna.conf
 
 #Set facl for minidlna
 setfacl -Rm u:minidlna:rwx /home/multimedia

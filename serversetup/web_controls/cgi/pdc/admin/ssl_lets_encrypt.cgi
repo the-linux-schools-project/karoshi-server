@@ -110,11 +110,11 @@ echo '</head><body onLoad="start()"><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-+')
 #########################
 #Assign data to variables
 #########################
-END_POINT=15
+END_POINT=19
 function get_data {
 COUNTER=2
 DATAENTRY=""
@@ -135,6 +135,16 @@ done
 DATANAME=SERVERNAME
 get_data
 SERVERNAME="$DATAENTRY"
+
+DATANAME=CUSTOMWEBADDRESS
+get_data
+CUSTOMWEBADDRESS="$DATAENTRY"
+
+DATANAME=MODE
+get_data
+MODE="$DATAENTRY"
+
+[ -z "$MODE" ] && MODE=auto
 
 #Generate navigation bar
 if [ "$MOBILE" = no ]
@@ -165,28 +175,62 @@ else
 fi
 
 if [ -z "$SERVERNAME" ]
-then 
+then
+	#Show custom alias box
+	echo '
+	<table class="standard" style="text-align: left;" ><tbody>
+	<tr style="vertical-align:middle">
+		<td style="width: 230px; height: 26px;">'$"Web Address Mode"'</td><td>'
+		if [ "$MODE" = auto ]
+		then
+			echo '<input name="_MODE_manual_" type="submit" class="button" value='$"Auto"'>'
+		else
+			echo '<input name="_MODE_auto_" type="submit" class="button" value='$"Manual"'>'
+		fi
+	echo ' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"In auto mode the web addresses of the server are automatically entered for the certificate based on the modules that have been applied to the server. Manual mode allows you to enter in custom web addresses for the certificate."'</span></a></td><td></td></tr>'
+	if [ "$MODE" = auto ]
+	then
+		echo '<tr><td style="height: 26px;"></td><td></td><td></td></tr>'
+	else
+		echo '<tr>
+		<td style="height: 26px;">'$"Custom Alias"'</td>
+		<td><input tabindex="1" name="_CUSTOMWEBADDRESS_" size="20" type="text"></td><td style="vertical-align:bottom"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Let%27s_Encrypt"><img class="images" alt="" src="/images/help/info.png"><span>'$"This field should normally be left blank to automtically create the certificate for the server. Enter in a web address if you want to override the default web addresses of the server."'</span></a></td>
+	</tr>'
+	fi
+	echo '</tbody></table>'
+
 	#Show list of servers
-	/opt/karoshi/web_controls/show_servers "$MOBILE" all $"Choose"
+	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"Apply"
 else
 	#Show any assigned aliases for the server.
 	#Show alias choice
 	source /opt/karoshi/server_network/domain_information/domain_name
-	if [ -f /opt/karoshi/server_network/aliases/"$SERVERNAME" ]
+	if [ -f /opt/karoshi/server_network/webservers/"$SERVERNAME" ]
 	then
 		#Show any custom aliases that have been assigned
 		echo "<ul><li>$SERVERNAME" - $"Creating an SSl certificate for the following domain entries""</li></ul>"
-		for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
-		do
-			echo "<ul><li>$CUSTOM_ALIAS.$REALM</li></ul>"
-			ALIASLIST="$ALIASLIST,$CUSTOM_ALIAS.$REALM"
-		done
-		ALIASLIST=$(echo "$ALIASLIST" | sed 's/^,//g')
+
+		if [ -z "$CUSTOMWEBADDRESS" ]
+		then
+			for CUSTOM_ALIAS in $(cat /opt/karoshi/server_network/aliases/"$SERVERNAME")
+			do
+				echo "<ul><li>$CUSTOM_ALIAS.$REALM</li></ul>"
+				ALIASLIST="$ALIASLIST,$CUSTOM_ALIAS.$REALM"
+			done
+			ALIASLIST=$(echo "$ALIASLIST" | sed 's/^,//g')
+		else
+			ALIASLIST="${CUSTOMWEBADDRESS//+/ }"
+			for CUSTOM_ALIAS in $ALIASLIST
+			do
+				echo "<ul><li>$CUSTOM_ALIAS</li></ul>"
+			done
+			ALIASLIST="${CUSTOMWEBADDRESS// /,}"
+		fi
 		ACTION=addcert
 		MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1)
 		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIASLIST:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_lets_encrypt
 	else
-		echo "<ul><li>$SERVERNAME: This server has not been set up as a web server and has no aliases</li></ul>"	
+		echo "<ul><li>$SERVERNAME: This server has not been set up as a web server</li></ul>"	
 	fi
 fi
 
