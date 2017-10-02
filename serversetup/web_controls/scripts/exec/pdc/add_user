@@ -726,7 +726,7 @@ if [ ! -d "/home/applications/profiles/$PRIMARYGROUP.V6" ]
 then
 	if [ -d "/home/applications/profiles/defaultprofile.V6" ]
 	then
-		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 10 Aniversary profile""</li></ul>"
+		echo "<ul><li>$PRIMARYGROUP - "$"Creating a Windows 10 Anniversary profile""</li></ul>"
 		cp -f -R /home/applications/profiles/defaultprofile.V6 "/home/applications/profiles/$PRIMARYGROUP.V6"
 		chown -R root.itadmin "/home/applications/profiles/$PRIMARYGROUP.V6"
 		chmod 0664 -R "/home/applications/profiles/$PRIMARYGROUP.V6"
