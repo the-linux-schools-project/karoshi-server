@@ -146,7 +146,7 @@ then
 	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo ''$"Opening ports"' - udp 1812,1813<br><br>'
+		echo '<ul><li>'$"Opening ports"' - udp 1812,1813</li></ul>'
 		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
 		sed -i "$LINENUM"'c''ACCEPT	net	fw	udp	1812,1813	-#Radius' /etc/shorewall/rules
 		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
@@ -155,13 +155,22 @@ then
 	######################
 	#Restart shorewall
 	######################
-	if [ $RESTART_SHOREWALL = yes ]
+	if [ "$RESTART_SHOREWALL" = yes ]
 	then
-		echo $"Restarting Shorewall"'<br><br>'
+		echo '<ul><li>'$"Restarting Shorewall"'</li></ul>'
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
-		echo '<br>'
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
-		echo '<br><br>'
+	fi
+
+	#Make sure that ntlm auth = yes so thag mschapv2 auth works
+	if [[ $(grep -c "ntlm auth = yes" /etc/samba/smb.conf) = 0 ]]
+	then
+		echo '<ul><li>'$"Allowing ntlm auth for mschapV2"'</li></ul>'
+		sed -i '/^\[global\]/a\\tntlm auth = yes' /etc/samba/smb.conf
+		#Restart samba4
+		echo '<ul><li>'$"Restarting Samba4"'</li></ul>'
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start	
 	fi
 else
 	#Copy in module
@@ -210,18 +219,18 @@ else
 	fi
 
 	#Start service
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/radius_start
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_start
 	#Start on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/radius
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/radius
 	###########################
 	#Open shorewall ports
 	###########################
 	RESTART_SHOREWALL=no
-	MODCHECK=`grep -c -w \#Radius /etc/shorewall/rules`
-	if [ $MODCHECK = 0 ]
+	MODCHECK=$(grep -c -w \#Radius /etc/shorewall/rules)
+	if [ "$MODCHECK" = 0 ]
 	then
 		RESTART_SHOREWALL=yes
-		echo '$"Opening ports"' - udp 1812,1813"<br><br>"
+		echo "<ul><li>"'$"Opening ports"'" - udp 1812,1813</li></ul>"
 		LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 		sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"udp"	"1812,1813"	"-"#"Radius /etc/shorewall/rules
 		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
@@ -232,12 +241,22 @@ else
 	######################
 	if [ "$RESTART_SHOREWALL" = yes ]
 	then
-		echo $"Restarting Shorewall""<br><br>"
+		echo "<ul><li>"$"Restarting Shorewall""</li></ul>"
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
-		echo "<br>"
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start
-		echo "<br><br>"
 	fi
+
+	#Make sure that ntlm auth = yes so thag mschapv2 auth works
+	if [[ $(grep -c "ntlm auth = yes" /etc/samba/smb.conf) = 0 ]]
+	then
+		echo "<ul><li>'$"Allowing ntlm auth for mschapV2"'</li></ul>"
+		sed -i "/^\[global\]/a\\\tntlm auth = yes" /etc/samba/smb.conf
+		#Restart samba4
+		echo "<ul><li>'$"Restarting Samba4"'</li></ul>"
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start	
+	fi
+
 	'
 fi
 #Add role information
