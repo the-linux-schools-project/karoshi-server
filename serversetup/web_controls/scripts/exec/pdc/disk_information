@@ -270,12 +270,12 @@ then
 
 	if [[ "$DISK_AGE_WARN" = 2 ]]
 	then
-		echo '<tr><td style="color:red"><b>'$"Disk Age"'</b></td><td style="color:red"><b>'"$DISK_AGE' '$DISK_AGE_UNIT"'</b></td></tr>'
+		echo '<tr><td style="color:red"><b>'$"Disk Age"'</b></td><td style="color:red"><b>'"$DISK_AGE $DISK_AGE_UNIT"'</b></td></tr>'
 	elif [[ "$DISK_AGE_WARN" = 1 ]]
 	then
-		echo '<tr><td style="color:orange">'$"Disk Age"'</b></td><td style="color:orange">'"$DISK_AGE' '$DISK_AGE_UNIT"'</b></td></tr>'
+		echo '<tr><td style="color:orange">'$"Disk Age"'</b></td><td style="color:orange">'"$DISK_AGE $DISK_AGE_UNIT"'</b></td></tr>'
 	else
-		echo '<tr><td>'$"Disk Age"'</td><td>'"$DISK_AGE' '$DISK_AGE_UNIT"'</td></tr>'
+		echo '<tr><td>'$"Disk Age"'</td><td>'"$DISK_AGE $DISK_AGE_UNIT"'</td></tr>'
 	fi
 
 	echo '<tr><td>'$"Smart Enabled"'</td><td>'"$SMARTENABLED"'</td></tr>
