@@ -14,11 +14,11 @@ then
 fi
 
 #List of google zones to add to samba4 dns
-YOUTUBEZONES="youtube.com youtube.be"
+YOUTUBEZONES="youtube.com youtube.be m.youtube.com youtubei.googleapis.com youtube.googleapis.com www.youtube-nocookie.com"
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 RESTARTSAMBA=no
-GOOGLEINFO=`samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LDAPPASS" | grep google`
+GOOGLEINFO=$(samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LDAPPASS" | grep youtube)
 
 
 
@@ -27,26 +27,26 @@ do
 	if [[ "$ACTION" == add ]]
 	then
 		#Create dns zones
-		if [[ `grep -c -w $YOUTUBEZONE <<< $GOOGLEINFO` = 0 ]]
+		if [[ $(grep -c -w "$YOUTUBEZONE" <<< "$GOOGLEINFO") = 0 ]]
 		then
 			RESTARTSAMBA=yes
 			echo Creating "$YOUTUBEZONE"
-			samba-tool dns zonecreate 127.0.0.1 $YOUTUBEZONE --username=Administrator --password="$LDAPPASS"
+			samba-tool dns zonecreate 127.0.0.1 "$YOUTUBEZONE" --username=Administrator --password="$LDAPPASS"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 $YOUTUBEZONE restrict.youtube.com.$YOUTUBEZONE CNAME restrict.youtube.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 "$YOUTUBEZONE" restrict.youtube.com."$YOUTUBEZONE" CNAME restrict.youtube.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
 			#Add in dns record for restrict.youtube.com
-			samba-tool dns add 127.0.0.1 $YOUTUBEZONE www.$YOUTUBEZONE A $YOUTUBESAFEIP --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 "$YOUTUBEZONE" www."$YOUTUBEZONE" A "$YOUTUBESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
 		fi
 	fi
 
 	if [[ "$ACTION" == delete ]]
 	then
 		#Remove dns zone if it exists
-		if [[ `grep -c -w $YOUTUBEZONE <<< $GOOGLEINFO` > 0 ]]
+		if [[ $(grep -c -w "$YOUTUBEZONE" <<< "$GOOGLEINFO") -gt 0 ]]
 		then
 			RESTARTSAMBA=yes
 			echo Deleting "$YOUTUBEZONE"
-			samba-tool dns zonedelete 127.0.0.1 $YOUTUBEZONE --username=Administrator --password="$LDAPPASS"
+			samba-tool dns zonedelete 127.0.0.1 "$YOUTUBEZONE" --username=Administrator --password="$LDAPPASS"
 		fi
 	fi
 done
