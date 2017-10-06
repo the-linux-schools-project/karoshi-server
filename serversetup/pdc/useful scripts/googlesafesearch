@@ -31,10 +31,7 @@ do
 			echo Creating www."$GOOGLEZONE"
 			samba-tool dns zonecreate 127.0.0.1 www."$GOOGLEZONE" --username=Administrator --password="$LDAPPASS"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 www."$GOOGLEZONE" forcesafesearch.google.com.www."$GOOGLEZONE" CNAME forcesafesearch.google.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
-
-			#Add in dns record for forcesafesearch.google.com
-			samba-tool dns add 127.0.0.1 www."$GOOGLEZONE" www."$GOOGLEZONE" A "$GOOGLESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 www."$GOOGLEZONE" www."$GOOGLEZONE" CNAME forcesafesearch.google.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
 		fi
 	fi
 
@@ -49,6 +46,13 @@ do
 		fi
 	fi
 done
+
+if [[ "$ACTION" == add ]]
+then
+	#Add in an A record for forcesafesearch.google.com	
+	samba-tool dns add 127.0.0.1 www.google.com forcesafesearch.google.com A "$GOOGLESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
+fi
+
 
 #Restart samba4 to activate any zones that have been added or deleted.
 if [[ "$RESTARTSAMBA" == yes ]]
