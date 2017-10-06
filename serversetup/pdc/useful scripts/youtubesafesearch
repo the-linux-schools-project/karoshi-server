@@ -33,20 +33,20 @@ do
 			echo Creating "$YOUTUBEZONE"
 			samba-tool dns zonecreate 127.0.0.1 "$YOUTUBEZONE" --username=Administrator --password="$LDAPPASS"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 "$YOUTUBEZONE" restrict.youtube.com."$YOUTUBEZONE" CNAME restrict.youtube.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 www."$YOUTUBEZONE" restrict.youtube.com.www."$YOUTUBEZONE" CNAME restrict.youtube.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
 			#Add in dns record for restrict.youtube.com
-			samba-tool dns add 127.0.0.1 "$YOUTUBEZONE" www."$YOUTUBEZONE" A "$YOUTUBESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 www."$YOUTUBEZONE" www."$YOUTUBEZONE" A "$YOUTUBESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
 		fi
 	fi
 
 	if [[ "$ACTION" == delete ]]
 	then
 		#Remove dns zone if it exists
-		if [[ $(grep -c -w "$YOUTUBEZONE" <<< "$GOOGLEINFO") -gt 0 ]]
+		if [[ $(grep -c -w www."$YOUTUBEZONE" <<< "$GOOGLEINFO") -gt 0 ]]
 		then
 			RESTARTSAMBA=yes
-			echo Deleting "$YOUTUBEZONE"
-			samba-tool dns zonedelete 127.0.0.1 "$YOUTUBEZONE" --username=Administrator --password="$LDAPPASS"
+			echo Deleting www."$YOUTUBEZONE"
+			samba-tool dns zonedelete 127.0.0.1 www."$YOUTUBEZONE" --username=Administrator --password="$LDAPPASS"
 		fi
 	fi
 done
