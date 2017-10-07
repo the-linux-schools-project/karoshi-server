@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dns_settings_cgi
 then
-	echo `date`: dns_settings - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_settings - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101	
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dns_settings_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dns_settings.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $dns_settings_cgi'check' ]
+if [ "$MD5SUM"'check' != "$dns_settings_cgi"'check' ]
 then
-	echo `date`: dns_settings - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_settings - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,86 +46,86 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: dns_set_forwarder - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-' | sed 's/REPLACEUNDERSCORE/_/g')
 if [ -z "$DATA" ]
 then
-	echo `date`: dns_set_forwarder - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
-ACTION=`echo "$DATA" | cut -s -d: -f7`
-DNS1=`echo "$DATA" | cut -s -d: -f8`
-DNS2=`echo "$DATA" | cut -s -d: -f9`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f5)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f6)
+ACTION=$(echo "$DATA" | cut -s -d: -f7)
+DNS1=$(echo "$DATA" | cut -s -d: -f8)
+#DNS2=$(echo "$DATA" | cut -s -d: -f9)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: dns_set_forwarder - Not called by dns_settings.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Not called by dns_settings.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: dns_set_forwarder - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: dns_set_forwarder - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: dns_set_forwarder - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: dns_set_forwarder - Blank servertype by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Blank servertype by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ "$SERVERTYPE" = federated ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: dns_set_forwarder - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dns_set_forwarder - Blank servermaster by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit
 	fi
 fi
 if [ -z "$ACTION" ]
 then
-	echo `date`: dns_set_forwarder - Blank action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - Blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ "$ACTION" = reallyedit ]
 then
 	if [ -z "$DNS1" ]
 	then
-		echo `date`: dns_set_forwarder - Blank DNS by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): dns_set_forwarder - Blank DNS by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit
 	fi
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ] && [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_tech` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: dns_set_forwarder - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dns_set_forwarder - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: "dns_set_forwarder - setting DNS for $SERVERNAME to $DNS1 $DNS2 by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): dns_set_forwarder - setting DNS for $SERVERNAME to $DNS1 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 if [ "$ACTION" = autogenerate ]
 then
@@ -136,35 +136,84 @@ fi
 if [ "$ACTION" = reallyedit ]
 then
 	#Set forwarder
-	if [ "$SERVERNAME" = $(hostname-fqdn) ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Change dns forwarder in smb.conf
-		sed -i '/dns forwarder =/c\\tdns forwarder = '$DNS1'' /etc/samba/smb.conf
-		#Restart Samba4
-		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
-	else
-		#Check what type of server this is
+		sed -i '/dns forwarder =/c\\tdns forwarder = '"$DNS1"'' /etc/samba/smb.conf
 
-		if [ -f /opt/karoshi/server_network/zones/internal/additional_domain_controllers/"$SERVERNAME" ] || [ -f /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/"$SERVERNAME" ]
+		#Change dns forwarder in bind
+		if [ -f /etc/bind/named.conf.options ]
 		then
-			DNSTYPE=samba4
-		else
-			DNSTYPE=dnsmasq
+			#Backup /etc/bind/named.conf.options
+			cp -f /etc/bind/named.conf.options /etc/bind/named.conf.options.backup."$LOG_DATE.$$"
+
+			#Delete the forwarders section from named.conf.options
+			sed -i ':again;$!N;$!b again; s/forwarders {[^}]*};//g' /etc/bind/named.conf.options
+
+			#Add in a new forwarders section
+			sed -i '/options {/a \\tforwarders {\n\t\t'"$DNS1"';\n\t};' /etc/bind/named.conf.options
 		fi
+
+		#Check if we are using samba4 internal dns or bind and restart the service
+		source /opt/karoshi/serversetup/variables/distro
+
+		if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
+		then
+			#Restart bind
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_start 1>/dev/null
+		else
+			#Restart Samba4
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
+		fi
+
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" "
+		#Change dns forwarder in bind
+		if [ -f /etc/bind/named.conf.options ]
+		then
+			#Backup /etc/bind/named.conf.options
+			cp -f /etc/bind/named.conf.options /etc/bind/named.conf.options.backup.""$LOG_DATE.$$""
+
+			#Delete the forwarders section from named.conf.options
+			sed -i ':again;\$!N;\$!b again; s/forwarders {[^}]*};//g' /etc/bind/named.conf.options
+		fi
+		"
+
+
+		#ssh -o PasswordAuthentication=no -o ConnectTimeout=3 cetus "sed ':again;\$!N;\$!b again; s/forwarders {[^}]*};//g' /etc/bind/named.conf.options"
+		#ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" "sed -i ':again;$!N;$!b again; s/forwarders {[^}]*};//g' /etc/bind/named.conf.options"
 
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 		#Change dns forwarder in smb.conf
-		sed -i "/dns forwarder =/c\\\tdns forwarder = '$DNS1'" /etc/samba/smb.conf
-		#Restart Samba4
+		sed -i "/dns forwarder =/c\\\tdns forwarder = '"$DNS1"'" /etc/samba/smb.conf
+
+		#Check if we are using samba4 internal dns or bind and restart the service
 		source /opt/karoshi/serversetup/variables/distro
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+
+		if [ -f /etc/bind/named.conf.options ]
+		then
+			#Add in a new forwarders section
+			sed -i "/options {/a \\\tforwarders {\n\t\t'"$DNS1"';\n\t};" /etc/bind/named.conf.options
+		fi
+
+
+		if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
+		then
+			#Restart bind
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_start 1>/dev/null
+		else
+			#Restart Samba4
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
+			sleep 1
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
+		fi
 		'
 	fi
 fi
-
 
