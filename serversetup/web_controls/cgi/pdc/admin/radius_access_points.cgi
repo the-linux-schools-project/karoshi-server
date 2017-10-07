@@ -147,10 +147,16 @@ if [ "$MOBILE" = no ]
 then
 	TABLECLASS=standard
 	DIV_ID=actionbox3
+	ICON1=/images/submenus/user/groups.png
+	ICON2=/images/submenus/system/wireless.png
+	ICON3=/images/submenus/system/add.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 else
+	ICON1=/images/submenus/user/groupsm.png
+	ICON2=/images/submenus/system/wirelessm.png
+	ICON3=/images/submenus/system/addm.png
 	TABLECLASS=mobilestandard
 fi
 
@@ -187,15 +193,13 @@ fi
 
 [ -z "$ACTION" ] && ACTION=view
 
-ICON1=/images/submenus/user/groups.png
-
 if [ "$ACTION" = add ] || [ "$ACTION" = edit ]
 then
 	ACTION2=view
 	BUTTONTXT=$"View access points."
 	TITLETXT=$"Add Access Point"
 	BUTTONTXT2=$"View"
-	ICON2=/images/submenus/system/wireless.png
+	CHOICEICON="$ICON2"
 fi
 
 if [ "$ACTION" = view ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = delete ]
@@ -204,7 +208,7 @@ then
 	BUTTONTXT=$"Add an access point."
 	TITLETXT=$"Radius Access Points"
 	BUTTONTXT2=$"Add"
-	ICON2=/images/submenus/system/add.png
+	CHOICEICON="$ICON3"
 fi
 
 #Show back button for mobiles
@@ -235,7 +239,7 @@ echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
 		<button class="info infonavbutton" name="____ActionChoice____" value="____ACTION____'$ACTION2'____">
-			<img src="'$ICON2'" alt="'"$BUTTONTXT"'">
+			<img src="'$CHOICEICON'" alt="'"$BUTTONTXT"'">
 			<span>'"$BUTTONTXT"'</span><br>
 			'"$BUTTONTXT2"'
 		</button>
