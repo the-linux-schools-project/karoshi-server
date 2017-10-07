@@ -52,32 +52,23 @@ then
 	exit 101
 fi
 
-#############################
 #Ensure that shorewall is running on boot
-#############################
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/shorewall
 
-#########################
 #Setup and start shorewall
-#########################
 echo "$(date): Configuring shorewall" >> /opt/karoshi/serversetup/install_log
 cd /etc
 rm -R -f /etc/shorewall
 tar -xvzf /opt/karoshi/serversetup/all/shorewall/shorewall.tar.gz
 cp -f /opt/karoshi/serversetup/pdc/pdcshorewall/rules /etc/shorewall/
-#########################
+
 #Make sure that shorewall will start
-#########################
 [ -e /etc/default/shorewall ] && sed -i 's/startup=0/startup=1/g' /etc/default/shorewall
 
-#########################
 #Run distro specific to check if eth0 should be changed
-#########################
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/shorewallconfig
 
-#########################
 #Start shorewall
-#########################
 echo "$(date): Restarting shorewall" >> /opt/karoshi/serversetup/install_log
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start

@@ -418,6 +418,9 @@ scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scrip
 #Copy in show_server_info
 scp /opt/karoshi/serversetup/all/"useful scripts"/show_server_info "$TCPIPNUMBER":/usr/sbin/
 
+#Copy in /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall
+scp /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall "$TCPIPNUMBER":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/
+
 echo "$(date): karoshi_servers_add - configuring initd scripts and uptime on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '
 source /opt/karoshi/serversetup/variables/distro
@@ -462,6 +465,11 @@ else
 fi
 LINENUM=`grep -n "#$RULESET" /etc/shorewall/rules | cut -d: -f1`
 sed -i $LINENUM"c"\ACCEPT"	"net:'"$PDCIP"'"	"fw"	"tcp"	"22"	"-"#"SSH-Access-PDC /etc/shorewall/rules
+
+#Set shorewall to start on boot
+rm -f /etc/rcS.d/*shorewall
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/shorewall
+
 #Restart shorewall
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 0.5
