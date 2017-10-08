@@ -51,17 +51,17 @@ then
 	echo "$(date): disk_information - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
-REMOTE_ADDR=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
-REMOTE_MD5=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
-SERVER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
-SERVERTYPE=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
-SERVERMASTER=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6)
-MOBILE=$(echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7)
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+SERVER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+SERVERTYPE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
+SERVERMASTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6)
+MOBILE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f7)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
 	echo "$(date): disk_information - Not called by disk_information.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -77,7 +77,7 @@ then
 	exit 101
 fi
 
-if [ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	echo "$(date): disk_information - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -114,7 +114,6 @@ fi
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
@@ -153,20 +152,21 @@ then
 	DISKINFO=$(df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5)
 	MOUNTCOUNT=$(echo -e "$DISKINFO" | wc -l)
 	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: $WIDTH1"px";\"><b>Mount point</b></td>"
+	<tr><td style=\"width: $WIDTH1\px\";\"><b>Mount point</b></td>"
 	[ "$MOBILE" = no ] && echo '<td style="width: '"$WIDTH2"'px;"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>'
 	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 	COUNTER=1
 	while [ "$COUNTER" -le "$MOUNTCOUNT" ]
 	do
 		MOUNTDATA=$(echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p")
-		FILESYSTEM=$(echo $MOUNTDATA | cut -d" " -f1)
-		SIZE=$(echo $MOUNTDATA | cut -d" " -f2)
-		USED=$(echo $MOUNTDATA | cut -d" " -f3)
-		AVAIL=$(echo $MOUNTDATA | cut -d" " -f4)
-		USE=$(echo $MOUNTDATA | cut -d" " -f5)
-		USE2=$(echo $USE | sed "s/%//g")
-		MOUNTPOINT=$(echo $MOUNTDATA | cut -d" " -f6)
+		FILESYSTEM=$(echo "$MOUNTDATA" | cut -d" " -f1)
+		SIZE=$(echo "$MOUNTDATA" | cut -d" " -f2)
+		USED=$(echo "$MOUNTDATA" | cut -d" " -f3)
+		AVAIL=$(echo "$MOUNTDATA" | cut -d" " -f4)
+		USE=$(echo "$MOUNTDATA" | cut -d" " -f5)
+		USE2="${USE//%/}"
+
+		MOUNTPOINT=$(echo "$MOUNTDATA" | cut -d" " -f6)
 		if [ "$MOBILE" = no ]
 		then
 			MOUNTPOINT="${MOUNTPOINT:0:50}"
@@ -187,7 +187,7 @@ then
 		fi
 		let USE2="$USE2"*"$MULTI"
 		echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
-		[ $MOBILE = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+		[ "$MOBILE" = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
 		echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
 		let COUNTER="$COUNTER"+1
@@ -198,22 +198,22 @@ then
 	DISKLIST=$(fdisk -l 2>/dev/null | grep ^"Disk /dev/s" | cut -d: -f1 | sed "s/^Disk //g")
 	for DISK in $DISKLIST
 	do
-	echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>"$DISK"</b><br>"
+	echo "<img src=\"/images/submenus/system/disk_drive.png\" alt=\"Disk Drive\"> <b>$DISK</b><br>"
 
 	#Enable smart
 	smartctl --smart=on "$DISK" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	#Get Disk information
 	UUID=
-	SMARTINFO=$(smartctl -i $DISK | tr -cd "A-Za-z0-9:=,/\n ")
+	SMARTINFO=$(smartctl -i "$DISK" | tr -cd "A-Za-z0-9:=,/\n ")
 	MODELFAMILY=$(echo -e "$SMARTINFO" | grep ^Model | cut -d: -f2 | sed "s/^ * //g")
 	DEVICEMODEL=$(echo -e "$SMARTINFO" | grep ^Device | cut -d: -f2 | sed "s/^ * //g")
 	SERIALNO=$(echo -e "$SMARTINFO" | grep ^Serial | cut -d: -f2 | sed "s/^ * //g")
 	FIRMWARE=$(echo -e "$SMARTINFO" | grep ^Firmware | cut -d: -f2 | sed "s/^ * //g")
 	CAPACITYBYTES=$(echo -e "$SMARTINFO" | grep ^User | cut -d: -f2 | sed "s/^ * //g" | cut -d" " -f1 | tr -cd "0-9")
 	SMARTENABLED=$(echo -e "$SMARTINFO" | grep ^SMART | cut -d: -f2 | sed "s/^ * //g")
-	SMARTSTATUS=$(smartctl -H $DISK | sed 1,4d)
-	EXTRASMARTINFO=$(smartctl -a $DISK)
+	SMARTSTATUS=$(smartctl -H "$DISK" | sed 1,4d)
+	EXTRASMARTINFO=$(smartctl -a "$DISK")
 	SSD_LIFE_LEFT=$(echo -e "$EXTRASMARTINFO" | grep SSD_Life_Left | sed "s/ * / /g" | cut -d" " -f4)
 	DISKTEMP=$(echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10)
 	PENDINGSECTORS=$(echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10)
@@ -222,39 +222,51 @@ then
 	then
 		DISK_AGE=$(echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours_and_Msec | sed "s/ * / /g" | cut -d" " -f11 | cut -d"+" -f1 | tr -cd "0-9\n")
 	fi
+
+	#Set disk age and disk temp to zero if we have no smart data
+	if [ -z "$DISK_AGE" ]
+	then
+		DISK_AGE=0
+	fi
+
+	if [ -z "$DISKTEMP" ]
+	then
+		DISKTEMP=0
+	fi
+	
 	#Convert disk age to days
 	DISK_AGE=$(echo "scale=0; $DISK_AGE/24" | bc)
 	DISK_AGE_UNIT=$"Days"
 
 	#If disk age is stupidly big reset it to 0 show a wrong value
-	if [ "$DISK_AGE" -gt 7300 ]
+	if [[ $(printf "%.0f\n" "$DISK_AGE") -gt 7300 ]]
 	then
 		DISK_AGE=0
 	fi
 
 	#Check disk age
 	DISK_AGE_WARN=0
-	if [ "$DISK_AGE" -gt 1460 ]
+	if [[ $(printf "%.0f\n" "$DISK_AGE") -gt 1460 ]]
 	then
 		DISK_AGE_WARN=1
 	fi
 
-	if [ "$DISK_AGE" -gt 1825 ]
+	if [[ $(printf "%.0f\n" "$DISK_AGE") -gt 1825 ]]
 	then
 		DISK_AGE_WARN=2
 	fi
 
 	#Convert disk age to years
-	if [ "$DISK_AGE" -gt 365 ]
+	if [[ $(printf "%.0f\n" "$DISK_AGE") -gt 365 ]]
 	then
-		DISK_AGE=`echo "scale=2; "$DISK_AGE"/365" | bc`
+		DISK_AGE=$(echo "scale=2; $DISK_AGE/365" | bc)
 		DISK_AGE_UNIT=$"Years"
 	fi
 
 	#Convert capacity to gigabytes
 	CAPACITY=$(echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc)
 	DRIVESCALE=GB
-	if [[ "$CAPACITY" > 1000 ]]
+	if [[ $(printf "%.0f\n" "$CAPACITY") -gt 1000 ]]
 	then
 		#Covert capacity to terabytes
 		CAPACITY=$(echo "scale=2; $CAPACITY/1024" | bc)
@@ -282,10 +294,13 @@ then
 	#Show SSD life left if we have the data
 	if [ ! -z "$SSD_LIFE_LEFT" ]
 	then
-		if [[ "$SSD_LIFE_LEFT" -lt 11 ]]
+		#Remove any leading zeros
+		SSD_LIFE_LEFT=$((10#$SSD_LIFE_LEFT))
+		if [[ $(printf "%.0f\n" "$SSD_LIFE_LEFT") -lt 11 ]]
 		then
 			echo '<tr><td style="color:red"><b>'$"SSD life left"'</b></td><td style="color:red"><b>'"$SSD_LIFE_LEFT"'%</b></td></tr>'
-		elif [[ "$SSD_LIFE_LEFT" -lt 30 ]]
+		elif [[ $(printf "%.0f\n" "$SSD_LIFE_LEFT") -lt 30 ]]
+		then
 			echo '<tr><td style="color:orange"><b>'$"SSD life left"'</b></td><td style="color:orange"><b>'"$SSD_LIFE_LEFT"'%</b></td></tr>'
 		else
 			echo '<tr><td>'$"SSD life left"'</td><td>'"$SSD_LIFE_LEFT"'%</td></tr>'
@@ -305,10 +320,10 @@ then
 		fi
 	fi
 
-	if [[ "$DISKTEMP" > 50 ]]
+	if [[ "$DISKTEMP" -gt 50 ]]
 	then
 		echo '<tr><td style="color:red"><b>'$"Disk temperature"'</b></td><td style="color:red"><b>'"$DISKTEMP"' <sup>o</sup>C</b></td></tr>'
-	elif [[ "$DISKTEMP" > 40 ]]
+	elif [[ "$DISKTEMP" -gt 40 ]]
 	then
 		echo '<tr><td style="color:orange">'$"Disk temperature"'</td><td style="color:orange">'"$DISKTEMP"' <sup>o</sup>C</td></tr>'
 	else
@@ -325,7 +340,7 @@ then
 		RAIDMOUNTPOINT=$(mdadm --detail --scan 2>/dev/null | cut -d" " -f2)
 		echo '<img src="/images/submenus/system/raid.png" alt="Software Raid"> <b>'$"Software Raid"'</b><br>'
 
-		MDADMDATA=$(mdadm --detail $RAIDMOUNTPOINT)
+		MDADMDATA=$(mdadm --detail "$RAIDMOUNTPOINT")
 		ACTIVE_RAID_DISKS=$(echo -e "$MDADMDATA" | grep "active sync" | sed "s/ * / /g" | cut -d" " -f8)
 		REBUILDING_RAID_DISKS=$(echo -e "$MDADMDATA" | grep "spare rebuilding " | sed "s/ * / /g" | cut -d" " -f8)
 		SPARE_RAID_DISKS=$(echo -e "$MDADMDATA" | sed "s/ * / /g" | grep "\- spare" | cut -d" " -f7)
@@ -349,7 +364,7 @@ then
 		<tr><td>'$"Raid Size"'</td><td>'"$ARRAYSIZE"'</td></tr>
 		<tr><td>'$"Used Size"'</td><td>'"$USEDSIZE"'</td></tr>
 		<tr><td>'$"Raid Status"'</td><td>'"$RAIDSTATUS"'</td></tr>'
-		[ ! -z "$REBUILDSTATUS" ] && echo '<tr><td>'$"Rebuild Status"'</td><td>'$REBUILDSTATUS'</td></tr>'
+		[ ! -z "$REBUILDSTATUS" ] && echo '<tr><td>'$"Rebuild Status"'</td><td>'"$REBUILDSTATUS"'</td></tr>'
 		echo '<tr><td>'$"Raid Drives"'</td><td>'"$RAIDDEVICES"'</td></tr>
 		<tr><td>'$"Used Drives"'</td><td>'"$TOTALDEVICES"'</td></tr>
 		<tr><td>'$"Active Devices"'</td><td>'"$ACTIVEDEVICES"'</td></tr>
@@ -375,47 +390,47 @@ then
 	#Get partition info
 	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
-	[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+	echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
+	<tr><td style=\"width: '"$WIDTH1"'px;\"><b>Mount point</b></td>"
+	[ '"$MOBILE"' = no ] && echo "<td style=\"width: '"$WIDTH2"'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
 	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 	COUNTER=1
-	while [ $COUNTER -le $MOUNTCOUNT ]
+	while [ "$COUNTER" -le "$MOUNTCOUNT" ]
 	do
-	MOUNTDATA=`echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p"`
-	FILESYSTEM=`echo $MOUNTDATA | cut -d" " -f1`
-	SIZE=`echo $MOUNTDATA | cut -d" " -f2`
-	USED=`echo $MOUNTDATA | cut -d" " -f3`
-	AVAIL=`echo $MOUNTDATA | cut -d" " -f4`
-	USE=`echo $MOUNTDATA | cut -d" " -f5`
-	USE2=`echo $USE | sed "s/%//g"`
+		MOUNTDATA=$(echo -e "$DISKINFO" | sed -n $COUNTER,$COUNTER"p")
+		FILESYSTEM=$(echo $MOUNTDATA | cut -d" " -f1)
+		SIZE=$(echo "$MOUNTDATA" | cut -d" " -f2)
+		USED=$(echo "$MOUNTDATA" | cut -d" " -f3)
+		AVAIL=$(echo "$MOUNTDATA" | cut -d" " -f4)
+		USE=$(echo "$MOUNTDATA" | cut -d" " -f5)
+		USE2=$(echo "$USE" | sed "s/%//g")
 
-	MOUNTPOINT=`echo $MOUNTDATA | cut -d" " -f6`
-	if [ "'$MOBILE'" = no ]
-	then
-		MOUNTPOINT="${MOUNTPOINT:0:50}"
-	else
-		MOUNTPOINT="${MOUNTPOINT:0:15}"
-	fi
+		MOUNTPOINT=$(echo "$MOUNTDATA" | cut -d" " -f6)
+		if [ "'"$MOBILE"'" = no ]
+		then
+			MOUNTPOINT="${MOUNTPOINT:0:50}"
+		else
+			MOUNTPOINT="${MOUNTPOINT:0:15}"
+		fi
 
-	if [ $USE2 -gt 90 ]
-	then
-	ALERTCOL=red
-	BARCOL=red
-	elif [ $USE2 -gt 70 ]
-	then
-	ALERTCOL=orange
-	BARCOL=orange
-	else
-	ALERTCOL=green
-	BARCOL=green
-	fi
-	let USE2=$USE2*'$MULTI'
-	echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
-	[ '$MOBILE' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
-	echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
+		if [ "$USE2" -gt 90 ]
+		then
+			ALERTCOL=red
+			BARCOL=red
+		elif [ "$USE2" -gt 70 ]
+		then
+			ALERTCOL=orange
+			BARCOL=orange
+		else
+			ALERTCOL=green
+			BARCOL=green
+		fi
+		let USE2="$USE2"*'"$MULTI"'
+		echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
+		[ '"$MOBILE"' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+		echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 
-	let COUNTER=$COUNTER+1
+		let COUNTER="$COUNTER"+1
 	done
 	echo "</tbody></table><br>"
 
@@ -440,17 +455,28 @@ then
 	SMARTSTATUS=$(smartctl -H $DISK | sed 1,4d)
 	EXTRASMARTINFO=$(smartctl -a $DISK)
 	SSD_LIFE_LEFT=$(echo -e "$EXTRASMARTINFO" | grep SSD_Life_Left | sed "s/ * / /g" | cut -d" " -f4)
-	DISKTEMP=`echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10`
-	PENDINGSECTORS=`echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10`
-	DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10`
+	DISKTEMP=$(echo -e "$EXTRASMARTINFO" | grep Temperature_Celsius | sed "s/ * / /g" | cut -d" " -f10)
+	PENDINGSECTORS=$(echo -e "$EXTRASMARTINFO" | grep Current_Pending_Sector | sed "s/ * / /g" | cut -d" " -f10)
+	DISK_AGE=$(echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours | sed "s/ * / /g" | sed "s/^ //g" | cut -d" " -f10)
 
 	if [ -z "$DISK_AGE" ]
 	then
-		DISK_AGE=`echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours_and_Msec | sed "s/ * / /g" | cut -d" " -f11 | cut -d"+" -f1 | tr -cd "0-9\n"`
+		DISK_AGE=$(echo -e "$EXTRASMARTINFO" | grep -w Power_On_Hours_and_Msec | sed "s/ * / /g" | cut -d" " -f11 | cut -d"+" -f1 | tr -cd "0-9\n")
+	fi
+
+	#Set disk age and disk temp to zero if we have no smart data
+	if [ -z "$DISK_AGE" ]
+	then
+		DISK_AGE=0
+	fi
+
+	if [ -z "$DISKTEMP" ]
+	then
+		DISKTEMP=0
 	fi
 
 	#Convert disk age to days
-	DISK_AGE=`echo "scale=0; $DISK_AGE/24" | bc`
+	DISK_AGE=$(echo "scale=0; $DISK_AGE/24" | bc)
 	DISK_AGE_UNIT=$"Days"
 
 	#If disk age is stupidly big reset it to 0 show a wrong value
@@ -479,17 +505,17 @@ then
 	fi
 
 	#Convert capacity to gigabytes
-	CAPACITY=`echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc`
+	CAPACITY=$(echo "scale=2; $CAPACITYBYTES/1024/1024/1024" | bc)
 	DRIVESCALE=GB
-	if [[ $CAPACITY > 1000 ]]
+	if [[ $(printf "%.0f\n" "$CAPACITY") -gt 1000 ]]
 	then
-	#Covert capacity to terabytes
-	CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
-	DRIVESCALE=TB
+		#Covert capacity to terabytes
+		CAPACITY=`echo "scale=2; $CAPACITY/1024" | bc`
+		DRIVESCALE=TB
 	fi
 
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: '$WIDTH3'px;\">'$"Model Family"'</td><td style=\"width: '$WIDTH4'px;\">$MODELFAMILY</td></tr>
+	echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
+	<tr><td style=\"width: '"$WIDTH3"'px;\">'$"Model Family"'</td><td style=\"width: '$WIDTH4'px;\">$MODELFAMILY</td></tr>
 	<tr><td>'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 	<tr><td>'$"Serial Number"'</td><td>$SERIALNO</td></tr>
 	<tr><td>'$"Firmware Version"'</td><td>$FIRMWARE</td></tr>"
@@ -507,10 +533,13 @@ then
 	#Show SSD life left if we have the data
 	if [ ! -z "$SSD_LIFE_LEFT" ]
 	then
-		if [[ "$SSD_LIFE_LEFT" -lt 11 ]]
+		#Remove any leading zeros
+		SSD_LIFE_LEFT=$((10#$SSD_LIFE_LEFT))
+		if [[ $(printf "%.0f\n" "$SSD_LIFE_LEFT") -lt 11 ]]
 		then
 			echo "<tr><td style=\"color:red\"><b>'$"SSD life left"'</b></td><td style="color:red"><b>$SSD_LIFE_LEFT%</b></td></tr>"
-		elif [[ "$SSD_LIFE_LEFT" -lt 30 ]]
+		elif [[ $(printf "%.0f\n" "$SSD_LIFE_LEFT") -lt 30 ]]
+		then
 			echo "<tr><td style=\"color:orange\"><b>'$"SSD life left"'</b></td><td style="color:orange"><b>$SSD_LIFE_LEFT%</b></td></tr>"
 		else
 			echo "<tr><td>'$"SSD life left"'</td><td>$SSD_LIFE_LEFT%</td></tr>"
@@ -570,8 +599,8 @@ then
 	CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 	UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-	echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-	<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+	echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
+	<tr><td style=\"width: '"$WIDTH3"'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 	<tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 	<tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
 	<tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
@@ -594,18 +623,18 @@ then
 
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$KAROSHI_SERVER' '\''
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$KAROSHI_SERVER"' '\''
 #Show free space
 
 #Get partition info
 DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
 echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
-<tr><td style=\"width: '$WIDTH1'px;\"><b>Mount point</b></td>"
-[ '$MOBILE' = no ] && echo "<td style=\"width: '$WIDTH2'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
+<tr><td style=\"width: '"$WIDTH1"'px;\"><b>Mount point</b></td>"
+[ '"$MOBILE"' = no ] && echo "<td style=\"width: '"$WIDTH2"'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
 echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
 COUNTER=1
 while [ $COUNTER -le $MOUNTCOUNT ]
@@ -638,9 +667,9 @@ else
 ALERTCOL=green
 BARCOL=green
 fi
-let USE2=$USE2*'$MULTI'
+let USE2=$USE2*'"$MULTI"'
 echo "<tr><td style=\"color:$ALERTCOL\">$MOUNTPOINT</td>"
-[ '$MOBILE' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
+[ '"$MOBILE"' = no ] && echo "<td style=\"color:$ALERTCOL\">$FILESYSTEM</td><td style=\"color:$ALERTCOL\">$SIZE</td><td style=\"color:$ALERTCOL\">$USED</td>"
 echo "<td style=\"color:$ALERTCOL\">$AVAIL</td><td style=\"color:$ALERTCOL\">$USE</td><td class=\"BarFull\"><img src=\"/images/disk_usage/$BARCOL.png\" height=\"12\" alt=\"$USE2\" width=\"$USE2\"></td></tr>"
 let COUNTER=$COUNTER+1
 done
@@ -683,7 +712,7 @@ CAPACITY=`echo "scale=0; $CAPACITY/1024" | bc`
 DRIVESCALE=TB
 fi
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
+echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
 <tr><td style=\"width: 180px;\">'$"Model Family"'</td><td>$MODELFAMILY</td></tr>
 <tr><td style=\"width: 180px;\">'$"Device Model"'</td><td>$DEVICEMODEL</td></tr>
 <tr><td style=\"width: 180px;\">'$"Serial Number"'</td><td>$SERIALNO</td></tr>
@@ -741,8 +770,8 @@ LAYOUT=`echo -e "$MDADMDATA" | grep "Layout :" | cut -d: -f2 | sed "s/^ //g"`
 CHUNKSIZE=`echo -e "$MDADMDATA" | grep "Chunk Size :" | cut -d: -f2 | sed "s/^ //g"`
 UUID=`echo -e "$MDADMDATA" | grep "UUID :" | cut -d: -f2- | sed "s/^ //g"`
 
-echo "<table class=\"'$TABLECLASS'\" style=\"text-align: left;\"><tbody>
-<tr><td style=\"width: '$WIDTH3'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
+echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
+<tr><td style=\"width: '"$WIDTH3"'px;\">'$"Raid Level"'</td><td>$RAIDLEVEL</td></tr>
 <tr><td>'$"Raid Size"'</td><td>$ARRAYSIZE</td></tr>
 <tr><td>'$"Used Size"'</td><td>$USEDSIZE</td></tr>
 <tr><td>'$"Raid Status"'</td><td>$RAIDSTATUS</td></tr>"
