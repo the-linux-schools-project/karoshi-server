@@ -313,10 +313,10 @@ then
 	then
 		#Remove any leading zeros
 		PERCENT_LIFETIME_USED=$((10#$PERCENT_LIFETIME_USED))
-		if [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -lt 11 ]]
+		if [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -gt 90 ]]
 		then
 			echo '<tr><td style="color:red"><b>'$"Percent lifetime used"'</b></td><td style="color:red"><b>'"$PERCENT_LIFETIME_USED"'%</b></td></tr>'
-		elif [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -lt 30 ]]
+		elif [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -gt 70 ]]
 		then
 			echo '<tr><td style="color:orange"><b>'$"Percent lifetime used"'</b></td><td style="color:orange"><b>'"$PERCENT_LIFETIME_USED"'%</b></td></tr>'
 		else
@@ -569,10 +569,10 @@ then
 	then
 		#Remove any leading zeros
 		PERCENT_LIFETIME_USED=$((10#$PERCENT_LIFETIME_USED))
-		if [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -lt 11 ]]
+		if [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -gt 90 ]]
 		then
 			echo "<tr><td style=\"color:red\"><b>'$"Percent lifetime used"'</b></td><td style="color:red"><b>$PERCENT_LIFETIME_USED%</b></td></tr>"
-		elif [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -lt 30 ]]
+		elif [[ $(printf "%.0f\n" "$PERCENT_LIFETIME_USED") -gt 70 ]]
 		then
 			echo "<tr><td style=\"color:orange\"><b>'$"Percent lifetime used"'</b></td><td style="color:orange"><b>$PERCENT_LIFETIME_USED%</b></td></tr>"
 		else
