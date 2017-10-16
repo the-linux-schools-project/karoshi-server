@@ -2282,7 +2282,7 @@ BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
 BACKUPARCHIVEPATH=$(echo "$LOCATION" | cut -d"/" -f1-5)
 SUBFOLDERS=$(echo "$LOCATION" | cut -d"/" -f7-8)
 
-echo '<table class="tablesorter" style="text-align: left;" ><tbody>
+echo '<div id="infobox"><table class="tablesorter" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;"><b>'$"Search Backup"'</b></td><td>'$SEARCH'</td></tr>
 <tr><td>'$"Backup Server"'</td><td>'$SERVERNAME'</td></tr>
 <tr><td>'$"Backup Archive"'</td><td>'$BACKUPARCHIVE'</td></tr>
@@ -2321,7 +2321,7 @@ convert_special_chars
 getlastlocation
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
 BACKUPARCHIVE=$(echo "$LOCATION" | cut -d"/" -f5)
-echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
+echo '<div id="titlebox"><input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
 #Show form for search
 
 echo '<table class="tablesorter" style="text-align: left;" ><tbody>
