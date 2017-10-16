@@ -413,7 +413,7 @@ then
 
 	#Create new profile folders for the user
 	#Windows XP
-	cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
+	cp -aR /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
 	chown -c -R "$NEWUSERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME" 1>/dev/null
 	chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
 	chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME"
@@ -426,7 +426,7 @@ then
 		then
 			if [ -d /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" ]
 			then
-				cp -R /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
+				cp -aR /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
 				chown -c -R "$NEWUSERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION" 1>/dev/null
 				chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"
 				chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$NEWUSERNAME.$PROFILE_VERSION"

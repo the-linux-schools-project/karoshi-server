@@ -110,7 +110,7 @@ echo '<ul><li>'"$USERNAME"' - '$"converting to a roaming profile"'</li></ul>'
 
 #Create new profile folders for the user
 #Windows XP
-cp -R /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
+cp -aR /home/applications/profiles/default_roaming_profile /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
 chown -c -R "$USERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME" 1>/dev/null
 chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
 chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME"
@@ -123,7 +123,7 @@ do
 	then
 		if [ -d /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" ]
 		then
-			cp -R /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
+			cp -aR /home/applications/profiles/default_roaming_profile."$PROFILE_VERSION" /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
 			chown -c -R "$USERNAME":itadmin /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION" 1>/dev/null
 			chmod 0660 -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"
 			chmod u+X,g+X -R /home/applications/profiles/roaming_profiles/"$PRIMARYGROUP/$USERNAME.$PROFILE_VERSION"

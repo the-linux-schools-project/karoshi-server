@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_profile_select_cgi
 then
-	echo `date`: windows_client_profile_select - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/windows_client_profile_select_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_profile_select.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $windows_client_profile_select_cgi'check' ]
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/windows_client_profile_select.cgi | cut -d' ' -f1)
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$windows_client_profile_select_cgi"'check' ]
 then
-	echo `date`: windows_client_profile_select - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,135 +46,196 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [ "$numArgs" != 1 ]
 then
-	echo `date`: windows_client_profile_select - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-FILENAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-WINDOWSVER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
-PRIGROUP=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g'` )
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+FILENAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+WINDOWSVER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
+PRIGROUP=( $(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6- | sed 's/:/ /g') )
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: windows_client_profile_select - Not called by windows_client_profile_select.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Not called by windows_client_profile_select.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: windows_client_profile_select - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: windows_client_profile_select - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: windows_client_profile_select - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$FILENAME" ]
 then
-	echo `date`: windows_client_profile_select - No filename by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - No filename by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$WINDOWSVER" ]
 then
-	echo `date`: windows_client_profile_select - No windows version by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - No windows version by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check that filename is a tar.gz or zip
-if [ `echo $FILENAME | grep -c '\<zip\>'` != 1 ] &&  [ `echo $FILENAME | grep -c '\<tar\.gz\>'` != 1 ]
+if [[ $(echo "$FILENAME" | grep -c '\<zip\>') != 1 ]] &&  [[ $(echo "$FILENAME" | grep -c '\<tar\.gz\>') != 1 ]]
 then
-	echo `date`: windows_client_profile_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Profile is not in correct format by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 #Check that profile with this filename exists
-if [ ! -f /var/www/karoshi/win_profile_upload/$FILENAME ]
+if [ ! -f /var/www/karoshi/win_profile_upload/"$FILENAME" ]
 then
-	echo `date`: windows_client_profile_select - The profile does not exist by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - The profile does not exist by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$PRIGROUP" ]
 then
-	echo `date`: windows_client_profile_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): windows_client_profile_select - Blank primary group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #######################
 #Move file
 #######################
-mkdir -p /opt/karoshi/.tempdata/win_profile_upload.$$
-cp /var/www/karoshi/win_profile_upload/$FILENAME /opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME
+mkdir -p /opt/karoshi/.tempdata/win_profile_upload."$$"
+cp /var/www/karoshi/win_profile_upload/"$FILENAME" "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME"
 rm -f -R /var/www/karoshi/win_profile_upload/
 ############################
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #######################
 #Check that compressed profile is valid
 #######################
-FILENAME2=`echo $FILENAME | sed 's/SPACECORRECT/ /g'`
+FILENAME2=$(echo "$FILENAME" | sed 's/SPACECORRECT/ /g')
 echo '<b>'$"Archive Check"'</b><br><br>'
-if [ `echo $FILENAME | grep -c '\<zip\>'` = 1 ]
+if [[ $(echo "$FILENAME" | grep -c '\<zip\>') = 1 ]]
 then
 	ARCHIVE_TYPE=zip
 else
 	ARCHIVE_TYPE=tar.gz
 fi
-if [ $ARCHIVE_TYPE = zip ]
+if [ "$ARCHIVE_TYPE" = zip ]
 then
-	unzip -tq /opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-	ARCHIVE_STATUS=`echo $?`
+	unzip -tq "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME" 1>/dev/null 2>/dev/null
+	ARCHIVE_STATUS="$?"
 else
-	tar -tzf /opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME 1>/dev/null 2>/dev/null
-ARCHIVE_STATUS=`echo $?`
+	tar -tzf "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME" 1>/dev/null 2>/dev/null
+ARCHIVE_STATUS="$?"
 fi
-if [ $ARCHIVE_STATUS != 0 ]
+if [ "$ARCHIVE_STATUS" != 0 ]
 then
-	echo $FILENAME2 : $"The archive is not valid."'<br><br>'
-	echo `date`: windows_client_profile_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$FILENAME2 : "$"The archive is not valid."'<br><br>'
+	echo "$(date): windows_client_profile_select - The archive format is not valid by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 else
-	echo $FILENAME2 : $"No errors detected in this archive."'<br><br>'
+	echo "$FILENAME2 : "$"No errors detected in this archive."'<br><br>'
 fi
 #######################
 #Extract profile
 #######################
-mkdir /opt/karoshi/.tempdata/win_profile_new.$$
+mkdir /opt/karoshi/.tempdata/win_profile_new."$$"
 if [ $ARCHIVE_TYPE = zip ]
 then
 	#Extract zip
-	unzip -d /opt/karoshi/.tempdata/win_profile_new.$$ /opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME 1>/dev/null
+	unzip -d /opt/karoshi/.tempdata/win_profile_new."$$" "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME" 1>/dev/null
 else
 	#Extract tar
-	tar -C /opt/karoshi/.tempdata/win_profile_new.$$ -xzf /opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME 1>/dev/null
+	tar --xattrs -C /opt/karoshi/.tempdata/win_profile_new."$$" -xzf "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME" 1>/dev/null
 fi
 #Check that there is only one directory extracted
-if [ `ls -1 /opt/karoshi/.tempdata/win_profile_new.$$ | wc -l` = 1 ]
+if [[ $(ls -1 /opt/karoshi/.tempdata/win_profile_new.$$ | wc -l) = 1 ]]
 then
-	TOPDIRNAME=`ls -1 /opt/karoshi/.tempdata/win_profile_new.$$ | sed -n 1,1p`
+	TOPDIRNAME=$(ls -1 /opt/karoshi/.tempdata/win_profile_new."$$" | sed -n 1,1p)
 else
-	echo `date`: windows_client_profile_select - The archive has more than one top directory by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	rm -f -R /opt/karoshi/.tempdata/win_profile_upload.$$
+	echo "$(date): windows_client_profile_select - The archive has more than one top directory by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	rm -f -R /opt/karoshi/.tempdata/win_profile_upload."$$"
 	exit 101
 fi
+
+# Restore DOS attributes from zip
+if [ "$ARCHIVE_TYPE" = zip ]
+then
+    zipinfo "/opt/karoshi/.tempdata/win_profile_upload.$$/$FILENAME" \* | \
+    grep -E '^[drwxahs-]{7} .* fat ' | cut -c1-7,54- --output-delimiter=" " | \
+    while read ATTRS FILE
+    do
+	[ -e /opt/karoshi/.tempdata/win_profile_new.$$/"$FILE" ] || continue
+	VALUE=0
+	[[ $ATTRS =~ ^d ]] && VALUE=10
+	[[ $ATTRS =~ ^..- ]] && VALUE=$((VALUE+1))
+	[[ $ATTRS =~ ^....a ]] && VALUE=$((VALUE+20))
+	[[ $ATTRS =~ ^.....h ]] && VALUE=$((VALUE+2))
+	[[ $ATTRS =~ ^......s ]] && VALUE=$((VALUE+4))
+	if [ $VALUE -gt 0 ]
+	then
+	    VALUE='"'"0x$VALUE"'"'
+	    setfattr --name=user.DOSATTRIB --value="$VALUE" \
+	      /opt/karoshi/.tempdata/win_profile_new.$$/"$FILE"
+	fi
+    done
+fi
+# For the proper functioning of the profiles, the following files and
+# directories must have the original attributes, so you should use this
+# hard-coded list if you can't restore the attributes from the archive.
+# (It was only tested in Windows 7, other versions of Windows may require other
+# directories or files.)
+#
+# Files
+find "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/" \
+  -type f \
+  -iname desktop.ini | \
+while read FILE
+do
+    [ -z "$(getfattr --absolute-names --name=user.DOSATTRIB --dump "$FILE")" ] && \
+      setfattr --name=user.DOSATTRIB --value='"0x26"' "$FILE"
+done
+# Directories
+while read FILE
+do
+    FILE=/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/"$FILE"
+    [ -d "$FILE" ] || continue
+    [ -z "$(getfattr --absolute-names --name=user.DOSATTRIB --dump "$FILE")" ] && \
+      setfattr --name=user.DOSATTRIB --value='"0x11"' "$FILE"
+done <<_EOF
+AppData/Roaming/Microsoft/Internet Explorer/Quick Launch
+AppData/Roaming/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar
+AppData/Roaming/Microsoft/Windows/Libraries
+AppData/Roaming/Microsoft/Windows/Recent
+AppData/Roaming/Microsoft/Windows/SendTo
+AppData/Roaming/Microsoft/Windows/Start Menu
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Accessories
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Accessories/Accessibility
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Accessories/System Tools
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Administrative Tools
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Maintenance
+AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup
+Favorites/Links
+_EOF
+
 
 #Check windows version
 source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
@@ -182,40 +243,40 @@ source /opt/karoshi/server_network/clients/windows_client_versions/"$WINDOWSVER"
 #######################
 #Copy profile to chosen groups
 #######################
-GROUPCOUNT=`echo ${#PRIGROUP[@]}`
+GROUPCOUNT="${#PRIGROUP[@]}"
 COUNTER=0
-while [ $COUNTER -lt $GROUPCOUNT ]
+while [ "$COUNTER" -lt "$GROUPCOUNT" ]
 do
-	CURRENTGROUP=`echo ${PRIGROUP[$COUNTER]}`
+	CURRENTGROUP="${PRIGROUP[$COUNTER]}"
 
-	if [ $CURRENTGROUP != defaultroamingprofile ]
+	if [ "$CURRENTGROUP" != defaultroamingprofile ]
 	then
 	#Change to mandatory profile
-		[ -f /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.dat ] && mv /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.dat /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.man
-		[ -f /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.DAT ] && mv /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.DAT /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.man
+		[ -f "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.dat" ] && mv "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.dat" "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.man"
+		[ -f "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.DAT" ] && mv "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.DAT" "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME/ntuser.man"
 	fi
 
-	[ $CURRENTGROUP = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
+	[ "$CURRENTGROUP" = defaultroamingprofile ] && CURRENTGROUP=default_roaming_profile
 
 	if [ -z "$PROFILE_VERSION" ]
 	then
-		PROFILENAME=$CURRENTGROUP
+		PROFILENAME="$CURRENTGROUP"
 	else
-		PROFILENAME=$CURRENTGROUP.$PROFILE_VERSION
+		PROFILENAME="$CURRENTGROUP.$PROFILE_VERSION"
 	fi
 
 	#Log event
-	echo `date`: windows_client_profile_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	echo $"Copying profile to" : $PROFILENAME'<br><br>'
-	[ -L /home/applications/profiles/$PROFILENAME ] && rm -f /home/applications/profiles/$PROFILENAME
-	[ -d /home/applications/profiles/$PROFILENAME ] && rm -f -R /home/applications/profiles/$PROFILENAME
-	cp -f -R /opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME /home/applications/profiles/$PROFILENAME
-	chown -R root.itadmin /home/applications/profiles/$PROFILENAME
-	chmod 0664 -R /home/applications/profiles/$PROFILENAME
-	chmod a+X -R /home/applications/profiles/$PROFILENAME
-	let COUNTER=$COUNTER+1
+	echo "$(date): windows_client_profile_select - copying $FILENAME2 to $CURRENTGROUP by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo $"Copying profile to"" : $PROFILENAME<br><br>"
+	[ -L /home/applications/profiles/"$PROFILENAME" ] && rm -f /home/applications/profiles/"$PROFILENAME"
+	[ -d /home/applications/profiles/"$PROFILENAME" ] && rm -f -R /home/applications/profiles/"$PROFILENAME"
+	cp -f -aR "/opt/karoshi/.tempdata/win_profile_new.$$/$TOPDIRNAME" /home/applications/profiles/"$PROFILENAME"
+	chown -R root.itadmin /home/applications/profiles/"$PROFILENAME"
+	chmod 0664 -R /home/applications/profiles/"$PROFILENAME"
+	chmod a+X -R /home/applications/profiles/"$PROFILENAME"
+	let COUNTER="$COUNTER"+1
 done
 #Remove temp folder
-rm -f -R /opt/karoshi/.tempdata/win_profile_new.$$
-rm -f -R /opt/karoshi/.tempdata/win_profile_upload.$$
+rm -f -R /opt/karoshi/.tempdata/win_profile_new."$$"
+rm -f -R /opt/karoshi/.tempdata/win_profile_upload."$$"
 exit
