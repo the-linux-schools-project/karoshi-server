@@ -24,27 +24,26 @@
 #
 #Website: http://www.karoshi.org.uk
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [[ -z "$DATA" ]]
 then
-	echo `date`: client_create_cert - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_create_cert - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-CLIENTNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+CLIENTNAME=$(echo "$DATA" | cut -s -d: -f4)
 
 if [[ -z $CLIENTNAME ]]
 then
-	echo `date`: client_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): client_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "`date`: client_create_cert - creating openvpn client certificates for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): client_create_cert - creating openvpn client certificates for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #Set certificate variables
 source /opt/karoshi/server_network/domain_information/domain_name
@@ -55,29 +54,37 @@ then
 	source /etc/default/locale
 fi
 
-COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-STATE=`cat /etc/timezone | cut -d/ -f1`
-CITY=`cat /etc/timezone | cut -d/ -f2`
-NAME=$HOSTNAME
-LOCALNAME=$REALM
-SERVERNAME=$REALM
-EMAILADDRESS=$CLIENTNAME@$REALM
+COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+STATE=$(cut -d/ -f1 < /etc/timezone)
+CITY=$(cut -d/ -f2 < /etc/timezone)
+EMAILADDRESS="$CLIENTNAME@$REALM"
 
 #SSH to the openvpn server to create the certificates
-VPNSERVER=`sed -n 1,1p /opt/karoshi/server_network/vpnserver`
+VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNSERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
 cd /etc/openvpn/easy-rsa
 . ./vars
 
+
+#Check to see if we already have a certificate for the user since they have to have a separate certifacate for each device they want to connect with at the same time.
+CLIENTNAME="'"$CLIENTNAME"'"
+COUNTER=1
+while [ -f /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn ]
+do
+	CLIENTNAME="$(echo "$CLIENTNAME" | cut -d"-" -f1)-$COUNTER"
+	((COUNTER += 1))	
+done
+
+
 #Squirt data into cert generators
 function pipe_data {
-echo -e "'$COUNTRY'\n'$STATE'\n'$CITY'\n'$REALM'\n'$REALM'\n'$CLIENTNAME'.'$REALM'\n'$REALM'\n'$EMAILADDRESS'\n'$OPENVPNPASS'\n\n"
+echo -e "'"$COUNTRY"'\n'"$STATE"'\n'"$CITY"'\n'"$REALM"'\n'"$REALM"'\n"$CLIENTNAME".'"$REALM"'\n'"$REALM"'\n'"$EMAILADDRESS"'\n'"$OPENVPNPASS"'\n\n"
 sleep 1
 echo -e "y\ny\n"
 }
 
-pipe_data | ./build-key '$CLIENTNAME'.'$REALM' 1>/dev/null
+pipe_data | ./build-key "$CLIENTNAME".'"$REALM"' 1>/dev/null
 
 
 #Create a unified certificate for the client to use.
@@ -85,31 +92,31 @@ pipe_data | ./build-key '$CLIENTNAME'.'$REALM' 1>/dev/null
 echo "client
 dev tun
 proto udp
-remote '$REALM' 1194
+remote '"$REALM"' 1194
 resolv-retry infinite
 nobind
 persist-key
 persist-tun
 ca ca.crt
-cert '$CLIENTNAME'.'$REALM'.crt
-key '$CLIENTNAME'.'$REALM'.key" > /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+cert "$CLIENTNAME".'"$REALM"'.crt
+key "$CLIENTNAME".'"$REALM"'.key" > /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 
 #Check if we have openvpn ldap auth
 if [ -f /usr/lib/openvpn/openvpn-auth-ldap.so ]
 then
-	echo "auth-user-pass" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+	echo "auth-user-pass" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 fi
 echo "ns-cert-type server
 comp-lzo
 verb 3
-" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 
-echo -e "\n<ca>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-cat /etc/openvpn/easy-rsa/keys/ca.crt >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-echo -e "</ca>\n<cert>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.crt >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-echo -e "</cert>\n<key>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-cat /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.key >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
-echo -e "</key>" >> /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.ovpn
+echo -e "\n<ca>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
+cat /etc/openvpn/easy-rsa/keys/ca.crt >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
+echo -e "</ca>\n<cert>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
+cat /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.crt >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
+echo -e "</cert>\n<key>" >> /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.ovpn
+cat /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.key >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
+echo -e "</key>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 '
 exit

@@ -24,41 +24,45 @@
 #
 #Website: http://www.karoshi.org.uk
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [[ -z "$DATA" ]]
 then
-	echo `date`: client_create_cert - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo $(date): client_create_cert - no data >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-CLIENTNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+CLIENTNAME=$(echo "$DATA" | cut -s -d: -f4)
 
-if [[ -z $CLIENTNAME ]]
+if [[ -z "$CLIENTNAME" ]]
 then
-	echo `date`: revoke_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): revoke_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "`date`: revoke_create_cert - revoking openvpn client certificate for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): revoke_create_cert - revoking openvpn client certificate for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #SSH to the openvpn server to create the certificates
-VPNSERVER=`sed -n 1,1p /opt/karoshi/server_network/vpnserver`
+VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNSERVER '
+#Set certificate variables
+source /opt/karoshi/server_network/domain_information/domain_name
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
 cd /etc/openvpn/easy-rsa
 . ./vars
-./revoke-full '$CLIENTNAME'.'$REALM'
+
+./revoke-full '"$CLIENTNAME"'.'"$REALM"'
 
 #Copy revocation file
 cp -f /etc/openvpn/easy-rsa/keys/crl.pem /etc/openvpn/
 
 #Enable revocation file in server.conf
-if [ `grep -c "#Verify client keys" /etc/openvpn/server.conf` = 0 ]
+if [ $(grep -c "#Verify client keys" /etc/openvpn/server.conf) = 0 ]
 then
 	echo -e "\n#Verify client keys" >> /etc/openvpn/server.conf
 	echo "crl-verify /etc/openvpn/crl.pem" >> /etc/openvpn/server.conf
@@ -69,6 +73,6 @@ then
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
 fi
 
-echo $(date) > /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.revoked
+echo $(date) > /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.revoked
 '
 
