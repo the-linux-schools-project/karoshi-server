@@ -112,7 +112,7 @@ function sortprinterstxt {
 #Sort printers.txt
 ##################
 STARTLINENO=$(grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1)
-NOOFLINES=$(wc -l < cat /var/lib/samba/netlogon/printers.txt)
+NOOFLINES=$(wc -l < /var/lib/samba/netlogon/printers.txt)
 let PRINTERSSTARTNO="$STARTLINENO"+1
 sed -n 1,"$STARTLINENO""p" /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_header.txt
 sed -n "$PRINTERSSTARTNO,$NOOFLINES""p" /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_data.txt
@@ -147,8 +147,12 @@ then
 			let PRINTERCOUNT="$PRINTERCOUNT"-1
 			#Delete line from current file
 			sed -i "$LOCATIONLINENO""d" /var/lib/samba/netlogon/printers.txt
+			#Make sure that the disk has really written the file
+			sync /var/lib/samba/netlogon/printers.txt
 			#Delete all empty lines
 			sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
+			#Make sure that the disk has really written the file
+			sync /var/lib/samba/netlogon/printers.txt
 			#Add in modified line
 			echo "$LOCATION,$PRINTERCOUNT,$PRINTERS,$DEFAULTPRINTER" | sed 's/,,/,/g' >> /var/lib/samba/netlogon/printers.txt
 		else
@@ -156,6 +160,8 @@ then
 			sed -i "$LOCATIONLINENO""d" /var/lib/samba/netlogon/printers.txt
 			#Delete all empty lines
 			sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
+			#Make sure that the disk has really written the file
+			sync /var/lib/samba/netlogon/printers.txt
 		fi
 		sortprinterstxt
 	fi

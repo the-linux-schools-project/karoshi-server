@@ -38,81 +38,62 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Assign PPD File"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%/+-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%/+-' | sed 's/____/QUADUNDERSCORE/g' | sed 's/_/12345UNDERSCORE12345/g' | sed 's/QUADUNDERSCORE/_/g')
 #########################
 #Assign data to variables
 #########################
 END_POINT=12
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign PRINTERNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRINTERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PRINTERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PRINTERNAME
+get_data
+PRINTERNAME=$(echo "$DATAENTRY" | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g')
+
 #Assign COLOUR
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = COLOURcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		COLOUR=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=COLOUR
+get_data
+COLOUR=$(echo "$DATAENTRY" | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g')
+
 #Assign PAGESIZE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PAGESIZEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PAGESIZE=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PAGESIZE
+get_data
+PAGESIZE=$(echo "$DATAENTRY" | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g')
+
 #Assign PRINTERPPD
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PRINTERPPDcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PRINTERPPD=`echo $DATA | cut -s -d'_' -f$COUNTER | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g'`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=PRINTERPPD
+get_data
+PRINTERPPD=$(echo "$DATAENTRY" | sed 's/123456789/_/g' | sed 's/12345UNDERSCORE12345/_/g')
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/printers.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -130,7 +111,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -138,13 +119,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -179,33 +160,32 @@ then
 fi
 #Check to see if we are uploading a ppd
 
-if [ $PRINTERPPD = uploadppd ]
+if [ "$PRINTERPPD" = uploadppd ]
 then
-#Write data to temp file
-echo PRINTERNAME=$PRINTERNAME > /var/www/karoshi/uploadppd
-echo PAGESIZE=$PAGESIZE >> /var/www/karoshi/uploadppd
-echo COLOUR=$COLOUR >> /var/www/karoshi/uploadppd
-echo '<form name="setppd" action="/cgi-bin/admin/printers_ppd_upload_fm.cgi" method="post">
-<input type="hidden" name="_PRINTERNAME_" value="'$PRINTERNAME'">
-</form>
-<script>
-document.setppd.submit();
-</script>'
-exit
+	#Write data to temp file
+	echo PRINTERNAME="$PRINTERNAME" > /var/www/karoshi/uploadppd
+	echo PAGESIZE="$PAGESIZE" >> /var/www/karoshi/uploadppd
+	echo COLOUR="$COLOUR" >> /var/www/karoshi/uploadppd
+	echo '<form name="setppd" action="/cgi-bin/admin/printers_ppd_upload_fm.cgi" method="post">
+	<input type="hidden" name="_PRINTERNAME_" value="'"$PRINTERNAME"'">
+	</form>
+	<script>
+	document.setppd.submit();
+	</script>'
+	exit
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d' ' -f1)
 #Add ppd file to printer
-sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PAGESIZE:$COLOUR:$PRINTERPPD
-EXEC_STATUS=`echo $?`
-if [ $EXEC_STATUS = 101 ]
+sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PAGESIZE:$COLOUR:$PRINTERPPD"
+if [ "$?" != 0 ]
 then
-	MESSAGE=`echo $"There was a problem adding this ppd. Please consult the Karoshi web administration logs."`
+	MESSAGE=$"There was a problem adding this ppd. Please consult the Karoshi web administration logs."
 	show_status
 fi
-MESSAGE=`echo $"The ppd file was added to" $PRINTERNAME`
-show_status
+
+view_printers
 
 echo "</div></body></html>"
 exit

@@ -23,172 +23,163 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
-SSHWARNMSG="SSH is not enabled for this server."
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_cgi
 then
-	echo `date`: printers_assign - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_assign_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printers_assign_cgi'check' ]
+if [ "$MD5SUM"'check' != "$printers_assign_cgi"'check' ]
 then
-	echo `date`: printers_assign - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 1 ]
+numArgs="$#"
+if [ "$numArgs" != 1 ]
 then
-	echo `date`: printers_assign - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-PRINTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-LOCATIONS=( `echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g'` )
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+PRINTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+LOCATIONS=( $(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5- | sed 's/:/ /g') )
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: printers_assign - Not called by printers_assign.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Not called by printers_assign.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: printers_assign - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: printers_assign - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check to see that LOCATIONS is not blank
 if [ -z "$LOCATIONS" ]
 then
-	echo `date`: printers_assign - Blank location by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Blank location by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 #Check to see that PRINTER is not blank
 if [ -z "$PRINTER" ]
 then
-	echo `date`: printers_assign - Blank Printers by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - Blank Printers by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: printers_assign - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printers_assign - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-
-function sortprinterstxt {
-###################
-#Sort printers.txt
-##################
-STARTLINENO=`grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
-NOOFLINES=`cat /var/lib/samba/netlogon/printers.txt | wc -l`
-let PRINTERSSTARTNO=$STARTLINENO+1
-sed -n 1,$STARTLINENO'p' /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_header.txt
-sed -n $PRINTERSSTARTNO,$NOOFLINES'p' /var/lib/samba/netlogon/printers.txt > /var/lib/samba/netlogon/printers_data.txt
-cat /var/lib/samba/netlogon/printers_header.txt > /var/lib/samba/netlogon/printers.txt
-sort /var/lib/samba/netlogon/printers_data.txt >> /var/lib/samba/netlogon/printers.txt
-rm -f /var/lib/samba/netlogon/printers_header.txt
-rm -f /var/lib/samba/netlogon/printers_data.txt
-}
 
 #Create printers.txt if it doesnt exist
-if [ ! -f /var/lib/samba/netlogon/printers.txt.$$ ]
+if [ ! -f "/var/lib/samba/netlogon/printers.txt.$$" ]
 then
-	echo '**********************************************************************' > /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'Printer names must match share names on the printer server >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'Supports a maximum of 10 printers per location >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'List your printers below the start marker >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'Do NOT remove or alter start marker >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*' >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '*'Example: R101,2,R101_BW,R101_CL,R101_BW >> /var/lib/samba/netlogon/printers.txt.$$
-	echo '**********************************************************************' >> /var/lib/samba/netlogon/printers.txt.$$
-	echo >> /var/lib/samba/netlogon/printers.txt.$$
-	echo --start-- >> /var/lib/samba/netlogon/printers.txt.$$
-	chmod 0644 /var/lib/samba/netlogon/printers.txt.$$
+	echo '**********************************************************************
+*Printer names must match share names on the printer server
+*Supports a maximum of 10 printers per location
+*List your printers below the start marker
+*Do NOT remove or alter start marker
+*
+*Format: Location,Numberofprinters,Printer1,Printer2,....,DefaultPrinter
+*Example: R101,2,R101_BW,R101_CL,R101_BW
+**********************************************************************
+--start--' >> "/var/lib/samba/netlogon/printers.txt.$$"
+	chmod 0644 "/var/lib/samba/netlogon/printers.txt.$$"
+
 fi
 
 #Remove printer from all locations
 STARTLINE=$(grep -n "\-\-start\-\-" /var/lib/samba/netlogon/printers.txt | cut -d: -f1 | sed -n 1,1p)
-for PRINTERDATA in $(sed '1,'$STARTLINE'd' /var/lib/samba/netlogon/printers.txt)
+for PRINTERDATA in $(sed '1,'"$STARTLINE"'d' /var/lib/samba/netlogon/printers.txt)
 do
-	LOCATION=$(echo $PRINTERDATA | cut -d, -f1)
+	LOCATION=$(echo "$PRINTERDATA" | cut -d, -f1)
 
-	PCOUNT=$(echo $PRINTERDATA | cut -d, -f2)
-	let PEND=$PCOUNT+2
-	let DPCPOUNT=$PEND+1
+	PCOUNT=$(echo "$PRINTERDATA" | cut -d, -f2)
+	let PEND="$PCOUNT"+2
+	let DPCPOUNT="$PEND"+1
 	PRINTERS=$(echo "$PRINTERDATA" | cut -d, -f3-"$PEND")	
 	DPRINTER=$(echo "$PRINTERDATA" | cut -d, -f"$DPCPOUNT")	
 
-	if [ $(echo $PRINTERS | grep -c -w $PRINTER) -gt 0 ]
+	if [[ $(echo "$PRINTERS" | grep -c -w "$PRINTER") -gt 0 ]]
 	then
 		#Remove the printer from the printer file
-		PRINTERS=$(echo $PRINTERS | sed 's/^'$PRINTER',//g' | sed 's/,'$PRINTER'$//g' | sed 's/,'$PRINTER',/,/g')
+		PRINTERS=$(echo "$PRINTERS" | sed 's/^'"$PRINTER"',//g' | sed 's/,'"$PRINTER"'$//g' | sed 's/,'"$PRINTER"',/,/g')
 
 		#Remove the default printer and assign a new one if it matches 
-		if [ $(echo "$DPRINTER" | grep -c -w "$PRINTER") -gt 0 ]
+		if [[ $(echo "$DPRINTER" | grep -c -w "$PRINTER") -gt 0 ]]
 		then
 			DPRINTER=$(echo "$PRINTERS" | cut -d, -f1)
 		fi
 		let PCOUNT-=1	
 	fi
-	[ "$PCOUNT" -ge 1 ] && echo $LOCATION,$PCOUNT,$PRINTERS,$DPRINTER >> /var/lib/samba/netlogon/printers.txt.$$
+	[ "$PCOUNT" -ge 1 ] && echo "$LOCATION,$PCOUNT,$PRINTERS,$DPRINTER" >> "/var/lib/samba/netlogon/printers.txt.$$"
 done
 
-cat /var/lib/samba/netlogon/printers.txt.$$ > /var/lib/samba/netlogon/printers.txt
-rm /var/lib/samba/netlogon/printers.txt.$$
+cat "/var/lib/samba/netlogon/printers.txt.$$" > /var/lib/samba/netlogon/printers.txt
+rm "/var/lib/samba/netlogon/printers.txt.$$"
+#Make sure that the disk has really written the file
+sync /var/lib/samba/netlogon/printers.txt
 
 #Add printer to locations
 COUNTER=0
-LOCATIONCOUNT=${#LOCATIONS[*]}
-while [ $COUNTER -lt $LOCATIONCOUNT ]
+LOCATIONCOUNT="${#LOCATIONS[*]}"
+while [ "$COUNTER" -lt "$LOCATIONCOUNT" ]
 do
-	LOCATION=`echo ${LOCATIONS[$COUNTER]}`
-	if [ `grep -c -w "$LOCATION" /var/lib/samba/netlogon/printers.txt` = 0 ]
+	LOCATION="${LOCATIONS[$COUNTER]}"
+	if [[ $(grep -c -w "$LOCATION" /var/lib/samba/netlogon/printers.txt) = 0 ]]
 	then
-		echo $LOCATION,1,$PRINTER,$PRINTER >> /var/lib/samba/netlogon/printers.txt
+		echo "$LOCATION,1,$PRINTER,$PRINTER" >> /var/lib/samba/netlogon/printers.txt
 	else
 		#Get location linenumber
-		LOCATIONLINENO=`grep -n ^$LOCATION, /var/lib/samba/netlogon/printers.txt | cut -d: -f1`
+		LOCATIONLINENO=$(grep -n ^"$LOCATION," /var/lib/samba/netlogon/printers.txt | cut -d: -f1)
 		#Get printer info for location
-		LOCATIONINFO=`sed -n $LOCATIONLINENO,$LOCATIONLINENO'p' /var/lib/samba/netlogon/printers.txt`
-		PRINTERCOUNT=`echo $LOCATIONINFO | cut -d, -f2`
-		PRINTERS=`echo $LOCATIONINFO | cut -d, -f3- | sed 's/ /,/g'`
+		LOCATIONINFO=$(sed -n "$LOCATIONLINENO,$LOCATIONLINENO"'p' /var/lib/samba/netlogon/printers.txt)
+		PRINTERCOUNT=$(echo "$LOCATIONINFO" | cut -d, -f2)
+		PRINTERS=$(echo "$LOCATIONINFO" | cut -d, -f3- | sed 's/ /,/g')
 		#Remove existing line
-		sed -i $LOCATIONLINENO'd' /var/lib/samba/netlogon/printers.txt
+		#echo "removing line $LOCATIONLINENO<br>"
+		sed -i "$LOCATIONLINENO"'d' /var/lib/samba/netlogon/printers.txt
+		#Make sure that the disk has really written the file
+		sync /var/lib/samba/netlogon/printers.txt
 		#Delete empty lines
 		sed -i '/^$/d' /var/lib/samba/netlogon/printers.txt
+		#Make sure that the disk has really written the file
+		sync /var/lib/samba/netlogon/printers.txt
 		#Add in printer
-		if [ `echo $PRINTERS | grep -c -w $PRINTER` = 0 ]
+		if [[ $(echo "$PRINTERS" | grep -c -w "$PRINTER") = 0 ]]
 		then
-			PRINTERS=`echo $PRINTER,$PRINTERS`
-			let PRINTERCOUNT=$PRINTERCOUNT+1
+			PRINTERS="$PRINTER,$PRINTERS"
+			let PRINTERCOUNT="$PRINTERCOUNT"+1
 		fi
-		echo $LOCATION,$PRINTERCOUNT,$PRINTERS >> /var/lib/samba/netlogon/printers.txt
+		echo "$LOCATION,$PRINTERCOUNT,$PRINTERS" >> /var/lib/samba/netlogon/printers.txt
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 exit
 

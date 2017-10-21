@@ -160,7 +160,7 @@ do
 
 			#Delete option
 			echo '<td>
-			<button class="info" name="____SetDefault____" value="____PRINTACTION____delete:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
+			<button class="info" name="____RemovePrinter____" value="____PRINTACTION____delete:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
 			<img src="/images/submenus/printer/remove_printer.png" alt="'$"Remove Printer"'">
 			<span>'$"Remove Printer"'</span>
 			</button>

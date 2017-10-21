@@ -181,7 +181,7 @@ else
 		</button>
 	</td>
 
-	</tr></tbody></table><br></div><div id="infobox">'
+	</tr></tbody></table></div><div id="infobox">'
 fi
 
 #Check to see that locations.txt exists

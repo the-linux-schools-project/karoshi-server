@@ -126,29 +126,52 @@ source /opt/karoshi/web_controls/version
 if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
+	WIDTH=100
+	ICON1=/images/submenus/printer/view_print_queues.png
+	ICON2=/images/submenus/printer/delete_printer.png
+	ICON3=/images/submenus/file/folder.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
 	DIV_ID=menubox
+	WIDTH=90
+	ICON1=/images/submenus/printer/view_print_queuesm.png
+	ICON2=/images/submenus/printer/delete_printerm.png
+	ICON3=/images/submenus/file/folderm.png
 fi
 
-echo '<form action="/cgi-bin/admin/printers_ppd_assign2.cgi" method="post"><div id="'"$DIV_ID"'"><div id="titlebox">'
+echo '<form action="/cgi-bin/admin/printers_ppd_assign2.cgi" method="post"><div id="'"$DIV_ID"'"><div id="titlebox">
 
-#Show back button for mobiles
-if [ "$MOBILE" = yes ]
-then
-	echo '<table class="standard" style="text-align: left;" >
-	<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
-	<td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Assign PPD File"'</b></a></td>'
-else
-	echo '<table class="standard" style="text-align: left;" >
-	<tbody><tr><td><b>'$"Assign PPD File"'</b></td>'
-fi
+<div class="sectiontitle">'$"Assign PPD File"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
 
-echo '<td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"A PPD is a linux printer driver. You will need to assign a printer driver to every printer queue that you set up."'</span></a></tr></tbody></table>
-<br><input type="hidden" name="____PRINTERNAME____" value="'"$PRINTERNAME"'"><table class="standard" style="text-align: left; height: 120px;" ><tbody>'
-#Show Printername
-echo '<tr><td style="width: 180px;">'$"Printer"'</td><td>'"$PRINTERNAME"'</td></tr>'
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="/cgi-bin/admin/printers.cgi" class="info infonavbutton" name="_ShowPrinters_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Show Printers"'">
+			<span>'$"Show network printer queues."'</span><br>
+			'$"Show Printers"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="/cgi-bin/admin/printers_delete.cgi" class="info infonavbutton" name="_DeletePrinters_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Delete Printer"'">
+			<span>'$"Delete network printer queues."'</span><br>
+			'$"Delete Printer"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="/cgi-bin/admin/locations.cgi" class="info infonavbutton" name="_ViewLocations_" value="_">
+			<img src="'"$ICON3"'" alt="'$"Locations"'">
+			<span>'$"View locations."'</span><br>
+			'$"Locations"'
+		</button>
+	</td>
+
+</tr></tbody></table>
+<br><input type="hidden" name="____PRINTERNAME____" value="'"$PRINTERNAME"'">
+<table class="standard" style="text-align: left; height: 120px;" ><tbody><tr><td style="width: 180px;">'$"Printer"'</td><td>'"$PRINTERNAME"'</td><td></td></tr>'
 
 #######################
 #Guess default paper size
@@ -179,7 +202,7 @@ echo '<option value="" label="blank"></option>'
 echo '<option value="uploadppd">'$"Upload PPD File"'</option>'
 #Get list of printer drivers
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERMAKE"
+sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:"
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 
