@@ -396,6 +396,16 @@ then
 	#Restrict access to the gluster volume
 	gluster volume set "$VOLUME" auth.allow 127.0.0.1
 
+	#Speed up the gluster volume
+	gluster volume set "$VOLUME" features.cache-invalidation on
+	gluster volume set "$VOLUME" features.cache-invalidation-timeout 600
+	gluster volume set "$VOLUME" performance.stat-prefetch on
+
+	#gluster volume set "$VOLUME" performance.cache-samba-metadata on
+	#gluster volume set "$VOLUME" performance.cache-invalidation on
+	#gluster volume set "$VOLUME" performance.md-cache-timeout 600
+	#gluster volume set "$VOLUME" network.inode-lru-limit: 90000
+
 	#Add in flag files for volume creation
 	[ ! -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/servers
 	[ ! -d /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders ] && mkdir -p /opt/karoshi/server_network/gluster-volumes/"$VOLUME"/folders
