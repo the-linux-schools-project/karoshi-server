@@ -1,0 +1,237 @@
+#!/bin/bash
+#Copyright (C) 2017 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=$(date +%F)
+
+#List of web applications that this script can change the permissions of to allow updating.
+WebAppList="kanboard joomla nextcloud savapage sogo xerte xibo"
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/web_application_permissions_cgi
+then
+	echo "$(date): web_application_permissions - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/web_application_permissions_cgi
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/web_application_permissions.cgi | cut -d' ' -f1)
+[ -z "$MD5SUM" ] && MD5SUM=not_set
+if [ "$MD5SUM"'check' != "$web_application_permissions_cgi"'check' ]
+then
+	echo "$(date): web_application_permissions - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 0 ]
+then
+	echo "$(date): web_application_permissions - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-/' | sed 's/REPLACEUNDERSCORE/_/g')
+if [ -z "$DATA" ]
+then
+	echo "$(date): web_application_permissions - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\-')
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2 | tr -cd '0-9.')
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+ACTION=$(echo "$DATA" | cut -s -d: -f5 | tr -cd '[:lower:]')
+APPNAME=$(echo "$DATA" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\-')
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f7)
+########################
+#Check data
+########################
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+then
+	echo "$(date): web_application_permissions - Not called by web_application_permissions.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo "$(date): web_application_permissions - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo "$(date): web_application_permissions - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
+then
+	echo "$(date): web_application_permissions - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ -z "$ACTION" ]
+then
+	echo "$(date): web_application_permissions - blank action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ "$ACTION" = full ] || [ "$ACTION" = readonly ]
+then
+	if [ -z "$APPNAME" ]
+	then
+		echo "$(date): web_application_permissions - blank application name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		exit 101
+	fi
+
+	if [ -z "$SERVERNAME" ]
+	then
+		echo "$(date): web_application_permissions - blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		exit 101
+	fi
+fi
+
+function CheckAppPermissions {
+echo "$(date): web_application_permissions - checking $WebApp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+if [[ "$ServerName" = $(hostname-fqdn) ]]
+then
+	Folder=/var/www/html/"$WebApp"
+	Owner=$(stat -c %U "$Folder")
+	Group=$(stat -c %G "$Folder")
+	AccessRights=$(stat -c %a "$Folder")
+fi
+
+if [ "$AccessRights" = 770 ] && [ "$Owner" = root ] && [ "$Group" = www-data ]
+then
+	AccessStatustxt=$"Full Access"
+	PermissionAction=readonly
+	PermissionIcon=/images/submenus/system/enabled.png
+	PermissionActionTxt=$"Change permissions to read only access for security."
+elif [ "$AccessRights" = 750 ] && [ "$Owner" = www-data ] && [ "$Group" = www-data ]
+then
+	AccessStatustxt=$"Full Access"
+	PermissionAction=readonly
+	PermissionIcon=/images/submenus/system/enabled.png
+	PermissionActionTxt=$"Change permissions to read only access for security."
+elif [ "$AccessRights" = 550 ] || [ "$AccessRights" = 750 ] && [ "$Owner" = root ] && [ "$Group" = www-data ]
+then
+	AccessStatustxt=$"Read Only"
+	PermissionAction=full
+	PermissionIcon=/images/submenus/system/lock.png
+	PermissionActionTxt=$"Change permissions to full access for the apache user to allow an update."
+else
+	AccessStatustxt=$"Unkown"
+	PermissionAction=readonly
+	PermissionIcon=/images/submenus/system/warning.png
+	PermissionActionTxt=$"Change permissions to read only access for security."
+fi
+
+}
+
+if [ "$ACTION" = full ]
+then
+	echo "$(date): web_application_permissions - setting full access for apache to $WebApp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ "$APPNAME" = nextcloud ]
+	then
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+		then
+			chown -R www-data:www-data /var/www/html/nextcloud/
+			chmod +x /var/www/html/nextcloud/occ
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			chown -R www-data:www-data /var/www/html/nextcloud/
+			chmod +x /var/www/html/nextcloud/occ			
+			'
+		fi	
+	fi
+	ACTION=view
+fi
+
+if [ "$ACTION" = "readonly" ]
+then
+	echo "$(date): web_application_permissions - setting full access for apache to $WebApp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ "$APPNAME" = nextcloud ]
+	then
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+		then
+			find /var/www/html/nextcloud/ -type f -print0 | xargs -0 chmod 0640
+			find /var/www/html/nextcloud/ -type d -print0 | xargs -0 chmod 0750
+
+			chown -R root:www-data /var/www/html/nextcloud/
+			chown -R www-data:www-data  /var/www/html/nextcloud/apps/
+			chown -R www-data:www-data /var/www/html/nextcloud/config/
+			chown -R www-data:www-data /home/nextcloud/data/
+			chown -R www-data:www-data /var/www/html/nextcloud/themes/
+			chown -R www-data:www-data /var/www/html/nextcloud/updater/
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			find /var/www/html/nextcloud/ -type f -print0 | xargs -0 chmod 0640
+			find /var/www/html/nextcloud/ -type d -print0 | xargs -0 chmod 0750
+
+			chown -R root:www-data /var/www/html/nextcloud/
+			chown -R www-data:www-data  /var/www/html/nextcloud/apps/
+			chown -R www-data:www-data /var/www/html/nextcloud/config/
+			chown -R www-data:www-data /home/nextcloud/data/
+			chown -R www-data:www-data /var/www/html/nextcloud/themes/
+			chown -R www-data:www-data /var/www/html/nextcloud/updater/		
+			'
+		fi	
+	fi
+	ACTION=view
+fi
+
+
+
+if [ "$ACTION" = view ]
+then
+	#Show web apps that are installed, the servers they are on and the current permission status
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: 220px;">'$"Server"'</th><th style="width: 90px;">'$"Application"'</th><th style="width: 170px;">'$"Folder"'</th><th style="width: 90px;">'$"Owner"'</th><th style="width: 90px;">'$"Group"'</th><th style="width: 90px;">'$"Permissions"'</th><th style="width: 110px;">'$"Apache Status"'</th><th></th></tr></thead><tbody>'
+
+	for WebApp in $WebAppList
+	do
+		for ServerName in $(find /opt/karoshi/server_network/servers -name "$WebApp" | cut -d/ -f6)
+		do
+			#Check on the app permissions
+			CheckAppPermissions
+			echo '<tr><td>'"$ServerName"'</td><td>'"$WebApp"'</td><td>'"$Folder"'</td><td>'"$Owner"'</td><td>'"$Group"'</td><td>'"$AccessRights"'</td><td>'"$AccessStatustxt"'</td><td>
+
+			<button class="info infoleft" name="____ChangePermissions" value="____ACTION____'"$PermissionAction"'____SERVERNAME____'"$ServerName"'____APPNAME____'"$WebApp"'____">
+				<img src="'"$PermissionIcon"'" alt="'"$PermissionActionTxt"'">
+				<span>'"$PermissionActionTxt"'</span><br>
+			</button>
+
+			</td></tr>'
+		done
+	done
+	echo '</tbody></table>'
+
+fi
+
+exit
+

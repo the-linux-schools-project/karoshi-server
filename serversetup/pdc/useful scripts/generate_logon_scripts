@@ -197,7 +197,7 @@ then
 		"storage": "'$STORAGE'",
 		"authentication_type": "password::'"$AUTH_TYPE"'",
 		"configuration": {
-		    "host": "'$REALM'",
+		    "host": "'"$REALM"'",
 		    "share": "dfs\/'"$SHARE"'",
 		    "root": "",
 		    "domain": ""
