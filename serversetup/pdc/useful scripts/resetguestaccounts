@@ -21,47 +21,30 @@
 #The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-#Change samba password on all guest accounts
 
 #Clear log area
 [ -f /opt/karoshi/logs/guest_passwords ] && rm -f /opt/karoshi/logs/guest_passwords
 touch /opt/karoshi/logs/guest_passwords
 chmod 0600 /opt/karoshi/logs/guest_passwords
 
-function random_password {
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
+[ -f /opt/karoshi/server_network/group_information/guestusers ] && \
+  source /opt/karoshi/server_network/group_information/guestusers
+[ -z "$HOMEPATH" ] && HOMEPATH=/home/users/guestusers
 
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 6 ]
+for GUESTUSERS in $(getent passwd | grep "$HOMEPATH"/guest | cut -d: -f1)
 do
-	ARRAYCHOICE=$RANDOM
-	let "ARRAYCHOICE %= $RANGE"
-	RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-	let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-}
-
-for GUESTUSERS in `getent passwd | grep /home/users/guests/guest | cut -d: -f1`
-do
-	GUESTUSER=`basename $GUESTUSERS`
+	GUESTUSER=$(basename "$GUESTUSERS")
 	#Get random password
-	random_password
+	PASSWORD=$(openssl rand -hex 20 | base64 | head -c 6)
 	#Change password
-	samba-tool user setpassword $GUESTUSER --newpassword=$PASSWORD 1>/dev/null
-
+	samba-tool user setpassword "$GUESTUSER" --newpassword="$PASSWORD" 1>/dev/null
 	#Notify administrators and techs of password
-	echo $GUESTUSER ':' $PASSWORD >> /opt/karoshi/logs/guest_passwords
+	echo "$GUESTUSER : $PASSWORD" >> /opt/karoshi/logs/guest_passwords
 	#Empty guest user account
-	rm -f -R /home/users/guests/$GUESTUSER/*
+	rm -f -R /home/users/guests/"$GUESTUSER"/*
 done
 
 #Add date to log
-echo >> /opt/karoshi/logs/guest_passwords
-echo Guest passwords last changed at':' >> /opt/karoshi/logs/guest_passwords
-date >> /opt/karoshi/logs/guest_passwords
+echo -e "\nGuest passwords last changed at: $(date)\n" >> /opt/karoshi/logs/guest_passwords
 exit
 

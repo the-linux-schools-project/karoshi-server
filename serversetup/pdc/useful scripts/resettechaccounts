@@ -27,38 +27,22 @@
 touch /opt/karoshi/logs/tech_passwords
 chmod 0600 /opt/karoshi/logs/tech_passwords
 
-function random_password {
-PASSCHOICE=( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y x 1 2 3 4 5 6 7 8 9 0 )
+[ -f /opt/karoshi/server_network/group_information/tech ] && \
+  source /opt/karoshi/server_network/group_information/tech
+[ -z "$HOMEPATH" ] && HOMEPATH=/home/users/techstaff
 
-RANGE=`echo ${#PASSCHOICE[@]}`
-let RANGE=$RANGE-1 
-
-COUNTER=1
-while [ $COUNTER -le 6 ]
+for TECHUSERS in $(getent passwd | grep "$HOMEPATH"/tech | cut -d: -f1)
 do
-	ARRAYCHOICE=$RANDOM
-	let "ARRAYCHOICE %= $RANGE"
-	RANDPASSWORD[$COUNTER]=`echo ${PASSCHOICE[$ARRAYCHOICE]} `
-	let COUNTER=COUNTER+1
-done
-PASSWORD=`echo ${RANDPASSWORD[@]:0} | sed 's/ //g'`
-}
-
-for TECHUSERS in `getent passwd | grep /home/users/techstaff/tech | cut -d: -f1`
-do
-	TECHUSER=`basename $TECHUSERS`
+	TECHUSER=$(basename "$TECHUSERS")
 	#Get random password
-	random_password
+	PASSWORD=$(openssl rand -hex 20 | base64 | head -c 6)
 	#Change password
-	samba-tool user setpassword $TECHUSER --newpassword=$PASSWORD 1>/dev/null
+	samba-tool user setpassword "$TECHUSER" --newpassword="$PASSWORD" 1>/dev/null
 	#Notify administrators and techs of password
-	echo $TECHUSER ':' $PASSWORD >> /opt/karoshi/logs/tech_passwords
+	echo "$TECHUSER : $PASSWORD" >> /opt/karoshi/logs/tech_passwords
 done
 
 #Add date to log
-echo >> /opt/karoshi/logs/tech_passwords
-echo Guest passwords last changed at':' >> /opt/karoshi/logs/tech_passwords
-date >> /opt/karoshi/logs/tech_passwords
+echo -e "\nTech passwords last changed at: $(date)\n" >> /opt/karoshi/logs/tech_passwords
 exit
-
 
