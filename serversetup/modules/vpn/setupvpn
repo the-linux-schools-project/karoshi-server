@@ -1,18 +1,17 @@
 #!/bin/bash
-LOG_DATE=`date +%F`
-numArgs=$#
+numArgs="$#"
 if [ $numArgs != 0 ]
 then
-	echo `date`: setupvpn - incorrect number of arguments"<br>"
+	echo "$(date): setupvpn - incorrect number of arguments<br>"
 	exit 101
 fi
 read -t 3 DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-/ '`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-/ ')
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-DNSSERVERLIST=`echo "$DATA" | cut -s -d: -f4`
+#REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+#REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+#REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+DNSSERVERLIST=$(echo "$DATA" | cut -s -d: -f4)
 
 #Copy in server.conf
 cp -f /opt/karoshi/serversetup/modules/vpn/server.conf /etc/openvpn/
@@ -21,8 +20,8 @@ cp -f /opt/karoshi/serversetup/modules/vpn/server.conf /etc/openvpn/
 echo "#Karoshi Domain Controllers - internal zone" >> /etc/openvpn/server.conf
 for DNSSERVER in $DNSSERVERLIST
 do
-	DNSIP=`net lookup "$DNSSERVER"`
-	echo 'push "dhcp-option DNS '$DNSIP'"' >> /etc/openvpn/server.conf
+	DNSIP=$(net lookup "$DNSSERVER")
+	echo 'push "dhcp-option DNS '"$DNSIP"'"' >> /etc/openvpn/server.conf
 done
 
 #Enable ldap auth
@@ -34,13 +33,13 @@ then
 	#Modify auth-ldap.conf with the correct ldap information.
 	LDAPSERVER=127.0.0.1
 	#Get ldap server to use
-	if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+	if [[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]]
 	then
-		LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+		LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
 	fi
 	source /opt/karoshi/server_network/domain_information/domain_name
-	sed -i 's/CHANGETHISLDAPSERVER/'$LDAPSERVER'/g' /etc/openvpn/auth/auth-ldap.conf
-	sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /etc/openvpn/auth/auth-ldap.conf	
+	sed -i 's/CHANGETHISLDAPSERVER/'"$LDAPSERVER"'/g' /etc/openvpn/auth/auth-ldap.conf
+	sed -i 's/CHANGETHISLDAPBASE/'"$LDAPBASE"'/g' /etc/openvpn/auth/auth-ldap.conf	
 fi
 
 #Enable packet forwarding
@@ -66,63 +65,62 @@ source /opt/karoshi/serversetup/variables/network_card_info
 #fi
 
 #Open Shorewall on udp 1194
-if [ $(grep -c -w \#OpenVPN-RoadWarrior /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c -w \#OpenVPN-RoadWarrior /etc/shorewall/rules) = 0 ]]
 then
 	#Configure shorewall to use the tunnel inteface on the vpn server
-	MODCHECK=0
-	if [ `grep -c -w tun+ /etc/shorewall/interfaces` = 0 ]
+	if [[ $(grep -c -w tun+ /etc/shorewall/interfaces) = 0 ]]
 	then
 		#Configure shorewall for tunnel
-		LINENUM=`wc -l /etc/shorewall/interfaces | cut -d" " -f1`
-		sed -i $LINENUM"c"\vpn"	"tun+"	"detect /etc/shorewall/interfaces
-		echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/interfaces
+		LINENUM=$(wc -l /etc/shorewall/interfaces | cut -d" " -f1)
+		sed -i "$LINENUM""c\vpn	tun+	detect" /etc/shorewall/interfaces
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/interfaces
 	fi
 
-	echo '<ul><li>'$"The following extra ports are being allowed" - udp 1194'</li></ul>'
+	echo '<ul><li>'$"The following extra ports are being allowed"' - udp 1194</li></ul>'
 
-	LINENUM=`wc -l /etc/shorewall/rules | cut -d" " -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'vpn'	'fw'	'udp'	'1194'	'-'#'OpenVPN-RoadWarrior /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(wc -l /etc/shorewall/rules | cut -d" " -f1)
+	sed -i "$LINENUM""c\ACCEPT	vpn	fw	udp	1194	-#OpenVPN-RoadWarrior" /etc/shorewall/rules
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
 fi
 
 #Add openvpn to zones file
-if [ `grep -c ^vpn /etc/shorewall/zones` = 0 ]
+if [[ $(grep -c ^vpn /etc/shorewall/zones) = 0 ]]
 then
-	LINENUM=`wc -l /etc/shorewall/zones | cut -d" " -f1`
-	sed -i $LINENUM"c"\vpn"	"ipv4 /etc/shorewall/zones
-	echo '#'LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/zones
+	LINENUM=$(wc -l /etc/shorewall/zones | cut -d" " -f1)
+	sed -i "$LINENUM""c\vpn	ipv4" /etc/shorewall/zones
+	echo "#LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/zones
 fi   
 
 #Add entry to masq file
-if [ `grep -c "10.8.0.0" /etc/shorewall/masq` = 0 ]
+if [[ $(grep -c "10.8.0.0" /etc/shorewall/masq) = 0 ]]
 then
-	LINENUM=`wc -l /etc/shorewall/masq | cut -d" " -f1`
-	sed -i $LINENUM"c"$NETWORK_INT"	"10.8.0.0/24 /etc/shorewall/masq
-	echo '#'LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/masq
+	LINENUM=$(wc -l /etc/shorewall/masq | cut -d" " -f1)
+	sed -i "$LINENUM""c$NETWORK_INT	10.8.0.0/24" /etc/shorewall/masq
+	echo "#LAST LINE -- ADD YOUR ENTRIES ABOVE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/masq
 fi   
 
 #Add dnat to hosts file
-if [ `grep -c ^vpn /etc/shorewall/hosts` = 0 ]
+if [[ $(grep -c ^vpn /etc/shorewall/hosts) = 0 ]]
 then
 	source /opt/karoshi/serversetup/variables/network_card_info
-	SERVERIP=$(dig `hostname-fqdn` +short)
-	SUBNETMASK=`ifconfig $NETWORK_INT | grep Mask | cut -d":" -f4`
-	SUBNET=`ipcalc -n $SERVERIP/$SUBNETMASK | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
-	LINENUM=`wc -l /etc/shorewall/hosts | cut -d" " -f1`
-	sed -i $LINENUM"c"\vpn"	"$NETWORK_INT:$SUBNET /etc/shorewall/hosts
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/hosts
+	SERVERIP=$(dig "$(hostname-fqdn)" +short)
+	SUBNETMASK=$(ifconfig "$NETWORK_INT" | grep Mask | cut -d":" -f4)
+	SUBNET=$(ipcalc -n "$SERVERIP/$SUBNETMASK" | grep ^Network: | sed 's/ * / /g' | cut -d' ' -f2)
+	LINENUM=$(wc -l /etc/shorewall/hosts | cut -d" " -f1)
+	sed -i "$LINENUM""c\vpn	$NETWORK_INT:$SUBNET" /etc/shorewall/hosts
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/hosts
 fi
 
 #Add openvpnserver to tunnels file
-if [ `grep -c ^openvpnserver /etc/shorewall/tunnels` = 0 ]
+if [[ $(grep -c ^openvpnserver /etc/shorewall/tunnels) = 0 ]]
 then
-	LINENUM=`wc -l /etc/shorewall/tunnels | cut -d" " -f1`
-	sed -i $LINENUM"c"\openvpnserver:1194"	"net"	" 0.0.0.0/0 /etc/shorewall/tunnels
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/tunnels
+	LINENUM=$(wc -l /etc/shorewall/tunnels | cut -d" " -f1)
+	sed -i "$LINENUM""c\openvpnserver:1194	net	0.0.0.0/0" /etc/shorewall/tunnels
+	echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/tunnels
 fi
 
 #Add entries to policy file
-if [ `grep -c ^vpn /etc/shorewall/policy = 0` ]
+if [[ $(grep -c ^vpn /etc/shorewall/policy = 0) ]]
 then
 	echo '#
 # Shorewall version 4 - Policy File
@@ -145,9 +143,9 @@ fi
 
 #Restart shorewall
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 
 #Create Certificate
 
@@ -163,22 +161,19 @@ then
 	source /etc/default/locale
 fi
 
-COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-STATE=`cat /etc/timezone | cut -d/ -f1`
-CITY=`cat /etc/timezone | cut -d/ -f2`
-NAME=$HOSTNAME
-LOCALNAME=$REALM
-SERVERNAME=$REALM
-EMAILADDRESS=administrator@$REALM
+COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+STATE=$(cut -d/ -f1 < /etc/timezone)
+CITY=$(cut -d/ -f2 < /etc/timezone)
+EMAILADDRESS="administrator@$REALM"
 
-sed -i '/KEY_COUNTRY=/c\export KEY_COUNTRY="'$COUNTRY'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_PROVINCE=/c\export KEY_PROVINCE="'$STATE'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_CITY=/c\export KEY_CITY="'$CITY'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_ORG=/c\export KEY_ORG="'$REALM'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_EMAIL=/c\export KEY_EMAIL="'$EMAILADDRESS'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_CN=/c\export KEY_CN="'$REALM'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_NAME=/c\export KEY_NAME="'$HOSTNAME'.'$REALM'"' /etc/openvpn/easy-rsa/vars
-sed -i '/KEY_OU=/c\export KEY_OU="'$LDAPBASE'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_COUNTRY=/c\export KEY_COUNTRY="'"$COUNTRY"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_PROVINCE=/c\export KEY_PROVINCE="'"$STATE"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_CITY=/c\export KEY_CITY="'"$CITY"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_ORG=/c\export KEY_ORG="'"$REALM"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_EMAIL=/c\export KEY_EMAIL="'"$EMAILADDRESS"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_CN=/c\export KEY_CN="'"$REALM"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_NAME=/c\export KEY_NAME="'"$HOSTNAME"'.'"$REALM"'"' /etc/openvpn/easy-rsa/vars
+sed -i '/KEY_OU=/c\export KEY_OU="'"$LDAPBASE"'"' /etc/openvpn/easy-rsa/vars
 sed -i '/KEY_SIZE=/c\export KEY_SIZE=2048' /etc/openvpn/easy-rsa/vars
 sed -i '/CA_EXPIRE=/c\export CA_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
@@ -187,27 +182,27 @@ sed -i '/KEY_EXPIRE=/c\export KEY_EXPIRE=3650' /etc/openvpn/easy-rsa/vars
 
 function show_elapsed_time {
 echo
-echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li></ul>'
+echo '<ul><li>'$"Generating Diffie Hellman parameters - this will take some time."'</li>'
 #Wait for command to start
-while [ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") = 1 ]
+while [[ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") = 1 ]]
 do
 	sleep 1
 done
 
-T1=$(date +%s)
 COUNTER=1
-while [ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") -gt 1 ]
+while [[ $(ps aux | grep -c "/etc/openvpn/dh2048.pem") -gt 1 ]]
 do
 	# Do something here
 	echo "."
 	sleep 0.5
-	let COUNTER=$COUNTER+1
-	if [ $COUNTER = 80 ]
+	let COUNTER="$COUNTER"+1
+	if [ "$COUNTER" = 80 ]
 	then
 		COUNTER=1
 		echo '<br>'
 	fi
 done
+echo '</ul>'
 }
 
 
@@ -232,9 +227,9 @@ then
 
 	#Squirt data into cert generators
 	function pipe_data {
-	echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$REALM"\n"$REALM"\n"$HOSTNAME.$REALM"\n"$REALM"\n"$EMAILADDRESS"\n"$OPENVPNPASS"\n"Karoshi"\n"
+	echo -e "$COUNTRY\n$STATE\n$CITY\n$REALM\n$REALM\n$HOSTNAME.$REALM\n$REALM\n$EMAILADDRESS\n$OPENVPNPASS\nKaroshi\n"
 	sleep 1
-	echo -e ""y"\n"y"\n"
+	echo -e "y\ny\n"
 	}
 
 	pipe_data | ./build-key-server server 1>/dev/null 2>/dev/null
@@ -247,11 +242,11 @@ then
 
 	#Restart the openvpn server
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
 	#Make sure service runs on boot
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/openvpn
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
 fi
 exit
 

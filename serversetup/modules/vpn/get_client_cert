@@ -24,37 +24,36 @@
 #
 #Website: http://www.karoshi.org.uk
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [[ -z "$DATA" ]]
 then
-	echo `date`: get_client_cert - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): get_client_cert - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-CLIENTNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+CLIENTNAME=$(echo "$DATA" | cut -s -d: -f4)
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
-if [[ -z $CLIENTNAME ]]
+if [[ -z "$CLIENTNAME" ]]
 then
-	echo `date`: get_client_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): get_client_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo "`date`: get_client_cert - getting openvpn client certificates for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): get_client_cert - getting openvpn client certificates for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 #SSH to the vpn server and create a zip file of the certificates.
-VPNSERVER=`sed -n 1,1p /opt/karoshi/server_network/vpnserver`
+VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
 
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $VPNSERVER '
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
 cd /etc/openvpn/easy-rsa/keys
-[ -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.zip ]  && rm -f /etc/openvpn/easy-rsa/keys/'$CLIENTNAME'.'$REALM'.zip
-zip '$CLIENTNAME'.'$REALM'.zip ca.crt '$CLIENTNAME'.'$REALM'.crt '$CLIENTNAME'.'$REALM'.key '$CLIENTNAME'.'$REALM'.ovpn
+[ -f /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.zip ]  && rm -f /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.zip
+zip '"$CLIENTNAME"'.'"$REALM"'.zip ca.crt '"$CLIENTNAME"'.'"$REALM"'.crt '"$CLIENTNAME"'.'"$REALM"'.key '"$CLIENTNAME"'.'"$REALM"'.ovpn
 '
 
 #Create certs directory in admin folder
@@ -65,7 +64,7 @@ then
 	chown root.apache_karoshi /var/www/html_karoshi/admin/vpn/certs
 fi
 #Copy zip file from the remote server
-[ -f /var/www/html_karoshi/admin/vpn/certs/$CLIENTNAME.$REALM.zip ] && rm -f /var/www/html_karoshi/admin/vpn/certs/$CLIENTNAME.$REALM.zip
-scp root@$VPNSERVER:/etc/openvpn/easy-rsa/keys/$CLIENTNAME.$REALM.zip /var/www/html_karoshi/admin/vpn/certs/
+[ -f /var/www/html_karoshi/admin/vpn/certs/"$CLIENTNAME.$REALM".zip ] && rm -f /var/www/html_karoshi/admin/vpn/certs/"$CLIENTNAME.$REALM".zip
+scp root@"$VPNSERVER:/etc/openvpn/easy-rsa/keys/$CLIENTNAME.$REALM.zip" /var/www/html_karoshi/admin/vpn/certs/
 
 exit

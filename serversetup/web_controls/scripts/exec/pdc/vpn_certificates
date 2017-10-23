@@ -164,42 +164,44 @@ then
 	#SSH to the vpn server to show client certs
 	VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
-
-	if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
+	if [ $(ls -1 /etc/openvpn/easy-rsa/keys/ | grep -c .ovpn ) -gt 0 ]
 	then
-		echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\">
-		<thead><tr><th style=\"width: 180px;\"><b>'$"Username"'</b></th><th style=\"width: 80px;\"><b>'$"Status"'</b></th><th style=\"width: 80px;\"><b>'$"Download"'</b></th></tr></thead><tbody>"
-		for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
-		do
-			USERNAME=$(basename $USERNAME | cut -d. -f1)
-			echo "<tr><td>$USERNAME</td><td>"
+		if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
+		then
+			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\">
+			<thead><tr><th style=\"width: 180px;\"><b>'$"Username"'</b></th><th style=\"width: 80px;\"><b>'$"Status"'</b></th><th style=\"width: 80px;\"><b>'$"Download"'</b></th></tr></thead><tbody>"
+			for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
+			do
+				USERNAME=$(basename $USERNAME | cut -d. -f1)
+				echo "<tr><td>$USERNAME</td><td>"
 
-			if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked ]
-			then
-				#Get revokation date
-				REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
-				echo "
-<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_view_\">
-			<img src=\"'"$ICON2"'\" alt=\"'$"Revoked"'\">
-			<span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'"$REVODATE"'</span>
-			</button>
-			</td><td>"
-			else
-				echo "<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_revoke_USERNAME_"$USERNAME"_\">
-			<img src=\"'"$ICON1"'\" alt=\"'$"Revoke"'\">
-			<span>'$"Revoke"'<br>$USERNAME</span>
-			</button>
-			</td><td>
+				if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked ]
+				then
+					#Get revokation date
+					REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
+					echo "
+	<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_view_\">
+				<img src=\"'"$ICON2"'\" alt=\"'$"Revoked"'\">
+				<span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'"$REVODATE"'</span>
+				</button>
+				</td><td>"
+				else
+					echo "<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_revoke_USERNAME_"$USERNAME"_\">
+				<img src=\"'"$ICON1"'\" alt=\"'$"Revoke"'\">
+				<span>'$"Revoke"'<br>$USERNAME</span>
+				</button>
+				</td><td>
 
-			<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_downloadcert_USERNAME_"$USERNAME"_\">
-			<img src=\"'"$ICON3"'\" alt=\"'$"Revoke"'\">
-			<span>'$"Download Certificate"'<br>$USERNAME</span>
-			</button>
-			"
-			fi
-			echo "</td></tr>"
-		done
-		echo "</tbody></table>"
+				<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_downloadcert_USERNAME_"$USERNAME"_\">
+				<img src=\"'"$ICON3"'\" alt=\"'$"Revoke"'\">
+				<span>'$"Download Certificate"'<br>$USERNAME</span>
+				</button>
+				"
+				fi
+				echo "</td></tr>"
+			done
+			echo "</tbody></table>"
+		fi
 	fi
 	'
 	echo '</form>'

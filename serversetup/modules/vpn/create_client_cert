@@ -115,7 +115,7 @@ echo -e "\n<ca>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 cat /etc/openvpn/easy-rsa/keys/ca.crt >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 echo -e "</ca>\n<cert>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 cat /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.crt >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
-echo -e "</cert>\n<key>" >> /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.ovpn
+echo -e "</cert>\n<key>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 cat /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.key >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 echo -e "</key>" >> /etc/openvpn/easy-rsa/keys/"$CLIENTNAME".'"$REALM"'.ovpn
 '
