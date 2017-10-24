@@ -26,7 +26,7 @@
 LOG_DATE=$(date +%F)
 
 #List of web applications that this script can change the permissions of to allow updating.
-WebAppList="kanboard joomla nextcloud savapage sogo xerte xibo"
+WebAppList="joomla nextcloud"
 ########################
 #Check md5checksum
 ########################
@@ -117,13 +117,22 @@ fi
 
 function CheckAppPermissions {
 echo "$(date): web_application_permissions - checking $WebApp by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-
+Folder=/var/www/html/"$WebApp"
 if [[ "$ServerName" = $(hostname-fqdn) ]]
 then
-	Folder=/var/www/html/"$WebApp"
 	Owner=$(stat -c %U "$Folder")
 	Group=$(stat -c %G "$Folder")
 	AccessRights=$(stat -c %a "$Folder")
+else
+	FolderData=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$ServerName" '
+	Owner=$(stat -c %U "'"$Folder"'")
+	Group=$(stat -c %G "'"$Folder"'")
+	AccessRights=$(stat -c %a "'"$Folder"'")
+	echo "$Owner,$Group,$AccessRights"	
+	')
+	Owner=$(echo "$FolderData" | cut -d, -f1)
+	Group=$(echo "$FolderData" | cut -d, -f2)
+	AccessRights=$(echo "$FolderData" | cut -d, -f3)
 fi
 
 if [ "$AccessRights" = 770 ] && [ "$Owner" = root ] && [ "$Group" = www-data ]
@@ -161,11 +170,30 @@ then
 		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
 			chown -R www-data:www-data /var/www/html/nextcloud/
-			chmod +x /var/www/html/nextcloud/occ
+			chmod 0640 -R /var/www/html/nextcloud
+			chmod u+X,g+X -R /var/www/html/nextcloud
 		else
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 			chown -R www-data:www-data /var/www/html/nextcloud/
-			chmod +x /var/www/html/nextcloud/occ			
+			chmod 0640 -R /var/www/html/nextcloud
+			chmod u+X,g+X -R /var/www/html/nextcloud		
+			'
+		fi	
+	fi
+
+	if [ "$APPNAME" = joomla ]
+	then
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+		then
+			chown -R www-data:www-data /var/www/html/joomla
+			chmod 0640 -R /var/www/html/joomla
+			chmod u+X,g+X -R /var/www/html/joomla
+			
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			chown -R www-data:www-data /var/www/html/joomla
+			chmod 0640 -R /var/www/html/joomla
+			chmod u+X,g+X -R /var/www/html/joomla	
 			'
 		fi	
 	fi
@@ -179,20 +207,25 @@ then
 	then
 		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 		then
+			#Read only access to Nextcloud
 			find /var/www/html/nextcloud/ -type f -print0 | xargs -0 chmod 0640
 			find /var/www/html/nextcloud/ -type d -print0 | xargs -0 chmod 0750
 
+			#Read and write access to folders that Nexcloud needs
 			chown -R root:www-data /var/www/html/nextcloud/
 			chown -R www-data:www-data  /var/www/html/nextcloud/apps/
 			chown -R www-data:www-data /var/www/html/nextcloud/config/
 			chown -R www-data:www-data /home/nextcloud/data/
 			chown -R www-data:www-data /var/www/html/nextcloud/themes/
 			chown -R www-data:www-data /var/www/html/nextcloud/updater/
+
 		else
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			#Read only access to Nextcloud
 			find /var/www/html/nextcloud/ -type f -print0 | xargs -0 chmod 0640
 			find /var/www/html/nextcloud/ -type d -print0 | xargs -0 chmod 0750
 
+			#Read and write access to folders that Nexcloud needs
 			chown -R root:www-data /var/www/html/nextcloud/
 			chown -R www-data:www-data  /var/www/html/nextcloud/apps/
 			chown -R www-data:www-data /var/www/html/nextcloud/config/
@@ -202,6 +235,36 @@ then
 			'
 		fi	
 	fi
+
+	if [ "$APPNAME" = joomla ]
+	then
+		if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+		then
+			#Read only access to Joomla
+			chown -R root.www-data /var/www/html/joomla
+			chmod 0640 -R /var/www/html/joomla
+			chmod u+X,g+X -R /var/www/html/joomla
+
+			#Read and write access to folders that Joomla needs
+			chown -R www-data:www-data  /var/www/html/joomla/images
+			chown -R www-data:www-data  /var/www/html/joomla/media
+			chown -R www-data:www-data  /var/www/html/joomla/cache
+		else
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			#Read only access to Joomla
+			chown -R root.www-data /var/www/html/joomla
+			chmod 0640 -R /var/www/html/joomla
+			chmod u+X,g+X -R /var/www/html/joomla
+
+			#Read and write access to folders that Joomla needs
+			chown -R www-data:www-data  /var/www/html/joomla/images
+			chown -R www-data:www-data  /var/www/html/joomla/media
+			chown -R www-data:www-data  /var/www/html/joomla/cache
+			'
+		fi	
+	fi
+
+
 	ACTION=view
 fi
 

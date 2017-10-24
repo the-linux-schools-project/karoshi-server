@@ -285,6 +285,7 @@ echo '		<li><a href="/cgi-bin/admin/file_manager.cgi">'$"File Manager"'</a></li>
 				<li><a href="/cgi-bin/admin/update_servers_view_logs_fm.cgi">'$"Update Logs"'</a></li><!-- '$"View the update logs for your servers."' -->
 				<li><a href="/cgi-bin/admin/update_karoshi_fm.cgi">'$"Update Web Management"'</a></li><!-- '$"Apply Web Management patches."' -->
 				<li><a href="/cgi-bin/admin/update_karoshi_upload_fm.cgi">'$"Upload Patch"'</a></li><!-- '$"Upload a patch to the Web Management."' -->
+				<li><a href="/cgi-bin/admin/web_application_permissions.cgi">'$"Web Application Permissions"'</a></li><!-- '$"Change the permissions on a web application."' -->
 				<li><a href="/cgi-bin/admin/update_server_proxy_settings_choose_server_fm.cgi">'$"Upstream Proxy"'</a></li><!-- '$"Configure a server to use an upstream proxy."' -->'
 #Moodle
 if [ "$MOODLECTRL" = yes ]
