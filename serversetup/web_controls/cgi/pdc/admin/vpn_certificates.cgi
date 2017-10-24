@@ -126,7 +126,7 @@ then
 	ICON1=/images/submenus/system/add.png
 fi
 
-if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = revoke ] || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = downloadcert ]
+if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = unrevoke ] || [ "$ACTION" = revoke ] || [ "$ACTION" = reallyunrevoke ]  || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = downloadcert ]
 then
 	ACTION2=view
 	ACTIONMSG=$"View Certificates"
@@ -141,8 +141,14 @@ fi
 
 if [ "$ACTION" = revoke ] || [ "$ACTION" = reallyrevoke ]
 then
-	TITLEMSG=$"Reovke Client VPN Certificate"
+	TITLEMSG=$"Revoke Client VPN Certificate"
 fi
+
+if [ "$ACTION" = unrevoke ] || [ "$ACTION" = reallyunrevoke ]
+then
+	TITLEMSG=$"Un-Revoke Client VPN Certificate"
+fi
+
 
 if [ "$ACTION" = downloadcert ]
 then
@@ -185,7 +191,7 @@ fi
 #Check data
 #########################
 
-if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyrevoke ]
+if [ "$ACTION" = reallyadd ] || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = reallyunrevoke ]
 then
 	#Make sure that a username has been entered.
 	if [ -z "$USERNAME" ]

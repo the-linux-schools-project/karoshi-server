@@ -96,6 +96,8 @@ ICON1=/images/submenus/system/vpn_cert_enabled.png
 ICON2=/images/submenus/system/vpn_cert_revoked.png
 ICON3=/images/submenus/system/cert.png
 
+source /opt/karoshi/server_network/domain_information/domain_name
+
 function reloadform {
 #Reload form
 echo '<form name="frm" action="/cgi-bin/admin/vpn_certificates.cgi" method="post"><script>
@@ -105,7 +107,7 @@ document.frm.submit();
 
 if [ "$ACTION" = downloadcert ]
 then
-	source /opt/karoshi/server_network/domain_information/domain_name
+
 	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/get_client_cert 1>/dev/null
 
 	#Redirect to the backup folder
@@ -118,6 +120,11 @@ then
 	rm -f -R "/var/www/html_karoshi/admin/vpn/certs/$USERNAME.$REALM.zip"
 fi
 
+if [ "$ACTION" = reallyunrevoke ]
+then
+	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/unrevoke_client_cert 1>/dev/null
+	reloadform
+fi
 
 if [ "$ACTION" = reallyrevoke ]
 then
@@ -125,13 +132,24 @@ then
 	reloadform
 fi
 
+if [ "$ACTION" = unrevoke ]
+then
+	#Show confirmation message.
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">'"$USERNAME"' - '$"Are you sure you want to unrevoke the certificate for this user?"'
+	<br><br><br>
+	<input type="hidden" name="_ACTION_" value="reallyunrevoke">
+	<input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+	'
+fi
+
 if [ "$ACTION" = revoke ]
 then
 	#Show confirmation message.
 	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">'"$USERNAME"' - '$"Are you sure you want to revoke the certificate for this user?"'
+	<br><br><br>
 	<input type="hidden" name="_ACTION_" value="reallyrevoke">
 	<input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
-	<br><br>
 	<input value="'$"Submit"'" class="button" type="submit"></form>
 	'
 fi
@@ -175,14 +193,14 @@ then
 				USERNAME=$(basename $USERNAME | cut -d. -f1)
 				echo "<tr><td>$USERNAME</td><td>"
 
-				if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked ]
+				if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.'"$REALM"'.revoked ]
 				then
 					#Get revokation date
-					REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.$REALM.revoked)
+					REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.'"$REALM"'.revoked)
 					echo "
-	<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_view_\">
+	<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_unrevoke_USERNAME_"$USERNAME"_\">
 				<img src=\"'"$ICON2"'\" alt=\"'$"Revoked"'\">
-				<span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>'"$REVODATE"'</span>
+				<span>$USERNAME<br>'$"This certificate has been revoked."'<br><br>$REVODATE</span>
 				</button>
 				</td><td>"
 				else

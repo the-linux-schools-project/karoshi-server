@@ -1,0 +1,98 @@
+#!/bin/bash
+#Copyright (C) 2015 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+
+LOG_DATE=$(date +%F)
+
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
+if [[ -z "$DATA" ]]
+then
+	echo $(date): client_create_cert - no data >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+CLIENTNAME=$(echo "$DATA" | cut -s -d: -f4)
+
+if [[ -z "$CLIENTNAME" ]]
+then
+	echo "$(date): unrevoke_create_cert - blank client name by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+echo "$(date): unrevoke_create_cert - unrevoking openvpn client certificate for $CLIENTNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+#SSH to the openvpn server to unrevoke the certificates
+VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
+
+#Set certificate variables
+source /opt/karoshi/server_network/domain_information/domain_name
+
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
+cd /etc/openvpn/easy-rsa
+. ./vars
+
+#Get the line number the certificate is on
+LineData=$(grep "/CN='"$CLIENTNAME"'.'"$REALM"'/" /etc/openvpn/easy-rsa/keys/index.txt)
+
+if [ ! -z "$LineData" ]
+then
+	if [[ $(echo $LineData | grep -c ^"R") = 1 ]]
+	then
+		#Backup /etc/openvpn/easy-rsa/keys/index.txt and /etc/openvpn/easy-rsa/keys/crl.pem
+		[ ! -d /etc/openvpn/easy-rsa/keys/backup ] && mkdir -p /etc/openvpn/easy-rsa/keys/backup
+		cp -f /etc/openvpn/easy-rsa/keys/index.txt /etc/openvpn/easy-rsa/keys/backup/index.txt.'"$LOG_DATE"'.'"$$"'
+		cp -f /etc/openvpn/easy-rsa/keys/crl.pem /etc/openvpn/easy-rsa/keys/backup/crl.pem.'"$LOG_DATE"'.'"$$"'
+		Date1=$(echo "$LineData" | cut -f2)
+		CertNumber=$(echo "$LineData" | cut -f4)
+		CertData=$(echo "$LineData" | cut -f6)
+		NewLineData="V\t$Date1\t\t$CertNumber\tunknown\t$CertData"
+		sed -i "s%$LineData%$NewLineData%g" /etc/openvpn/easy-rsa/keys/index.txt
+
+		rm -f /etc/openvpn/easy-rsa/keys/crl.pem
+
+		openssl ca -gencrl -out "crl.pem" -config "$KEY_CONFIG"
+		#Copy revocation file
+		mv /etc/openvpn/easy-rsa/crl.pem /etc/openvpn/easy-rsa/keys
+		cp -f /etc/openvpn/easy-rsa/keys/crl.pem /etc/openvpn/
+	fi
+fi
+
+#Enable revocation file in server.conf
+if [ $(grep -c "#Verify client keys" /etc/openvpn/server.conf) = 0 ]
+then
+	echo -e "\n#Verify client keys" >> /etc/openvpn/server.conf
+	echo "crl-verify /etc/openvpn/crl.pem" >> /etc/openvpn/server.conf
+	#Restart the openvpn server
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/openvpn_start 1>/dev/null
+fi
+[ -f /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.revoked ] && rm -f /etc/openvpn/easy-rsa/keys/'"$CLIENTNAME"'.'"$REALM"'.revoked
+'
+exit
