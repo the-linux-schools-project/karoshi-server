@@ -183,7 +183,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div><div id="mobileactionbox">
 '
 else
-	echo '<div class="sectiontitle">'$"Web Application Permissions"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Radius_Server#Viewing_Access_Points"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to change permissions on web applications to allow the application to update itself."'</span></a></div>'
+	echo '<div class="sectiontitle">'$"Web Application Permissions"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Web_Application_Permissions"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to change permissions on web applications to allow the application to update itself."'</span></a></div>'
 fi
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
