@@ -34,7 +34,7 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_archive_cgi
-MD5Sum=$(MD5Sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
+MD5Sum=$(md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
 [ -z "$MD5Sum" ] && MD5Sum=not_set
 if [ "$MD5Sum"'check' != "$exam_accounts_archive_cgi"'check' ]
 then
@@ -45,15 +45,24 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ "$numArgs" != 1 ]
+if [ "$numArgs" != 0 ]
 then
 	echo "$(date): exam_accounts_archive - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-RemoteUser=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f1)
-RemoteAddress=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f2)
-RemoteMD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f3)
-Exceptionlist=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f4)
+
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
+
+RemoteUser=$(echo "$DATA" | cut -s -d: -f1)
+RemoteAddress=$(echo "$DATA" | cut -s -d: -f2)
+RemoteMD5=$(echo "$DATA" | cut -s -d: -f3)
+UserName=$(echo "$DATA" | cut -s -d: -f4)
+Group=$(echo "$DATA" | cut -s -d: -f5)
+Server=$(echo "$DATA" | cut -s -d: -f6)
+Share=$(echo "$DATA" | cut -s -d: -f7)
+Exceptionlist=$(echo "$DATA" | cut -s -d: -f8)
+
 ########################
 #Check data
 ########################
@@ -78,23 +87,26 @@ then
 	exit 101
 fi
 
-########################
-#Archive the exam accounts to /home/staffshare/examfiles/todays date
-########################
-
-if [ ! -d /home/staffshare ]
+if [ -z "$Server" ]
 then
-	mkdir /home/staffshare
-	chmod 0750 /home/staffshare
-	chown root.staff /home/staffshare
+	echo "$(date): exam_accounts_archive - blank server" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-if [ ! -d /home/staffshare/examfiles ]
+if [ -z "$Share" ]
 then
-	mkdir /home/staffshare/examfiles
-	chmod 0750 /home/staffshare/examfiles
-	chown root.itadmin /home/staffshare/examfiles
+	echo "$(date): exam_accounts_archive - blank network share" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
+
+if [ -z "$UserName" ] &&  [ -z "$Group" ]
+then
+	echo "$(date): exam_accounts_archive - no username or group specified" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+[ -z "$UserName" ] && UserName=root
+[ -z "$Group" ] && Group=root
 
 DAY=$(date +%d)
 MONTH=$(date +%b)
@@ -102,32 +114,78 @@ TIME=$(date +%T)
 YEAR=$(date +%Y)
 ArchiveFolder=$(echo "$DAY""_$MONTH""_$YEAR""_$TIME" | sed 's/:/_/g')
 
-echo "$(date): exam_accounts_archive - Archiving all exam accounts by $RemoteUser from $RemoteAddress" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-echo "$(date): exam_accounts_archive - Archive path: /home/staffshare/examfiles/$ArchiveFolder" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ -z "$Exceptionlist" ]
+then
+	echo "$(date): exam_accounts_archive - Archiving exam accounts to $Server://$Share by $RemoteUser from $RemoteAddress" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+else
+	echo "$(date): exam_accounts_archive - Archiving exam accounts apart from to $Server://$Share by $Exceptionlist by $RemoteUser from $RemoteAddress" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+fi
 
-mkdir /home/staffshare/examfiles/"$ArchiveFolder"
-chown root.itadmin /home/staffshare/examfiles/"$ArchiveFolder"
-chmod 0640 /home/staffshare/examfiles/"$ArchiveFolder"
-chmod u+X,g+X /home/staffshare/examfiles/"$ArchiveFolder"
+#Get the network share path
+source "/opt/karoshi/server_network/network_shares/$Server/$Share"
 
+#Create the archive folder
+if [[ "$Server" = $(hostname-fqdn) ]]
+then
+	chmod 0755 "$SHAREPATH/examfiles"
+	if [ ! -d "$SHAREPATH/examfiles/$ArchiveFolder" ]
+	then
+		mkdir -p "$SHAREPATH/examfiles/$ArchiveFolder"
+		chown $UserName.$Group "$SHAREPATH/examfiles/$ArchiveFolder"
+		chmod 0770 "$SHAREPATH/examfiles/$ArchiveFolder"
+	fi
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$Server" '
+	chmod 0755 "'"$SHAREPATH"'/examfiles"
+	if [ ! -d "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'" ]
+	then
+		mkdir -p "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+		chown '"$UserName"'.'"$Group"' "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+		chmod 0770 "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+	fi	
+	'
+fi
+
+#Copy the exam account home areas to the archive folder
 ExamCount=$(ls -1 /home/users/exams/ | wc -l)
 Counter=1
 while [ "$Counter" -le "$ExamCount" ]
 do
 	if [[ $(echo "$Exceptionlist" | grep -c -w exam"$Counter") = 0 ]]
 	then 
-		echo "Archiving exam$Counter<br>"
-		cp -f -R /home/users/exams/exam$Counter /home/staffshare/examfiles/"$ArchiveFolder"/
-		echo "Clearing exam$Counter<br><br>"
-		rm -R -f /home/users/exams/exam"$Counter"
-		mkdir /home/users/exams/exam"$Counter"
-		chmod 0700 /home/users/exams/exam"$Counter"
-		chown exam"$Counter".exams /home/users/exams/exam"$Counter"
+		echo '<ul><li>'$"Archiving"' exam'"$Counter"'</li></ul>'
+		if [[ "$Server" = $(hostname-fqdn) ]]
+		then
+			cp -f -R /home/users/exams/exam"$Counter" "$SHAREPATH/examfiles/$ArchiveFolder"/	
+		else
+			scp /home/users/exams/exam"$Counter" root@"$Server:/$SHAREPATH/examfiles/$ArchiveFolder"
+		fi
+		#Don't delete the exam account home area if there was a problem archiving the files
+		if [ "$?" = 0 ]
+		then 
+			echo "<ul><li>Clearing exam$Counter</li></ul>"
+			rm -R -f /home/users/exams/exam"$Counter"
+			mkdir /home/users/exams/exam"$Counter"
+			chmod 0700 /home/users/exams/exam"$Counter"
+			chown exam"$Counter".exams /home/users/exams/exam"$Counter"
+		else
+			echo "<ul><li>There was a problem archiving exam$Counter</li></ul>"
+		fi
 	fi
-
-	let Counter=Counter+1
+	let Counter="$Counter"+1
 done
-chown -R root.itadmin /home/staffshare/examfiles/"$ArchiveFolder"
-chmod -R 0640 /home/staffshare/examfiles/"$ArchiveFolder"
-chmod -R u+X,g+X /home/staffshare/examfiles/"$ArchiveFolder"
+
+#Set the permissions on the archive folder
+if [[ "$Server" = $(hostname-fqdn) ]]
+then
+	chown -R "$UserName"."$Group" "$SHAREPATH/examfiles/$ArchiveFolder"
+	chmod -R 0660 "$SHAREPATH/examfiles/$ArchiveFolder"
+	chmod -R u+X,g+X "$SHAREPATH/examfiles/$ArchiveFolder"
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$Server" '
+	chown -R "'"$UserName"'.'"$Group"'" "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+	chmod -R 0660 "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+	chmod -R u+X,g+X "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
+	'
+fi
 exit

@@ -30,13 +30,13 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -45,8 +45,10 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Archive the exam accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Archive exam accounts"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
@@ -55,25 +57,50 @@ echo '
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '
-<form action="/cgi-bin/admin/exam_accounts_archive.cgi" method="post"><div id="actionbox">
-<b>'$"Archive the exam accounts"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"All data will be archived from the exam accounts to a sub folder in /home/staffshare/examfiles."'<br><br>'$"Only a member of the itadmin group can access this folder."'</span></a>
-<br>
-<br>
-'$"This will archive the data from all of the exam accounts."'<br><br>
-
+<form action="/cgi-bin/admin/exam_accounts_archive.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td><div class="sectiontitle">'$"Archive exam accounts"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"All data will be archived from the exam accounts to a sub folder in /home/staffshare/examfiles."'<br><br>'$"Only a member of the selected group can access this folder."'</span></a></td></tr></tbody></table><br><br>
 <table class="standard" style="text-align: left;" >
 <tbody>
-<tr><td style="width: 180px;">
+<tr><td style="width: 180px;">'$"Username"'</td><td><div id="suggestions"></div><input tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that will be set as the owner of the archived files."'</span></a></td></tr>
+<tr><td>'$"Group"'</td><td>'
+
+#Show a dropdown list of all groups
+/opt/karoshi/web_controls/group_dropdown_list
+
+echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"If you choose a group all users in the group will have full access to the archived files."'</span></a></td></tr>
+<tr><td>'$"Network Share"'</td><td><select name="_SHARE_" style="width: 200px;">'
+
+#Show a list of network shares to archive the accounts to
+for SERVERS in /opt/karoshi/server_network/network_shares/*
+do
+	SERVER=$(basename "$SERVERS")
+	SERVER_SHORT=$(echo "$SERVER" | cut -d. -f1)
+	if [[ $(ls -1 /opt/karoshi/server_network/network_shares/"$SERVER" | wc -l) -gt 0 ]]
+	then
+		for NETSHARES in /opt/karoshi/server_network/network_shares/"$SERVER"/*
+		do
+			NETSHARE=$(basename "$NETSHARES")
+			source /opt/karoshi/server_network/network_shares/"$SERVER"/"$NETSHARE"
+			if [ "$NETSHARE" != sysvol ] && [ "$NETSHARE" != netlogon ] && [ "$NETSHARE" != applications ]
+			then
+				echo '<option value="'"$NETSHARE"'_SERVER_'"$SERVER"'_">'"$SERVER_SHORT"': '"$NETSHARE"'</option>'
+			fi
+		done
+	fi
+done
+
+
+echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the network share to archive the exam accounts to."'</span></a></td></tr>
+<tr><td>
 '$"Exceptions"'
 </td><td>
-<input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
+<input tabindex= "3" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to be archived separated by spaces."'</span></a>
-
-</td></tr></tbody></table>
+</td></tr></tbody></table><br>
+<input value="'$"Submit"'" class="button" type="submit"
 </div>
-<div id="submitbox">
-  <input value="'$"Submit"'" class="button" type="submit">
 </div>
 </form>
 </div></body>
