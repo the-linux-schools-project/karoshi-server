@@ -53,31 +53,30 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/exam_accounts_enable_disable.cgi" method="post">
-<div id="actionbox"><table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Enable - Disable all exam accounts"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Use this option to allow or deny access to all of the exam accounts."'</span></a></td></tr></tbody></table><br>
+<div id="actionbox3"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Enable - Disable all exam accounts"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Enable_.2F_Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Use this option to allow or deny access to all of the exam accounts."'</span></a></td></tr></tbody></table><br>
   <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$"Enable"'</td>
-        <td><input name="_EXAMSTATUS_" value="enable" checked="checked" type="radio">&nbsp;</td>
+        <td><input name="_EXAMSTATUS_" value="enable" checked="checked" type="radio">&nbsp;</td><td></td>
       </tr>
       <tr>
         <td>
 '$"Disable"'</td>
-        <td><input name="_EXAMSTATUS_" value="disable" type="radio">&nbsp;</td>
+        <td><input name="_EXAMSTATUS_" value="disable" type="radio">&nbsp;</td><td></td>
       </tr>
 <tr><td>
 '$"Exceptions"'
 </td><td>
 <input tabindex= "1" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Enable/Disable_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to be enabled or disabled."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Enable_.2F_Disable_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to be enabled or disabled."'</span></a>
 </td></tr>
     </tbody>
   </table>
-</div>
-<div id="submitbox">
-  <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div></form></div></body></html>'
+<br><br>
+  <input value="'$"Submit"'" class="button" type="submit">
+</div></div></form></div></body></html>'
 exit

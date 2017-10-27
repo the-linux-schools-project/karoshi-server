@@ -54,33 +54,34 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="post"><div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$"Exam Accounts - Change Passwords"'</div>
-  <br>
+<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td><div class="sectiontitle">'$"Change exam account passwords"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will change all of the exam accounts to a password of your choice."'</span></a></td></tr></tbody></table><br><br>
+
   <table class="standard" style="text-align: left;" >
     <tbody>
       <tr>
         <td style="width: 180px;">
 '$"Password"'</td>
         <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the password that you want all of the exam accounts changed to."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the password that you want all of the exam accounts changed to."'</span></a>
 </td></tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td>
+        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
       </tr>
 <tr><td style="width: 180px;">
 '$"Exceptions"'
 </td><td>
 <input tabindex= "3" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to have the passwords changed for separated by spaces."'</span></a>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to have the passwords changed for separated by spaces."'</span></a>
 </td></tr>
     </tbody>
   </table>
 <br><br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div><div>
+</div></div>
 </form>
 </div></body>
 </html>

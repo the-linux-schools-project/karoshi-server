@@ -52,10 +52,10 @@ echo '
 <body onLoad=start()><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
 <table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Exam Accounts - Upload Files"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The uploaded files will be copied to a folder called exam_files in each exam account."'</span></a></td></tr></tbody></table><br>
+<tr><td><div class="sectiontitle">'$"Exam Accounts - Upload Files"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Copy_Data_to_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"The uploaded files will be copied to a folder called exam_files in each exam account."'</span></a></td></tr></tbody></table><br>
 <P>
 '$"Please select the files that you want to upload for the exam accounts"':
 <P>
@@ -178,7 +178,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/exam_accounts_u
 		</tr>
         </TABLE>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
         </FORM>
         </div>
 </BODY>

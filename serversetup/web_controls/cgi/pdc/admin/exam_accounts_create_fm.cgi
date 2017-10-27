@@ -45,23 +45,23 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Exam Accounts - Create additional accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"Create extra exam accounts"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script src="/all/stuHover.js" type="text/javascript"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/exam_accounts_create.cgi" method="post"><div id="actionbox">
-<div class="sectiontitle">'$"Exam Accounts - Create additional accounts"'</div>
+echo '<form action="/cgi-bin/admin/exam_accounts_create.cgi" method="post"><div id="actionbox3"><div id="titlebox">
+<div class="sectiontitle">'$"Create extra exam accounts"'</div>
   <br>
 '$OPENINGMSG'<br>
 <table class="standard" style="text-align: left;" ><tbody>
 <tr><td style="width: 180px;">'$"Quantity"'</td><td><input maxlength="3" size="3" name="_NEWEXAMS_" value="10"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Create_Extra_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create additional numbered exam accounts."'</span></a></td></tr>
-</tbody></table></div>
-<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Create_Extra_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create extra numbered exam accounts."'</span></a></td></tr>
+</tbody></table><br><br>
+<input value="'$"Submit"'" class="button" type="submit">
+</div></div>
 </form>
 </div></body>
 </html>
