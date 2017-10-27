@@ -178,7 +178,6 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$SERVER:$SHARE:$EXCEPTI
 if [ "$?" = 0 ]
 then
 	#Get the network share details
-	source 
 	MESSAGE=$"All exam accounts have been archived to"": $SERVER: $SHARE /examfiles/$ARCHIVEFOLDER"
 else
 	MESSAGE=$"The exam accounts could not be archived"

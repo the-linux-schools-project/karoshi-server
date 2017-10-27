@@ -127,22 +127,22 @@ source "/opt/karoshi/server_network/network_shares/$Server/$Share"
 #Create the archive folder
 if [[ "$Server" = $(hostname-fqdn) ]]
 then
-	chmod 0755 "$SHAREPATH/examfiles"
 	if [ ! -d "$SHAREPATH/examfiles/$ArchiveFolder" ]
 	then
 		mkdir -p "$SHAREPATH/examfiles/$ArchiveFolder"
 		chown $UserName.$Group "$SHAREPATH/examfiles/$ArchiveFolder"
 		chmod 0770 "$SHAREPATH/examfiles/$ArchiveFolder"
+		chmod 0755 "$SHAREPATH/examfiles"
 	fi
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$Server" '
-	chmod 0755 "'"$SHAREPATH"'/examfiles"
 	if [ ! -d "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'" ]
 	then
 		mkdir -p "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
 		chown '"$UserName"'.'"$Group"' "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
 		chmod 0770 "'"$SHAREPATH"'/examfiles/'"$ArchiveFolder"'"
-	fi	
+		chmod 0755 "'"$SHAREPATH"'/examfiles"
+	fi
 	'
 fi
 
@@ -158,7 +158,7 @@ do
 		then
 			cp -f -R /home/users/exams/exam"$Counter" "$SHAREPATH/examfiles/$ArchiveFolder"/	
 		else
-			scp /home/users/exams/exam"$Counter" root@"$Server:/$SHAREPATH/examfiles/$ArchiveFolder"
+			scp -r /home/users/exams/exam"$Counter" root@"$Server:/$SHAREPATH/examfiles/$ArchiveFolder"
 		fi
 		#Don't delete the exam account home area if there was a problem archiving the files
 		if [ "$?" = 0 ]
