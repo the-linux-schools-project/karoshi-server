@@ -6,7 +6,7 @@ CREATEPOFILES=yes
 source /opt/karoshi/serversetup/variables/langlist
 
 LANGLIST=$(echo -e "$LANGLIST" | sed 's/en_EN.UTF-8,English //g'| sed 's/ /\n/g' | cut -d"_" -f1)
-LANGLIST=$(echo $LANGLIST | sed 's/ /+/g')
+LANGLIST=$(echo "$LANGLIST" | sed 's/ /+/g')
 
 APPEND=no
 POTFILE=karoshi-server.pot
@@ -51,7 +51,7 @@ then
 	#Translate each language in turn
 	for KLANG in $(echo "$LANGLIST" | sed 's/+/ /g')
 	do
-		TRANSDATA=$(trans -brief -s en -t "$KLANG" "$MSGIDTEXT")
+		TRANSDATA=$(trans -brief -s en -t "$KLANG" "$MSGIDTEXT" | sed 's/"//g')
 		echo "msgid \"$MSGIDTEXT\""  >> "/opt/karoshi/serversetup/language/$KLANG.po"
 		echo "msgstr \"$TRANSDATA\"" >> "/opt/karoshi/serversetup/language/$KLANG.po"
 		echo >> "/opt/karoshi/serversetup/language/$KLANG.po"

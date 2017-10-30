@@ -179,6 +179,9 @@ cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/tech/dg_room_controls_fm.cgi
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls.cgi /var/www/cgi-bin_karoshi/staff/
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/admin/dg_room_controls2.cgi /var/www/cgi-bin_karoshi/staff/
 
+sed -i 's#user_prefs/"\$REMOTE_USER"#global_prefs#g' \
+/var/www/cgi-bin_karoshi/staff/{search,dg_room_controls{,_fm,2}}.cgi
+
 cp -f /opt/karoshi/serversetup/web_controls/html/pdc/staff/index.html /var/www/html_karoshi/staff/
 
 cp -f /opt/karoshi/serversetup/web_controls/cgi/pdc/staff/mobile_menu.cgi /var/www/cgi-bin_karoshi/staff/

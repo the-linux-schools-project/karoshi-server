@@ -1,11 +1,10 @@
 #!/bin/bash
 
 source /opt/karoshi/serversetup/variables/langlist
-
-for LANGFILE in `echo $LANGLIST | sed 's/+/ /g'`
+for LANGFILE in ${LANGLIST//+/ }
 do
-	LANGFILE=$(echo $LANGFILE | cut -d"_" -f1)
-	[ -f /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo ] && rm -f /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo
-	msgfmt -o /usr/share/locale/$LANGFILE/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/$LANGFILE.po
+	LANGFILE=$(echo "$LANGFILE" | cut -d"_" -f1)
+	[ -f /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo ] && rm -f /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo
+	msgfmt -o /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/"$LANGFILE".po
 done
 dpkg-reconfigure locales

@@ -38,6 +38,8 @@ MONTH=$(echo "$DATE_INFO" | cut -d- -f2)
 YEAR=$(echo "$DATE_INFO" | cut -d- -f1)
 
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
+
+export TEXTDOMAIN=karoshi-server
 ############################
 #Show page
 ############################
