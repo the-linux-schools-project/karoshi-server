@@ -200,7 +200,7 @@ then
 			echo "</tr></tbody></table></form><br>"
 		fi
 	else
-		echo $"You have not chosen a location."
+		echo $"No locations have been added."
 	fi
 else
 	echo $"No locations have been created."

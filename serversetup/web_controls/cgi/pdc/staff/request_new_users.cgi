@@ -38,71 +38,69 @@ SLEEPTIME=5
 
 echo "Content-type: text/html"
 echo ""
-echo '<html><head><title>'$"Request New Users"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Request New Users"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+-')
 #########################
 #Assign data to variables
 #########################
-MYUSERNAME=`echo $DATA | cut -d_ -f3`
-MYPASSWORD=`echo $DATA | cut -d_ -f5`
+MYUSERNAME=$(echo "$DATA" | cut -d_ -f3)
 
-FORENAME1=`echo $DATA | cut -d_ -f3`
-SURNAME1=`echo $DATA | cut -d_ -f5`
-GROUP1=`echo $DATA | cut -d_ -f7`
-ADNO1=`echo $DATA | cut -d_ -f9`
+FORENAME1=$(echo "$DATA" | cut -d_ -f3)
+SURNAME1=$(echo "$DATA" | cut -d_ -f5)
+GROUP1=$(echo "$DATA" | cut -d_ -f7)
+ADNO1=$(echo "$DATA" | cut -d_ -f9)
 
-FORENAME2=`echo $DATA | cut -d_ -f11`
-SURNAME2=`echo $DATA | cut -d_ -f13`
-GROUP2=`echo $DATA | cut -d_ -f15`
-ADNO2=`echo $DATA | cut -d_ -f17`
+FORENAME2=$(echo "$DATA" | cut -d_ -f11)
+SURNAME2=$(echo "$DATA" | cut -d_ -f13)
+GROUP2=$(echo "$DATA" | cut -d_ -f15)
+ADNO2=$(echo "$DATA" | cut -d_ -f17)
 
-FORENAME3=`echo $DATA | cut -d_ -f19`
-SURNAME3=`echo $DATA | cut -d_ -f21`
-GROUP3=`echo $DATA | cut -d_ -f23`
-ADNO3=`echo $DATA | cut -d_ -f25`
+FORENAME3=$(echo "$DATA" | cut -d_ -f19)
+SURNAME3=$(echo "$DATA" | cut -d_ -f21)
+GROUP3=$(echo "$DATA" | cut -d_ -f23)
+ADNO3=$(echo "$DATA" | cut -d_ -f25)
 
-FORENAME4=`echo $DATA | cut -d_ -f27`
-SURNAME4=`echo $DATA | cut -d_ -f29`
-GROUP4=`echo $DATA | cut -d_ -f31`
-ADNO4=`echo $DATA | cut -d_ -f33`
+FORENAME4=$(echo "$DATA" | cut -d_ -f27)
+SURNAME4=$(echo "$DATA" | cut -d_ -f29)
+GROUP4=$(echo "$DATA" | cut -d_ -f31)
+ADNO4=$(echo "$DATA" | cut -d_ -f33)
 
-FORENAME5=`echo $DATA | cut -d_ -f35`
-SURNAME5=`echo $DATA | cut -d_ -f37`
-GROUP5=`echo $DATA | cut -d_ -f39`
-ADNO5=`echo $DATA | cut -d_ -f41`
+FORENAME5=$(echo "$DATA" | cut -d_ -f35)
+SURNAME5=$(echo "$DATA" | cut -d_ -f37)
+GROUP5=$(echo "$DATA" | cut -d_ -f39)
+ADNO5=$(echo "$DATA" | cut -d_ -f41)
 
-FORENAME6=`echo $DATA | cut -d_ -f43`
-SURNAME6=`echo $DATA | cut -d_ -f45`
-GROUP6=`echo $DATA | cut -d_ -f47`
-ADNO6=`echo $DATA | cut -d_ -f49`
+FORENAME6=$(echo "$DATA" | cut -d_ -f43)
+SURNAME6=$(echo "$DATA" | cut -d_ -f45)
+GROUP6=$(echo "$DATA" | cut -d_ -f47)
+ADNO6=$(echo "$DATA" | cut -d_ -f49)
 
-FORENAME7=`echo $DATA | cut -d_ -f51`
-SURNAME7=`echo $DATA | cut -d_ -f53`
-GROUP7=`echo $DATA | cut -d_ -f55`
-ADNO7=`echo $DATA | cut -d_ -f57`
+FORENAME7=$(echo "$DATA" | cut -d_ -f51)
+SURNAME7=$(echo "$DATA" | cut -d_ -f53)
+GROUP7=$(echo "$DATA" | cut -d_ -f55)
+ADNO7=$(echo "$DATA" | cut -d_ -f57)
 
-FORENAME8=`echo $DATA | cut -d_ -f59`
-SURNAME8=`echo $DATA | cut -d_ -f61`
-GROUP8=`echo $DATA | cut -d_ -f63`
-ADNO8=`echo $DATA | cut -d_ -f65`
+FORENAME8=$(echo "$DATA" | cut -d_ -f59)
+SURNAME8=$(echo "$DATA" | cut -d_ -f61)
+GROUP8=$(echo "$DATA" | cut -d_ -f63)
+ADNO8=$(echo "$DATA" | cut -d_ -f65)
 
-FORENAME9=`echo $DATA | cut -d_ -f67`
-SURNAME9=`echo $DATA | cut -d_ -f69`
-GROUP9=`echo $DATA | cut -d_ -f71`
-ADNO9=`echo $DATA | cut -d_ -f73`
+FORENAME9=$(echo "$DATA" | cut -d_ -f67)
+SURNAME9=$(echo "$DATA" | cut -d_ -f69)
+GROUP9=$(echo "$DATA" | cut -d_ -f71)
+ADNO9=$(echo "$DATA" | cut -d_ -f73)
 
-FORENAME10=`echo $DATA | cut -d_ -f75`
-SURNAME10=`echo $DATA | cut -d_ -f77`
-GROUP10=`echo $DATA | cut -d_ -f79`
-ADNO10=`echo $DATA | cut -d_ -f81`
+FORENAME10=$(echo "$DATA" | cut -d_ -f75)
+SURNAME10=$(echo "$DATA" | cut -d_ -f77)
+GROUP10=$(echo "$DATA" | cut -d_ -f79)
+ADNO10=$(echo "$DATA" | cut -d_ -f81)
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'history.go(-1);'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -111,7 +109,7 @@ exit
 
 function show_status2 {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/staff/request_new_users_fm.cgi";'
 echo '</script>'
 echo "</div></div></body></html>"
@@ -120,167 +118,167 @@ exit
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_staff
-echo '<div id="actionbox">'
+echo '<div id="actionbox3">'
 #########################
 #Check data
 #########################
 
 #Check some fornames have been entered
-if [ `echo $FORENAME1$FORENAME2$FORENAME3$FORENAME4$FORENAME5$FORENAME6$FORENAME7$FORENAME8$FORENAME9$FORENAME10'null'` = null ]
+if [ "$FORENAME1$FORENAME2$FORENAME3$FORENAME4$FORENAME5$FORENAME6$FORENAME7$FORENAME8$FORENAME9$FORENAME10"null = null ]
 then
-MESSAGE=$"You have not enterered any forenames."
-show_status
+	MESSAGE=$"You have not enterered any forenames."
+	show_status
 fi
 
 #Check some surnames have been entered
-if [ `echo $SURNAME1$SURNAME2$SURNAME3$SURNAME4$SURNAME5$SURNAME6$SURNAME7$SURNAME8$SURNAME9$SURNAME10'null'` = null ]
+if [ "$SURNAME1$SURNAME2$SURNAME3$SURNAME4$SURNAME5$SURNAME6$SURNAME7$SURNAME8$SURNAME9$SURNAME10"null = null ]
 then
-MESSAGE=$"You have not enterered any surnames."
-show_status
+	MESSAGE=$"You have not enterered any surnames."
+	show_status
 fi
 
-if [ $FORENAME1'null' != null ]
+if [ ! -z "$FORENAME1" ]
 then
-if [ $SURNAME1'null' = null ]
-then
-MESSAGE=`echo $FORENAME1 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP1'null' = null ]
-then
-MESSAGE=`echo $FORENAME1 $SURNAME1 - $"You need to set the group for this user."`
-show_status
-fi
-fi
-
-if [ $FORENAME2'null' != null ]
-then
-if [ $SURNAME2'null' = null ]
-then
-MESSAGE=`echo $FORENAME2 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP2'null' = null ]
-then
-MESSAGE=`echo $FORENAME2 $SURNAME2 - $"You need to set the group for this user."`
-show_status
-fi
+	if [ -z "$SURNAME1" ]
+	then
+		MESSAGE="$FORENAME1 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP1" ]
+	then
+		MESSAGE="$FORENAME1 $SURNAME1 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
 
-if [ $FORENAME3'null' != null ]
+if [ ! -z "$FORENAME2" ]
 then
-if [ $SURNAME3'null' = null ]
-then
-MESSAGE=`echo $FORENAME3 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP3'null' = null ]
-then
-MESSAGE=`echo $FORENAME3 $SURNAME3 - $"You need to set the group for this user."`
-show_status
-fi
-fi
-
-if [ $FORENAME4'null' != null ]
-then
-if [ $SURNAME4'null' = null ]
-then
-MESSAGE=`echo $FORENAME4 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP4'null' = null ]
-then
-MESSAGE=`echo $FORENAME4 $SURNAME4 - $"You need to set the group for this user."`
-show_status
-fi
+	if [ -z "$SURNAME2" ]
+	then
+		MESSAGE="$FORENAME2 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP2" ]
+	then
+		MESSAGE="$FORENAME2 $SURNAME2 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
 
-if [ $FORENAME5'null' != null ]
+if [ ! -z "$FORENAME3" ]
 then
-if [ $SURNAME5'null' = null ]
-then
-MESSAGE=`echo $FORENAME5 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP5'null' = null ]
-then
-MESSAGE=`echo $FORENAME5 $SURNAME5 - $"You need to set the group for this user."`
-show_status
-fi
-fi
-
-if [ $FORENAME6'null' != null ]
-then
-if [ $SURNAME6'null' = null ]
-then
-MESSAGE=`echo $FORENAME6 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP6'null' = null ]
-then
-MESSAGE=`echo $FORENAME6 $SURNAME6 - $"You need to set the group for this user."`
-show_status
-fi
+	if [ -z "$SURNAME3" ]
+	then
+		MESSAGE="$FORENAME3 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP1" ]
+	then
+		MESSAGE="$FORENAME3 $SURNAME3 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
 
-if [ $FORENAME7'null' != null ]
+if [ ! -z "$FORENAME4" ]
 then
-if [ $SURNAME7'null' = null ]
-then
-MESSAGE=`echo $FORENAME7 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP7'null' = null ]
-then
-MESSAGE=`echo $FORENAME7 $SURNAME7 - $"You need to set the group for this user."`
-show_status
-fi
-fi
-
-if [ $FORENAME8'null' != null ]
-then
-if [ $SURNAME8'null' = null ]
-then
-MESSAGE=`echo $FORENAME8 - $"Missing surname."`
-show_status
-fi
-if [ $GROUP8'null' = null ]
-then
-MESSAGE=`echo $FORENAME8 $SURNAME8 - $"You need to set the group for this user."`
-show_status
-fi
+	if [ -z "$SURNAME4" ]
+	then
+		MESSAGE="$FORENAME4 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP4" ]
+	then
+		MESSAGE="$FORENAME4 $SURNAME4 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
 
-if [ $FORENAME9'null' != null ]
+if [ ! -z "$FORENAME5" ]
 then
-if [ $SURNAME9'null' = null ]
-then
-MESSAGE=`echo $FORENAME9 - $"Missing surname."`
-show_status
+	if [ -z "$SURNAME5" ]
+	then
+		MESSAGE="$FORENAME5 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP5" ]
+	then
+		MESSAGE="$FORENAME5 $SURNAME5 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
-if [ $GROUP9'null' = null ]
+
+if [ ! -z "$FORENAME6" ]
 then
-MESSAGE=`echo $FORENAME9 $SURNAME9 - $"You need to set the group for this user."`
-show_status
+	if [ -z "$SURNAME6" ]
+	then
+		MESSAGE="$FORENAME6 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP6" ]
+	then
+		MESSAGE="$FORENAME6 $SURNAME6 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
+
+if [ ! -z "$FORENAME7" ]
+then
+	if [ -z "$SURNAME7" ]
+	then
+		MESSAGE="$FORENAME7 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP7" ]
+	then
+		MESSAGE="$FORENAME7 $SURNAME7 - "$"You need to set the group for this user."
+		show_status
+	fi
+fi
+
+if [ ! -z "$FORENAME8" ]
+then
+	if [ -z "$SURNAME8" ]
+	then
+		MESSAGE="$FORENAME8 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP8" ]
+	then
+		MESSAGE="$FORENAME8 $SURNAME8 - "$"You need to set the group for this user."
+		show_status
+	fi
+fi
+
+if [ ! -z "$FORENAME9" ]
+then
+	if [ -z "$SURNAME9" ]
+	then
+		MESSAGE="$FORENAME9 - "$"Missing surname."
+		show_status
+	fi
+	if [ -z "$GROUP9" ]
+	then
+		MESSAGE="$FORENAME9 $SURNAME9 - "$"You need to set the group for this user."
+		show_status
+	fi
 fi
 
 #Check to see that the member of staff is not restricted
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
-if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
-then
-sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME
-sleep $SLEEPTIME
-MESSAGE=$"Authentication failure."
-show_status
-fi
+	if [[ $(grep -c -w "$REMOTE_USER" /opt/karoshi/web_controls/staff_restrictions.txt) -gt 0 ]]
+	then
+		sudo -H /opt/karoshi/web_controls/exec/record_staff_error "$REMOTE_USER:$REMOTE_ADDR:$MYUSERNAME"
+		sleep "$SLEEPTIME"
+		MESSAGE=$"Authentication failure."
+		show_status
+	fi
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/request_new_users.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/request_new_users.cgi | cut -d' ' -f1)
 #Change student password
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$REMOTE_USER:$FORENAME1:$SURNAME1:$GROUP1:$ADNO1:$FORENAME2:$SURNAME2:$GROUP2:$ADNO2:$FORENAME3:$SURNAME3:$GROUP3:$ADNO3:$FORENAME4:$SURNAME4:$GROUP4:$ADNO4:$FORENAME5:$SURNAME5:$GROUP5:$ADNO5:$FORENAME6:$SURNAME6:$GROUP6:$ADNO6:$FORENAME7:$SURNAME7:$GROUP7:$ADNO7:$FORENAME8:$SURNAME8:$GROUP8:$ADNO8:$FORENAME9:$SURNAME9:$GROUP9:$ADNO9:$FORENAME10:$SURNAME10:$GROUP10:$ADNO10:" | sudo -H /opt/karoshi/web_controls/exec/request_new_users
-MESSAGE=`echo $"The users you have requested have been added to the list."`
+MESSAGE=$"The users you have requested have been added to the list."
 show_status2
 exit

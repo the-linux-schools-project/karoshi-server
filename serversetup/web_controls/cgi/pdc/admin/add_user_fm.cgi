@@ -225,7 +225,7 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
-FILE=$(echo "$DATA" | cut -s -d_ -f3)
+FILE=$(echo "$DATA" | cut -s -d_ -f5)
 
 #Generate navigation bar
 if [ "$MOBILE" = no ]
@@ -260,7 +260,7 @@ then
 fi
 
 #Get request data if asked
-if [ -z "$FILE" ]
+if [ ! -z "$FILE" ]
 then
 	if [ -f "/opt/karoshi/user_requests/new_users/$FILE" ]
 	then
