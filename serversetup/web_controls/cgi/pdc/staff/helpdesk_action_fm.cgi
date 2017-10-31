@@ -36,33 +36,39 @@ echo '<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><title>'$"Technical Support"'</title></head><body><div id="pagecontainer">'
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><title>'$"Technical Support"'</title></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\.%+_:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\.%+_:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign JOBNAME
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = JOBNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		JOBNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign JOBNAME
+DATANAME=JOBNAME
+get_data
+JOBNAME="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/staff/helpdesk_add_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -79,7 +85,7 @@ then
 	show_status
 fi
 
-if [ ! -f /opt/karoshi/server_network/helpdesk/todo/$JOBNAME ]
+if [ ! -f /opt/karoshi/server_network/helpdesk/todo/"$JOBNAME" ]
 then
 	MESSAGE=$"This job does not exist."
 	show_status
@@ -90,7 +96,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_staff
 
 #Get data
-source /opt/karoshi/server_network/helpdesk/todo/$JOBNAME
+source /opt/karoshi/server_network/helpdesk/todo/"$JOBNAME"
 source /opt/karoshi/web_controls/version
 
 #Show job data
@@ -98,13 +104,13 @@ echo '<form action="/cgi-bin/staff/helpdesk_view_fm.cgi" method="post"><div id="
 
 <table class="standard" style="text-align: left; height: 91px;" >
 <tbody>
-<tr><td style="width: 180px;">'$"Request Summary"'</td><td>'$JOBTITLE'</td></tr>
-<tr><td>'$"Name"'</td><td>'$NAME'</td></tr>
-<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
-<tr><td>'$"Department"'</td><td>'$DEPARTMENT'</td></tr>
-<tr><td>'$"Category"'</td><td>'$CATEGORY'</td></tr>
-<tr><td>'$"Extended Details"'</td><td>'$REQUEST'</td></tr>
-<tr><td>'$"Feedback"'</td><td>'$FEEDBACK'</td></tr>
+<tr><td style="width: 180px;">'$"Request Summary"'</td><td>'"$JOBTITLE"'</td></tr>
+<tr><td>'$"Name"'</td><td>'"$NAME"'</td></tr>
+<tr><td>'$"Location"'</td><td>'"$LOCATION"'</td></tr>
+<tr><td>'$"Department"'</td><td>'"$DEPARTMENT"'</td></tr>
+<tr><td>'$"Category"'</td><td>'"$CATEGORY"'</td></tr>
+<tr><td>'$"Extended Details"'</td><td>'"$REQUEST"'</td></tr>
+<tr><td>'$"Feedback"'</td><td>'"$FEEDBACK"'</td></tr>
 </tbody></table></div>
 <div id="submitbox">
 <input value="'$"Back"'" type="submit">

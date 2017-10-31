@@ -104,59 +104,59 @@ fi
 echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 140px;"><b>'$"Name"'</b></th><th style="width: 140px;"><b>'$"Request Summary"'</b></th><th style="width: 120px;"><b>'$"Location"'</b></th><th style="width: 100px;"><b>'$"Wait Time"'</b></th><th style="width: 120px;"><b>'$"Assigned to"'</b></th><th style="width: 60px;"><b>'$"Action"'</b></th></tr></thead><tbody>
 '
-for NEWJOB in `grep -w -l 'NAME="'$REMOTE_USER'"' /opt/karoshi/server_network/helpdesk/todo/*`
+for NEWJOB in $(grep -w -l 'NAME="'"$REMOTE_USER"'"' /opt/karoshi/server_network/helpdesk/todo/*)
 do
-	NEWJOB=`basename $NEWJOB`
-	source /opt/karoshi/server_network/helpdesk/todo/$NEWJOB
-	NOW=`date +%s`
+	NEWJOB=$(basename "$NEWJOB")
+	source /opt/karoshi/server_network/helpdesk/todo/"$NEWJOB"
+	NOW=$(date +%s)
 	let WAITTIME=($NOW-$DATE2)
-	if [ $WAITTIME -lt 60 ]
+	if [ "$WAITTIME" -lt 60 ]
 	then
 		#Show time in seconds
-		if [ $WAITTIME = 1 ]
+		if [ "$WAITTIME" = 1 ]
 		then 
-			WAITTIME=`echo $WAITTIME $"second"`
+			WAITTIME="$WAITTIME "$"second"
 		else
-			WAITTIME=`echo $WAITTIME $"seconds"`
+			WAITTIME="$WAITTIME "$"seconds"
 		fi
 	else
 		#Convert to minutes
-		let WAITTIME=$WAITTIME/60
-		if [ $WAITTIME -lt 60 ]
+		let WAITTIME="$WAITTIME"/60
+		if [ "$WAITTIME" -lt 60 ]
 			then
 			#Show time in minutes
-			if [ $WAITTIME = 1 ]
+			if [ "$WAITTIME" = 1 ]
 			then
-				WAITTIME=`echo $WAITTIME $"minute"`
+				WAITTIME="$WAITTIME "$"minute"`
 			else
-				WAITTIME=`echo $WAITTIME $"minutes"`
+				WAITTIME="$WAITTIME "$"minutes"`
 			fi
 		else
 			#Convert time to hours
-			let WAITTIME=$WAITTIME/60
-			if [ $WAITTIME -lt 24 ]
+			let WAITTIME="$WAITTIME"/60
+			if [ "$WAITTIME" -lt 24 ]
 			then
 				#Show time in hours
-				if [ $WAITTIME = 1 ]
+				if [ "$WAITTIME" = 1 ]
 				then
-					WAITTIME=`echo $WAITTIME $"hour"`
+					WAITTIME="$WAITTIME "$"hour"
 				else
-					WAITTIME=`echo $WAITTIME $"hours"`
+					WAITTIME="$WAITTIME "$"hours"
 				fi
 			else
 				#Covert time to days
-				let WAITTIME=$WAITTIME/24
-				if [ $WAITTIME = 1 ]
+				let WAITTIME="$WAITTIME"/24
+				if [ "$WAITTIME" = 1 ]
 				then
-					WAITTIME=`echo $WAITTIME $"day"`
+					WAITTIME="$WAITTIME "$"day"
 				else
-					WAITTIME=`echo $WAITTIME $"days"`
+					WAITTIME="$WAITTIME "$"days"
 				fi
 			fi
 		fi
 	fi
 
-	echo '<tr><td style="vertical-align: top;">'$NAME'</td><td style="vertical-align: top;">'$JOBTITLE'</td><td style="vertical-align: top;">'$LOCATION'</td><td style="vertical-align: top;">'$WAITTIME'</td><td style="vertical-align: top;">'$ASSIGNED'</td><td><form action="/cgi-bin/staff/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'$NEWJOB'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'$NEWJOB'_"><span>'$JOBTITLE'</span></a></form></td></tr>'
+	echo '<tr><td style="vertical-align: top;">'"$NAME"'</td><td style="vertical-align: top;">'"$JOBTITLE"'</td><td style="vertical-align: top;">'"$LOCATION"'</td><td style="vertical-align: top;">'"$WAITTIME"'</td><td style="vertical-align: top;">'"$ASSIGNED"'</td><td><form action="/cgi-bin/staff/helpdesk_action_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="_JOBNAME_'"$NEWJOB"'_" type="image" class="images" src="/images/submenus/user/helpdesk/action.png" value="_JOBNAME_'"$NEWJOB"'_"><span>'"$JOBTITLE"'</span></a></form></td></tr>'
 done
 echo '</tbody></table></div></div></div></html>'
 

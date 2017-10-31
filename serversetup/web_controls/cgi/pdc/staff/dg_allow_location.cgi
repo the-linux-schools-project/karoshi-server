@@ -35,35 +35,41 @@ STYLESHEET=defaultstyle.css
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo "<html><head><title>$"Allow Room"</title><meta http-equiv='"'REFRESH'"' content='"'0; URL='$HTTP_REFERER''"'>"
-echo '<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<html><head><title>'$"Allow Room"'</title><meta http-equiv="REFRESH" content="0; URL='"$HTTP_REFERER"'">'
+echo '<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=6
 
 #Assign LOCATION
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-then
-let COUNTER=$COUNTER+1
-LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
+}
+
+DATANAME=LOCATION
+get_data
+LOCATION="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -74,34 +80,33 @@ exit
 #########################
 
 #Check to see that location is not blank
-if [ $LOCATION'null' = null ]
+if [ -z "$LOCATION" ]
 then
-MESSAGE=$"The location must not be blank."
-show_status
+	MESSAGE=$"The location must not be blank."
+	show_status
 fi
 #Check to see that location is banned
-if [ `ls -1 /opt/karoshi/internet_controls/banned_locations | grep -c $LOCATION` = 0 ]
+if [[ $(ls -1 /opt/karoshi/internet_controls/banned_locations | grep -c "$LOCATION") = 0 ]]
 then
-MESSAGE=$"This location is not banned."
-show_status
+	MESSAGE=$"This location is not banned."
+	show_status
 fi
 
 #Check to see that the member of staff is not restricted
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
-if [ `grep -c -w $REMOTE_USER /opt/karoshi/web_controls/staff_restrictions.txt` -gt 0 ]
-then
-sudo -H /opt/karoshi/web_controls/exec/record_staff_error $REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER
-sleep $SLEEPTIME
-MESSAGE=$"You do not have permissions to control internet access."
-show_status
-fi
+	if [[ $(grep -c -w "$REMOTE_USER" /opt/karoshi/web_controls/staff_restrictions.txt) -gt 0 ]]
+	then
+		sudo -H /opt/karoshi/web_controls/exec/record_staff_error "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_USER"
+		sleep "$SLEEPTIME"
+		MESSAGE=$"You do not have permissions to control internet access."
+		show_status
+	fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/dg_allow_location.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/dg_allow_location.cgi | cut -d' ' -f1)
 #Ban location
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_allow_location
-BAN_STATUS=`echo $?`
-MESSAGE=`echo $LOCATION - $"Internet access allowed."`
+MESSAGE="$LOCATION - "$"Internet access allowed."
 show_status
 exit
