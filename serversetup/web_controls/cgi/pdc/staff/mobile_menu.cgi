@@ -42,13 +42,13 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -56,7 +56,7 @@ fi
 echo "Content-type: text/html"
 echo ""
 echo '
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Web Management"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 	<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css" />
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
@@ -83,7 +83,7 @@ echo '
         <a href="/cgi-bin/staff/helpdesk_add_fm.cgi">'$"View Requests"'</a>
       </div>'
 
-if [ $PRINTERCTRL = yes ]
+if [ "$PRINTERCTRL" = yes ]
 then
 echo '      <div class="collapsed">
         <span>'$"Printer"'</span>
@@ -91,7 +91,7 @@ echo '      <div class="collapsed">
       </div>'
 fi
 
-if [ $INTERNETCTRL = yes ]
+if [ "$INTERNETCTRL" = yes ]
 then
 echo  '     <div class="collapsed">
         <span>Internet</span>

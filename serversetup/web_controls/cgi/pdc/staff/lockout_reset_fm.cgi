@@ -29,9 +29,9 @@ TIMEOUT=300
 NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
@@ -42,8 +42,8 @@ echo '
 <!DOCTYPE html>
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Reset User Lockout"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-<link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Reset User Lockout"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+<link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script>

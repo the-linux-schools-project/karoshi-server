@@ -124,7 +124,7 @@ else
 fi
 
 echo '<div id="'"$DIV_ID"'">'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1)
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
