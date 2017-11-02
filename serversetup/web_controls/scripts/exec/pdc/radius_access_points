@@ -176,7 +176,7 @@ then
 	echo '</td></tr>
       <tr>
         <td>
-'$"TCPIP"'</td>
+'$"TCP IP"'</td>
         <td><input tabindex= "2" style="width: '"$WIDTH3"'px; height: '"$HEIGHT1"'px;" value="'"$TCPIP"'" name="____TCPIP____" size="35" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip address of your wireless access point. You can also allow a range of addresses if you enter in a tcpip range. 172.30.0.0/16 would allow all devices in that range."'</span></a>
       </td></tr>
@@ -248,7 +248,7 @@ then
 	fi
 	#Show access points
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
-	<thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Short name"'</b></th><th style="width: '"$WIDTH2"'px; "><b>'$"TCPIP"'</b></th><th style="width: '"$WIDTH5"'px; "><b>'$"Edit"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Delete"'</b></th></tr></thead><tbody>'
+	<thead><tr><th style="width: '"$WIDTH1"'px;"><b>'$"Short name"'</b></th><th style="width: '"$WIDTH2"'px; "><b>'$"TCP IP"'</b></th><th style="width: '"$WIDTH5"'px; "><b>'$"Edit"'</b></th><th style="width: '$WIDTH5'px; "><b>'$"Delete"'</b></th></tr></thead><tbody>'
 	for ACCESSPOINTS in /opt/karoshi/server_network/radius/wireless_access_points/*
 	do
 		ACCESSPOINT=$(basename "$ACCESSPOINTS")

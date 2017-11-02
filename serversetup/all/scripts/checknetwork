@@ -124,9 +124,9 @@ fi
 
 if [ "$SCARDCOUNT" -gt 1 ]
 then
-	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text '<span font_weight="bold">'$"Bond Mode Options"'</span>\n\n<span font_weight="bold" foreground="red">*</span> '$"Requires Network switch configuration"'\n\n0: balance-rr <span font_weight="bold" foreground="red">*</span>\n1: active-backup\n4: 802.3ad <span font_weight="bold" foreground="red">*</span>\n5:balance-tlb\n6: balance-alb\n' --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4!mode5!mode6' --button="gtk-ok"`
+	DATA=`yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --text '<span font_weight="bold">'$"Bond Mode Options"'</span>\n\n<span font_weight="bold" foreground="red">*</span> '$"Requires Network switch configuration"'\n\n0: balance-rr <span font_weight="bold" foreground="red">*</span>\n1: active-backup\n4: 802.3ad <span font_weight="bold" foreground="red">*</span>\n5:balance-tlb\n6: balance-alb\n' --field=$"Server name" "$NAMECUSTOM" --field=$"TCP IP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --field=$"Bond mode":CB 'mode0!mode1!mode4!mode5!mode6' --button="gtk-ok"`
 else
-	DATA=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCPIP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null)
+	DATA=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 200 --form --field=$"Server name" "$NAMECUSTOM" --field=$"TCP IP" "$TCPIPCUSTOM" --field=$"Netmask" "$NETMASKCUSTOM" --field=$"DNS Server" "$NAMESERVERCUSTOM" --field=$"Gateway" "$GATEWAYCUSTOM" --button="gtk-ok" 2>/dev/null)
 fi
 
 NAMECUSTOM=$(echo "$DATA" | cut -d"|" -f1 | tr -cd 'A-Za-z1-9-' | sed 's/^-//g' | sed 's/-$//g' | tr "[:upper:]" "[:lower:]")
@@ -147,7 +147,7 @@ function confirmchoice {
 BONDMSG=""
 [ "$SCARDCOUNT" -gt 1 ] && BONDMSG='<span font_weight="bold">\nBond Mode</span>\t'"$BONDMODE"''
 DATA=$(yad --title $"Network Settings" --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --height 250 \
-    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n\n<span font_weight="bold">'$"Server name"'</span>\t'"$NAMECUSTOM"'\n\n<span font_weight="bold">'$"TCPIP"'</span>\t\t'"$TCPIPCUSTOM"'\n\n<span font_weight="bold">'$"Netmask"'</span>\t\t'"$NETMASKCUSTOM"'\n\n<span font_weight="bold">'$"DNS Server"'</span>\t'"$NAMESERVERCUSTOM"'\n\n<span font_weight="bold">'$"Gateway"'</span>\t\t'"$GATEWAYCUSTOM"'\n\n<span font_weight="bold">'$"Card selection"'</span>\t'"$CARDSELECTION"''"$BONDMSG"'\n\n' 2>/dev/null)
+    --text '<span font_weight="bold">'$"Network Settings"'</span>\n\n\n<span font_weight="bold">'$"Server name"'</span>\t'"$NAMECUSTOM"'\n\n<span font_weight="bold">'$"TCP IP"'</span>\t\t'"$TCPIPCUSTOM"'\n\n<span font_weight="bold">'$"Netmask"'</span>\t\t'"$NETMASKCUSTOM"'\n\n<span font_weight="bold">'$"DNS Server"'</span>\t'"$NAMESERVERCUSTOM"'\n\n<span font_weight="bold">'$"Gateway"'</span>\t\t'"$GATEWAYCUSTOM"'\n\n<span font_weight="bold">'$"Card selection"'</span>\t'"$CARDSELECTION"''"$BONDMSG"'\n\n' 2>/dev/null)
 CHOICE="$?"
 [ "$CHOICE" = 0 ] && CHOICE=commit
 [ "$CHOICE" = 1 ] && CHOICE=configure

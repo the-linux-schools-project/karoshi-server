@@ -6,7 +6,7 @@ CREATEPOFILES=yes
 source /opt/karoshi/serversetup/variables/langlist
 
 LANGLIST=$(echo -e "$LANGLIST" | sed 's/en_EN.UTF-8,English //g'| sed 's/ /\n/g' | cut -d"_" -f1)
-LANGLIST=$(echo "$LANGLIST" | sed 's/ /+/g')
+LANGLIST=$(echo $LANGLIST | sed 's/ /+/g')
 
 APPEND=no
 POTFILE=karoshi-server.pot
@@ -40,7 +40,6 @@ fi
 }
 
 function translatetxt {
-
 TRANSDATA=$(trans -brief -s en -t "$LANGLIST" "$MSGIDTEXT")
 if [ "$?" != 0 ]
 then

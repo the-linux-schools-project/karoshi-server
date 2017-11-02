@@ -44,7 +44,7 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"TCPIP Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
+  <title>'$"TCP IP Logs"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
   <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
 <script language="JavaScript" src="/all/calendar2/calendar_eu.js" type="text/javascript"></script>
         <!-- Timestamp input popup (European Format) -->
@@ -56,12 +56,12 @@ echo '
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/samba_logs_ip.cgi" name="testform" method="post"><b></b>
-  <div id="actionbox"><b>'$"TCPIP Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Connection logs are generated each time a user connects to a share."'</span></a>
+  <div id="actionbox"><b>'$"TCP IP Logs"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Connection logs are generated each time a user connects to a share."'</span></a>
 <br><br>
 
 <table class="standard" style="text-align: left;" >
     <tbody>
-<tr><td style="width: 180px;">'$"TCPIP"'</td><td><input tabindex= "1" name="_TCPIP_" size="14" type="text"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network share name that you want to check the logs for."'</span></a></td></tr>'
+<tr><td style="width: 180px;">'$"TCP IP"'</td><td><input tabindex= "1" name="_TCPIP_" size="14" type="text"></td><td style="vertical-align: top; text-align: center;"><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the network share name that you want to check the logs for."'</span></a></td></tr>'
 echo "<tr><td>$"Log Date"</td><td>
 <!-- calendar attaches to existing form element -->
 	<input type=\"text\" value=\"$DAY-$MONTH-$YEAR\" size=14 maxlength=10 name=\"_DATE_\"></td><td style=\"vertical-align: top; text-align: center;\">

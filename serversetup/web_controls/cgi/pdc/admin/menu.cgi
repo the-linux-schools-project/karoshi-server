@@ -32,7 +32,6 @@ STYLESHEET=defaultstyle.css
 TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/web_controls/version
-source /opt/karoshi/web_controls/version
 ############################
 #Show page
 ############################
@@ -61,7 +60,7 @@ echo '
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/file_manager.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/file.png"><br>
 '$"File"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/email_add_alias_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/email.png"><br>
-'$"E-Mail"'</a></td>
+'$"Email"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/activate_internet_changes_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/internet.png"><br>
 '$"Internet"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/web_management_upload_files_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/web.png"><br>

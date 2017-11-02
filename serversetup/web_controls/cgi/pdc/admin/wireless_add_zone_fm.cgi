@@ -60,7 +60,7 @@ echo '<form action="/cgi-bin/admin/wireless_add_zone.cgi" method="post"><div id=
     <tbody>
 <tr><td style="width: 180px;">'$"Access Name"'</td><td><input name="_CLIENTNAME_" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a name for your set of wireless access points."'</span></a></td></tr>
-<tr><td style="width: 180px;">'$"TCPIP"'</td><td><input name="_TCPIP_" maxlength="20" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"TCP IP"'</td><td><input name="_TCPIP_" maxlength="20" size="20" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the tcpip number or range you require."'<br><br>'$"Example 172.30.0.0/16"'</span></a></td></tr>
 <tr><td style="width: 180px;">'$"Secret Key"'</td><td><input name="_WPAKEY_" maxlength="63" size="63" type="text"></td><td>
 <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a WPA key or leave blank to auto generate a key."'<br><br>'$"The key must be between 20 and 63 characters long."'</span></a>

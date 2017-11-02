@@ -56,7 +56,7 @@ echo '
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/tech/durep_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/file.png"><br>
 '$"File"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/email.png"><br>
-'$"E-Mail"'</td>
+'$"Email"'</td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/tech/activate_internet_changes_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/internet.png"><br>
 '$"Internet"'</a></td>
       <td style="height: 90px; width: 110px; text-align: center;"><a href="/cgi-bin/admin/web_management_upload_files_fm.cgi" target="_top"><img style="border: 0px solid ; width: 48px; height: 48px;" alt="" src="/images/web.png"><br>

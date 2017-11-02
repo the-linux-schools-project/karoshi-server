@@ -116,7 +116,7 @@ if [ "$SHOWENABLEDLAERTS" = yes ] || [ "$SHOWDISABLEDLAERTS" = yes ]
 then
 	echo '<table id="myTable" class="tablesorter" style="text-align: left; " >
     <thead>
-<tr><th style="width: 120px;"><b>'$"Contact Name"'</b></th><th style="width: 180px;"><b>'$"E-Mail"'</b></th><th style="width: 180px;"><b>'$"Sender"'</b></th><th style="width: 140px;"><b>'$"E-Mail Server"'</b></th><th style="width: 70px;"><b>'$"Enabled"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Test"'</b></th></tr></thead><tbody>'
+<tr><th style="width: 120px;"><b>'$"Contact Name"'</b></th><th style="width: 180px;"><b>'$"Email"'</b></th><th style="width: 180px;"><b>'$"Sender"'</b></th><th style="width: 140px;"><b>'$"E-Mail Server"'</b></th><th style="width: 70px;"><b>'$"Enabled"'</b></th><th style="width: 70px;"><b>'$"Edit"'</b></th><th style="width: 70px;"><b>'$"Delete"'</b></th><th style="width: 70px;"><b>'$"Test"'</b></th></tr></thead><tbody>'
 fi
 
 

@@ -124,7 +124,7 @@ echo '
 
 </tr></tbody></table>
 </div><div id="infobox">
-<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 210px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Version"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
+<table id="myTable" class="tablesorter" style="text-align: left;" ><thead><tr><th style="vertical-align: top; width: 210px; height: 40px;"><b>'$"Server"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"TCP IP"'</b></th><th style="vertical-align: top; width: 80px;"><b>'$"Version"'</b></th><th style="vertical-align: top; width: 290px;"><b>'$"Server Roles"'</b></th><td style="vertical-align: top; width: 70px;"><b>'$"Add role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr></thead><tbody>'
 
 function show_servers {
 SERVERSSHSTATUS=$"SSH failure for this server."
@@ -360,7 +360,7 @@ then
 			</tr></tbody></table>'
 
 			echo '<table class="standard" style="text-align: left;" ><tbody>'
-			echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr>'
+			echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCP IP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Remove role"'</b></td><td style="vertical-align: top; width: 70px;"><b>'$"Remote Access"'</b></td><td style="vertical-align: top; width: 70px;"></td><td style="vertical-align: top; width: 70px;"><b>'$"Backup Server"'</b></td></tr>'
 
 
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=2  "$FEDERATED_SERVER" ls 1>/dev/null
@@ -436,7 +436,7 @@ then
 		echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><form action="/cgi-bin/admin/windows_servers_add_fm.cgi" method="post"><a class="info" href="javascript:void(0)"><input name="ADDSERVER" type="image" class="images" src="'"$ADDSERVERICON"'" value="ADDSERVER"><span>'$"Add a Windows Server to the network."'</span></a></form></td><td style="vertical-align: top; width: 140px;"><b>'$"Windows Servers"'</b></td></tr></tbody></table>'
 
 		echo '<table class="standard" style="text-align: left;" ><tbody>'
-		echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td></tr>'
+		echo '<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCP IP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Server Roles"'</b></td></tr>'
 
 		for WINDOWS_SERVERS in /opt/karoshi/server_network/windows_servers/*
 		do

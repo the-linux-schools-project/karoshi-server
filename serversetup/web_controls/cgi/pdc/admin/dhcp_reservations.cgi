@@ -288,7 +288,7 @@ then
 	ICON9=/images/submenus/system/reload.png
 	TABLECLASS=standard
 	MACTITLE=$"Mac Address"
-	TCPIPTITLE=$"TCPIP Address"
+	TCPIPTITLE=$"TCP IP Address"
 
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
@@ -311,7 +311,7 @@ else
 	ICON9=/images/submenus/system/reload.png
 	TABLECLASS=mobilestandard
 	MACTITLE=$"Mac"
-	TCPIPTITLE=$"TCPIP"
+	TCPIPTITLE=$"TCP IP"
 fi
 
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
@@ -521,7 +521,7 @@ fi
 #Check that the ip address is outside of the dns reservation range
 checkIpNotInRange
 	MACTITLE=$"Mac"
-	TCPIPTITLE=$"TCPIP"
+	TCPIPTITLE=$"TCP IP"
 echo '<form name="addreservervation" action="/cgi-bin/admin/dhcp_reservations.cgi" method="post"><input type="hidden" name="_ACTION_'"$FORMACTION"'_" value="English"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
 <tr><td style="width: '"$WIDTH1"'px;">'$"Host name"'</td>
 <td><input required="required" tabindex= "1" style="width: '"$WIDTH5"'px;" name="_CLIENTHOSTNAME_" value="'"$CLIENTHOSTNAME"'" 

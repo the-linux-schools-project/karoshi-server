@@ -306,14 +306,14 @@ echo '</tr><tr>'
 #Col1
 if [ ! -f /opt/karoshi/server_network/servers/"$SERVERNAME"/reverseproxyserver ]
 then
-	echo '<td>'$"E-Mail"'</td><td>'"$EMAILSERVERSTATUS"'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
+	echo '<td>'$"Email"'</td><td>'"$EMAILSERVERSTATUS"'</td><td><form action="/cgi-bin/admin/module_email_fm.cgi" method="post">
 	<button class="info" name="_AddEMailServer_" value="_SERVERNAME_'"$SERVERNAME"'_">
 	<img src="'"$ICON"'" alt="'$"E-Mail Server"'">
 	<span>'$"This will setup a server to provide E-Mail services."'</span>
 	</button>
 	</form></td>'
 else
-	echo '<td>'$"E-Mail"'</td><td></td><td>
+	echo '<td>'$"Email"'</td><td></td><td>
 	<form action="/cgi-bin/admin/karoshi_servers_add_role_fm.cgi" method="post">
 	<button class="info" name="_AddEmailServer_" value="_SERVERNAME_'"$SERVERNAME"'_">
 	<img src="'"$ICON2"'" alt="'$"E-MailServer"'">

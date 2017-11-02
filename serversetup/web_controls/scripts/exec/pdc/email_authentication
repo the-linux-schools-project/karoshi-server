@@ -168,7 +168,7 @@ fi
 
 if [ "$ACTION" = delete ]
 then
-	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;"><b>'$"TCPIP"'</b></td><td style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></td></tr>
+	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><tbody><tr><td style="width: '"$WIDTH1"'px;"><b>'$"TCP IP"'</b></td><td style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></td></tr>
 <tr><td>'"$TCPIP"'</td><td>'"$COMMENT"'</td></tr>
 </tbody></table><br>'$"Remove this TCPIP address?"'<br><br>
 <input type="hidden" name="____ACTION____" value="reallydelete">
@@ -225,7 +225,7 @@ fi
 if [ "$ACTION" = add ]
 then
 	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr><td style="width: '"$WIDTH1"'px;">'$"TCPIP"'</td><td><input tabindex= "1" value="'"$TCPIP"'" name="____TCPIP____" style="width: '"$WIDTH3"'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the TCPIP address of a device that you want to be able to send E-Mail from without having to authenticate."'</span></a></td></tr><tr><td>'$"Comment"'</td><td><input tabindex= "2" value="'"$COMMENT"'" name="____COMMENT____" style="width: '"$WIDTH3"'px;" size="60" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a comment for the TCPIP address."'</span></a></td></tr></tbody></table><br><br><input type="hidden" name="____ACTION____" value="reallyadd"> <input value="'$"Submit"'" class="button" type="submit"></form>'
+	<tr><td style="width: '"$WIDTH1"'px;">'$"TCP IP"'</td><td><input tabindex= "1" value="'"$TCPIP"'" name="____TCPIP____" style="width: '"$WIDTH3"'px;" size="20" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the TCPIP address of a device that you want to be able to send E-Mail from without having to authenticate."'</span></a></td></tr><tr><td>'$"Comment"'</td><td><input tabindex= "2" value="'"$COMMENT"'" name="____COMMENT____" style="width: '"$WIDTH3"'px;" size="60" type="text"></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=E-Mail_Authentication"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a comment for the TCPIP address."'</span></a></td></tr></tbody></table><br><br><input type="hidden" name="____ACTION____" value="reallyadd"> <input value="'$"Submit"'" class="button" type="submit"></form>'
 fi
 
 if [ "$ACTION" = view ]
@@ -241,7 +241,7 @@ then
 	fi
 	
 	echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post"><table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-	<tr><th style="width: '"$WIDTH1"'px;"><b>'$"TCPIP"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></th><th style="width: '"$WIDTH4"'px;"></th></tr></thead><tbody>'
+	<tr><th style="width: '"$WIDTH1"'px;"><b>'$"TCP IP"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Comment"'</b></th><th style="width: '"$WIDTH4"'px;"></th></tr></thead><tbody>'
 	#Show all allowed tcpip addresses
 	for ALLOWED in $ALLOWED_LIST
 	do

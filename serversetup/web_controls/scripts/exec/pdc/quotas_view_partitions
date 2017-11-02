@@ -96,7 +96,7 @@ then
 fi
 
 echo '<table class="tablesorter" style="text-align: left;" ><thead><tr><td style="vertical-align: top;">
-<tr><th style="width: 120px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"TCPIP"'</b></th><th style="width: 320px;"><b>'$"Role"'</b></th><th style="width: 80px;"><b>'$"Quota status"'</b></th></tr></thead><tbody>
+<tr><th style="width: 120px;"><b>'$"Server"'</b></th><th style="width: 80px;"><b>'$"TCP IP"'</b></th><th style="width: 320px;"><b>'$"Role"'</b></th><th style="width: 80px;"><b>'$"Quota status"'</b></th></tr></thead><tbody>
 '
 
 #Check main server
@@ -166,7 +166,7 @@ fi
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="2" cellspacing="6"><tbody><tr><td style="vertical-align: top;"><img src='"$ADDSERVERICON"'></td><td style="vertical-align: top;"><b>'$"Federated Servers"' '$LOCATION_NAME'</b></td></tr></tbody></table>'
 
 echo '<table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;">
-<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCPIP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></td></tr>'
+<tr><td style="vertical-align: top; width: 120px; height: 40px;"><b>'$"Server"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"TCP IP"'</b></td><td style="vertical-align: top; width: 320px;"><b>'$"Role"'</b></td><td style="vertical-align: top; width: 80px;"><b>'$"Quota status"'</b></td></tr>'
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=2  $FEDERATED_SERVER '
 QUOTAICON=/images/submenus/file/quotas_disabled.png

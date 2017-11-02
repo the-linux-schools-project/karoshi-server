@@ -139,7 +139,7 @@ LOGTYPE=NOTSET
 echo '<table class="standard" style="text-align: left;" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td style="vertical-align: top;"><b>'$"Network Share Logs"' '$MACHINE' '$DAY'-'$MONTH'-'$YEAR'</b></td></tr></tbody></table><br>'
 
 echo '<table class="standard" style="text-align: left;" ><tbody>'
-echo '<tr><td style="width: 120px;"><b>'$"Time"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Username"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Computer"'</b></td><td style="width: 20px;"></td><td><b>'$"TCPIP"'</b></td></tr>'
+echo '<tr><td style="width: 120px;"><b>'$"Time"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Username"'</b></td><td style="width: 20px;"></td><td style="width: 120px;"><b>'$"Computer"'</b></td><td style="width: 20px;"></td><td><b>'$"TCP IP"'</b></td></tr>'
 if [ $LOGTYPE = text ]
 then
 cat /opt/karoshi/logs/connections/$DAY-$MONTH-$YEAR/shares/$SHARE

@@ -103,7 +103,7 @@ echo '<form action="/cgi-bin/admin/module_ssh_access.cgi" method="post"><div id=
 '$"This module is for advanced use for users that want ssh access to the main server."' '$"It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."'<br><br>
 <b>'$"Parameters"'</b><br><br>
 <table class="standard" style="text-align: left;"><tbody>
-<tr><td style="width: 180px;">'$"TCPIP"' / '$"MAC"'</td><td><input tabindex= "2" name="_TCPIP_" size="20" type="text"></td><td>
+<tr><td style="width: 180px;">'$"TCP IP"' / '$"MAC"'</td><td><input tabindex= "2" name="_TCPIP_" size="20" type="text"></td><td>
 <select name="_RESTRICTTYPE_">
 <option>TCPIP</option>
 <option>MAC</option>

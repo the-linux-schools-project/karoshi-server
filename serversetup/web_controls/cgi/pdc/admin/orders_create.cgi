@@ -294,7 +294,7 @@ echo '</div><div id="actionbox">
 <tr><td>'$REF13'</td><td>'$QUANTITY13'</td><td>'$DESC13'</td><td>'$PPU13'</td><td>'$TOTAL13'</td></tr>
 <tr><td>'$REF14'</td><td>'$QUANTITY14'</td><td>'$DESC14'</td><td>'$PPU14'</td><td>'$TOTAL14'</td></tr>
 <tr><td>'$REF15'</td><td>'$QUANTITY15'</td><td>'$DESC15'</td><td>'$PPU15'</td><td>'$TOTAL15'</td></tr>
-<tr><td></td><td></td><td></td><td><b>'$"Sub Total"'</b></td><td>'$SUBTOTAL'</td></tr>
+<tr><td></td><td></td><td></td><td><b>'$"Subtotal"'</b></td><td>'$SUBTOTAL'</td></tr>
 <tr><td></td><td></td><td></td><td><b>P+P</b></td><td>'$PANDP'</td></tr>
 <tr><td></td><td></td><td></td><td><b>Total</b></td><td><b>'$GRANDTOTAL'</b></td></tr>
 </tbody></table><br>

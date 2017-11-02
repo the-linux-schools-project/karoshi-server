@@ -144,7 +144,7 @@ then
 
 			if [ "$MOBILE" = no ]
 			then
-				echo '<th style="width: 130px;"><b>'$"Mac Address"'</b></th><th style="width: 100px;"><b>'$"TCPIP"'</b></th>'
+				echo '<th style="width: 130px;"><b>'$"Mac Address"'</b></th><th style="width: 100px;"><b>'$"TCP IP"'</b></th>'
 			fi
 			echo '<th style="width: 120px;"><b>'$"Boot status"'</b></th><td style="width: '"$WIDTH1px"';">'
 			echo '<select name="_NETBOOT_" style="width: '"$WIDTH1"'px; height: 30px;" onClick="rewriteselect();">'

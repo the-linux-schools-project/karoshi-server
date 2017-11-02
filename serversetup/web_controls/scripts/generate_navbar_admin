@@ -449,7 +449,7 @@ fi
 #E-Mail
 if [ "$EMAILCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$"E-Mail"'</span></a>
+echo '	<li class="top"><a href="/cgi-bin/admin/email_aliases.cgi" id="E-Mail" class="top_link"><span class="down">'$"Email"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/email_view_banned_domains_fm.cgi">'$"Domain Controls"'</a></li><!-- '$"Allow or ban domains for E-Mails."' -->
 			<li><a href="/cgi-bin/admin/email_access.cgi">'$"Access Controls"'</a></li><!-- '$"Allow or deny users from sending and receiving E-Mails."' -->

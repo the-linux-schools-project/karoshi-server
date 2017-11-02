@@ -275,7 +275,7 @@ echo '</td></tr>
 <tr><td><input value="'$REF14'" maxlength="20" size="20" name="___REF14___"></td><td><input value="'$QUANTITY14'" maxlength="4" size="4" name="___QUANTITY14___"></td><td><input value="'$DESC14'" maxlength="30" size="30" name="___DESC14___"></td><td><input value="'$PPU14'" maxlength="8" size="8" name="___PPU14___"></td><td>'$TOTAL14'</td></tr>
 <tr><td><input value="'$REF15'" maxlength="20" size="20" name="___REF15___"></td><td><input value="'$QUANTITY15'" maxlength="4" size="4" name="___QUANTITY15___"></td><td><input value="'$DESC15'" maxlength="30" size="30" name="___DESC15___"></td><td><input value="'$PPU15'" maxlength="8" size="8" name="___PPU15___"></td><td>'$TOTAL15'</td></tr>
 
-<tr><td></td><td></td><td></td><td><b>'$"Sub Total"'</b></td><td>'$SUBTOTAL'</td></tr>
+<tr><td></td><td></td><td></td><td><b>'$"Subtotal"'</b></td><td>'$SUBTOTAL'</td></tr>
 <tr><td></td><td></td><td></td><td><b>P+P</b></td><td><input value="'$PANDP'" maxlength="4" size="4" name="___PANDP___"></td></tr>
 <tr><td></td><td></td><td></td><td><b>Total</b></td><td><b>'$GRANDTOTAL'</b></td></tr>
 </tbody></table><br>

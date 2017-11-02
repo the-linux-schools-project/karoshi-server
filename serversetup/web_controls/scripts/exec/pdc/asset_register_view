@@ -317,7 +317,7 @@ fi
 if [ $ACTION = viewtcpip ]
 then
 
-	echo '<div class="sectiontitle">'$"Asset Register"' - '$"TCPIP Addresses"'</div><table class="tablesorter"><tbody><tr>
+	echo '<div class="sectiontitle">'$"Asset Register"' - '$"TCP IP Addresses"'</div><table class="tablesorter"><tbody><tr>
 		<td style="vertical-align: top; height: 30px; width: '$WIDTH'px;">
 			<button class="info infonavbutton" name="_DoChooseLocation_" value="_ACTION_view_LOCATION_showchoice_">
 				'$"Choose Location"'<br>
@@ -331,7 +331,7 @@ then
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 	touch /opt/karoshi/asset_register/tcpip_addresses
 	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
-	<tr><th style="width: '$WIDTH1'px;">'$"TCPIP"'</th>'
+	<tr><th style="width: '$WIDTH1'px;">'$"TCP IP"'</th>'
 
 	[ $MOBILE = no ] && echo '<th style="width: '$WIDTH2'px;">'$"Location"'</th>'
 
@@ -414,7 +414,7 @@ then
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
 	echo '<textarea rows="100" cols="150">'
-	echo $"ID Number",$"Name",$"Location",$"Type",$"Description",$"Tcpip",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
+	echo $"ID Number",$"Name",$"Location",$"Type",$"Description",$"TCP IP",$"Mac-address",$"S.N.",$"Purchased",$"Value",$"Supplier",$"Budget",$"Assigned to"
 	for LOCATIONS in /opt/karoshi/asset_register/locations/*
 	do
 		LOCATION=`basename $LOCATIONS`
@@ -981,7 +981,7 @@ then
 		<button class="info infonavbutton" name="_ViewTCPIPAddresses_" value="_ACTION_viewtcpip_LOCATION_notset_">
 			<img src="'$ICON16'" alt="'$"View Allocated TCPIP Addresses"'">
 			<span>'$"View Allocated TCPIP Addresses."'</span><br>
-			'$"TCPIP"'
+			'$"TCP IP"'
 		</button>
 	</td>
 
@@ -1633,7 +1633,7 @@ then
 
 	if [ $MOBILE = no ]
 	then
-		echo '<th style="width: 60px;"><b>'$"Name"'</b></th><th style="width: 240px;"><b>'$"Description"'</b></th><th style="width: 100px;"><b>'$"Tcpip"'</b></th><th style="width: 110px;"><b>'$"Mac-address"'</b></th><th style="width: 150px;"><b>'$"Serial Number"'</b></th></tr>'
+		echo '<th style="width: 60px;"><b>'$"Name"'</b></th><th style="width: 240px;"><b>'$"Description"'</b></th><th style="width: 100px;"><b>'$"TCP IP"'</b></th><th style="width: 110px;"><b>'$"Mac-address"'</b></th><th style="width: 150px;"><b>'$"Serial Number"'</b></th></tr>'
 	else
 		echo '</tr>'
 	fi
@@ -1653,7 +1653,7 @@ then
 		if [ $SHOWENTRY = yes ]
 		then
 			echo '<tr><td style="vertical-align: top;">
-			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Assigned"' : '$ASSIGNED'<br>'$"Purchased"' : '$PURCHASEDATE'<br>'$"Value"' : '$VALUE'<br>'$"Supplier"' : '$SUPPLIER'<br>'$"Budget"' : '$BUDGET'<br>'$"Tcpip"'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$"Mac-address"'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td>
+			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Assigned"' : '$ASSIGNED'<br>'$"Purchased"' : '$PURCHASEDATE'<br>'$"Value"' : '$VALUE'<br>'$"Supplier"' : '$SUPPLIER'<br>'$"Budget"' : '$BUDGET'<br>'$"TCP IP"'<br>'$TCPIP1' '$TCPIP2' '$TCPIP3'<br>'$"Mac-address"'<br>'$MAC1' '$MAC2' '$MAC3'</span></a></td>
 			<td style="vertical-align: top;">
 			<button class="info" name="_DoEdit_" value="_ACTION_edit_LOCATION_'$LOCATION'_ASSET_'$ASSET'_">
 			<img src="'$ICON2'" alt="'$"Edit"' '$IDENTITY'">
@@ -1737,7 +1737,7 @@ then
 	<tr><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 20px;"></td><td style="width: 60px;">'$"Name"'</td>'
 	if [ $MOBILE = no ]
 	then
-		echo '<td style="width: 180px;">'$"Description"'</td><td style="width: 80px;">'$"Assigned"'</td><td style="width: 60px;">'$"Tcpip"'</td><td style="width: 60px;">'$"Mac-address"'</td><td style="width: 80px;">'$"S.N."'</td><td style="width: 60px;">'$"Purchased"'</td><td style="width: 60px;">'$"Value"'</td><td style="width: 80px;">'$"Supplier"'</td><td style="width: 180px;">'$"Budget"'</td></tr>'
+		echo '<td style="width: 180px;">'$"Description"'</td><td style="width: 80px;">'$"Assigned"'</td><td style="width: 60px;">'$"TCP IP"'</td><td style="width: 60px;">'$"Mac-address"'</td><td style="width: 80px;">'$"S.N."'</td><td style="width: 60px;">'$"Purchased"'</td><td style="width: 60px;">'$"Value"'</td><td style="width: 80px;">'$"Supplier"'</td><td style="width: 180px;">'$"Budget"'</td></tr>'
 	else
 		echo '</tr>'
 	fi
@@ -1801,7 +1801,7 @@ then
 
 	[ $MOBILE != yes ] && echo '</div><div id="infobox">'
 
-	echo ''$"Name"','$"Location"','$"Type"','$"Description"','$"Tcpip"','$"Mac-address"','$"S.N."','$"Purchased"','$"Value"','$"Supplier"','$"Budget"','$"Assigned to"'
+	echo ''$"Name"','$"Location"','$"Type"','$"Description"','$"TCP IP"','$"Mac-address"','$"S.N."','$"Purchased"','$"Value"','$"Supplier"','$"Budget"','$"Assigned to"'
 	<textarea cols="150" rows="100" name="_LOCATION_notset_IMPORTDATA_"></textarea>
 	'
 fi
@@ -1848,9 +1848,9 @@ then
 		<tr><td>'$"Location"'</td><td>'$LOCATION'</td></tr>
 		<tr><td>'$"Type"'</td><td>'$ASSETTYPE'</td></tr>
 		<tr><td>'$"Description"'</td><td>'$DESCRIPTION'</td></tr>
-		<tr><td>'$"TCPIP"' 1</td><td>'$TCPIP1'</td></tr>
-		<tr><td>'$"TCPIP"' 2</td><td>'$TCPIP2'</td></tr>
-		<tr><td>'$"TCPIP"' 3</td><td>'$TCPIP3'</td></tr>
+		<tr><td>'$"TCP IP"' 1</td><td>'$TCPIP1'</td></tr>
+		<tr><td>'$"TCP IP"' 2</td><td>'$TCPIP2'</td></tr>
+		<tr><td>'$"TCP IP"' 3</td><td>'$TCPIP3'</td></tr>
 		<tr><td>'$"Mac Address"' 1</td><td>'$MAC1'</td></tr>
 		<tr><td>'$"Mac Address"' 2</td><td>'$MAC2'</td></tr>
 		<tr><td>'$"Mac Address"' 3</td><td>'$MAC3'</td></tr>
