@@ -23,68 +23,68 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_show_queue_fm_cgi
 then
-	echo `date`: email_show_queue - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_show_queue_fm_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_show_queue_fm_cgi'check' ]
+if [ "$MD5SUM"'check' != "$email_show_queue_fm_cgi"'check' ]
 then
-	echo `date`: email_show_queue - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: email_show_queue - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
 if [ -z "$DATA" ]
 then
-	echo `date`: email_show_queue - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MOBILE=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+MOBILE=$(echo "$DATA" | cut -s -d: -f4)
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: email_show_queue - Not called by email_show_queue.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - Not called by email_show_queue.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: email_show_queue - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: email_show_queue - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: email_show_queue - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -92,18 +92,15 @@ fi
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 ICON1=/images/submenus/email/email_flush.png
 ICON2=/images/submenus/email/email_delete.png
-TABLECLASS=standard
 HELPCLASS="info"
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
-	TABLECLASS=mobilestandard
 	HELPCLASS="info infoleft"
 	ICON1=/images/submenus/email/email_flush.png
 	ICON2=/images/submenus/email/email_deletem.png
@@ -112,28 +109,28 @@ fi
 #Get mail server
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
+	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
 else
-	echo `date`: email_show_queue - no email server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): email_show_queue - no email server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Get postfix data
 echo '
 <table class="standard"><tbody><tr>
-<td></td><td><div class="sectiontitle">'$"E-Mail Queue"'  - '$EMAILSERVER'</div></td><td>
-<a class="'$HELPCLASS'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a></td>
+<td></td><td><div class="sectiontitle">'$"E-Mail Queue"'  - '"$EMAILSERVER"'</div></td><td>
+<a class="'"$HELPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Show_E-Mail_Queue"><img class="images" alt="" src="/images/help/info.png"><span>'$"This shows any E-Mails that are queued waiting to be sent."'</span></a></td>
 </tr></tbody></table>'
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-if [ $EMAILSERVER = `hostname-fqdn` ]
+if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 then
-	QUEUEARRAY=( `postqueue -p | sed 1d | sed "s/^$/;/g" | sed "s/ * /,/g" | tr -cd "A-Za-z0-9.@;:,\!\* " | sed "s/;/ /g"` )
+	QUEUEARRAY=( $(postqueue -p | sed 1d | sed "s/.*connect to.*/ /g" | sed "s/^$/;/g" | sed "s/ * /,/g" | tr -cd "A-Za-z0-9.@;:,\!\* " | sed "s/;/ /g") )
 	#Process array
-	QUEUEARRAYCOUNT=${#QUEUEARRAY[@]}
-	let QUEUEARRAYCOUNT=$QUEUEARRAYCOUNT-1
-	if [ $QUEUEARRAYCOUNT -gt 0 ]
+	QUEUEARRAYCOUNT="${#QUEUEARRAY[@]}"
+	let QUEUEARRAYCOUNT="$QUEUEARRAYCOUNT"-1
+	if [ "$QUEUEARRAYCOUNT" -gt 0 ]
 	then
 		echo '<table class="tablesorter" style="text-align: left;" >
 		<tbody><tr><td style="width: 140px;">'$"Flush E-Mail queue"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_FLUSH_MAILID_NOTSET_" type="image" class="images" src="'$ICON1'" value=""><span>'$"Flush E-Mail queue"'</span></a></td></tr>
@@ -146,51 +143,51 @@ then
 		COUNTER=0
 		while [ $COUNTER -lt $QUEUEARRAYCOUNT ]
 		do
-			MAILDATA=${QUEUEARRAY[$COUNTER]}
-			MAILID=`echo $MAILDATA | cut -d, -f1`
-			SIZE=`echo $MAILDATA | cut -d, -f2`
-			DOFW=`echo $MAILDATA | cut -d, -f3`
-			MONTH=`echo $MAILDATA | cut -d, -f4`
-			DAY=`echo $MAILDATA | cut -d, -f5`
-			TIME=`echo $MAILDATA | cut -d, -f6`
-			SENDER=`echo $MAILDATA | cut -d, -f7`
-			RECIPIENT=`echo $MAILDATA | cut -d, -f8`
-			echo '<tr><td>'$MAILID'</td><td>'$SIZE'</td><td>'$DOFW' '$DAY' '$MONTH' '$TIME'</td><td>'$SENDER'</td><td>'$RECIPIENT'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_MAILID_'$MAILID'_" type="image" class="images" src="'$ICON2'" value=""><span>'$"Delete E-Mail"' '$MAILID'</span></a></td></tr>'
-			let COUNTER=$COUNTER+1
+			MAILDATA="${QUEUEARRAY[$COUNTER]}"
+			MAILID=$(echo "$MAILDATA" | cut -d, -f1)
+			SIZE=$(echo "$MAILDATA" | cut -d, -f2)
+			DOFW=$(echo "$MAILDATA" | cut -d, -f3)
+			MONTH=$(echo "$MAILDATA" | cut -d, -f4)
+			DAY=$(echo "$MAILDATA" | cut -d, -f5)
+			TIME=$(echo "$MAILDATA" | cut -d, -f6)
+			SENDER=$(echo "$MAILDATA" | cut -d, -f7)
+			RECIPIENT=$(echo "$MAILDATA" | cut -d, -f8- | sed "s/,/<br>/g")
+			echo '<tr><td>'"$MAILID"'</td><td>'"$SIZE"'</td><td>'"$DOFW"' '"$DAY"' '"$MONTH"' '"$TIME"'</td><td>'"$SENDER"'</td><td>'"$RECIPIENT"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="_ACTION_DELETE_MAILID_'"$MAILID"'_" type="image" class="images" src="'"$ICON2"'" value=""><span>'$"Delete E-Mail"' '"$MAILID"'</span></a></td></tr>'
+			let COUNTER="$COUNTER"+1
 		done
 		echo "</tbody></table>"
 	else
 		echo $"The E-Mail Queue is empty"
 	fi
 else
-ssh -x -o PasswordAuthentication=no $EMAILSERVER '
-QUEUEARRAY=( `postqueue -p | sed 1d | sed "s/^$/;/g" | sed "s/ * /,/g" | tr -cd "A-Za-z0-9.@;:,\!\* " | sed "s/;/ /g"` )
+ssh -x -o PasswordAuthentication=no "$EMAILSERVER" '
+QUEUEARRAY=( $(postqueue -p | sed 1d | sed "s/.*connect to.*/ /g" | sed "s/^$/;/g" | sed "s/ * /,/g" | tr -cd "A-Za-z0-9.@;:,\!\* " | sed "s/;/ /g") )
 #Process array
-QUEUEARRAYCOUNT=${#QUEUEARRAY[@]}
-let QUEUEARRAYCOUNT=$QUEUEARRAYCOUNT-1
-if [ $QUEUEARRAYCOUNT -gt 0 ]
+QUEUEARRAYCOUNT="${#QUEUEARRAY[@]}"
+let QUEUEARRAYCOUNT="$QUEUEARRAYCOUNT"-1
+if [ "$QUEUEARRAYCOUNT" -gt 0 ]
 then
 	echo "<table class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
-	<tbody><tr><td style=\"width: 140px;\">'$"Flush E-Mail queue"'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_FLUSH_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'$ICON1'\" value=\"\"><span>'$"Flush E-Mail queue"'</span></a></td></tr>
-	<tr><td style=\"width: 180px;\">'$"Delete all queued E-Mails"'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETEALL_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete all queued E-Mails"'</span></a></td></tr>
+	<tbody><tr><td style=\"width: 140px;\">'$"Flush E-Mail queue"'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_FLUSH_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'"$ICON1"'\" value=\"\"><span>'$"Flush E-Mail queue"'</span></a></td></tr>
+	<tr><td style=\"width: 180px;\">'$"Delete all queued E-Mails"'</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETEALL_MAILID_NOTSET_\" type=\"image\" class=\"images\" src=\"'"$ICON2"'\" value=\"\"><span>'$"Delete all queued E-Mails"'</span></a></td></tr>
 	</tbody></table><br>
 	<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\" border=\"0\" cellpadding=\"2\" cellspacing=\"2\">
 	<thead>
 	<tr><th style=\"width: 120px;\"><b>'$"Mail ID"'</b></th><th style=\"min-width: 80px;\"><b>'$"Size"'</b></th><th><b>'$"Date"'</b></th><th><b>'$"Sender"'</b></th><th><b>'$"Recipient"'</b></th><th></th></tr></thead><tbody>"
 	COUNTER=0
-	while [ $COUNTER -lt $QUEUEARRAYCOUNT ]
+	while [ "$COUNTER" -lt "$QUEUEARRAYCOUNT" ]
 	do
-		MAILDATA=${QUEUEARRAY[$COUNTER]}
-		MAILID=`echo $MAILDATA | cut -d, -f1`
-		SIZE=`echo $MAILDATA | cut -d, -f2`
-		DOFW=`echo $MAILDATA | cut -d, -f3`
-		MONTH=`echo $MAILDATA | cut -d, -f4`
-		DAY=`echo $MAILDATA | cut -d, -f5`
-		TIME=`echo $MAILDATA | cut -d, -f6`
-		SENDER=`echo $MAILDATA | cut -d, -f7`
-		RECIPIENT=`echo $MAILDATA | cut -d, -f8`
-		echo "<tr><td>$MAILID</td><td>$SIZE</td><td>$DOFW $DAY $MONTH $TIME</td><td>$SENDER</td><td>$RECIPIENT</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_MAILID_"$MAILID"_\" type=\"image\" class=\"images\" src=\"'$ICON2'\" value=\"\"><span>'$"Delete E-Mail"' $MAILID</span></a></td></tr>"
-		let COUNTER=$COUNTER+1
+		MAILDATA="${QUEUEARRAY[$COUNTER]}"
+		MAILID=$(echo "$MAILDATA" | cut -d, -f1)
+		SIZE=$(echo "$MAILDATA" | cut -d, -f2)
+		DOFW=$(echo "$MAILDATA" | cut -d, -f3)
+		MONTH=$(echo "$MAILDATA" | cut -d, -f4)
+		DAY=$(echo "$MAILDATA" | cut -d, -f5)
+		TIME=$(echo "$MAILDATA" | cut -d, -f6)
+		SENDER=$(echo "$MAILDATA" | cut -d, -f7)
+		RECIPIENT=$(echo "$MAILDATA" | cut -d, -f8- | sed "s/,/<br>/g")
+		echo "<tr><td>$MAILID</td><td>$SIZE</td><td>$DOFW $DAY $MONTH $TIME</td><td>$SENDER</td><td>$RECIPIENT</td><td style=\"vertical-align: top;\"><a class=\"info\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_MAILID_"$MAILID"_\" type=\"image\" class=\"images\" src=\"'"$ICON2"'\" value=\"\"><span>'$"Delete E-Mail"' $MAILID</span></a></td></tr>"
+		let COUNTER="$COUNTER"+1
 	done
 	echo "</tbody></table>"
 else
