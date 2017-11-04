@@ -260,6 +260,17 @@ do
 		COLCOUNT=0
 	fi
 done
+
+if [ "$COLCOUNT" -lt "$MAXCOLS" ] && [ "$COLCOUNT" != 0 ]
+then
+	while [ "$COLCOUNT" -lt "$MAXCOLS" ]
+	do
+		echo "<td></td>"
+		let COLCOUNT="$COLCOUNT"+1
+	done
+	echo "</tr>"
+fi
+
 echo '</tbody></table><br><br>'
 
 echo '<input value="'$"Submit"'" class="button" type="submit"></div></div></form></div></body></html>'
