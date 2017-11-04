@@ -48,7 +48,10 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Archive the exam accounts"'</div></div><div id="infobox">'
+echo '<div id="actionbox3"><div id="titlebox">
+<table class="standard" style="text-align: left;" ><tbody>
+<tr><td><div class="sectiontitle">'$"Archive exam accounts"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"All data will be archived from the exam accounts to an examfiles folder in the network share that you choose."'<br><br>'$"Only a member of the selected group can access this folder."'</span></a></td></tr></tbody></table>
+</div><div id="infobox">'
 
 #########################
 #Get data input
@@ -99,6 +102,11 @@ DATANAME=EXCEPTIONLIST
 get_data
 EXCEPTIONLIST="$DATAENTRY"
 
+#Assign DELETE
+DATANAME=DELETE
+get_data
+DELETE="$DATAENTRY"
+
 function show_status {
 echo '<SCRIPT language="Javascript">'
 echo 'alert("'"$MESSAGE"'")';
@@ -116,7 +124,7 @@ then
 	show_status
 fi
 #########################
-#Check user accessing this script
+#Check data
 #########################
 if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
@@ -130,10 +138,9 @@ then
 	show_status
 fi
 
-#Check to see that the server is not blank
-if [ -z "$SERVER" ]
+if [ -z "$USERNAME" ] && [ -z "$GROUP" ]
 then
-	MESSAGE=$"The servername cannot be blank."
+	MESSAGE=$"You must choose either a user or a group to set the permissions for the archive."
 	show_status
 fi
 
@@ -143,9 +150,9 @@ then
 	show_status
 fi
 
-if [ -z "$USERNAME" ] && [ -z "$GROUP" ]
+if [ -z "$SERVER" ]
 then
-	MESSAGE=$"You must choose either a user or a group to set the permissions for the archive."
+	MESSAGE=$"The servername cannot be blank."
 	show_status
 fi
 
@@ -168,12 +175,12 @@ DAY=$(date +%d)
 MONTH=$(date +%b)
 TIME=$(date +%T)
 YEAR=$(date +%Y)
-ARCHIVEFOLDER=$(echo "$DAY""_$MONTH""_$YEAR""_$TIME" | sed 's/:/_/g')
+ARCHIVEFOLDER=$(echo "$DAY""-$MONTH""-$YEAR"".$TIME")
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
 
 #Archive exam accounts
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$SERVER:$SHARE:$EXCEPTIONLIST:" | sudo -H /opt/karoshi/web_controls/exec/exam_accounts_archive
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$SERVER:$SHARE:$EXCEPTIONLIST:$DELETE:" | sudo -H /opt/karoshi/web_controls/exec/exam_accounts_archive
 
 if [ "$?" = 0 ]
 then

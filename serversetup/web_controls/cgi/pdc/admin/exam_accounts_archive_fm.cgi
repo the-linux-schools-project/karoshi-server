@@ -98,7 +98,10 @@ echo '</select></td><td><a class="info" target="_blank" href="http://www.linuxsc
 <input tabindex= "3" name="_EXCEPTIONLIST_" style="width: 200px;" size="20" type="text">
 </td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in any exam accounts that you do not want to be archived separated by spaces."'</span></a>
-</td></tr></tbody></table><br>
+</td></tr>
+<tr><td>'$"Clean home areas"'</td><td><input type="checkbox" name="_DELETE_" value="yes"></td><td>
+<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Archive_Exam_Accounts"><img class="images" alt="" src="/images/help/info.png"><span>'$"Select this to delete all files and folders inside the exam account home areas."'</span></a>
+</td></tbody></table><br>
 <input value="'$"Submit"'" class="button" type="submit">
 </div>
 </div>
