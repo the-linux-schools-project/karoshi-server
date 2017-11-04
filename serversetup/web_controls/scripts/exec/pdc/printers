@@ -119,5 +119,5 @@ if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
 then
 	/opt/karoshi/"useful scripts"/printer_info admin "$LOCATIONDATA" "$MOBILE" "$PRINTER"
 else
-	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '/opt/karoshi/"useful scripts"/printer_info admin '"$LOCATIONDATA"' '"$MOBILE"' '"$PRINTER"'' 2>&1
+	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '/opt/karoshi/"useful scripts"/printer_info admin "'"$LOCATIONDATA"'" "'"$MOBILE"'" "'"$PRINTER"'"' 2>&1
 fi
