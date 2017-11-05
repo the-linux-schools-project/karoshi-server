@@ -125,15 +125,19 @@ else
 	fi	
 fi
 
+#Get the number of items to translate
+LangCount=$(grep -c ^msgid /opt/karoshi/serversetup/language/$POTFILE)
+Count=1
 for MSGIDDATA in $(grep ^msgid /opt/karoshi/serversetup/language/$POTFILE | sed 's/ /___/g')
 do
 	MSGIDTEXT=$(echo "$MSGIDDATA" | cut -d'"' -f2 | sed 's/___/ /g')
 	if [[ ! -z "$MSGIDTEXT" ]]
 	then
-		echo "$MSGIDTEXT"
+		echo "$Count/$LangCount: $MSGIDTEXT"
 		translatetxt
 		sleep 0.2
 	fi
+	let Count=$Count+1
 done
 }
 
