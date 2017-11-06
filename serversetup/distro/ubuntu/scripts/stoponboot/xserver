@@ -5,3 +5,9 @@ if [ $(grep -c chvt /etc/rc.local) = 0 ]
 then
 	sed -i '/exit 0/i chvt 2' /etc/rc.local
 fi
+
+#Check to see if we are using systemd
+if [[ $(ps --no-headers -o comm 1) = systemd ]]
+then
+	systemctl disable lightdm.service
+fi
