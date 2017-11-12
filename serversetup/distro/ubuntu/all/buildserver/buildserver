@@ -588,7 +588,9 @@ fi
 
 function install_e2guardian {
 echo -e "\nInstalling e2guardian\n"
-dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_3.0.3_wheezy_amd64.deb
+dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_4.1.3_jessie_ubuntu16.04_amd64.deb
+#Fix dependencies
+apt-get install -y -f 
 }
 
 function install_docker {
