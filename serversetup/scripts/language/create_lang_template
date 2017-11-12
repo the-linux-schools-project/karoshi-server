@@ -50,9 +50,9 @@ then
 	#Translate each language in turn
 	for KLANG in $(echo "$LANGLIST" | sed 's/+/ /g')
 	do
-		TRANSDATA=$(trans -brief -s en -t "$KLANG" "$MSGIDTEXT" | sed 's/"//g')
+		TRANSDATA=$(trans -brief -s en -t "$KLANG" "$MSGIDTEXT")
 		echo "msgid \"$MSGIDTEXT\""  >> "/opt/karoshi/serversetup/language/$KLANG.po"
-		echo "msgstr \"$TRANSDATA\"" >> "/opt/karoshi/serversetup/language/$KLANG.po"
+		echo "msgstr \"$TRANSDATA\"" | sed 's/"//g'  >> "/opt/karoshi/serversetup/language/$KLANG.po"
 		echo >> "/opt/karoshi/serversetup/language/$KLANG.po"
 
 		#Create en.po

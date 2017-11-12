@@ -360,7 +360,7 @@ fi
 if [ $ACTION = qrcodes ]
 then
 	#Load asset_register_show_qrcodes.cgi
-	echo '</form><form METHOD=POST ACTION="asset_register_show_qrcodes.cgi" target="_top" name="frm">
+	echo '</form><form METHOD=POST ACTION="asset_register_show_qrcodes.cgi" target="_blank" name="frm">
 	<input type="hidden" name="_LOCATION_" value="'$LOCATION'">
 	</form>
 	<script>
