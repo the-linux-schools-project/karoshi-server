@@ -1,4 +1,9 @@
 #!/bin/bash
+#OpenVPN can be problematic on boot if /etc/default/openvpn has not been altered. This results in openvpn starting , but looking like it has stopped.
+#/etc/default/openvpn should have #AUTOSTART="all" uncommented.
+#To ensure this has not happened we will stop OpenVPN first to make sure.
+service openvpn stop 2>/dev/null
+
 service openvpn start 2>&1
 if [ "$?" != 0 ]
 then
