@@ -8,20 +8,85 @@ function start_mysql {
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_start 1>/dev/null
 
 #Make sure the mysql database is started
-STARTCOUNT=0
-while [ "$STARTCOUNT" -lt 50 ]
+WaitTime=0
+while [ "$WaitTime" -lt 50 ]
 do
-	MYSQLSTATUS=$(ps -e | grep -c "$MYSQLDVER")
-	if [ "$MYSQLSTATUS" = 0 ]
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+	if [ "$?" != 0 ]
 	then
 		sleep 1
 	else
-		STARTCOUNT=50
+		break
 	fi
 	sleep 1
-	let STARTCOUNT="$STARTCOUNT"+1
+	((WaitTime+=1))
 done
 
+}
+
+function ChangeMysqlPassword {
+#Change mysql password to random password
+mysqladmin -u root password ''"$RootMysqlPass"''
+mysqladmin --password="$RootMysqlPass" status 1>/dev/null 2>/dev/null
+}
+
+function SkipGrantTablesChangeMysqlPass {
+#Change root mysql password if password does not work by starting mysql/mariadb with -skip-grant-tables
+
+#Stop the mysql database
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+if [ "$?" = 0 ]
+then
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
+fi
+#Start with -skip-grant-tables
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/mysql_no_passwd
+sleep 2
+#Make sure the mysql database is started
+WaitTime=0
+while [ "$WaitTime" -lt 50 ]
+do
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+	if [ "$?" = 1 ]
+	then
+		sleep 1
+	else
+		break
+	fi
+	sleep 1
+	((WaitTime+=1))
+done
+#mysqladmin -h localhost -u root password ''$MYSQLPASS''
+echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
+if [[ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]] || [[ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]]
+then
+	#MySQL 5.6 and earlier
+	echo UPDATE user SET Password=PASSWORD\(\'"$RootMysqlPass"\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+else
+	#MySQl 5.7 and later
+	echo UPDATE user SET authentication_string=PASSWORD\(\'"$RootMysqlPass"\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+fi
+echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
+mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
+rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
+sleep 1
+
+#Make sure the mysql database is stopped
+WaitTime=0
+while [ "$WaitTime" -lt 50 ]
+do
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
+	if [ "$?" = 0 ]
+	then
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
+	else
+		break
+	fi
+	sleep 1
+	((WaitTime+=1))
+done
+start_mysql
 }
 
 ######################
@@ -30,11 +95,13 @@ done
 
 if [ ! -f /etc/mysql.secret ]
 then
-	RANDPASS=$(openssl rand -hex 20 | base64 | head -c 35)
+	RandomPassword=$(openssl rand -hex 20 | base64 | head -c 35)
 	touch /etc/mysql.secret
 	chmod 0600 /etc/mysql.secret
 	chown root.root /etc/mysql.secret
-	echo "$RANDPASS" > /etc/mysql.secret
+	echo "$RandomPassword" > /etc/mysql.secret
+
+	ChangeMysqlPassword
 fi
 
 ######################
@@ -42,88 +109,24 @@ fi
 ######################
 mysqladmin ping 1>/dev/null 2>/dev/null
 [ "$?" != 0 ] && start_mysql
-######################
-#Check that we can connect with the root password
-######################
 
-ROOTMYSQLPASS=$(cat /etc/mysql.secret)
-mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
-LOGINSTATUS=$?
+#Get the mysql root password
+RootMysqlPass=$(cat /etc/mysql.secret)
 
-if [ "$LOGINSTATUS" != 0 ]
+#Check if we can log in without a password - this may be work depending on the sql version since mariadb allows root to login using operating system credentials using socket authentication
+mysqladmin status 1>/dev/null 2>/dev/null
+if [ "$?" != 0 ]
 then
-	#Check if this is the first time that mysql has been used and the password is blank.
-	mysqladmin status 1>/dev/null 2>/dev/null
-	LOGINSTATUS="$?"
-	if [ "$LOGINSTATUS" = 0 ]
-	then
-		#Change mysql password to random password
-		mysqladmin -u root password ''"$ROOTMYSQLPASS"''
-		mysqladmin --password="$ROOTMYSQLPASS" status 1>/dev/null 2>/dev/null
-		LOGINSTATUS=$?
-	fi
+	ChangeMysqlPassword	
 fi
 
-######################
-#Change root mysql password if password does not work
-######################
-
-if [ $LOGINSTATUS != 0 ]
+#Check that we can log in with the mysql root password
+mysqladmin --password="$RootMysqlPass" status 1>/dev/null 2>/dev/null
+if [ "$?" != 0 ]
 then
-	#Stop the mysql database
-	MYSQLSTATUS=$(ps -e | grep -c "$MYSQLDVER")
-	if [ "$MYSQLSTATUS" != 0 ]
-	then
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
-	fi
-	#Start with -skip-grant-tables
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/mysql_no_passwd
-	sleep 2
-	#Make sure the mysql database is started
-	STARTCOUNT=0
-	while [ "$STARTCOUNT" -lt 50 ]
-	do
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
-		if [ "$?" = 1 ]
-		then
-			sleep 1
-		else
-			STARTCOUNT=50
-		fi
-		sleep 1
-		let STARTCOUNT="$STARTCOUNT"+1
-	done
-	#mysqladmin -h localhost -u root password ''$MYSQLPASS''
-	echo use mysql\; > /opt/karoshi/.tempdata/setmysqlpass.sql
-	if [[ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]] || [[ $(lsb_release -a 2>/dev/null | grep -c precise) -gt 0 ]]
-	then
-		#MySQL 5.6 and earlier
-		echo UPDATE user SET Password=PASSWORD\(\'"$ROOTMYSQLPASS"\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
-	else
-		#MySQl 5.7 and later
-		echo UPDATE user SET authentication_string=PASSWORD\(\'"$ROOTMYSQLPASS"\'\) WHERE User=\'root\'\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
-	fi
-	echo FLUSH PRIVILEGES\; >> /opt/karoshi/.tempdata/setmysqlpass.sql
-	mysql < /opt/karoshi/.tempdata/setmysqlpass.sql
-	rm -f /opt/karoshi/.tempdata/setmysqlpass.sql
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
-	sleep 1
-
-	#Make sure the mysql database is stopped
-	STOPCOUNT=0
-	while [ "$STOPCOUNT" -lt 50 ]
-	do
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_status
-		if [ "$?" = 0 ]
-		then
-			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_stop
-		else
-			STOPCOUNT=50
-		fi
-		sleep 1
-		let STOPCOUNT="$STOPCOUNT"+1
-	done
-	start_mysql
+	SkipGrantTablesChangeMysqlPass
 fi
+
+
 
 

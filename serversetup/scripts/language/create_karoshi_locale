@@ -7,4 +7,4 @@ do
 	[ -f /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo ] && rm -f /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo
 	msgfmt -o /usr/share/locale/"$LANGFILE"/LC_MESSAGES/karoshi-server.mo /opt/karoshi/serversetup/language/"$LANGFILE".po
 done
-dpkg-reconfigure locales
+dpkg-reconfigure -f noninteractive locales 2>&1
