@@ -5,3 +5,5 @@ if [ $(grep -c chvt /etc/rc.local) = 0 ]
 then
 	sed -i '/exit 0/i chvt 2' /etc/rc.local
 fi
+
+systemctl disable lightdm

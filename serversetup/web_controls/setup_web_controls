@@ -730,6 +730,19 @@ fi
 [ -d /var/www/karoshi ] || mkdir /var/www/karoshi
 chown apache_karoshi /var/www/karoshi
 chmod 0700 /var/www/karoshi
+
+if [ ! -d /var/www/karoshi/add_user_image ]
+then
+	mkdir -p /var/www/karoshi/add_user_image
+	chown  apache_karoshi /var/www/karoshi/add_user_image
+	chmod 0700 /var/www/karoshi/add_user_image
+fi
+
+if [ ! -e /var/www/html_karoshi/admin/add_user_image ]
+then
+	ln -s /var/www/karoshi/add_user_image /var/www/html_karoshi/admin/add_user_image
+fi
+
 #########################
 #Extract phpldapadmin
 #########################

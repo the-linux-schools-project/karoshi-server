@@ -189,7 +189,7 @@ else
 
 #Show user photo
 echo '<td colspan="1" rowspan="5" style="vertical-align: top;">'
-echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>'
+echo '<div id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div>'
 
 echo '</td></tr>
       <tr>

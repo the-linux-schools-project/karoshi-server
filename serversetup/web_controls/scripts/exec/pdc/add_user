@@ -733,5 +733,31 @@ then
 		chmod u+X,g+X,o+X -R "/home/applications/profiles/$PRIMARYGROUP.V6"
 	fi
 fi
+
+#Add in a user image if one has been uploaded
+if [ -d "/var/www/karoshi/add_user_image/$REMOTE_USER" ]
+then
+	ImageFile=$(find "/var/www/karoshi/add_user_image/$REMOTE_USER" -type f -iname "*.jpg" | sed -n 1,1p)
+
+	if [ ! -z "$ImageFile" ]
+	then
+		ImageFile=$(basename "$ImageFile")
+
+		if [ ! -d /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP"/ ]
+		then
+			mkdir -p /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP"/
+			chmod 0770 /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP"/
+			chown root.apache_karoshi /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP"/
+		fi
+
+		echo "$(date): add_user uploading - $ImageFile for user $NEWUSERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+		cp -f "/var/www/karoshi/add_user_image/$REMOTE_USER/$ImageFile" "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
+		chown root.apache_karoshi "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
+		chmod 0440 "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
+	fi
+	rm -f -R "/var/www/karoshi/add_user_image/$REMOTE_USER"
+fi
+
 exit "$CREATE_USER_STATUS"
 
