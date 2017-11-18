@@ -167,10 +167,21 @@ if (selectedstyle == "userstyleS9") {
 
 if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
-el.innerHTML = "Username";
-	var el = document.getElementById("extraoptions2");
-el.innerHTML = "<input tabindex= \"6\" value=\"'"$USERNAME"'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";
-usernameValue = "'$"Enter a username"'";
+el.innerHTML = "Username";'
+if [ "$MOBILE" = yes ]
+then
+	echo '<br>'
+fi
+	echo  'var el = document.getElementById("extraoptions2");'
+
+if [ "$MOBILE" = no ]
+then
+	echo 'el.innerHTML = "<input tabindex= \"6\" value=\"'"$USERNAME"'\" name=\"____USERNAME____\" style=\"width: 200px\;\" size=\"20\" type=\"text\">";'
+else
+	echo 'el.innerHTML = "<input tabindex= \"6\" value=\"'"$USERNAME"'\" name=\"____USERNAME____\" style=\"width: 200px\; text-align: center;\" size=\"20\" type=\"text\"><br>";'
+fi
+
+echo 'usernameValue = "'$"Enter a username"'";
 	status10 = "true";
 }
 
@@ -189,7 +200,7 @@ if (surnameValue == "") {
 }
 
 if (enrollmentValue == "") {
-	enrollmentValue = "Enrollment number as username";
+	enrollmentValue = "Enrollment number";
 }
 
 '
@@ -277,22 +288,22 @@ if [ "$MOBILE" = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo ''$"Forename"'<br>
-	<input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>
 	'$"Surname"'<br>
-	<input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px;" size="20" type="text"><br>
+	<input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>
 	'$"Password"'<br>
-	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px;" size="20" type="password"><br>
+	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px; text-align: center;" size="20" type="password"><br>
 	'$"Confirm Password"'<br>
-	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px;" size="20" type="password"><br>'
+	<input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px; text-align: center;" size="20" type="password"><br>'
 
 	if [ "$INSTALL_TYPE" != home ]
 	then
 		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px;" size="20" type="text"><br>'
+		<input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>'
 	fi
 
 	echo '	'$"Change at next logon"'<br>
-	<select tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px;">
+	<select tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px; text-align: center;">
 	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
 	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
 	</select><br>'
@@ -300,13 +311,13 @@ then
 	echo ''$"Primary group"'<br>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px; text-align: center;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
 	else
 		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option required="required" selected="selected">'"$GROUP"'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
 	fi
 	echo '<br>
 	'$"Username style"'<br>
-	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px;" onClick="rewriteselect();">
+	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px; text-align: center;" onClick="rewriteselect();">
 		<option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>
 		<option value="userstyleS2" '"$SELECT2"'>'$"09auser"'</option>
 		<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
@@ -315,11 +326,13 @@ then
 		<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>
 		<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>
 		<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>
-		<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number as username."'</option>
+		<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number"'</option>
 		<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
 		</select><br>
-		<span id="extraoptions1"></span><br>
-		<span id="extraoptions2"></span><br>'
+		<span id="extraoptions1"></span>
+		<span id="extraoptions2"></span>
+		'$"User Photo"'<br>
+		<div><iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="136" height="165" scrolling="no" frameborder="0"></iframe></div><br>'
 else
 
 	echo '<table class="standard" style="text-align: left;" ><tbody>
