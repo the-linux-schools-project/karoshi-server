@@ -6,12 +6,10 @@ then
 	sed -i '/chvt 2/d' /etc/rc.local
 fi
 
-<<<<<<< HEAD
-systemctl enable lightdm
-=======
+
 #Check to see if we are using systemd
 if [[ $(ps --no-headers -o comm 1) = systemd ]]
 then
 	systemctl enable lightdm.service
 fi
->>>>>>> dcf45c4a125111d33e58617f0d521f3cbc3a6013
+
