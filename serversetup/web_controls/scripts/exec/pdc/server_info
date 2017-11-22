@@ -223,8 +223,8 @@ then
 	#Show cpu usage
 	if [ "$INFO" = cpu ]
 	then
-	echo '<b>'$"CPU Usage"'</b><br><br>
-		<table class="tablesorter" style="text-align: left;"><thead>
+	echo '
+		<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
 		<tr><th style="width:40px"><b>PID</b></th><th style="width:80px"><b>'$"User"'</b></th><th style="width:60px"><b>NI</b></th><th style="width:200px"><b>'$"Command"'</b></th><th style="width:100px"><b>'$"Elapsed"'</b></th><th style="width:60px">%CPU</th></tr>
 		</thead>
 		<tbody>'
@@ -350,8 +350,8 @@ then
 	#Show cpu usage
 	if [ "'"$INFO"'" = cpu ]
 	then
-	echo "<b>'$"CPU Usage"'</b><br><br>
-		<table class=\"tablesorter\" style=\"text-align: left;\"><thead>
+	echo "
+		<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead>
 		<tr><th style=\"width:40px\"><b>PID</b></th><th style=\"width:80px\"><b>'$"User"'</b></th><th style=\"width:60px\"><b>NI</b></th><th style=\"width:200px\"><b>'$"Command"'</b></th><th style=\"width:100px\"><b>'$"Elapsed"'</b></th><th style=\"width:60px\">%CPU</th></tr>
 		</thead>
 		<tbody>"
@@ -480,8 +480,8 @@ then
 	#Show cpu usage
 	if [ "'"$INFO"'" = cpu ]
 	then
-	echo "<b>'$"CPU Usage"'</b><br><br>
-		<table class=\"tablesorter\" style=\"text-align: left;\"><thead>
+	echo "
+		<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\"><thead>
 		<tr><th style=\"width:40px\"><b>PID</b></th><th style=\"width:80px\"><b>'$"User"'</b></th><th style=\"width:60px\"><b>NI</b></th><th style=\"width:200px\"><b>'$"Command"'</b></th><th style=\"width:100px\"><b>'$"Elapsed"'</b></th><th style=\"width:60px\">%CPU</th></tr>
 		</thead>
 		<tbody>"
