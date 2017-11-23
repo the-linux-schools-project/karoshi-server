@@ -185,6 +185,21 @@ else
 	DIV_ID=actionbox2
 fi
 
+if [ "$INFO" = cpu ]
+then
+	TITLE=$"CPU Usage"
+elif [ "$INFO" = kernel ]
+then
+	TITLE=$"Kernel"
+elif [ "$INFO" = samba ]
+then
+	TITLE=$"Samba information"
+elif [ "$INFO" = harddrive ]
+then
+	TITLE=$"Hard disk usage"
+fi
+
+
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -196,15 +211,28 @@ then
 <a href="/cgi-bin/admin/server_info_fm.cgi">'$"Select Server"'</a>
 </div></div><div id="mobilecontent"><div id="mobileactionbox2">'
 else
-	echo '<table class="standard" style="text-align: left;" ><tbody><tr><td><div class="sectiontitle">'"$SERVERNAME"'</div></td><td>
-	<form name="myform" action="server_info_fm.cgi" method="post">
-	<button class="button" name="SelectServer" value="_">
-	'$"Select server"'
-	</button>
-	</form>
-	</td></tr></tbody></table>
-	<br></div>
-	<div id="infobox">'
+
+	WIDTH=100
+	ICON1=/images/submenus/system/computer.png
+
+	echo '
+
+	<div class="sectiontitle">'$TITLE - "$SERVERNAME"'</div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form name="myform" action="server_info_fm.cgi" method="post">
+				<button class="info infonavbutton" name="SelectServer" value="_">
+					<img src="'"$ICON1"'" alt="'$"Select server"'">
+					<span>'$"Select the server you want to view."'</span><br>
+					'$"Select Server"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+
+	</div><div id="infobox">'
 fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1)
