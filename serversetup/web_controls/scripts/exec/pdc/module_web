@@ -355,7 +355,8 @@ then
 		MYSQLPASS=$(sed -n 1,1p /etc/mysql.secret)
 		mysqladmin --password="$MYSQLPASS" create "$WEBDB"
 		sleep 1
-		echo "GRANT ALL PRIVILEGES ON $WEBDB.* TO '$WEBDBUSER'@'localhost' IDENTIFIED BY '$WEBDBPASS';" > /opt/karoshi/.tempdata/perms"$$".sql
+		echo "CREATE USER '$WEBDBUSER'@'localhost' IDENTIFIED BY '$WEBDBPASS';" > /opt/karoshi/.tempdata/perms"$$".sql
+		echo "GRANT ALL PRIVILEGES ON $WEBDB.* TO '$WEBDBUSER'@'localhost';" >> /opt/karoshi/.tempdata/perms"$$".sql
 		echo "ALTER DATABASE $WEBDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;" >> /opt/karoshi/.tempdata/perms"$$".sql
 		mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/perms"$$".sql
 		rm -f /opt/karoshi/.tempdata/perms"$$".sql
@@ -368,7 +369,8 @@ then
 		MYSQLPASS=`sed -n 1,1p /etc/mysql.secret`
 		mysqladmin --password=$MYSQLPASS create '"$WEBDB"'
 		sleep 1
-		echo "GRANT ALL PRIVILEGES ON '"'$WEBDB'"'.* TO '"'$WEBDBUSER'"'@localhost IDENTIFIED BY '"'$WEBDBPASS'"';" > /opt/karoshi/.tempdata/perms$$.sql
+		echo "CREATE USER '"'$WEBDBUSER'"'@'"'localhost'"' IDENTIFIED BY '"'$WEBDBPASS'"';" > /opt/karoshi/.tempdata/perms"$$".sql
+		echo "GRANT ALL PRIVILEGES ON '"'$WEBDB'"'.* TO '"'$WEBDBUSER'"'@'"'localhost'"';" >> /opt/karoshi/.tempdata/perms"$$".sql
 		echo "ALTER DATABASE '"$WEBDB"' DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;" >> /opt/karoshi/.tempdata/perms$$.sql
 		mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/perms$$.sql
 		rm -f /opt/karoshi/.tempdata/perms$$.sql
