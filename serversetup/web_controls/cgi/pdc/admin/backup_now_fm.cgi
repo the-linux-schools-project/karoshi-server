@@ -30,12 +30,12 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 MOBILE=no
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -46,8 +46,8 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Run Network Backup Now"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"> 
+  <title>'$"Run Network Backup Now"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"> 
   <script>
 <!--
 function SetAllCheckBoxes(FormName, FieldName, CheckValue)
@@ -88,7 +88,7 @@ echo '<form action="/cgi-bin/admin/backup_now.cgi" name="selectservers" method="
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/karoshi_servers_view.cgi"'
 echo '</script>'
 echo "</div></body></html>"
@@ -102,14 +102,14 @@ then
 	show_status
 fi
 
-if [ `ls -1 /opt/karoshi/server_network/backup_servers/servers` = 0 ]
+if [[ $(ls -1 /opt/karoshi/server_network/backup_servers/servers) = 0 ]]
 then
 	MESSAGE=$"No karoshi backup servers have been enabled for ssh."
 	show_status
 fi
 
 #Show list of servers
-/opt/karoshi/web_controls/show_servers $MOBILE backups $"Run Network Backup"
+/opt/karoshi/web_controls/show_servers "$MOBILE" backups $"Run Network Backup"
 
 echo '</div></div></form></div></body></html>'
 exit
