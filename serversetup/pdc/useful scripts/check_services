@@ -232,6 +232,8 @@ do
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_start
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_status 1>/dev/null
 					SERVICESTATUS=$?
+					#Make sure the service is set to start on boot
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/startonboots/$SERVICE"
 				fi
 				else
 				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
@@ -245,6 +247,8 @@ do
 						/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"start
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"status 1>/dev/null
 					SERVICESTATUS="$?"
+					#Make sure the service is set to start on boot
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboots/'"$SERVICE"'
 					fi
 					exit "$SERVICESTATUS"
 				'

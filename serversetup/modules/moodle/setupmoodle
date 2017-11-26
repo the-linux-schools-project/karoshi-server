@@ -157,6 +157,10 @@ cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/m
 
 sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
+#Edit moodle2.sql with the correct SSO ip range ( replace 192.168.0.0/24 )
+
+#ipcalc 172.16.1.1/255.255.0.0 | grep Network: | sed 's/ * / /g' | cut -d" " -f2
+
 #Edit moodle.sql with the correct realm information
 sed -i 's/CHANGETHISLDAPBASE/'"$LDAPBASE"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
