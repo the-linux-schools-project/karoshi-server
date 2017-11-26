@@ -129,7 +129,7 @@ fi
 }
 
 
-for SERVERS in /opt/karoshi/server_network/servers/*
+for SERVERS in $(hostname-fqdn) $(ls -1 /opt/karoshi/server_network/servers/ | sed 's%'"$(hostname-fqdn)"'%%g')
 do
 	SERVERNAME=$(basename "$SERVERS")
 	EMAILSERVER=no
@@ -139,9 +139,14 @@ do
 
 	[[ "$SERVERNAME" = $(hostname-fqdn) ]] && DSERVICES=cron,apache_karoshi
 
-	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",dns,bind,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ] && DSERVICES="$DSERVICES",dns,bind,samba,nslcd
-	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba,nslcd
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1pdc ] && DSERVICES="$DSERVICES",bind,samba,nslcd
+	if [ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1dc ]
+	then
+		DSERVICES="$DSERVICES",bind,samba,nslcd
+	else
+		DSERVICES="$DSERVICES",nslcd
+	fi
+	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/1domainmember ] && DSERVICES="$DSERVICES",samba,nslcd,dnsmasq
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/2users-groups ] && DSERVICES="$DSERVICES",nslcd
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver ] && DSERVICES="$DSERVICES",apache,mysql
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/casserver ] && DSERVICES="$DSERVICES",apache
@@ -169,7 +174,9 @@ do
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/openvpn ] && DSERVICES="$DSERVICES",openvpn
 	[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/userwebhosting ] && DSERVICES="$DSERVICES",apache,mysql,vsftpd
 
-
+	DSERVICES="${DSERVICES//,/\\n}"
+	DSERVICES=$(echo -e "$DSERVICES" | sort --unique)
+	DSERVICES=$(echo -e "$DSERVICES" | sed ':a;N;s/\n/,/g;ba')
 	#Check that the server is online
 	ONLINE=yes
 	if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
