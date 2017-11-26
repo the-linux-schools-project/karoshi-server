@@ -64,7 +64,7 @@ fi
 echo "$(date): karoshi_gluster serverlist:$SERVERLIST volume:$VOLUME folderpath:$FOLDERPATH action:$ACTION by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 source /opt/karoshi/server_network/domain_information/domain_name
-PORTS=111,24007:24009,49152:49200,34865:34867
+PORTS=111,24007:24009,59152:59200
 
 if [ "$ACTION" != removebrick ] && [ "$ACTION" != removeserver ]
 then
@@ -130,6 +130,9 @@ then
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/glusterfs
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/releaseports
 
+	#Make sure that gluster is using high ports that do not conflict with samba 4.7 and later as gluster cannot move to another port.
+	sed -i "s/#   option base-port 49152/    option base-port 59152/g" /etc/glusterfs/glusterd.vol
+
 	if [[ $(grep -c "Gluster-tcp" /etc/shorewall/rules) = 0 ]]
 	then
 		echo '<ul><li>'$SERVER' - '$"Opening ports for glusterfs"'</li></ul>'
@@ -174,6 +177,9 @@ else
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 	fi
+
+	#Make sure that gluster is using high ports that do not conflict with samba 4.7 and later as gluster cannot move to another port.
+	sed -i "s/#   option base-port 49152/    option base-port 59152/g" /etc/glusterfs/glusterd.vol
 
 	#Make sure glusterfs is running
 	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_status
