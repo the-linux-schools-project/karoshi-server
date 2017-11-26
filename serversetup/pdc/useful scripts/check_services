@@ -229,11 +229,12 @@ do
 				then
 					echo "$SERVERNAME: $SERVICE is not running."
 					echo "Attempting to start $SERVICE"
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_stop
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_start
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/control_services/$SERVICE"_status 1>/dev/null
 					SERVICESTATUS=$?
 					#Make sure the service is set to start on boot
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/startonboots/$SERVICE"
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE/scripts/startonboot/$SERVICE"
 				fi
 				else
 				ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
@@ -244,11 +245,12 @@ do
 					then
 						echo '"$SERVERNAME":' '"$SERVICE"' is not running.
 						echo Attempting to start '"$SERVICE"'
+						/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"stop
 						/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"start
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"status 1>/dev/null
 					SERVICESTATUS="$?"
 					#Make sure the service is set to start on boot
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboots/'"$SERVICE"'
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/'"$SERVICE"'
 					fi
 					exit "$SERVICESTATUS"
 				'

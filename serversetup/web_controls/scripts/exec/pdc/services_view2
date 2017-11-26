@@ -149,20 +149,30 @@ if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	source /opt/karoshi/serversetup/variables/distro
 
-	#Set the service to run on boot
+
 	if [ "$ACTION" = start ]
 	then
+		#Set the service to run on boot
 		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE"
+
+		#Stop the service to make sure that it is really stopped
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_stop		
+
+		#Start the service
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_start
 	fi
 	
-	#Stop the service from running at boot
+
 	if [ "$ACTION" = stop ]
 	then
+		#Stop the service from running at boot
 		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/$SERVICE"
+
+		#Stop the service
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_stop	
 	fi
 
-	#Start or stop the service
-	"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_"$ACTION"
+
 	redirect
 fi
 
@@ -173,20 +183,29 @@ then
 	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=4 "$SERVERNAME" '
 	source /opt/karoshi/serversetup/variables/distro
 
-	#Set the service to run on boot
+	
 	if [ '"$ACTION"' = start ]
 	then
+		#Set the service to run on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/'"$SERVICE"'
+
+		#Stop the service to make sure that it is really stopped
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'_stop
+
+		#Start the service
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'_start
 	fi
 
 	#Stop the service from running at boot
 	if [ '"$ACTION"' = stop ]
 	then
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/'"$SERVICE"'
+
+		#Stop the service
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'_stop
 	fi
 
-	#Start or stop the service
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"'"$ACTION"'
+
 	'
 	redirect
 	fi

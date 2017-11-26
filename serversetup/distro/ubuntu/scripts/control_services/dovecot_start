@@ -2,6 +2,5 @@
 service dovecot start 2>&1
 if [ "$?" != 0 ]
 then
-	echo BOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 	sleep 5
 fi
