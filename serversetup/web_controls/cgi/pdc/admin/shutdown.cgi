@@ -227,10 +227,10 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	DIV_ID=actionbox2
+	DIV_ID=actionbox3
 fi
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'">'
+[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -241,7 +241,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/shutdown_fm.cgi">'"$SERVERNAME"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br>'
+	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><div id="infobox">'
 fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
@@ -252,6 +252,9 @@ then
 	MESSAGE=$"The form code must not be blank."
 	show_status
 fi
+
+[ "$MOBILE" = no ] && echo '</div>'
+
 echo "</div>"
 echo "</div></body></html>"
 exit
