@@ -230,8 +230,6 @@ else
 	DIV_ID=actionbox2
 fi
 
-[ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
-
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
@@ -241,7 +239,7 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/shutdown_fm.cgi">'"$SERVERNAME"'</a>
 </div></div><div id="mobileactionbox">'
 else
-	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><div id="infobox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Shutdown-Reboot Server"'</div></div><div id="infobox">'
 fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
