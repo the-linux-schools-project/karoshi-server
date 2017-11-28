@@ -36,7 +36,7 @@ fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_savapage_cgi
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_savapage.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_savapage_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_savapage_cgi"'check' ]
 then
 	echo "$(date): module_savapage - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -56,7 +56,7 @@ read DATA
 DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_savapage - no data >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_savapage - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
@@ -66,32 +66,32 @@ SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [[ $REMOTE_MD5'check' != $MD5SUM'check' ]]
+if [[ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]]
 then
-	echo `date`: module_savapage - Not called by module_savapage.cgi >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_savapage - Not called by module_savapage.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$REMOTE_USER" ]]
 then
-	echo `date`: module_savapage - Blank remote user >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_savapage - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$REMOTE_ADDR" ]]
 then
-	echo `date`: module_savapage - Blank remote tcpip address >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_savapage - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [[ -z "$SERVERNAME" ]]
 then
-	echo `date`: module_savapage - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): module_savapage - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_savapage - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): module_savapage - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export  TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -110,20 +110,28 @@ fi
 
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
-if [ $SERVERNAME != $(hostname-fqdn) ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	#Copy in module
 	scp -p -r /opt/karoshi/serversetup/modules/printserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_start root@"$PRINTSERVER":"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_status root@"$PRINTSERVER":"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_stop root@"$PRINTSERVER":"/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/savapage root@"$PRINTSERVER":"/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/savapage root@"$PRINTSERVER":"/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"
+	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_start root@"$PRINTSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_status root@"$PRINTSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_stop root@"$PRINTSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
+	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/savapage root@"$PRINTSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/"
+	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/savapage root@"$PRINTSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"
+
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	mkdir -p /opt/karoshi/server_network/domain_information 
+	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+	#Copy in domain information
+	scp /opt/karoshi/server_network/domain_information/domain_name root@"$SERVERNAME":/opt/karoshi/server_network/domain_information
 
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage
 	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	[ $? = 101 ] && exit 101
+	[ "$?" = 101 ] && exit 101
+
 else
 	/opt/karoshi/serversetup/modules/printserver/savapage/setup_savapage 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	[ "$?" = 101 ] && exit 101
@@ -131,8 +139,9 @@ fi
 
 #Add role information
 [ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
 echo $"Savapage""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
+echo '<a href="http://savapage.'"$REALM"':8631" target="_blank">http://savapage.'"$REALM"':8631</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
 echo '<a href="http://savapage.'"$REALM"':8631/admin" target="_blank">http://savapage.'"$REALM"':8631/admin</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
 
 #Add savapage ppd to netlogon
@@ -146,20 +155,20 @@ cp -f /opt/karoshi/serversetup/modules/printserver/savapage/savapage.ppd /var/li
 #Add in savapage icon for linux clients
 for KAROSHICLIENT in $(ls -1 /var/lib/samba/netlogon/linuxclient/ | grep ^karoshi) 
 do
-	[ ! -d /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all
+	[ ! -d /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all
 	echo '[Desktop Entry]
 	Version=1.0
 	Type=Link
 	Name=Savapage
 	Comment=Savapage
 	Icon=printer
-	URL=http://savapage.'$REALM':8631' > /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all/Savapage.desktop
+	URL=http://savapage.'"$REALM"':8631' > /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all/Savapage.desktop
 done
 
 #Add dns entry for savapage
-echo `date`: "module_savapage - checking if savapage.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): module_savapage - checking if savapage.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 samba-tool dns query 127.0.0.1 "$REALM" savapage."$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-if [ $? != 0 ]
+if [ "$?" != 0 ]
 then
 	echo "$(date): module_savapage - adding savapage for $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	samba-tool dns add 127.0.0.1 "$REALM" savapage CNAME "$SERVERNAME" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -169,7 +178,7 @@ fi
 #Show completed message
 ###########################
 echo '<br>'$"Savapage has been installed and can be accessed from" - '<a href="http://savapage.'"$REALM"':8631/admin" target="_blank">savapage.'"$REALM"':8631/admin</a>'
-echo '<br>'$"username":admin - $"password": admin
+echo "<br>"$"username"":admin - "$"password"": admin"
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br><br>'
 
 exit

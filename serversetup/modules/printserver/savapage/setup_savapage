@@ -14,11 +14,11 @@ then
 fi
 
 INSTALL_LIST="lynx default-jre default-jdk avahi-daemon python-cups python3-cups python3-cupshelpers libreoffice libgxps-utils imagemagick"
-if [ $(lsb_release -r | grep -c 12.04) -gt 0 ]
+if [[ $(lsb_release -r | grep -c 12.04) -gt 0 ]]
 then
 	INSTALL_LIST="lynx default-jre default-jdk avahi-daemon python-cups python-cupshelpers libreoffice libgxps-utils imagemagick"
 fi
-if [ $(lsb_release -r | grep -c 14.04) -gt 0 ]
+if [[ $(lsb_release -r | grep -c 14.04) -gt 0 ]]
 then
 	INSTALL_LIST="lynx default-jre default-jdk avahi-daemon python-cups python3-cups libreoffice libgxps-utils imagemagick"
 fi
@@ -27,7 +27,7 @@ fi
 UPDATEREPO=yes
 for PACKAGE in $INSTALL_LIST
 do
-	if [ $(dpkg-query -l "$PACKAGE" 2>/dev/null | grep -c ^ii) = 0 ]
+	if [[ $(dpkg-query -l "$PACKAGE" 2>/dev/null | grep -c ^ii) = 0 ]]
 	then
 		if [ "$UPDATEREPO" = yes ]
 		then
@@ -35,11 +35,11 @@ do
 			apt-get update
 			echo '</pre>'
 		fi
-		echo '<ul><li>'$"Installing"' '$PACKAGE'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+		echo '<ul><li>'$"Installing"' '"$PACKAGE"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		apt-get install -y "$PACKAGE"
 		if [ $? != 0 ]
 		then
-			echo '<ul><li>'$"Error installing"' '$PACKAGE'</li></ul></pre>'
+			echo '<ul><li>'$"Error installing"' '"$PACKAGE"'</li></ul></pre>'
 			sleep 5
 			exit 101
 		fi
@@ -89,11 +89,11 @@ fi
 chown savapage "$INSTALLPATH/$SAVABINARY"
 chmod 0755 "$INSTALLPATH/$SAVABINARY"
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-if [ $(lsb_release -r | grep -c 12.04) -gt 0 ]
+if [[ $(lsb_release -r | grep -c 12.04) -gt 0 ]]
 then
-	su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'$SAVABINARY'"'
+	su savapage -c 'echo -e "yes\nyes\nno\n" | ./"'"$SAVABINARY"'"'
 else
-	su savapage -c 'echo -e "yes\nno\n" | ./"'$SAVABINARY'"'
+	su savapage -c 'echo -e "yes\nno\n" | ./"'"$SAVABINARY"'"'
 fi
 echo '</pre>'
 
@@ -109,21 +109,21 @@ ln -sf "/opt/savapage/server/bin/linux-x64/app-server" /etc/init.d/savapage
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/savapage
 
 #Configure cups to allow access on 631 - backup cupsd.conf and copy in revised cupsd.conf
-cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf-backup-$LOG_DATE.$$
+cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf-backup-"$LOG_DATE.$$"
 cp -f /opt/karoshi/serversetup/modules/printserver/savapage/cupsd.conf /etc/cups/
 
 #Extract savapage database and modify ldap
 unzip /opt/karoshi/serversetup/modules/printserver/savapage/savapage.zip -d /opt/karoshi/serversetup/modules/printserver/savapage/
 #Set the ldap base for users
-sed -i 's/REPLACETHISDN/'$LDAPBASE'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
+sed -i 's/REPLACETHISDN/'"$LDAPBASE"'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
 #Set the ldap server
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-if [ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ]
+if [[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]]
 then
-	LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+	LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
 fi
-sed -i 's/REPLACETHISLDAPSERVER/'$LDAPSERVER'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
+sed -i 's/REPLACETHISLDAPSERVER/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
 
 #Zip up savapage.xml ready for import
 cd /opt/karoshi/serversetup/modules/printserver/savapage
@@ -133,7 +133,7 @@ rm -f /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
 cd "$INSTALLPATH"
 
 #Import custom savapage database - make sure savapage is stopped
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/savapage_stop
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/savapage_stop
 su savapage -c "/opt/savapage/server/bin/linux-x64/savapage-db --db-import /opt/karoshi/serversetup/modules/printserver/savapage/savapage_custom.zip"
 
 #Restart cups
@@ -143,34 +143,34 @@ su savapage -c "/opt/savapage/server/bin/linux-x64/savapage-db --db-import /opt/
 #SavaPage uses TCP/IP port 8631(for HTTP), port 8632 (for HTTPS/SSL) and port 9100(for JetDirect/RAWprinting) by default.
 #Open shorewall ports
 RESTARTSHOREWALL=no
-if [ $(grep -c savapage /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c savapage /etc/shorewall/rules) = 0 ]]
 then
 	RESTARTSHOREWALL=yes
 	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp 8631 8632 9100 </li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'8631,8632,9100'	'-'#'savapage /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM""c\ACCEPT	net	fw	tcp	8631,8632,9100	-#savapage" /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-if [ $(grep -c avahi /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c avahi /etc/shorewall/rules) = 0 ]]
 then
 	RESTARTSHOREWALL=yes
 	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp,udp 5353</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp,udp'	'5353'	'-'#'avahi /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM""c\ACCEPT	net	fw	tcp,udp	5353	-#avahi" /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
 if [ "$RESTARTSHOREWALL" = yes ]
 then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Restart savapage
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/savapage_start
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/savapage_start
 
 echo '<ul><li>'$"Setting up Airprint"'</li></ul>'
 #Setup airprint
@@ -178,7 +178,7 @@ cp -f /opt/karoshi/serversetup/modules/printserver/savapage/savapage.service /et
 
 #Restart avahi
 echo '<ul><li>'$"Restarting Avahi"'</li></ul>'
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
 
 

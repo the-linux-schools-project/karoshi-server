@@ -194,21 +194,38 @@ then
 <td style="vertical-align: middle;"><a href="/cgi-bin/admin/mobile_menu.cgi"><b>'$"Create ZFS Raid" - $SERVERNAME'</b></a></td>
 </tr></tbody></table>'
 else
+	WIDTH=100
+	ICON1="/images/submenus/system/computer.png"
+	ICON2="/images/submenus/system/zfs.png"
 
 	echo '<div id="titlebox">
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td><div class="sectiontitle">'$"Create ZFS Raid"' - '$SERVERNAME'</div></td>
-<td>
-<a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></td>
-<td>
-<form action="/cgi-bin/admin/zfs_raid_create_fm.cgi" method="post">
-<button class="button" name="_">'$"Create ZFS Raid"'</button>
-</form>
-</td><td>
-<form action="zfs_raid_control_fm.cgi" method="post">
-<button class="button" name="_">'$"ZFS Status"'</button>
-</form>
-</td></tr></tbody></table><br></div><div id="infobox">
+
+	<div class="sectiontitle">'$"Create ZFS Raid"' - '$SERVERNAME' <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>"'$"Choose the server you want to view the raid information for."'"</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="zfs_raid_create_fm.cgi" name="selectservers" method="post">
+				<button class="info infonavbutton" name="CreateRaid" value="_">
+					<img src="'$ICON1'" alt="'$"Select Server"'">
+					<span>'$"Select a server."'</span><br>
+					'$"Select Server"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="zfs_raid_control_fm.cgi" name="selectservers" method="post">
+				<button class="info infonavbutton" name="SelectServer" value="_">
+					<img src="'$ICON1'" alt="'$"ZFS Status"'">
+					<span>'$"ZFS Status"'</span><br>
+					'$"ZFS Status"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+
+<br></div><div id="infobox">
 <br>'
 
 fi

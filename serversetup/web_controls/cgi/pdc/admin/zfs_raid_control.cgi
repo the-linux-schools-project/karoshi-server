@@ -198,13 +198,35 @@ then
 <a href="/cgi-bin/admin/zfs_raid_control_fm.cgi">'$"Select Server"'</a>
 </div></div><div id="mobileactionbox">'
 else
+	WIDTH=100
+	ICON1="/images/submenus/system/computer.png"
+	ICON2="/images/submenus/system/add.png"
 	echo '
-	<table class="standard" style="text-align: left;" ><tbody>
-	<tr>
-	<td><b>'$"ZFS Status"' - '$SERVERNAME'</b></td>
-	<td><a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page shows the status of your software raid. You can also add and remove drives from the raid array here."'</span></a></td>
-	<td><a href="zfs_raid_control_fm.cgi"><input class="button" type="button" name="" value="'$"Select server"'"></a></td><td><a href="zfs_raid_create_fm.cgi"><input class="button" type="button" name="" value="'$"Create ZFS Raid"'"></a></td>
-	</tr></table><br></div><div id="infobox">'
+	<div class="sectiontitle">'$"ZFS Status"' - '$SERVERNAME' <a class="info" target="_blank" href="http://www.linuxgfx.co.uk/karoshi/documentation/wiki/index.php?title=ZFS_Raid"><img class="images" alt="" src="/images/help/info.png"><span>'$"This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."'</span></a></div>
+	<table class="tablesorter"><tbody><tr>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="zfs_raid_control_fm.cgi" name="selectservers" method="post">
+				<button class="info infonavbutton" name="SelectServer" value="_">
+					<img src="'$ICON1'" alt="'$"Select a server"'">
+					<span>'$"Select a server"'</span><br>
+					'$"Select server"'
+				</button>
+			</form>
+		</td>
+
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+			<form action="zfs_raid_create_fm.cgi" name="selectservers" method="post">
+				<button class="info infonavbutton" name="CreateRaid" value="_">
+					<img src="'$ICON2'" alt="'$"Create ZFS volume"'">
+					<span>'$"Create a ZFS volume."'</span><br>
+					'$"Create ZFS Raid"'
+				</button>
+			</form>
+		</td>
+
+	</tr></tbody></table>
+	<br></div><div id="infobox">'
 fi
 
 MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control.cgi | cut -d' ' -f1`
