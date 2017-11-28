@@ -133,13 +133,13 @@ echo '<form action="/cgi-bin/admin/shutdown.cgi" name="selectservers" method="po
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
-echo '<div style="float: center" id="my_menu" class="sdmenu">
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Shutdown-Reboot Server"'</span>
 	<a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 	</div></div><div id="mobileactionbox">'
 else
-echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br></div><div id="infobox">'
+	echo '<div class="sectiontitle">'$"Shutdown-Reboot Server"'</div><br></div><div id="infobox">'
 fi
 
 echo '<table class="'"$TABLECLASS"'" style="text-align: left;" >

@@ -49,6 +49,9 @@ NOTIMEOUT=127.0.0.1
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
+#Delete the existing add user image if it has been uploaded but not used
+[ -d "/var/www/karoshi/add_user_image/$REMOTE_USER" ] && rm -f -R "/var/www/karoshi/add_user_image/$REMOTE_USER"
+
 #Get install type
 INSTALL_TYPE=education
 if [ -f /opt/karoshi/server_network/install_type ]

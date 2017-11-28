@@ -37,7 +37,17 @@ export TEXTDOMAIN=karoshi-server
 ##########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Remove Server Role"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Remove Server Role"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -169,7 +179,7 @@ fi
 
 ICON1=/images/warnings/server.png
 
-echo '<div id="actionbox"><div class="sectiontitle">'$"Remove Server Role"' - '"$SERVERNAME"'</div><br><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Remove Server Role"' - '"$SERVERNAME"'</div></div><div id="infobox">'
 
 if [ "$ACTION" = reallyremove ]
 then
@@ -297,10 +307,15 @@ case "$ROLE_FILE" in
 	ROLE_NAME_STATUS=set
 	CONSEQUENCES=$"Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 	;;
-	owncloud)
-	ROLE_NAME=$"Owncloud Server"
+	nextcloud)
+	ROLE_NAME=$"Nextcloud Server"
 	ROLE_NAME_STATUS=set
-	CONSEQUENCES=$"Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
+	CONSEQUENCES=$"Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
+	;;
+	savapage)
+	ROLE_NAME=$"Savapage"
+	ROLE_NAME_STATUS=set
+	CONSEQUENCES=$"Unflags this server as Savapage server. Stops Savapage from running."
 	;;
 	federated_server)
 	ROLE_NAME=$"Federated Server"
@@ -344,7 +359,9 @@ then
 <form action="/cgi-bin/admin/karoshi_servers_remove_role.cgi" method="post">
 <input name="___ACTION___" value="remove" type="hidden">
 <input name="___SERVERNAME___" value="'"$SERVERNAME"'" type="hidden">
-<table class="standard" style="text-align: left;" ><tbody>
+<table id="myTable" class="tablesorter" style="text-align: left;" >
+<thead><tr><th style="vertical-align: top; width: 180px;"><b>'$"Role"'</b></th><th style="vertical-align: top; width: 180px;"><b>'$"Action"'</b></th><th></th></thead>
+<tbody>
 '
 
 	if [ -d /opt/karoshi/server_network/federated_ldap_servers/"$SERVERNAME" ]
@@ -353,7 +370,7 @@ then
 		get_role_name
 		if [ "$ROLE_NAME_STATUS" != notset ]
 		then
-			echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;">'"$ROLE_NAME"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'"$ROLE_FILE"'___" type="image" class="images" src="'$ICON1'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
+			echo '<tr><td style="vertical-align: top;">'"$ROLE_NAME"'</td><td style="vertical-align: top;"><a class="info" href="javascript:void(0)"><input name="___MODULE___'"$ROLE_FILE"'___" type="image" class="images" src="'$ICON1'" value=""><span>'$CONSEQUENCES'</span></a></td></tr>'
 		fi
 	else
 		for ROLES in /opt/karoshi/server_network/servers/$SERVERNAME/*
@@ -363,7 +380,7 @@ then
 
 			if [ "$ROLE_NAME_STATUS" != notset ] && [ "$ROLE_FILE" != 1dc ] && [ "$ROLE_FILE" != 1domainmember ] && [ "$ROLE_FILE" != 2users-groups ]
 			then
-				echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;"><b>'$ROLE_NAME'</b></td><td style="vertical-align: top; width: 600px;">'"$CONSEQUENCES"'</td><td style="vertical-align: top;">
+				echo '<tr><td style="vertical-align: top; width: 180px;"><b>'$ROLE_NAME'</b></td><td style="vertical-align: top; width: 600px;">'"$CONSEQUENCES"'</td><td style="vertical-align: top;">
 				<button class="button" name="___RemoveRole___" value="___MODULE___'"$ROLE_FILE"'___">
 				'$"Remove"'
 				</button>
@@ -374,7 +391,7 @@ then
 
 	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [ ! -d /opt/karoshi/server_network/federated_ldap_servers/"$SERVERNAME" ]
 	then
-		echo '<tr><td style="vertical-align: top; width: 180px; height: 40px;"><b>'$"Remove Server"'</b></td><td style="vertical-align: top; width: 600px;"></td><td style="vertical-align: top;">
+		echo '<tr><td style="vertical-align: top; width: 180px;"><b>'$"Remove Server"'</b></td><td style="vertical-align: top; width: 600px;"></td><td style="vertical-align: top;">
 		<button class="button" name="___RemoveServer___" value="___MODULE___REMOVESERVER___">
 		'$"Remove"'
 		</button>
@@ -382,4 +399,4 @@ then
 	fi
 	echo '</tbody></table><br></form>'
 fi
-echo '</div></div></body></html>'
+echo '</div></div></div></body></html>'
