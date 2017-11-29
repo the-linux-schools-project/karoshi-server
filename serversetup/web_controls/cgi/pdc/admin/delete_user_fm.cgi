@@ -33,16 +33,16 @@ source /opt/karoshi/web_controls/version
 ############################
 #Language
 ############################
-SHUTDOWN_CODE=`echo ${RANDOM:0:3}`
+SHUTDOWN_CODE="${RANDOM:0:3}"
 
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
 	TIMEOUT=86400
 fi
@@ -53,13 +53,13 @@ echo "Content-type: text/html"
 echo ""
 echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>'$"Delete User"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi">
-  <link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'">
+  <title>'$"Delete User"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
+  <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
 <script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
@@ -85,43 +85,39 @@ echo '</head>
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=5
-#Assign username
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-		then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign username
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
 
 #FILE
-COUNTER=2
-END_POINT=8
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		FILE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=FILE
+get_data
+FILE="$DATAENTRY"
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -130,15 +126,14 @@ else
 	DIV_ID=actionbox2
 fi
 
-
 echo '
 <form action="/cgi-bin/admin/delete_user.cgi" method="post">
-<input name="_FORMCODE_" value="'$SHUTDOWN_CODE'" type="hidden">'
+<input name="_FORMCODE_" value="'"$SHUTDOWN_CODE"'" type="hidden">'
 
-[ $MOBILE = no ]  && echo '<div id="'$DIV_ID'"><div id="titlebox">'
+[ "$MOBILE" = no ]  && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -152,7 +147,7 @@ else
 fi
 
 #Check that this server is not part of a federated setup
-if [ -f /opt/karoshi/server_network/servers/$HOSTNAME/federated_server ]
+if [ -f /opt/karoshi/server_network/servers/"$HOSTNAME"/federated_server ]
 then
 	echo $"This server is part of a federated system. Users must be deleted on the main federation server." '</div></div></body></html>'
 	exit
@@ -162,34 +157,34 @@ fi
 #Get request data if asked
 if [ -z "$FILE" ]
 then
-	if [ -f /opt/karoshi/user_requests/delete_users/$FILE ]
+	if [ -f /opt/karoshi/user_requests/delete_users/"$FILE" ]
 		then
-		NEW_USER_DATA=`sed -n 1,1p /opt/karoshi/user_requests/delete_users/$FILE`
-		FORENAME=`echo $NEW_USER_DATA | cut -d: -f1`
-		SURNAME=`echo $NEW_USER_DATA | cut -d: -f2`
-		GROUP=`echo $NEW_USER_DATA | cut -d: -f3`
+		NEW_USER_DATA=$(sed -n 1,1p /opt/karoshi/user_requests/delete_users/"$FILE")
+		FORENAME=$(echo "$NEW_USER_DATA" | cut -d: -f1)
+		SURNAME=$(echo "$NEW_USER_DATA" | cut -d: -f2)
+		GROUP=$(echo "$NEW_USER_DATA" | cut -d: -f3)
 		echo '<input name="_REQUESTFILE_" value="'$FILE'" type="hidden">'
 		#Try and get username
 
-		if [ `echo $GROUP | grep -c ^yr` -gt 0 ]
+		if [[ $(echo "$GROUP" | grep -c ^yr) -gt 0 ]]
 		then
-			GROUPCHARCOUNT=`echo $GROUP | wc -c`
-			let GROUPCHARCOUNT=$GROUPCHARCOUNT-1
-			let GROUPSTARTCHAR=$GROUPCHARCOUNT-2
-			USERNAME=`echo ${FORENAME:0:1}$SURNAME${GROUP:$GROUPSTARTCHAR:$GROUPCHARCOUNT} | tr 'A-Z' 'a-z'`
+			GROUPCHARCOUNT=$(echo "$GROUP" | wc -c)
+			let GROUPCHARCOUNT="$GROUPCHARCOUNT"-1
+			let GROUPSTARTCHAR="$GROUPCHARCOUNT"-2
+			USERNAME=$(echo "${FORENAME:0:1}$SURNAME${GROUP:$GROUPSTARTCHAR:$GROUPCHARCOUNT}" | tr 'A-Z' 'a-z')
 		else
-			USERNAME=`echo ${FORENAME:0:1}$SURNAME | tr 'A-Z' 'a-z'`
+			USERNAME=$(echo "${FORENAME:0:1}$SURNAME" | tr 'A-Z' 'a-z')
 		fi
 	fi
 fi
 
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 	echo '<div id="mobileactionbox">'
 	echo '<div id="suggestions"></div>
 	'$"Username"'<br>
-	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
-	'$"Delete Code"' '$SHUTDOWN_CODE'<br><br>
+	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
+	'$"Delete Code"' '"$SHUTDOWN_CODE"'<br><br>
 	'$"Confirm"'<br>
 	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
 	<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
@@ -197,69 +192,37 @@ then
 else
 
 	echo '
-  <table class="standard" style="text-align: left;" >
-    <tbody>
-      <tr>
-        <td style="width: 180px;">
-	  '$"Username"'
-	</td>
-        <td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'$USERNAME'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
-	</td>
-	<td>
-	  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the username that you want to delete. This WILL delete all of the user files and their home folder."'</span></a>
-	</td>
-        <td colspan="1" rowspan="7" style="vertical-align: top;">
-	  <div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
-	</td>
-     </tr>
-     <tr>
-	<td>
-	  '$"Confirm"'
-	</td>
-        <td style="vertical-align: top; text-align: left;"><input required="required" tabindex= "2" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text">
-	</td>
-	<td>
-	  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to confirm that you want to delete the user."'</span></a>
-	</td>
-     </tr>
-     <tr>
-	<td>
-	  '$"Delete Code"'
-	</td>
-        <td style="vertical-align: top; text-align: left;">
-	  <b>'$SHUTDOWN_CODE'</b>
-	</td></tr>
-     <tr>
-	<td>
-	  '$"Archive home area"'</td>
-	<td>
-	  <input type="checkbox" name="_ARCHIVE_" value="yes">
-	</td>
-	<td>
-	  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will archive the user home area to the archive folder in /home/users."'</span></a>
-	</td>
-
-     </tr>
-     <tr>
-	<td>&nbsp;</td>
-     </tr>
-     <tr>
-	<td>&nbsp;</td>
-     </tr>
-     <tr>
-	<td>&nbsp;</td>
-     </tr>
-   </tbody>
-</table>'
+  	<table class="standard" style="text-align: left;" >
+		<tbody>
+			<tr>
+				<td style="width: 180px;">
+				'$"Username"'
+				</td>
+				<td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: 200px;" name="_USERNAME_" value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);">
+				</td>
+				<td>
+					<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter the username that you want to delete. This WILL delete all of the user files and their home folder."'</span></a>
+				</td>
+			</tr>
+			<tr>
+				<td>'$"Confirm"'</td>
+				<td style="vertical-align: top; text-align: left;"><input style="width: 200px;" required="required" tabindex= "2" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"></td>
+				<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Type in the number displayed to confirm that you want to delete the user."'</span></a></td>
+			</tr>
+			<tr>
+				<td>'$"Delete Code"'</td>
+				<td style="vertical-align: top; text-align: left;"><b>'"$SHUTDOWN_CODE"'</b></td>
+			</tr>
+		 	<tr>
+				<td>'$"Archive home area"'</td>
+				<td><input type="checkbox" name="_ARCHIVE_" value="yes"></td>
+				<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will archive the user home area to the archive folder in /home/users."'</span></a></td>
+			</tr>
+			<tr><td style="vertical-align:top">'$"User Photo"'</td><td><div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div></td></tr>
+		</tbody>
+	</table>'
 
 fi
-#Get user image
-
-#if [ $USERNAME'blank' != blank ]
-#then
-#	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/show_user_image
-#fi
-
 echo '<br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 
 [ "$MOBILE" = no ] && echo '</div>'
