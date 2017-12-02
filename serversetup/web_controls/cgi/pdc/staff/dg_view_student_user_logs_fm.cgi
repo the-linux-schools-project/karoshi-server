@@ -143,7 +143,7 @@ else
 				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the name of the student that you want to check the internet logs for."'</span></a>
 			</td>
 			<td colspan="1" rowspan="4" style="vertical-align: top;">
-				<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>
+				<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="120" height="150"></div>
 			</td>
 		</tr>
 		<tr><td style="vertical-align: top;">'$"Log Date"'</td><td style="vertical-align: top;">'

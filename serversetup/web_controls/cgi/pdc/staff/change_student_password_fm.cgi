@@ -152,7 +152,7 @@ then
 <input tabindex= "2" style="width: 160px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
 <input tabindex= "3" style="width: 160px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br><br>
-<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+<div id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150"></div>
 '
 else
 	echo '<table class="standard" style="text-align: left;" >
@@ -168,7 +168,7 @@ else
 
 #Show user photo
 echo '<td colspan="1" rowspan="4" style="vertical-align: top;">'
-echo '<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+echo '<div id="photobox"><img alt="photo" src="/images/blank_user_image.jpg" width="120" height="150"></div>'
 
 echo '</td></tr>
       <tr>

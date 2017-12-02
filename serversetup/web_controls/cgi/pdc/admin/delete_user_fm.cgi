@@ -57,7 +57,7 @@ echo '
   <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ "$MOBILE" = yes ]
 then
@@ -187,7 +187,7 @@ then
 	'$"Delete Code"' '"$SHUTDOWN_CODE"'<br><br>
 	'$"Confirm"'<br>
 	<input required="required" tabindex= "2" style="width: 160px; height: 30px;" name="_SHUTDOWNCODE_" maxlength="3" size="3" type="text"><br><br>
-	<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180" alt="photo"></div>
+	<div id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div>
 	'
 else
 
@@ -211,14 +211,14 @@ else
 			</tr>
 			<tr>
 				<td>'$"Delete Code"'</td>
-				<td style="vertical-align: top; text-align: left;"><b>'"$SHUTDOWN_CODE"'</b></td>
+				<td style="vertical-align: top; text-align: left;"><b>'"$SHUTDOWN_CODE"'</b></td><td></td>
 			</tr>
 		 	<tr>
 				<td>'$"Archive home area"'</td>
 				<td><input type="checkbox" name="_ARCHIVE_" value="yes"></td>
 				<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will archive the user home area to the archive folder in /home/users."'</span></a></td>
 			</tr>
-			<tr><td style="vertical-align:top">'$"User Photo"'</td><td><div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div></td></tr>
+			<tr><td style="vertical-align:top">'$"User Photo"'</td><td><div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div></td><td></td></tr>
 		</tbody>
 	</table>'
 

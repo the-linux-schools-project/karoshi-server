@@ -129,7 +129,7 @@ else
 			<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Membership"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please enter in the username you want to change the groups for."'</span></a>
 		</td>
         	<td colspan="1" rowspan="8" style="vertical-align: top;">
-	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="140" height="180"></div>
+	 		<div id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150"></div>
 		</td>
 	</tr>
    </tbody>

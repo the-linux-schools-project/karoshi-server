@@ -224,9 +224,9 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 #Show user image
 if [ -f /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP/$USERNAME".jpg ]
 then
-	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/user_images/'"$PRIMARYGROUP"'/'"$USERNAME"'.jpg" style="width:140px;height:180px"></div>'
+	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/user_images/'"$PRIMARYGROUP"'/'"$USERNAME"'.jpg" style="width:120px;height:150px"></div>'
 else
-	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/blank_user_image.jpg" width="140" height="180"></div>'
+	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/blank_user_image.jpg" width="120" height="150"></div>'
 fi
 
 echo '</tr>
