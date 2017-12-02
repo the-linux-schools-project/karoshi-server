@@ -55,7 +55,7 @@ echo '
 <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/script.js"></script>
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 if [ "$MOBILE" = yes ]
 then
 echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
@@ -113,16 +113,24 @@ fi
 if [ "$MOBILE" = no ]
 then
 	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-<tr><td style="width: '"$WIDTH1"'px;">'$"Username"'</td>
- <td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: '"$WIDTH2"'px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to reset the user lockout for."'</span></a>
-</td></tr>
-</tbody></table><br><br>'
+	<tr>
+		<td style="width: '"$WIDTH1"'px;">'$"Username"'</td>
+		<td><div id="suggestions"></div><input required="required" tabindex= "1" style="width: '"$WIDTH2"'px;" name="_USERNAME_" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"></td>
+		<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Reset_User_Lockout"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to reset the user lockout for."'</span></a>
+		</td>
+	</tr>
+	<tr>
+		<td style="vertical-align: top;">'$"User Photo"'</td><td><div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div></td>
+		<td></td>
+	</tr>
+	</tbody></table><br><br>'
 else
 	echo '<div id="suggestions"></div>
 	'$"Username"'<br>
-	<input required="required" tabindex= "1" style="width: 160px; height: 30px;" name="_USERNAME_" 
- 	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>'
+	<input required="required" tabindex= "1" style="width: 200px; height: 30px;" name="_USERNAME_" 
+ 	size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br><br>
+	<div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div><br>
+	'
 fi
 
 echo '<input value="'$"Submit"'" class="button" type="submit"></div>'
