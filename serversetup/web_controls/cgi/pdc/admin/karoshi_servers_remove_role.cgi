@@ -315,7 +315,7 @@ case "$ROLE_FILE" in
 	savapage)
 	ROLE_NAME=$"Savapage"
 	ROLE_NAME_STATUS=set
-	CONSEQUENCES=$"Unflags this server as Savapage server. Stops Savapage from running."
+	CONSEQUENCES=$"Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
 	;;
 	federated_server)
 	ROLE_NAME=$"Federated Server"

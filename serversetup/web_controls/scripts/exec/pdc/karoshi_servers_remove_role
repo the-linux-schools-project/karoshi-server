@@ -884,6 +884,8 @@ then
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/savapage_stop
 		#Disable starting on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/savapage
+		#Remove savapage folder
+		[ -d /opt/savapage ] && rm -f -R /opt/savapage	 
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		source /opt/karoshi/serversetup/variables/distro
@@ -891,6 +893,8 @@ then
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/savapage_stop
 		#Disable starting on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/savapage
+		#Remove savapage folder
+		[ -d /opt/savapage ] && rm -f -R /opt/savapage	
 		'
 	fi
 
