@@ -9,7 +9,7 @@ source /opt/karoshi/server_network/domain_information/domain_name
 #Exit if the savapage directory already exits
 if [ -d /opt/savapage ]
 then
-	echo '<ul><li>'$"Error installing Savapage"' /opt/savapage '$"already exists"'</li></ul><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	echo '<ul><li>'$"Error installing Savapage"' /opt/savapage '$"already exists"'</li></ul>'$"Delete this folder before re-installing this module."''
 	exit 101
 fi
 
@@ -112,6 +112,17 @@ ln -sf "/opt/savapage/server/bin/linux-x64/app-server" /etc/init.d/savapage
 cp /etc/cups/cupsd.conf /etc/cups/cupsd.conf-backup-"$LOG_DATE.$$"
 cp -f /opt/karoshi/serversetup/modules/printserver/savapage/cupsd.conf /etc/cups/
 
+#Get country currency code
+source /etc/default/locale
+CountryCode=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+[ -z "$CountryCode" ] && CountryCode=US
+
+CurrencyCode=$(/opt/karoshi/serversetup/all/"useful scripts"/get_currency_symbol "$CountryCode")
+if [ "$?" != 0 ] || [ -z "$CurrencyCode" ]
+then
+	CurrencyCode=USD
+fi
+
 #Extract savapage database and modify ldap
 unzip /opt/karoshi/serversetup/modules/printserver/savapage/savapage.zip -d /opt/karoshi/serversetup/modules/printserver/savapage/
 #Set the ldap base for users
@@ -124,6 +135,8 @@ then
 	LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
 fi
 sed -i 's/REPLACETHISLDAPSERVER/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
+#Replace the currency code
+sed -i 's/REPLACETHISCURRENCYCODE/'"$CurrencyCode"'/g' /opt/karoshi/serversetup/modules/printserver/savapage/savapage.xml
 
 #Zip up savapage.xml ready for import
 cd /opt/karoshi/serversetup/modules/printserver/savapage
