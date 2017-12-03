@@ -47,7 +47,7 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>'$"Add Network Printer"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi">
 <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
-<script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/stuHover.js"></script>
 </head>
 <body onLoad="start()"><div id="pagecontainer">'
 
@@ -162,7 +162,7 @@ echo '</select></td><td>
         <option>'$"Network Printer TCP"'</option>
         <option>'$"Network Printer IPP"'</option>
         <option>'$"Remote LPD queue"'</option>
-        </select></td></tr>
+        </select></td><td></td></tr>
 <tr><td>'$"Port"'</td><td>
         <select tabindex= "7" name="____PRINTERPORT____" style="width: 200px;">
         <option>9100</option>

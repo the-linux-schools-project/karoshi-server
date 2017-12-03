@@ -43,7 +43,17 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete a Network Printer"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Delete a Network Printer"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
@@ -98,9 +108,10 @@ WIDTH=100
 ICON1=/images/submenus/printer/view_print_queues.png
 ICON2=/images/submenus/printer/add_printer.png
 ICON3=/images/submenus/file/folder.png
+ICON4=/images/submenus/system/delete.png
 
 echo '<form action="/cgi-bin/admin/printers_delete2.cgi" method="post"><div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$"Delete a Network Printer"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'"$HELPMSG1"'</span></a></div>
+<div class="sectiontitle">'$"Delete a Network Printer"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the printer you want to delete."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
@@ -139,20 +150,23 @@ then
 	exit
 fi
 #Show printer list to choose from
-echo '  <table class="standard" style="text-align: left;" >
-    <tbody>
-      <tr>
-        <td style="width: 180px;">'$"Printer"'</td><td>'
+echo '  <table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: 200px;">'$"Printer"'</th><th style="width: 80px;">'$"Delete"'</th></tr></thead><tbody>'
 COUNTER=0
-echo '<select name="____PRINTERNAME____" style="width: 200px;"><option label="blank" value=""></option>'
 while [ "$COUNTER" -lt "$PRINTERCOUNT" ]
 do
 	#Get printer name
 	PRINTERNAME="${PRINTERLIST[$COUNTER]}"
-	echo '<option value="'"$PRINTERNAME"'">'"$PRINTERNAME"'</option>'
+	echo '<tr>
+		<td style="height: 35px;">'"$PRINTERNAME"'</td><td>
+			<button class="info" name="____PRINTERNAME____" value="'"$PRINTERNAME"'">
+			<img src="'"$ICON4"'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'"$PRINTERNAME"'</span>
+			</button>
+		</td>
+	</tr>
+	'
 	let COUNTER="$COUNTER"+1
 done
-echo '</select></td><td>
-<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Delete_Network_Printer"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please choose the printer you want to delete."'</span></a>
-</td></tr></tbody></table><br><br><input class="button" value="Submit" type="submit"></div></div></form></div></body></html>'
+echo '</tbody></table><br><br><input class="button" value="Submit" type="submit"></div></div></form></div></body></html>'
 exit

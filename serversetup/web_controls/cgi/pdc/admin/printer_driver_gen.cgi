@@ -87,7 +87,7 @@ $(document).ready(function()
 );
 </script>
 
-<script src="/all/stuHover.js" type="text/javascript"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
+<script src="/all/stuHover.js"></script><meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 
 if [ "$MOBILE" = yes ]
 then
@@ -156,6 +156,7 @@ then
 	ICON1=/images/submenus/printer/enable_printer.png
 	ICON2=/images/submenus/printer/disable_printer.png
 	ICON3=/images/submenus/printer/printer_assigned.png
+	ICON4=/images/submenus/printer/view_print_queues.png
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
@@ -165,6 +166,7 @@ else
 	ICON1=/images/submenus/printer/enable_printerm.png
 	ICON2=/images/submenus/printer/disable_printerm.png
 	ICON3=/images/submenus/printer/printer_assignedm.png
+	ICON4=/images/submenus/printer/view_print_queuesm.png
 fi
 
 function show_status {
@@ -226,9 +228,16 @@ echo '
 			'$"Generate Drivers"'
 		</button>
 	</td>
-'
 
-[ "$MOBILE" = yes ] && echo "<td></td>"
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button formaction="printers.cgi" class="info infonavbutton" name="_ShowPrinters_" value="_">
+			<img src="'"$ICON4"'" alt="'$"Show Printers"'">
+			<span>'$"Show network printer queues."'</span><br>
+			'$"Show Printers"'
+		</button>
+	</td>
+
+'
 
 echo '</tr></tbody></table>'
 

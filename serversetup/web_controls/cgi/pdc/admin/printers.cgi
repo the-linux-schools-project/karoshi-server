@@ -51,7 +51,7 @@ exit
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Manage Print Queues"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js"></script>
 <script src="/all/js/jquery.js"></script>
 <script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
 <script id="js1">
@@ -201,9 +201,10 @@ else
 	ICON2=/images/submenus/printer/delete_printer.png
 	ICON3=/images/submenus/printer/assign_ppd.png
 	ICON4=/images/submenus/printer/edit_ppd.png
-	ICON5=/images/submenus/printer/savapage.png
-	ICON6=/images/submenus/file/folder.png
-	ICON7=/images/submenus/printer/view_print_queues.png
+	ICON5=/images/submenus/printer/win_print_gen.png
+	ICON6=/images/submenus/printer/savapage.png
+	ICON7=/images/submenus/file/folder.png
+	ICON8=/images/submenus/printer/view_print_queues.png
 
 	echo '<div id="titlebox">
 	<div class="sectiontitle">'$"Manage Print Queues"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Manage_Print_Queues"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the icons to control the printers in each queue."'</span></a></div>
@@ -233,7 +234,7 @@ else
 			<form action="/cgi-bin/admin/printers_view_assigned_fm.cgi" name="printers" method="post">
 				<button class="info infonavbutton" name="_AssignedPrinter_" value="_">
 					<img src="'"$ICON3"'" alt="'$"Assigned Printers"'">
-					<span>'$"View Assigned Printers"'</span><br>
+					<span>'$"View Assigned Printers."'</span><br>
 					'$"Assigned Printers"'
 				</button>
 			</form>
@@ -249,6 +250,16 @@ else
 			</form>
 		</td>
 
+		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+			<form action="printer_driver_gen.cgi" name="printers" method="post">
+				<button class="info infonavbutton" name="_WindowsDriverGen_" value="_">
+					<img src="'"$ICON5"'" alt="'$"Edit PPD"'">
+					<span>'$"Windows printer drivers."'</span><br>
+					'$"Windows Drivers"'
+				</button>
+			</form>
+		</td>
+
 	'
 
 
@@ -258,7 +269,7 @@ else
 			<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 				<form action="http://savapage:8631/admin" name="printers" method="post">
 					<button class="info infonavbutton" name="_Savapage_" value="_">
-						<img src="'"$ICON5"'" alt="Savapage">
+						<img src="'"$ICON6"'" alt="Savapage">
 						<span>'$"Configure printing with Savapage."'</span><br>
 						Savapage
 					</button>
@@ -272,7 +283,7 @@ else
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/locations.cgi" name="printers" method="post">
 				<button class="info infonavbutton" name="_ViewLocations_" value="_">
-					<img src="'"$ICON6"'" alt="'$"Locations"'">
+					<img src="'"$ICON7"'" alt="'$"Locations"'">
 					<span>'$"View locations."'</span><br>
 					'$"Locations"'
 				</button>
@@ -288,7 +299,7 @@ else
 		<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 			<form action="/cgi-bin/admin/printers.cgi" name="printers" method="post">
 				<button class="info infonavbutton" name="_ShowPrinters_" value="_">
-					<img src="'"$ICON7"'" alt="'$"Show Printers"'">
+					<img src="'"$ICON8"'" alt="'$"Show Printers"'">
 					<span>'$"Show network printer queues."'</span><br>
 					'$"Show Printers"'
 				</button>

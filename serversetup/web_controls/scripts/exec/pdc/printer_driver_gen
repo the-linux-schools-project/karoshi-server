@@ -118,8 +118,8 @@ echo "$(date): printer_driver_gen - action $ACTION Queue $QUEUE by $REMOTE_USER 
 PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 ICON1=/images/submenus/printer/enable_printer.png
 ICON2=/images/submenus/printer/disable_printer.png
-WIDTH1=200
-WIDTH2=120
+WIDTH1=330
+WIDTH2=100
 if [ "$MOBILE" = yes ]
 then
 	ICON1=/images/submenus/printer/enable_printerm.png
@@ -162,7 +162,7 @@ then
 
 	for PRINTQUEUE in $(lpstat -a | cut -d" " -f1)
 	do
-		echo "<tr><td>$PRINTQUEUE</td><td>"
+		echo '<tr><td style="height: 35px;">'"$PRINTQUEUE"'</td><td>'
 
 		if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/"$PRINTQUEUE" ]
 		then
@@ -216,7 +216,7 @@ else
 	<tr><th style=\"width: '"$WIDTH1"'px;\"><b>'$"Print Queue"'</b></th><th style=\"width: '"$WIDTH1"'px;\"><b>'$"Auto generate"'</b></th></tr></thead><tbody>"
 	for PRINTQUEUE in `lpstat -a | cut -d" " -f1`
 	do
-		echo "<tr><td>$PRINTQUEUE</td><td>"
+		echo "<tr><td style=\"height: 35px;\">$PRINTQUEUE</td><td>"
 
 		if [ -f /opt/karoshi/server_network/printers/windows/stop_driver_gen/$PRINTQUEUE ]
 		then

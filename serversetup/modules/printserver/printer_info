@@ -309,13 +309,13 @@ then
 		echo "<form action=\"printers_add_fm.cgi\" method=\"post\" id=\"printersadd\">
 <input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME2""_SERVERTYPE_$SERVERTYPE""_SERVERMASTER_$SERVERMASTER""_\" value=\"\">
 </form>
-<script language=\"JavaScript\" type=\"text/javascript\">
+<script>
 document.getElementById('printersadd').submit();
 </script>"
 	fi
 	#Reload the page every 3 minutes
 	echo '<form id="refresh_form" action="printers.cgi" method="post"><input type="hidden" name="_ReloadPage_" value="_"> </form>
-<script type="text/javascript">
+<script>
 setTimeout(function(){
 document.getElementById("refresh_form").submit();
 }, 180000);
