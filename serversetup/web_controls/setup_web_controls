@@ -743,6 +743,11 @@ then
 	ln -s /var/www/karoshi/add_user_image /var/www/html_karoshi/admin/add_user_image
 fi
 
+if [ ! -e /var/www/html_karoshi/admin/show_user_image ]
+then
+	ln -s /var/www/karoshi/show_user_image /var/www/html_karoshi/admin/show_user_image
+fi
+
 #########################
 #Extract phpldapadmin
 #########################

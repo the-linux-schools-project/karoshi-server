@@ -117,6 +117,9 @@ then
 	exit 101
 fi
 
+#Delete any uploaded photos
+[ -d /var/www/karoshi/show_user_image/"$REMOTE_USER" ] && rm -f -R /var/www/karoshi/show_user_image/"$REMOTE_USER" ]
+
 ########################
 #Show user information
 ########################
@@ -219,17 +222,9 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <tr><td>'$"Password last changed"'</td><td colspan="2">'"$SAMBAPWDLASTSET2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The date that the password was last changed for this user."'</span></a></td></tr>
 <tr><td>'$"Common Name"'</td><td colspan="2">'"$CN"'</td></tr>
 <tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'"$SN"'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
-<td style="max-width: 200px;" colspan="1" rowspan="5">'
+<td style="max-width: 200px;" colspan="1" rowspan="5">
 
-#Show user image
-if [ -f /var/www/html_karoshi/images/user_images/"$PRIMARYGROUP/$USERNAME".jpg ]
-then
-	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/user_images/'"$PRIMARYGROUP"'/'"$USERNAME"'.jpg" style="width:120px;height:150px"></div>'
-else
-	echo '<div id="photobox"><img alt="'"$USERNAME"'.jpg" src="/images/blank_user_image.jpg" width="120" height="150"></div>'
-fi
-
-echo '</tr>
+<iframe src="show_user_info_upload_image_fm.cgi?_username_='"$USERNAME"'&_primarygroup_='"$PRIMARYGROUP"'" width="136" height="180" scrolling="no" frameborder="0"></iframe></tr>
 <tr><td>'$"Given Name"'</td><td><input tabindex= "3" value="'"$GIVENNAME"'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>Employee / student number</td><td><input tabindex= "4" value="'"$EMPLOYEENUMBER"'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'"$DISPLAYNAME"'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
