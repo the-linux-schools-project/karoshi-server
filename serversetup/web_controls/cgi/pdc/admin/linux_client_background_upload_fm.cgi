@@ -133,7 +133,7 @@ echo '<p>
                 '$"Background"'
             </td>
 <td style="vertical-align: top;">
-<INPUT TYPE="FILE" NAME="file-to-upload-01" SIZE="30"></td>'
+<INPUT accept=".png" TYPE="FILE" NAME="file-to-upload-01" SIZE="30"></td>'
 
 if [ "$MOBILE" != yes ]
 then
