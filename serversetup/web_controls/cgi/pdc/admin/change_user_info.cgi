@@ -149,7 +149,7 @@ done
 function show_status {
 echo '<SCRIPT language="Javascript">
 alert("'$MESSAGE'");
-window.location = "/cgi-bin/admin/show_user_info_fm.cgi"
+window.location = "/cgi-bin/admin/show_user_info.cgi"
 </script>
 </div></body></html>'
 exit
@@ -210,6 +210,10 @@ fi
 
 #Change information
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
-MESSAGE=''$USERNAME' - '$"information changed."''
-show_status
+SERVERNAME=$(hostname-fqdn)
+
+echo '<form METHOD=POST ACTION="show_user_info.cgi" target="_top" name = "frm">
+<input type="hidden" name="_UserInfo_" value="_USERNAME_'"$USERNAME"'_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_">
+</form><script>document.frm.submit();</script><form>'
+
 exit
