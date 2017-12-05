@@ -150,6 +150,11 @@ sleep 1
 mysqladmin --password="$MYSQLPASS" create moodle 1>/dev/null
 sleep 1
 
+#Get the network range so that kerberos SSO can be configured in Moodle
+IPAddress=$(ip -o -f inet addr show | awk '/scope global/ {print $4}' | sed -n 1,1p)
+SingleSignOnRange=$(ipcalc "$IPAddress" | grep ^Network: | sed 's% * % %g' | cut -d" " -f2 | tr -cd '0-9./')
+[ -z "$SingleSignOnRange" ] && SingleSignOnRange="192.168.0.0/24"
+
 #Make a backup of moodle.sql
 cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
@@ -158,8 +163,7 @@ cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/m
 sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
 #Edit moodle2.sql with the correct SSO ip range ( replace 192.168.0.0/24 )
-
-#ipcalc 172.16.1.1/255.255.0.0 | grep Network: | sed 's/ * / /g' | cut -d" " -f2
+sed -i 's%192.168.0.0/24%'"$SingleSignOnRange"'%g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
 #Edit moodle.sql with the correct realm information
 sed -i 's/CHANGETHISLDAPBASE/'"$LDAPBASE"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
