@@ -96,7 +96,5 @@ else
 	fi	
 fi
 TimeStamp=$(date +%s)
-echo '<div id="photobox"><form enctype="multipart/form-data" action="/cgi-bin/admin/show_user_info_upload_image.cgi" method="post"><label for="fileButton"><img src="'"$ImageFile"'?'"$TimeStamp.$$"'" width="120" height="150" alt="photo"></label> 
-<input accept=".jpg" onchange="this.form.submit()" name="file-to-upload-01" type="file" id="fileButton" style="display:none;"/></div>'
-
-echo '</form></body></html>'
+echo '<div id="photobox" style="position: relative; top: 50%; transform: translateY(-50%);"><form enctype="multipart/form-data" action="/cgi-bin/admin/show_user_info_upload_image.cgi" method="post"><label for="fileButton"><img src="'"$ImageFile"'?'"$TimeStamp.$$"'" width="120" height="150" alt=""></label> 
+<input accept=".jpg" onchange="this.form.submit()" name="file-to-upload-01" type="file" id="fileButton" style="display:none;"></form></div></body></html>'
