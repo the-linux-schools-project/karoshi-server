@@ -61,6 +61,12 @@ then
 	exit 101
 fi
 
+#Make sure we have smb.conf - this is needed otherwise we get error messages in the apache error log when users log into nextcloud and it maps samba shares.
+if [ ! -f /etc/samba/smb.conf ]
+then
+	echo -e "[global]\n\tlock directory = /tmp\n" > /etc/samba/smb.conf  
+fi
+
 #Ensure that apache and mysql are running on boot
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
