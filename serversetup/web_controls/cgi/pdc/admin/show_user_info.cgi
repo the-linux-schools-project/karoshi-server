@@ -196,26 +196,6 @@ echo '
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form action="/cgi-bin/admin/change_username_fm.cgi" method="post">
-			<button class="info infonavbutton" name="_ChangeUsername_" value="_USERNAME_'"$USERNAME"'_">
-				<img src="'"$ICON2"'" alt="'$"Change Username"'">
-				<span>'$"Change the username for this user."'</span><br>
-				'$"Change Username"'
-			</button>
-		</form>
-	</td>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form action="/cgi-bin/admin/change_primary_group_fm.cgi" method="post">
-			<button class="info infonavbutton" name="_ChangePrimaryGroup_" value="_USERNAME_'"$USERNAME"'_">
-				<img src="'"$ICON3"'" alt="'$"Change Primary Group"'">
-				<span>'$"Change the primary group for this user."'</span><br>
-				'$"Change Primary Group"'
-			</button>
-		</form>
-	</td>
-
-	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<form action="/cgi-bin/admin/group_membership.cgi" method="post">
 			<button class="info infonavbutton" name="____GroupMembership____" value="____USERNAME____'"$USERNAME"'____">
 				<img src="'"$ICON4"'" alt="'$"Group Membership"'">

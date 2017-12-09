@@ -29,126 +29,87 @@
 ########################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #########################
 #Show page
 #########################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Show User Information"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-#DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
-DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
-END_POINT=17
+END_POINT=21
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
 
 #Assign SN
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SNcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SN=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SN
+get_data
+SN="$DATAENTRY"
+
 #Assign GIVENNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GIVENNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		GIVENNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=GIVENNAME
+get_data
+GIVENNAME="$DATAENTRY"
 
-#Assign _EMPLOYEENUMBER_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = EMPLOYEENUMBERcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		EMPLOYEENUMBER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign EMPLOYEENUMBER
+DATANAME=EMPLOYEENUMBER
+get_data
+EMPLOYEENUMBER="$DATAENTRY"
 
-#Assign _DISPLAYNAME_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = DISPLAYNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		DISPLAYNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign DISPLAYNAME
+DATANAME=DISPLAYNAME
+get_data
+DISPLAYNAME="$DATAENTRY"
 
-#Assign _MAILLOCALADDRESS_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MAILLOCALADDRESScheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MAILLOCALADDRESS=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign MAILLOCALADDRESS
+DATANAME=MAILLOCALADDRESS
+get_data
+MAILLOCALADDRESS="$DATAENTRY"
 
 #Assign _MAIL_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = MAILcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		MAIL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=MAIL
+get_data
+MAIL="$DATAENTRY"
 
-#Assign _USERNAME_
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		USERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+#Assign USERNAME
+DATANAME=USERNAME
+get_data
+USERNAME="$DATAENTRY"
+
+#Assign NEWUSERNAME
+DATANAME=NEWUSERNAME
+get_data
+NEWUSERNAME="$DATAENTRY"
+
+#Assign GROUP
+DATANAME=GROUP
+get_data
+GROUP="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">
-alert("'$MESSAGE'");
+alert("'"$MESSAGE"'");
 window.location = "/cgi-bin/admin/show_user_info.cgi"
 </script>
 </div></body></html>'
@@ -157,7 +118,7 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -171,12 +132,12 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -208,12 +169,18 @@ then
 	show_status
 fi
 
+if [ -z "$NEWUSERNAME" ]
+then
+	MESSAGE=$"The new username must not be blank."
+	show_status
+fi
+
 #Change information
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL:$GROUP:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
 SERVERNAME=$(hostname-fqdn)
 
 echo '<form METHOD=POST ACTION="show_user_info.cgi" target="_top" name = "frm">
-<input type="hidden" name="_UserInfo_" value="_USERNAME_'"$USERNAME"'_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_">
+<input type="hidden" name="_UserInfo_" value="_USERNAME_'"$NEWUSERNAME"'_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_">
 </form><script>document.frm.submit();</script><form>'
 
 exit

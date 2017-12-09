@@ -213,21 +213,24 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <tr><td>'$"Home Server"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$SERVER"'</td></tr>
 <tr><td>'$"Unix Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The internal path on the server to the user's home area."'</span></a></td></tr>
 <tr><td>'$"Home Directory Path"'</td><td colspan="2" rowspan="1" style="vertical-align: top;">'"$HOMEDIRECTORY2"'  <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The external path used to access the user's home area."'</span></a></td></tr>
-<tr><td>'$"Primary Group"'</td><td colspan="2">'"$PRIMARYGROUP"'</td></tr>
 <tr><td>UID number</td><td colspan="2">'"$UIDNUMBER"'</td></tr>
 <tr><td>GID number</td><td colspan="2">'"$GIDNUMBER"'</td></tr>
 <tr><td>'$"Bad Password Time"'</td><td colspan="2">'"$BADPASSWORDTIME"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"If this value is not zero it shows that last time that an incorrect password was used."'</span></a></td></tr>
 <tr><td>'$"Bad Password Count"'</td><td colspan="2">'"$BADPASSWORDCOUNT"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The number of incorrect password attempts that have occured for this user over the time period set on the default user settings page."'</span></a></td></tr>
 <tr><td>'$"Lockout Time"'</td><td colspan="2">'"$LOCKOUTTIME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"If this value is not zero it indicates that this account has been locked out from the date shown."'</span></a></td></tr>
 <tr><td>'$"Password last changed"'</td><td colspan="2">'"$SAMBAPWDLASTSET2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The date that the password was last changed for this user."'</span></a></td></tr>
-<tr><td>'$"Common Name"'</td><td colspan="2">'"$CN"'</td></tr>
+<tr><td>'$"Username"'</td><td colspan="2"><input tabindex= "2" value="'"$CN"'" name="_NEWUSERNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'"$SN"'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
-<td style="max-width: 200px; vertical-align:middle;" colspan="1" rowspan="5">
+<td style="max-width: 200px; vertical-align:middle;" colspan="1" rowspan="6">
 <iframe src="show_user_info_upload_image_fm.cgi?_username_='"$USERNAME"'&_primarygroup_='"$PRIMARYGROUP"'" width="136" height="180" style="overflow:hidden; border: none;"></iframe></tr>
 <tr><td>'$"Given Name"'</td><td><input tabindex= "3" value="'"$GIVENNAME"'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>Employee / student number</td><td><input tabindex= "4" value="'"$EMPLOYEENUMBER"'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'"$DISPLAYNAME"'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"E-Mail address"'</td><td><input tabindex= "7" value="'"$MAIL"'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Primary Group"'</td><td>'
+
+/opt/karoshi/web_controls/group_dropdown_list | sed 's/.*<option disabled selected value>.*/<option selected="selected">'"$PRIMARYGROUP"'<\/option><option disabled value>-----------------<\/option>/g'
+echo '</td></tr>
 </tbody></table>
 <br><input value="Submit" type="submit" class="button"> <input value="Reset" type="reset" class="button"></form>'
 

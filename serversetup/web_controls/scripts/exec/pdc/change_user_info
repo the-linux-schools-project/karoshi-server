@@ -70,6 +70,8 @@ DISPLAYNAME=$(echo "$DATA" | cut -s -d: -f7)
 EMPLOYEENUMBER=$(echo "$DATA" | cut -s -d: -f8)
 MAILLOCALADDRESS=$(echo "$DATA" | cut -s -d: -f9)
 MAIL=$(echo "$DATA" | cut -s -d: -f10)
+GROUP=$(echo "$DATA" | cut -s -d: -f11)
+NEWUSERNAME=$(echo "$DATA" | cut -s -d: -f12)
 
 ########################
 #Check data
@@ -123,6 +125,12 @@ then
 	exit 101
 fi
 
+if [ -z "$GROUP" ]
+then
+	echo "$(date): change_user_info - Blank group by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
 if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	echo "$(date): change_user_info - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -132,13 +140,13 @@ fi
 ########################
 #Change the information
 ########################
-echo "$(date): change_user_info - 'for' $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): change_user_info - for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+PrimaryGroup=$(id -g -n "$USERNAME")
 
 #Update the user photo
 if [ -d "/var/www/karoshi/show_user_image/$REMOTE_USER" ]
 then
 	ImageFile=$(find "/var/www/karoshi/show_user_image/$REMOTE_USER" -type f -iname "*.jpg" | sed -n 1,1p)
-	PrimaryGroup=$(id -g -n "$USERNAME")
 	if [ ! -z "$ImageFile" ]
 	then
 		ImageFile=$(basename "$ImageFile")
@@ -176,6 +184,21 @@ else
 fi
 
 echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+
+#Change the primary group if it has changed
+if [ "$PrimaryGroup" != "$GROUP" ]
+then
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group
+fi
+
+#Change the username if it has changed
+if [ "$USERNAME" != "$NEWUSERNAME" ]
+then
+	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+	#Change username
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$GIVENNAME:$SN:" | sudo -H /opt/karoshi/web_controls/exec/change_username
+fi
 
 #Change info on federated ldap servers
 if [ -d /opt/karoshi/server_network/federated_ldap_servers/ ]
