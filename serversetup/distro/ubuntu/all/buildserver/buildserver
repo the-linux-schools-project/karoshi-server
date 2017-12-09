@@ -138,6 +138,9 @@ add-apt-repository -y ppa:webupd8team/y-ppa-manager
 #samba-latest
 add-apt-repository -y "ppa:linux-schools/samba-latest"
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
+
+#Glusterfs
+add-apt-repository -y ppa:gluster/glusterfs-3.12
 }
 
 function update_repos {
