@@ -1,5 +1,5 @@
 <IfModule mod_ssl.c>
-<VirtualHost _default_:50001>
+<VirtualHost _default_:INTERNAL_MANAGEMENT_PORT>
 	ServerAdmin webmaster@localhost
 
 	DocumentRoot /var/www/html_karoshi

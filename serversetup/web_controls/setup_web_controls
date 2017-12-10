@@ -76,11 +76,11 @@ DEMO_MODE=no
 #Create certificate
 if [ ! -f /etc/ssl/webmanagement/server_web_management.key ]
 then
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert_web_management
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert_web_management
 fi
 
 #Configure a separate apache to run on ports 50001 and 50002 with user apache_karoshi
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/pdc/scripts/configure_karoshi_web_management
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/pdc/scripts/configure_karoshi_web_management
 
 #Create root ssh folder
 if [ ! -d /root/.ssh ]
@@ -612,21 +612,28 @@ cat /opt/karoshi/web_controls/web_access_admin /opt/karoshi/web_controls/web_acc
 /opt/karoshi/serversetup/web_controls/scripts/generate_sudoers
 
 #####################################
-#Ensure that apache_karoshi ports 50001 and 50002 are open in shorewall
+#Ensure that apache_karoshi ports are open in shorewall
 #####################################
-MODCHECK=`grep -c -w 50001,50002 /etc/shorewall/rules`
 
-if [ $MODCHECK = 0 ]
+Internal_Management_Port=50001
+External_Management_Port=50002
+if [ -f /opt/karoshi/serversetup/variables/ports ]
 then
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp'	'50001,50002'	'-'#'webmanagementrule /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	source /opt/karoshi/serversetup/variables/ports
 fi
-######################
-#Restart shorewall
-######################
-if [ $MODCHECK = 0 ]
+
+MODCHECK=$(grep -c -w "$Internal_Management_Port,$External_Management_Port" /etc/shorewall/rules)
+
+if [ "$MODCHECK" = 0 ]
 then
+	#Remove any existing Web Management rules
+	sed -i "/#Web-Management/d" /etc/shorewall/rules
+	sed -i "/^$/d" /etc/shorewall/rules
+	#Modify shorewall rules to open the ports
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp	'"$Internal_Management_Port,$External_Management_Port"'	-#Web-Management' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	#Restart shorewall
 	/etc/init.d/$SHOREWALLVER restart
 fi
 
@@ -644,7 +651,7 @@ fi
 ######################
 #Schedule web log rotation
 ######################
-[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+[[ ! -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ]] && mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
 
 ######################
 #Schedule check karoshi updates
@@ -1044,6 +1051,6 @@ fi
 ############################
 #Display completed message
 ############################
-echo -e ''$"Web management access"':\n\nhttps://pdc.internal:50001 - '$"internal access"'\nhttps://pdc.internal:50002 - '$"external access"'\n\n'$"Port 50002 needs a client certificate available in the itadmin share."'\n\n'
+echo -e ''$"Web management access"':\n\nhttps://pdc.internal:'"$Internal_Management_Port"' - '$"internal access"'\nhttps://pdc.internal:'"$External_Management_Port"' - '$"external access"'\n\n'$"Port '"$External_Management_Port"' needs a client certificate available in the itadmin share."'\n\n'
 exit
 

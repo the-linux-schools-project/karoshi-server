@@ -1,19 +1,39 @@
 #!/bin/bash
+Configure_Apache=no
+Internal_Management_Port=50001
+External_Management_Port=50002
+if [ -f /opt/karoshi/serversetup/variables/ports ]
+then
+	source /opt/karoshi/serversetup/variables/ports
+fi
 
-#Dont run this script again if apache has already been configured.
-if [ -d /etc/apache2/sites-karoshi-enabled ]
+
+#Check to see if we need to configure apache for the web management
+
+if [ ! -d /etc/apache2/sites-karoshi-enabled ]
 	then
-	exit
+	Configure_Apache=yes
+else
+	#Check if the ports have changed
+	if [[ $(grep -c -w "$Internal_Management_Port" /etc/apache2/ports_karoshi.conf) = 0 ]] || [[ $(grep -c -w "$External_Management_Port" /etc/apache2/ports_karoshi.conf) = 0 ]]
+	then
+		Configure_Apache=yes
+	fi
+fi
+
+if [ "$Configure_Apache" = no ]
+then
+	exit	
 fi
 
 COPYPATH=/opt/karoshi/serversetup/distro/ubuntu/pdc/configfiles/karoshi_web_management
 #Create apache_karoshi user and group
-if [ `grep -c apache_karoshi /etc/group` = 0 ]
+if [[ $(grep -c apache_karoshi /etc/group) = 0 ]]
 then
 	groupadd apache_karoshi
 	groupmod -g 998 apache_karoshi
 fi
-if [ `grep -c apache_karoshi /etc/passwd` = 0 ]
+if [[ $(grep -c apache_karoshi /etc/passwd) = 0 ]]
 then
 	useradd -u 998 -g apache_karoshi -d /var/www -c "system user for apache_karoshi" -K PASS_MAX_DAYS=-1 -s /bin/sh -M apache_karoshi
 fi
@@ -22,18 +42,26 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/apache2_karosh
 chmod 0744 /etc/init.d/apache2_karoshi
 #Copy in apache configuration files
 [ ! -d /etc/apache2/sites-karoshi-enabled ] && mkdir -p /etc/apache2/sites-karoshi-enabled
-cp -f $COPYPATH/karoshi-global-ssl /etc/apache2/sites-karoshi-enabled/
-cp -f $COPYPATH/karoshi-local-ssl /etc/apache2/sites-karoshi-enabled/
-cp -f $COPYPATH/ports_karoshi.conf /etc/apache2/
-cp -f $COPYPATH/envvars_karoshi /etc/apache2/
-cp -f $COPYPATH/apache2ctl_karoshi /usr/sbin
-cp -f $COPYPATH/apache2_karoshi.conf /etc/apache2
+cp -f "$COPYPATH"/karoshi-global-ssl /etc/apache2/sites-karoshi-enabled/
+cp -f "$COPYPATH"/karoshi-local-ssl /etc/apache2/sites-karoshi-enabled/
+cp -f "$COPYPATH"/ports_karoshi.conf /etc/apache2/
+cp -f "$COPYPATH"/envvars_karoshi /etc/apache2/
+cp -f "$COPYPATH"/apache2ctl_karoshi /usr/sbin
+cp -f "$COPYPATH"/apache2_karoshi.conf /etc/apache2
+
+#Modify config files with the correct ports
+sed 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
+sync /etc/apache2/ports_karoshi.conf
+sed 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
+
+sed 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-local-ssl
+sed 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-global-ssl
 
 #Add in servername to apache2_karoshi.conf
-if [ `grep -c manage.$REALM /etc/apache2/apache2_karoshi.conf` = 0 ]
+if [[ $(grep -c manage."$REALM" /etc/apache2/apache2_karoshi.conf) = 0 ]]
 then
 	source /opt/karoshi/server_network/domain_information/domain_name
-	echo ServerName manage.$REALM >> /etc/apache2/apache2_karoshi.conf
+	echo ServerName manage."$REALM" >> /etc/apache2/apache2_karoshi.conf
 fi
 
 [ ! -f /usr/sbin/apache2_karoshi ] && ln -s /usr/sbin/apache2 /usr/sbin/apache2_karoshi
@@ -77,8 +105,8 @@ then
 else
 	PHPVER=php7.0
 fi
-[ ! -f /etc/apache2/mods-enabled_karoshi/$PHPVER.conf ] && ln -s /etc/apache2/mods-available/$PHPVER.conf /etc/apache2/mods-enabled_karoshi/$PHPVER.conf
-[ ! -f /etc/apache2/mods-enabled_karoshi/$PHPVER.load ] && ln -s /etc/apache2/mods-available/$PHPVER.load /etc/apache2/mods-enabled_karoshi/$PHPVER.load
+[ ! -f /etc/apache2/mods-enabled_karoshi/"$PHPVER".conf ] && ln -s /etc/apache2/mods-available/"$PHPVER".conf /etc/apache2/mods-enabled_karoshi/"$PHPVER".conf
+[ ! -f /etc/apache2/mods-enabled_karoshi/"$PHPVER".load ] && ln -s /etc/apache2/mods-available/"$PHPVER".load /etc/apache2/mods-enabled_karoshi/"$PHPVER".load
 
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.conf ] && ln -s /etc/apache2/mods-available/setenvif.conf /etc/apache2/mods-enabled_karoshi/setenvif.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.load ] && ln -s /etc/apache2/mods-available/setenvif.load /etc/apache2/mods-enabled_karoshi/setenvif.load
