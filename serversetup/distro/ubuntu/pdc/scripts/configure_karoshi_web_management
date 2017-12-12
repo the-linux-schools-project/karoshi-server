@@ -50,12 +50,12 @@ cp -f "$COPYPATH"/apache2ctl_karoshi /usr/sbin
 cp -f "$COPYPATH"/apache2_karoshi.conf /etc/apache2
 
 #Modify config files with the correct ports
-sed 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
+sed -i 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
 sync /etc/apache2/ports_karoshi.conf
-sed 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
+sed -i 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/ports_karoshi.conf
 
-sed 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-local-ssl
-sed 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-global-ssl
+sed -i 's/INTERNAL_MANAGEMENT_PORT/'"$Internal_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-local-ssl
+sed -i 's/EXTERNAL_MANAGEMENT_PORT/'"$External_Management_Port"'/g' /etc/apache2/sites-karoshi-enabled/karoshi-global-ssl
 
 #Add in servername to apache2_karoshi.conf
 if [[ $(grep -c manage."$REALM" /etc/apache2/apache2_karoshi.conf) = 0 ]]
@@ -144,7 +144,9 @@ then
 	echo "}" >> /etc/logrotate.d/apache2
 fi
 
-#Start httpd_karoshi if it is not running
-[ `ps -e | grep -c apache2_karoshi` = 0 ] && service apache2_karoshi start
+#Retart httpd_karoshi
+service apache2_karoshi stop
+sleep 1
+service apache2_karoshi start
 exit
 

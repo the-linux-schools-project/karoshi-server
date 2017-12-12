@@ -1025,18 +1025,38 @@ fi
 [ ! -d /var/www/html_karoshi/images/linuxclient ] && mkdir -p /var/www/html_karoshi/images/linuxclient
 ln -s /var/lib/samba/netlogon/linuxclient/backgrounds /var/www/html_karoshi/images/linuxclient/backgrounds
 
+#Create desktop icons
+
+echo '
+[Desktop Entry]
+Comment=Web Management
+Comment[en_GB]=Web Management
+Encoding=UTF-8
+Exec=firefox https://manage.karoshi.testing.com:'"$Internal_Management_Port"'/cgi-bin/admin/redirect.cgi
+GenericName=Web Management
+GenericName[en_GB]=Web Management
+Icon=/opt/karoshi/serversetup/essentials/smalllogo.xpm
+MimeType=Web Management
+Name=Web Management
+Name[en_GB]=Web Management
+StartupNotify=false
+Terminal=false
+Type=Application
+GenericName[en_GB.UTF-8]=Web Management
+Comment[en_GB.UTF-8]=Web Management' > /opt/karoshi/karoshi_user/Desktop/webmanagement.desktop
+
 #Add in dns record for manage.realm
 
-TCPIP=`net lookup $HOSTNAME`
+TCPIP=$(net lookup "$HOSTNAME")
 if [ ! -f /etc/ldap.secret ]
 then
 	echo 'ldap secret file' > /etc/ldap.secret
 fi
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-samba-tool dns query 127.0.0.1 $REALM manage.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>/dev/null 2>/dev/null
-if [ $? != 0 ]
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+samba-tool dns query 127.0.0.1 "$REALM" manage."$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>/dev/null 2>/dev/null
+if [ "$?" != 0 ]
 then
-	samba-tool dns add 127.0.0.1 $REALM manage CNAME $HOSTNAME.$REALM --username=Administrator --password=$LDAPPASS
+	samba-tool dns add 127.0.0.1 "$REALM" manage CNAME "$HOSTNAME.$REALM" --username=Administrator --password="$LDAPPASS"
 fi
 
 #Create some statistics for the front page
@@ -1045,7 +1065,7 @@ fi
 #Add an entry into /etc/hosts for manage.realm so that the web management can be accessed from the main server in the event that samba4 is not running.
 if [ $(grep -c manage."$REALM" /etc/hosts) = 0 ]
 then
-	echo "$TCPIP""	"manage."$REALM" >> /etc/hosts
+	echo "$TCPIP	manage.$REALM" >> /etc/hosts
 fi
 
 ############################

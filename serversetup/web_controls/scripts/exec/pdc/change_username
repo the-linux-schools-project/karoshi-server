@@ -40,19 +40,6 @@ then
 	exit 101
 fi
 
-if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/change_username_cgi
-then
-	echo "$(date): change_username - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	exit 101
-fi
-source /opt/karoshi/web_controls/checksums/tech_checksums/change_username_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/change_username.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ "$MD5SUM2"'check' != "$change_username_cgi"'check' ]
-then
-	echo "$(date): change_username - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	exit 101
-fi
 ########################
 #Get variables
 ########################
@@ -79,7 +66,7 @@ SURNAME=$(echo "$DATA" | cut -s -d: -f7)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
 	echo "$(date): change_username - Not called by change_username.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
