@@ -17,9 +17,23 @@ then
 	exit
 fi
 
+#Check if sshpass is installed
+which sshpass 1>/dev/null
+if [ "$?" = 0 ]
+then
+	UseSSHPass=yes
+else
+	UseSSHPass=no
+fi
+
 #Check that we can connect to mysql / mariadb with the supplied Username and MysqlRootPass
 #mysqladmin --password="$MysqlRootPass" version 1>/dev/null
-sshpass -p "$MysqlRootPass" mysqladmin -p version 1>/dev/null
+if [ "$UseSSHPass" = yes ]
+then
+	sshpass -p "$MysqlRootPass" mysqladmin -p version 1>/dev/null
+else
+	mysqladmin --password="$MysqlRootPass" version 1>/dev/null
+fi
 
 if [ "$?" != 0 ]
 then
@@ -36,11 +50,23 @@ then
 	chmod 0700 "$BackupPath"
 fi
 
-databases=$(sshpass -p "$MysqlRootPass" mysql -u "$User" -p -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+if [ "$UseSSHPass" = yes ]
+then
+	databases=$(sshpass -p "$MysqlRootPass" mysql -u "$User" -p -e "SHOW DATABASES;" | tr -d "| " | grep -v Database)
+else
+	databases=$(mysql -u "$User" --password="$MysqlRootPass" -e "SHOW DATABASES;" 2>/dev/null | tr -d "| " | grep -v Database)
+fi
+
 for db in $databases; do
     if [[ "$db" != "information_schema" ]] && [[ "$db" != "performance_schema" ]] && [[ "$db" != "mysql" ]] && [[ "$db" != _* ]] ; then
 	echo "$(date): mysql_backup - dumping $db to $BackupPath" | tee -a "/opt/karoshi/logs/backup_servers/$LogDate/backup_log_summary"
-        sshpass -p "$MysqlRootPass" mysqldump -u "$User" -p --databases "$db" > "$BackupPath/$db.sql"
+	if [ "$UseSSHPass" = yes ]
+	then
+        	sshpass -p "$MysqlRootPass" mysqldump -u "$User" -p --databases "$db" > "$BackupPath/$db.sql"
+	else
+		mysqldump -u "$User" --password="$MysqlRootPass" --databases "$db" > "$BackupPath/$db.sql"
+	fi
     fi
 done
+
 exit
