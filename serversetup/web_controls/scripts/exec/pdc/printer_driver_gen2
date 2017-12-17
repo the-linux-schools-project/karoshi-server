@@ -24,127 +24,133 @@
 #
 #Website: http://www.karoshi.org.uk
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
 then
-	echo `date`: printer_driver_gen - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printer_driver_gen_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printer_driver_gen_cgi'check' ]
+if [ "$MD5SUM"'check' != "$printer_driver_gen_cgi"'check' ]
 then
-	echo `date`: printer_driver_gen - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 1 ]
+numArgs="$#"
+if [ "$numArgs" != 1 ]
 then
-	echo `date`: printer_driver_gen2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen2 - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+MOBILE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: printer_driver_gen2 - Not called by printer_driver_gen2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen2 - Not called by printer_driver_gen2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: printer_driver_gen2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen2 - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: printer_driver_gen2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen2 - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: printer_driver_gen2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): printer_driver_gen2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: printer_driver_gen2 - Restarting from $REMOTE_ADDR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): printer_driver_gen2 - Restarting from $REMOTE_ADDR by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 source /opt/karoshi/server_network/domain_information/domain_name
 
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-PRINTSERVER=`sed -n 1,1p /opt/karoshi/server_network/printserver`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
 
 
-if [ $PRINTSERVER != `hostname-fqdn` ]
+if [[ "$PRINTSERVER" != $(hostname-fqdn) ]]
 then
 	#Make sure 64bit drivers are on print server
-	scp -r /opt/karoshi/serversetup/modules/printserver/cupsdrivers64 root@$PRINTSERVER:"/opt/karoshi/serversetup/modules/printserver/"
+	scp -r /opt/karoshi/serversetup/modules/printserver/cupsdrivers64 root@"$PRINTSERVER:/opt/karoshi/serversetup/modules/printserver/"
 
 	#Check to see if the print server is a domain member or an additional domain controller
 	#For a dc we have to use cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -a -v 2>&1
 	#For a domain member cupsaddsmb -H $HOSTNAME -U root%$LDAPPASS -a -v 2>&1
 
 	#set root password to be the same as the administrator password
-	samba-tool user setpassword root --newpassword=$LDAPPASS 1>/dev/null
+	samba-tool user setpassword root --newpassword="$LDAPPASS" 1>/dev/null
 
-	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
 
-	######################
-	#Copy cups drivers from \\pdc\applications
-	######################
+	#Get windows dlls
+
+	ssh "$PRINTSERVER" '
 	if [ ! -d /usr/share/cups/drivers ]
 	then
-	mkdir /usr/share/cups/drivers
-	cp /opt/karoshi/serversetup/modules/printserver/cupsdrivers/* /usr/share/cups/drivers/
+		mkdir /usr/share/cups/drivers
+		cp /opt/karoshi/serversetup/modules/printserver/cupsdrivers/* /usr/share/cups/drivers/
+	fi
+	[ ! -e /usr/share/cups/drivers/pscript5.dll ] && exit 101'
+	if [ "$?" = 101 ]
+	then
+		scp /home/applications/cups_print/pscript5.dll root@"$PRINTSERVER"/usr/share/cups/drivers/
+		scp /home/applications/cups_print/ps5ui.dll root@"$PRINTSERVER"/usr/share/cups/drivers/
+		scp /home/applications/cups_print/pscript.hlp root@"$PRINTSERVER"/usr/share/cups/drivers/
+		scp /home/applications/cups_print/pscript.ntf root@"$PRINTSERVER"/usr/share/cups/drivers/
 	fi
 
-	[ ! -d /usr/share/cups/drivers/x64 ] && mkdir /usr/share/cups/drivers/x64
-	cp /opt/karoshi/serversetup/modules/printserver/cupsdrivers64/cups6.inf /usr/share/cups/drivers/x64/
-
-	if ! test -e /usr/share/cups/drivers/pscript5.dll
+	ssh "$PRINTSERVER" '
+	if [ ! -d /usr/share/cups/drivers/x64 ]
 	then
-	cd /usr/share/cups/drivers
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript5.dll pscript5.dll"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\ps5ui.dll ps5ui.dll"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript.hlp pscript.hlp"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\pscript.ntf pscript.ntf"
+		mkdir /usr/share/cups/drivers/x64
+		cp /opt/karoshi/serversetup/modules/printserver/cupsdrivers64/cups6.inf /usr/share/cups/drivers/x64/
+	fi
+	[ ! -e /usr/share/cups/drivers/x64/pscript5.dll ] && exit 101
+	'
+	if [ "$?" = 101 ]
+	then
+		scp /home/applications/cups_print/x64/PSCRIPT5.DLL root@"$PRINTSERVER"/usr/share/cups/drivers/x64/pscript5.dll
+		scp /home/applications/cups_print/x64/PS5UI.DLL root@"$PRINTSERVER"/usr/share/cups/drivers/x64/ps5ui.dll
+		scp /home/applications/cups_print/x64/PSCRIPT.HLP root@"$PRINTSERVER"/usr/share/cups/drivers/x64/pscript.hlp
+		scp /home/applications/cups_print/x64/PSCRIPT.NTF root@"$PRINTSERVER"/usr/share/cups/drivers/x64/pscript.ntf
 	fi
 
-	if ! test -e /usr/share/cups/drivers/x64/pscript5.dll
-	then
-	cd /usr/share/cups/drivers/x64
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript5.dll pscript5.dll"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\ps5ui.dll ps5ui.dll"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript.hlp pscript.hlp"
-	smbclient -N //'$HOSTNAME'/applications -c "get \cups_print\x64\pscript.ntf pscript.ntf"
+	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
 	chmod 0644 -R /usr/share/cups/drivers
 	chmod u+X,g+X,o+X /usr/share/cups/drivers
-	fi
-	echo "<br>"
 	if [ ! -f /usr/share/cups/drivers/pscript5.dll ] && [ ! -f /usr/share/cups/drivers/x64/pscript5.dll ]
 	then
-	exit 103
+		exit 103
 	fi
 	'
-	SSHSTATUS=$?
-	[ $SSHSTATUS = 103 ] && exit 103
+	if [ "$?" = 103 ]
+	then
+		exit 103
+	fi
+
 	echo '<br><b>'$"Generating Windows Printer Drivers"'</b><br>'
-	[ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-	ssh -x -o PasswordAuthentication=no $PRINTSERVER '
+	[ "$MOBILE" = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
 	#Make sure /var/lib/samba/printers/ exists and has correct permissions
 	[ ! -d /var/lib/samba/printers/x64/ ] && mkdir -p /var/lib/samba/printers/x64/
 	chown root.itadmin -R /var/lib/samba/printers 
@@ -159,12 +165,12 @@ then
 	QUEUELIST=`diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
 	if [ ! -z "$QUEUELIST" ]
 	then
-	cupsaddsmb -H $HOSTNAME -U $REGENUSER%'$LDAPPASS' -v $QUEUELIST 2>&1
-	#Copy in cups6.inf
-	cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
+		cupsaddsmb -H $HOSTNAME -U $REGENUSER%'"$LDAPPASS"' -v $QUEUELIST 2>&1
+		#Copy in cups6.inf
+		cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 	fi
 	'
-	[ $MOBILE = no ] && echo "</pre>"
+	[ "$MOBILE" = no ] && echo "</pre>"
 else
 
 	######################
@@ -223,8 +229,8 @@ else
 	#rm -f -R /var/lib/samba/printers/WIN40
 	#rm -f -R /var/lib/samba/printers/x64
 	#Generate drivers
-	echo '<br><b>'$"Generating Windows Printer Drivers"'</b><br><br>'
-	[ $MOBILE = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+	echo '<br><b>'$"Generating Windows Printer Driverssdff"'</b><br><br>'
+	[ "$MOBILE" = no ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 	#Make sure /var/lib/samba/printers/ exists and has correct permissions
 	[ ! -d /var/lib/samba/printers/x64/ ] && mkdir -p /var/lib/samba/printers/x64/
@@ -234,13 +240,14 @@ else
 
 	#Generate printer drivers
 	[ ! -d /opt/karoshi/server_network/printers/windows/stop_driver_gen ] && mkdir -p /opt/karoshi/server_network/printers/windows/stop_driver_gen
-	QUEUELIST=`diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g"`
+	QUEUELIST=$(diff <(lpstat -a | cut -d" " -f1 | sort) <(ls -1 /opt/karoshi/server_network/printers/windows/stop_driver_gen | sort) | grep "<" | sed "s/^< //g")
 	if [ ! -z "$QUEUELIST" ]
 	then
-	cupsaddsmb -H $HOSTNAME -U Administrator%$LDAPPASS -v $QUEUELIST 2>&1
-	#Copy in cups.inf
-	cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
+		echo about to genrate printers to "$HOSTNAME""<br>"
+		cupsaddsmb -H "$HOSTNAME" -U Administrator%"$LDAPPASS" -v "$QUEUELIST" 2>&1
+		#Copy in cups.inf
+		cp -f /usr/share/cups/drivers/x64/cups6.inf /var/lib/samba/printers/x64/
 	fi
-	[ $MOBILE = no ] && echo "</pre>"
+	[ "$MOBILE" = no ] && echo "</pre>"
 fi
 exit 0
