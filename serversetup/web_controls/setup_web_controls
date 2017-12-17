@@ -1032,7 +1032,7 @@ echo '
 Comment=Web Management
 Comment[en_GB]=Web Management
 Encoding=UTF-8
-Exec=firefox https://manage.karoshi.testing.com:'"$Internal_Management_Port"'/cgi-bin/admin/redirect.cgi
+Exec=firefox https://manage.'"$REALM"':'"$Internal_Management_Port"'/cgi-bin/admin/redirect.cgi
 GenericName=Web Management
 GenericName[en_GB]=Web Management
 Icon=/opt/karoshi/serversetup/essentials/smalllogo.xpm
