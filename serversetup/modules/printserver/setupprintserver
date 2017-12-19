@@ -126,7 +126,7 @@ then
 	echo "	"path = /var/lib/samba/printers >> /etc/samba/smb.conf
 	echo "	"guest ok = Yes >> /etc/samba/smb.conf
 	echo "	"browsable = Yes >> /etc/samba/smb.conf
-	echo "	"read only = yes >> /etc/samba/smb.conf
+	echo "	"read only = no >> /etc/samba/smb.conf
 	echo "	"write list = "@"itadmin, "@"adm, root, Administrator >> /etc/samba/smb.conf
 
 	echo >> /etc/samba/smb.conf
