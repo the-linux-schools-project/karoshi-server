@@ -260,7 +260,16 @@ then
 	fi
 	show_status
 else
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
+	#Check that we have some printer queues
+	COUNTER=$(grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1)
+	let COUNTER="$COUNTER"+1
+	NOOFLINES=$(wc -l < /var/lib/samba/netlogon/printers.txt)
+	if [ "$COUNTER" -lt "$NOOFLINES" ]
+	then
+		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
+	else
+		echo '<ul><li>'$"No Printers have been assigned"'</li></ul>'
+	fi
 fi
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></form></div></body></html>'

@@ -161,16 +161,18 @@ cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/m
 #Edit moodle2.sql with the correct ldap server information ( replace ldap://127.0.0.1 )
 
 sed -i 's/ldap:\/\/127.0.0.1/ldap:\/\/'"$LDAPSERVER"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
+sync /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 #Edit moodle2.sql with the correct SSO ip range ( replace 192.168.0.0/24 )
 sed -i 's%192.168.0.0/24%'"$SingleSignOnRange"'%g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
+sync /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 #Edit moodle.sql with the correct realm information
 sed -i 's/CHANGETHISLDAPBASE/'"$LDAPBASE"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
+sync /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+sed -i 's/CHANGETHISREALM/'"$REALM"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
+sync /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 #Edit hash for badges
 sed -i 's/CHANGETHISHASH/'"$BADGEHASH"'/g' /opt/karoshi/serversetup/modules/moodle/moodle2.sql
-
+sync /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 mysql --password="$MYSQLPASS" moodle < /opt/karoshi/serversetup/modules/moodle/moodle2.sql
 
 #Create moodle_user in mysql

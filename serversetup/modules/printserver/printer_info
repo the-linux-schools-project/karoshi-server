@@ -303,7 +303,7 @@ then
 
 		echo '</tbody></table>'
 	else
-		echo '<ul><li>'$"No Printer queues have been added"'</ul></li>'
+		echo '<ul><li>'$"No printer queues have been added"'</ul></li>'
 		sleep 3
 		#There are no printer queues so redirect to add printer queue
 		echo "<form action=\"printers_add_fm.cgi\" method=\"post\" id=\"printersadd\">

@@ -145,8 +145,7 @@ PRINTERLIST=( $(sudo -H /opt/karoshi/web_controls/exec/printers_show_queues) )
 PRINTERCOUNT="${#PRINTERLIST[@]}"
 if [ "$PRINTERCOUNT" = 0 ]
 then
-	echo $"There are no printer queues to delete."'<br>'
-	echo '/div></div></body></html>'
+	echo '<ul><li>'$"There are no printer queues to delete"'</ul></li></div></div></body></html>'
 	exit
 fi
 #Show printer list to choose from

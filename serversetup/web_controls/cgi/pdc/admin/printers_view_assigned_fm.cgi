@@ -122,57 +122,65 @@ COUNTER=$(grep -n ^--start-- /var/lib/samba/netlogon/printers.txt | cut -d: -f1)
 let COUNTER="$COUNTER"+1
 NOOFLINES=$(wc -l < /var/lib/samba/netlogon/printers.txt)
 
-#Create top of table
-echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: 200px; height: 20px;"><b>'$"Location"'</b></th><th style="width: 150px;"><b>'$"Assigned Printers"'</b></th><th style="width: 80px;">'$"Default"'</th><th style="width: 80px;">'$"Remove"'</th></tr></thead><tbody>'
-#Show locations and printers
-while [ "$COUNTER" -le "$NOOFLINES" ]
-do
-	DATAENTRY=$(sed -n "$COUNTER,$COUNTER""p" /var/lib/samba/netlogon/printers.txt)
-	#Assign data entry to an array
-	if [ ! -z "$DATAENTRY" ]
-	then
-		DATARRAY=( ${DATAENTRY//,/ } )
-		ARRAYCOUNT="${#DATARRAY[@]}"
-		let ARRAYCOUNT="$ARRAYCOUNT"-1
-		DEFAULTPRINTER="${DATARRAY[$ARRAYCOUNT]}"
-		#Show printers
-		ARRAYCOUNTER=2
-		while [ "$ARRAYCOUNTER" -lt "$ARRAYCOUNT" ]
-		do
-			#Show location 
-			echo '<tr><td style="height: 35px;">'"${DATARRAY[0]}"'</td><td>'"${DATARRAY[$ARRAYCOUNTER]}"'</td>'
-			#Show printer actions
-			#Set default option
-			if [ "${DATARRAY[$ARRAYCOUNTER]}" != "$DEFAULTPRINTER" ]
-			then
-				echo '<td style="text-align: center;">
+if [ "$COUNTER" -lt "$NOOFLINES" ]
+then
+	#Create top of table
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><tr><th style="width: 200px; height: 20px;"><b>'$"Location"'</b></th><th style="width: 150px;"><b>'$"Assigned Printers"'</b></th><th style="width: 80px;">'$"Default"'</th><th style="width: 80px;">'$"Remove"'</th></tr></thead><tbody>'
+	#Show locations and printers
+	while [ "$COUNTER" -le "$NOOFLINES" ]
+	do
+		DATAENTRY=$(sed -n "$COUNTER,$COUNTER""p" /var/lib/samba/netlogon/printers.txt)
+		#Assign data entry to an array
+		if [ ! -z "$DATAENTRY" ]
+		then
+			DATARRAY=( ${DATAENTRY//,/ } )
+			ARRAYCOUNT="${#DATARRAY[@]}"
+			let ARRAYCOUNT="$ARRAYCOUNT"-1
+			DEFAULTPRINTER="${DATARRAY[$ARRAYCOUNT]}"
+			#Show printers
+			ARRAYCOUNTER=2
+			while [ "$ARRAYCOUNTER" -lt "$ARRAYCOUNT" ]
+			do
+				#Show location 
+				echo '<tr><td style="height: 35px;">'"${DATARRAY[0]}"'</td><td>'"${DATARRAY[$ARRAYCOUNTER]}"'</td>'
+				#Show printer actions
+				#Set default option
+				if [ "${DATARRAY[$ARRAYCOUNTER]}" != "$DEFAULTPRINTER" ]
+				then
+					echo '<td style="text-align: center;">
 
-			<button class="info" name="____SetDefault____" value="____PRINTACTION____default:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
-			<img src="/images/help/printer_make_default.png" alt="'$"Set Default"'">
-			<span>'$"Set Default"'</span>
-			</button>
-			</td>'
-			else
-				echo '<td style="text-align: center;">
-			<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$"Default Printer"'</span></a>
-			'
-			fi
+				<button class="info" name="____SetDefault____" value="____PRINTACTION____default:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
+				<img src="/images/help/printer_make_default.png" alt="'$"Set Default"'">
+				<span>'$"Set Default"'</span>
+				</button>
+				</td>'
+				else
+					echo '<td style="text-align: center;">
+				<a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/printer_default.png"><span>'$"Default Printer"'</span></a>
+				'
+				fi
 
-			#Delete option
-			echo '<td>
-			<button class="info" name="____RemovePrinter____" value="____PRINTACTION____delete:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
-			<img src="/images/submenus/printer/remove_printer.png" alt="'$"Remove Printer"'">
-			<span>'$"Remove Printer"'</span>
-			</button>
-			</td></tr>'
-			let ARRAYCOUNTER="$ARRAYCOUNTER"+1
-		done
-		#Clear array
-		unset DATARRAY
-	fi
-	let COUNTER="$COUNTER"+1
-done
-#End table
-echo '</tbody></table></div></div></form></div></body></html>'
+				#Delete option
+				echo '<td>
+				<button class="info" name="____RemovePrinter____" value="____PRINTACTION____delete:'"${DATARRAY[0]}"':'"${DATARRAY[$ARRAYCOUNTER]}"'____">
+				<img src="/images/submenus/printer/remove_printer.png" alt="'$"Remove Printer"'">
+				<span>'$"Remove Printer"'</span>
+				</button>
+				</td></tr>'
+				let ARRAYCOUNTER="$ARRAYCOUNTER"+1
+			done
+			#Clear array
+			unset DATARRAY
+		fi
+		let COUNTER="$COUNTER"+1
+	done
+	#End table
+	echo '</tbody></table>'
+
+else
+	echo '<ul><li>'$"No Printers have been assigned"'</li></ul>'
+fi
+
+echo '</div></div></form></div></body></html>'
 exit
 

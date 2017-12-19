@@ -145,7 +145,8 @@ then
 
 	rm -f -R "$HOME"/.ssh/id_ecdsa
 	#rm -f -R $HOME/.ssh/id_dsa
-	ssh-keygen -t ecdsa -b 521 -N '' -f "$HOME"/.ssh/id_ecdsa > /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ssh-keygen -t ed25519 -N '' -f "$HOME"/.ssh/id_ecdsa > /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	#ssh-keygen -t ecdsa -b 521 -N '' -f "$HOME"/.ssh/id_ecdsa > /dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#ssh-keygen -t dsa -N '' -f $HOME/.ssh/id_dsa > /dev/null
 fi
 
