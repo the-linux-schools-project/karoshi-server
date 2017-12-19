@@ -178,12 +178,12 @@ then
 		MailData=$(echo "${QUEUEARRAY[$COUNTER]}" | sed "s/_/ /g" | sed "s/,/\n/g")
 		MailID=$(echo -e "$MailData" | grep "queue id" | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9a-zA-Z@.")
 		Size=$(echo -e "$MailData" | grep "message size" | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9a-zA-Z@.")
-		RawDate=$(echo -e "$MailData" | grep "arrival time" | cut -d: -f2 | sed 's/ //g' | tr -cd "0-9a-zA-Z@.")
+		RawDate=$(echo -e "$MailData" | grep "arrival time" | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9a-zA-Z@.")
 		Date=$(date -d @"$RawDate")
 		Sender=$(echo -e "$MailData" | grep "sender" | cut -d: -f2 | sed "s/ //g" | tr -cd "0-9a-zA-Z@.")
 		Recipients=$(echo -e "$MailData" | grep "recipients" | cut -d: -f3- | sed "s/^ //g" | sed "s/ /<br>/g" | tr -cd "0-9a-zA-Z@.")
 		DelayReason=$(echo -e "$MailData" | grep "delay reason" | cut -d: -f2- | sed "s/_/ /g" | sed "s/\[/ /g" | sed "s/$]//g" | tr -cd "0-9a-zA-Z@. ()")
-		echo "<tr><td style=\"vertical-align: top;\">'"$MailID"'</td><td style=\"vertical-align: top;\">'"$Size"'B</td><td style=\"vertical-align: top;\">'"$Date"'</td><td style=\"vertical-align: top;\">'"$Sender"'</td><td style=\"vertical-align: top;\">'"$Recipients"'</td><td style=\"vertical-align: top;\">'"$DelayReason"'</td><td style=\"vertical-align: top;\"><a class=\"info infoleft\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_MAILID_'"$MailID"'_\" type=\"image\" class=\"images\" src=\"'"$ICON2"'\" value=\"\"><span>'$"Delete E-Mail"' '"$MailID"'</span></a></td></tr>"
+		echo "<tr><td style=\"vertical-align: top;\">$MailID</td><td style=\"vertical-align: top;\">$Size""B</td><td style=\"vertical-align: top;\">$Date</td><td style=\"vertical-align: top;\">$Sender</td><td style=\"vertical-align: top;\">$Recipients</td><td style=\"vertical-align: top;\">$DelayReason</td><td style=\"vertical-align: top;\"><a class=\"info infoleft\" href=\"javascript:void(0)\"><input name=\"_ACTION_DELETE_MAILID_$MailID""_\" type=\"image\" class=\"images\" src=\"'"$ICON2"'\" value=\"\"><span>'$"Delete E-Mail"' $MailID</span></a></td></tr>"
 		let COUNTER="$COUNTER"+1
 	done
 	echo "</tbody></table>"
