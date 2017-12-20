@@ -4,3 +4,25 @@ if [ "$?" != 0 ]
 then
 	sleep 5
 fi
+
+Ports="631"
+
+#Check that the service ports are up
+for Port in $Ports
+do
+	PortCheck=0
+	Counter=0
+	while [ "$PortCheck" = 0 ]
+	do
+		#Check if we can see the Port open with netstat and keep looping until the Port is up
+		PortCheck=$(netstat -vatupn | grep 'cupsd' | grep -c ":$Port ")
+		if [ "$PortCheck" = 0 ]
+		then
+			sleep 1
+			#Give up after 60 seconds
+			[ $Counter = 60 ] && exit 101
+			let Counter=$Counter+1
+		fi
+	done	
+done
+

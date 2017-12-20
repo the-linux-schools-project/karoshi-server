@@ -2,7 +2,7 @@
 service samba4 start 2>&1
 
 #Check to see if this is a pdc or adc in which case we want to wait until samba4 is up and runnning on all of the required ports
-if [ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]
+if [[ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]]
 then
 	if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
 	then

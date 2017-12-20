@@ -6,12 +6,42 @@ then
 fi
 
 #Check to see if this is a pdc or adc
-if [ `grep -w -c sysvol /etc/samba/smb.conf` -gt 0 ]
+if [[ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]]
 then
 	#Check that all samba4 processes have stopped
 	for PROCESS in $(ps aux | grep "/usr/sbin/samba" | grep -v "grep" | sed "s/ * / /g" | cut -d" " -f2 | tr -cd "0-9\ \n")
 	do
-		echo Stopping $PROCESS
-		kill -9 $PROCESS
+		echo Stopping "$PROCESS"
+		kill -9 "$PROCESS"
 	done
 fi
+
+#Check that all ports are no longer being used
+if [[ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]]
+then
+	if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
+	then
+		PORTS="88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses 
+	else
+		PORTS="53 88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses minus dns since this is now being handled by bind
+	fi
+
+	for PORT in $PORTS
+	do
+		PORTCHECK=1 #Assign output from netstat for the port being checked
+		COUNTER=0 #Use for a time check so that we can give up if we have to
+		while [ "$PORTCHECK" != 0 ]
+		do
+			#Check if we can see the port open with netstat and keep looping until the port is down
+			PORTCHECK=$(netstat -vatupn | grep 'samba\|smbd' | grep -c ":$PORT ")
+			if [ "$PORTCHECK" != 0 ]
+			then
+				sleep 1
+				#Give up after 60 seconds
+				[ $COUNTER = 60 ] && exit 101
+				let COUNTER=$COUNTER+1
+			fi
+		done	
+	done
+fi
+exit
