@@ -1,0 +1,145 @@
+#!/bin/bash
+
+Service=$(echo "$1" | tr -cd "A-Za-z0-9")
+Action=$(echo "$2" | tr -cd "a-z")
+OutputStyle=$(echo "$3" | tr -cd "a-z")
+PortTimeout=30
+WarnInterval=3
+Search="$Service"
+
+function  Usage {
+echo -e "\nUsage:\n\ncheck_port_status service action(start|stop) output style(text|html)\n\nExample:\n\ncheck_port_status apache start\n\nThis will check if the apache ports are up.\n\nExplanation:\n\nIt can be a problem where services are started and the service start command immediately returns an ok status when the service is actually still starting in the background.\nThis script searches netstat -vatupn for the ports used by the service and waits until the service is actually ready."
+}
+
+if [ -z "$Service" ] || [ -z "$Action" ] || [ "$Service" = "help" ] || [ "$Service" = "--help" ]
+then
+	Usage
+fi
+
+if [ "$Action" != start ] &&  [ "$Action" != stop ]
+then
+	Usage	
+fi
+
+if [ -z "$OutputStyle" ]
+then
+	OutputStyle=text
+fi
+
+#Get the ports to check for the service
+case "$Service" in
+apache)
+	[ -e /etc/apache2/sites-enabled/000-default.conf ] && Ports=80
+	[ -e /etc/apache2/sites-enabled/default-ssl.conf ] && Ports="$Ports 443"
+;;
+bind)
+	Ports="53"
+	Search=named
+;;
+cups)
+	Ports="631"
+	Search=cupsd
+;;
+dnsmasq)
+	Ports="53"
+;;
+dovecot)
+	Ports="143 993"
+;;
+e2guardian)
+	Ports="3129"
+;;
+mysql)
+	Ports="3306"
+;;
+ntp)
+	Ports="123"
+	Search=ntpd
+;;
+openvpn)
+	Ports="1194"
+;;
+postfix)
+	Ports="25"
+	Search=master
+;;
+radius)
+	Ports="1812 1813"
+	Search=freeradius
+;;
+samba)
+	Search="samba\|smbd"
+	if [[ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]]
+	then
+		if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
+		then
+			Ports="88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses 
+		else
+			Ports="53 88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses minus dns since this is now being handled by bind
+		fi
+	else
+		Ports="139 445"
+	fi
+;;
+sogo)
+	Ports="20000"
+	Search=sogod
+;;
+esac
+
+if [ -z "$Ports" ]
+then
+	echo "$Service: The ports are not known for this service."
+	exit 101
+fi
+
+#Check service ports
+for Port in $Ports
+do
+	if [ "$Action" = start ]
+	then
+		PortCheck=0
+		PortStatus=0
+	else
+		PortCheck=1
+		PortStatus=1
+	fi
+
+	PortStatus=notchecked
+
+	Counter=1
+	while [ "$PortStatus" = notchecked ]
+	do
+		#Check if we can see the port open with netstat and keep looping until the Port is up
+		PortCount=$(netstat -vatupn | grep "$Search" | grep -c ":$Port ")
+
+		if [ "$Action" = start ]
+		then
+			if  [ "$PortCount" -gt 0 ]
+			then
+				PortStatus=checked
+			fi
+		else
+			if  [ "$PortCount" = 0 ]
+			then
+				PortStatus=checked
+			fi
+		fi 
+
+		if [ "$PortStatus" = notchecked ]
+		then
+			if [ $(($Counter%$WarnInterval)) == 0 ]
+			then
+				if [ "$OutputStyle" = html ]
+				then
+					echo "<ul><li>$HOSTNAME: "$"Checking port"": $Port</li></ul>"
+				else
+					echo "$HOSTNAME: "$"Checking port"": $Port"
+				fi
+			fi
+			sleep 1
+			[ "$Counter" = "$PortTimeout" ] && exit 101
+			let Counter=$Counter+1
+		fi
+	done
+done

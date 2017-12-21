@@ -198,18 +198,28 @@ fi
 
 [ "$MOBILE" = no ] && echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 
+if [ "$ACTION" = stop ]
+then
+	Action2=$"stopping"
+fi
+
+if [ "$ACTION" = start ]
+then
+	Action2=$"starting"
+fi
+
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
 then
 	SERVERNAME2=$(echo "${SERVERNAME:0:9}" | cut -d. -f1)
 	echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
-	<span>'$"Service Status"' - '"$SERVERNAME2"'</span>
+	<span>'"$SERVERNAME2"' '"$Action2 $SERVICE"'</span>
 	<a href="/cgi-bin/admin/services_view_fm.cgi">'"$SERVERNAME"'</a>
 	</div></div><div id="mobileactionbox">
 	'
 else
-	echo '<div class="sectiontitle">'$"Service Status"' - '"$SERVERNAME"'</div><br>'
+	echo '<div class="sectiontitle">'"$SERVERNAME"' - '"$Action2 $SERVICE"'</div><br>'
 fi
 
 

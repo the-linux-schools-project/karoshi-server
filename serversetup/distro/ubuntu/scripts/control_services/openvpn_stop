@@ -5,23 +5,4 @@ then
 	sleep 5
 fi
 
-Ports="1194"
-
-#Check that the service ports are down
-for Port in $Ports
-do
-	PortCheck=1
-	Counter=0
-	while [ "$PortCheck" != 0 ]
-	do
-		#Check if we can see the Port open with netstat and keep looping until the Port is down
-		PortCheck=$(netstat -vatupn | grep 'openvpn' | grep -c ":$Port ")
-		if [ "$PortCheck" != 0 ]
-		then
-			sleep 1
-			#Give up after 60 seconds
-			[ $Counter = 60 ] && exit 101
-			let Counter=$Counter+1
-		fi
-	done	
-done
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status openvpn stop html

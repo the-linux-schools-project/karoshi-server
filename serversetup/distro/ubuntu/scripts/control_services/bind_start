@@ -2,24 +2,5 @@
 service bind9 start 2>&1
 [ "$?" != 0 ] && sleep 5
 
-Ports="53"
-
-#Check that the service ports are up
-for Port in $Ports
-do
-	PortCheck=0
-	Counter=0
-	while [ "$PortCheck" = 0 ]
-	do
-		#Check if we can see the Port open with netstat and keep looping until the Port is up
-		PortCheck=$(netstat -vatupn | grep 'named' | grep -c ":$Port ")
-		if [ "$PortCheck" = 0 ]
-		then
-			sleep 1
-			#Give up after 60 seconds
-			[ $Counter = 60 ] && exit 101
-			let Counter=$Counter+1
-		fi
-	done	
-done
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status bind start html
 
