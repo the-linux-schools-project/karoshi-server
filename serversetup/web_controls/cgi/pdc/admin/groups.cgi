@@ -398,7 +398,7 @@ then
 	echo '
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+		<form name="ButtonNav1" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="info infonavbutton" name="____NewPrimaryGroup____" value="____ACTION____add____TYPE____primary____">
 				<img src="'"$ICON5"'" alt="'$"New Primary Group"'">
 				<span>'$"Create a new primary group."'</span><br>
@@ -408,7 +408,7 @@ then
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+		<form name="ButtonNav2" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="info infonavbutton" name="____NewSecondaryGroup____" value="____ACTION____add____TYPE____secondary____">
 				<img src="'"$ICON6"'" alt="'$"New Secondary Group"'">
 				<span>'$"Create a new secondary group."'</span><br>
@@ -423,7 +423,7 @@ then
 
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/categories.cgi" method="post">
+		<form name="ButtonNav3" action="/cgi-bin/admin/categories.cgi" method="post">
 			<button class="info infonavbutton" name="_Categories_" value="_">
 				<img src="'"$ICON4"'" alt="'$"Categories"'">
 				<span>'$"View Categories"'</span><br>
@@ -487,7 +487,7 @@ then
 else
 	echo '
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
-		<form name="myform" action="/cgi-bin/admin/groups.cgi" method="post">
+		<form name="ButtonNav4" action="/cgi-bin/admin/groups.cgi" method="post">
 			<button class="info infonavbutton" name="____ViewGroups____" value="____ACTION____view____TYPE____'$TYPE'____">
 				<img src="'"$ICON11"'" alt="'$"Group Management"'">
 				<span>'$"Manage groups."'</span><br>

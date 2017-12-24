@@ -29,15 +29,15 @@ then
 
 	if [ "$LEVEL" = 1 ]
 	then
-		echo '<a href="'"$LINK"'">'"$DESCRIPTION"'</a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'">'"$DESCRIPTION"'<\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	if [ "$LEVEL" = 2 ]
 	then
-		echo '<a href="'"$LINK"'"><span class="warnlevel2"><b>'"$DESCRIPTION"'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'"><span class="warnlevel2"><b>'"$DESCRIPTION"'</b></span><\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	if [ "$LEVEL" = 3 ]
 	then
-		echo '<a href="'"$LINK"'"><span class="warnlevel3"><b>'"$DESCRIPTION"'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'"><span class="warnlevel3"><b>'"$DESCRIPTION"'</b></span><\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	echo "$LINK,$DESCRIPTION" > /opt/karoshi/web_controls/warnings/raw_messages/"$NAME"
 fi

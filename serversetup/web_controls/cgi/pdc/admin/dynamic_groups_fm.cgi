@@ -56,7 +56,7 @@ echo '
 WIDTH=100
 ICON1=/images/submenus/user/groups.png
 
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_upload.cgi" METHOD="POST"><div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Dynamic Groups"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Group_Management"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to create groups of users that change on a regular basis."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
@@ -70,7 +70,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_
 	</td>
 
 </tr></tbody></table>
-<br>
+<br></div><div id="infobox">
 
 <table class="standard">
 <tr><td style="width: 180px;">'$"Upload CSV file"'</td><td>
@@ -78,10 +78,9 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dynamic_groups_
 </td>
 </tr>
 </table>
-</div>
-<div id="submitbox">
+<br>
   <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
 </form>
 </div></body>
 </html>

@@ -79,7 +79,7 @@ echo '<form action="/cgi-bin/admin/label_groups.cgi" method="post"><div id="acti
 
 #groups
 COUNTER=1
-echo '<table class="tablesorter" style="text-align: left;" ><thead><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th><tr></thead><tbody>'
+echo '<table class="tablesorter" style="text-align: left;" ><thead><tr><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th><th style="width: 200px;">'$"Group"'</th><th style="width: 100px;">'$"Label"'</th><th style="width: 60px;"></th></tr></thead><tbody><tr>'
 for GROUPNAMES in /opt/karoshi/server_network/group_information/*
 do
 	GROUPNAME=$(basename "$GROUPNAMES")

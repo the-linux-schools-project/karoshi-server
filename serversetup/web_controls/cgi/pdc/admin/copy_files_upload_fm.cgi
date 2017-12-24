@@ -57,7 +57,7 @@ echo '
 WIDTH=100
 ICON1=/images/submenus/user/groups.png
 
-echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox">
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
 <div class="sectiontitle">'$"Copy Files"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Label_Groups"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will copy files into all of the user home areas for the group that you choose."'</span></a></div>
 <table class="tablesorter"><tbody><tr>
@@ -70,15 +70,15 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
 		</button>
 	</td>
 
-</tr></tbody></table>
+</tr></tbody></table></div><div id="infobox">
 <br>
 <P>
 '$"Select the files that you want to upload to a group"':
-<P>
+</P>
         
         <table class="tablesorter" style="text-align: left; height: 91px;" >
         <TR>
-            <TD ALIGN=RIGHT>
+            <TD>
                 '$"File"' 1:
             </TD>
             <TD>
@@ -86,7 +86,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
             </TD>
         </TR>
         <TR>
-            <TD ALIGN=RIGHT>
+            <TD>
                 '$"File"' 2:
             </TD>
             <TD>
@@ -94,7 +94,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
             </TD>
         </TR>
         <TR>
-            <TD ALIGN=RIGHT>
+            <TD>
                 '$"File"' 3:
             </TD>
             <TD>
@@ -102,7 +102,7 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
             </TD>
         </TR>
         <TR>
-            <TD ALIGN=RIGHT>
+            <TD>
                 '$"File"' 4:
             </TD>
             <TD>
@@ -110,10 +110,8 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/copy_files_uplo
             </TD>
         </TR>
         </TABLE>
-</div>
-<div id="submitbox">
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
-</div>
+</div></div>
 </FORM>
 </div>
 </BODY>

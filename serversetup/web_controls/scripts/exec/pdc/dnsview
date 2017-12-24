@@ -158,7 +158,7 @@ then
 	echo '<form action="/cgi-bin/admin/dnsview.cgi" method="post">'
 fi
 echo '<input type="hidden" name="_SERVERNAME_'"$SERVERNAME"'_SERVERTYPE_network_SERVERMASTER_notset_ACTION_view_" value="">
-<select name="_ZONE_" style="width: '"$WIDTH7"'; height: '"$HEIGHT1"'px;" '"$SELECTOPTIONS"'><option value="'"$ZONE"'">'"$ZONE"'</option><option class="select-dash" disabled="disabled">----------</option>'
+<select name="_ZONE_" style="width: '"$WIDTH7"'px; height: '"$HEIGHT1"'px;" '"$SELECTOPTIONS"'><option value="'"$ZONE"'">'"$ZONE"'</option><option class="select-dash" disabled="disabled">----------</option>'
 for DNSZONE in $DNSZONELIST
 do
 	echo '<option value="'"$DNSZONE"'">'"$DNSZONE"'</option>'
