@@ -144,13 +144,8 @@ touch /home/nextcloud/data/.ocdata
 find /var/www/html/nextcloud/ -type f -print0 | xargs -0 chmod 0640
 find /var/www/html/nextcloud/ -type d -print0 | xargs -0 chmod 0750
 
-#chown -R root:www-data /var/www/html/nextcloud/
-#chown -R www-data:www-data  /var/www/html/nextcloud/apps/
-#chown -R www-data:www-data /var/www/html/nextcloud/config/
-#chown -R www-data:www-data /home/nextcloud/data/
-#chown -R www-data:www-data /var/www/html/nextcloud/themes/
-#chown -R www-data:www-data /var/www/html/nextcloud/updater/
-
+chmod 0770 /home/nextcloud/data
+chown -R www-data:www-data /home/nextcloud/data/
 chown -R www-data:www-data /var/www/html/nextcloud/
 
 chmod +x /var/www/html/nextcloud/occ

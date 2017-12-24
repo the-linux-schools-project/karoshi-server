@@ -2,74 +2,103 @@
 
 #Setup collabora-online - this can also be run to remove the existing docker collabora container and install an updated one.
 
-DNSNAME=$(echo "$1" | tr -cd "a-z.")
-SERVERIP=$(echo "$2" | tr -cd "0-9.")
-OUTPUT=$(echo "$3" | tr -cd "a-z")
+DnsName=$(echo "$1" | tr -cd "a-z.")
+ServerIP=$(echo "$2" | tr -cd "0-9.")
+Output=$(echo "$3" | tr -cd "a-z")
+SetupType=$(echo "$4" | tr -cd "a-z")
 
 #Make the fonts folder
 [ ! -d /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype ] && mkdir -p /opt/karoshi/serversetup/modules/nextcloud/fonts/truetype
 
 #Check that we have the correct data
-if [ -z "$SERVERIP" ] || [ -z "$DNSNAME" ]
+if [ -z "$ServerIP" ] || [ -z "$DnsName" ]
 then
-	echo -e "\nUsage: setupcollabora <DNS Name> <DNS server> <Output style>\n\nDNS Name - enter in the dns name for accessing accessing nextcloud - example mycloud.testing.com\n\nDNS server - This should probably be the TCPIP address of this server\n\nOutput Style - html / normal\n"
+	echo -e "\nUsage: setupcollabora <DNS Name> <DNS server> <Output style> <Setup Type>\n\nDNS Name - enter in the dns name for accessing accessing nextcloud - example mycloud.testing.com\n\nDNS server - This should probably be the TCPIP address of this server\n\nOutput Style - html / text\n\nSetup Type\n\ninstall / update\n"
 	exit
 fi
 
-[ -z "$OUTPUT" ] && OUTPUT=normal
+[ -z "$Output" ] && Output="normal"
+[ -z "$SetupType" ] && SetupType="install"
 
 function show_progress_info {
-if [ "$OUTPUT" = html ]
+if [ "$Output" = html ]
 then
-	echo '<ul><li>'"$MESSAGE"'</li></ul>'
+	echo '<ul><li>'"$Message"'</li></ul>'
 else
-	echo -e "\n$MESSAGE\n"
+	echo -e "\n$Message\n"
 fi
 }
 
 #Test that docker is running correctly
-echo '<ul><li>'$"Checking that Docker is working"'</li></ul>'
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+Message=$"Checking that Docker is working"
+show_progress_info
+[ "$Output" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 docker run hello-world
 
 #Check that docker worked
 if [ "$?" != 0 ]
 then
-	MESSAGE=$"There was a problem installing Docker"
+	Message=$"There was a problem installing Docker"
 	show_progress_info
 	exit
 fi
-[ "$OUTPUT" = html ] && echo '</pre>'
-
-#Delete the existing collabora container if it exists
-CONTAINER_ID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
-if [ ! -z "$CONTAINER_ID" ]
-then
-	MESSAGE=$"Deleting the existing Collabora docker container"
-	show_progress_info
-	docker stop "$CONTAINER_ID" 1>/dev/null
-	docker rm "$CONTAINER_ID" 1>/dev/null
-fi
+[ "$Output" = html ] && echo '</pre>'
 
 #Get collabora for docker
-MESSAGE=$"Downloading Collabora"' - '$"This will take some time"
+Message=$"Downloading Collabora"' - '$"This may take some time"
 show_progress_info
 
-[ "$OUTPUT" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+[ "$Output" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 docker pull collabora/code
-[ "$OUTPUT" = html ] && echo '</pre>'
-DNSNAME=$(echo "$DNSNAME" | sed 's%\.%\\\\\.%g')
+[ "$Output" = html ] && echo '</pre>'	
+
+
+#Delete the existing collabora container if it exists
+ContainerID=$(docker ps | grep "collabora/code" | cut -d" " -f1)
+if [ ! -z "$ContainerID" ]
+then
+	Message=$"Deleting the existing Collabora docker container"
+	show_progress_info
+	docker stop "$ContainerID" 1>/dev/null
+	docker rm "$ContainerID" 1>/dev/null
+fi
+
+if [ "$SetupType" = update ]
+then
+	#Richdocument data can stop the new collabora office docker container from working correctly if it is not deleted.
+	for AppDataFolder in $(ls -1 /home/nextcloud/data/ | grep appdata_ ) 
+	do
+		if [ -d "/home/nextcloud/data/$AppDataFolder/richdocuments" ]
+		then
+			rm -f -R "/home/nextcloud/data/$AppDataFolder/richdocuments"
+		fi
+	done
+fi
+
+#Copy in templates
+source /etc/default/locale
+Language=$(echo $LANG | cut -d"." -f1)
+if [ -d /opt/karoshi/serversetup/modules/nextcloud/CollaboraTemplates/"$Language" ]
+then
+	cp -f /opt/karoshi/serversetup/modules/nextcloud/CollaboraTemplates/"$Language"/* /var/www/html/nextcloud/core/templates/filetemplates/
+	chmod -R 0644 /var/www/html/nextcloud/core/templates/filetemplates/
+	chmod -R u+X,g+X,o+X /var/www/html/nextcloud/core/templates/filetemplates/
+fi
+
+DnsName=$(echo "$DnsName" | sed 's%\.%\\\\\.%g')
 
 #Run collabora
-MESSAGE=$"Starting Collabora"
+Message=$"Starting Collabora"
 show_progress_info
 
-docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$DNSNAME"'' --dns="$SERVERIP" --restart always --cap-add MKNOD collabora/code 1> /dev/null
+docker run -t -d -p 127.0.0.1:9980:9980 -e 'domain='"$DnsName"'' --dns="$ServerIP" --restart always --cap-add MKNOD collabora/code 1> /dev/null
 
 #Restart Docker to load collabora Online
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_stop
-sleep 1
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_start
-
+if [ "$SetupType" = install ]
+then
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_stop
+	sleep 1
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_start
+fi
