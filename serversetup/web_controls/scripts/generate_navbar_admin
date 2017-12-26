@@ -292,6 +292,12 @@ then
 				<li><a href="/cgi-bin/admin/update_moodle_theme_fm.cgi">'$"Upload Moodle Theme"'</a></li>'
 fi
 
+#Collabora Online
+if [ "$NEXTCLOUDCTRL" = yes ]
+then
+	echo '			<li><a href="/cgi-bin/admin/update_collabora_office.cgi">'$"Update Collabora Office"'</a></li><!-- '$"Update Collabora Office to the latest version."' -->'
+fi
+
 echo '			</ul>
 		</li>'
 

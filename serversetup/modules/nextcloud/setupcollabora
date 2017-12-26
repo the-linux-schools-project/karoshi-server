@@ -34,7 +34,7 @@ Message=$"Checking that Docker is working"
 show_progress_info
 [ "$Output" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
-docker run hello-world
+docker run hello-world 1>/dev/null
 
 #Check that docker worked
 if [ "$?" != 0 ]
@@ -49,10 +49,22 @@ fi
 Message=$"Downloading Collabora"' - '$"This may take some time"
 show_progress_info
 
-[ "$Output" = html ] && echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-docker pull collabora/code
-[ "$Output" = html ] && echo '</pre>'	
+[ "$Output" = html ] && echo '<ul><li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
+#Pull the latest docker version
+docker pull collabora/code | tee /tmp/CollaboraLog."$$"
+UpdateStatus=$(grep -c "Status: Image is up to date for collabora/code" /tmp/CollaboraLog."$$")
+rm -f /tmp/CollaboraLog."$$"
+
+if [ "$UpdateStatus" -gt 0 ]
+then
+	Message=$"The Collabora Office container is already the latest version."
+	[ "$Output" = html ] && echo '</li></ul></pre>'	
+	show_progress_info
+	exit 105	
+fi
+
+[ "$Output" = html ] && echo '</li></ul></pre>'	
 
 #Delete the existing collabora container if it exists
 ContainerID=$(docker ps | grep "collabora/code" | cut -d" " -f1)

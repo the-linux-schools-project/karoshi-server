@@ -266,7 +266,7 @@ then
 
 	#Reset user lockout just in case
 	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 
 	MESSAGE=''$"Password changed for"' '"$USERNAME"'.'
 	if [ "$SHOW_PASSWORD" = yes ]

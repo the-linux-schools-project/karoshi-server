@@ -891,6 +891,9 @@ MONITORINGCTRL=no
 
 MOODLECTRL=no
 
+NEXTCLOUDCTRL=no
+[ -f /opt/karoshi/server_network/nextcloudserver ] && NEXTCLOUDCTRL=yes
+
 OCSCTRL=no
 [ -f /opt/karoshi/server_network/ocs_server ] && OCSCTRL=yes
 
@@ -935,6 +938,7 @@ echo INTERNETCTRL=$INTERNETCTRL >> /opt/karoshi/server_network/web_controls/menu
 echo KSSOCTRL=$KSSOCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo MONITORINGCTRL=$MONITORINGCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo MOODLECTRL=$MOODLECTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo NEXTCLOUDCTRL=$NEXTCLOUDCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
