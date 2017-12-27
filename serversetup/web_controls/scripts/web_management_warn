@@ -29,15 +29,15 @@ then
 
 	if [ "$LEVEL" = 1 ]
 	then
-		echo '<a href="'"$LINK"'">'"$DESCRIPTION"'<\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'">'"$DESCRIPTION"'</a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	if [ "$LEVEL" = 2 ]
 	then
-		echo '<a href="'"$LINK"'"><span class="warnlevel2"><b>'"$DESCRIPTION"'</b></span><\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'"><span class="warnlevel2"><b>'"$DESCRIPTION"'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	if [ "$LEVEL" = 3 ]
 	then
-		echo '<a href="'"$LINK"'"><span class="warnlevel3"><b>'"$DESCRIPTION"'</b></span><\/a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
+		echo '<a href="'"$LINK"'"><span class="warnlevel3"><b>'"$DESCRIPTION"'</b></span></a>' > /opt/karoshi/web_controls/warnings/messages/"$NAME"
 	fi
 	echo "$LINK,$DESCRIPTION" > /opt/karoshi/web_controls/warnings/raw_messages/"$NAME"
 fi
@@ -55,9 +55,9 @@ if [ "$ALERT_COUNT" -gt 0 ]
 then
 	[ -f /opt/karoshi/web_controls/warnings/summary.txt ] && rm -f /opt/karoshi/web_controls/warnings/summary.txt
 	COUNTER=0
-	for ALERTS in /opt/karoshi/web_controls/warnings/messages/*
+	for Alert in /opt/karoshi/web_controls/warnings/messages/*
 	do
-		echo "singletext[$COUNTER]='$(cat "$ALERTS")';" >> /opt/karoshi/web_controls/warnings/summary.txt
+		echo "singletext[$COUNTER]='$(cat "$Alert" | sed 's%/%\\/%g')';" >> /opt/karoshi/web_controls/warnings/summary.txt
 		let COUNTER="$COUNTER"+1
 	done
 	chmod 0640 /opt/karoshi/web_controls/warnings/summary.txt

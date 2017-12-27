@@ -196,7 +196,7 @@ if [ "$ACTION" != delete ]
 then
 	if [ "$MOBILE" = no ]
 	then
-		DIV_ID=actionbox
+		DIV_ID=actionbox3
 		#Generate navigation bar
 		/opt/karoshi/web_controls/generate_navbar_admin
 	else

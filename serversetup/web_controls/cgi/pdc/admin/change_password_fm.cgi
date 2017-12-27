@@ -168,9 +168,9 @@ echo '<div id="mobileactionbox">
 <input required="required" tabindex= "1" style="width: 200px; height: 30px; text-align: center;" name="____USERNAME____" 
  value="'"$USERNAME"'" size="20" type="text" id="inputString" onkeyup="lookup(this.value);"><br>
 '$"New Password"'<br>
-<input minlength="'"$MINPASSLENGTH"'" tabindex= "2" style="width: 200px; height: 30px; text-align: center;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
+<input pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "2" style="width: 200px; height: 30px; text-align: center;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"><br>
 '$"Confirm New Password"'<br>
-<input minlength="'"$MINPASSLENGTH"'" tabindex= "3" style="width: 200px; height: 30px; text-align: center;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br>
+<input pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "3" style="width: 200px; height: 30px; text-align: center;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"><br>
 '$"Change at next logon"'<br>
 <input type="checkbox" name="____NEXTLOGON____" value="yes" '$CHECKED'><br><br>
 <div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div>
@@ -184,7 +184,7 @@ else
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the username that you want to change the password for."'</span></a>
 </td></tr>
 <tr>
-<td>'$"New Password"'</td><td><input minlength="'"$MINPASSLENGTH"'" tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
+<td>'$"New Password"'</td><td><input pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "2" style="width: 200px;" name="____PASSWORD1____" value="'"$PASSWORD1"'" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the new password that you want the user to have."'<br><br>'$"Leave the password fields blank if you want a random password."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~<br><br>'
 
@@ -192,7 +192,7 @@ else
 echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a>
 </td>
 </tr>
-<tr><td style="vertical-align: top;">'$"Confirm New Password"'</td><td style="vertical-align: top;"><input minlength="'"$MINPASSLENGTH"'" tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td><td></td>
+<tr><td style="vertical-align: top;">'$"Confirm New Password"'</td><td style="vertical-align: top;"><input pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "3" style="width: 200px;" name="____PASSWORD2____" value="'"$PASSWORD2"'" size="20" type="password"></td><td></td>
       </tr>
 	<tr><td style="vertical-align: top;">'$"Change at next logon"'</td><td><input type="checkbox" name="____NEXTLOGON____" value="yes" '"$CHECKED"'></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Change_Password"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
 <tr><td style="vertical-align: top;">'$"User Photo"'</td><td><div style="width: 120px;" id="photobox"><img src="/images/blank_user_image.jpg" width="120" height="150" alt="photo"></div></td><td></td></tr>

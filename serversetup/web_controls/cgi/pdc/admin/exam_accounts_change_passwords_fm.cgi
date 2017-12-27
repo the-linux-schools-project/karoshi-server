@@ -62,13 +62,13 @@ echo '<form action="/cgi-bin/admin/exam_accounts_change_passwords.cgi" method="p
       <tr>
         <td style="width: 180px;">
 '$"Password"'</td>
-        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
+        <td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "1" name="_PASSWORD1_" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Exam_Accounts#Change_Exam_Passwords"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the password that you want all of the exam accounts changed to."'</span></a>
 </td></tr>
       <tr>
         <td>
 '$"Confirm"'</td>
-        <td><input required="required" minlength="'"$MINPASSLENGTH"'" tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
+        <td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "2" name="_PASSWORD2_" style="width: 200px;" size="20" type="password"></td><td></td>
       </tr>
 <tr><td style="width: 180px;">
 '$"Exceptions"'

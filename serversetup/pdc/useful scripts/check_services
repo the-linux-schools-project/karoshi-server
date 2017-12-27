@@ -265,7 +265,7 @@ do
 			if [ "$SERVICESTATUS" != 0 ]
 			then
 				echo "$(date): check_services - service $SERVICE was not running on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-				[ "$AutoStart" = no ] && echo "$(date): check_services - auto start is disabled for $SERVICE on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				[ "$AutoStart" = no ] && echo "$(date): check_services - autostart is disabled for $SERVICE on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 			fi
 
 			[ "$SERVICE" = apache ] && APACHE="$SERVICESTATUS"
