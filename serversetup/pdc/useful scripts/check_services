@@ -217,11 +217,13 @@ do
 
 		DSERVICES=$(echo -e "$DSERVICES" | sed "s/,/\n/g" | sort)
 
-		AutoStart=yes
-		[ -f /opt/karoshi/server_network/disabled_services/"$SERVERNAME/$SERVICE" ] && AutoStart=no
-
 		for SERVICE in $DSERVICES
 		do
+
+			#Check if we should start the service if it is not running
+			AutoStart=yes
+			[ -f /opt/karoshi/server_network/disabled_services/"$SERVERNAME/$SERVICE" ] && AutoStart=no
+
 			#Check if the service is running
 			SERVICESTATUS=0
 			if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
