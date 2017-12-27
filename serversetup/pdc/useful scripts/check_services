@@ -217,6 +217,9 @@ do
 
 		DSERVICES=$(echo -e "$DSERVICES" | sed "s/,/\n/g" | sort)
 
+		AutoStart=yes
+		[ -f /opt/karoshi/server_network/disabled_services/"$SERVERNAME/$SERVICE" ] && AutoStart=no
+
 		for SERVICE in $DSERVICES
 		do
 			#Check if the service is running
@@ -225,7 +228,7 @@ do
 			then
 				"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE""_status" 1>/dev/null
 				SERVICESTATUS="$?"
-				if [ "$SERVICESTATUS" != 0 ]
+				if [ "$SERVICESTATUS" != 0 ] && [ "$AutoStart" = yes ]
 				then
 					echo "$SERVERNAME: $SERVICE is not running."
 					echo "Attempting to start $SERVICE"
@@ -241,7 +244,7 @@ do
 					source /opt/karoshi/serversetup/variables/distro
 					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'"_"status 1>/dev/null
 					SERVICESTATUS="$?"
-					if [ "$SERVICESTATUS" != 0 ]
+					if [ "$SERVICESTATUS" != 0 ] && [ "'"$AutoStart"'" = yes ]
 					then
 						echo '"$SERVERNAME":' '"$SERVICE"' is not running.
 						echo Attempting to start '"$SERVICE"'
@@ -257,7 +260,11 @@ do
 				SERVICESTATUS="$?"
 			fi
 			#Log service failure
-			[ "$SERVICESTATUS" != 0 ] && echo "$(date): check_services - service $SERVICE was not running on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			if [ "$SERVICESTATUS" != 0 ]
+			then
+				echo "$(date): check_services - service $SERVICE was not running on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+				[ "$AutoStart" = no ] && echo "$(date): check_services - auto start is disabled for $SERVICE on $SERVERNAME" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+			fi
 
 			[ "$SERVICE" = apache ] && APACHE="$SERVICESTATUS"
 			[ "$SERVICE" = cups ] && CUPS="$SERVICESTATUS"
