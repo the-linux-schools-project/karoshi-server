@@ -36,7 +36,7 @@ source /opt/karoshi/web_controls/version
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
@@ -98,61 +98,41 @@ DATA=$(echo "$DATA" | sed 's/*/%99/g')
 #Assign data to variables
 #########################
 END_POINT=45
-#Assign SERVER
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		SERVERNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
+}
+
+#Assign SERVER
+DATANAME=SERVERNAME
+get_data
+SERVERNAME="$DATAENTRY"
 
 #Assign SERVERTYPE
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = SERVERTYPEcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		SERVERTYPE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=SERVERTYPE
+get_data
+SERVERTYPE="$DATAENTRY"
 
 #Assign ACTION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ACTIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		ACTION=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=ACTION
+get_data
+ACTION="$DATAENTRY"
 
 #Assign LOCATION
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = LOCATIONcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		LOCATION=`echo $DATA | cut -s -d'_' -f$COUNTER  | sed 's/%2F/\//g' | sed "s/Z%25%25%25%25%25Z/_/g"`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+DATANAME=LOCATION
+get_data
+LOCATION=$(echo "$DATAENTRY" |sed 's/%2F/\//g' | sed "s/Z%25%25%25%25%25Z/_/g")
 
 function show_status {
 echo '<script>
@@ -179,24 +159,15 @@ fi
 if [ $SERVERTYPE = federatedslave ]
 then
 	#Assign SERVERMASTER
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SERVERMASTERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SERVERMASTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SERVERMASTER
+	get_data
+	SERVERMASTER="$DATAENTRY"
 fi
 
 #########################
 #Check data
 #########################
-if [ $ACTION != ENTER ] && [ $ACTION != DELETE ] && [ $ACTION != REALLYDELETE ] && [ $ACTION != SETPERMS ] && [ $ACTION != REALLYSETPERMS ] && [ $ACTION != MOVE ] && [ $ACTION != REALLYMOVE ] && [ $ACTION != REALLYCOPY ] && [ $ACTION != CANCELCOPY ] && [ $ACTION != RENAME ] && [ $ACTION != REALLYRENAME ] && [ $ACTION != EDIT ] && [ $ACTION != REALLYEDIT ] && [ $ACTION != CREATEDIR ] && [ $ACTION != REALLYCREATEDIR ] && [ $ACTION != CREATEFILE ] && [ $ACTION != REALLYCREATEFILE ] && [ $ACTION != RESTORE ] && [ $ACTION != REALLYRESTORE ] && [ $ACTION != SEARCHBACKUP ]  && [ $ACTION != REALLYSEARCHBACKUP ] && [ $ACTION != notset ] && [ $ACTION != DELETEACLPERMS ] && [ $ACTION != REALLYDELETEACLPERMS ] && [ $ACTION != ADDACLPERMS ] && [ $ACTION != REALLYADDACLPERMS ]
+if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ]  && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ] && [ "$ACTION" != SQLRESTORE ]
 then
 	MESSAGE=$"You have not entered a correct action."
 	show_status
@@ -207,18 +178,9 @@ then
 	END_POINT=32
 	COUNTER=2
 	#Assign SEARCH
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SEARCHcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SEARCH=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SEARCH
+	get_data
+	SEARCH="$DATAENTRY"
 fi
 
 if [ "$ACTION" = REALLYEDIT ]
@@ -279,308 +241,137 @@ fi
 if [ "$ACTION" = REALLYADDACLPERMS ]
 then
 	END_POINT=50
+
 	#Assign ACLOWNER
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ACLOWNERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ACLOWNER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=ACLOWNER
+	get_data
+	ACLOWNER="$DATAENTRY"
 
 	#Assign ACLPERMISSIONS
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ACLPERMISSIONScheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ACLPERMISSIONS=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done	
+	DATANAME=ACLPERMISSIONS
+	get_data
+	ACLPERMISSIONS="$DATAENTRY"	
 fi
 
 if [ "$ACTION" = DELETEACLPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ]
 then
 	END_POINT=50
 	#Assign ACLOWNER
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ACLOWNERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ACLOWNER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=ACLOWNER
+	get_data
+	ACLOWNER="$DATAENTRY"
 
 	#Assign ACLGROUP
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = ACLGROUPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			ACLGROUP=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=ACLGROUP
+	get_data
+	ACLGROUP="$DATAENTRY"
+fi
+
+if [ "$ACTION" = SQLRESTORE ]
+then
+	#Assign OWNER
+	DATANAME=OWNER
+	get_data
+	OWNER="$DATAENTRY"
 fi
 
 if [ "$ACTION" = REALLYSETPERMS ]
 then
-	DATA=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\-+*'`
+	DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\-+*')
 	END_POINT=42
 	#Assign OWNER
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = OWNERcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			OWNER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=OWNER
+	get_data
+	OWNER="$DATAENTRY"
 
 	#Assign GROUP
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUP=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUP
+	get_data
+	GROUP="$DATAENTRY"
 
 	#Assign USERREAD
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = USERREADcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			USERREAD=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ "$USERREAD" = 1 ] && PERMISSIONS=USERREAD
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=USERREAD
+	get_data
+	USERREAD="$DATAENTRY"
+	[ "$USERREAD" = 1 ] && PERMISSIONS=USERREAD
 
 	#Assign USERWRITE
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = USERWRITEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			USERWRITE=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $USERWRITE = 1 ] && PERMISSIONS="`echo $PERMISSIONS,USERWRITE`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=USERWRITE
+	get_data
+	USERWRITE="$DATAENTRY"
+	[ "$USERWRITE" = 1 ] && PERMISSIONS="$PERMISSIONS,USERWRITE"
 
 	#Assign USEREXEC
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = USEREXECcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			USEREXEC=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			[ $USEREXEC = 1 ] && PERMISSIONS="`echo $PERMISSIONS,USEREXEC`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=USEREXEC
+	get_data
+	USEREXEC="$DATAENTRY"
+	[ "$USEREXEC" = 1 ] && PERMISSIONS="$PERMISSIONS,USEREXEC"
 
 	#Assign GROUPREAD
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPREADcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPREAD=`echo $DATA | cut -s -d'_' -f$COUNTER`
-			[ $GROUPREAD = 1 ] && PERMISSIONS="`echo $PERMISSIONS,GROUPREAD`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPREAD
+	get_data
+	GROUPREAD="$DATAENTRY"
+	[ "$GROUPREAD" = 1 ] && PERMISSIONS="$PERMISSIONS,GROUPREAD"
 
 	#Assign GROUPWRITE
-	COUNTER=2
-	while [ "$COUNTER" -le "$END_POINT" ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPWRITEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPWRITE=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $GROUPWRITE = 1 ] && PERMISSIONS="`echo $PERMISSIONS,GROUPWRITE`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPWRITE
+	get_data
+	GROUPWRITE="$DATAENTRY"
+	[ "$GROUPWRITE" = 1 ] && PERMISSIONS="$PERMISSIONS,GROUPWRITE"
 
 	#Assign GROUPEXEC
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = GROUPEXECcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			GROUPEXEC=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $GROUPEXEC = 1 ] && PERMISSIONS="`echo $PERMISSIONS,GROUPEXEC`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=GROUPEXEC
+	get_data
+	GROUPEXEC="$DATAENTRY"
+	[ "$GROUPEXEC" = 1 ] && PERMISSIONS="$PERMISSIONS,GROUPEXEC"
 
 	#Assign OTHERREAD
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = OTHERREADcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			OTHERREAD=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $OTHERREAD = 1 ] && PERMISSIONS="`echo $PERMISSIONS,OTHERREAD`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=OTHERREAD
+	get_data
+	OTHERREAD="$DATAENTRY"
+	[ "$OTHERREAD" = 1 ] && PERMISSIONS="$PERMISSIONS,OTHERREAD"
 
 	#Assign OTHERWRITE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = OTHERWRITEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			OTHERWRITE=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $OTHERWRITE = 1 ] && PERMISSIONS="`echo $PERMISSIONS,OTHERWRITE`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=OTHERWRITE
+	get_data
+	OTHERWRITE="$DATAENTRY"
+	[ "$OTHERWRITE" = 1 ] && PERMISSIONS="$PERMISSIONS,OTHERWRITE"
 
 	#Assign OTHEREXEC
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = OTHEREXECcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			OTHEREXEC=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $OTHEREXEC = 1 ] && PERMISSIONS="`echo $PERMISSIONS,OTHEREXEC`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=OTHEREXEC
+	get_data
+	OTHEREXEC="$DATAENTRY"
+	[ "$OTHEREXEC" = 1 ] && PERMISSIONS="$PERMISSIONS,OTHEREXEC"
 
 	#Assign SETUID
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SETUIDcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SETUID=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $SETUID = 1 ] && PERMISSIONS="`echo $PERMISSIONS,SETUID`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SETUID
+	get_data
+	SETUID="$DATAENTRY"
+	[ "$SETUID" = 1 ] && PERMISSIONS="$PERMISSIONS,SETUID"
 
 	#Assign SETGID
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = SETGIDcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			SETGID=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $SETGID = 1 ] && PERMISSIONS="`echo $PERMISSIONS,SETGID`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=SETGID
+	get_data
+	SETGID="$DATAENTRY"
+	[ "$SETGID" = 1 ] && PERMISSIONS="$PERMISSIONS,SETGID"
 
 	#Assign STICKY
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = STICKYcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			STICKY=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $STICKY = 1 ] && PERMISSIONS="`echo $PERMISSIONS,STICKY`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=STICKY
+	get_data
+	STICKY="$DATAENTRY"
+	[ "$STICKY" = 1 ] && PERMISSIONS="$PERMISSIONS,STICKY"
 
 	#Assign RECURSIVE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = RECURSIVEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			RECURSIVE=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $RECURSIVE = 1 ] && PERMISSIONS="`echo $PERMISSIONS,RECURSIVE`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=RECURSIVE
+	get_data
+	RECURSIVE="$DATAENTRY"
+	[ "$RECURSIVE" = 1 ] && PERMISSIONS="$PERMISSIONS,RECURSIVE"
 
 	#Assign EXECRECURSE
-	COUNTER=2
-	while [ $COUNTER -le $END_POINT ]
-	do
-		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-		if [ `echo $DATAHEADER'check'` = EXECRECURSEcheck ]
-		then
-			let COUNTER=$COUNTER+1
-			EXECRECURSE=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
-			[ $EXECRECURSE = 1 ] && PERMISSIONS="`echo $PERMISSIONS,EXECRECURSE`"
-			break
-		fi
-		let COUNTER=$COUNTER+1
-	done
+	DATANAME=EXECRECURSE
+	get_data
+	EXECRECURSE="$DATAENTRY"
+	[ "$EXECRECURSE" = 1 ] && PERMISSIONS="$PERMISSIONS,EXECRECURSE"
 
 	#Check to see that owner is not blank
 	if [ -z "$OWNER" ]

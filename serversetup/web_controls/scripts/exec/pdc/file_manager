@@ -108,7 +108,7 @@ then
 	ACTION=notset
 fi
 
-if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ] && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ]
+if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != SQLRESTORE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ] && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ]
 then
 	echo "$(date): file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -476,6 +476,7 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead><
 
 if [ $MOBILE = no ]
 then
+
 	echo '<th style="word-wrap:break-word; width: '$VIEWWIDTH2'px;"><b>'$DISPLOCATION'</b></th>'
 	[ "$SHOWRESTORE" = yes ] && echo '<th style="width: '$VIEWWIDTH3'px;">'$"Search"'</th><th style="width: '$VIEWWIDTH3'px;">'$"Restore"'</th>'
 else
@@ -483,8 +484,6 @@ else
 fi
 
 echo '</tr></thead><tbody>'
-
-#[ $MOBILE = yes ] && echo '<col width='$COLWIDTH'>'
 
 #Log Browse Actions
 echo `date`: file_manager - browsing  "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -497,14 +496,9 @@ then
 		for FILE in "$LOCATION"/*
 		do
 
-			FILENAME=`basename "$FILE"`
-			#FILEINFO=`ls -l -h -d "$FILE"`
-			#PERMS=`echo $FILEINFO | cut -d" " -f1`
-			#OWNER=`echo $FILEINFO | cut -d" " -f3-4`
-			#SIZE=`echo $FILEINFO | cut -d" " -f5`
-			#LASTMOD=`echo $FILEINFO | cut -d" " -f6-8`
-			FILE2=`echo "$FILE" | sed "s/_/Z%%%%%Z/g"`
-			LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
+			FILENAME=$(basename "$FILE")
+			FILE2=$(echo "$FILE" | sed "s/_/Z%%%%%Z/g")
+			LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 
 			ICON1=$ICON15
 			FILEACTION=DOWNLOAD
@@ -562,10 +556,11 @@ then
 			fi
 			if [ $MOBILE = no ]
 			then
-				echo '</td><td>'$FILENAME'</td></tr>'
+				echo '</td><td>'$FILENAME'</td>'
 			else
-				echo '</td></tr>'
+				echo '</td>'
 			fi
+			echo '</tr>'
 		done
 	fi
 fi
@@ -854,8 +849,8 @@ then
 	exit
 fi
 
-OWNER=`echo "$DATA" | cut -s -d: -f12`
-GROUP=`echo "$DATA" | cut -s -d: -f13`
+OWNER=$(echo "$DATA" | cut -s -d: -f12)
+GROUP=$(echo "$DATA" | cut -s -d: -f13)
 
 #Work out permission numbers
 USERDIGIT=0
@@ -1103,20 +1098,20 @@ show_title
 
 if [ "$SERVERNAME" = $(hostname-fqdn) ]
 then
-	OWNER=`ls -d -l "$LOCATION" | cut -d" " -f3`
-	GROUP=`ls -d -l "$LOCATION" | cut -d" " -f4`
+	OWNER=$(ls -d -l "$LOCATION" | cut -d" " -f3)
+	GROUP=$(ls -d -l "$LOCATION" | cut -d" " -f4)
 	#Get current permissions of the item
-	CURRENT_PERMS=`ls -d -l "$LOCATION" | cut -d" " -f1`
+	CURRENT_PERMS=$(ls -d -l "$LOCATION" | cut -d" " -f1)
 	#Get size
-	ITEMSIZE=`du -h -s "$LOCATION" | cut -f1`
+	ITEMSIZE=$(du -h -s "$LOCATION" | cut -f1)
 	#Get file info
-	ITEMTYPE=`file "$LOCATION" | cut -d: -f2`
+	ITEMTYPE=$(file "$LOCATION" | cut -d: -f2)
 	#Basename
-	SHORTNAME=`basename "$LOCATION"`
+	SHORTNAME=$(basename "$LOCATION")
 	#Last modified
-	LASTMOD=`stat -c %y "$LOCATION" | cut -d. -f1`
+	LASTMOD=$(stat -c %y "$LOCATION" | cut -d. -f1)
 	#Last accessed
-	LASTACC=`stat -c %x "$LOCATION" | cut -d. -f1`
+	LASTACC=$(stat -c %x "$LOCATION" | cut -d. -f1)
 
 	echo '<b>'$"Information"'</b><br><table class="tablesorter" style="text-align: left; " >
 	<tbody>
@@ -1126,8 +1121,21 @@ then
 	<tr><td>'$"Type"'</td><td>'$ITEMTYPE'</td></tr>
 	<tr><td>'$"Last accessed"'</td><td>'$LASTACC'</td></tr>
 	<tr><td>'$"Last modified"'</td><td>'$LASTMOD'</td></tr>
-	</tbody></table><br>
-	<b>'$"Basic Permissions"'</b><br><table class="tablesorter" style="text-align: left; " >
+	'
+
+	#Offer to restore sql files
+	if [ "${SHORTNAME: -4}" == ".sql" ]
+	then
+		DatabaseName=$(echo "$SHORTNAME" | cut -d. -f1) 
+		echo '
+		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name="_OWNER_" value="'$DatabaseName'" size="20" type="text"></td></tr>
+		</tbody></table>
+		<input name="_ACTION_SQLRESTORE_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Restore SQL"'"><br><br>'
+	else
+		echo '</tbody></table><br>'
+	fi
+
+	echo '</form><form action="/cgi-bin/admin/file_manager.cgi" method="post"><b>'$"Basic Permissions"'</b><br><table class="tablesorter" style="text-align: left; " >
 	<tbody>
 	<tr><td style="width: '$WIDTH2'px;">'$"User"'</td><td style="width: '$WIDTH3'px;"><input tabindex= "1" name="_OWNER_" value="'$OWNER'" size="20" type="text"></td></tr>
 	<tr><td>'$"Group"'</td><td><input tabindex= "2" name="_GROUP_" value='"$GROUP"' size="20" type="text"></td></tr>
@@ -1232,8 +1240,21 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	<tr><td>'$"Size"'</td><td>$ITEMSIZE</td></tr>
 	<tr><td>'$"Type"'</td><td>$ITEMTYPE</td></tr>
 	<tr><td>'$"Last accessed"'</td><td>$LASTACC</td></tr>
-	<tr><td>'$"Last modified"'</td><td>$LASTMOD</td></tr>
-	</tbody></table><br>
+	<tr><td>'$"Last modified"'</td><td>$LASTMOD</td></tr>"
+
+	#Offer to restore sql files
+	if [ "${SHORTNAME: -4}" == ".sql" ]
+	then
+		DatabaseName=$(echo "$SHORTNAME" | cut -d. -f1) 
+		echo "
+		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name=\"_OWNER_\" value=\"$DatabaseName\" size=\"20\" type=\"text\"></td></tr>
+		</tbody></table>
+		<input name=\"_ACTION_SQLRESTORE_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_\" type=\"submit\" class=\"button\" value=\"'$"Restore SQL"'\"><br><br>"
+	else
+		echo "</tbody></table><br>"
+	fi
+
+	echo "</tbody></table><br>
 	<b>'$"Basic Permissions"'</b><br><table class=\"tablesorter\" style=\"text-align: left; \" >
 	<tbody>
 	<tr><td style=\"width: '$WIDTH2'px;\">'$"User"'</td><td style=\"width: '$WIDTH3'px;\"><input tabindex= \"1\" name=\"_OWNER_\" value=$OWNER size=\"20\" type=\"text\"></td></tr>
@@ -2113,15 +2134,62 @@ echo '<td><input name="_NEWFOLDER_" type="text" size="20"></td></tr></tbody></ta
 
 }
 
+function SQLRestore {
+if [ -z "$LOCATION" ]
+then
+	echo "$(date): file_manager - blank location by for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit
+fi
+convert_special_chars
+SQLFile=$(basename "$LOCATION")
+LASTLOCATION=$(echo "$LOCATION" | sed "s/\/$SQLFile$//g" | sed "s/_/Z%%%%%Z/g")
+DataBaseName=$(echo "$DATA" | cut -s -d: -f12)
+
+if [ -z "$DataBaseName" ]
+then
+	echo "$(date): file_manager - blank owner by for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit
+fi
+
+echo "$(date): file_manager - restoring $SQLFile to $DataBaseName by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+show_title
+
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+then
+	MYSQLPassword=$(cat /etc/mysql.secret)
+	#Drop any existing database
+	mysqladmin -f --password="$MYSQLPassword" drop "$DataBaseName" 1>/dev/null 2>/dev/null
+	mysqladmin --password="$MYSQLPassword" create "$DataBaseName" 1>/dev/null
+	#Restore the database
+	mysql --password="$MYSQLPassword" "$DataBaseName" < "$LOCATION" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+else
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+	MYSQLPassword=$(cat /etc/mysql.secret)
+	#Drop any existing database
+	mysqladmin -f --password="$MYSQLPassword" drop "'"$DataBaseName"'" 1>/dev/null 2>/dev/null
+	mysqladmin --password="$MYSQLPassword" create "'"$DataBaseName"'" 1>/dev/null
+	#Restore the database
+	mysql --password="$MYSQLPassword" "'"$DataBaseName"'" < "'"$LOCATION"'"
+	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+fi
+echo  $"SQL restore process complete for"" $DataBaseName."
+sleep 3
+#Reload the page
+echo '</form>
+<form METHOD=POST ACTION="/cgi-bin/admin/file_manager.cgi" target="_top" name = "frm">
+<input type="hidden" name="_ViewLocation" value="_ACTION_ENTER_SERVERTYPE_network_SERVERNAME_'$SERVERNAME'_LOCATION_'$LASTLOCATION'_">
+</form><script>document.frm.submit();</script><form>'
+}
+
 function restore_check_info {
 
 ENABLE_RESTORE=yes
-if [ `echo $"Back"UPINFO'null' | sed 's/ //g'` = null ]
+if [ -z "$BACKUPINFO" ]
 then
 	ENABLE_RESTORE=no
 fi
 
-if [ `echo "$RESTOREPATH"null | sed 's/ //g'` = null ]
+if [ -z "$RESTOREPATH" ]
 then
 	echo '<br>'$"Blank restore path."'<br><br>'
 	ENABLE_RESTORE=no
@@ -2132,36 +2200,36 @@ fi
 function restore_item {
 #Confirm restore of item.
 convert_special_chars
-LOCATIONFOLDER2=`basename "$LOCATION"`
-LASTLOCATION=`echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER2$//g"`
+LOCATIONFOLDER2=$(basename "$LOCATION")
+LASTLOCATION=$(echo "$LOCATION" | sed "s/\/$LOCATIONFOLDER2$//g")
 #Get backup details
-RESTOREPATH=`echo $LOCATION | cut -d/ -f7-`
-RESTOREPATH=`echo /$RESTOREPATH`
-DEPTHCOUNT=`echo -e "$RESTOREPATH" | sed 's/\//\n/g' | wc -l`
-let DEPTHCOUNT=$DEPTHCOUNT-1
+RESTOREPATH=$(echo $LOCATION | cut -d/ -f7-)
+RESTOREPATH=$(echo /$RESTOREPATH)
+DEPTHCOUNT=$(echo -e "$RESTOREPATH" | sed 's/\//\n/g' | wc -l)
+let DEPTHCOUNT="$DEPTHCOUNT"-1
 
 if [ $DEPTHCOUNT -gt 0 ]
 then
-RESTOREPATH=`echo $RESTOREPATH | cut -d/ -f1-$DEPTHCOUNT`
+	RESTOREPATH=$(echo "$RESTOREPATH" | cut -d/ -f1-"$DEPTHCOUNT")
 else
-RESTOREPATH=""
+	RESTOREPATH=""
 fi
 LOCATION2=`echo "$LOCATION" | sed "s/_/Z%%%%%Z/g"`
-LOCATIONFOLDER=`echo $LOCATION | cut -d/ -f6-`
-RESTORESERVER=`echo $LOCATION | cut -d/ -f4`
-[ `echo $RESTORESERVER'null' | sed 's/ //g'` = null ] && RESTORESERVER=notset
-BACKUPNAME=`echo $LOCATION | cut -d/ -f5`
-[ `echo $BACKUPNAME'null' | sed 's/ //g'` = null ] && BACKUPNAME=notset
-BACKUPINFOPATH=/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information
+LOCATIONFOLDER=$(echo "$LOCATION" | cut -d/ -f6-)
+RESTORESERVER=$(echo "$LOCATION" | cut -d/ -f4)
+[ -z "$RESTORESERVER" ] && RESTORESERVER=notset
+BACKUPNAME=$(echo "$LOCATION" | cut -d/ -f5)
+[ -z "$BACKUPNAME" ] && BACKUPNAME=notset
+BACKUPINFOPATH="/home/backups/$RESTORESERVER/$BACKUPNAME/backup_information"
 #Read info file
-BACKUPINFO=`ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -f "'$BACKUPINFOPATH'" ] && cat '$BACKUPINFOPATH'
-'`
+BACKUPINFO=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+[ -f "'"$BACKUPINFOPATH"'" ] && cat '"$BACKUPINFOPATH"'
+')
 
-TOPRESTOREPATH=`echo -e "$BACKUPINFO" | sed -n 4,4p`
-TOPRESTOREPATH2=`basename "$TOPRESTOREPATH"`
-TOPRESTOREPATH=`echo "$TOPRESTOREPATH" | sed "s/\/$TOPRESTOREPATH2$//g"`
-RESTOREPATH=`echo "$TOPRESTOREPATH$RESTOREPATH"`
+TOPRESTOREPATH=$(echo -e "$BACKUPINFO" | sed -n 4,4p)
+TOPRESTOREPATH2=$(basename "$TOPRESTOREPATH")
+TOPRESTOREPATH=$(echo "$TOPRESTOREPATH" | sed "s/\/$TOPRESTOREPATH2$//g")
+RESTOREPATH=$(echo "$TOPRESTOREPATH$RESTOREPATH")
 
 show_title
 #Check info
@@ -2513,6 +2581,7 @@ echo '<b>'$"Add ACL"'</b><br><table class="tablesorter"><tbody>
 [ $ACTION = REALLYEDIT ] && really_edit_item #converted to federated_mode
 [ $ACTION = CREATEDIR ] && create_dir #converted to federated_mode
 [ $ACTION = REALLYCREATEDIR ] && really_create_dir #converted to federated_mode
+[ $ACTION = SQLRESTORE ] && SQLRestore
 [ $ACTION = RESTORE ] && restore_item
 [ $ACTION = REALLYRESTORE ] && really_restore_item
 [ $ACTION = CREATEFILE ] && create_file
