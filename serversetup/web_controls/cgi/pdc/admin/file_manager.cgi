@@ -269,10 +269,48 @@ fi
 
 if [ "$ACTION" = SQLRESTORE ]
 then
-	#Assign OWNER
-	DATANAME=OWNER
-	get_data
-	OWNER="$DATAENTRY"
+	#Assign DBNAME
+	END_POINT=32
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo "$DATAHEADER"'check'` = DBNAMEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			DBNAME=`echo "$DATA" | cut -s -d'_' -f$COUNTER- | cut -d'&' -f1`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign DBUSERNAME
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo "$DATAHEADER"'check'` = DBUSERNAMEcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			DBUSERNAME=`echo "$DATA" | cut -s -d'_' -f$COUNTER- | cut -d'&' -f1`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
+
+	#Assign  DBPASSWORD
+	COUNTER=2
+	while [ $COUNTER -le $END_POINT ]
+	do
+		DATAHEADER=`echo "$DATA" | cut -s -d'_' -f$COUNTER`
+		if [ `echo "$DATAHEADER"'check'` = DBPASSWORDcheck ]
+		then
+			let COUNTER=$COUNTER+1
+			 DBPASSWORD=`echo "$DATA" | cut -s -d'_' -f$COUNTER- | cut -d'&' -f1`
+			break
+		fi
+		let COUNTER=$COUNTER+1
+	done
 fi
 
 if [ "$ACTION" = REALLYSETPERMS ]
@@ -442,7 +480,7 @@ fi
 
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:$DBNAME:$DBUSERNAME:$DBPASSWORD" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'

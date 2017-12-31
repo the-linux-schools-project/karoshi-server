@@ -1128,7 +1128,9 @@ then
 	then
 		DatabaseName=$(echo "$SHORTNAME" | cut -d. -f1) 
 		echo '
-		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name="_OWNER_" value="'$DatabaseName'" size="20" type="text"></td></tr>
+		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name="_DBNAME_" value="'$DatabaseName'" size="20" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the database name that you want this file restored to."'<br><br>'$"This will overwrite the data stored in this database if it already exits."'</span></a></td></tr>
+		<tr><td>'$"Database Username"'</td><td><input tabindex= "1" name="_DBUSERNAME_" size="20" type="text"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a mysql username to access the database."' '$"This mysql user will be created if it does not already exist."'<br><br>'$"This field can be left blank to use an existing mysql username and password that has already been set for this database."'</span></a></td></tr>
+		<tr><td>'$"Database Password"'</td><td><input tabindex= "1" name="_DBPASSWORD_" size="20" type="password"> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in a mysql password to access the database." $"This field can be left blank to use an existing mysql username and password that has already been set for this database."'</span></a></td></tr>
 		</tbody></table>
 		<input name="_ACTION_SQLRESTORE_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Restore SQL"'"><br><br>'
 	else
@@ -1217,7 +1219,7 @@ fi
 
 if [ "$SERVERTYPE" = network ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]] || [ "$SERVERTYPE" = federated ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	OWNER=`ls -d -l "'$LOCATION'" | cut -d" " -f3`
 	GROUP=`ls -d -l "'$LOCATION'" | cut -d" " -f4`
 	#Get current permissions of the item
@@ -1247,7 +1249,9 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
 	then
 		DatabaseName=$(echo "$SHORTNAME" | cut -d. -f1) 
 		echo "
-		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name=\"_OWNER_\" value=\"$DatabaseName\" size=\"20\" type=\"text\"></td></tr>
+		<tr><td>'$"Database name"'</td><td><input tabindex= "1" name=\"_DBNAME_\" value=\"$DatabaseName\" size=\"20\" type=\"text\"> <a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in the database name that you want this file restored to."'<br><br>'$"This will overwrite the data stored in this database if it already exits."'</span></a></td></tr>
+		<tr><td>'$"Database Username"'</td><td><input tabindex= \"1\" name=\"_DBUSERNAME_\" size=\"20\" type=\"text\"> <a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in a mysql username to access the database." $"This mysql user will be created if it does not already exist."'<br><br>'$"This field can be left blank to use an existing mysql username and password that has already been set for this database."'</span></a></td></tr>
+		<tr><td>'$"Database Password"'</td><td><input tabindex= \"1\" name=\"_DBPASSWORD_\" size=\"20\" type=\"password\"> <a class=\"info\" target=\"_blank\" href=\"http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=File_Manager\"><img class=\"images\" alt=\"\" src=\"/images/help/info.png\"><span>'$"Enter in a mysql password to access the database."'<br><br>'$"This field can be left blank to use an existing mysql username and password that has already been set for this database."'</span></a></td></tr>
 		</tbody></table>
 		<input name=\"_ACTION_SQLRESTORE_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_\" type=\"submit\" class=\"button\" value=\"'$"Restore SQL"'\"><br><br>"
 	else
@@ -2141,38 +2145,73 @@ then
 	exit
 fi
 convert_special_chars
+echo $DATA"<br>"
 SQLFile=$(basename "$LOCATION")
 LASTLOCATION=$(echo "$LOCATION" | sed "s/\/$SQLFile$//g" | sed "s/_/Z%%%%%Z/g")
-DataBaseName=$(echo "$DATA" | cut -s -d: -f12)
+DBName=$(echo "$DATA" | cut -s -d: -f21)
+DBUsername=$(echo "$DATA" | cut -s -d: -f22)
+DBPass=$(echo "$DATA" | cut -s -d: -f23)
 
-if [ -z "$DataBaseName" ]
+if [ -z "$DBName" ]
 then
 	echo "$(date): file_manager - blank owner by for $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 
-echo "$(date): file_manager - restoring $SQLFile to $DataBaseName by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo "$(date): file_manager - restoring $SQLFile to $DBName by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 show_title
 
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	MYSQLPassword=$(cat /etc/mysql.secret)
 	#Drop any existing database
-	mysqladmin -f --password="$MYSQLPassword" drop "$DataBaseName" 1>/dev/null 2>/dev/null
-	mysqladmin --password="$MYSQLPassword" create "$DataBaseName" 1>/dev/null
+	mysqladmin -f --password="$MYSQLPassword" drop "$DBName" 1>/dev/null 2>/dev/null
+	mysqladmin --password="$MYSQLPassword" create "$DBName" 1>/dev/null
 	#Restore the database
-	mysql --password="$MYSQLPassword" "$DataBaseName" < "$LOCATION" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	mysql --password="$MYSQLPassword" "$DBName" < "$LOCATION" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 else
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 	MYSQLPassword=$(cat /etc/mysql.secret)
 	#Drop any existing database
-	mysqladmin -f --password="$MYSQLPassword" drop "'"$DataBaseName"'" 1>/dev/null 2>/dev/null
-	mysqladmin --password="$MYSQLPassword" create "'"$DataBaseName"'" 1>/dev/null
+	mysqladmin -f --password="$MYSQLPassword" drop "'"$DBName"'" 1>/dev/null 2>/dev/null
+	mysqladmin --password="$MYSQLPassword" create "'"$DBName"'" 1>/dev/null
 	#Restore the database
-	mysql --password="$MYSQLPassword" "'"$DataBaseName"'" < "'"$LOCATION"'"
+	mysql --password="$MYSQLPassword" "'"$DBName"'" < "'"$LOCATION"'"
 	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
-echo  $"SQL restore process complete for"" $DataBaseName."
+
+#Set the permissions on the database
+if [ ! -z "$DBUsername" ] && [ ! -z "$DBPass" ]
+then
+	echo "CREATE USER '$DBUsername'@'localhost'  IDENTIFIED BY '$DBPass';" > /"opt/karoshi/.tempdata/mysqlperms1.$$.sql"
+	echo "UPDATE mysql.user SET Password=PASSWORD('$DBPass') WHERE User='$DBUsername' AND Host='localhost';" > /"opt/karoshi/.tempdata/mysqlperms2.$$.sql"
+	echo "FLUSH PRIVILEGES;" >> "/opt/karoshi/.tempdata/mysqlperms2.$$.sql"
+	#Grant mysql permissions to the database
+	echo "GRANT ALL PRIVILEGES ON $DBName.* TO '$DBUsername'@'localhost';" >> "/opt/karoshi/.tempdata/mysqlperms2.$$.sql"
+
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+	then	
+		mysql --password="$MYSQLPASS" < "/opt/karoshi/.tempdata/mysqlperms1.$$.sql"
+		mysql --password="$MYSQLPASS" < "/opt/karoshi/.tempdata/mysqlperms2.$$.sql"
+	else
+		scp /opt/karoshi/.tempdata/mysqlperms1.$$.sql root@$SERVERNAME:/opt/karoshi/.tempdata/	
+		scp /opt/karoshi/.tempdata/mysqlperms2.$$.sql root@$SERVERNAME:/opt/karoshi/.tempdata/
+
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+		MYSQLPassword=$(cat /etc/mysql.secret)
+		mysql --password="$MYSQLPASS" < "/opt/karoshi/.tempdata/mysqlperms1.'$$'.sql"
+		mysql --password="$MYSQLPASS" < "/opt/karoshi/.tempdata/mysqlperms2.'$$'.sql"
+
+		rm -f "/opt/karoshi/.tempdata/mysqlperms1.'$$'.sql"
+		rm -f "/opt/karoshi/.tempdata/mysqlperms2.'$$'.sql"
+		'	
+	fi
+
+	rm -f "/opt/karoshi/.tempdata/mysqlperms1.$$.sql"
+	rm -f "/opt/karoshi/.tempdata/mysqlperms2.$$.sql"
+fi
+
+echo  $"SQL restore process complete for"" $DBName."
 sleep 3
 #Reload the page
 echo '</form>
