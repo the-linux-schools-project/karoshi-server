@@ -199,6 +199,24 @@ export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
+function schedule_fallback_times {
+if [ -d /opt/karoshi/server_network/proxyservers/ ]
+then
+	for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
+	do
+		if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
+		then
+			/opt/karoshi/serversetup/modules/squid/scripts/schedule_fallback_times
+		else
+			scp /opt/karoshi/serversetup/modules/squid/scripts/schedule_fallback_times "$PROXYSERVER":/opt/karoshi/serversetup/modules/squid/scripts/
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$PROXYSERVER" '
+			/opt/karoshi/serversetup/modules/squid/scripts/schedule_fallback_times
+			'
+		fi	
+	done
+fi
+}
+
 function reloade2guardian {
 if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
 then
@@ -1266,6 +1284,7 @@ FALLBACKFILTER=$FILTERDATA
 	SOURCEPATH=/etc/e2guardian/lists/filtertimes/
 	TARGETPATH=/etc/e2guardian/lists/filtertimes/
 	datasync
+	schedule_fallback_times
 fi
 }
 
@@ -1289,6 +1308,7 @@ else
 	SOURCEPATH=/etc/e2guardian/lists/filtertimes/
 	TARGETPATH=/etc/e2guardian/lists/filtertimes/
 	datasync
+	schedule_fallback_times
 fi
 }
 

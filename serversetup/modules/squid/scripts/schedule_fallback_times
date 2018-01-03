@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ -d /etc/e2guardian/lists/filtertimes/ ]
+then
+	[ ! -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ] && mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
+	rm -f /opt/karoshi/server_network/cronjobs/"$(hostname-fqdn)"/jobs/e2gupdatefilterlist-fallback-*
+
+	for FilterGroup in $(ls -1 /etc/e2guardian/lists/filtertimes/)
+	do
+		for FilterData in $(ls -1 /etc/e2guardian/lists/filtertimes/"$FilterGroup"/)
+		do
+			source /etc/e2guardian/lists/filtertimes/"$FilterGroup/$FilterData"
+			DAYOFWEEK2="$DAYOFWEEK"
+			[ "$DAYOFWEEK" = 8 ] && DAYOFWEEK2="1-5"
+			[ "$DAYOFWEEK" = 9 ] && DAYOFWEEK2="5,6,7,1"
+			[ "$DAYOFWEEK" = 10 ] && DAYOFWEEK2="6,7"
+			[ "$DAYOFWEEK" = 11 ] && DAYOFWEEK2="*"
+			echo "$MINUTES1 $HOUR1 * * $DAYOFWEEK2 /opt/karoshi/\"useful scripts\"/e2gupdatefilterlist" > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/e2gupdatefilterlist-fallback-$MINUTES1-$HOUR1-$DAYOFWEEK.cron"
+			echo "$MINUTES2 $HOUR2 * * $DAYOFWEEK2 /opt/karoshi/\"useful scripts\"/e2gupdatefilterlist" > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/e2gupdatefilterlist-fallback-$MINUTES2-$HOUR2-$DAYOFWEEK.cron"
+		done	
+	done
+	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
+fi
+exit
