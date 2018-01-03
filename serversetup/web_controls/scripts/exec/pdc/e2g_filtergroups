@@ -226,7 +226,10 @@ fi
 function copydata {
 if [[ "$PROXYSERVER" != $(hostname-fqdn) ]]
 then
-	rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SOURCEPATH" "$PROXYSERVER":"$TARGETPATH"
+	if [ ! -z "$SOURCEPATH" ] && [ ! -z "$TARGETPATH" ]
+	then
+		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group "$SOURCEPATH" "$PROXYSERVER":"$TARGETPATH"
+	fi
 fi
 }
 
@@ -311,6 +314,44 @@ echo '
 }
 
 
+function DayOfWeek {
+case "$DAYOFWEEK" in
+	1 )
+		FilterDays=$"Monday"
+	;;
+	2 )
+		FilterDays=$"Tuesday"
+	;;
+	3 )
+		FilterDays=$"Wednesday"
+	;;
+	4 )
+		FilterDays=$"Thursday"
+	;;
+	5 )
+		FilterDays=$"Friday"
+	;;
+	6 )
+		FilterDays=$"Saturday"
+	;;
+	7 )
+		FilterDays=$"Sunday"
+	;;
+	8 )
+		FilterDays=$"Monday to Friday"
+	;;
+	9 )
+		FilterDays=$"Friday to Monday"
+	;;
+	10 )
+		FilterDays=$"Saturday and Sunday"
+	;;
+	11 )
+		FilterDays=$"Every day"
+	;;
+esac
+
+}
 function viewfilters {
 #Show add filtergroup button
 echo '<form name="myform" action="e2g_filtergroups.cgi" method="post">
@@ -335,7 +376,7 @@ echo '<table id="myTable" class="tablesorter" style="text-align: left;" >
 <thead><tr><th style="width: 50px;"><b>'$"Name"'</b></th>'
 if [ "$MOBILE" = no ]
 then
-	echo '<th style="width: 150px;"><b>'$"Description"'</b></th><th style="width: 130px;"><b>'$"Assigned Groups"'</b></th>'
+	echo '<th style="width: 150px;"><b>'$"Description"'</b></th><th style="width: 130px;"><b>'$"Assigned Groups"'</b></th><th style="width: 300px;"><b>'$"Times"'</b></th>'
 fi
 echo '<th></th><th></th></tr></thead><tbody>'
 
@@ -365,9 +406,26 @@ do
 			fi
 		fi
 		echo '</td>'
+
+		#Show any times and the fallbackgroups
+		echo '<td>'
+
+		if [ -d /etc/e2guardian/lists/filtertimes/"$FILTERGROUP" ]
+		then
+			for FilterTimeData in /etc/e2guardian/lists/filtertimes/"$FILTERGROUP"/*
+			do
+				FilterTimeData=$(basename "$FilterTimeData")
+				source "/etc/e2guardian/lists/filtertimes/$FILTERGROUP/$FilterTimeData"
+				DayOfWeek
+				echo ''"$FilterDays" "$HOUR1:$MINUTES1" $"to"" $HOUR2:$MINUTES2 &rarr; $FALLBACKFILTER"'<br>'
+			done
+		else
+			echo "24/7"
+		fi
 	fi
+
 	#Show actions for the filter groups
-	echo '<td style="vertical-align: top;"><input name="____ACTION____editfiltergroup____FILTERNAME____'"$FILTERGROUP"'____" type="submit" class="button" value="'$"Edit Filter Group"'"></td><td style="vertical-align: top;">'
+	echo '</td><td style="vertical-align: top;"><input name="____ACTION____editfiltergroup____FILTERNAME____'"$FILTERGROUP"'____" type="submit" class="button" value="'$"Edit Filter Group"'"></td><td style="vertical-align: top;">'
 	if [ "$FILTERGROUP" != f1 ]
 	then
 		echo '<input name="____ACTION____deletefiltergroup____FILTERNAME____'"$FILTERGROUP"'____" type="submit" class="button" value="'$"Delete Filter Group"'">'
@@ -525,11 +583,82 @@ showtitle
 source /etc/e2guardian/lists/filtergroups/"$FILTERNAME"/details
 
 #Show details for the group
-echo '<form name="myform" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'"><input type="hidden" name="____ACTION____" value="reallyeditlable"><table class="tablesorter" style="text-align: left;" ><tbody>
-<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Description"'</b></td><td><input tabindex= "2" value="'"$FILTERDESC"'" name="____FILTERDATA2____" style="width: '"$WIDTH2"'px;" size="20" type="text"></td><td><input value='$"Submit"' class="button" type="submit"></td></tr></tbody></table><br>'
+echo '<form name="ChangeFilterName" action="e2g_filtergroups.cgi" method="post"><input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'"><input type="hidden" name="____ACTION____" value="reallyeditlable">
+<table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: '"$WIDTH1"'px;"><b>'$"Filter Name"'</b></td><td>'"$FILTERNAME"'</td><td rowspan="2"><input value='$"Submit"' class="button" type="submit"></td></tr>
+<tr><td><b>'$"Description"'</b></td><td><input value="'"$FILTERDESC"'" name="____FILTERDATA2____" style="width: '"$WIDTH2"'px;" size="20" type="text"></td></tr>
+</tbody></table><br>'
 
+
+#Show time and fallback options
+if [ "$FILTERNAME" != f1 ]
+then
+	echo '</form><form name="AddFilterTime" action="e2g_filtergroups.cgi" method="post">
+	<input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'"><input type="hidden" name="____ACTION____" value="reallyaddtime">
+	<b>'$"Add Filter Fallback Time"'</b><br>
+	<table class="tablesorter" style="text-align: left;" >
+	<tr><td style="width: '$WIDTH1'px;">'$"Start Time"'</td><td>
+		<input tabindex="1" name="____HOUR1____" size="2" maxlength="2" type="text">:
+		<input tabindex="2" name="____MINUTES1____" size="2" maxlength="2" type="text">
+	</td> <td rowspan="4"><input value="'$"Add"'" class="button" type="submit"></td></tr>
+	<tr><td>'$"End Time"'</td><td>
+		<input tabindex="3" name="____HOUR2____" size="2" maxlength="2" type="text">:
+		<input tabindex="4"name="____MINUTES2____" size="2" maxlength="2" type="text">
+	</td></tr>
+	<tr><td>'$"Days"'</td><td>
+		<select tabindex="5" name="____DAYOFWEEK____" style="width: 200px;">
+			<option value="11">'$"Every day"'</option>
+			<option value="8">'$"Monday to Friday"'</option>
+			<option value="9">'$"Friday to Monday"'</option>
+			<option value="10">'$"Saturday and Sunday"'</option>
+			<option value="1">'$"Monday"'</option>
+			<option value="2">'$"Tuesday"'</option>
+			<option value="3">'$"Wednesday"'</option>
+			<option value="4">'$"Thursday"'</option>
+			<option value="5">'$"Friday"'</option>
+			<option value="6">'$"Saturday"'</option>
+			<option value="7">'$"Sunday"'</option>
+		</select>
+	</td></tr>
+	<tr><td>'$"Fallback filter"'</td><td><select tabindex="6" name="____FILTERDATA____" style="width: 200px;">'
+
+	for FilterNames in /etc/e2guardian/lists/filtergroups/*
+	do
+		FilterName=$(basename "$FilterNames")
+		if [ "$FilterName" != "$FILTERNAME" ]
+		then
+			echo '<option value="'"$FilterName"'">'"$FilterName"'</option>'
+		fi
+	done
+	echo '</select></td></tr></tbody></table><br>'
+
+	if [ -d /etc/e2guardian/lists/filtertimes/"$FILTERNAME" ]
+	then
+		echo '</form><form name="ViewFilterTimes" action="e2g_filtergroups.cgi" method="post">
+		<input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'">
+		<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+		<tr><th style="width: '"$WIDTH6"'px;"><b>'$"Assigned Filter Group Fallback Times"'</b></th><th style="width: '"$WIDTH7"'px;"><b>'$"Delete"'</b></th></tr></thead><tbody>'
+
+		for FilterTimeData in /etc/e2guardian/lists/filtertimes/"$FILTERNAME"/*
+		do
+			FilterTimeData=$(basename "$FilterTimeData")
+			source "/etc/e2guardian/lists/filtertimes/$FILTERNAME/$FilterTimeData"
+
+			DayOfWeek
+
+			echo '<tr><td>'"$FilterDays" "$HOUR1:$MINUTES1" $"to"" $HOUR2:$MINUTES2 &rarr; $FALLBACKFILTER"'</td><td>
+				<button class="'"$HELPCLASS"'" name="____RemoveFilterGroup____" value="____ACTION____removetime____FILTERNAME____'"$FILTERNAME"'____FILTERDATA____'"$FilterTimeData"'____">
+					<img src="'"$ICON1"'" alt="'"$FILTERGROUP" $"Remove"'">
+					<span>'$"Remove"'<br>'"$FilterDays" "$HOUR1:$MINUTES1" $"to"" $HOUR2:$MINUTES2"'</span>
+				</button>
+
+			</td></tr>'
+		done
+		echo '</tbody></table></form><br>'
+	fi
+fi
 #Show option to edit banned site lists and part banned site lists
-echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">
+echo '</form><form name="EditFilterLists" action="e2g_filtergroups.cgi" method="post">
 <input type="hidden" name="____FILTERNAME____" value="'"$FILTERNAME"'">
 <table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
 <tr><th style="width: '"$WIDTH6"'px;"><b>'$"Filter Group Options"'</b></th><th style="width: '"$WIDTH7"'px;"><b>'$"Edit"'</b></th></tr></thead><tbody>
@@ -573,7 +702,7 @@ echo '<tr><td>'$"Banned Phrase Categories"'</td><td style="vertical-align: top;"
 </tbody></table><br>
 '
 
-echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">'
+echo '</form><form name="AddGroups" action="e2g_filtergroups.cgi" method="post">'
 
 if [ "$FILTERNAME" != f1 ]
 then
@@ -586,7 +715,7 @@ then
 
 	echo '</td><td><input value="'$"Add Group"'" class="button" type="submit"></td></tr></tbody></table><br>'
 
-	echo '</form><form name="myform" action="e2g_filtergroups.cgi" method="post">'
+	echo '</form><form name="AssignedGroups" action="e2g_filtergroups.cgi" method="post">'
 
 
 	#Show any existing groups that have been assigned.
@@ -628,6 +757,10 @@ SOURCEPATH=/etc/e2guardian/lists/filtergroupslist
 TARGETPATH=/etc/e2guardian/lists
 datasync
 
+SOURCEPATH=/etc/e2guardian/lists/filtergroups
+TARGETPATH=/etc/e2guardian/lists
+datasync
+
 }
 
 function reallyaddgroup {
@@ -660,6 +793,10 @@ done
 
 #Sync the data to all proxy servers
 SOURCEPATH=/etc/e2guardian/lists/filtergroupslist
+TARGETPATH=/etc/e2guardian/lists
+datasync
+
+SOURCEPATH=/etc/e2guardian/lists/filtergroups
 TARGETPATH=/etc/e2guardian/lists
 datasync
 }
@@ -1104,6 +1241,57 @@ datasync
 activatechanges
 }
 
+function reallyaddtime {
+HOUR1=$(echo "$DATA" | cut -s -d: -f11 | tr -cd 0-9)
+MINUTES1=$(echo "$DATA" | cut -s -d: -f12 | tr -cd 0-9)
+HOUR2=$(echo "$DATA" | cut -s -d: -f13 | tr -cd 0-9)
+MINUTES2=$(echo "$DATA" | cut -s -d: -f14 | tr -cd 0-9)
+DAYOFWEEK=$(echo "$DATA" | cut -s -d: -f15 | tr -cd 0-9)
+
+if [ -z "$HOUR1" ] || [ -z "$HOUR2" ] || [ -z "$MINUTES1" ] || [ -z "$MINUTES2" ] || [ -z "$DAYOFWEEK" ] || [ -z "$FILTERNAME" ] || [ -z "$FILTERDATA" ]
+then
+	echo "$(date): e2g_filtergroups - blank filter times by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+else
+	echo "$(date): e2g_filtergroups - adding a filter time for $FILTERNAME starting at $HOUR1:$MINUTES1 and ending at $HOUR2:$MINUTES2 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+	[ ! -d /etc/e2guardian/lists/filtertimes/"$FILTERNAME" ] && mkdir -p /etc/e2guardian/lists/filtertimes/"$FILTERNAME"
+	echo "HOUR1=$HOUR1
+MINUTES1=$MINUTES1
+HOUR2=$HOUR2
+MINUTES2=$MINUTES2
+DAYOFWEEK=$DAYOFWEEK #1-7 Monday to Sunday, 8 Monday to Friday,9 Friday to Monday, 10 Saturday and Sunday, 11 Every day
+FALLBACKFILTER=$FILTERDATA
+" > "/etc/e2guardian/lists/filtertimes/$FILTERNAME/$HOUR1:$MINUTES1-$HOUR2:$MINUTES2.$DAYOFWEEK.$FILTERDATA"
+
+	SOURCEPATH=/etc/e2guardian/lists/filtertimes/
+	TARGETPATH=/etc/e2guardian/lists/filtertimes/
+	datasync
+fi
+}
+
+function removetime {
+
+FilterTimeFile=$(echo "$FILTERDATA" | sed 's/%3A/:/g')
+
+if [ -z "$FilterTimeFile" ]
+then
+	echo "$(date): e2g_filtergroups - blank filter time file by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+else
+	echo "$(date): e2g_filtergroups - deleting filter time file $FilterTimeFile by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ -f /etc/e2guardian/lists/filtertimes/"$FILTERNAME/$FilterTimeFile"	]
+	then
+		rm -f /etc/e2guardian/lists/filtertimes/"$FILTERNAME/$FilterTimeFile"
+		if [ $(ls -1 /etc/e2guardian/lists/filtertimes/"$FILTERNAME"/ | wc -l) = 0 ]
+		then
+			rm -f -R /etc/e2guardian/lists/filtertimes/"$FILTERNAME"/
+		fi 	
+	fi
+	SOURCEPATH=/etc/e2guardian/lists/filtertimes/
+	TARGETPATH=/etc/e2guardian/lists/filtertimes/
+	datasync
+fi
+}
+
 [ "$ACTION" = reallyeditlable ] && ( reallyeditlabels ; viewfilters )
 [ "$ACTION" = add ] && addfiltergroup 
 [ "$ACTION" = reallyadd ] && ( reallyaddfiltergroup ; viewfilters )
@@ -1122,6 +1310,8 @@ activatechanges
 [ "$ACTION" = viewcustomsites ] && viewcustomsites
 [ "$ACTION" = modifycustomsite ] && ( modifycustomsite ; viewcustomsites )
 [ "$ACTION" = activatechanges ] && ( activatechanges ; viewfilters )
+[ "$ACTION" = reallyaddtime ] && ( reallyaddtime ; editfiltergroup )
+[ "$ACTION" = removetime ] && ( removetime ; editfiltergroup )
 
 exit
 

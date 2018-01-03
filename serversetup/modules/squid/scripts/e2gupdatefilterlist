@@ -32,6 +32,100 @@ do
 		#Check to see if any groups have been assigned to this filtergroup.
 		if [ -d /etc/e2guardian/lists/filtergroups/"$FILTERGROUP"/assigned_groups ] 
 		then
+			#Check if there are any custom times for this filtergroup.
+			if [ -d /etc/e2guardian/lists/filtertimes/"$FILTERGROUP" ]
+			then
+				#Check if we are any of the times set match the current time
+				CurrentTime=$(date +%H%M)
+				CurrentDayofWeek=$(date +%u)
+				for FilterTimes in /etc/e2guardian/lists/filtertimes/"$FILTERGROUP"/*
+				do
+					FilterTimeData=$(basename "$FilterTimes")
+					source /etc/e2guardian/lists/filtertimes/"$FILTERGROUP"/$FilterTimeData
+					StartTime="$HOUR1$MINUTES1"
+					EndTime="$HOUR2$MINUTES2"
+					#Check for standard days of the week or every day of the week
+					if [ "$CurrentDayofWeek" -ge 1 ] && [ "$DAYOFWEEK" -le 7 ] || [ "$DAYOFWEEK" = 11 ]
+					then
+						if [ "$CurrentDayofWeek" = "$DAYOFWEEK" ] || [ "$DAYOFWEEK" = 11 ]
+						then
+							#Check if we are in the time slot
+							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
+							then
+								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+							fi
+						fi
+					fi
+
+					#Check for Monday to Friday
+					if [ "$DAYOFWEEK" = 8 ]
+					then
+						if [ "$CurrentDayofWeek" -ge 1 ] && [ "$CurrentDayofWeek" -le 5 ]
+						then
+							if [ "$CurrentDayofWeek" = 1 ]
+							then
+								if [ "$CurrentTime" -gt "$StartTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							elif [ "$CurrentDayofWeek" = 5 ]
+							then
+								if [ "$CurrentTime" -lt "$EndTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							else
+								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+							fi
+						fi
+					fi
+					#Check Friday to Monday
+					if [ "$DAYOFWEEK" = 9 ]
+					then
+						if [ "$CurrentDayofWeek" -ge 5 ] && [ "$CurrentDayofWeek" -le 7 ]
+						then
+							if [ "$CurrentDayofWeek" = 5 ]
+							then
+								if [ "$CurrentTime" -gt "$StartTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							elif [ "$CurrentDayofWeek" = 7 ]
+							then
+								if [ "$CurrentTime" -lt "$EndTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							else
+								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+							fi	
+						fi
+					fi
+					#Check Saturday and Sunday
+					if [ "$DAYOFWEEK" = 10 ]
+					then
+						if [ "$CurrentDayofWeek" -ge 6 ] && [ "$CurrentDayofWeek" -le 7 ]
+						then
+							if [ "$CurrentDayofWeek" = 6 ]
+							then
+								if [ "$CurrentTime" -gt "$StartTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							elif [ "$CurrentDayofWeek" = 7 ]
+							then
+								if [ "$CurrentTime" -lt "$EndTime" ]
+								then
+									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								fi
+							else
+								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+							fi
+						fi
+					fi
+				done
+			fi
+
 			for ASSIGNEDGROUPS in /etc/e2guardian/lists/filtergroups/"$FILTERGROUP"/assigned_groups/*
 			do
 				ASSIGNEDGROUP=$(basename "$ASSIGNEDGROUPS")

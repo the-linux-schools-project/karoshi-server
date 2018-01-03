@@ -147,6 +147,35 @@ then
 		get_data
 		FILTERDATA4="${DATAENTRY//REPLACEUNDERSCORE/_}"
 	fi
+
+	if [ "$ACTION" = reallyaddtime ]
+	then
+		END_POINT=30
+		DATANAME=HOUR1
+		DO_BREAK=yes
+		get_data
+		HOUR1="${DATAENTRY//REPLACEUNDERSCORE/_}"
+
+		DATANAME=HOUR2
+		DO_BREAK=yes
+		get_data
+		HOUR2="${DATAENTRY//REPLACEUNDERSCORE/_}"
+
+		DATANAME=MINUTES1
+		DO_BREAK=yes
+		get_data
+		MINUTES1="${DATAENTRY//REPLACEUNDERSCORE/_}"
+
+		DATANAME=MINUTES2
+		DO_BREAK=yes
+		get_data
+		MINUTES2="${DATAENTRY//REPLACEUNDERSCORE/_}"
+
+		DATANAME=DAYOFWEEK
+		DO_BREAK=yes
+		get_data
+		DAYOFWEEK="${DATAENTRY//REPLACEUNDERSCORE/_}"
+	fi
 fi
 #########################
 #Check data
@@ -177,7 +206,7 @@ else
 fi
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:$MOBILE:$HOUR1:$MINUTES1:$HOUR2:$MINUTES2:$DAYOFWEEK:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit
