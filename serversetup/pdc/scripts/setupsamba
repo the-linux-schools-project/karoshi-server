@@ -142,12 +142,10 @@ chmod 0755 /bin/hostname-fqdn
 #Get new root samba password
 ###############################
 function getrootsmbpasswd {
-echo `date`: "Asking the user a new root samba password" >> /opt/karoshi/serversetup/install_log
-DATA=`yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 400 --wrap --text "$ROOTPASSWDMSG\n\n" --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null`
-SAMBAROOTPASSWORD1=`echo $DATA | cut -d"|" -f1`
-SAMBAROOTPASSWORD2=`echo $DATA | cut -d"|" -f2`
-
-echo $SAMBAROOTPASSWORD1 > /opt/karoshi/.tempdata/sambapassword
+echo "$(date): Asking the user a new root samba password" >> /opt/karoshi/serversetup/install_log
+DATA=$(yad --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=''$"Setup"' '$"Samba"'' --width 400 --wrap --text "$ROOTPASSWDMSG\n\n" --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null)
+SAMBAROOTPASSWORD1=$(echo "$DATA" | cut -d"|" -f1)
+SAMBAROOTPASSWORD2=$(echo "$DATA" | cut -d"|" -f2)
 }
 
 ###############################

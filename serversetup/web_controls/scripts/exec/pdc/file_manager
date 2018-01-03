@@ -1754,7 +1754,7 @@ else
 	RENAMEFILE=$(basename "$LOCATION")
 	LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 
-	echo '<br><table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+	echo '<br><table class="tablesorter" style="text-align: left;" ><tbody>
 	<tr><td style="height: 25px; width: 180px;"><b>'$"Location"'</b></td>'
 	[ "$MOBILE" = yes ] && echo "</tr><tr>" 
 	echo '<td>'"$LOCATION"'</td></tr>
@@ -2037,6 +2037,7 @@ function create_dir {
 [ -z "$LOCATION" ] && LOCATION=/
 LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 convert_special_chars
+getlastlocation
 show_title
 echo '
 <table class="tablesorter" style="text-align: left;" ><tbody>
@@ -2120,8 +2121,9 @@ function create_file {
 
 [ -z "$LOCATION" ] && LOCATION=/
 LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
-show_title
 convert_special_chars
+getlastlocation
+show_title
 CREATEFILEMSG="Create File"
 echo '
 <table class="tablesorter" style="text-align: left;" ><tbody>
