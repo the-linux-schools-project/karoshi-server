@@ -41,7 +41,7 @@ do
 				for FilterTimes in /etc/e2guardian/lists/filtertimes/"$FILTERGROUP"/*
 				do
 					FilterTimeData=$(basename "$FilterTimes")
-					source /etc/e2guardian/lists/filtertimes/"$FILTERGROUP"/$FilterTimeData
+					source /etc/e2guardian/lists/filtertimes/"$FILTERGROUP/$FilterTimeData"
 					StartTime="$HOUR1$MINUTES1"
 					EndTime="$HOUR2$MINUTES2"
 					#Check for standard days of the week or every day of the week
@@ -53,6 +53,7 @@ do
 							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
 							then
 								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
+								echo "check 1-7 and 11 pass filternumer is now $FILTERNUMBER"
 							fi
 						fi
 					fi
@@ -62,19 +63,9 @@ do
 					then
 						if [ "$CurrentDayofWeek" -ge 1 ] && [ "$CurrentDayofWeek" -le 5 ]
 						then
-							if [ "$CurrentDayofWeek" = 1 ]
+							#Check if we are in the time slot
+							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
 							then
-								if [ "$CurrentTime" -gt "$StartTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							elif [ "$CurrentDayofWeek" = 5 ]
-							then
-								if [ "$CurrentTime" -lt "$EndTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							else
 								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
 							fi
 						fi
@@ -84,19 +75,9 @@ do
 					then
 						if [ "$CurrentDayofWeek" -ge 5 ] && [ "$CurrentDayofWeek" -le 7 ]
 						then
-							if [ "$CurrentDayofWeek" = 5 ]
+							#Check if we are in the time slot
+							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
 							then
-								if [ "$CurrentTime" -gt "$StartTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							elif [ "$CurrentDayofWeek" = 7 ]
-							then
-								if [ "$CurrentTime" -lt "$EndTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							else
 								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
 							fi	
 						fi
@@ -106,19 +87,9 @@ do
 					then
 						if [ "$CurrentDayofWeek" -ge 6 ] && [ "$CurrentDayofWeek" -le 7 ]
 						then
-							if [ "$CurrentDayofWeek" = 6 ]
+							#Check if we are in the time slot
+							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
 							then
-								if [ "$CurrentTime" -gt "$StartTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							elif [ "$CurrentDayofWeek" = 7 ]
-							then
-								if [ "$CurrentTime" -lt "$EndTime" ]
-								then
-									FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								fi
-							else
 								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
 							fi
 						fi
@@ -145,5 +116,7 @@ getent passwd | grep /home/users/tech | cut -d: -f1 >> /etc/squid/stafflist
 getent passwd | grep /home/users/itadmin | cut -d: -f1 >> /etc/squid/stafflist
 getent passwd | grep /home/users/staff | cut -d: -f1 >> /etc/squid/stafflist
 getent passwd | grep /home/users/officestaff | cut -d: -f1 >> /etc/squid/stafflist
+
+service e2guardian reload 1>/dev/null
 exit
 
