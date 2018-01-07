@@ -53,7 +53,6 @@ do
 							if [ "$CurrentTime" -gt "$StartTime" ] && [ "$CurrentTime" -lt "$EndTime" ]
 							then
 								FILTERNUMBER=$(echo "$FALLBACKFILTER" | tr -cd 0-9)
-								echo "check 1-7 and 11 pass filternumer is now $FILTERNUMBER"
 							fi
 						fi
 					fi

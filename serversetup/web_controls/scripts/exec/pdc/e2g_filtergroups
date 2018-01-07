@@ -1266,20 +1266,34 @@ HOUR2=$(echo "$DATA" | cut -s -d: -f13 | tr -cd 0-9)
 MINUTES2=$(echo "$DATA" | cut -s -d: -f14 | tr -cd 0-9)
 DAYOFWEEK=$(echo "$DATA" | cut -s -d: -f15 | tr -cd 0-9)
 
+StartTime="$HOUR1$MINUTES1"
+EndTime="$HOUR2$MINUTES2"
+ScheduleFilter=yes
+
 if [ -z "$HOUR1" ] || [ -z "$HOUR2" ] || [ -z "$MINUTES1" ] || [ -z "$MINUTES2" ] || [ -z "$DAYOFWEEK" ] || [ -z "$FILTERNAME" ] || [ -z "$FILTERDATA" ]
 then
 	echo "$(date): e2g_filtergroups - blank filter times by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-else
-	echo "$(date): e2g_filtergroups - adding a filter time for $FILTERNAME starting at $HOUR1:$MINUTES1 and ending at $HOUR2:$MINUTES2 by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ScheduleFilter=no
+fi
+
+if [ "$StartTime" -ge "$EndTime" ] && [ "$ScheduleFilter" = yes ]
+then
+	echo "$(date): e2g_filtergroups - the start time is greater than the end time by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	ScheduleFilter=no
+fi
+
+if [ "$ScheduleFilter" = yes ]
+then
+	echo "$(date): e2g_filtergroups - adding a filter time for $FILTERNAME starting at $HOUR1:$MINUTES1 and ending at $HOUR2:$MINUTES2 falling back to $FILTERDATA on day of week $DAYOFWEEK where 1-7 Monday to Sunday, 8 Monday to Friday,9 Friday to Monday, 10 Saturday and Sunday, 11 every day by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 	[ ! -d /etc/e2guardian/lists/filtertimes/"$FILTERNAME" ] && mkdir -p /etc/e2guardian/lists/filtertimes/"$FILTERNAME"
 	echo "HOUR1=$HOUR1
-MINUTES1=$MINUTES1
-HOUR2=$HOUR2
-MINUTES2=$MINUTES2
-DAYOFWEEK=$DAYOFWEEK #1-7 Monday to Sunday, 8 Monday to Friday,9 Friday to Monday, 10 Saturday and Sunday, 11 Every day
-FALLBACKFILTER=$FILTERDATA
-" > "/etc/e2guardian/lists/filtertimes/$FILTERNAME/$HOUR1:$MINUTES1-$HOUR2:$MINUTES2.$DAYOFWEEK.$FILTERDATA"
+	MINUTES1=$MINUTES1
+	HOUR2=$HOUR2
+	MINUTES2=$MINUTES2
+	DAYOFWEEK=$DAYOFWEEK #1-7 Monday to Sunday, 8 Monday to Friday,9 Friday to Monday, 10 Saturday and Sunday, 11 Every day
+	FALLBACKFILTER=$FILTERDATA
+	" > "/etc/e2guardian/lists/filtertimes/$FILTERNAME/$HOUR1:$MINUTES1-$HOUR2:$MINUTES2.$DAYOFWEEK.$FILTERDATA"
 
 	SOURCEPATH=/etc/e2guardian/lists/filtertimes/
 	TARGETPATH=/etc/e2guardian/lists/filtertimes/

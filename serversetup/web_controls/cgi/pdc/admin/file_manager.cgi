@@ -441,14 +441,14 @@ END_POINT=12
 COUNTER=2
 while [ $COUNTER -le $END_POINT ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = ITEMMOVEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [ $(echo "$DATAHEADER"'check') = ITEMMOVEcheck ]
 	then
-		let COUNTER=$COUNTER+1
-		ITEMMOVE=`echo $DATA | cut -s -d'_' -f$COUNTER  | sed 's/%2F/\//g' | sed "s/Z%25%25%25%25%25Z/_/g"`
+		let COUNTER="$COUNTER"+1
+		ITEMMOVE=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER"  | sed 's/%2F/\//g' | sed "s/Z%25%25%25%25%25Z/_/g")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 if [ "$ACTION" = notset ]
@@ -480,7 +480,7 @@ fi
 
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:$DBNAME:$DBUSERNAME:$DBPASSWORD" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:$DBNAME:$DBUSERNAME:$DBPASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'

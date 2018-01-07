@@ -215,8 +215,8 @@ if [[ "$CURRENT_SERVER" != $(hostname-fqdn) ]] && [[ "$NEW_SERVER" != $(hostname
 then
 	[ ! -d /opt/karoshi/mount/"$CURRENT_SERVER"/home ] && mkdir -p /opt/karoshi/mount/"$CURRENT_SERVER"/home
 	[ ! -d /opt/karoshi/mount/"$NEW_SERVER"/home ] && mkdir -p /opt/karoshi/mount/"$NEW_SERVER"/home
-	sshfs root@"$CURRENT_SERVER:/home /opt/karoshi/mount/$CURRENT_SERVER/home" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	sshfs root@"$NEW_SERVER:/home /opt/karoshi/mount/$NEW_SERVER/home" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	sshfs root@"$CURRENT_SERVER:/home" "/opt/karoshi/mount/$CURRENT_SERVER/home" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	sshfs root@"$NEW_SERVER:/home" "/opt/karoshi/mount/$NEW_SERVER/home" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	rsync --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "/opt/karoshi/mount/$CURRENT_SERVER/$CURRENTPATH" "/opt/karoshi/mount/$NEW_SERVER/$HOMEPATH" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Unmount sshfs shares
 	fusermount -u /opt/karoshi/mount/"$CURRENT_SERVER"/home 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"

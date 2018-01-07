@@ -123,6 +123,7 @@ fi
 [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 export TEXTDOMAIN=karoshi-server
 SHOWMOVE=no
+MOVECHECK=yes
 #icons
 if [ "$MOBILE" = no ]
 then
@@ -214,6 +215,10 @@ LINECOLOUR2="#DCDCDC"
 #Show SERVERNAME choice
 if [ "$SERVERNAME" = notset ]
 then
+	if [ ! -z "$ITEMMOVE" ]
+	then
+		echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
+	fi
 	#Show list of servers
 	if [ "$MOBILE" = no ]
 	then
@@ -313,7 +318,7 @@ fi
 
 if [ "$SHOWMOVE" = yes ]
 then
-	echo '</tr><tr><td colspan="'"$COLSPAN2"'">'"$ITEMMOVE2"'</td></tr><tr>'
+	echo '</tr><tr><td colspan="'"$COLSPAN2"'">'"$COPYSERVERNAME"':'"$ITEMMOVE2"'</td></tr><tr>'
 	if [ "$MOVECHECK" = yes ]
 	then 
 
@@ -403,24 +408,23 @@ fi
 if [ ! -z "$ITEMMOVE" ]
 then
 	convert_special_chars2
-	ITEMMOVE2=`echo $ITEMMOVE | sed "s/Z%%%%%Z/_/g"`
-
-	#Check to see that item is not on the protected list
-	MOVECHECK=yes
+	ITEMMOVE2=$(echo "$ITEMMOVE" | sed "s/Z%%%%%Z/_/g")
+	COPYSERVERNAME=$(echo "$ITEMMOVE2" | cut -d: -f1)
+	ITEMMOVE2=$(echo "$ITEMMOVE2" | cut -d: -f4 | sed 's/+/ /g')
 	#Check that file is not in a banned path
-	if [ `echo ${LOCATION_LIST[@]:0} | grep -c -w "$ITEMMOVE2"` -gt 0 ]
+	if [[ $(echo "${LOCATION_LIST[@]:0}" | grep -c -w "$ITEMMOVE2") -gt 0 ]]
 	then
 		MOVECHECK=no
 	fi
-	for PATHCHECK in `echo ${LOCATION_LIST2[@]:0}`
+	for PATHCHECK in $(echo "${LOCATION_LIST2[@]:0}")
 	do
-		if [ `echo "$ITEMMOVE2" | grep -c $PATHCHECK` -gt 0 ]
+		if [[ $(echo "$ITEMMOVE2" | grep -c "$PATHCHECK") -gt 0 ]]
 		then
 			MOVECHECK=no
 		fi
 	done
 
-	if [ $MOVECHECK = yes ]
+	if [ "$MOVECHECK" = yes ]
 	then
 		SHOWMOVE=yes
 		echo '<input name="_ITEMMOVE_" value="'$ITEMMOVE'" type="hidden">'
@@ -430,7 +434,7 @@ if [ -z "$LOCATION" ]
 then
 	DISPLOCATION=/
 else
-	DISPLOCATION=$LOCATION
+	DISPLOCATION="$LOCATION"
 fi
 
 SHOWRESTORE=no
@@ -500,55 +504,55 @@ then
 			FILE2=$(echo "$FILE" | sed "s/_/Z%%%%%Z/g")
 			LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
 
-			ICON1=$ICON15
+			ICON1="$ICON15"
 			FILEACTION=DOWNLOAD
 			if [ -d "$FILE" ]
 			then
-				ICON1=$ICON16
+				ICON1="$ICON16"
 				FILEACTION=ENTER
 			fi
 
-			if [ $MOBILE = yes ]
+			if [ "$MOBILE" = yes ]
 			then
-				if [ $LINECOLOUR = "$LINECOLOUR1" ]
+				if [ "$LINECOLOUR" = "$LINECOLOUR1" ]
 				then
-					LINECOLOUR=$LINECOLOUR2
+					LINECOLOUR="$LINECOLOUR2"
 				else
-					LINECOLOUR=$LINECOLOUR1
+					LINECOLOUR="$LINECOLOUR1"
 				fi
-				echo '<tr style="background-color:'$LINECOLOUR'"><td colspan="'$COLSPAN'">'$FILENAME'</td></tr><tr style="background-color:'$LINECOLOUR'">'
+				echo '<tr style="background-color:'"$LINECOLOUR"'"><td colspan="'"$COLSPAN"'">'"$FILENAME"'</td></tr><tr style="background-color:'"$LINECOLOUR"'">'
 			else
-				echo '<tr style="height: '$VIEWHEIGHT1'px;">'
+				echo '<tr style="height: '"$VIEWHEIGHT1"'px;">'
 			fi
 
 			echo '
 			<td>
-			<button class="info" name="_Rename_" value="_ACTION_RENAME_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_">
+			<button class="info" name="_Rename_" value="_ACTION_RENAME_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$FILE2"'_">
 			<img src="'$ICON3'" alt="'$"Rename"'">
-			<span>'$"Rename"'<br>'$FILENAME'</span>
+			<span>'$"Rename"'<br>'"$FILENAME"'</span>
 			</button>
 			</td>
 			<td>
-			<button class="info" name="_Move_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'$FILE2'_LOCATION_'$LOCATION2'_">
-			<img src="'$ICON4'" alt="'$"Move/Copy"'">
-			<span>'$"Move/Copy"'<br>'$FILENAME'</span>
+			<button class="info" name="_Move_" value="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_ITEMMOVE_'"$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$FILE2"'_LOCATION_'"$LOCATION2"'_">
+			<img src="'"$ICON4"'" alt="'$"Move/Copy"'">
+			<span>'$"Move/Copy"'<br>'"$FILENAME"'</span>
 			</button>
 			</td>
 			<td>
-			<button class="info" name="_Delete_" value="_ACTION_DELETE_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_">
-			<img src="'$ICON5'" alt="'$"Delete"'">
-			<span>'$"Delete"'<br>'$FILENAME'</span>
+			<button class="info" name="_Delete_" value="_ACTION_DELETE_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$FILE2"'_">
+			<img src="'"$ICON5"'" alt="'$"Delete"'">
+			<span>'$"Delete"'<br>'"$FILENAME"'</span>
 			</button>
 			</td>
 			'
 			echo '<td>
-			<button class="'$INFOCLASS1'" name="_Properties_" value="_ACTION_SETPERMS_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_">
-			<img src="'$ICON2'" alt="'$"Properties"'">
-			<span>'$"Properties"'<br>'$FILENAME'</span>
+			<button class="'"$INFOCLASS1"'" name="_Properties_" value="_ACTION_SETPERMS_SERVERTYPE_'"$SERVERTYPE"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$FILE2"'_">
+			<img src="'"$ICON2"'" alt="'$"Properties"'">
+			<span>'$"Properties"'<br>'"$FILENAME"'</span>
 			</button>
 			</td><td>'
 
-			if [ $FILEACTION = ENTER ]
+			if [ "$FILEACTION" = ENTER ]
 			then
 				echo '<button class="'$INFOCLASS1'" name="_Enter_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_'$FILE2'_"><img src="'$ICON1'" alt="'$"Enter"'"><span>'$"Enter"'<br>'$FILENAME'<br></span></button>'
 			else
@@ -614,7 +618,7 @@ then
 		</button>
 		</td>
 		<td>
-		<button class=\"info\" name=\"_Move_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\">
+		<button class=\"info\" name=\"_Move_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'"$SERVERNAME"':'"$SERVERTYPE"':'"$SERVERMASTER"':$FILE2"_"LOCATION_$LOCATION2"_"\">
 		<img src=\"'$ICON4'\" alt=\"'$"Move/Copy"'\">
 		<span>'$"Move/Copy"'<br>$FILENAME</span>
 		</button>
@@ -704,7 +708,7 @@ then
 		</button>
 		</td>
 		<td>
-		<button class=\"info\" name=\"_Move_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_$FILE2"_"LOCATION_$LOCATION2"_"\">
+		<button class=\"info\" name=\"_Move_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_ITEMMOVE_'"$SERVERNAME"':'"$SERVERTYPE"':'"$SERVERMASTER"':$FILE2"_"LOCATION_$LOCATION2"_"\">
 		<img src=\"'$ICON4'\" alt=\"'$"Move/Copy"'\">
 		<span>'$"Move/Copy"'<br>$FILENAME</span>
 		</button>
@@ -1453,159 +1457,140 @@ ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
 fi
 }
 
-
-function really_move_item {
-convert_special_chars
-convert_special_chars2
-ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
-
-echo `date`: file_manager - moving "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-EXISTCHECK=go
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -f "$LOCATION"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
-else
-EXISTCHECK=stop
-fi
-done
-
-[ -d "$LOCATION/" ] && mv -f "$ITEMMOVE" "$LOCATION"/"$FILETOCOPY"
-fi
-
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - moving "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-EXISTCHECK=go
-ITEMMOVE=`echo '$ITEMMOVE'`
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -f "'$LOCATION'"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
-else
-EXISTCHECK=stop
-fi
-done
-[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
-'
-fi
-
-if [ $SERVERTYPE = federatedslave ]
-then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: file_manager \(federated mode\) - moving "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-EXISTCHECK=go
-ITEMMOVE=`echo '$ITEMMOVE'`
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -f "'$LOCATION'"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
-else
-EXISTCHECK=stop
-fi
-done
-[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
-'\''
-'
-fi
-
-ITEMMOVE=""
-#Display location
-show_directory
-}
-
 function really_copy_item {
 convert_special_chars
 convert_special_chars2
-ITEMMOVE=`echo $ITEMMOVE| sed "s/Z%%%%%Z/_/g"`
+ITEMMOVE=$(echo "$ITEMMOVE" | sed "s/Z%%%%%Z/_/g")
+COPYSERVERNAME=$(echo "$ITEMMOVE" | cut -d: -f1)
+COPYSERVERTYPE=$(echo "$ITEMMOVE" | cut -d: -f2)
+COPYSERVERMASTER=$(echo "$ITEMMOVE" | cut -d: -f3)
+ITEMMOVE=$(echo "$ITEMMOVE" | cut -d: -f4)
+FILETOCOPY=$(basename "$ITEMMOVE")
+convert_special_chars2
 
 #Copy item
-echo `date`: file_manager - copying "$ITEMMOVE" to "$LOCATION" on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [ "$ACTION" = REALLYCOPY ]
 then
-EXISTCHECK=go
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -e "$LOCATION"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
+	echo "$(date): file_manager - copying $ITEMMOVE on $COPYSERVERNAME to $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 else
-EXISTCHECK=stop
-fi
-done
-if [ -d "$LOCATION/" ]
-then
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -f -R "$ITEMMOVE" "$LOCATION"/$FILETOCOPY
-echo "</pre>"
-fi
+	echo "$(date): file_manager - moving $ITEMMOVE on $COPYSERVERNAME to $LOCATION on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"	
 fi
 
-if [ $SERVERTYPE = network ] && [ $SERVERNAME != `hostname-fqdn` ] || [ $SERVERTYPE = federated ]
+
+if [ "$SERVERNAME" = "$COPYSERVERNAME" ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-EXISTCHECK=go
-ITEMMOVE=`echo '$ITEMMOVE'`
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -e "'$LOCATION'"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
-else
-EXISTCHECK=stop
-fi
-done
-if [ -d "'$LOCATION'" ] 
-then
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -f -R "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
-echo "</pre>"
-fi
-'
+	#Copy on the main server
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
+	then
+
+		EVENTFILE=copy-$(date +%F-%H:%M:%S)
+		[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events		
+		nohup bash -c "echo $(date) Copying $ITEMMOVE to $LOCATION/$FILETOCOPY ; rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls \"$ITEMMOVE\" \"$LOCATION/\" ; if [ \"$ACTION\" = REALLYMOVE ]; then rm -f -R \"$ITEMMOVE\"; fi; echo $(date) Copy completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
+	else
+		#Copy on a network or federated server
+		if [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
+			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			EXISTCHECK=go
+			ITEMMOVE=$(echo "'"$ITEMMOVE"'")
+			FILETOCOPY=$(basename "$ITEMMOVE")
+			while [ "$EXISTCHECK" = go ]
+			do
+				if [ -e "'"$LOCATION"'"/"$FILETOCOPY" ]
+				then
+					FILETOCOPY="$FILETOCOPY"new
+				else
+					EXISTCHECK=stop
+				fi
+			done
+			if [ -d "'"$LOCATION"'" ] 
+			then
+				echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+				if [ "'"$ACTION"'" = REALLYCOPY ]
+				then
+					cp -v -f -R "$ITEMMOVE" "'"$LOCATION"'"/"$FILETOCOPY"
+				else
+					[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
+				fi
+				echo "</pre>"
+			fi
+			'
+		fi	
+
+		if [ "$SERVERTYPE" = federatedslave ]
+		then
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+			echo $(date): file_manager \(federated mode\) - copying "'"$ITEMMOVE"'" to "'"$LOCATION"'" on '"$SERVERNAME"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
+			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
+			EXISTCHECK=go
+			ITEMMOVE=$(echo '"$ITEMMOVE"')
+			FILETOCOPY=$(basename "$ITEMMOVE")
+			while [ "$EXISTCHECK" = go ]
+			do
+				if [ -e "'"$LOCATION"'"/"$FILETOCOPY" ]
+				then
+					FILETOCOPY="$FILETOCOPY"new
+				else
+					EXISTCHECK=stop
+				fi
+			done
+			if [ -d "'"$LOCATION"'" ]
+			then
+				echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+				if [ "'"$ACTION"'" = REALLYCOPY ]
+				then
+					cp -v -f -R "$ITEMMOVE" "'"$LOCATION"'"/"$FILETOCOPY"
+				else
+					[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"			
+				fi
+				echo "</pre>"
+			fi
+			'\''
+			'
+		fi
+	fi
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERNAME" != "$COPYSERVERNAME" ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
-EXISTCHECK=go
-ITEMMOVE=`echo '$ITEMMOVE'`
-FILETOCOPY=`basename "$ITEMMOVE"`
-while [ $EXISTCHECK = go ]
-do
-if [ -e "'$LOCATION'"/"$FILETOCOPY" ]
-then
-FILETOCOPY=`echo "$FILETOCOPY"new`
-else
-EXISTCHECK=stop
-fi
-done
-if [ -d "'$LOCATION'" ]
-then
-echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-cp -v -f -R "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
-echo "</pre>"
-fi
-'\''
-'
+	#Copy from the main server to a network server
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [[ "$COPYSERVERNAME" = $(hostname-fqdn) ]] && [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
+	then
+		EVENTFILE=copy-$(date +%F-%H:%M:%S)
+		LOCATION=$(echo "$LOCATION" | sed 's/ /\\ /g')
+		[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
+		nohup bash -c "echo $(date) Copying "$COPYSERVERNAME":$ITEMMOVE to $SERVERNAME:$LOCATION ; rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls \"$ITEMMOVE\" root@$SERVERNAME:\"$LOCATION\"/ ; if [ \"$ACTION\" = REALLYMOVE ]; then rm -f -R \"$ITEMMOVE\"; fi; echo $(date) Copy completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
+		LOCATION=$(echo "$LOCATION" | sed 's/\\ / /g')
+	fi
+
+	#Copy from a network server to the main server
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]] && [[ "$COPYSERVERNAME" != $(hostname-fqdn) ]] && [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
+	then
+		EVENTFILE=copy-$(date +%F-%H:%M:%S)
+		ITEMMOVE=$(echo "$ITEMMOVE" | sed 's/ /\\ /g')
+		[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
+		nohup bash -c "echo $(date) Copying "$COPYSERVERNAME":$ITEMMOVE to $SERVERNAME:$LOCATION ; rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls root@$COPYSERVERNAME:\"$ITEMMOVE\" \"$LOCATION\" ; if [ \"$ACTION\" = REALLYMOVE ]; then ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$COPYSERVERNAME" ' rm -f -R \"$ITEMMOVE\" '; fi; echo $(date) Copy completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
+	fi
+
+	#Copy between network servers
+	if [[ "$SERVERNAME" != $(hostname-fqdn) ]] && [[ "$COPYSERVERNAME" != $(hostname-fqdn) ]] && [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
+	then	
+		EVENTFILE=copy-$(date +%F-%H:%M:%S)
+		BASECOPYFOLDER=$(echo "$ITEMMOVE" | sed 's/'"\/"$FILETOCOPY""'$//g')
+		[ ! -d /opt/karoshi/mount/"$SERVERNAME/$LOCATION" ] && mkdir -p "/opt/karoshi/mount/$SERVERNAME/$LOCATION"
+		[ ! -d /opt/karoshi/mount/"$COPYSERVERNAME/$BASECOPYFOLDER" ] && mkdir -p "/opt/karoshi/mount/$COPYSERVERNAME$BASECOPYFOLDER"
+		sshfs root@"$SERVERNAME:$LOCATION" "/opt/karoshi/mount/$SERVERNAME$LOCATION" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		sshfs root@"$COPYSERVERNAME:$BASECOPYFOLDER" "/opt/karoshi/mount/$COPYSERVERNAME$BASECOPYFOLDER" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		#rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --links --compress --times --perms --acls --owner --group "/opt/karoshi/mount/$COPYSERVERNAME/$BASECOPYFOLDER/$FILETOCOPY" "/opt/karoshi/mount/$SERVERNAME/$LOCATION" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		nohup bash -c "echo $(date) Copying "$COPYSERVERNAME":$ITEMMOVE to $SERVERNAME:$LOCATION ; rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls /opt/karoshi/mount/\"$COPYSERVERNAME/$ITEMMOVE\" /opt/karoshi/mount/\"$SERVERNAME/$LOCATION\"; if [ \"$ACTION\" = REALLYMOVE ]; then rm -f -R \"$ITEMMOVE\"; fi; fusermount -u /opt/karoshi/mount/"$SERVERNAME/$LOCATION"; fusermount -u /opt/karoshi/mount/"$COPYSERVERNAME/$BASECOPYFOLDER"; echo $(date) Copy completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
+		LOCATION=$(echo "$LOCATION" | sed 's/\\ / /g')	
+	fi	
 fi
 
 ITEMMOVE=""
 #Display location
+sleep 1
 show_directory
 }
 
@@ -2613,8 +2598,7 @@ echo '<b>'$"Add ACL"'</b><br><table class="tablesorter"><tbody>
 [ $ACTION = SETPERMS ] && set_perms #converted to federated_mode
 [ $ACTION = REALLYSETPERMS ] && really_set_perms #converted to federated_mode
 [ $ACTION = MOVE ] && move_item #converted to federated_mode
-[ $ACTION = REALLYMOVE ] && really_move_item #converted to federated_mode
-[ $ACTION = REALLYCOPY ] && really_copy_item #converted to federated_mode
+[ $ACTION = REALLYMOVE ] || [ $ACTION = REALLYCOPY ] && really_copy_item #converted to federated_mode
 [ $ACTION = CANCELCOPY ] && cancel_copy_item #converted to federated_mode
 [ $ACTION = RENAME ] && rename_item #converted to federated_mode
 [ $ACTION = REALLYRENAME ] && really_rename_item #converted to federated_mode
