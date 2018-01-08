@@ -184,12 +184,20 @@ fi
 if [ "$ACTION" = reallyedit ]
 then
 	#Delete any existing data for this entry
-	if [[ $(grep -c ,"$BACKUPNAME", /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) != 0 ]]
+	if [[ $(grep -c ^"$BACKUPFOLDER", /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) != 0 ]]
 	then
-		sed -i '/,'"$BACKUPNAME"',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+		sed -i '/'"$BACKUPFOLDER"',/d' /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 	fi
-	#Append backup data to the file
-	echo "$BACKUPFOLDER,$BACKUPNAME,$DURATION" >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+
+	BACKUPNAME2="$BACKUPNAME"
+	while [[ $(grep -c ",$BACKUPNAME2$DOT$COUNTER," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) != 0 ]]
+	do
+		[ -z "$COUNTER" ] && COUNTER=1
+		[ -z "$DOT" ] && DOT="."
+		((COUNTER++))
+	done
+	echo "$BACKUPFOLDER,$BACKUPNAME2$DOT$COUNTER,$DURATION" >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+
 	#Sort the file
 	sort --field-separator=',' -k 2 /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders > /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME/backup_folders.$$"
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders.$$ ]

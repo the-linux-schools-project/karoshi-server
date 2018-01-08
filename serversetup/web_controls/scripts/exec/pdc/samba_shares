@@ -595,9 +595,16 @@ create 0640 syslog adm
 	#Add the folder to the backup configuration
 	if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders ]
 	then
-		if [[ $(grep -c "$SHAREPATH,$SHARENAME" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]]
+		if [[ $(grep -c ^"$SHAREPATH," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]]
 		then
-			echo "$SHAREPATH,$SHARENAME",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
+			BACKUPNAME="$SHARENAME"
+			while [[ $(grep -c ",$BACKUPNAME$DOT$COUNTER," /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) != 0 ]]
+			do
+				[ -z "$COUNTER" ] && COUNTER=1
+				[ -z "$DOT" ] && DOT="."
+				((COUNTER++))
+			done
+			echo "$SHAREPATH,$BACKUPNAME$DOT$COUNTER",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 		fi
 	fi
 

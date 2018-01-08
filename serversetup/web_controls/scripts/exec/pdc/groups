@@ -398,11 +398,18 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 		fi
 
 		#Add the folder to the backup configuration
-		if [ -f "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders" ]
+		if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$HOMESERVER"/backup_folders ]
 		then
-			if [[ $(grep -c "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME" "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders") = 0 ]]
+			if [[ $(grep -c ^"/home/users/$CATEGORY/$GROUPNAME," /opt/karoshi/server_network/backup_servers/backup_settings/"$HOMESERVER"/backup_folders) = 0 ]]
 			then
-				echo "/home/users/$CATEGORY/$GROUPNAME,$GROUPNAME",21 >> "/opt/karoshi/server_network/backup_servers/backup_settings/$HOMESERVER/backup_folders"
+				BACKUPNAME="$GROUPNAME"
+				while [[ $(grep -c ",$BACKUPNAME$DOT$COUNTER," /opt/karoshi/server_network/backup_servers/backup_settings/"$HOMESERVER"/backup_folders) != 0 ]]
+				do
+					[ -z "$COUNTER" ] && COUNTER=1
+					[ -z "$DOT" ] && DOT="."
+					((COUNTER++))
+				done
+				echo "/home/users/$CATEGORY/$GROUPNAME,$BACKUPNAME$DOT$COUNTER",21 >> /opt/karoshi/server_network/backup_servers/backup_settings/"$HOMESERVER"/backup_folders
 			fi
 		fi
 
