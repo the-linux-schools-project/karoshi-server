@@ -291,7 +291,7 @@ echo '
 	</td>
 '
 
-if [ "$ACTION" = ENTER ] || [ "$ACTION" = CANCELCOPY ] || [ "$ACTION" = REALLYCREATEDIR ] || [ "$ACTION" = REALLYCREATEFILE ] || [ "$ACTION" = REALLYSETPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ] || [ "$ACTION" = REALLYADDACLPERMS ] || [ "$ACTION" = REALLYRENAME ] || [ "$ACTION" = REALLYRESTORE ] || [ "$ACTION" = REALLYDELETE ]
+if [ "$ACTION" = ENTER ] || [ "$ACTION" = CANCELCOPY ] || [ "$ACTION" = REALLYCREATEDIR ] || [ "$ACTION" = REALLYCREATEFILE ] || [ "$ACTION" = REALLYSETPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ] || [ "$ACTION" = REALLYADDACLPERMS ] || [ "$ACTION" = REALLYRENAME ] || [ "$ACTION" = REALLYRESTORE ] || [ "$ACTION" = REALLYDELETE ] || [ $ACTION = REALLYMOVE ] || [ $ACTION = REALLYCOPY ]
 then
 	[ "$MOBILE" = yes ] && echo '</tr><tr>'
 	echo '
@@ -1499,30 +1499,9 @@ then
 		if [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ]
 		then
 			ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
-			[ -d /opt/karoshi/logs/karoshi_web_management/ ] && echo `date`: file_manager \(federated mode\) - copying "'$ITEMMOVE'" to "'$LOCATION'" on '$SERVERNAME' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-			EXISTCHECK=go
-			ITEMMOVE=$(echo "'"$ITEMMOVE"'")
-			FILETOCOPY=$(basename "$ITEMMOVE")
-			while [ "$EXISTCHECK" = go ]
-			do
-				if [ -e "'"$LOCATION"'"/"$FILETOCOPY" ]
-				then
-					FILETOCOPY="$FILETOCOPY"new
-				else
-					EXISTCHECK=stop
-				fi
-			done
-			if [ -d "'"$LOCATION"'" ] 
-			then
-				echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-				if [ "'"$ACTION"'" = REALLYCOPY ]
-				then
-					cp -v -f -R "$ITEMMOVE" "'"$LOCATION"'"/"$FILETOCOPY"
-				else
-					[ -d "'$LOCATION'" ] && mv -f "$ITEMMOVE" "'$LOCATION'"/"$FILETOCOPY"
-				fi
-				echo "</pre>"
-			fi
+		EVENTFILE=copy-$(date +%F-%H:%M:%S)
+				[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events		
+				nohup bash -c "echo $(date) Copying '"$ITEMMOVE"' to '"$LOCATION"'/'"$FILETOCOPY"' ; rsync --backup --suffix=_old_$(date +%F-%H:%M:%S) --timeout=30 --dirs --recursive --compress --links --times --verbose --perms --executability --owner --group --acls \"'"$ITEMMOVE"'\" \"'"$LOCATION"'/\" ; if [ \"'"$ACTION"'\" = REALLYMOVE ]; then rm -f -R \"'"$ITEMMOVE"'\"; fi; echo $(date) Copy completed." 1>> /opt/karoshi/logs/events/"$EVENTFILE" 2>> /opt/karoshi/logs/events/"$EVENTFILE"&
 			'
 		fi	
 
