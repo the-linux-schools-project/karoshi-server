@@ -160,7 +160,7 @@ then
 	ICON17=/images/submenus/file/search.png
 	ICON18=/images/submenus/system/computer.png
 	COLSPAN=5
-	COLSPAN2=5
+	COLSPAN2=6
 	COLWIDTH=22
 	VIEWWIDTH1=35
 	VIEWWIDTH2=520
@@ -200,7 +200,7 @@ else
 	ICON17=/images/submenus/file/searchm.png
 	ICON18=/images/submenus/system/computerm.png
 	COLSPAN=5
-	COLSPAN2=3
+	COLSPAN2=4
 	COLWIDTH=32
 	VIEWWIDTH1=50
 	VIEWWIDTH2=520
@@ -291,7 +291,7 @@ echo '
 	</td>
 '
 
-if [ "$ACTION" = ENTER ] || [ "$ACTION" = REALLYCREATEDIR ] || [ "$ACTION" = REALLYCREATEFILE ] || [ "$ACTION" = REALLYSETPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ] || [ "$ACTION" = REALLYADDACLPERMS ] || [ "$ACTION" = REALLYRENAME ] || [ "$ACTION" = REALLYRESTORE ] || [ "$ACTION" = REALLYDELETE ]
+if [ "$ACTION" = ENTER ] || [ "$ACTION" = CANCELCOPY ] || [ "$ACTION" = REALLYCREATEDIR ] || [ "$ACTION" = REALLYCREATEFILE ] || [ "$ACTION" = REALLYSETPERMS ] || [ "$ACTION" = REALLYDELETEACLPERMS ] || [ "$ACTION" = REALLYADDACLPERMS ] || [ "$ACTION" = REALLYRENAME ] || [ "$ACTION" = REALLYRESTORE ] || [ "$ACTION" = REALLYDELETE ]
 then
 	[ "$MOBILE" = yes ] && echo '</tr><tr>'
 	echo '
@@ -310,11 +310,19 @@ then
 			'$"New File"'
 		</button>
 	</td>
-	'
 
-	[ "$MOBILE" = yes ] && echo '<td></td>'
-	
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+		<button class="info infonavbutton" name="_Refresh_" value="_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<img src="'"$ICON13"'" alt="'$"Refresh"'">
+			<span>'$"Refresh the folder."'</span><br>
+			'$"Refresh"'
+		</button>
+	</td>
+
+	'
 fi
+
+
 
 if [ "$SHOWMOVE" = yes ]
 then
@@ -346,7 +354,7 @@ then
 			</button>
 		</td>
 		'
-		[ "$MOBILE" = no ] && echo '<td></td><td></td>'
+		[ "$MOBILE" = no ] && echo '<td></td><td></td><td></td>'
 
 	else
 		echo '<tr><td>'$"This item is protected and cannot be moved or copied."'</td></tr>'
