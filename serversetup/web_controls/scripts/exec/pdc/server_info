@@ -238,7 +238,7 @@ then
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		uname -a
 		echo '</pre>'
-		echo '<hr style="width: 100%; height: 2px;">'
+		echo '<hr style="width: 100%; height: 1px;">'
 	fi
 	#Show samba status
 	if [ "$INFO" = samba ]
@@ -247,7 +247,7 @@ then
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 		smbstatus
 		echo '</pre>'
-		echo '<hr style="width: 100%; height: 2px;">'
+		echo '<hr style="width: 100%; height: 1px;">'
 	fi
 fi
 
@@ -365,7 +365,7 @@ then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		uname -a
 		echo "</pre>"
-		echo "<hr style="width: 100%; height: 2px;">"
+		echo "<hr style=\"width: 100%; height: 1px;\">"
 	fi
 	#Show samba status
 	if [ '"$INFO"' = samba ]
@@ -374,7 +374,7 @@ then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		smbstatus
 		echo "</pre>"
-		echo "<hr style="width: 100%; height: 2px;">"
+		echo "<hr style=\"width: 100%; height: 1px;\">"
 	fi
 	'
 fi
@@ -495,7 +495,7 @@ then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		uname -a
 		echo "</pre>"
-		echo "<hr style="width: 100%; height: 2px;">"
+		echo "<hr style="width: 100%; height: 1px;">"
 	fi
 	#Show samba status
 	if [ '"$INFO"' = samba ]
@@ -504,7 +504,7 @@ then
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 		smbstatus
 		echo "</pre>"
-		echo "<hr style="width: 100%; height: 2px;">"
+		echo "<hr style="width: 100%; height: 1px;">"
 	fi
 	'\''
 	'
