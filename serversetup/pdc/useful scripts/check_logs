@@ -2,27 +2,26 @@
 
 WARNLIMIT=20
 LOGPATH=/var/log/syslog
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 function report_problems {
 if [ ! -z "$FAIL_LIST" ]
 then
 	#Add in a warning to the web management.
-	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-$SERVERNAME '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'$SERVERNAME'_ACTION_viewlist_' "$SERVERNAME: "$"Warning"" - "$"Event Log" 3
-	echo `date`: check_logs "$SERVERNAME" - Syslog warning >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	/opt/karoshi/serversetup/web_controls/scripts/web_management_warn add syslog-"$SERVERNAME" '/cgi-bin/admin/view_logs.cgi?_SERVERNAME_'"$SERVERNAME"'_ACTION_viewlist_' "$SERVERNAME: "$"Warning"" - "$"Event Log" 3
+	echo "$(date): check_logs $SERVERNAME" - Syslog warning >> /opt/karoshi/logs/karoshi_web_management/"$LOG_DATE"
 fi
 }
 
-for SERVERNAME in `ls /opt/karoshi/server_network/servers/`
+for SERVERNAME in $(ls /opt/karoshi/server_network/servers/)
 do
-	#echo `date`: check_logs "$SERVERNAME" - checking syslog >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	FAIL_LIST=""
-	if [ $SERVERNAME = `hostname-fqdn` ]
+	if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 	then
 		#Don't run a check in the first 6 minutes of uptime - there will be a lot of kernel boot messages in syslog.
 
 		#Get uptime in seconds 
-		UPTIME=`cat /proc/uptime | cut -d. -f1`
+		UPTIME=$(cut -d. -f1 < /proc/uptime)
 
 		DO_CHECK=yes
 		#Disable uptime if the server has been up for less than 6 minutes
@@ -31,20 +30,20 @@ do
 			DO_CHECK=no
 		fi
 
-		if [ $DO_CHECK = yes ]
+		if [ "$DO_CHECK" = yes ]
 		then
 			#Create variables for the last 5 minutes
 			for (( i = 5; i >=0; i-- ))
 			do
-				MIN[$i]="`date "+%b %e %R" -d "-$i  min"`"
+				MIN[$i]="$(date "+%b %e %R" -d "-$i  min")"
 			done
 
-			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "$LOGPATH" | sed 's/ * / /g' | cut -d" " -f5`
+			SYSLOGDATA=$(egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "$LOGPATH" | sed 's/ * / /g' | cut -d" " -f5)
 			#Check data
 			CHECK_LIST="kernel nslcd"
 			for CHECK in $CHECK_LIST
 			do
-				CHECKCOUNT=`echo -e "$SYSLOGDATA" | grep -c $CHECK`
+				CHECKCOUNT=$(echo -e "$SYSLOGDATA" | grep -c "$CHECK")
 				if [ "$CHECKCOUNT" -ge "$WARNLIMIT" ]
 				then
 					FAIL_LIST="$FAIL_LIST, $CHECK"
@@ -56,18 +55,18 @@ do
 			done
 
 			#Removing any commas from the front of FAIL_LIST
-			FAIL_LIST=`echo "$FAIL_LIST" | sed "s/^, //g"`
+			FAIL_LIST=$(echo "$FAIL_LIST" | sed "s/^, //g")
 
 			#Report any problems detected
 			report_problems
 		fi
 	else
-		FAIL_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
+		FAIL_LIST=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
 
 		#Dont run a check in the first 6 minutes of uptime - there will be a lot of kernel boot messages in syslog.
 
 		#Get uptime in seconds 
-		UPTIME=`cat /proc/uptime | cut -d. -f1`
+		UPTIME=$(cat /proc/uptime | cut -d. -f1)
 
 		DO_CHECK=yes
 		#Disable uptime if the server has been up for less than 6 minutes
@@ -76,7 +75,7 @@ do
 			DO_CHECK=no
 		fi
 
-		if [ $DO_CHECK = yes ]
+		if [ "$DO_CHECK" = yes ]
 		then
 			#Create variables for the last 5 minutes
 			for (( i = 5; i >=0; i-- ))
@@ -84,25 +83,25 @@ do
 				MIN[$i]=$(date "+%b %e %R" -d "-$i  min")
 			done
 
-			SYSLOGDATA=`egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'$LOGPATH'" | sed "s/ * / /g" | cut -d" " -f5`
+			SYSLOGDATA=$(egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'"$LOGPATH"'" | sed "s/ * / /g" | cut -d" " -f5)
 
 			#Check data
 			CHECK_LIST="kernel nslcd"
 			for CHECK in $CHECK_LIST
 			do
-				CHECKCOUNT=`echo -e "$SYSLOGDATA" | grep -c $CHECK`
-				if [ "$CHECKCOUNT" -ge "'$WARNLIMIT'" ]
+				CHECKCOUNT=$(echo -e "$SYSLOGDATA" | grep -c $CHECK)
+				if [ "$CHECKCOUNT" -ge "'"$WARNLIMIT"'" ]
 				then
 					FAIL_LIST="$FAIL_LIST, $CHECK"
 					#Save syslog data so that it can be viewed later
 					ERRORFILE=syslog-$(date +%F-%H:%M:%S)
 					[ ! -d /opt/karoshi/logs/events ] && mkdir -p /opt/karoshi/logs/events
-					egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'$LOGPATH'" > /opt/karoshi/logs/events/"$ERRORFILE"
+					egrep "${MIN[0]}|${MIN[1]}|${MIN[2]}|${MIN[3]}|${MIN[4]}|${MIN[5]}" "'"$LOGPATH"'" > /opt/karoshi/logs/events/"$ERRORFILE"
 				fi
 			done
 
 			#Removing any commas from the front of FAIL_LIST
-			FAIL_LIST=`echo "$FAIL_LIST" | sed "s/^, //g"`
+			FAIL_LIST=$(echo "$FAIL_LIST" | sed "s/^, //g")
 			echo "$FAIL_LIST"
 		fi
 		')
