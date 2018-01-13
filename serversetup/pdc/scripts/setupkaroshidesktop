@@ -146,6 +146,8 @@ FIREFOXPROFILE=$(ls /opt/karoshi/karoshi_user/.mozilla/firefox | grep .default)
 certutil -A -n "Karoshi Web Management" -addstore root -t "CTu,CTu,CTu" -i /var/lib/samba/netlogon/domain_information/cacert.pem -d /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"
 chown karoshi /opt/karoshi/karoshi_user/.mozilla/firefox/"$FIREFOXPROFILE"/cert8.db
 
+#Copy xsettings to /etc/xdg
+cp -f /opt/karoshi/karoshi_user/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
 
 #Modify web management to point at the domain path instead of 127.0.0.1
 echo "$(date): Modifying the web management desktop icon to point at the domain path" >> /opt/karoshi/serversetup/install_log

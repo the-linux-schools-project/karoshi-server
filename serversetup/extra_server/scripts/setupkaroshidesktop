@@ -25,18 +25,18 @@
 #aloughlin@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-[ -d $HOME/.tempdata ] || mkdir $HOME/.tempdata
+[ -d "$HOME"/.tempdata ] || mkdir "$HOME"/.tempdata
 source /opt/karoshi/serversetup/variables/language
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/extra_server/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/extra_server/software
 
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 locale 1>/dev/null
 
 #########################
 #Add log entry
 #########################
-echo `date`: '##############'setupkaroshidesktop'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############setupkaroshidesktop##############" >> /opt/karoshi/serversetup/install_log
 date >> /opt/karoshi/serversetup/install_log
 ###########################
 #Detect desktop type
@@ -44,16 +44,16 @@ date >> /opt/karoshi/serversetup/install_log
 #Using kde
 DESKTOP_TYPE=kde
 
-if [ `ps -e | grep -c gnome-session` -gt 0 ]
+if [[ $(ps -e | grep -c gnome-session) -gt 0 ]]
 then
-#Using Gnome
-DESKTOP_TYPE=gnome
+	#Using Gnome
+	DESKTOP_TYPE=gnome
 fi
 
-if [ `ps -e | grep -c xfce4` -gt 0 ]
+if [[ $(ps -e | grep -c xfce4) -gt 0 ]]
 then
-#Using Thunar
-DESKTOP_TYPE=xfce4
+	#Using Thunar
+	DESKTOP_TYPE=xfce4
 fi
 
 
@@ -61,14 +61,14 @@ fi
 ######################
 #make sure that kdesu uses su
 ######################
-if [ $DESKTOP_TYPE = kde ]
+if [ "$DESKTOP_TYPE" = kde ]
 then
-KDESUCHECK=`grep -c super-user-command'='su /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals`
-if [ $KDESUCHECK = 0 ]
-then
-echo '['super-user-command']' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
-echo super-user-command'='su >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
-fi
+	KDESUCHECK=$(grep -c 'super-user-command=su' /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals)
+	if [ "$KDESUCHECK" = 0 ]
+	then
+		echo '[super-user-command]' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
+		echo 'super-user-command=su' >> /opt/karoshi/karoshi_user/.kde/share/config/kdeglobals
+	fi
 fi
 
 ##########################
@@ -79,7 +79,7 @@ cp -f /opt/karoshi/serversetup/all/links/adminfilemanager.desktop /opt/karoshi/k
 ##########################
 #Set Karoshi User Permissions
 ##########################
-echo `date`: "Setting karoshi user permissions" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Setting karoshi user permissions" >> /opt/karoshi/serversetup/install_log
 chmod u+X -R /opt/karoshi/karoshi_user
 chown -c -R karoshi /opt/karoshi/karoshi_user
 #######################
@@ -99,25 +99,25 @@ echo /opt/karoshi/serversetup/extra_server/scripts/setupextra_server > /opt/karo
 chmod 0700 /opt/karoshi/karoshimanagement/karoshisetup
 cp -f /opt/karoshi/karoshimanagement/karoshisetup /opt/karoshi/"useful scripts"/
 
-if [ $DESKTOP_TYPE = kde ]
+if [ "$DESKTOP_TYPE" = kde ]
 then
-echo konqueror --profile filemanagement /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo konqueror --profile filemanagement /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
-if [ $DESKTOP_TYPE = gnome ]
+if [ "$DESKTOP_TYPE" = gnome ]
 then
-echo nautilus /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo nautilus /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
-if [ $DESKTOP_TYPE = xfce4 ]
+if [ "$DESKTOP_TYPE" = xfce4 ]
 then
-echo thunar /home > /opt/karoshi/karoshimanagement/admin_file_manager
+	echo thunar /home > /opt/karoshi/karoshimanagement/admin_file_manager
 fi
 
 ##########################
 #Stop karoshi setup from running on logon
 ##########################
-echo `date`: "Stopping karoshi setup from running on login" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Stopping karoshi setup from running on login" >> /opt/karoshi/serversetup/install_log
 [ -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop ] && rm -f /opt/karoshi/karoshi_user/.config/autostart/karoshi_setup.desktop
 
 ###########################
@@ -127,7 +127,7 @@ echo `date`: "Stopping karoshi setup from running on login" >> /opt/karoshi/serv
 ###########################
 #Change default login user
 ###########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/default_login
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/default_login
 ###########################
 #Do desktop change
 ###########################
@@ -140,11 +140,11 @@ chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager
 ###########################
 #Set karoshi and root password
 ###########################
-echo `date`: "Setting karoshi and root passwords" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Setting karoshi and root passwords" >> /opt/karoshi/serversetup/install_log
 function getpassword {
-DATA=`yad --separator=SEPARATOR --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"'\n' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null | sed 's/|/REPLACEVERTICALLINE/g' | sed 's/SEPARATOR/|/g'`
-PASSWORD1=`echo "$DATA" | cut -d"|" -f1 | sed 's/REPLACEVERTICALLINE/|/g'`
-PASSWORD2=`echo "$DATA" | cut -d"|" -f2 | sed 's/REPLACEVERTICALLINE/|/g'`
+DATA=$(yad --separator=SEPARATOR --image="/opt/karoshi/serversetup/essentials/smalllogo2.xpm" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --form --title=$"Setup Karoshi Desktop" --width 400 --wrap --text ''"$PASSWORDMSG"'\n' --field=$"Password":H --field=$"Confirm":H --button=Ok 2>/dev/null | sed 's/|/REPLACEVERTICALLINE/g' | sed 's/SEPARATOR/|/g')
+PASSWORD1=$(echo "$DATA" | cut -d"|" -f1 | sed 's/REPLACEVERTICALLINE/|/g')
+PASSWORD2=$(echo "$DATA" | cut -d"|" -f2 | sed 's/REPLACEVERTICALLINE/|/g')
 
 [ -z "$PASSWORD1" ] && PASSWORD1=notset1
 [ -z "$PASSWORD2" ] && PASSWORD2=notset2
@@ -155,12 +155,13 @@ getpassword
 
 while [ "$PASSWORD1" != "$PASSWORD2" ]
 do
-	PASSWORDMSG=`echo $"The passwords do not match. Please try again."`
+	PASSWORDMSG=$"The passwords do not match. Please try again."
 	getpassword
 done
 
 echo root:"$PASSWORD1" | chpasswd
 echo karoshi:"$PASSWORD1" | chpasswd
 
-
+#Copy xsettings to /etc/xdg
+cp -f /opt/karoshi/karoshi_user/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
 
