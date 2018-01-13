@@ -24,21 +24,21 @@
 #
 #Website: http://www.karoshi.org.uk
 
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
-SERVER=$(echo $1 | tr -cd 'A-Za-z0-9\._-')
+SERVER=$(echo "$1" | tr -cd 'A-Za-z0-9\._-')
 
-if [ $SERVER = $(hostname-fqdn) ]
+if [[ "$SERVER" = $(hostname-fqdn) ]]
 then
-	SERVERTIME=$(date "+%b %d %H:%M:%S") 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	NTPSERVERS=$(grep ^server /etc/ntp.conf | sed "s/^server//g" | sed "s/^ //g" | cut -d" " -f1)
+	SERVERTIME=$(date "+%b %d %H:%M:%S") 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	NTPSERVERS=$(grep ^server /etc/ntp.conf | sed "s/^server//g" | sed "s/^ //g" | sed "s/^\t//g" | cut -d" " -f1)
 else
-	SERVERTIME=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	SERVERTIME=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	date "+%b %d %H:%M:%S"
-	') 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	NTPSERVERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
+	') 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	NTPSERVERS=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
 	grep ^server /etc/ntp.conf | sed "s/^server//g" | sed "s/^ //g" | cut -d" " -f1
-	') 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	') 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 echo -e "$SERVERTIME,$NTPSERVERS"

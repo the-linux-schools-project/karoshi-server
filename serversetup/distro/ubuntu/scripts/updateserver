@@ -19,6 +19,9 @@
 #
 #Website: http://www.linuxschools.com
 
+#Make sure the output is in english becuase we are searching the output for package errors
+export LC_ALL=C
+
 LogDate=$(date +%F)
 
 #Make sure that dkpg doesnt change any config files.
