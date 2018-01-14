@@ -120,7 +120,7 @@ function install_web_management {
 #Back up user images if they exist
 if [ -d /var/www/html_karoshi/images/user_images ]
 then
-mv /var/www/html_karoshi/images/user_images /var/www/user_images.$$
+	mv /var/www/html_karoshi/images/user_images /var/www/user_images.$$
 fi
 
 #Move /var/www/html_karoshi/admin/ocs
