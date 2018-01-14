@@ -30,10 +30,10 @@ source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span> 
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/tech/search.cgi" method="post">
 <input required="required" class="search-query" name="_SEARCH_" placeholder="'$"Search"'" style="width: 200px; height: 25px;" size="20" type="text">
 </form></div>'
@@ -53,12 +53,13 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 			<li><a href="/cgi-bin/tech/change_password_fm.cgi">'$"Change Password"'</a></li>
 '
 
-if [ $ADDUSERCTRL = yes ]
+if [ "$ADDUSERCTRL" = yes ]
 then
-echo '			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>
+	echo '
+			<li><a href="/cgi-bin/tech/add_user_fm.cgi">'$"Add User"'</a></li>
 			<li><a href="/cgi-bin/tech/lockout_reset_fm.cgi">'$"Reset User Lockout"'</a></li>
 			<li><a href="/cgi-bin/tech/acceptable_use.cgi">'$"Acceptable Use"'</a></li>
-'
+	'
 fi
 
 echo '
@@ -82,9 +83,9 @@ echo '
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/asset_register_view.cgi">'$"Asset Register"'</a></li>'
 #Monitoring
-if [ $MONITORINGCTRL = yes ]
+if [ "$MONITORINGCTRL" = yes ]
 then
-echo '			<li><a href="/cgi-bin/tech/mon_status.cgi">'$"Network Monitoring"'</a></li>'
+	echo '		<li><a href="/cgi-bin/tech/mon_status.cgi">'$"Network Monitoring"'</a></li>'
 fi
 echo '			</ul>
 	</li>
@@ -92,11 +93,7 @@ echo '			</ul>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/domain_information.cgi">'$"Domain Information"'</a></li>'
 
-#OCS Inventory
-if [ $"OCS-Inventory"CTRL = yes ]
-then
-echo '			<li><a href="/cgi-bin/tech/ocs.cgi" target="_blank">'$"OCS-Inventory"'</a></li>'
-fi
+
 #echo '			<li class="mid"><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi" class="fly">'$"Classroom Management"'</a>
 #					<ul>
 #						<li><a href="/cgi-bin/tech/generate_classroom_lists_csv_upload_fm.cgi">'$"Generate - CSV"'</a></li>
@@ -105,17 +102,18 @@ fi
 #					</ul>
 #			</li>'
 #Distribution server
-if [ $DISTROCTRL = yes ]
+if [ "$DISTROCTRL" = yes ]
 then
-echo '			<li><a href="/cgi-bin/tech/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a></li>'
+	echo '			<li><a href="/cgi-bin/tech/client_boot_controls_fm.cgi">'$"Client Boot Controls"'</a></li>'
 fi
 echo '		</ul>
 	</li>'
 
 #Printers
-if [ $PRINTERCTRL = yes ]
+if [ "$PRINTERCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
+	echo 
+	'	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/tech/printers.cgi">'$"Manage Print Queues"'</a></li>
 		</ul>
@@ -123,9 +121,10 @@ echo '	<li class="top"><a href="/cgi-bin/tech/printers.cgi" id="Printer" class="
 fi
 
 #Internet
-if [ $INTERNETCTRL = yes ]
+if [ "$INTERNETCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/tech/e2g_filtergroups.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+	echo '
+	<li class="top"><a href="/cgi-bin/tech/e2g_filtergroups.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
 		<ul class="sub">
 			<li class="mid"><a href="/cgi-bin/admin/dg_view_user_logs_fm.cgi" class="fly">'$"Logs"'</a>
 					<ul>
@@ -141,7 +140,7 @@ echo '	<li class="top"><a href="/cgi-bin/tech/e2g_filtergroups.cgi" id="Internet
 			<li><a href="/cgi-bin/tech/user_internet_access.cgi">'$"Ban User"'</a></li>
 			<li><a href="/cgi-bin/tech/dg_bypass.cgi">'$"Client Bypass Controls"'</a></li>
 			<li><a href="/cgi-bin/tech/dg_room_controls_fm.cgi">'$"Room controls"'</a></li>
-</ul></li>
+	</ul></li>
 '
 fi
 

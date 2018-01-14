@@ -18,17 +18,17 @@
 #The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 #Check that there are users to ban
-BANCOUNT=`ls -1 /opt/karoshi/logs/banned_user_account_durations/ | wc -l`
-[ $BANCOUNT = 0 ] && exit
+BANCOUNT=$(ls -1 /opt/karoshi/logs/banned_user_account_durations/ | wc -l)
+[ "$BANCOUNT" = 0 ] && exit
 ############################
 #Allow user
 ############################
 function enable_user {
-echo `date`: increment_user_account_bans - allowing $BANNEDUSER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-smbpasswd -e $BANNEDUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): increment_user_account_bans - allowing $BANNEDUSER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+smbpasswd -e "$BANNEDUSER" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 }
 
 ############################
@@ -36,15 +36,15 @@ smbpasswd -e $BANNEDUSER 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 
 ############################
 for BANNEDUSERPATH in /opt/karoshi/logs/banned_user_account_durations/*
 do
-BAN_DURATION=`sed -n 1,1p $BANNEDUSERPATH |  tr -cd '0-9\n'`
-let BAN_DURATION=$BAN_DURATION-1
-if [ $BAN_DURATION -lt 1 ]
-then
-BANNEDUSER=`basename $BANNEDUSERPATH`
-#Allow User
-enable_user
-rm -f $BANNEDUSERPATH
-else
-echo $BAN_DURATION > $BANNEDUSERPATH
-fi
+	BAN_DURATION=$(sed -n 1,1p "$BANNEDUSERPATH" |  tr -cd '0-9\n')
+	let BAN_DURATION="$BAN_DURATION"-1
+	if [ "$BAN_DURATION" -lt 1 ]
+	then
+		BANNEDUSER=$(basename "$BANNEDUSERPATH")
+		#Allow User
+		enable_user
+		rm -f "$BANNEDUSERPATH"
+	else
+		echo "$BAN_DURATION" > "$BANNEDUSERPATH"
+	fi
 done

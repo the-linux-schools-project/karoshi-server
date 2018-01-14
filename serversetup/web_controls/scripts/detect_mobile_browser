@@ -1,2 +1,2 @@
 #!/bin/bash
-[ `echo "$HTTP_USER_AGENT" | grep -c 'Mobi\|Android\|Mini\|Silk\|Tablet'` -gt 0 ] && MOBILE=yes
+[[ $(echo "$HTTP_USER_AGENT" | grep -c 'Mobi\|Android\|Mini\|Silk\|Tablet') -gt 0 ]] && MOBILE=yes

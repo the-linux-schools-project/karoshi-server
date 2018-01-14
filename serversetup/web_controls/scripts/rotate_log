@@ -1,14 +1,14 @@
 #!/bin/bash
 if test -f /opt/karoshi/web_controls/event_log
 then
-LOGSIZE=`wc -c /opt/karoshi/web_controls/event_log | cut -d" " -f1`
-if [ $LOGSIZE -gt 512000 ]
-then
-[ -f /opt/karoshi/web_controls/event_log4 ] && rm -f /opt/karoshi/web_controls/event_log4
-[ -f /opt/karoshi/web_controls/event_log3 ] && mv /opt/karoshi/web_controls/event_log3 /opt/karoshi/web_controls/event_log4
-[ -f /opt/karoshi/web_controls/event_log2 ] && mv /opt/karoshi/web_controls/event_log2 /opt/karoshi/web_controls/event_log3
-[ -f /opt/karoshi/web_controls/event_log1 ] && mv /opt/karoshi/web_controls/event_log1 /opt/karoshi/web_controls/event_log2
-mv /opt/karoshi/web_controls/event_log /opt/karoshi/web_controls/event_log1
-echo `date`: rotate_log - event log rotated. >> /opt/karoshi/web_controls/event_log
-fi
+	LOGSIZE=$(wc -c /opt/karoshi/web_controls/event_log | cut -d" " -f1)
+	if [ "$LOGSIZE" -gt 512000 ]
+	then
+		[ -f /opt/karoshi/web_controls/event_log4 ] && rm -f /opt/karoshi/web_controls/event_log4
+		[ -f /opt/karoshi/web_controls/event_log3 ] && mv /opt/karoshi/web_controls/event_log3 /opt/karoshi/web_controls/event_log4
+		[ -f /opt/karoshi/web_controls/event_log2 ] && mv /opt/karoshi/web_controls/event_log2 /opt/karoshi/web_controls/event_log3
+		[ -f /opt/karoshi/web_controls/event_log1 ] && mv /opt/karoshi/web_controls/event_log1 /opt/karoshi/web_controls/event_log2
+		mv /opt/karoshi/web_controls/event_log /opt/karoshi/web_controls/event_log1
+		echo "$(date): rotate_log - event log rotated." >> /opt/karoshi/web_controls/event_log
+	fi
 fi

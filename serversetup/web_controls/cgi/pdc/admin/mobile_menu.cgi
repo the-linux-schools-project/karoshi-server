@@ -291,12 +291,3 @@ echo '<div class="a.current">
 '
 exit
 
-########################
-#Unique key
-########################
-#7,kpxjxbbF.NOLF1klJSCD4pf
-
-########################
-#Unique key
-########################
-#ZqCT/HPs-fgvpW_EhtzJGN4nL

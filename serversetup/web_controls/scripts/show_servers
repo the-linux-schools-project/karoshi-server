@@ -1,11 +1,11 @@
 #!/bin/bash
 
-MOBILE=`echo $1 | tr -cd a-z`
-VIEW=`echo $2 | tr -cd a-z`
-ACTIONMSG=`echo $3 | tr -cd "A-Za-z\n-/"`
-ACTION=`echo $4 | tr -cd "A-Za-z"`
-CUSTOM=`echo $5 | tr -cd "A-Za-z."`
-SEPARATOR=`echo $6 | tr -cd "_"`
+MOBILE=$(echo "$1" | tr -cd '[:lower:]')
+VIEW=$(echo "$2" | tr -cd '[:lower:]')
+ACTIONMSG=$(echo "$3" | tr -cd "A-Za-z\n-/")
+ACTION=$(echo "$4" | tr -cd "A-Za-z")
+CUSTOM=$(echo "$5" | tr -cd "A-Za-z.")
+SEPARATOR=$(echo "$6" | tr -cd "_")
 GLUSTER=no
 SERVER_COUNT=0
 MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_controller/ | sed -n 1,1p )
@@ -14,8 +14,8 @@ MAINSERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/primary_domain_con
 #Language
 ############################
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 
 #Check data
@@ -25,23 +25,23 @@ echo -e "show_servers usage\n\nshow_servers mobile(yes/no) view(all/internal/pdc
 exit
 }
 
-[ -z $MOBILE ] && usage
-[ -z $VIEW ] && usage
-[ -z $CUSTOM ] && CUSTOM=no
-[ -z $ACTION ] && ACTION=notset
-[ -z $SEPARATOR ] && SEPARATOR=_
+[ -z "$MOBILE" ] && usage
+[ -z "$VIEW" ] && usage
+[ -z "$CUSTOM" ] && CUSTOM=no
+[ -z "$ACTION" ] && ACTION=notset
+[ -z "$SEPARATOR" ] && SEPARATOR=_
 
-if [ $MOBILE != yes ] && [ $MOBILE != no ]
+if [ "$MOBILE" != yes ] && [ "$MOBILE" != no ]
 then
 	usage
 fi
 
-if [ $VIEW != all ] && [ $VIEW != internal ] && [ $VIEW != pdc ] && [ $VIEW != servers ] && [ $VIEW != adc ] && [ $VIEW != addslaveups ] && [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ] && [ $VIEW != restore ]
+if [ "$VIEW" != all ] && [ "$VIEW" != internal ] && [ "$VIEW" != pdc ] && [ "$VIEW" != servers ] && [ "$VIEW" != adc ] && [ "$VIEW" != addslaveups ] && [ "$VIEW" != web ] && [ "$VIEW" != email ] && [ "$VIEW" != fileservers ] && [ "$VIEW" != backups ] && [ "$VIEW" != backupservers ] && [ "$VIEW" != restore ]
 then
 	usage
 fi
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	WIDTH1=220
 	WIDTH2=320
@@ -49,10 +49,6 @@ then
 	WIDTH4=120
 	WIDTH5=80
 	WIDTH6=180
-	HEIGHT1=50
-	SERVERICON="/images/submenus/system/computer.png"
-	SERVERICON2="/images/submenus/system/all_computers.png"
-	TABLECLASS=standard
 else
 	WIDTH1=200
 	WIDTH2=140
@@ -60,53 +56,49 @@ else
 	WIDTH4=110
 	WIDTH5=80
 	WIDTH6=100
-	HEIGHT1=30
-	SERVERICON="/images/submenus/system/computerm.png"
-	SERVERICON2="/images/submenus/system/all_computersm.png"
-	TABLECLASS=mobilestandard
 fi
 
 #Used to show the current time of the servers on time related pages
 function getservertime {
-SERVERTIMEDATA=$(sudo -H /opt/karoshi/web_controls/exec/get_server_time $SERVER)
-SERVERTIME=$(echo $SERVERTIMEDATA | cut -d, -f1)
-NTPSERVERS=$(echo $SERVERTIMEDATA | cut -d, -f2 | sed 's/ /<br>/g')
+SERVERTIMEDATA=$(sudo -H /opt/karoshi/web_controls/exec/get_server_time "$SERVER")
+SERVERTIME=$(echo "$SERVERTIMEDATA" | cut -d, -f1)
+NTPSERVERS=$(echo "$SERVERTIMEDATA" | cut -d, -f2 | sed 's/ /<br>/g')
 }
 
 function getdnsforwarders {
-DNSFORWARDERS=$(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders $SERVER)
-DNSFORWARDERS=$(echo $DNSFORWARDERS | sed 's/ /<br>/g')
+DNSFORWARDERS=$(sudo -H /opt/karoshi/web_controls/exec/get_dns_forwarders "$SERVER")
+DNSFORWARDERS="${DNSFORWARDERS// /<br>}"
 }
 
 function tabletop {
 echo '<table id="myTable" class="tablesorter" style="text-align: left;"><thead>
-<tr><th style="vertical-align: top; width: '$WIDTH1'px;"><b>'$"Server"'</b></th>'
+<tr><th style="vertical-align: top; width: '"$WIDTH1"'px;"><b>'$"Server"'</b></th>'
 
-[ $MOBILE = no ] && echo '<th style="vertical-align: top; width: '$WIDTH5'px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: '$WIDTH2'px;"><b>'$"Role"'</b></th>'
+[ "$MOBILE" = no ] && echo '<th style="vertical-align: top; width: '"$WIDTH5"'px;"><b>'$"Zone"'</b></th><th style="vertical-align: top; width: '"$WIDTH2"'px;"><b>'$"Role"'</b></th>'
 
-if [ $CUSTOM = updateserver ]
+if [ "$CUSTOM" = updateserver ]
 then
-	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Update Time"'</b></th>'
+	echo '<th style="vertical-align: top; text-align: left; width: '"$WIDTH4"'px;"><b>'$"Update Time"'</b></th>'
 fi
 
-if [ $CUSTOM = showdns ]
+if [ "$CUSTOM" = showdns ]
 then
-	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH6'px;"><b>'$"DNS Forwarders"'</b></th>'	
+	echo '<th style="vertical-align: top; text-align: left; width: '"$WIDTH6"'px;"><b>'$"DNS Forwarders"'</b></th>'	
 fi
 
-if [ $CUSTOM = showtime ]
+if [ "$CUSTOM" = showtime ]
 then
-	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH6'px;"><b>'$"NTP Servers"'</b></th><th style="vertical-align: top; text-align: left; width: '$WIDTH4'px;"><b>'$"Date and Time"'</b></th>'
+	echo '<th style="vertical-align: top; text-align: left; width: '"$WIDTH6"'px;"><b>'$"NTP Servers"'</b></th><th style="vertical-align: top; text-align: left; width: '"$WIDTH4"'px;"><b>'$"Date and Time"'</b></th>'
 fi
 
-if [ $CUSTOM = commercialsslcert ]
+if [ "$CUSTOM" = commercialsslcert ]
 then
 	COMMERCIALSSLSTEP1="Step 1"
 	COMMERCIALSSLSTEP2="Step 2"
 	COMMERCIALSSLSTEP3="Step 3"
-	echo '<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP1'</b></th>
-	<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP2'</b></th>
-	<th style="vertical-align: top; text-align: left; width: '$WIDTH3'px;"><b>'$COMMERCIALSSLSTEP3'</b></th>
+	echo '<th style="vertical-align: top; text-align: left; width: '"$WIDTH3"'px;"><b>'"$COMMERCIALSSLSTEP1"'</b></th>
+	<th style="vertical-align: top; text-align: left; width: '"$WIDTH3"'px;"><b>'"$COMMERCIALSSLSTEP2"'</b></th>
+	<th style="vertical-align: top; text-align: left; width: '"$WIDTH3"'px;"><b>'"$COMMERCIALSSLSTEP3"'</b></th>
 	</tr>'
 else
 	echo '<th style="vertical-align: top; text-align: right; width: '$WIDTH3'px;"></th></tr>'
@@ -120,71 +112,71 @@ echo '</tbody></table>'
 
 
 function show_server {
-SERVER_COUNT=$(($SERVER_COUNT + 1))
+SERVER_COUNT=$((SERVER_COUNT + 1))
 if [ "$SERVER" = allservers ]
 then
 	SERVERNAME2=$"All Servers"
 else
-	if [ $MOBILE = yes ]
+	if [ "$MOBILE" = yes ]
 	then
-		SERVERNAME2=`echo "$SERVER" | cut -d. -f1`
+		SERVERNAME2=$(echo "$SERVER" | cut -d. -f1)
 	else
 		SERVERNAME2="$SERVER"
 	fi
 fi
 
-echo '<tr><td style="vertical-align: top;">'$SERVERNAME2'</td>'
+echo '<tr><td style="vertical-align: top;">'"$SERVERNAME2"'</td>'
 
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
-	echo '<td style="vertical-align: top;">'$ZONE'</td><td style="vertical-align: top;">'
+	echo '<td style="vertical-align: top;">'"$ZONE"'</td><td style="vertical-align: top;">'
 	[ -d "$INFOPATH"/"$SERVER" ] && cat "$INFOPATH"/"$SERVER"/*
 	[ "$GLUSTER" = yes ] && echo "$GLUSTERINFO"
 	echo '</td>'
 fi
 
-if [ $CUSTOM = commercialsslcert ]
+if [ "$CUSTOM" = commercialsslcert ]
 then
 	#Set action depending on what has been set
 	ACTION=getcertdetails
 fi
 
-if [ $CUSTOM = updateserver ]
+if [ "$CUSTOM" = updateserver ]
 then
 	echo '<td style="vertical-align: top; text-align: left;">'
-	if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER ]
+	if [ -f /opt/karoshi/server_network/upgrade_schedules/servers/"$SERVER" ]
 	then
-		cat /opt/karoshi/server_network/upgrade_schedules/servers/$SERVER | sed 's/ - / /g'
+		sed 's/ - / /g' /opt/karoshi/server_network/upgrade_schedules/servers/"$SERVER"
 	else
 		echo -
 	fi
 	echo '</td>'
 fi
 
-if [ $CUSTOM = showtime ]
+if [ "$CUSTOM" = showtime ]
 then
 	getservertime
-	echo '<td style="vertical-align: top; text-align: left;">'$NTPSERVERS'</td><td style="vertical-align: top; text-align: left;">'$SERVERTIME'</td>'
+	echo '<td style="vertical-align: top; text-align: left;">'"$NTPSERVERS"'</td><td style="vertical-align: top; text-align: left;">'"$SERVERTIME"'</td>'
 fi
 
-if [ $CUSTOM = showdns ]
+if [ "$CUSTOM" = showdns ]
 then
 	getdnsforwarders
-	echo '<td style="vertical-align: top; text-align: left;">'$DNSFORWARDERS'</td>'
+	echo '<td style="vertical-align: top; text-align: left;">'"$DNSFORWARDERS"'</td>'
 fi
 
 echo '<td style="vertical-align: top; text-align: left;">
-<input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG'"></td>'
+<input name="'"$SEPARATOR"'SERVERNAME'"$SEPARATOR"''"$SERVER"''"$SEPARATOR"'SERVERTYPE'"$SEPARATOR"''"$SERVERTYPE"''"$SEPARATOR"'SERVERMASTER'"$SEPARATOR"''"$SERVERMASTER"''"$SEPARATOR"'ACTION'"$SEPARATOR"''"$ACTION"''"$SEPARATOR"'" type="submit" class="button" value="'"$ACTIONMSG"'"></td>'
 
-if [ $CUSTOM = commercialsslcert ]
+if [ "$CUSTOM" = commercialsslcert ]
 then
 	ACTION2=copycertinfo
 	ACTION3=getinstallcertinfo
 	ACTIONMSG2="Copy Certificate"
 	ACTIONMSG3="Install Certificate"
-	if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/$SERVERNAME ]
+	if [ -f /opt/karoshi/server_network/ssl/commercial_ssl_certs/"$SERVER" ]
 	then
-		echo '<td style="vertical-align: top; text-align: right;"><input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION2''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG2'"></td><td style="vertical-align: top; text-align: right;"><input name="'$SEPARATOR'SERVERNAME'$SEPARATOR''$SERVER''$SEPARATOR'SERVERTYPE'$SEPARATOR''$SERVERTYPE''$SEPARATOR'SERVERMASTER'$SEPARATOR''$SERVERMASTER''$SEPARATOR'ACTION'$SEPARATOR''$ACTION3''$SEPARATOR'" type="submit" class="button" value="'$ACTIONMSG3'"></td>'
+		echo '<td style="vertical-align: top; text-align: right;"><input name="'"$SEPARATOR"'SERVERNAME'"$SEPARATOR"''"$SERVER"''"$SEPARATOR"'SERVERTYPE'"$SEPARATOR"''"$SERVERTYPE"''"$SEPARATOR"'SERVERMASTER'"$SEPARATOR"''"$SERVERMASTER"''"$SEPARATOR"'ACTION'"$SEPARATOR"''"$ACTION2"''"$SEPARATOR"'" type="submit" class="button" value="'"$ACTIONMSG2"'"></td><td style="vertical-align: top; text-align: right;"><input name="'"$SEPARATOR"'SERVERNAME'"$SEPARATOR"''"$SERVER"''"$SEPARATOR"'SERVERTYPE'"$SEPARATOR"''"$SERVERTYPE"''"$SEPARATOR"'SERVERMASTER'"$SEPARATOR"''"$SERVERMASTER"''"$SEPARATOR"'ACTION'"$SEPARATOR"''"$ACTION3"''"$SEPARATOR"'" type="submit" class="button" value="'"$ACTIONMSG3"'"></td>'
 	fi
 fi
 
@@ -194,7 +186,6 @@ echo '</tr>'
 function show_all_option {
 if [ "$SERVER_COUNT" -gt 1 ]
 then
-	FILLCOLOUR=yellow
 	SERVERTYPE=network
 	INFOPATH=/opt/karoshi/server_network/servers
 	SERVER=allservers
@@ -204,7 +195,6 @@ fi
 }
 
 function show_internal_servers {
-FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
@@ -215,7 +205,7 @@ ADCLIST=""
 [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
 for SERVER in $SERVERLIST
 do
-	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+	if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 	then
 		show_server
 	fi
@@ -223,7 +213,7 @@ done
 
 for SERVER in $SERVERLIST
 do
-	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+	if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]]
 	then
 		show_server
 	fi
@@ -237,12 +227,10 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/webservers/*
 do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 	then	
-		FILLCOLOUR=orange
 		ZONE=$"DMZ"
 	fi
 	show_server
@@ -255,14 +243,12 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/servers/*
 	do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/servers/$SERVER/emailserver ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/servers/"$SERVER"/emailserver ]
 	then
-		if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+		if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 		then
-			FILLCOLOUR=orange
 			ZONE=$"DMZ"
 		fi
 		show_server
@@ -278,7 +264,6 @@ SERVERMASTER=notset
 #Show the main server
 show_pdc
 
-FILLCOLOUR=green
 ZONE=$"Internal"
 
 SERVERLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/servers)
@@ -286,7 +271,7 @@ ADCLIST=""
 [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)
 for SERVER in $SERVERLIST
 do
-	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+	if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 	then
 		show_server
 	fi
@@ -294,7 +279,7 @@ done
 
 for SERVER in $SERVERLIST
 do
-	if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ] && [ -f /opt/karoshi/server_network/servers/$SERVER/fileserver ]
+	if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]] && [ -f /opt/karoshi/server_network/servers/"$SERVER"/fileserver ]
 	then
 		show_server
 	fi
@@ -304,23 +289,22 @@ done
 if [ -d /opt/karoshi/server_network/gluster-volumes/ ]
 then
 	GLUSTER=yes
-	FILLCOLOUR=blue
 	ZONE=$"Gluster"
 	ACTIONMSG="Select Volume"
 	for GLUSTERVOLUMES in /opt/karoshi/server_network/gluster-volumes/*
 	do
 		SHOWGLUSTER=yes
-		GLUSTERVOLUME=`basename "$GLUSTERVOLUMES"`
+		GLUSTERVOLUME=$(basename "$GLUSTERVOLUMES")
 		if [ "$GLUSTERVOLUME" != dc-data ]
 		then
 			GLUSTERINFO="`echo $"Gluster Volume""<br>"` `ls -1 /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/ | sed 's/$/\<br\>/g'`"
-			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/$GLUSTERVOLUME/servers/*
+			for GLUSTERSERVERS in /opt/karoshi/server_network/gluster-volumes/"$GLUSTERVOLUME"/servers/*
 			do
-				GLUSTERSERVER=`basename "$GLUSTERSERVERS"`
+				GLUSTERSERVER=$(basename "$GLUSTERSERVERS")
 				SERVER="$GLUSTERVOLUME"
 				[ ! -f /opt/karoshi/server_network/servers/"$GLUSTERSERVER"/fileserver ] && SHOWGLUSTER=no
 			done
-			 [ $SHOWGLUSTER = yes ] && show_server
+			 [ "$SHOWGLUSTER" = yes ] && show_server
 		fi
 	done
 	GLUSTER=no
@@ -333,23 +317,14 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 	then
-		FILLCOLOUR=orange
 		ZONE=$"DMZ"
 	fi
-	[ $CUSTOM != $SERVER ] && show_server
+	[ "$CUSTOM" != "$SERVER" ] && show_server
 
-	BACKUPSTATUS=$"Disable Backup"
-	BACKUP_ICON=/images/submenus/system/backup_enabled.png
-	if [ -f /opt/karoshi/server_network/backup_servers/stop_backup_$SERVER ]
-	then
-		BACKUPSTATUS=$"Enable Backup"
-		BACKUP_ICON=/images/submenus/system/backup_disabled.png
-	fi
 done
 }
 
@@ -359,15 +334,13 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 	then
-		FILLCOLOUR=orange
 		ZONE=$"DMZ"
 	fi
-	[ $CUSTOM != $SERVER ] && show_server
+	[ "$CUSTOM" != "$SERVER" ] && show_server
 done
 }
 
@@ -378,15 +351,13 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/servers/*
 do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 	then
-		FILLCOLOUR=orange
 		ZONE=$"DMZ"
 	fi
-	[ $CUSTOM != $SERVER ] && show_server
+	[ "$CUSTOM" != "$SERVER" ] && show_server
 done
 }
 
@@ -396,33 +367,29 @@ SERVERTYPE=network
 SERVERMASTER=notset
 for SERVERS in /opt/karoshi/server_network/backup_servers/backup_settings/*
 do
-	FILLCOLOUR=green
 	ZONE=$"Internal"
-	SERVER=`basename $SERVERS`
-	if [ -f /opt/karoshi/server_network/zones/dmz/servers/$SERVER ]
+	SERVER=$(basename "$SERVERS")
+	if [ -f /opt/karoshi/server_network/zones/dmz/servers/"$SERVER" ]
 	then
-		FILLCOLOUR=orange
 		ZONE=$"Internal"
 	fi
-	[ $CUSTOM != $SERVER ] && show_server
+	[ "$CUSTOM" != "$SERVER" ] && show_server
 done
 }
 
 function addslaveups {
-FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
 ZONE=$"Internal"
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-	SERVER=`basename $SERVERS`
-	[ ! -d /opt/karoshi/server_network/ups/master/$SERVER ] && show_server
+	SERVER=$(basename "$SERVERS")
+	[ ! -d /opt/karoshi/server_network/ups/master/"$SERVER" ] && show_server
 done
 }
 
 function show_dmz_servers {
-FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
@@ -434,7 +401,7 @@ then
 	[ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ] && ADCLIST=$(ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/)
 	for SERVER in $SERVERLIST
 	do
-		if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]
+		if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") -gt 0 ]]
 		then
 			show_server
 		fi
@@ -442,7 +409,7 @@ then
 
 	for SERVER in $SERVERLIST
 	do
-		if [ "$SERVER" != "$MAINSERVER" ] && [ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]
+		if [ "$SERVER" != "$MAINSERVER" ] && [[ $(echo "$ADCLIST" | grep -c "$SERVER") = 0 ]]
 		then
 			show_server
 		fi
@@ -451,7 +418,6 @@ fi
 }
 
 function show_pdc {
-FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
@@ -461,38 +427,36 @@ show_server
 }
 
 function show_adc_servers {
-FILLCOLOUR=green
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
 ZONE=$"Internal"
 if [ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | wc -l) -gt 0 ]]
 	then
 		for SERVERS in /opt/karoshi/server_network/zones/internal/additional_domain_controllers/*
 		do
-			SERVER=`basename $SERVERS`
-			[ $SERVER != $MAINSERVER ] && show_server
+			SERVER=$(basename "$SERVERS")
+			[ "$SERVER" != "$MAINSERVER" ] && show_server
 		done
 	fi
 fi
 }
 
 function show_dmz_adc_servers {
-FILLCOLOUR=orange
 INFOPATH=/opt/karoshi/server_network/servers
 SERVERTYPE=network
 SERVERMASTER=notset
 ZONE=$"DMZ"
 if [ -d /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/ | wc -l) -gt 0 ]]
 	then
 		for SERVERS in /opt/karoshi/server_network/zones/dmz/additional_domain_controllers/*
 		do
-			SERVER=`basename $SERVERS`
-			[ $SERVER != $MAINSERVER ] && show_server
+			SERVER=$(basename "$SERVERS")
+			[ "$SERVER" != "$MAINSERVER" ] && show_server
 		done
 	fi
 fi
@@ -502,19 +466,19 @@ fi
 tabletop
 
 
-if [ $VIEW = addslaveups ]
+if [ "$VIEW" = addslaveups ]
 then
 	addslaveups
 else
 	#Show pdc
-	if [ $VIEW != web ] && [ $VIEW != email ] && [ $VIEW != fileservers ] && [ $VIEW != backups ] && [ $VIEW != backupservers ]
+	if [ "$VIEW" != web ] && [ "$VIEW" != email ] && [ "$VIEW" != fileservers ] && [ "$VIEW" != backups ] && [ "$VIEW" != backupservers ]
 	then
 		show_pdc
 	fi
 fi
 
 #Show adc servers
-if [ $VIEW = adc ]
+if [ "$VIEW" = adc ]
 then
 	show_adc_servers
 	show_dmz_adc_servers
@@ -522,7 +486,7 @@ fi
 
 
 #Show internal servers
-if [ $VIEW = all ] || [ $VIEW = internal ] || [ $VIEW = servers ]
+if [ "$VIEW" = all ] || [ "$VIEW" = internal ] || [ "$VIEW" = servers ]
 then
 	ZONE=$"Internal"
 	show_internal_servers
@@ -531,26 +495,26 @@ then
 fi
 
 #Show web servers
-[ $VIEW = web ] && show_web_servers
+[ "$VIEW" = web ] && show_web_servers
 
 #Show email servers
-[ $VIEW = email ] && show_email_servers
+[ "$VIEW" = email ] && show_email_servers
 
 #Show file servers
-[ $VIEW = fileservers ] && show_file_servers
+[ "$VIEW" = fileservers ] && show_file_servers
 
 
 #Show backups
-[ $VIEW = backups ] && show_backups
+[ "$VIEW" = backups ] && show_backups
 
 #Show backup servers
-[ $VIEW = backupservers ] && show_backupservers
+[ "$VIEW" = backupservers ] && show_backupservers
 
 #Show restore
-[ $VIEW = restore ] && show_restore
+[ "$VIEW" = restore ] && show_restore
 
 #Show all option
-[ $VIEW = all ] && show_all_option
+[ "$VIEW" = all ] && show_all_option
 
 #End table
 tablebottom

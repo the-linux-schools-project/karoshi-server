@@ -112,7 +112,7 @@ if [ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links ]
 then
 	FIRSTLINK=yes
 	SUBENTRIES=no
-	for LINKDATA in $(cat /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links | sed 's% %SPACE%g')
+	for LINKDATA in $(sed 's% %SPACE%g' /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER".links)
 	do
 		LINK=$(echo "$LINKDATA" | cut -d, -f1)
 		LINKTITLE=$(echo "$LINKDATA" | cut -d, -f2 | sed 's%SPACE% %g')

@@ -83,8 +83,8 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	DIV_ID=actionbox2
-	/opt/karoshi/web_controls/generate_navbar_admin_mobile
+	DIV_ID=actionbox
+	TABLECLASS=mobilestandard
 fi
 
 echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">'
@@ -93,16 +93,12 @@ echo '<div id="'$DIV_ID'"><form action="/cgi-bin/admin/helpdesk_view_fm.cgi" met
 #Show back button for mobiles
 if [ $MOBILE = yes ]
 then
-	echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
-<td style="vertical-align: middle;"><b>'$"Technical Support"' - '$"Requests"'</b></td>
-<td style="vertical-align: middle;">
-<button class="info" name="_ViewAssigned_" value="_SEARCHCRITERIA_ASSIGNED_">
-<img src="/images/submenus/user/helpdesk/staff.png" alt="'$"All"'">
-<span>'$"All"'</span>
-</button>
-</form></td>
-</tr></tbody></table><br>'
+	echo '<div style="float: center" id="my_menu" class="sdmenu">
+	<div class="expanded">
+	<span>'$"Technical Support"' - '$"Requests"'</span>
+<a href="/cgi-bin/tech/mobile_menu.cgi">'$"Menu"'</a>
+</div></div><div id="mobileactionbox">
+'
 else
 	echo '<b>'$"Technical Support"' - '$"Requests"'</b> <a class="info" href="javascript:void(0)"><input name="_SEARCHCRITERIA_ASSIGNED_" type="image" class="images" src="/images/submenus/user/helpdesk/staff.png" value="_SEARCHCRITERIA_ASSIGNED_"><span>All</span></a></form>'
 fi
@@ -111,7 +107,7 @@ fi
 
 #Reload the page every 3 minutes
 echo '
-<form id="refresh_form" action="/cgi-bin/admin/helpdesk_view_fm.cgi" method="post">
+<form id="refresh_form" action="/cgi-bin/tech/helpdesk_view_fm.cgi" method="post">
  <input type="hidden" name="_SEARCHCRITERIA_'$SEARCHCRITERIA'_" value="_SEARCHCRITERIA_'$SEARCHCRITERIA'_"> 
 </form>
 <script>

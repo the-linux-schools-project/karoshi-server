@@ -18,55 +18,31 @@
 #The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 #Check that there are users to ban
-BANCOUNT=`ls -1 /opt/karoshi/logs/banned_user_internet_durations/ | wc -l`
-[ $BANCOUNT = 0 ] && exit
+BANCOUNT=$(ls -1 /opt/karoshi/logs/banned_user_internet_durations/ | wc -l)
+[ "$BANCOUNT" = 0 ] && exit
 
-############################
-#Allow user
-############################
-function allow_user {
-echo `date`: dg_increment_user_internet_bans - allowing $BANNEDUSER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+DataSync=no
 
-[ ! -f /opt/karoshi/server_network/proxyserver ] && exit
+function AllowUser {
+DataSync=yes
+echo "$(date): dg_increment_user_internet_bans - allowing $BANNEDUSER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-PROXYSERVER=`sed -n 1,1p /opt/karoshi/server_network/proxyserver`
-
-if [ $PROXYSERVER != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $PROXYSERVER '
-#Get line number of site
-USERLINENUMBER=`grep -n ^'$BANNEDUSER' /etc/squid/badusers.list | cut -d: -f1`
-if [ $USERLINENUMBER"null" != null ]
-then
-sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
-fi
-#Remove blank lines
-sed -i "/^$/d" /etc/squid/badusers.list
-#Make sure that list is not empty
-SITECOUNT=`cat /etc/squid/badusers.list | wc -l`
-if [ $SITECOUNT = 0 ]
-then
-echo sampleuser > /etc/squid/badusers.list
-fi
-'
-else
 #Get line number of username
-USERLINENUMBER=`grep -n ^$BANNEDUSER /etc/squid/badusers.list | cut -d: -f1`
-if [ $USERLINENUMBER"null" != null ]
+USERLINENUMBER=$(grep -n ^"$BANNEDUSER" /etc/squid/badusers.list | cut -d: -f1)
+if [ ! -z "$USERLINENUMBER" ]
 then
-sed -i $USERLINENUMBER"d" /etc/squid/badusers.list
+	sed -i "$USERLINENUMBER""d" /etc/squid/badusers.list
 fi
 #Remove blank lines
 sed -i '/^$/d' /etc/squid/badusers.list
 #Make sure that list is not empty
-USERCOUNT=`cat /etc/squid/badusers.list | wc -l`
-if [ $USERCOUNT = 0 ]
+USERCOUNT=$(wc -l < /etc/squid/badusers.list)
+if [ "$USERCOUNT" = 0 ]
 then
-echo sampleuser > /etc/squid/badusers.list
-fi
+	echo sampleuser > /etc/squid/badusers.list
 fi
 }
 
@@ -75,15 +51,37 @@ fi
 ############################
 for BANNEDUSERPATH in /opt/karoshi/logs/banned_user_internet_durations/*
 do
-BAN_DURATION=`sed -n 1,1p $BANNEDUSERPATH |  tr -cd '0-9\n'`
-let BAN_DURATION=$BAN_DURATION-1
-if [ $BAN_DURATION -lt 1 ]
-then
-BANNEDUSER=`basename $BANNEDUSERPATH`
-#Allow User
-allow_user
-rm -f $BANNEDUSERPATH
-else
-echo $BAN_DURATION > $BANNEDUSERPATH
-fi
+	BAN_DURATION=$(sed -n 1,1p "$BANNEDUSERPATH" |  tr -cd '0-9\n')
+	let BAN_DURATION="$BAN_DURATION"-1
+	if [ "$BAN_DURATION" -lt 1 ]
+	then
+		BANNEDUSER=$(basename "$BANNEDUSERPATH")
+		#Allow User
+		AllowUser
+		rm -f "$BANNEDUSERPATH"
+	else
+		echo "$BAN_DURATION" > "$BANNEDUSERPATH"
+	fi
 done
+
+if [ "$DataSync" = yes ]
+then
+	#Copy badusers.list to all proxy servers
+	if [ -d /opt/karoshi/server_network/proxyservers/ ]
+	then
+		for PROXYSERVER in $(ls -1 /opt/karoshi/server_network/proxyservers)
+		do
+			if [[ "$PROXYSERVER" = $(hostname-fqdn) ]]
+			then
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null				
+			else
+				scp /etc/squid/badusers.list root@"$PROXYSERVER":/etc/squid/
+				ssh -x -o PasswordAuthentication=no "$PROXYSERVER" '
+				source /opt/karoshi/serversetup/variables/distro
+				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_reload 1>/dev/null 2>/dev/null
+				'				
+			fi
+		done
+	fi
+fi

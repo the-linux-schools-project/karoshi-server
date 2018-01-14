@@ -783,18 +783,6 @@ chown root:apache_karoshi /opt/karoshi/web_controls/show_servers
 cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_admin /opt/karoshi/web_controls
 chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin
 chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_admin
-cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_admin_mobile /opt/karoshi/web_controls
-chmod 0750 /opt/karoshi/web_controls/generate_navbar_admin_mobile
-chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_admin_mobile
-cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_tech_mobile /opt/karoshi/web_controls
-chmod 0750 /opt/karoshi/web_controls/generate_navbar_tech_mobile
-chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_tech_mobile
-cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_staff_mobile /opt/karoshi/web_controls
-chmod 0750 /opt/karoshi/web_controls/generate_navbar_staff_mobile
-chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_staff_mobile
-cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_all_mobile /opt/karoshi/web_controls
-chmod 0750 /opt/karoshi/web_controls/generate_navbar_all_mobile
-chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_all_mobile
 cp -f /opt/karoshi/serversetup/web_controls/scripts/generate_navbar_top /opt/karoshi/web_controls
 chmod 0750 /opt/karoshi/web_controls/generate_navbar_top
 chown root:apache_karoshi /opt/karoshi/web_controls/generate_navbar_top

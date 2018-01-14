@@ -57,7 +57,7 @@ then
 	COUNTER=0
 	for Alert in /opt/karoshi/web_controls/warnings/messages/*
 	do
-		echo "singletext[$COUNTER]='$(cat "$Alert" | sed 's%/%\\/%g')';" >> /opt/karoshi/web_controls/warnings/summary.txt
+		echo "singletext[$COUNTER]='$(sed 's%/%\\/%g' "$Alert")';" >> /opt/karoshi/web_controls/warnings/summary.txt
 		let COUNTER="$COUNTER"+1
 	done
 	chmod 0640 /opt/karoshi/web_controls/warnings/summary.txt

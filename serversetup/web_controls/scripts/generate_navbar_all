@@ -24,13 +24,12 @@
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
 [ -f /opt/karoshi/web_controls/global_prefs ] && source /opt/karoshi/web_controls/global_prefs
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
-echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span>
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span>
 </div><div id="navbar"><span class="preload1"></span>
 <span class="preload2"></span>
 <ul id="nav">

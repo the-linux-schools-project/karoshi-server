@@ -25,8 +25,8 @@
 ##########################
 
 #Website: http://www.karoshi.org.uk
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 HELPDESK=$"Helpdesk"
 
@@ -34,7 +34,7 @@ source /opt/karoshi/server_network/web_controls/menusettings
 source /opt/karoshi/web_controls/version
 source /opt/karoshi/server_network/domain_information/domain_name
 
-echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '$SHORTNAME' <span class="version">'$"Version"' : '$VERSION'</span></span> 
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span> 
 <div id="searchbar"><form name="searchform" action="/cgi-bin/admin/search.cgi" method="post">
 <input required="required" class="search-query" name="_SEARCH_" placeholder="'$"Search"'" style="width: 200px; height: 25px;" size="20" type="text">
 </form></div>'
@@ -60,14 +60,14 @@ echo '</div><div id="navbar"><span class="preload1"></span>
 	</li>
 '
 #Printers
-if [ $PRINTERCTRL = yes ]
+if [ "$PRINTERCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/staff/printers.cgi" class="top_link"><span>'$"Printer"'</span></a></li>'
+	echo '	<li class="top"><a href="/cgi-bin/staff/printers.cgi" class="top_link"><span>'$"Printer"'</span></a></li>'
 fi
 #Internet
-if [ $INTERNETCTRL = yes ]
+if [ "$INTERNETCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
+	echo '	<li class="top"><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi" id="Internet" class="top_link"><span class="down">Internet</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/staff/dg_room_controls_fm.cgi">'$"Room controls"'</a></li>
 			<li><a href="/cgi-bin/staff/dg_view_student_user_logs_fm.cgi">'$"Internet Logs"'</a></li>

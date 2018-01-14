@@ -1,43 +1,42 @@
 #!/bin/bash
-echo `date`: '##############'monitorixwebmanagement'##############' >> /opt/karoshi/serversetup/install_log
+echo "$(date): ##############monitorixwebmanagement##############" >> /opt/karoshi/serversetup/install_log
 #Check which version of ubuntu we are running.
-
-if [ `lsb_release -c | cut -d: -f2 | tr -cd 'a-z'` = precise ]
+source /opt/karoshi/server_network/domain_information/domain_name
+if [[ $(lsb_release -c | cut -d: -f2 | tr -cd '[:lower:]') = precise ]]
 then
-#Config for ubuntu 12.04 with apache 2.2
-echo ProxyRequests Off > /etc/apache2/conf.d_karoshi/monitorix
-source /opt/karoshi/server_network/domain_information/domain_name
-for SERVERS in /opt/karoshi/server_network/servers/*
-do
-SERVER=`basename $SERVERS`
-echo '<Location /monitorix-'$SERVER'/monitorix.cgi>
-	ProxyPass http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
-	ProxyPassReverse http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
+	#Config for ubuntu 12.04 with apache 2.2
+	echo ProxyRequests Off > /etc/apache2/conf.d_karoshi/monitorix
+
+	for SERVERS in /opt/karoshi/server_network/servers/*
+	do
+	SERVER=$(basename "$SERVERS")
+echo '<Location /monitorix-'"$SERVER"'/monitorix.cgi>
+	ProxyPass http://'"$SERVER"':50005/monitorix-cgi/monitorix.cgi
+	ProxyPassReverse http://'"$SERVER"':50005/monitorix-cgi/monitorix.cgi
 </Location>
-<Location /monitorix-'$SERVER'>
+<Location /monitorix-'"$SERVER"'>
 	SetOutputFilter proxy-html
-	ProxyPass http://'$SERVER':50005/monitorix/
-	ProxyPassReverse http://'$SERVER':50005/monitorix/
-	ProxyHTMLURLMap http://'$SERVER':50005/monitorix/ /monitorix-'$SERVER'/
+	ProxyPass http://'"$SERVER"':50005/monitorix/
+	ProxyPassReverse http://'"$SERVER"':50005/monitorix/
+	ProxyHTMLURLMap http://'"$SERVER"':50005/monitorix/ /monitorix-'"$SERVER"'/
 </Location>
-'>> /etc/apache2/conf.d_karoshi/monitorix
-done
+	'>> /etc/apache2/conf.d_karoshi/monitorix
+	done
 else
-#Config for ubuntu 14.04 with apache 2.4
-echo ProxyRequests Off > /etc/apache2/conf.d_karoshi/monitorix
-source /opt/karoshi/server_network/domain_information/domain_name
+	#Config for ubuntu 14.04 with apache 2.4
+	echo ProxyRequests Off > /etc/apache2/conf.d_karoshi/monitorix
 for SERVERS in /opt/karoshi/server_network/servers/*
 do
-SERVER=`basename $SERVERS`
-echo '<Location /monitorix-'$SERVER'>
-	ProxyPass http://'$SERVER':50005/monitorix/
-	ProxyPassReverse http://'$SERVER':50005/monitorix/
+SERVER=$(basename "$SERVERS")
+echo '<Location /monitorix-'"$SERVER"'>
+	ProxyPass http://'"$SERVER"':50005/monitorix/
+	ProxyPassReverse http://'"$SERVER"':50005/monitorix/
 	ProxyHTMLEnable On
-	ProxyHTMLURLMap http://'$SERVER':50005/monitorix/ /monitorix-'$SERVER'/
+	ProxyHTMLURLMap http://'"$SERVER"':50005/monitorix/ /monitorix-'"$SERVER"'/
 </Location>
-<Location /monitorix-'$SERVER'/monitorix.cgi>
-	ProxyPass http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
-	ProxyPassReverse http://'$SERVER':50005/monitorix-cgi/monitorix.cgi
+<Location /monitorix-'"$SERVER"'/monitorix.cgi>
+	ProxyPass http://'"$SERVER"':50005/monitorix-cgi/monitorix.cgi
+	ProxyPassReverse http://'"$SERVER"':50005/monitorix-cgi/monitorix.cgi
 </Location>
 '>> /etc/apache2/conf.d_karoshi/monitorix
 done

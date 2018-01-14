@@ -56,8 +56,7 @@ then
 	#Generate navigation bar
 	/opt/karoshi/web_controls/generate_navbar_admin
 else
-	DIV_ID=navbar
-	/opt/karoshi/web_controls/generate_navbar_admin_mobile
+	DIV_ID=menubox
 fi
 echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="'$DIV_ID'"><div id="titlebox">'
 
@@ -65,7 +64,7 @@ echo '<form action="/cgi-bin/admin/set_default_page.cgi" method="post"><div id="
 if [ "$MOBILE" = yes ]
 then
 	echo '<table class="standard" style="text-align: left;" >
-<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_user_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"MSG'"></a></td>
+<tbody><tr><td style="vertical-align: top;"><a href="/cgi-bin/admin/mobile_user_menu.cgi"><img border="0" src="/images/submenus/mobile/back.png" alt="'$"Back"'"></a></td>
 <td style="vertical-align: middle;"><b>'$"Set Default Page"'</b> <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></td></tr></tbody></table>'
 else
 	echo '<div class="sectiontitle">'$"Set Default Page"' <a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the default page that you want to have for this section of the web management."'</span></a></div><br>'
