@@ -195,9 +195,21 @@ then
 		chown root.itadmin /home/users/archive/email/
 	fi
 	mv /home/users/email/"$DELETEUSER" /home/users/archive/email/
+
+	#Archive user's SOGo data
+	if [ ! -d /home/users/archive/SOGo/"$DELETEUSER" ]
+	then
+		mkdir -p /home/users/archive/SOGo/"$DELETEUSER"
+		chmod 0770 /home/users/archive/SOGo/"$DELETEUSER"
+		chown root.itadmin /home/users/archive/SOGo/"$DELETEUSER"
+	fi
+	sogo-tool backup /home/users/archive/SOGo/"$DELETEUSER" "$DELETEUSER"
 else
 	rm -f -R /home/users/email/"$DELETEUSER"
 fi
+
+#Delete SOGo user data
+sogo-tool remove "$DELETEUSER"
 
 #Remove the username from all restriction lists.
 if [[ $(grep -c -w ^"$DELETEUSER" /etc/postfix/restricted_accounts) -gt 0 ]]

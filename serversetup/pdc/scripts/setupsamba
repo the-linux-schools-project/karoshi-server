@@ -1855,14 +1855,14 @@ run_functions 2>> /opt/karoshi/serversetup/install_log | show_info
 #######################
 #Change passwords
 #######################
-echo `date`: "Changing root and karoshi passwords" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Changing root and karoshi passwords" >> /opt/karoshi/serversetup/install_log
 echo root:"$SAMBAROOTPASSWORD1" | chpasswd
 echo karoshi:"$SAMBAROOTPASSWORD1" | chpasswd
 
 #######################
 #Stop password aging
 #######################
-echo `date`: "Stopping password aging" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Stopping password aging" >> /opt/karoshi/serversetup/install_log
 chage -M 99999 root
 chage -M 99999 karoshi
 
@@ -1871,7 +1871,7 @@ then
 	#######################
 	#Setup Scheduled Jobs
 	#######################
-	echo `date`: "Setting up scheduled jobs" >> /opt/karoshi/serversetup/install_log
+	echo "$(date): Setting up scheduled jobs" >> /opt/karoshi/serversetup/install_log
 	[ ! -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] && mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
 	echo 0 0 '*' '*' 7 /opt/karoshi/'"'useful scripts'"'/resetguestaccounts > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/resetguestaccounts.cron
 	echo 1 0 '*' '*' 1-5 /opt/karoshi/'"'useful scripts'"'/resettechaccounts > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/resettechaccounts.cron
@@ -1885,97 +1885,97 @@ then
 	echo `date`: "Adding linux client support" >> /opt/karoshi/serversetup/install_log
 
 	[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
-	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION
-	tar -xvzf /opt/karoshi/serversetup/pdc/linuxclient/$LINUXCLIENTVERSION.tar.gz -C /var/lib/samba/netlogon/linuxclient 1>/dev/null
+	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"
+	tar -xvzf /opt/karoshi/serversetup/pdc/linuxclient/"$LINUXCLIENTVERSION".tar.gz -C /var/lib/samba/netlogon/linuxclient 1>/dev/null
 
 	cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 
 	#Create client info on netlogon
 	[ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
-	echo $SAMBADOMAIN > /var/lib/samba/netlogon/domain_information/domain_name
+	echo "$SAMBADOMAIN" > /var/lib/samba/netlogon/domain_information/domain_name
 	#echo $HOSTNAME.$REALM > /var/lib/samba/netlogon/domain_information/main_server_fqdn
-	echo $HOSTNAME > /var/lib/samba/netlogon/domain_information/main_server
+	echo "$HOSTNAME" > /var/lib/samba/netlogon/domain_information/main_server
 
 	#Copy printer info to netlogon
 	[ -f /opt/karoshi/server_network/printserver ] && cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/
 
 	#Add LINUXCLIENTVERSION to versions.txt
 	touch /var/lib/samba/netlogon/linuxclient/versions.txt
-	[ `grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt` = 0 ] && echo $LINUXCLIENTVERSION >> /var/lib/samba/netlogon/linuxclient/versions.txt
+	[[ $(grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt) = 0 ]] && echo "$LINUXCLIENTVERSION" >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 	#Point icons at the correct path
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/all/"Change Password.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/itadmin/"Helpdesk.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/itadmin/"karoshimanagement.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/staff/"Helpdesk.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/staff/"karoshimanagement.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"Helpdesk.desktop"
-	sed -i 's/xen:50001/manage.'$REALM':50001/g' /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons/officestaff/"karoshimanagement.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/all/"Change Password.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/itadmin/"Helpdesk.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/itadmin/"karoshimanagement.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/staff/"Helpdesk.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/staff/"karoshimanagement.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/officestaff/"Helpdesk.desktop"
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/officestaff/"karoshimanagement.desktop"
 
 	#Add in support for older client versions
 	for OLDERCLIENTVERSION in $OLDERCLIENTVERSIONS
 	do
-		[ ! -d /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/libreoffice/extensions/
-		cp -f -R /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVERSION/desktop-icons /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/desktop-icons 
+		[ ! -d /var/lib/samba/netlogon/linuxclient/"$OLDERCLIENTVERSION"/libreoffice/extensions/ ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$OLDERCLIENTVERSION/libreoffice/extensions/
+		cp -f -R /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons /var/lib/samba/netlogon/linuxclient/"$OLDERCLIENTVERSION"/desktop-icons 
 	done
 
 	#Create information for linux clients
 	[ ! -d /var/lib/samba/netlogon/domain_information ] && mkdir -p /var/lib/samba/netlogon/domain_information
 	[ ! -d /var/lib/samba/dfs/homes ] && mkdir -p /var/lib/samba/dfs/homes
 	touch /var/lib/samba/netlogon/domain_information/samba4
-	echo $WEBADDRESS > /var/lib/samba/netlogon/domain_information/dns_domain
-	echo $DOMAINSID > /var/lib/samba/netlogon/domain_information/domain_sid
-	echo $LDAPBASE > /var/lib/samba/netlogon/domain_information/ldap_base
+	echo "$WEBADDRESS" > /var/lib/samba/netlogon/domain_information/dns_domain
+	echo "$DOMAINSID" > /var/lib/samba/netlogon/domain_information/domain_sid
+	echo "$LDAPBASE" > /var/lib/samba/netlogon/domain_information/ldap_base
 
 	#Prepare client_settings
 	[ ! -d /var/lib/samba/netlogon/client_settings ] && mkdir -p /var/lib/samba/netlogon/client_settings
 fi
 
 #Create zone information
-echo `date`: "Creating zone information" >> /opt/karoshi/serversetup/install_log
+echo "$(date): Creating zone information" >> /opt/karoshi/serversetup/install_log
 [ ! -d /opt/karoshi/server_network/zones/internal/primary_domain_controller ] && mkdir -p /opt/karoshi/server_network/zones/internal/primary_domain_controller
-echo $HOSTNAME.$REALM > /opt/karoshi/server_network/zones/internal/primary_domain_controller/$HOSTNAME.$REALM
+echo "$HOSTNAME.$REALM" > /opt/karoshi/server_network/zones/internal/primary_domain_controller/"$HOSTNAME.$REALM"
 
 [ ! -d /opt/karoshi/server_network/zones/internal/servers ] && mkdir -p /opt/karoshi/server_network/zones/internal/servers
-touch /opt/karoshi/server_network/zones/internal/servers/$HOSTNAME.$REALM
+touch /opt/karoshi/server_network/zones/internal/servers/"$HOSTNAME.$REALM"
 
 #Make sure all jobs are scheduled
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 
 #Restart samba
 echo Restarting samba4 >> /opt/karoshi/serversetup/install_log
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop
 sleep 1
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start
 
-if [ $INSTALL_TYPE != adcrestore ] && [ "$INSTALL_TYPE" != archiverestore ]
+if [ "$INSTALL_TYPE" != adcrestore ] && [ "$INSTALL_TYPE" != archiverestore ]
 then 
 	#Create dfs links
-	ln -s msdfs:$HOSTNAME\\applications /var/lib/samba/dfs/applications
-	ln -s msdfs:$HOSTNAME\\itadminshare /var/lib/samba/dfs/itadminshare
-	ln -s msdfs:$HOSTNAME\\netlogon /var/lib/samba/dfs/netlogon
-	ln -s msdfs:$HOSTNAME\\sysvol /var/lib/samba/dfs/sysvol
+	ln -s msdfs:"$HOSTNAME"\\applications /var/lib/samba/dfs/applications
+	ln -s msdfs:"$HOSTNAME"\\itadminshare /var/lib/samba/dfs/itadminshare
+	ln -s msdfs:"$HOSTNAME"\\netlogon /var/lib/samba/dfs/netlogon
+	ln -s msdfs:"$HOSTNAME"\\sysvol /var/lib/samba/dfs/sysvol
 
-	if [ $INSTALL_TYPE = education ]
+	if [ "$INSTALL_TYPE" = education ]
 	then 
-		ln -s msdfs:$HOSTNAME\\subjects /var/lib/samba/dfs/subjects
+		ln -s msdfs:"$HOSTNAME"\\subjects /var/lib/samba/dfs/subjects
 	fi
 
-	if [ $INSTALL_TYPE = education ] || [ $INSTALL_TYPE = business ] 
+	if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = business ] 
 	then
-		ln -s msdfs:$HOSTNAME\\staffshare /var/lib/samba/dfs/staffshare
-		ln -s msdfs:$HOSTNAME\\officeshare /var/lib/samba/dfs/officeshare
+		ln -s msdfs:"$HOSTNAME"\\staffshare /var/lib/samba/dfs/staffshare
+		ln -s msdfs:"$HOSTNAME"\\officeshare /var/lib/samba/dfs/officeshare
 	fi
 
-	if [ $INSTALL_TYPE = home ]
+	if [ "$INSTALL_TYPE" = home ]
 	then 
-		ln -s msdfs:$HOSTNAME\\multimedia /var/lib/samba/dfs/multimedia
+		ln -s msdfs:"$HOSTNAME"\\multimedia /var/lib/samba/dfs/multimedia
 	fi
 
 	#Create dfs links for existing users
-	for NEWUSER in `getent passwd | grep /home/users | cut -d: -f1` 
+	for NEWUSER in $(getent passwd | grep /home/users | cut -d: -f1) 
 	do
-		ln -s msdfs:$HOSTNAME\\$NEWUSER /var/lib/samba/dfs/homes/$NEWUSER
+		ln -s msdfs:"$HOSTNAME\\$NEWUSER" /var/lib/samba/dfs/homes/"$NEWUSER"
 	done
 
 	#Add in server declarations
@@ -1984,8 +1984,8 @@ then
 	[ ! -d /opt/karoshi/server_network/network_shares/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/network_shares/$SERVERNAME
 
 	SERVERSHARES="applications subjects staffshare sysvol itadminshare officeshare netlogon"
-	[ $INSTALL_TYPE = business ] && SERVERSHARES="applications staffshare sysvol itadminshare officeshare netlogon"
-	[ $INSTALL_TYPE = home ] && SERVERSHARES="applications multimedia sysvol itadminshare netlogon"
+	[ "$INSTALL_TYPE" = business ] && SERVERSHARES="applications staffshare sysvol itadminshare officeshare netlogon"
+	[ "$INSTALL_TYPE" = home ] && SERVERSHARES="applications multimedia sysvol itadminshare netlogon"
 
 	for SHARENAME in $SERVERSHARES
 	do
@@ -2068,16 +2068,16 @@ then
 				MAP_DRIVE="1,1,1,"
 			fi
 
-			echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
-			echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/$SERVERNAME/$SHARENAME
+			echo SERVER='"'"$SERVERNAME"'"' > /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo SHAREPATH='"'"$SHAREPATH"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo USERLIST='"'"$NETUSERS"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo GROUPLIST='"'"$NETGROUPS"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo GROUPPERMS='"'"$GROUPPERMS"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo MAP_DRIVE='"'"$MAP_DRIVE"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo DRIVELETTER='"'"$DRIVELETTER"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo SERVERTYPE='"'network'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo SERVERMASTER='""' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
+			echo MASK='"'"$MASK"'"' >> /opt/karoshi/server_network/network_shares/"$SERVERNAME/$SHARENAME"
 		fi
 	done
 
@@ -2160,7 +2160,7 @@ fi
 #Set permissions on sysvol
 #samba-tool ntacl sysvolreset
 
-if [ $INSTALL_TYPE = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
+if [ "$INSTALL_TYPE" = adcrestore ] || [ "$INSTALL_TYPE" = archiverestore ]
 then 
 	#Modify role information
 	if [ -d /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM" ]
@@ -2171,7 +2171,7 @@ then
 			INFOFILE=$(basename "$INFOFILES")
 			if [ "$INFOFILE" != apacheserver ] && [ "$INFOFILE" != glusterfs_server ] && [ "$INFOFILE" != 1dc ] && [ "$INFOFILE" != 1domainmember ] && [ "$INFOFILE" != 2users-groups ]
 			then
-				if [ `grep -c RE-INSTALL /opt/karoshi/server_network/servers/$HOSTNAME.$REALM/$INFOFILE` = 0 ]
+				if [[ $(grep -c RE-INSTALL /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM/$INFOFILE") = 0 ]]
 				then
 					echo "$(date): marking $INFOFILE for re-install" >> /opt/karoshi/serversetup/install_log
 					sed -i '1i <span class="reinstall"><b>' /opt/karoshi/server_network/servers/"$HOSTNAME.$REALM/$INFOFILE"
