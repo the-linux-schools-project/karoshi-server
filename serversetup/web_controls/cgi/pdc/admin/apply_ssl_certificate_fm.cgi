@@ -64,7 +64,7 @@ $(document).ready(function()
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectservers" method="post"><b></b>
-  <div id="actionbox"><table class="standard" style="text-align: left;" ><tbody><tr>
+  <div id="actionbox3"><div id="infobox"><table class="standard" style="text-align: left;" ><tbody><tr>
 <td style="vertical-align: top;"><div class="sectiontitle">'$"Apply SSL Certificate"'</div></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=SSL_Certificate"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will create an ssl certificate signed by the root signing authority on your server."' '$"Your client computers will need to have the root signing authority installed into their web browsers."'</span></a></td></tr></tbody></table>
   <br><table  id="myTable" class="tablesorter" style="text-align: left;" >
@@ -81,7 +81,7 @@ echo '<form action="/cgi-bin/admin/apply_ssl_certificate.cgi" name="selectserver
 '$"Apply Certificate"'
 </button>
 </td></tr></tbody></table>
-</div></form></div></body></html>
+</div></div></form></div></body></html>
 '
 
 

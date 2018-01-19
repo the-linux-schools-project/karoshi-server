@@ -77,7 +77,7 @@ echo '<SCRIPT language="Javascript">'
 echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/apply_ssl_certificate_fm.cgi";'
 echo '</script>'
-echo "</div></div></body></html>"
+echo "</div></div></div></body></html>"
 exit
 }
 #########################
@@ -117,7 +117,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
-echo '<div id="actionbox">'
+echo '<div id="actionbox3"><div id="infobox">'
 
 MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
