@@ -41,4 +41,4 @@ else
 	grep ^server /etc/ntp.conf | sed "s/^server//g" | sed "s/^ //g" | cut -d" " -f1
 	') 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
-echo -e "$SERVERTIME,$NTPSERVERS"
+echo "$SERVERTIME,$NTPSERVERS" | tr '\n' ' '
