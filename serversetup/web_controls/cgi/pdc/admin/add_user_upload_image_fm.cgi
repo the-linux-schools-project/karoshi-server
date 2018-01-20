@@ -51,8 +51,7 @@ echo '
 <!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'">
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--><title>Upload User Image</title></head>
-<body>
-'
+<body id="photobox">'
 
 ImageFile=/images/blank_user_image.jpg
 #Show the user photo if one has been uploaded
@@ -69,8 +68,8 @@ then
 	fi
 fi
 
-echo '<div id="photobox"><form enctype="multipart/form-data" action="/cgi-bin/admin/add_user_upload_image.cgi" method="post"><label for="fileButton"><img src="'"$ImageFile"'" width="120" height="150" alt="photo"></label> 
-<input accept=".jpg" onchange="this.form.submit()" name="file-to-upload-01" type="file" id="fileButton" style="display:none;"/></div>'
+echo '<form enctype="multipart/form-data" action="/cgi-bin/admin/add_user_upload_image.cgi" method="post"><label for="fileButton"><img src="'"$ImageFile"'" width="120" height="150" alt="photo"></label> 
+<input accept=".jpg" onchange="this.form.submit()" name="file-to-upload-01" type="file" id="fileButton" style="display:none;"/></form>'
 
+echo '</body></html>'
 
-echo '</form></body></html>'

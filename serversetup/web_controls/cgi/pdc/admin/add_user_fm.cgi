@@ -393,7 +393,7 @@ else
 	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
 	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
 	<tr><td style="vertical-align:top">'$"User Photo"'</td><td>
-	<iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="136" height="180" style="overflow:hidden; border: none;"></iframe>
+	<iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="135" height="165" scrolling="no" style="overflow:hidden; border: none;"></iframe>
 	</td><td style="vertical-align:top"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the image to upload a JPG image for this user."'<br><br>'$"User images default to width 120px height 150px."'</span></a></td></tr>
 	</tbody></table><br>
 	'
