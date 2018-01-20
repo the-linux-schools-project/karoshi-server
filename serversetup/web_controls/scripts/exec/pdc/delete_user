@@ -241,7 +241,7 @@ then
 		delete_email
 	else
 		#Delete the user's E-Mail from an additional server
-		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" "$(declare -f delete_email);
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$EMAILSERVER" "$(declare -f delete_email);
 		#Aasign variables as we are on the other side of the ssh and the declared function will not recognise the variables otherwise
 		ARCHIVE=$ARCHIVE
 		DELETEUSER=$DELETEUSER
