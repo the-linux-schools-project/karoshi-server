@@ -43,7 +43,7 @@ else
 	TABLECLASS=standard
 	WIDTH1=215
 	WIDTH2=210
-	WIDTH3=75
+	WIDTH3=135
 	WIDTH4=150
 	HEIGHT1=24
 fi
@@ -254,17 +254,16 @@ echo '<table class="tablesorter" style="text-align: left;" ><tbody>
 <img src="'"$ICON"'" alt="'"$GRACETIMESTATUSMSG"'">
 <span>'"$GRACETIMESTATUSMSG"'</span>
 </button>
-</td><td style="width: '"$WIDTH3"'px;"><input name="_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ACCEPTABLEUSESTATUS"'"></td><td></td></tr>
+</td><td style="width: '"$WIDTH3"'px;"><input name="_ACTION_'"$ACTION2"'_" type="submit" class="button" value="'"$ACCEPTABLEUSESTATUS"'"></td></tr>
 <tr><td>'$"Grace Time"'</td><td><input maxlength="2" size="2" name="_GRACETIME_" value="'"$GRACETIME"'"></td>
-<td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$"Set Grace Time"'"></td>
-<td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
+<td><input name="_ACTION_setgracetime_" type="submit" class="button" value="'$"Set Grace Time"'"> <a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"The grace time is the amount of time a new user is allowed to log into the system before signing and returning the acceptable use policy. This time is set in days."'</span></a></td>
 </tr>
 <tr><td>'$"Reset Status"'</td><td>'
 
 #Show list of groups to reset the acceptable use grace time for
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;"/style="width: 200px; height:'"$HEIGHT1"'px"/g' | sed 's/200/'"$WIDTH4"'/g' | sed 's%</select>%<option value="allusers">'$"All Users"'</option></select>%g'
 
-echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"></td><td><a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
+echo '</td><td><input name="_ACTION_resetstatus_" type="submit" class="button" value="'$"Reset"'"> <a class="'"$TOOLTIPCLASS"'" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the group that you want to reset the acceptable use status for."'</span></a></td>
 </tbody></table><br>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
@@ -287,7 +286,7 @@ fi
 if [ "$PROCESS_USERS" = yes ]
 then
 	echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
-	<tr><td style="vertical-align: top; width: 150px;"><div class="sectiontitle">'$"Pending Users"'</div></td>
+	<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Pending Users"'</div></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Acceptable_Use#View_pending_users"><img class="images" alt="" src="/images/help/info.png"><span>'$"The acceptable use policy gives new users a grace period to sign and return an acceptable use policy."' '$"User accounts are automatically disabled once the trial time is ended unless they are authorised."'</span></a></td>
 	</tr></tbody></table><br>
 	<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
