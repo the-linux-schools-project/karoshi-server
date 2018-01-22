@@ -1,0 +1,6 @@
+#!/bin/bash
+systemctl start isc-dhcp-server 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi

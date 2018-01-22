@@ -1,0 +1,3 @@
+#!/bin/bash
+service fail2ban restart
+systemctl restart fail2ban.service 2>&1

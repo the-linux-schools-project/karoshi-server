@@ -51,7 +51,10 @@ UBUNTUVER=$(lsb_release -a 2> /dev/null | grep ^Release: | tr -cd '0-9.\n')
 #Stop service from running at boot
 if [ "$ACTION" = off ]
 then
-	if [ "$UBUNTUVER" = 16.04 ]
+	if [ "$UBUNTUVER" = 18.04 ]
+	then
+		systemctl disable "$SERVICE".service 2>/dev/null
+	elif [ "$UBUNTUVER" = 16.04 ]
 	then
 		update-rc.d "$SERVICE" remove defaults 2>/dev/null
 	else
@@ -70,7 +73,10 @@ fi
 #Start service on boot
 if [ "$ACTION" = on ]
 then
-	if [ "$UBUNTUVER" = 16.04 ]
+	if [ "$UBUNTUVER" = 18.04 ]
+	then	
+		systemctl enable "$SERVICE".service 2>/dev/null
+	elif [ "$UBUNTUVER" = 16.04 ]
 	then
 		#Remove any existing defaults as they will stop the service from being set to start on boot.
 		update-rc.d "$SERVICE" remove defaults 2>/dev/null
@@ -85,7 +91,7 @@ then
 				#Get priority number
 				set_priority_number
 				#Add symlink
-				ln -s /etc/init.d/"$SERVICE" /etc/"$RUNLEVEL"/"$PRI_NUM$SERVICE"
+				ln -s /etc/init.d/"$SERVICE" /etc/"$RUNLEVEL/$PRI_NUM$SERVICE"
 			fi
 		done
 		if [ ! -f /etc/rc0.d/*"$SERVICE" ]

@@ -1,0 +1,3 @@
+#!/bin/bash
+systemctl stop savapage.service 2>&1
+[ "$?" != 0 ] && sleep 5

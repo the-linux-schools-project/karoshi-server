@@ -1,0 +1,29 @@
+#!/bin/bash
+
+systemctl stop ssh.service 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+
+Ports="22"
+
+#Check that the service ports are no longer up
+for Port in $Ports
+do
+	PortCheck=1
+	Counter=0
+	while [ "$PortCheck" != 0 ]
+	do
+		#Check if we can see the Port open with netstat and keep looping until the Port is down
+		PortCheck=$(netstat -vatupn | grep 'sshd' | grep -c ":$Port ")
+		if [ "$PortCheck" != 0 ]
+		then
+			sleep 1
+			#Give up after 60 seconds
+			[ $Counter = 60 ] && exit 101
+			let Counter=$Counter+1
+		fi
+	done	
+done

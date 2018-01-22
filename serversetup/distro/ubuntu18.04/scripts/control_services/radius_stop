@@ -1,0 +1,8 @@
+#!/bin/bash
+systemctl stop freeradius.service 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status radius stop html

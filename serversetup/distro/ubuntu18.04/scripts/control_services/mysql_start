@@ -1,0 +1,17 @@
+#!/bin/bash
+systemctl start mysql.service 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status mysql start html
+
+#Check that we can connect to mysql
+for i in {1..60}
+do
+	mysqladmin ping 1>/dev/null 2>/dev/null
+	[ "$?" = 0 ] && exit
+	sleep 1
+done
+

@@ -1,0 +1,7 @@
+#!/bin/bash
+systemctl start nslcd.service 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+

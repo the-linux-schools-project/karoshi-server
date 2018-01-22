@@ -1,0 +1,4 @@
+#!/bin/bash
+service squid reload
+systemctl reload squid.service 2>&1
+
