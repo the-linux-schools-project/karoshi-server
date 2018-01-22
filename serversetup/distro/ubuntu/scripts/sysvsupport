@@ -20,9 +20,15 @@
 #Website: http://www.linuxschools.com
 
 ##########################
-#SysV - much more reliable for starting, stopping, checking if services are running than upstart.
+#SysV - much more reliable for starting, stopping, checking if services are running than upstart or systemd.
 ##########################
 
+#Bail if we are using 18.04
+
+if [[ $(lsb_release -a 2>/dev/null | grep -c 18.04) -gt 0 ]]
+then
+	exit
+fi
 #Copy startup scripts back into /etc/init.d
 
 [ -L /etc/init.d/apache2 ] && rm -f /etc/init.d/apache2
@@ -136,9 +142,9 @@ fi
 #Only remove systemd scripts if we are running systemd - or we might disable a sysv service
 DISABLESYSTEMD=no
 #Check to see if we are in a chroot
-if [ $(stat -c %i /) = 2 ]
+if [[ $(stat -c %i /) = 2 ]]
 then
-	if [ $(ps -e | grep -wc upstart) = 0 ]
+	if [[ $(ps -e | grep -wc upstart) = 0 ]]
 	then
 		DISABLESYSTEMD=yes
 	fi
