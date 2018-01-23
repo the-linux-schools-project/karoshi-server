@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+Distribution=ubuntu18.04
 #Set this to yes if you do not want to stop for errors or help messages.
 AUTO=no
 #Create the karoshi user
@@ -98,7 +100,7 @@ then
 	echo -e "\nExtracting karoshi home area folder\n"
 	sleep 1
 	cd /
-	tar -xvzf /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/karoshi_user.tar.gz
+	tar -xvzf /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/karoshi_user.tar.gz
 	chmod 0600 -R /opt/karoshi/karoshi_user
 	chmod u+X -R /opt/karoshi/karoshi_user
 	chown karoshi -R /opt/karoshi/karoshi_user
@@ -113,7 +115,7 @@ then
 fi
 
 #Create synaptic-warning
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/synaptic-warning /usr/bin
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/scripts/synaptic-warning /usr/bin
 
 [ ! -d /opt/karoshi/karoshi_user/.local/share/applications ] && mkdir -p /opt/karoshi/karoshi_user/.local/share/applications
 cp -f /opt/karoshi/serversetup/all/synaptic/synaptic.desktop /opt/karoshi/karoshi_user/.local/share/applications/
@@ -156,7 +158,7 @@ apt-get -y install xorg 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_buil
 function install_monitorix {
 #Needed because monitorix repo has a week key
 apt-get install -y rrdtool perl libwww-perl libmailtools-perl libmime-lite-perl librrds-perl libdbi-perl libxml-simple-perl libhttp-server-simple-perl libconfig-general-perl libio-socket-ssl-perl
-dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/monitorix_3.8.1-izzy1_all.deb
+dpkg -i /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/deb/monitorix_3.8.1-izzy1_all.deb
 }
 
 function install_sogo_mysql_packages {
@@ -168,17 +170,17 @@ echo -e "\nInstalling lightdm display manager\n"
 sleep 1
 apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 #Configure lightdm to auto login the karoshi user
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
 
 #Copy in upstart lightdm.conf that does not depend on plymouth being ready
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
 
 #apt-get -y install --no-install-recommends slim
 #Configure slim to auto login the karoshi user
-#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/slim/slim.conf /etc/
+#cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/slim/slim.conf /etc/
 #Add in slim theme.
-#cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/slim/karoshi /usr/share/slim/themes/
+#cp -f -R /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/slim/karoshi /usr/share/slim/themes/
 
 #Add the karoshi user to the nopasswdlogin group. 
 usermod -a -G nopasswdlogin karoshi
@@ -262,7 +264,7 @@ apt-get -y install samba 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_bui
 
 function update_server {
 #Update server
-/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver buildserver
+/opt/karoshi/serversetup/distro/"$Distribution"/scripts/updateserver buildserver
 }
 
 function configure_sudoers {
@@ -279,16 +281,16 @@ services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2g
 for service in $services
 do
 	echo -e "\nStopping $service\n"
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"$service"_stop
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"$service"
+	/opt/karoshi/serversetup/distro/"$Distribution"/scripts/control_services/"$service"_stop
+	/opt/karoshi/serversetup/distro/"$Distribution"/scripts/stoponboot/"$service"
 done
 
 #Stop lightdm in sysv - let upstart start it.
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status lightdm off 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$Distribution"/scripts/set_boot_status lightdm off 1>/dev/null 2>/dev/null
 }
 
 function sysvsupport {
-/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+/opt/karoshi/serversetup/distro/"$Distribution"/scripts/sysvsupport
 }
 
 function install_mailscanner {
@@ -306,7 +308,7 @@ apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch 
 #rm -f -R /tmp/MailScanner-$MAILSCANNERVER
 
 #Install modified mailscanner with dependency changed to perl instead of perl-modules.
-dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/deb/mailscanner-4.85.2-3-noarch.deb
+dpkg -i /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/deb/mailscanner-4.85.2-3-noarch.deb
 }
 
 function install_zfs {
@@ -322,7 +324,7 @@ cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgroun
 
 #Configure Plymouth
 echo -e "\nAdding karoshi-logo theme to plymouth.\n"
-cp -f -R /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/plymouth/karoshi-logo /usr/share/plymouth/themes/
+cp -f -R /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/plymouth/karoshi-logo /usr/share/plymouth/themes/
 update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth /usr/share/plymouth/themes/karoshi-logo/karoshi-logo.plymouth 100
 update-alternatives --config default.plymouth
 #Get selection number for karoshi theme
@@ -340,7 +342,7 @@ update-initramfs -u
 
 #Configure grub
 echo -e "\nConfiguring grub2.\n"
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/grub /etc/default/grub
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/grub /etc/default/grub
 echo -e "\nUpdating grub2.\n"
 update-grub
 }
@@ -374,7 +376,7 @@ function install_sogo {
 function configure_system {
 
 #Configure MariaDB
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/
 
 #Hide console messages
 sed -i 's/^console output/#console output/g' /etc/init/rc.conf
@@ -400,15 +402,15 @@ groupdel staff
 [ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
 
 #Copy in ssl.conf
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/ssl.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/configfiles/apache/ssl.conf /etc/apache2/mods-available/
 
 if [ "$INSTALL_REMASTERSYS" = yes ]
 then
 	#Configure remastersys
-	cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
-	cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/isolinux.cfg.vesamenu /etc/remastersys/isolinux/
+	cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
+	cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/remastersys/isolinux.cfg.vesamenu /etc/remastersys/isolinux/
 	cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /etc/remastersys/isolinux/splash.png
-	cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/remastersys/custom.seed /etc/remastersys/preseed/
+	cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/remastersys/custom.seed /etc/remastersys/preseed/
 fi
 
 #Remove resolvconf folder
@@ -445,12 +447,12 @@ apt-mark manual thunar
 #fi
 
 #Plymouth boot waiting for dhcp
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/failsafe.conf /etc/init/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/failsafe.conf /etc/init/
 
 #Configure easy-rsa
 cp -f -R /usr/share/easy-rsa /etc/openvpn/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/easy-rsa/vars /etc/openvpn/easy-rsa/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/easy-rsa/vars /etc/openvpn/easy-rsa/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/
 
 #remove serversetup.tar.gz
 [ -f /opt/karoshi/serversetup.tar.gz ] && rm -f /opt/karoshi/serversetup.tar.gz
@@ -469,16 +471,16 @@ then
 	rm -f /etc/apache2/conf-enabled/SOGo.conf
 fi
 #Configure php
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
 
 #Configure proxy_html.conf
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
 
 #Configure mcrypt
 #ln -s /etc/php/mods-available/mcrypt.ini /etc/php/apache2/conf.d/20-mcrypt.ini
 
 #Configure suphp
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/suphp.conf /etc/apache2/mods-available/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/suphp.conf /etc/apache2/mods-available/
 
 #Configure cups
 sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
@@ -509,11 +511,11 @@ touch /etc/postfix/main.cf
 
 #Modify langlist for ubiquity installer
 #mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
-#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
+#cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
 
 #Copy in ubiquity-slideshow
 [ -d /usr/share/ubiquity-slideshow ] && rm -f -R /usr/share/ubiquity-slideshow
-cp -f -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/ubiquity-slideshow /usr/share/
+cp -f -r /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/ubiquity-slideshow /usr/share/
 
 #Setup reserve ports
 cp -f /opt/karoshi/serversetup/all/reserveports/reserveports /usr/sbin
@@ -535,7 +537,7 @@ touch /var/log/mail.warn
 cp -f /opt/karoshi/serversetup/all/"useful scripts"/show_server_info /usr/sbin/
 
 #Apparmor
-cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/apparmor/usr.sbin.clamd /etc/apparmor.d/
+cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/apparmor/usr.sbin.clamd /etc/apparmor.d/
 
 #/etc/sysctl.d/10-network-security.conf
 
@@ -586,7 +588,7 @@ net.ipv6.conf.default.accept_redirects = 0' >> /etc/sysctl.d/10-network-security
 fi
 
 #Copy in rsyslog to logrotate - this works with upstart
-#cp -f /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/rsyslog /etc/logrotate.d
+#cp -f /opt/karoshi/serversetup/distro/"$Distribution"/all/buildserver/configfiles/rsyslog /etc/logrotate.d
 }
 
 function install_e2guardian {
