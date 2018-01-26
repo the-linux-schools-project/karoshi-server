@@ -1,7 +1,0 @@
-#!/bin/bash
-systemctl start clamav-daemon.service 2>&1
-if [ "$?" != 0 ]
-then
-	sleep 5
-fi
-

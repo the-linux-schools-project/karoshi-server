@@ -1,4 +1,5 @@
 #!/bin/bash
+service savapage stop > /dev/null 2>&1
 service savapage start 2>&1
 if [ "$?" != 0 ]
 then

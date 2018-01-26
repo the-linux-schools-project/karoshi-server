@@ -1,3 +1,4 @@
 #!/bin/bash
+service fail2ban stop > /dev/null 2>&1
 service fail2ban start 2>&1
 [ "$?" != 0 ] && sleep 5

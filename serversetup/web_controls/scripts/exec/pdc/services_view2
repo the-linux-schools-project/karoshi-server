@@ -168,10 +168,7 @@ then
 	if [ "$ACTION" = start ]
 	then
 		#Set the service to run on boot
-		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE"
-
-		#Stop the service to make sure that it is really stopped
-		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_stop		
+		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/$SERVICE"	
 
 		#Start the service
 		"/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/$SERVICE"_start
@@ -203,9 +200,6 @@ then
 	then
 		#Set the service to run on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/'"$SERVICE"'
-
-		#Stop the service to make sure that it is really stopped
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'_stop
 
 		#Start the service
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/'"$SERVICE"'_start

@@ -1,5 +1,0 @@
-#!/bin/bash
-systemctl stop bind9.service 2>&1
-[ "$?" != 0 ] && sleep 5
-
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status bind stop html

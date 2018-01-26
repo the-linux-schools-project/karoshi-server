@@ -1,5 +1,5 @@
 #!/bin/bash
-#initctl start ssh
+service ssh stop > /dev/null 2>&1
 service ssh start 2>&1
 if [ "$?" != 0 ]
 then

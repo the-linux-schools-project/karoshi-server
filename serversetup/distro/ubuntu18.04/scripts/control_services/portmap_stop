@@ -1,6 +1,0 @@
-#!/bin/bash
-systemctl stop portmap.service 2>&1
-if [ "$?" != 0 ]
-then
-	sleep 5
-fi

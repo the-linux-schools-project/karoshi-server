@@ -1,4 +1,5 @@
 #!/bin/bash
+service glusterfs-server stop > /dev/null 2>&1
 service glusterfs-server start 2>&1
 if [ "$?" != 0 ]
 then

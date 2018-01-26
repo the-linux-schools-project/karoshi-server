@@ -1,3 +1,4 @@
 #!/bin/bash
+service reserveports stop > /dev/null 2>&1
 service reserveports start 2>&1
 

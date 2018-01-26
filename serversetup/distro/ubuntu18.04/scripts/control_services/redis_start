@@ -1,7 +1,0 @@
-#!/bin/bash
-systemctl start redis-server.service 2>&1
-
-if [ "$?" != 0 ]
-then
-	sleep 5
-fi

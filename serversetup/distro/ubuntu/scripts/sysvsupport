@@ -23,12 +23,6 @@
 #SysV - much more reliable for starting, stopping, checking if services are running than upstart or systemd.
 ##########################
 
-#Bail if we are using 18.04
-
-if [[ $(lsb_release -a 2>/dev/null | grep -c 18.04) -gt 0 ]]
-then
-	exit
-fi
 #Copy startup scripts back into /etc/init.d
 
 [ -L /etc/init.d/apache2 ] && rm -f /etc/init.d/apache2

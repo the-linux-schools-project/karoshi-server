@@ -1,4 +1,5 @@
 #!/bin/bash
+service samba4 stop> /dev/null 2>&1
 service samba4 start 2>&1
 
 /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status samba start html

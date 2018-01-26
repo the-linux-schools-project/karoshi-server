@@ -1,4 +1,5 @@
 #!/bin/bash
+service redis-server stop > /dev/null 2>&1
 service redis-server start 2>&1
 if [ "$?" != 0 ]
 then

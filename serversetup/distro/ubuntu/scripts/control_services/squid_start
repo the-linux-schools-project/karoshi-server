@@ -3,12 +3,12 @@
 #Check which init.d script to use
 if [ -f /etc/init.d/squid3 ]
 then
-	SQUIDVER=squid3
+	SquidVersion=squid3
 else
-	SQUIDVER=squid
+	SquidVersion=squid
 fi
-
-service $SQUIDVER start 2>&1
+service "$SquidVersion" stop > /dev/null 2>&1
+service "$SquidVersion" start 2>&1
 if [ "$?" != 0 ]
 then
 	sleep 5

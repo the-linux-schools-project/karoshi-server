@@ -1,4 +1,5 @@
 #!/bin/bash
+service tftpd-hpa stop > /dev/null 2>&1
 service tftpd-hpa start 2>&1
 if [ "$?" != 0 ]
 then

@@ -1,4 +1,5 @@
 #!/bin/bash
+service monitorix stop > /dev/null 2>&1
 service monitorix start 2>&1
 if [ "$?" != 0 ]
 then

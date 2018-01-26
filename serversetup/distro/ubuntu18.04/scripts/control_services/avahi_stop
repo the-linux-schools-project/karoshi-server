@@ -1,3 +1,0 @@
-#!/bin/bash
-systemctl stop avahi-daemon.service 2>&1
-[ "$?" != 0 ] && sleep 5

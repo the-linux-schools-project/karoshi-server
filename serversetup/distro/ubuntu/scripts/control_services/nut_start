@@ -2,11 +2,14 @@
 
 if [ -f /etc/init.d/nut ]
 then
+	service nut stop > /dev/null 2>&1
 	service nut start
 fi
 
 if [ -f /etc/init.d/nut-server ]
 then
+	service nut-server stop > /dev/null 2>&1
+	service nut-client stop > /dev/null 2>&1
 	service nut-server start
 	service nut-client start
 fi

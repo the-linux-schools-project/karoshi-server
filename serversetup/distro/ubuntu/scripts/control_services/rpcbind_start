@@ -3,4 +3,5 @@ if [[ $(ps --no-headers -o comm 1) = systemd ]]
 then
 	systemctl unmask "rpcbind"
 fi
+service rpcbind stop > /dev/null 2>&1
 service rpcbind start

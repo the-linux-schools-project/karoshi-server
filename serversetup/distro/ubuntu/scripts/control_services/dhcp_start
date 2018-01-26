@@ -1,4 +1,5 @@
 #!/bin/bash
+service isc-dhcp-server stop > /dev/null 2>&1
 service isc-dhcp-server start 2>&1
 if [ "$?" != 0 ]
 then
