@@ -2,13 +2,13 @@
 
 #This script has been developed from the information at https://help.ubuntu.com/community/LiveCDCustomizationFromScratch
 
-KaroshiBuildVersion=karoshi-server-v11.1-amd64
+KaroshiBuildVersion=karoshi-server-v12.0.1-amd64
 KaroshiBuildVersion=$(echo "$KaroshiBuildVersion" | tr '[:upper:]' '[:lower:]')
 BuildPath=/home/karoshi/"$KaroshiBuildVersion"
 Architecture=amd64
-UbuntuVersion=xenial
+UbuntuVersion=bionic
 DistroVersion=ubuntu-18.04
-KaroshiVersion=11.0
+KaroshiVersion=12.0
 
 clear
 

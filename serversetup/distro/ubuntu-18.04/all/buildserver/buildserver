@@ -88,12 +88,6 @@ then
 	exit
 fi
 
-#if [ $AUTO = no ]
-#then
-#	echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed: \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\nNSLCD - Set to 127.0.0.1\ndc=example,dc=net - leave this as it is.\nLeave all name services to configure unselected.\nKerberos - Leave blank.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
-#	read pause
-#fi
-
 function create_karoshi_user { 
 #Create karoshi user
 getent passwd karoshi 1>/dev/null
