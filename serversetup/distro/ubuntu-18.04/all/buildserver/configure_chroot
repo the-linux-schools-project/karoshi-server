@@ -1,1 +1,159 @@
-/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
+#!/bin/bash
+
+DistroVersion="$1"
+KaroshiVersion="$2"
+
+function usage {
+echo -e "Usage: configure_chroot \"Distribution version\" Karoshi Version\"\n\nExample\n\nconfigure_chroot ubuntu-18.04 11.0\n\nDistribution version\n\nThis is the folder that contains distribution specific configuration files in /opt/karoshi/serversetup/distro/\n\nKaroshi Version\n\nThis is the Karoshi version number that is used for checking for Karoshi updates."
+}
+
+if [ -z "$DistroVersion" ] || [ -z "$KaroshiVersion" ]
+then
+	usage
+	exit
+fi
+
+mount none -t proc /proc
+mount none -t sysfs /sys
+mount none -t devpts /dev/pts
+export HOME=/root
+export LC_ALL=C
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
+
+#Create /tmp/fake for symlinks to /bin/true
+mkdir /tmp/fake
+
+ln -s /bin/true /tmp/fake/initctl
+ln -s /bin/true /tmp/fake/invoke-rc.d
+ln -s /bin/true /tmp/fake/restart
+ln -s /bin/true /tmp/fake/start
+ln -s /bin/true /tmp/fake/stop
+ln -s /bin/true /tmp/fake/start-stop-daemon
+ln -s /bin/true /tmp/fake/service
+
+export PATH=/tmp/fake:$PATH
+export DEBIAN_FRONTEND=noninteractive
+
+function check_status {
+if [ $? != 0 ]
+then
+	echo -e "\nChroot: There was a problem installing packages for the live system\n\nPress a key to continue.\n"
+	read pause
+fi
+}
+
+#Make sure that dpkg is happy
+dpkg --configure -a
+check_status
+
+echo -e "Chroot: updating apt\n"
+sleep 1	
+apt-get update
+check_status
+
+echo -e "\nChroot: installing dbus\n"
+sleep 1	
+apt-get install --yes dbus 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+
+dbus-uuidgen > /var/lib/dbus/machine-id
+dpkg-divert --local --rename --add /sbin/initctl
+
+#Install Packages needed for the live system
+echo -e "\nChroot: Installing packages for the live system\n"
+sleep 1	
+apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+
+#Temporary fudge for package dependency problem with casper and samba4 from linuxschools backports
+#apt-get remove casper
+
+#Install a version of casper that does not have cifs-utils as a dependency.
+#dpkg -i /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/casper_1.340.2_amd64.deb
+
+echo -e "\nChroot: Installing discover and os-prober\n"
+sleep 1	
+apt-get install --yes discover os-prober 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+
+echo -e "\nChroot: Installing linux-generic\n"
+sleep 1	
+apt-get install --yes linux-generic 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+
+echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
+sleep 1	
+
+apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+
+echo -e "\nChroot: Installing python-software-properties\n"
+sleep 1	
+apt-get install --yes software-properties-common python-software-properties 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+ 
+echo -e "\nChroot: Installing wget\n"
+sleep 1	
+apt-get install --yes wget
+check_status
+
+echo -e "\nChroot: Installing ubiquity-frontend-gtk\n"
+sleep 1
+apt-get install --yes ubiquity-frontend-gtk 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+check_status
+
+#Install and configure Karoshi
+TMOUT=5
+echo -e "\nChroot: Do you want to run the karoshi Server build process? (y/n)"
+read choice
+[ -z "$choice" ] && choice=y
+[ "$choice" = y ] && /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/buildserver "$DistroVersion" "$KaroshiVersion" 2>> /var/log/karoshi_build.log
+
+#Add the ubuntu user for casper
+#echo -e "\nChroot: Creating karoshi user\n"
+#sleep 1
+#useradd -u 999 -m -d /home/ubuntu ubuntu
+#read pause
+
+function disable_script {
+for arg in "$@"; do
+echo "Disabling $arg" >&2
+dpkg-divert --local --add "$arg"
+cat > "$arg" <<- EOF
+#!/bin/bash
+exit 0 #disabled
+EOF
+done
+}
+#Prevent CD being added as apt repository, and prevent attempted user creation
+disable_script /usr/share/ubiquity/apt-setup
+disable_script /usr/lib/ubiquity/user-setup/user-setup-apply
+disable_script /usr/share/initramfs-tools/scripts/casper-bottom/{25adduser,41apt_cdrom}
+
+#Chroot clean up
+rm /var/lib/dbus/machine-id
+[ -f /sbin/initctl ] && rm /sbin/initctl
+dpkg-divert --rename --remove /sbin/initctl
+
+#Remove old linux kernels if there are more than one
+ls /boot/vmlinuz* > list.txt
+sum=$(cat list.txt | grep '[^ ]' | wc -l)
+
+if [ $sum -gt 1 ]; then
+dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge
+fi
+
+#Update initramfs
+update-initramfs -u
+
+rm list.txt
+
+apt-get clean
+
+rm -rf /tmp/*
+
+rm /etc/resolv.conf
+
+umount -lf /proc
+umount -lf /sys
+umount -lf /dev/pts
+exit

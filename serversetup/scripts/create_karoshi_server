@@ -145,7 +145,6 @@ cp /etc/resolv.conf chroot/etc/resolv.conf
 #Copy in sources.list if only a minimal list is there
 if [[ $(wc -l < chroot/etc/apt/sources.list) -lt 2 ]]
 then
-	#cp chroot/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/sources.list chroot/etc/apt/sources.list
 	cp /etc/apt/sources.list chroot/etc/apt/sources.list
 fi
 
@@ -153,7 +152,7 @@ fi
 cp /sbin/initctl /sbin/initctl".$$"
 
 #Run configure chroot
-chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot "$DistroVersion" "$KaroshiVersion"
+chroot chroot /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configure_chroot "$DistroVersion" "$KaroshiVersion"
 
 #Copy out karoshi_build.log
 mv chroot/var/log/karoshi_build.log "$BuildPath"/

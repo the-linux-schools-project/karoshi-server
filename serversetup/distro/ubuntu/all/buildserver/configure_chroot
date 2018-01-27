@@ -106,7 +106,7 @@ TMOUT=5
 echo -e "\nChroot: Do you want to run the karoshi Server build process? (y/n)"
 read choice
 [ -z "$choice" ] && choice=y
-[ "$choice" = y ] && /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver "$DistroVersion" "$KaroshiVersion" 2>> /var/log/karoshi_build.log
+[ "$choice" = y ] && /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/buildserver "$DistroVersion" "$KaroshiVersion" 2>> /var/log/karoshi_build.log
 
 #Add the ubuntu user for casper
 #echo -e "\nChroot: Creating karoshi user\n"

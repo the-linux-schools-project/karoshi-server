@@ -1,1 +1,654 @@
-/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver
+#!/bin/bash
+
+DistroVersion="$1"
+KaroshiVersion="$2"
+
+function usage {
+echo -e "Usage: configure_chroot \"Distribution version\" Karoshi Version\"\n\nExample\n\nconfigure_chroot ubuntu-18.04 11.0\n\nDistribution version\n\nThis is the folder that contains distribution specific configuration files in /opt/karoshi/serversetup/distro/\n\nKaroshi Version\n\nThis is the Karoshi version number that is used for checking for Karoshi updates."
+}
+
+if [ -z "$DistroVersion" ] || [ -z "$KaroshiVersion" ]
+then
+	usage
+	exit
+fi
+
+#Set this to yes if you do not want to stop for errors or help messages.
+AUTO=no
+#Create the karoshi user
+CREATE_KAROSHI_USER=yes
+#Add additional repos for zfs yad remastersys and mailscanner.
+ADD_REPOS=yes
+UPDATE_REPOS=yes
+#Install xorg support - the initial karoshi setup will no run without graphical support.
+INSTALL_XORG=yes
+#Install e2guardian - internet filtering.
+INSTALL_E2GUARDIAN=yes
+#Install a lightwieght desktop environment.
+INSTALL_XFCE=yes
+#Install lightdm gtk display manager.
+INSTALL_DM=yes
+#Install additional software utils.
+INSTALL_ADDITIONAL=yes
+#Install all of the main software packages needed such as apache and mysql.
+INSTALL_SOFTWARE=yes
+#Install all software in one go to save time - setting to no installs each package seperately to check for problems.
+INSTALL_BATCH=no
+#Install mailscanner for the email system - kept separate because it is not in the standard repos.
+INSTALL_MAILSCANNER=yes
+#Install ZFS
+INSTALL_ZFS=yes
+#Install Monitorix
+INSTALL_MONITORIX=yes
+#Install Docker
+INSTALL_DOCKER=yes
+#Install sogo_mysql_fix
+INSTALL_SOGO_MYSQL_FIX=yes
+#We are currently using sysv startup scripts instead of upstart.
+SYSVSUPPORT=yes
+#Download and compile samba4 - we are staying with a compiled version rather than the version from the repos for backward compatibily with Karoshi V9.
+#INSTALL_SAMBA4=yes
+#Download and install sogo email 
+#INSTALL_SOGO=yes
+#Configure sudoers to allow the karoshi user to sudo.
+CONFIGURE_SUDOERS=yes
+#Remove a few extra packages that are installed with xfce that are not needed.
+REMOVE_SOFTWARE=yes
+#Purge packages that are no longer required.
+TIDYPACKAGES=yes
+#Change to a better theme for the karoshi user in xfce.
+SET_THEME=yes
+#Configure system settings
+CONFIGURE_SYSTEM=yes
+#Update the system.
+UPDATE_SERVER=no
+#Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
+TURN_OFF_SERVICES=yes
+
+
+#Reboot the machine to auto log in to the karoshi user.
+REBOOT=yes
+
+#Main list of packages to install (apart from samba4 and SOGo which are compiled).
+packages="glusterfs-server apache2 libapache2-mod-php libapache2-mod-auth-kerb libssl-dev apache2-utils mariadb-server php-mysql php-ldap php-sqlite3 php-pear php-cli php-common php-imap php-mcrypt php-curl php-fpm php-gd php-intl php-xml php-xmlrpc php-mysql php-ldap php-mbstring php-zip php-gd php-curl postfix postfix-ldap postfwd mb2md clamav clamav-daemon clamav-freshclam memcached php-memcached dovecot-core dovecot-gssapi dovecot-imapd  dovecot-managesieved dovecot-sieve squid3 squid-deb-proxy shorewall mon isc-dhcp-server openvpn openvpn-auth-ldap cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client  redis-server rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp freeradius freeradius-krb5 libawl-php php-xsl php-soap php-apcu php-apcu php-redis acl samba php-smbclient sogo dnsmasq nginx icecast2 bind9"
+
+#Utilities and other extras to install.
+extrapackages="nano apache2-suexec-pristine wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd brother-lpr-drivers-ac brother-lpr-drivers-bh7 brother-lpr-drivers-extra brother-lpr-drivers-laser brother-lpr-drivers-laser1 brother-lpr-drivers-mfc9420cn smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 virtualbox-guest-dkms gksu yad gedit synaptic plymouth plymouth-label zip unzip unrar bleachbit links gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath1 language-pack-nl firefox-locale-nl language-pack-de firefox-locale-de language-pack-pl firefox-locale-pl language-pack-fr firefox-locale-fr language-pack-sv firefox-locale-sv language-pack-da firefox-locale-da language-pack-fi firefox-locale-fi language-pack-es firefox-locale-es language-pack-it firefox-locale-it language-pack-pt firefox-locale-pt language-pack-cs firefox-locale-cs language-pack-el firefox-locale-el language-pack-ru firefox-locale-ru language-pack-nb firefox-locale-nb language-pack-zh-hans firefox-locale-zh-hans language-pack-ko firefox-locale-ko language-pack-id firefox-locale-id language-pack-ar firefox-locale-ar language-pack-hu language-pack-hu firefox-locale-hu language-pack-he firefox-locale-he language-pack-cy firefox-locale-cy language-pack-en language-pack-hi firefox-locale-hi fonts-nanum-coding fonts-gargi hdparm printer-driver-escpr krb5-user dnsutils winbind rng-tools sshpass gridsite-clients qrencode dos2unix mdadm busybox-static pyzor razor systemd-sysv minidlna smbclient attr lnav xfce4-genmon-plugin inotify-tools quota apt-transport-https ca-certificates curl"
+
+#Missing packages libapache2-mod-suphp
+  
+#Packages to remove
+removepackages="wpasupplicant nscd byobu xterm orage ppp php-fpm landscape-common avahi-daemon gnome-user-guide libsane gstreamer1.0-plugins-good geoip-database libgphoto2-6 libsane-common w3m libcdparanoia0 vim-runtime vim wireless-tools pcscd libccid resolvconf cups-browsed gnome-keyring rtkit unattended-upgrades"
+
+#Check that this script is running as root.
+
+if [ "$(id -u)" != 0 ]
+then
+	echo This script must be run as root.
+	exit
+fi
+
+#if [ $AUTO = no ]
+#then
+#	echo -e "\nThis will convert your Ubuntu 14.04 server into a karoshi server.\n\nGuidance - some software will prompt for action when installed: \n\nMysql - Set the password to karoshi.\nPostfix - Choose the no configuration option.\nDovecot - Do not create a certificate - one will be created later.\nNSLCD - Set to 127.0.0.1\ndc=example,dc=net - leave this as it is.\nLeave all name services to configure unselected.\nKerberos - Leave blank.\n\nOn reboot the username and passsword is karoshi.\n\nPress a key to continue\n"
+#	read pause
+#fi
+
+function create_karoshi_user { 
+#Create karoshi user
+getent passwd karoshi 1>/dev/null
+if [ $? != 0 ]
+then
+	echo -e "Creating karoshi user\n"
+	sleep 1
+	useradd -d /opt/karoshi/karoshi_user -s /bin/bash -m karoshi
+	#Set password to karoshi
+	echo -e "\nSetting karoshi user password to karoshi\n"
+	sleep 1
+	echo -e "karoshi\nkaroshi\n" | passwd karoshi
+
+	#Extract karoshi home area
+	echo -e "\nExtracting karoshi home area folder\n"
+	sleep 1
+	cd /
+	tar -xvzf /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/karoshi_user.tar.gz
+	chmod 0600 -R /opt/karoshi/karoshi_user
+	chmod u+X -R /opt/karoshi/karoshi_user
+	chown karoshi -R /opt/karoshi/karoshi_user
+	chmod 0750 /opt/karoshi/karoshi_user/karoshi_setup
+
+	#Make sure that there is an admin group
+	getent group admin 1>/dev/null
+	[ "$?" != 0 ] && groupadd admin
+
+	#Add karoshi user to the admin group
+	usermod -a -G admin karoshi
+fi
+
+#Create synaptic-warning
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/synaptic-warning /usr/bin
+
+[ ! -d /opt/karoshi/karoshi_user/.local/share/applications ] && mkdir -p /opt/karoshi/karoshi_user/.local/share/applications
+cp -f /opt/karoshi/serversetup/all/synaptic/synaptic.desktop /opt/karoshi/karoshi_user/.local/share/applications/
+chown karoshi /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
+chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
+}
+
+function add_repos {
+#Add sogo remastersys, monitoriz,yad, and zfs repositories
+echo -e "\nAdding SOGo, monitorix, yad, and zfs repositories\n"
+sleep 1
+
+apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
+#Xenial sogo version does not work with mysql atm
+#add-apt-repository -y "deb http://inverse.ca/ubuntu xenial xenial"
+#inverse repository is no longer available without a support contract.
+add-apt-repository -y "deb http://packages.inverse.ca/SOGo/nightly/3/ubuntu xenial xenial"
+
+#Yad
+add-apt-repository -y ppa:webupd8team/y-ppa-manager
+
+#samba-latest
+add-apt-repository -y "ppa:linux-schools/samba-latest"
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
+
+#Glusterfs
+add-apt-repository -y ppa:gluster/glusterfs-3.12
+}
+
+function update_repos {
+echo -e "\nUpdating repositories\n"
+sleep 1
+apt-get update
+}
+
+function install_xorg {
+apt-get -y install xorg 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+function install_monitorix {
+#Needed because monitorix repo has a week key
+apt-get install -y rrdtool perl libwww-perl libmailtools-perl libmime-lite-perl librrds-perl libdbi-perl libxml-simple-perl libhttp-server-simple-perl libconfig-general-perl libio-socket-ssl-perl
+dpkg -i /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/deb/monitorix_3.8.1-izzy1_all.deb
+}
+
+function install_sogo_mysql_packages {
+apt-get install -y sope4.9-gdl1-mysql
+}
+
+function install_dm {
+echo -e "\nInstalling lightdm display manager\n"
+sleep 1
+apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+#Configure lightdm to auto login the karoshi user
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
+
+#Copy in upstart lightdm.conf that does not depend on plymouth being ready
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
+
+#apt-get -y install --no-install-recommends slim
+#Configure slim to auto login the karoshi user
+#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/slim/slim.conf /etc/
+#Add in slim theme.
+#cp -f -R /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/slim/karoshi /usr/share/slim/themes/
+
+#Add the karoshi user to the nopasswdlogin group. 
+usermod -a -G nopasswdlogin karoshi
+}
+
+function install_xfce4 {
+#Install xfce4
+echo -e "\nInstalling xfce4\n"
+sleep 1
+apt-get -y install --no-install-recommends xfce4 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+sleep 1
+}
+
+function install_remastersys {
+echo -e "\nInstalling remastersys\n"
+sleep 1
+apt-get -y install --no-install-recommends remastersys remastersys-gui 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+
+function install_additional_software {
+#Install software
+if [ $INSTALL_BATCH = yes ]
+then
+		apt-get -y install "$extrapackages" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		if [ $? != 0 ]
+		then
+			echo There was a problem installing the extra packages. Press return to continue.
+		fi
+else
+	for package in $extrapackages
+	do
+		echo -e "\nInstalling $package\n"
+		sleep 1
+		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		if [ $? != 0 ]
+		then
+			echo "$package: There was a problem installing this package. Press return to continue."
+			[ $AUTO = no ] && read pause
+		fi
+	done
+fi
+update-initramfs -u
+}
+
+function install_software {
+#Install software
+
+
+echo -e "\nInstalling main software packages\n"
+sleep 1
+
+if [ $INSTALL_BATCH = yes ]
+then
+		apt-get -y install "$packages" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		if [ $? != 0 ]
+		then
+			echo There was a problem installing the packages. Press return to continue.
+		fi
+else
+	for package in $packages
+	do
+		echo -e "\nInstalling $package\n"
+		sleep 1
+		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+		if [ "$?" != 0 ]
+		then
+			echo "$package: There was a problem installing this package. Press return to continue."
+			[ "$AUTO" = no ] && read pause
+		fi
+	done
+fi
+}
+
+function install_samba4 {
+#Install samba4
+echo -e "\nInstalling Samba4\n"
+sleep 1
+apt-get -y install samba 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+function update_server {
+#Update server
+/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/updateserver buildserver
+}
+
+function configure_sudoers {
+#Configure sudoers
+cp /opt/karoshi/serversetup/all/configfiles/sudoers /etc
+chown root:root /etc/sudoers
+chmod 0550 /etc/sudoers
+}
+
+function turn_off_services {
+echo -e "\nStopping Services\n"
+sleep 1
+services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
+for service in $services
+do
+	echo -e "\nStopping $service\n"
+	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop text
+	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
+done
+
+#Stop lightdm in sysv - let upstart start it.
+/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/set_boot_status lightdm off 1>/dev/null 2>/dev/null
+}
+
+function sysvsupport {
+/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/sysvsupport
+}
+
+function install_mailscanner {
+#Install dependencies
+apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-"$(uname -r)" build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl perl-modules libdbd-mysql-perl libsys-hostname-long-perl 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+
+#MAILSCANNERVER=4.85.2-3
+#[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
+#[ -d /tmp/MailScanner-$MAILSCANNERVER ] && rm -f -R /tmp/MailScanner-$MAILSCANNERVER
+#wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-$MAILSCANNERVER.deb.tar.gz -O /tmp/mailscanner.tar.gz
+#tar -xvzf /tmp/mailscanner.tar.gz -C /tmp
+#dpkg -i /tmp/MailScanner-$MAILSCANNERVER/mailscanner-$MAILSCANNERVER-noarch.deb
+#Tidy up
+#rm -f /tmp/mailscanner.tar.gz
+#rm -f -R /tmp/MailScanner-$MAILSCANNERVER
+
+#Install modified mailscanner with dependency changed to perl instead of perl-modules.
+dpkg -i /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/deb/mailscanner-4.85.2-3-noarch.deb
+}
+
+function install_zfs {
+apt-get -y install zfsutils-linux 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+function set_theme {
+su karoshi -c "xfconf-query -c xsettings -p /Net/ThemeName -s Numix"
+#Copy in backgrounds
+[ ! -d /usr/share/backgrounds/karoshi ] && mkdir -p /usr/share/backgrounds/karoshi
+cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgrounds/karoshi/
+cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
+
+#Configure Plymouth
+echo -e "\nAdding karoshi-logo theme to plymouth.\n"
+cp -f -R /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/plymouth/karoshi-logo /usr/share/plymouth/themes/
+update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth /usr/share/plymouth/themes/karoshi-logo/karoshi-logo.plymouth 100
+update-alternatives --config default.plymouth
+#Get selection number for karoshi theme
+SELECT=$(update-alternatives --list default.plymouth | grep -n karoshi-logo | cut -d: -f1)
+#Set karoshi theme as the default theme
+echo -e "\nSetting karoshi-logo theme as the default theme for plymouth.\n"
+echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-logo
+
+#Load modules for initramfs
+#[ `grep -c ^fbcon /etc/initramfs-tools/modules` = 0 ] && echo "fbcon" >> /etc/initramfs-tools/modules
+#[ `grep -c ^vesafb /etc/initramfs-tools/modules` = 0 ] && echo "vesafb" >> /etc/initramfs-tools/modules
+
+#Update initramfs
+update-initramfs -u
+
+#Configure grub
+echo -e "\nConfiguring grub2.\n"
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/grub /etc/default/grub
+echo -e "\nUpdating grub2.\n"
+update-grub
+}
+
+function remove_software {
+
+for package in $removepackages
+do
+	echo -e "\nRemoving $package\n"
+	sleep 1
+	apt-get -y purge "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+	if [ $? != 0 ]
+	then
+		echo "$package": There was a problem removing this package. Press return to continue.
+		[ $AUTO = no ] && read pause
+	fi
+done
+
+#Make sure we have working dns after resolvconf is removed
+echo nameserver 8.8.8.8 > /etc/resolv.conf
+}
+
+function tidy_packages {
+apt-get -y autoremove 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+}
+
+function install_sogo {
+/opt/karoshi/serversetup/modules/email/sogo/install_sogo
+}
+
+function configure_system {
+
+#Configure MariaDB
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/
+
+#Hide console messages
+sed -i 's/^console output/#console output/g' /etc/init/rc.conf
+sed -i 's/^console owner/#console owner/g' /etc/init/rcS.conf
+sed -i 's/^console output/#console output/g' /etc/init/rc-sysinit.conf
+
+#Stop ntpdate from running at boot - this causes problems with the ntp service starting
+[ -f /etc/network/if-up.d/ntpdate ] && rm -f /etc/network/if-up.d/ntpdate
+
+#Make sure there is a printcap file
+touch /etc/printcap
+
+#Update freshclam
+echo -e "\nRunning freshclam\n"
+freshclam
+
+#Remove staff group
+groupdel staff
+
+#Configure apache with extra modules.
+[ ! -f /etc/apache2/mods-enabled_karoshi/auth_kerb.load ] && ln -s /etc/apache2/mods-available/auth_kerb.load /etc/apache2/mods-enabled_karoshi/auth_kerb.load
+[ ! -f /etc/apache2/mods-enabled/ldap.conf ] && ln -s /etc/apache2/mods-available/ldap.conf /etc/apache2/mods-enabled/ldap.conf
+[ ! -f /etc/apache2/mods-enabled/ldap.load ] && ln -s /etc/apache2/mods-available/ldap.load /etc/apache2/mods-enabled/ldap.load
+
+#Copy in ssl.conf
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/configfiles/apache/ssl.conf /etc/apache2/mods-available/
+
+if [ "$INSTALL_REMASTERSYS" = yes ]
+then
+	#Configure remastersys
+	cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/remastersys/remastersys.conf /etc/
+	cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/remastersys/isolinux.cfg.vesamenu /etc/remastersys/isolinux/
+	cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /etc/remastersys/isolinux/splash.png
+	cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/remastersys/custom.seed /etc/remastersys/preseed/
+fi
+
+#Remove resolvconf folder
+[ -d /etc/resolvconf ] && rm -f -R /etc/resolvconf
+
+#Import public gpg keys - needed for official patches to be applied later.
+for PUBLIC_KEY in /opt/karoshi/serversetup/all/keys/*
+do
+	KEYNAME=$(basename "$PUBLIC_KEY")
+	KEY=$(echo "$KEYNAME" | sed 's/.key$//g')
+	echo Importing key :"$KEY"
+	gpg --import "$PUBLIC_KEY"
+	#Get fingerprint
+	FINGERPRINT=$(gpg --fingerprint "$KEY" | grep fingerprint | sed 's/ //g' | cut -d"=" -f2)
+	#Set ownertrust to 6
+	echo "$FINGERPRINT":6: | gpg --import-ownertrust
+done
+
+#Make sure that apt is happy - something was causing a problem and thunar was getting removed - this may have been caused by remastersys later on.
+dpkg --configure -a
+which thunar 2>/dev/null
+[ $? != 0 ] && apt-get install thunar 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+
+#Stop apt-get autoremove from removing thunar and xfce panel
+apt-mark manual thunar
+
+#Modify remastersys so that it will remaster with the slim display manager
+#LINE_NO=`grep -n "Can't determine which user to use. Please logoff all users except for your main user and try again. Exiting." /usr/bin/remastersys | cut -d: -f1`
+#if [ ! -z $LINE_NO ]
+#then
+#let LINE_NO=$LINE_NO+1
+#cp /usr/bin/remastersys /usr/bin/remastersys.$$
+#sed -i ''$LINE_NO'c\	LIVEUSER=karoshi' /usr/bin/remastersys
+#fi
+
+#Plymouth boot waiting for dhcp
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/failsafe.conf /etc/init/
+
+#Configure easy-rsa
+cp -f -R /usr/share/easy-rsa /etc/openvpn/
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/easy-rsa/vars /etc/openvpn/easy-rsa/
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/
+
+#remove serversetup.tar.gz
+[ -f /opt/karoshi/serversetup.tar.gz ] && rm -f /opt/karoshi/serversetup.tar.gz
+
+#Configure sogo
+echo PREFORK=5 > /etc/default/sogo
+echo USER=sogo >> /etc/default/sogo
+getent passwd sogo 1>/dev/null
+[ $? != 0 ] && echo sogo:x:123:134::/var/run/sogo:/bin/false >> /etc/passwd
+getent group sogo 1>/dev/null
+[ $? != 0 ] && echo sogo:x:134: >> /etc/group
+[ ! -d /var/run/sogo ] && mkdir -p /var/run/sogo
+chown sogo:sogo /var/run/sogo
+if [ -e /etc/apache2/conf-enabled/SOGo.conf ]
+then
+	rm -f /etc/apache2/conf-enabled/SOGo.conf
+fi
+#Configure php
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
+
+#Configure proxy_html.conf
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
+
+#Configure mcrypt
+#ln -s /etc/php/mods-available/mcrypt.ini /etc/php/apache2/conf.d/20-mcrypt.ini
+
+#Configure suphp
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/suphp.conf /etc/apache2/mods-available/
+
+#Configure cups
+sed -i "s/JobPrivateAccess default/JobPrivateAccess all/g" /etc/cups/cupsd.conf
+sed -i "s/JobPrivateValues default/JobPrivateValues none/g" /etc/cups/cupsd.conf
+
+#Configure dovecot and e2guardian max files
+echo ulimit -n 131072 > /etc/default/dovecot
+echo ulimit -n 10240 > /etc/default/e2guardian
+
+#Make sure that tango is inheriting icons 
+sed -i 's/Inherits=gnome,crystalsvg/Inherits=gnome,crystalsvg,mate/g' /usr/share/icons/Tango/index.theme
+/usr/bin/gtk-update-icon-cache --force /usr/share/icons/Tango
+
+#Configure mount.d to run on 33777
+if [[ $(grep -c 33777 /etc/default/nfs-kernel-server) = 0 ]]
+then
+	sed -i 's/--manage-gids/--manage-gids -p 33777/g' /etc/default/nfs-kernel-server
+fi
+
+#Modify mon ping monitor - default is to just ping once - this change will cause the ping check to keep trying up to six times over 3 seconds - the check will report a success at the first successful ping.
+sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/ping.monitor
+
+#Create an empty main.cf to stop postconf from moaning.
+touch /etc/postfix/main.cf
+
+#Install karoshi language packs
+/opt/karoshi/serversetup/scripts/language/create_karoshi_locale
+
+#Modify langlist for ubiquity installer
+#mv /usr/lib/ubiquity/localechooser/languagelist /usr/lib/ubiquity/localechooser/languagelist.$$
+#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/languagelist /usr/lib/ubiquity/localechooser/languagelist
+
+#Copy in ubiquity-slideshow
+[ -d /usr/share/ubiquity-slideshow ] && rm -f -R /usr/share/ubiquity-slideshow
+cp -f -r /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/ubiquity-slideshow /usr/share/
+
+#Setup reserve ports
+cp -f /opt/karoshi/serversetup/all/reserveports/reserveports /usr/sbin
+cp -f /opt/karoshi/serversetup/all/reserveports/releaseports /usr/sbin
+cp -f -r /opt/karoshi/serversetup/all/reserveports/services /etc/reserveports
+ln -s /usr/sbin/reserveports /etc/init.d/reserveports
+ln -s /usr/sbin/releaseports /etc/init.d/releaseports
+
+#Sysvol inotify daemon
+cp -f 
+
+#Delete install_log
+[ -f /opt/karoshi/serversetup/install_log ] && rm -f /opt/karoshi/serversetup/install_log
+
+#fail2ban mail.warn
+touch /var/log/mail.warn
+
+#show_server_info
+cp -f /opt/karoshi/serversetup/all/"useful scripts"/show_server_info /usr/sbin/
+
+#Apparmor
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/apparmor/usr.sbin.clamd /etc/apparmor.d/
+
+#/etc/sysctl.d/10-network-security.conf
+
+if [[ $(grep -c "# Ignore ICMP broadcast requests" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Ignore ICMP broadcast requests
+net.ipv4.icmp_echo_ignore_broadcasts = 1' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [[ $(grep -c "# Disable source packet routing" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Disable source packet routing
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0 
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [[ $(grep -c "# Ignore send redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Ignore send redirects
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0 ' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [[ $(grep -c "# Block SYN attacks" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Block SYN attacks
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_syn_retries = 5' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [[ $(grep -c "# Log Martians" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Log Martians
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+if [[ $(grep -c "# Ignore ICMP redirects" /etc/sysctl.d/10-network-security.conf) = 0 ]]
+then
+	echo '# Ignore ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0 
+net.ipv6.conf.default.accept_redirects = 0' >> /etc/sysctl.d/10-network-security.conf
+fi
+
+#Copy in rsyslog to logrotate - this works with upstart
+#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/rsyslog /etc/logrotate.d
+}
+
+function install_e2guardian {
+echo -e "\nInstalling e2guardian\n"
+dpkg -i /opt/karoshi/serversetup/modules/squid/e2guardian_4.1.3_jessie_ubuntu16.04_amd64.deb
+#Fix dependencies
+apt-get install -y -f 
+}
+
+function install_docker {
+curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
+add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
+apt-get update
+apt-get -y install docker-engine
+}
+
+function reboot_server {
+#Dont shutdown if running in a chroot since it will reboot the host os.
+ischroot
+[ "$?" != 0 ] && shutdown -r now
+}
+
+echo "VERSION=$KaroshiVersion" > /opt/karoshi/serversetup/variables/version
+echo "DISTROCHOICE=$DistroVersion" > /opt/karoshi/serversetup/variables/distro
+
+#Run functions
+[ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
+[ $ADD_REPOS = yes ] && add_repos
+[ $UPDATE_REPOS = yes ] && update_repos
+[ $INSTALL_XORG = yes ] && install_xorg
+[ $INSTALL_XFCE = yes ] && install_xfce4
+[ $INSTALL_DM = yes ] && install_dm
+[ $INSTALL_SOFTWARE = yes ] && install_software
+[ $INSTALL_ADDITIONAL = yes ] && install_additional_software
+[ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
+[ $INSTALL_E2GUARDIAN = yes ] && install_e2guardian
+[ $INSTALL_ZFS = yes ] && install_zfs
+#[ $INSTALL_SAMBA4 = yes ] && install_samba4
+#[ $INSTALL_SOGO = yes ] && install_sogo
+[ $INSTALL_MONITORIX = yes ] && install_monitorix
+[ $INSTALL_DOCKER = yes ] && install_docker
+[ $INSTALL_SOGO_MYSQL_FIX = yes ] && install_sogo_mysql_packages
+[ $SYSVSUPPORT = yes ] && sysvsupport
+[ $CONFIGURE_SUDOERS = yes ] && configure_sudoers
+[ $REMOVE_SOFTWARE = yes ] && remove_software
+[ $SET_THEME = yes ] && set_theme
+[ $CONFIGURE_SYSTEM = yes ] && configure_system
+[ $TIDYPACKAGES = yes ] && tidy_packages
+[ $TURN_OFF_SERVICES = yes ] && turn_off_services
+[ $UPDATE_SERVER = yes ] && update_server
+[ $REBOOT = yes ] && reboot_server
+
