@@ -1,5 +1,18 @@
 #!/bin/bash
 
+DistroVersion="$1"
+KaroshiVersion="$2"
+
+function usage {
+echo -e "Usage: configure_chroot \"Distribution version\" Karoshi Version\"\n\nExample\n\nconfigure_chroot ubuntu-18.04 11.0\n\nDistribution version\n\nThis is the folder that contains distribution specific configuration files in /opt/karoshi/serversetup/distro/\n\nKaroshi Version\n\nThis is the Karoshi version number that is used for checking for Karoshi updates."
+}
+
+if [ -z "$DistroVersion" ] || [ -z "$KaroshiVersion" ]
+then
+	usage
+	exit
+fi
+
 mount none -t proc /proc
 mount none -t sysfs /sys
 mount none -t devpts /dev/pts
@@ -93,7 +106,7 @@ TMOUT=5
 echo -e "\nChroot: Do you want to run the karoshi Server build process? (y/n)"
 read choice
 [ -z "$choice" ] && choice=y
-[ "$choice" = y ] && /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver 2>> /var/log/karoshi_build.log
+[ "$choice" = y ] && /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/buildserver "$DistroVersion" "$KaroshiVersion" 2>> /var/log/karoshi_build.log
 
 #Add the ubuntu user for casper
 #echo -e "\nChroot: Creating karoshi user\n"

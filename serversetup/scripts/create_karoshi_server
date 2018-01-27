@@ -2,11 +2,13 @@
 
 #This script has been developed from the information at https://help.ubuntu.com/community/LiveCDCustomizationFromScratch
 
-KAROSHIVER=karoshi-server-v11.1-amd64
-KAROSHIVERNOCAPS=$(echo "$KAROSHIVER" | tr '[:upper:]' '[:lower:]')
-BUILDPATH=/home/karoshi/"$KAROSHIVERNOCAPS"
-ARCH=amd64
-RELEASE=xenial
+KaroshiBuildVersion=karoshi-server-v11.1-amd64
+KaroshiBuildVersion=$(echo "$KaroshiBuildVersion" | tr '[:upper:]' '[:lower:]')
+BuildPath=/home/karoshi/"$KaroshiBuildVersion"
+Architecture=amd64
+UbuntuVersion=xenial
+DistroVersion=ubuntu-18.04
+KaroshiVersion=11.0
 
 clear
 
@@ -45,19 +47,19 @@ then
 	fi
 fi
 
-echo -e "Making the chroot environment for $KAROSHIVER based on $RELEASE.\n"
+echo -e "Making the chroot environment for $KaroshiBuildVersion based on $UbuntuVersion.\n"
 sleep 1
 
 
 #Create the chroot folder
-if [ -d "$BUILDPATH"/chroot ]
+if [ -d "$BuildPath"/chroot ]
 then
-	echo -e "$BUILDPATH/chroot exits\n\n1: Delete this folder and make the chroot environment\n2: Skip this step\n"
+	echo -e "$BuildPath/chroot exits\n\n1: Delete this folder and make the chroot environment\n2: Skip this step\n"
 	read choice
 	case $choice in
 		1)
 		RUNDEBOOSTRAP=yes
-		rm -f -R "$BUILDPATH"/chroot
+		rm -f -R "$BuildPath"/chroot
 		;;
 		2)
 		RUNDEBOOSTRAP=no;;
@@ -65,22 +67,22 @@ then
 
 else
 	RUNDEBOOSTRAP=yes
-	echo -e "Creating $BUILDPATH/chroot\n"
+	echo -e "Creating $BuildPath/chroot\n"
 	sleep 1	
-	mkdir -p "$BUILDPATH"/chroot
+	mkdir -p "$BuildPath"/chroot
 fi
 
 #Chroot into the folder
 
-cd "$BUILDPATH"
+cd "$BuildPath"
 
-[ "$RUNDEBOOSTRAP" = yes ] && debootstrap --arch="$ARCH" "$RELEASE" chroot
+[ "$RUNDEBOOSTRAP" = yes ] && debootstrap --arch="$Architecture" "$UbuntuVersion" chroot
 
 echo -e "\nDownload serversetup\n"
 sleep 1
 if [ -d chroot/opt/karoshi/serversetup ]
 then
-	echo -e "$BUILDPATH/chroot/opt/karoshi/serversetup exits\n\n1: Delete this folder and download the latest version\n2: Skip this step\n"
+	echo -e "$BuildPath/chroot/opt/karoshi/serversetup exits\n\n1: Delete this folder and download the latest version\n2: Skip this step\n"
 	read choice
 	case $choice in
 		1)
@@ -110,25 +112,25 @@ then
 		exit
 	fi
 
-	echo -e "Unziping master.zip to $BUILDPATH/chroot/opt/karoshi\n"
+	echo -e "Unziping master.zip to $BuildPath/chroot/opt/karoshi\n"
 	sleep 1
-	unzip master.zip  -d "$BUILDPATH"/chroot/opt/karoshi/
+	unzip master.zip  -d "$BuildPath"/chroot/opt/karoshi/
 	if [ $? != 0 ]
 	then
 		echo -e "There was a problem unziping master.zip - exiting now."
 		exit
 	fi
 
-	mv "$BUILDPATH"/chroot/opt/karoshi/karoshi-server-master/serversetup "$BUILDPATH"/chroot/opt/karoshi/
-	rm -f -R "$BUILDPATH"/chroot/opt/karoshi/karoshi-server-master
+	mv "$BuildPath"/chroot/opt/karoshi/karoshi-server-master/serversetup "$BuildPath"/chroot/opt/karoshi/
+	rm -f -R "$BuildPath"/chroot/opt/karoshi/karoshi-server-master
 
-	cd "$BUILDPATH"
+	cd "$BuildPath"
 fi
 
 
 #Mount dev folder
 
-echo -e "\nMounting $BUILDPATH/chroot\n"
+echo -e "\nMounting $BuildPath/chroot\n"
 sleep 1	
 mount --bind /dev chroot/dev
 
@@ -148,15 +150,15 @@ then
 fi
 
 #Backup /sbin/initctl
-cp /sbin/initctl /sbin/initctl.$$
+cp /sbin/initctl /sbin/initctl".$$"
 
 #Run configure chroot
-chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot
+chroot chroot /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configure_chroot "$DistroVersion" "$KaroshiVersion"
 
 #Copy out karoshi_build.log
-mv chroot/var/log/karoshi_build.log "$BUILDPATH"/
+mv chroot/var/log/karoshi_build.log "$BuildPath"/
 
-umount "$BUILDPATH"/chroot/dev 
+umount "$BuildPath"/chroot/dev 
 
 echo -e "\nCreate ISO image\n"
 
@@ -285,11 +287,11 @@ sleep 1
 printf $(sudo du -sx --block-size=1 chroot | cut -f1) > image/casper/filesystem.size
 
 #Create diskdefines
-echo '#define DISKNAME  '$KAROSHIVER'
+echo '#define DISKNAME  '$KaroshiBuildVersion'
 #define TYPE  binary
 #define TYPEbinary  1
-#define ARCH  amd64
-#define ARCHamd64  1
+#define Architecture  amd64
+#define Architectureamd64  1
 #define DISKNUM  1
 #define DISKNUM1  1
 #define TOTALNUM  0
@@ -299,14 +301,14 @@ echo '#define DISKNAME  '$KAROSHIVER'
 cp -f image/README.diskdefines image/casper/
 
 #Recognition as a Ubuntu remix
-KAROSHIVER2=${KAROSHIVER//-/ }
+KaroshiBuildVersion2=${KaroshiBuildVersion//-/ }
 
 touch image/ubuntu
 mkdir image/.disk
 cd image/.disk
 touch base_installable
 echo "full_cd/single" > cd_type
-echo "$KAROSHIVER2" > info
+echo "$KaroshiBuildVersion2" > info
 echo "http://www.linuxschools.com" > release_notes_url
 cd ../..
 
@@ -316,17 +318,17 @@ chmod 0644 image/casper/vmlinuz
 #Calculate MD5
 echo -e "\nCalculating MD5\n"
 sleep 1
-cd "$BUILDPATH"/image
+cd "$BuildPath"/image
 sudo find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt
 echo -e "\nCreating the iso image\n"
 sleep 1
 #Create iso image for the live CD
 
-[ -f "$BUILDPATH/$KAROSHIVER.iso" ] && rm -f "$BUILDPATH/$KAROSHIVER.iso"
+[ -f "$BuildPath/$KaroshiBuildVersion.iso" ] && rm -f "$BuildPath/$KaroshiBuildVersion.iso"
 
-sudo mkisofs -r -V "$KAROSHIVER" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$KAROSHIVER.iso .
+sudo mkisofs -r -V "$KaroshiBuildVersion" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$KaroshiBuildVersion.iso .
 cd ..
 
-echo -e "\nThe iso has been created at: $BUILDPATH/$KAROSHIVER.iso\n"
+echo -e "\nThe iso has been created at: $BuildPath/$KaroshiBuildVersion.iso\n"
 
 exit
