@@ -178,15 +178,6 @@ apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter 1>> /var/
 cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
 cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
 
-#Copy in upstart lightdm.conf that does not depend on plymouth being ready
-cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/upstart/lightdm.conf /etc/init/
-
-#apt-get -y install --no-install-recommends slim
-#Configure slim to auto login the karoshi user
-#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/slim/slim.conf /etc/
-#Add in slim theme.
-#cp -f -R /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/slim/karoshi /usr/share/slim/themes/
-
 #Add the karoshi user to the nopasswdlogin group. 
 usermod -a -G nopasswdlogin karoshi
 }
@@ -289,9 +280,6 @@ do
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop text
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
 done
-
-#Stop lightdm in sysv - let upstart start it.
-/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/set_boot_status lightdm off 1>/dev/null 2>/dev/null
 }
 
 function sysvsupport {
@@ -301,16 +289,6 @@ function sysvsupport {
 function install_mailscanner {
 #Install dependencies
 apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-"$(uname -r)" build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl perl-modules libdbd-mysql-perl libsys-hostname-long-perl 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
-
-#MAILSCANNERVER=4.85.2-3
-#[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
-#[ -d /tmp/MailScanner-$MAILSCANNERVER ] && rm -f -R /tmp/MailScanner-$MAILSCANNERVER
-#wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-$MAILSCANNERVER.deb.tar.gz -O /tmp/mailscanner.tar.gz
-#tar -xvzf /tmp/mailscanner.tar.gz -C /tmp
-#dpkg -i /tmp/MailScanner-$MAILSCANNERVER/mailscanner-$MAILSCANNERVER-noarch.deb
-#Tidy up
-#rm -f /tmp/mailscanner.tar.gz
-#rm -f -R /tmp/MailScanner-$MAILSCANNERVER
 
 #Install modified mailscanner with dependency changed to perl instead of perl-modules.
 dpkg -i /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/deb/mailscanner-4.85.2-3-noarch.deb
