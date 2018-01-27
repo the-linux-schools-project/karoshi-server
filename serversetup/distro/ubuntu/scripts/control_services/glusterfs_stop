@@ -1,5 +1,5 @@
 #!/bin/bash
-service glusterfs-server stop 2>&1
+service glusterfs stop 2>&1
 if [ "$?" != 0 ]
 then
 	sleep 5

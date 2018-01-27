@@ -1,9 +1,13 @@
 #!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
 service openvpn stop > /dev/null 2>&1
 service openvpn start 2>&1
+
 if [ "$?" != 0 ]
 then
 	sleep 5
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status openvpn start html
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status openvpn start "$Display"

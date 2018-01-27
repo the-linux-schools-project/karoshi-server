@@ -1,4 +1,7 @@
 #!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
 service cups stop > /dev/null 2>&1
 service cups start 2>&1
 if [ "$?" != 0 ]
@@ -6,5 +9,5 @@ then
 	sleep 5
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status cups start html
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status cups start $Display"
 

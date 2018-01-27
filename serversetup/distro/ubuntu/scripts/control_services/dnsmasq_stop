@@ -1,5 +1,9 @@
 #!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
 service dnsmasq stop 2>&1
+
 [ "$?" != 0 ] && sleep 5
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status dnsmasq stop html
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status dnsmasq stop "$Display"

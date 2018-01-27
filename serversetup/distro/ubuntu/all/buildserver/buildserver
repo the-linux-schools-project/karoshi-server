@@ -292,7 +292,7 @@ services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2g
 for service in $services
 do
 	echo -e "\nStopping $service\n"
-	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop
+	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop text
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
 done
 

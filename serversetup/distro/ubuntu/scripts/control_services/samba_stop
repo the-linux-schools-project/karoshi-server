@@ -1,4 +1,7 @@
 #!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
 service samba4 stop 2>&1
 if [ "$?" != 0 ]
 then
@@ -16,4 +19,4 @@ then
 	done
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status samba stop html
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status samba stop "$Display"
