@@ -623,6 +623,7 @@ ischroot
 }
 
 echo "VERSION=$KaroshiVersion" > /opt/karoshi/serversetup/variables/version
+echo "DISTROCHOICE=$DistroVersion" > /opt/karoshi/serversetup/variables/distro
 
 #Run functions
 [ $CREATE_KAROSHI_USER = yes ] && create_karoshi_user
