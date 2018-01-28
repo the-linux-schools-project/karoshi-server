@@ -1,1 +1,49 @@
-/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/ubiquity-slideshow/slides/index.html
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<title>ubiquity-slideshow-ubuntu-gnome</title>
+		
+		<link href="link/base.css" rel="stylesheet" type="text/css" />
+		
+		<base target="_blank" />
+		
+		<script type="text/javascript" src="link-core/jquery.js"></script>
+		<script type="text/javascript" src="link-core/jquery.cycle.all.js"></script>
+		
+		<script type="text/javascript" src="link-core/base.js"></script>
+		
+		<script type="text/javascript">
+			SLIDESHOW_OPTIONS = {
+				timeout:50000,
+				speed:900,
+			}
+		</script>
+		
+		<script type="text/javascript" src="link/twitter.js"></script>
+		
+		<script type="text/javascript" src="link-core/slideshow.js"></script>
+	</head>
+
+	<body>
+		<div id="wrapper">
+			<div id="slideshow">
+				<div><a href="welcome.html"></a></div>
+				<div><a href="modules.html"></a></div>
+				<div><a href="monitoring.html"></a></div>
+				<div><a href="gluster.html"></a></div>
+				<div><a href="printing.html"></a></div>
+				<div><a href="mobile.html"></a></div>
+				<div><a href="documentation.html"></a></div>
+				<div><a href="forum.html"></a></div>
+				<div><a href="irc.html"></a></div>
+			</div>
+
+			<div id="controls">
+				<a class="control-arrow" id="prev-slide" style="display:none;"></a>
+				<a class="control-arrow" id="next-slide"></a>
+				<input type="hidden" id="current-slide" />
+			</div>
+		</div>
+	</body>
+</html>

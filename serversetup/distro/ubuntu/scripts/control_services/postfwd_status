@@ -1,0 +1,9 @@
+#!/bin/bash
+STATUS=$(ps -e | grep -w -c "postfwd")
+if [ "$STATUS" -gt 0 ]
+then
+	exit 0
+else
+	exit 1
+fi
+

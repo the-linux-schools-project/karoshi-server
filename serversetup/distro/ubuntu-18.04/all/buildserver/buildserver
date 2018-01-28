@@ -64,7 +64,8 @@ CONFIGURE_SYSTEM=yes
 UPDATE_SERVER=no
 #Services are started and set to run on boot when installed so lets turn them all back off for now until they are actually needed.
 TURN_OFF_SERVICES=yes
-
+#Turn on any needed services
+TURN_ON_SERVICES=yes
 
 #Reboot the machine to auto log in to the karoshi user.
 REBOOT=yes
@@ -147,7 +148,7 @@ add-apt-repository -y "ppa:linux-schools/samba-latest"
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
 
 #Glusterfs
-add-apt-repository -y ppa:gluster/glusterfs-3.12
+#add-apt-repository -y ppa:gluster/glusterfs-3.12
 }
 
 function update_repos {
@@ -279,6 +280,16 @@ do
 	echo -e "\nStopping $service\n"
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop text
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
+done
+}
+
+function turn_on_services {
+services="cron"
+for service in $services
+do
+	echo -e "\nStarting $service\n"
+	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_start text
+	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/startonboot/"$service"
 done
 }
 
@@ -621,6 +632,7 @@ echo "DISTROCHOICE=$DistroVersion" > /opt/karoshi/serversetup/variables/distro
 [ $CONFIGURE_SYSTEM = yes ] && configure_system
 [ $TIDYPACKAGES = yes ] && tidy_packages
 [ $TURN_OFF_SERVICES = yes ] && turn_off_services
+[ $TURN_ON_SERVICES = yes ] && turn_on_services
 [ $UPDATE_SERVER = yes ] && update_server
 [ $REBOOT = yes ] && reboot_server
 

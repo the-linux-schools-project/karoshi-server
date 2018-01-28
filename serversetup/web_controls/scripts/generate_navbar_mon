@@ -27,8 +27,5 @@ source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/server_network/mon/network_status
 #Get system status
 
-echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'"$LONGNAME"' - '$"System Status"'</span> 
-<div id="alertlevel"><span class="webmanagement-title">Defcon '"$DEFCON"'</span></div>
-</div>
-'
+echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'"$LONGNAME"' - '$"System Status"'</span> </div>'
 
