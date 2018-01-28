@@ -99,9 +99,11 @@ fi
 [ ! -f /etc/apache2/mods-enabled_karoshi/mpm_prefork.load ] && ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled_karoshi/mpm_prefork.load
 [ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.conf ] && ln -s /etc/apache2/mods-available/negotiation.conf /etc/apache2/mods-enabled_karoshi/negotiation.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/negotiation.load ] && ln -s /etc/apache2/mods-available/negotiation.load /etc/apache2/mods-enabled_karoshi/negotiation.load
-PHPVersion=basename $(ls /etc/apache2/mods-available/php*.conf | sed 's/.conf//g' | tr -cd '0-9.')
-[ ! -f /etc/apache2/mods-enabled_karoshi/"$PHPVersion".conf ] && ln -s /etc/apache2/mods-available/"$PHPVersion".conf /etc/apache2/mods-enabled_karoshi/"$PHPVersion".conf
-[ ! -f /etc/apache2/mods-enabled_karoshi/"$PHPVersion".load ] && ln -s /etc/apache2/mods-available/"$PHPVersion".load /etc/apache2/mods-enabled_karoshi/"$PHPVersion".load
+
+for PHPMod in $(ls -1 /etc/apache2/mods-available/ | grep ^php)
+do
+	ln -s /etc/apache2/mods-available/"$PHPMod" /etc/apache2/mods-enabled_karoshi/"$PHPMod"
+done
 
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.conf ] && ln -s /etc/apache2/mods-available/setenvif.conf /etc/apache2/mods-enabled_karoshi/setenvif.conf
 [ ! -f /etc/apache2/mods-enabled_karoshi/setenvif.load ] && ln -s /etc/apache2/mods-available/setenvif.load /etc/apache2/mods-enabled_karoshi/setenvif.load

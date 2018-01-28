@@ -9,7 +9,7 @@ then
 	sleep 5
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status mysql "$Display"
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status mysql start "$Display"
 
 #Check that we can connect to mysql
 for i in {1..60}
