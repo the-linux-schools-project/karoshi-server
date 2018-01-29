@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/shorewall
+#!/bin/bash
+#Start shorewall on boot
+systemctl enable shorewall
+

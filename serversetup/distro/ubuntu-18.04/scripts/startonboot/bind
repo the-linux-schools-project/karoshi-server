@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/bind
+#!/bin/bash
+#Start bind on boot
+systemctl enable bind9

@@ -1,1 +1,6 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/nut
+#!/bin/bash
+#Start nut on boot
+
+systemctl disable nut
+
+

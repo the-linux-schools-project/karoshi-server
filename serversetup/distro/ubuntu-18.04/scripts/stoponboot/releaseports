@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/releaseports
+#!/bin/bash
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status releaseports off 1>/dev/null 2>/dev/null
+

@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/cups
+#!/bin/bash
+#Stop cups on boot
+
+systemctl disable cups
+

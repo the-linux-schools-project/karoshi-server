@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi
+#!/bin/bash
+#Start avahi on boot
+systemctl enable avahi-daemon
+

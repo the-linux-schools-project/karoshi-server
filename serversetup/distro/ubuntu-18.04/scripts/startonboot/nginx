@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/nginx
+#!/bin/bash
+#Start nginx on boot
+systemctl enable nginx

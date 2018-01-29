@@ -1,1 +1,8 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_stop
+#!/bin/bash
+#initctl start tftpd-hpa
+systemctl stop nfs-kernel-server 2>&1
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+

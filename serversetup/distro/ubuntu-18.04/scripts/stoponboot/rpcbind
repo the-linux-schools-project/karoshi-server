@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/rpcbind
+#!/bin/bash
+#Stop portmap on boot
+systemctl disable rpcbind
+

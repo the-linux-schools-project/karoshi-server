@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/dhcp
+#!/bin/bash
+#Start dhcp on boot
+systemctl enable isc-dhcp-server
+

@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/cron_stop
+#!/bin/bash
+systemctl stop cron 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi

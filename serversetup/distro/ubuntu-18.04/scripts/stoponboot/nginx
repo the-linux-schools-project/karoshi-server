@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/nginx
+#!/bin/bash
+#Stop nginx on boot
+systemctl disable nginx
+

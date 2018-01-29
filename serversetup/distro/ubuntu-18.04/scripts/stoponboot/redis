@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/redis
+#!/bin/bash
+#Stop redis on boot
+
+systemcl disable redis-server
+

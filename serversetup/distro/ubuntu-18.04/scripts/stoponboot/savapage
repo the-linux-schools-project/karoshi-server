@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/savapage
+#!/bin/bash
+#Stop savapage on boot
+systemctl disable savapage
+

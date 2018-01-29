@@ -1,1 +1,6 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/xinetd
+#!/bin/bash
+#Stop xinetd on boot
+systemctl disable xinetd
+
+
+

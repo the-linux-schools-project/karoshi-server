@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/savapage
+#!/bin/bash
+#Start savapage on boot
+systemctl enable savapage
+
+

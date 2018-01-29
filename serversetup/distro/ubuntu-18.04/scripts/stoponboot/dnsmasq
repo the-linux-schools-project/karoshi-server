@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dnsmasq
+#!/bin/bash
+#Stop dns on boot
+
+systemctl disable dnsmasq
+

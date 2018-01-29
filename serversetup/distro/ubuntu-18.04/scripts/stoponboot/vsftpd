@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/vsftpd
+#!/bin/bash
+#Stop vsftpd on boot
+
+systemctl disable vsftpd

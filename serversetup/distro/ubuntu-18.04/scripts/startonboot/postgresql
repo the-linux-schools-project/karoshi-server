@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/postgresql
+#!/bin/bash
+#Start mysql on boot
+systemctl enable postgresql

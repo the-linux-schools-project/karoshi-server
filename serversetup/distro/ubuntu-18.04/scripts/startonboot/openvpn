@@ -1,1 +1,9 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/openvpn
+#!/bin/bash
+
+#Modify /etc/default/openvpn
+sed 's/^#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
+
+systemctl enable openvpn
+
+
+

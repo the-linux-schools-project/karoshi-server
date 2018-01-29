@@ -1,1 +1,473 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver
+#!/bin/bash
+#upgradeserver
+#Copyright (C) 2012  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.linuxschools.com
+
+#Make sure the output is in english becuase we are searching the output for package errors
+export LC_ALL=C
+
+LogDate=$(date +%F)
+
+#Make sure that dkpg doesnt change any config files.
+export DEBIAN_FRONTEND=noninteractive
+
+#Removes all old kernels if set to yes.
+RemoveOldKernels=no
+
+#if the install type is set to scheduled this script has been called via cron so hold cron back from being updated.
+InstallType=scheduled
+
+#This list of services are checked to see if they are running before the update is started. After the update is complete each of these services will be checked again and stopped if needed.
+ServiceArray=( apache apache_karoshi avahi bind clamd cron cups dansguardian dovecot dhcp dnsmasq glusterfs mailscanner monitorix memcached mon mysql nfs nginx postfix postfwd portmap proftpd radius redis rpcbind samba squid sogo nut ssh tftpd xinetd )
+
+#All config files in this list are backed up before the update and checked after the update to see if they have changed. If a config file has changed the new config file is moved to .postupdate and the original config file is restored.
+ConfigfileArray=( apache,/etc/apache2/apache2.conf cups,/etc/cups/cupsd.conf dhcp,/etc/dhcp/dhcpd.conf dnsmasq,/etc/dnsmasq.conf dovecot,/etc/dovecot/dovecot.conf e2guardian,/etc/e2guardian/e2guardian.conf fail2ban,/etc/fail2ban/fail2ban.conf mysql,/etc/mysql/my.cnf nslcd,/etc/nslcd.conf ntp,/etc/ntp.conf nssswitch,/etc/nsswitch.conf nut,/etc/nut/nut.conf postfix,/etc/postfix/main.cf postfix,/etc/postfix/master.cf samba,/etc/samba/smb.conf ssh,/etc/ssh/sshd_config sshclient,/etc/ssh/ssh_config squid,/etc/squid/squid.conf )
+
+if [ ! -z "$1" ] 
+then
+	if [ "$1" = "buildserver" ]
+	then
+		RemoveOldKernels=yes
+		InstallType=notscheduled
+	fi
+fi
+
+#Make Log folder
+if [ ! -d /opt/karoshi/logs/server_upgrades/ ]
+then
+	mkdir -p /opt/karoshi/logs/server_upgrades/
+	chmod 0700 /opt/karoshi/logs/server_upgrades/
+fi
+
+function check_reboot_required {
+#Check to see if the server needs a reboot.
+if [ -f /var/run/reboot-required ] || [ -f /var/run/reboot-required.pkgs ]
+then
+	#Let any services restart and stabilise
+	sleep 30
+	echo "A reboot is required."
+	echo -e "$HOSTNAME: $(date) - A reboot is required, rebooting now.\nA reboot has not occurred unless there is a reboot entry below this." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#Add in script to record reboot time
+	echo '#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          recordreboot
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      1
+# Short-Description: Record Reboot
+### END INIT INFO
+LogDate=$(date +%F)
+echo  "$(hostname-fqdn | cut -d. -f1): $(date) - This server has now rebooted.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/set_boot_status recordreboot off 1>/dev/null 2>/dev/null' > /etc/init.d/recordreboot
+
+
+	if [ ! -z "$RescheduleUpdate" ]
+	then
+		#Run the updateserver script again as apt was broken the first time and a reboot was needed
+		echo /opt/karoshi/serversetup/all/scripts/updateserver >> /etc/init.d/recordreboot
+	fi
+
+	chmod 0755 /etc/init.d/recordreboot
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/set_boot_status recordreboot on 1>/dev/null 2>/dev/null
+
+	#Check if kexec is installed
+	#if [ -e /etc/init.d/kexec ]
+	#then
+		#Load kernel into memory before rebooting
+		#kexec -l /vmlinuz --initrd=/initrd.img --reuse-cmdline
+	#fi
+
+	#If the server hangs on reboot use the force reboot script to make sure we get a reboot.
+	if [ -f /opt/karoshi/force_reboot ]
+	then
+		echo -e "$HOSTNAME: $(date) - force reboot flag detected - forcing a reboot." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/force_reboot
+	else
+		shutdown -r now 1>> "/opt/karoshi/logs/server_upgrades/$LogDate" 2>> "/opt/karoshi/logs/server_upgrades/$LogDate"
+	fi
+	exit
+fi
+}
+
+function backup_config_files {
+#Backup service config files
+Counter=0
+ArrayCount=${#ConfigfileArray[@]}
+while [ $Counter -lt "$ArrayCount" ]
+do
+	ConfigFileData=${ConfigfileArray[$Counter]}
+	ConfigPath=$(echo "$ConfigFileData" | cut -d, -f2)
+
+	[ -f "$ConfigPath" ] && cp -f "$ConfigPath" "$ConfigPath.$LogDate.preupdate"
+
+	let Counter=$Counter+1
+done
+}
+
+function check_config_files {
+#Check that config files have not changed during the update process.
+echo -e "$HOSTNAME: $(date) - Checking config files have not been altered by the update process.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+Counter=0
+ArrayCount=${#ConfigfileArray[@]}
+while [ "$Counter" -lt "$ArrayCount" ]
+do
+	ConfigFileData=${ConfigfileArray[$Counter]}
+	ConfigPath=$(echo "$ConfigFileData" | cut -d, -f2)
+	ServiceName=$(echo "$ConfigFileData" | cut -d, -f1)
+
+	if [ -f "$ConfigPath" ] && [ -f "$ConfigPath.$LogDate.preupdate" ]
+	then
+		#Get md5sum and check against the backup config file
+		if [[ $(md5sum "$ConfigPath" | cut -d" " -f1) != $(md5sum "$ConfigPath.$LogDate.preupdate" | cut -d" " -f1) ]]
+		then
+			echo -e "$HOSTNAME: $(date) - $ConfigPath has been altered.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+			#Copy current config file
+			cp -f "$ConfigPath" "$ConfigPath.$LogDate.postupdate" 2>>"/opt/karoshi/logs/server_upgrades/$LogDate"
+
+			#Restore backed up config file
+			echo -e "$HOSTNAME: $(date) - Restoring the original config file.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+			echo -e "$HOSTNAME: $(date) - Inspect $ConfigPath.$LogDate.preupdate and $ConfigPath.$LogDate.postupdate for changes.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+			cp -f "$ConfigPath.$LogDate.preupdate" "$ConfigPath" 2>>"/opt/karoshi/logs/server_upgrades/$LogDate"
+			#Restart the service if it is running as long as it is not nsswitch.
+			if [ "$ServiceName" != nssswitch ]
+			then
+				/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_status
+				if [ $? = 0 ]
+				then
+					echo -e "$HOSTNAME: $(date) - Restarting $ServiceName.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+					/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_stop
+					sleep 1
+					/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_start
+				fi
+			fi
+		else
+			#Delete the backed up config files
+			rm -f "$ConfigPath.$LogDate.preupdate"
+		fi
+	fi
+	let Counter=$Counter+1
+done
+}
+backup_config_files
+
+#Update non apt packages
+[ -f /usr/local/sbin/samba ] && /opt/karoshi/serversetup/all/samba4/samba4install
+
+#Check to see if this server should have ssh - need to make sure this is running.
+
+SSHService=yes
+if [ -d /opt/karoshi/web_controls ]
+then
+	#This server is the main server and may not need ssh so fall back to normal check.
+	SSHService=no
+	if [ -f /opt/karoshi/server_network/servers/"$HOSTNAME"/federated_server ]
+	then
+		#This server is a federated server and must have ssh.
+		SSHService=yes
+	fi
+fi
+
+#Delete dnsmasq conf from insserv
+if [ -f /etc/insserv.conf.d/dnsmasq ]
+then
+	rm -f /etc/insserv.conf.d/dnsmasq
+fi
+
+#Get the current samba version - needed to trigger a restart if this changes
+CurrentSambaVer=$(samba-tool -V)
+
+#Check to see if a service should be running after the update.
+function check_status {
+Status=off
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_status
+[ $? = 0 ] && Status=on
+
+#Make sure status is correct for ssh
+if [ "$ServiceName" = ssh ]
+then
+	if [ $SSHService = yes ]
+	then
+		Status=on
+	fi
+fi
+StatusArray[$Counter]=$Status
+echo -e "Service: $ServiceName - Status before update: $Status" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+}
+
+#Check which services should be running on this server.
+echo -e "$HOSTNAME: $(date) - Checking which services are currently set to run on boot.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+Counter=0
+ArrayCount=${#ServiceArray[@]}
+while [ "$Counter" -lt "$ArrayCount" ]
+do
+	ServiceName=${ServiceArray[$Counter]}
+	check_status
+	let Counter=$Counter+1
+done
+echo -e "_________________________________________________\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+#Make sure we keep config files
+echo 'Dpkg::Options {' > /etc/apt/apt.conf.d/local
+echo '   "--force-confdef";' >> /etc/apt/apt.conf.d/local
+echo '   "--force-confold";' >> /etc/apt/apt.conf.d/local
+echo '}' >> /etc/apt/apt.conf.d/local
+
+#Refresh package list
+echo Refreshing Package Lists
+echo -e "$HOSTNAME: $(date) - Refreshing Package Lists\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+apt-get update | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+echo -e "_________________________________________________\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+#Stop cron or apache from being upgraded which stops the script from completing the upgrade
+if [ $InstallType = scheduled ]
+then
+	echo Holding Cron from updating
+	echo cron hold | dpkg --set-selections
+	echo apache2 install | dpkg --set-selections
+fi
+
+#Remove any init.d scripts that would stop an update from taking place!
+[ -f /etc/init.d/cups ] && rm -f /etc/init.d/cups
+
+#Make sure that update-notifier-common is installed
+if [[ $(dpkg -l | grep ^ii | grep -c update-notifier-common) = 0 ]]
+then
+	apt-get install -y update-notifier-common
+fi
+
+function check_clamav {
+#Check to see if clamav-daemon package has broken apt - this is a problem in Karoshi V11.1 which has shipped with a version of clamav which will not update.
+if [[ $(apt-get -s dist-upgrade 2>/dev/null | grep -c "clamav-daemon : Depends: clamav-base") -gt 0 ]]
+then
+	echo -e "$HOSTNAME: $(date) - Clamav is currently broken." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+	rm /var/lib/dpkg/info/clamav*
+	apt purge clamav*
+	apt-get install -y clamav | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+	apt-get install -y -f | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#Make sure that all required clamav packages are installed
+	apt-get install -y clamav clamav-daemon clamav-freshclam | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#We might need to reboot after this as the reboot-required flag file would not have been generated until apt was fixed
+	RescheduleUpdate=yes
+	check_reboot_required
+fi
+}
+
+function check_cups {
+#Check to see if cups-daemon package has broken apt - this is a problem in Karoshi V11.1 which has shipped with a version of cups which will not update.
+if [[ $(apt-get -s dist-upgrade 2>/dev/null | grep -c "cups-daemon : Depends: libcups") -gt 0 ]]
+then
+	echo -e "$HOSTNAME: $(date) - Cups is currently broken." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+	rm /var/lib/dpkg/info/cups*
+	apt purge cups*
+	apt-get install -y cups | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+	apt-get install -y -f | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#Make sure that all required cups packages are installed
+	apt-get install -y ghostscript-cups cups-bsd | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#Remove cups-browsed
+	apt-get remove -y cups-browsed tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+
+	#We might need to reboot after this as the reboot-required flag file would not have been generated until apt was fixed
+	RescheduleUpdate=yes
+	check_reboot_required
+fi
+}
+
+function check_sucess {
+echo -e "Checking that the upgrade will be successfull.\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+apt-get -s dist-upgrade >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+if [ $? != 0 ]
+then
+	echo -e "Apt-get is reporting an upgrade problem. Upgrade NOT carried out.\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/sysvsupport
+	exit
+fi
+echo -e "_________________________________________________\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+}
+
+#Do upgrade
+function do_upgrade {
+echo Upgrading the server
+echo -e "\n$HOSTNAME: $(date) - Upgrading the server\n\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--no-triggers" dist-upgrade | tee -a "/opt/karoshi/logs/server_upgrades/$LogDate"
+[ "${PIPESTATUS[0]}" = 0 ] && UpgradeStatus=completed
+}
+
+UpgradeCount=1
+UpgradeStatus=notcompleted
+
+while [ "$UpgradeStatus" = notcompleted ] && [ "$UpgradeCount" -lt 5 ]
+do
+	#Check for broken packages in Karoshi V11.1
+	check_clamav
+	check_cups
+
+	#Check that we can successfully upgrade
+	check_sucess
+	do_upgrade
+	#Let's make sure we are not stuck trying to upgrade for ever
+	((UpgradeCount +=1))
+done
+
+#Check for any packages that dpkg is not happy about - caused from fixing apt for clamav and cups in Karoshi V11.1
+if [[ $(grep -c "dpkg: warning: files list file for package" "/opt/karoshi/logs/server_upgrades/$LogDate") -gt 0 ]]
+then
+	for BrokenPackage in $(grep "dpkg: warning: files list file for package" "/opt/karoshi/logs/server_upgrades/$LogDate" | grep "missing; assuming package has no files currently installed" | cut -d"'" -f2 | sort --unique)
+	do
+		echo -e "\n$HOSTNAME: $(date) - re-installing $BrokenPackage due to dpkg warning about missing files for the package. " >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+		apt-get -y install --reinstall "$BrokenPackage" 
+	done
+fi
+
+echo -e "\n$HOSTNAME: $(date) - Upgrade completed\n\n" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+echo -e "_________________________________________________\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+
+#Check sysv
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/sysvsupport
+
+#Remove apache sogo conf symlink
+if [ -L /etc/apache2/conf-enabled/SOGo.conf ]
+then
+	rm -f /etc/apache2/conf-enabled/SOGo.conf
+fi
+
+#Get the new samba version
+NewSambaVer=$(samba-tool -V)
+RestartSamba=no
+
+#Check if samba restart is required
+if [[ "$CurrentSambaVer" != "$NewSambaVer" ]]
+then
+	RestartSamba=yes
+fi
+
+#######################
+#Make sure that only the correct services are running.
+#######################
+function controlservices {
+
+#Check if the service is running.
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_status
+ServiceStatus=$?
+
+#Make sure services are stopped if they were not running before the update.
+if [ "$Status" = off ]
+then
+	if [ "$ServiceStatus" = 0 ]
+	then
+		echo -e "$HOSTNAME: $(date) - $ServiceName has been started by apt - stopping $ServiceName.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_stop
+	fi
+	echo -e "$HOSTNAME: $(date) - Stopping $ServiceName from running on boot.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/stoponboot/"$ServiceName"
+fi
+#Make sure services are started if they were running before the update.
+if [ "$Status" = on ]
+then
+	[ "$ServiceStatus" = 1 ] && /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_start
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/startonboot/"$ServiceName"
+
+	#Restart samba if it has been updated
+	if [ "$RestartSamba" = yes ] && [ "$ServiceName" = samba ]
+	then
+		echo Restarting samba due to version change >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/"$ServiceName"_start
+
+		#Restart nslcd - needed for moving to newer samba versions
+		echo Restarting nslcd due to version change >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/nslcd_stop
+		sleep 1
+		/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/nslcd_start		
+	fi
+fi
+
+#Make sure ssh is running
+if [ "$ServiceName" = ssh ]
+then
+	if [ "$SSHService" = yes ]
+	then
+		if [[ $(pgrep -c sshd) = 0 ]]
+		then
+			echo starting ssh >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+			/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/ssh_start
+			/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/startonboot/ssh
+		fi
+	fi
+fi
+}
+############################
+#Make sure that services running before the update are still running.
+############################
+echo -e "$HOSTNAME: $(date) - Setting services to run on boot.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+Counter=0
+while [ "$Counter" -lt "$ArrayCount" ]
+do
+	Status=${StatusArray[$Counter]}
+	ServiceName=${ServiceArray[$Counter]}
+	echo Setting "$ServiceName $Status"
+	echo -e "$ServiceName $Status" >> "/opt/karoshi/logs/server_upgrades/$LogDate"
+	controlservices
+	let Counter=$Counter+1
+done
+echo -e "_________________________________________________\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+
+###########################
+#Make sure that config files have not been changed.
+###########################
+check_config_files
+
+#Stop ntpdate from running at boot - this causes problems with the ntp service starting
+[ -f /etc/network/if-up.d/ntpdate ] && rm -f /etc/network/if-up.d/ntpdate
+
+##########################
+#Modify mon ping monitor
+##########################
+#Default is to just ping once - this change will cause the ping check to keep trying up to six times over 3 seconds - the check will report a success at the first successful ping.
+sed -i 's/PING="ping -c 1"/PING="ping -i 0.5 -c 1 -w 3"/g' /usr/lib/mon/mon.d/ping.monitor
+###########################
+#Make sure that apache2_karoshi is running on the main server.
+###########################
+if [[ $(pgrep -c apache2_karoshi) -lt 2 ]] && [ -d /opt/karoshi/web_controls/exec ]
+then
+	echo -e "$HOSTNAME: $(date) - Starting apache2_karoshi since it was not running." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+	service apache2_karoshi start
+fi
+
+###########################
+#Remove old kernels
+###########################
+if [ "$RemoveOldKernels" = yes ]
+then
+	apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) --assume-yes
+fi
+###########################
+#Check to see if the server needs a reboot.
+###########################
+check_reboot_required
+
+echo -e "$HOSTNAME: $(date) - Update completed." >>"/opt/karoshi/logs/server_upgrades/$LogDate"
+exit
+

@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/bind
+#!/bin/bash
+#Stop bind on boot
+systemctl disable bind9
+

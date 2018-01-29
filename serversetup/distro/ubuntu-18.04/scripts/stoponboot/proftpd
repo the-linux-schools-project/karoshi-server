@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/proftpd
+#!/bin/bash
+#Stop proftp on boot
+
+systemctl disable proftpd
+

@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start
+#!/bin/bash
+systemctl start nginx 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi

@@ -1,1 +1,10 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/xserver
+#!/bin/bash
+#Start xserver on boot
+[ -f  /etc/init/lightdm.override ] && rm -f /etc/init/lightdm.override
+if [ $(grep -c chvt /etc/rc.local) -gt 0 ]
+then
+	sed -i '/chvt 2/d' /etc/rc.local
+fi
+
+systemctl enable lightdm.service
+

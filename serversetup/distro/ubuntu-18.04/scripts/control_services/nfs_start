@@ -1,1 +1,8 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nfs_start
+#!/bin/bash
+systemctl start nfs-kernel-server 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+

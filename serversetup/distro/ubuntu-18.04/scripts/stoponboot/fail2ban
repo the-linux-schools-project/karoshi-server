@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/fail2ban
+#!/bin/bash
+#Stop fail2ban on boot
+systemctl disable fail2ban
+

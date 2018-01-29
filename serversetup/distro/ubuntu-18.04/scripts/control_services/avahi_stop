@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop
+#!/bin/bash
+systemctl stop avahi-daemon 2>&1
+[ "$?" != 0 ] && sleep 5

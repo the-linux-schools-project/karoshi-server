@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/postgresql
+#!/bin/bash
+#Stop postgresql on boot
+
+systemctl disable postgresql
+

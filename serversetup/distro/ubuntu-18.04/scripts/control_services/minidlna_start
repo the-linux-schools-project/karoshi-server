@@ -1,1 +1,2 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/minidlna_start
+#!/bin/bash
+systemctl start minidlna 2>&1

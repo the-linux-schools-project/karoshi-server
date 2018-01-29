@@ -1,1 +1,6 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/cron
+#!/bin/bash
+#Stop cron on boot
+
+systemctl disable cron
+
+

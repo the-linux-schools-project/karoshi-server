@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/memcached
+#!/bin/bash
+#Start memcached on boot
+systemctl enable memcached
+

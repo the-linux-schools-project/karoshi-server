@@ -1,1 +1,8 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/shellinabox
+#!/bin/bash
+#Stop shellinbox on boot
+
+#Modify /etc/default/openvpn
+sed 's/^AUTOSTART="all"/#AUTOSTART="all"/g' /etc/default/openvpn
+
+systemctl disable shellinabox
+

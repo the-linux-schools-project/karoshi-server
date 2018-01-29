@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ocsmanager
+#!/bin/bash
+#Start ocsmanager on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status openchange-ocsmanager off 1>/dev/null 2>/dev/null
+
+

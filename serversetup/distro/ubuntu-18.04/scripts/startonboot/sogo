@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/sogo
+#!/bin/bash
+#Start apache2 on boot
+systemctl enable sogo

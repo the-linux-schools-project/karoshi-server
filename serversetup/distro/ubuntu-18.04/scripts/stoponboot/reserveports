@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/reserveports
+#!/bin/bash
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status reserveports off 1>/dev/null 2>/dev/null
+
+

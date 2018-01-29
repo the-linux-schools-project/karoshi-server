@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/radius
+#!/bin/bash
+#Stop freeradius on boot
+
+systemctl disable freeradius

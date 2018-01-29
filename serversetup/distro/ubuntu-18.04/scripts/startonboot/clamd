@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/clamd
+#!/bin/bash
+#Start clamav-daemon on boot
+systemctl emable clamav-daemon

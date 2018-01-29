@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi
+#!/bin/bash
+#Stop avahi on boot
+
+saystemctl disable avahi-daemon

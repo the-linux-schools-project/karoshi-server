@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ntp
+#!/bin/bash
+#Stop ntp on boot
+systemctl disable ntp
+

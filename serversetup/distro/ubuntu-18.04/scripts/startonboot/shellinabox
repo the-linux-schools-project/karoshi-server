@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/shellinabox
+#!/bin/bash
+#Start shellinabox on boot
+sed -i 's/SHELLINABOX_DAEMON_START=0/SHELLINABOX_DAEMON_START=1/g' /etc/default/shellinabox
+systemctl enable shellinabox
+

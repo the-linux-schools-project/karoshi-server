@@ -1,1 +1,48 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+#!/bin/bash
+#sysvsupport
+#Copyright (C) 2012  Paul Sharrad
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+#The Karoshi Team can be contact either at mpsharrad@karoshi.org.uk or jharris@karoshi.org.uk
+#
+#Website: http://www.linuxschools.com
+
+#Copy startup scripts back into /etc/init.d
+
+cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/apache2_karoshi /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/icecast2 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/samba4 /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/zfs-mount-all /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mount-gluster-volumes /etc/init.d/
+
+#Check if we have zfs
+if [[ $(ls -1 /etc/rc2.d/ | grep -c "zfs-mount-all") -gt 0 ]]
+then
+	#Make sure we are waiting for ZFS
+
+	#Set minidlna to wait for zfs-mount-all
+	if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
+	then
+		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+	fi
+	#Set gluster to wait for zfs-mount-all
+	if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
+	then
+		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+	fi
+fi
+exit
+

@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/radius
+#!/bin/bash
+#Start radius on boot
+systemctl enable radius

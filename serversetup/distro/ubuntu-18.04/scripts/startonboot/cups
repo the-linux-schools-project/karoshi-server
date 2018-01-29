@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/cups
+#!/bin/bash
+#Start cups on boot
+systemctl enable cups

@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/icecast
+#!/bin/bash
+#Start mon on boot
+systemctl enable icecast
+

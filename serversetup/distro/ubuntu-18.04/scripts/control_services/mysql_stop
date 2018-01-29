@@ -1,1 +1,12 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/mysql_stop
+#!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
+systemctl stop mysql 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status mysql stop "$Display"

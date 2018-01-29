@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/mysql
+#!/bin/bash
+#Start mysql on boot
+systemctl enable mysql

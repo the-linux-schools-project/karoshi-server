@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/winbind
+#!/bin/bash
+#Stop winbind on boot
+
+systemctl disable winbind
+
+
+

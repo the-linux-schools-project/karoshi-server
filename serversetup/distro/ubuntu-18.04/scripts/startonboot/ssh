@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ssh
+#!/bin/bash
+#Start ssh on boot
+systemctl enable ssh
+

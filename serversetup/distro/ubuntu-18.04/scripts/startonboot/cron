@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/cron
+#!/bin/bash
+#Start cron on boot
+systemctl enable cron

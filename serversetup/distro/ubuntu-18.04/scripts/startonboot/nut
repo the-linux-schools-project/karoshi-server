@@ -1,1 +1,8 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/nut
+#!/bin/bash
+#Start nut on boot
+
+#Check which sysv script is in use
+
+systemctl enable nut
+
+

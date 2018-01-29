@@ -1,1 +1,9 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/uptimed
+#!/bin/bash
+if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
+then
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status uptimed off 1>/dev/null 2>/dev/null
+else
+chkconfig -f uptimed off 1>/dev/null 2>/dev/null
+fi
+
+

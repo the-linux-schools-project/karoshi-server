@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/icecast
+#!/bin/bash
+#Stop icecast2 on boot
+systemctl disable icecast
+

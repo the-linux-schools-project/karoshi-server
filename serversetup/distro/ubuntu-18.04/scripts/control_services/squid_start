@@ -1,1 +1,9 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/squid_start
+#!/bin/bash
+service "$SquidVersion" stop > /dev/null 2>&1
+sytemctl start squid 2>&1
+
+if [ "$?" != 0 ]
+then
+	sleep 5
+fi
+

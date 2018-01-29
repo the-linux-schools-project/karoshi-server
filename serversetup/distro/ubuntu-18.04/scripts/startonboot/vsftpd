@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/vsftpd
+#!/bin/bash
+#Start vsftpd on boot
+systemctl enable vsftpd
+

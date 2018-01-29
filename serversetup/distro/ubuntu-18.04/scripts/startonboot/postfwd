@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/postfwd
+#!/bin/bash
+#Start postfwd on boot
+systemctl enable postfwd

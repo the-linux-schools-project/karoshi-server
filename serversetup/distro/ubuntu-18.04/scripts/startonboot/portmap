@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/portmap
+#!/bin/bash
+#Start portmap on boot
+systemctl enable portmap

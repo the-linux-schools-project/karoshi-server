@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/mon
+#!/bin/bash
+#Start mon on boot
+systemctl enable mon
+

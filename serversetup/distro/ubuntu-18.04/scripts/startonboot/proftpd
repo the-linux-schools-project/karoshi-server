@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/proftpd
+#!/bin/bash
+#Start proftp on boot
+systemctl enable proftpd

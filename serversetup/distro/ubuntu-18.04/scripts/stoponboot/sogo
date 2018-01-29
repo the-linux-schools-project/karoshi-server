@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/sogo
+#!/bin/bash
+#Stop sogo on boot
+
+systemctl disable sogo
+

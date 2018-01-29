@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/postfix
+#!/bin/bash
+#Start postfix on boot
+systemctl enable postfix

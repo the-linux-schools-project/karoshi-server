@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/mysql
+#!/bin/bash
+#Stop mysql on boot
+
+systemctl disable mysql
+

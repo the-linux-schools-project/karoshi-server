@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/nslcd
+#!/bin/bash
+#Stop nsldc on boot
+
+systemctl disable nslcd
+

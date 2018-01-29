@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/docker
+#!/bin/bash
+#Stop docker on boot
+
+systemctl disable docker

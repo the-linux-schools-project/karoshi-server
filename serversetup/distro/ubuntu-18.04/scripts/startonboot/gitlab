@@ -1,1 +1,15 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/gitlab
+#!/bin/bash
+#Start gitlab on boot
+
+if [ ! -f /etc/init/gitlab-runsvdir.conf ]; then
+	echo -e "start on runlevel [2345]
+stop on shutdown
+respawn
+post-stop script
+   # To avoid stomping on runsv's owned by a different runsvdir
+   # process, kill any runsv process that has been orphaned, and is
+   # now owned by init (process 1).
+   pkill -HUP -P 1 runsv$
+end script
+exec /opt/gitlab/embedded/bin/runsvdir-start" >> /etc/init/gitlab-runsvdir.conf
+fi

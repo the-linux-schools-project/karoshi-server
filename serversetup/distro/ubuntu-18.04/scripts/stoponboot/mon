@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/mon
+#!/bin/bash
+#Stop mon on boot
+systemctl disable mon
+

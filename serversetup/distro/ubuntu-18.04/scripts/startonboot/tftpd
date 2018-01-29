@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/tftpd
+#!/bin/bash
+#Start tftp on boot
+systemctl enable tftp

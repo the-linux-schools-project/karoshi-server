@@ -1,1 +1,2 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/rpcbind_stop
+#!/bin/bash
+systemctl stop rpcbind 2>&1

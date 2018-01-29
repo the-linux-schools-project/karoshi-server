@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/fail2ban
+#!/bin/bash
+#Start fail2ban on boot
+
+systemctl enable fail2ban
+

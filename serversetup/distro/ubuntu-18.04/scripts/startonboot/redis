@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/redis
+#!/bin/bash
+#Start redis on boot
+systemctl enable redis

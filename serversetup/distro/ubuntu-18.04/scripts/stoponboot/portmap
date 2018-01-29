@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/portmap
+#!/bin/bash
+#Stop portmap on boot
+systemctl disable portmap
+

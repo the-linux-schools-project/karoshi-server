@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/memcached
+#!/bin/bash
+#Stop memcached on boot
+systemctl disable memcached
+

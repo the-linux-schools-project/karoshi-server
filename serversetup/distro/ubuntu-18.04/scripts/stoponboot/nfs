@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/nfs
+#!/bin/bash
+#Stop nfs on boot
+
+systemctl disable nfs-kernel-server
+

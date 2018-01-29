@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/dhcp
+#!/bin/bash
+#Stop dhcp on boot
+
+systemctl disable dhcp3-server
+

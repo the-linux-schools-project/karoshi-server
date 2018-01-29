@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/tftpd
+#!/bin/bash
+#Stop tftp on boot
+
+systemctl disable tftpd-hpa
+
+
+

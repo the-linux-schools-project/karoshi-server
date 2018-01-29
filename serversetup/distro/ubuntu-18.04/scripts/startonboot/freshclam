@@ -1,1 +1,5 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/freshclam
+#!/bin/bash
+#Start clamav-daemon on boot
+
+systemctl enable clamav-freshclam
+

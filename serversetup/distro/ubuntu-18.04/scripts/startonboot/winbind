@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/winbind
+#!/bin/bash
+#Start winbind on boot
+systemctl enable winbind
+

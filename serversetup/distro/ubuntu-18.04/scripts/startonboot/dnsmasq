@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/dnsmasq
+#!/bin/bash
+#Start dhcp on boot
+systemctl enable dnsmasq
+

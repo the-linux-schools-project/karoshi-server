@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/mount-gluster-volumes
+#!/bin/bash
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status mount-gluster-volumes on 1>/dev/null
+

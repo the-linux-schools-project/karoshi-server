@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/clamd
+#!/bin/bash
+#Stop clamav-daemon on boot
+systemctl disable clamav-daemon
+

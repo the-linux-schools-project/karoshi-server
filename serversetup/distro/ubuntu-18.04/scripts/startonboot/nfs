@@ -1,1 +1,3 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/nfs
+#!/bin/bash
+#Start ntp on boot
+systemctl enable nfs
