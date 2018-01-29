@@ -8,34 +8,6 @@ echo -e "set_username usage\nservicename on/off\n"
 exit
 }
 
-function set_priority_number {
-PRI_NUM=S99
-[ "$SERVICE" = apache2 ] && PRI_NUM=S04
-[ "$SERVICE" = cron ] && PRI_NUM=S04
-[ "$SERVICE" = cups ] && PRI_NUM=S04
-[ "$SERVICE" = dansguardian ] && PRI_NUM=S05
-[ "$SERVICE" = dnsmasq ] && PRI_NUM=S04
-[ "$SERVICE" = fail2ban ] && PRI_NUM=S05
-[ "$SERVICE" = glusterfs ] && PRI_NUM=S100
-[ "$SERVICE" = mailscanner ] && PRI_NUM=S01
-[ "$SERVICE" = minidlna ] && PRI_NUM=S102
-[ "$SERVICE" = mysql ] && PRI_NUM=S05
-[ "$SERVICE" = nginx ] && PRI_NUM=S04
-[ "$SERVICE" = ntp ] && PRI_NUM=S04
-[ "$SERVICE" = nut ] && PRI_NUM=S04
-[ "$SERVICE" = portmap ] && PRI_NUM=S04
-[ "$SERVICE" = postfix ] && PRI_NUM=S06
-[ "$SERVICE" = proftpd ] && PRI_NUM=S05
-[ "$SERVICE" = rpcbind ] && PRI_NUM=S04
-[ "$SERVICE" = uptimed ] && PRI_NUM=S01
-[ "$SERVICE" = ssh ] && PRI_NUM=S04
-[ "$SERVICE" = samba ] && PRI_NUM=S05
-[ "$SERVICE" = slapd ] && PRI_NUM=S04
-[ "$SERVICE" = squid ] && PRI_NUM=S06
-[ "$SERVICE" = zfs-share ] && PRI_NUM=S20
-[ "$SERVICE" = zfs-mount ] && PRI_NUM=S20
-} 
-
 #Check data
 [ -z "$SERVICE" ] && show_usage
 [ -z "$ACTION" ] && show_usage
@@ -45,66 +17,17 @@ then
 	show_usage
 fi
 
-#Get Ubuntu version
-UBUNTUVER=$(lsb_release -a 2> /dev/null | grep ^Release: | tr -cd '0-9.\n')
-
 #Stop service from running at boot
 if [ "$ACTION" = off ]
 then
-	if [ "$UBUNTUVER" = 18.04 ]
-	then
-		systemctl disable "$SERVICE".service 2>/dev/null
-	elif [ "$UBUNTUVER" = 16.04 ]
-	then
-		update-rc.d "$SERVICE" remove defaults 2>/dev/null
-	else
-		for RUNLEVEL in rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d rcS.d
-		do
-		if [ -f /etc/"$RUNLEVEL"/*$SERVICE ]
-		then
-			echo Removing "$SERVICE" in "$RUNLEVEL"
-			#Remove symlinks if they exist
-			rm -f /etc/"$RUNLEVEL"/*"$SERVICE"
-		fi
-		done	
-	fi
+	update-rc.d "$SERVICE" remove defaults 2>/dev/null
 fi
 
 #Start service on boot
 if [ "$ACTION" = on ]
 then
-	if [ "$UBUNTUVER" = 18.04 ]
-	then	
-		systemctl enable "$SERVICE".service 2>/dev/null
-	elif [ "$UBUNTUVER" = 16.04 ]
-	then
-		#Remove any existing defaults as they will stop the service from being set to start on boot.
-		update-rc.d "$SERVICE" remove defaults 2>/dev/null
-		#Set the service to start on boot
-		update-rc.d "$SERVICE" defaults
-	else
-		for RUNLEVEL in rc2.d rc3.d rc4.d rc5.d
-		do
-			if [ ! -f /etc/"$RUNLEVEL"/*"$SERVICE" ]
-			then
-				echo Adding "$SERVICE" in "$RUNLEVEL"
-				#Get priority number
-				set_priority_number
-				#Add symlink
-				ln -s /etc/init.d/"$SERVICE" /etc/"$RUNLEVEL/$PRI_NUM$SERVICE"
-			fi
-		done
-		if [ ! -f /etc/rc0.d/*"$SERVICE" ]
-		then
-			ln -s /etc/init.d/"$SERVICE" /etc/rc0.d/K01"$SERVICE"
-		fi
-		if [ ! -f /etc/rc1.d/*"$SERVICE" ]
-		then
-			ln -s /etc/init.d/"$SERVICE" /etc/rc1.d/K01"$SERVICE"
-		fi
-		if [ ! -f /etc/rc6.d/*"$SERVICE" ]
-		then
-			ln -s /etc/init.d/"$SERVICE" /etc/rc6.d/K01"$SERVICE"
-		fi
-	fi
+	#Remove any existing defaults as they will stop the service from being set to start on boot.
+	update-rc.d "$SERVICE" remove defaults 2>/dev/null
+	#Set the service to start on boot
+	update-rc.d "$SERVICE" defaults
 fi
