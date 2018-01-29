@@ -172,6 +172,12 @@ then
 	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi11-squid3.conf /etc/squid/squid.conf
 fi
 
+if [ $SQUIDVER = bionic ]
+then
+	cp -f /opt/karoshi/serversetup/modules/squid/squidfiles/squid3/karoshi12-squid3.conf /etc/squid/squid.conf
+fi
+
+
 if [ ! -f /etc/squid/location_tcpip.list ]
 then
 	echo 1.1.1.1 > /etc/squid/location_tcpip.list

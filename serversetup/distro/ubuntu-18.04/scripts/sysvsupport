@@ -22,6 +22,7 @@
 #Copy startup scripts back into /etc/init.d
 
 cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/apache2_karoshi /etc/init.d/
+cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/e2guardian /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/icecast2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/samba4 /etc/init.d/

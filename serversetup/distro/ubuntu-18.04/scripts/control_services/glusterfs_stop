@@ -1,5 +1,8 @@
 #!/bin/bash
-systemctl stop glusterfs 2>&1
+
+service glusterd stop 2>&1
+service glustereventsd stop 2>&1
+
 if [ "$?" != 0 ]
 then
 	sleep 5

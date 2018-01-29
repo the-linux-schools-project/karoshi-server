@@ -1,6 +1,6 @@
 #!/bin/bash
 Display=$(echo "$1" | tr -cd 'a-z')
-[ -z "$Display" ] && display=html
+[ -z "$Display" ] && Display=html
 
 systemctl start openvpn 2>&1
 
@@ -9,4 +9,4 @@ then
 	sleep 5
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status openvpn start "$Display"
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status openvpn start "$Display"

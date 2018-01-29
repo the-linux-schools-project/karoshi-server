@@ -1,6 +1,6 @@
 #!/bin/bash
 Display=$(echo "$1" | tr -cd 'a-z')
-[ -z "$Display" ] && display=html
+[ -z "$Display" ] && Display=html
 
 systemctl start postfix 2>&1
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 Display=$(echo "$1" | tr -cd 'a-z')
-[ -z "$Display" ] && display=html
+[ -z "$Display" ] && Display=html
 
-systemctl stop sogo 2>&1
+systemctl stop Sogo 2>&1
 
 if [ "$?" != 0 ]
 then

@@ -1,6 +1,6 @@
 #!/bin/bash
-service "$SquidVersion" stop > /dev/null 2>&1
-sytemctl start squid 2>&1
+
+systemctl start squid 2>&1
 
 if [ "$?" != 0 ]
 then

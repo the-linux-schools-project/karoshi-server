@@ -277,8 +277,7 @@ sleep 1
 services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
 for service in $services
 do
-	echo -e "\nStopping $service\n"
-	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_stop text
+	echo -e "\nSetting $service to stop on boot\n"
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
 done
 }
@@ -287,8 +286,7 @@ function turn_on_services {
 services="cron"
 for service in $services
 do
-	echo -e "\nStarting $service\n"
-	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/control_services/"$service"_start text
+	echo -e "\nSetting $service to start on boot\n"
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/startonboot/"$service"
 done
 }

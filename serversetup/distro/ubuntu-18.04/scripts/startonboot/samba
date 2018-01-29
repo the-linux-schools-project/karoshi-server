@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/samba
+#!/bin/bash
+#Start samba on boot
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status samba4 on 1>/dev/null 2>/dev/null
+

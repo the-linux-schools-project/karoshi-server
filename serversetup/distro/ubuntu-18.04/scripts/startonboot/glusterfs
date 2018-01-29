@@ -1,4 +1,5 @@
 #!/bin/bash
-systemctl enable glusterfs
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status glusterd on 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status glustereventsd on 1>/dev/null 2>/dev/null
 
 
