@@ -4,9 +4,10 @@ Display=$(echo "$1" | tr -cd 'a-z')
 
 systemctl start freeradius 2>&1
 
-if [ "$?" != 0 ]
+if [ "$?" = 0 ]
 then
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status radius start "$Display"
+else
 	sleep 5
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status radius start "$Display"

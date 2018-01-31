@@ -4,7 +4,10 @@ Display=$(echo "$1" | tr -cd 'a-z')
 
 systemctl start bind9 2>&1
 
-[ "$?" != 0 ] && sleep 5
-
-/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status bind start "$Display"
+if [ "$?" = 0 ]
+then
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status bind start "$Display"
+else
+	sleep 5
+fi
 

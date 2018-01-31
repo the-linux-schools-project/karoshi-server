@@ -4,6 +4,9 @@ Display=$(echo "$1" | tr -cd 'a-z')
 
 systemctl stop bind9 2>&1
 
-[ "$?" != 0 ] && sleep 5
-
-/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status bind stop "$Display"
+if [ "$?" = 0 ]
+then
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status bind stop "$Display"
+else
+	sleep 5
+fi
