@@ -129,7 +129,7 @@ then
 	#Make sure that ssl is enabled
 	a2enmod ssl 1>/dev/null
 	#Copy in ssl config file
-	[ ! -e /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
+	[ ! -e /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 	#Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
 	if [[ $(grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf) -gt 0 ]]
 	then
@@ -146,16 +146,16 @@ then
 	#Check which web server
 	if [[ $(ls /etc/rc2.d | grep -c nginx) -gt 0 ]]
 	then
-		echo "<ul><li>"Restarting nginx to apply the ssl certificate"</li></ul>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start 1>/dev/null
+		echo "<ul><li>"$"Restarting nginx to apply the ssl certificate""</li></ul>"
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nginx_start 1>/dev/null
 	fi
 
 	if [[ $(ls /etc/rc2.d | grep -c apache2) -gt 0 ]]
 	then
 		echo "<ul><li>"Restarting apache to apply the ssl certificate"</li></ul>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_start 1>/dev/null
 	fi
 
 else
@@ -180,7 +180,7 @@ else
 	#Make sure that ssl is enabled
 	a2enmod ssl 1>/dev/null
 	#Copy in ssl config file
-	[ ! -f /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/ubuntu/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
+	[ ! -f /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 
 	#Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
 	if [ `grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf` -gt 0 ]
@@ -199,15 +199,15 @@ else
 	if [ `ls /etc/rc2.d | grep -c nginx` -gt 0 ]
 	then
 		echo "<ul><li>"Restarting nginx to apply the ssl certificate"</li></ul>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/nginx_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_stop 1>/dev/null 2>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start 1>/dev/null
 	fi
 
 	if [ `ls /etc/rc2.d | grep -c apache2` -gt 0 ]
 	then
 		echo "<ul><li>"Restarting apache to apply the ssl certificate"</li></ul>"
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
-		/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/apache_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null 2>/dev/null
+		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_start 1>/dev/null
 	fi
 	'
 fi

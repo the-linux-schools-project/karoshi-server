@@ -1,4 +1,5 @@
 #!/bin/bash
 #Stop portmap on boot
 systemctl disable rpcbind
+systemctl mask rpcbind
 

@@ -48,8 +48,12 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 <script id="js">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter(); 
-    }
+        $("#myTable").tablesorter({
+	headers: {
+	2: { sorter: false}
+    		}
+		});
+    } 
 );
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
