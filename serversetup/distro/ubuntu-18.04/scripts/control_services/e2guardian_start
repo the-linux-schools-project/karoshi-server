@@ -1,1 +1,14 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/e2guardian_start
+#!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && Display=html
+
+systemctl start e2guardian 2>&1
+
+if [ "$?" = 0 ]
+then
+	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status e2guardian start "$Display"
+else
+	sleep 5
+fi
+
+
