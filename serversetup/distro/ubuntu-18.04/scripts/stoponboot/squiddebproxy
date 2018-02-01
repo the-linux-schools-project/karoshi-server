@@ -1,11 +1,4 @@
 #!/bin/bash
-#Start squid-deb-proxy on boot
 
-if [ -f /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status ]
-then
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status squiddebproxy off 1>/dev/null 2>/dev/null
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status squid-deb-proxy off 1>/dev/null 2>/dev/null
-else
-chkconfig -f squiddebproxy off 1>/dev/null 2>/dev/null
-fi
+systemctl disable squid-deb-proxy
 

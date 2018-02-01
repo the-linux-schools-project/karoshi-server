@@ -93,6 +93,12 @@ then
 	SQUIDPATH=squid
 fi
 
+if [ $(lsb_release -a 2>/dev/null | grep -c bionic) -gt 0 ]
+then
+	SQUIDVER=bionic
+	SQUIDPATH=squid
+fi
+
 #Make sure that e2guardian is installed
 dpkg -l e2guardian 1>/dev/null 2>/dev/null
 if [ $? != 0 ]
@@ -331,8 +337,6 @@ echo download.virtualbox.org >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-d
 echo mirrors.coreix.net >> /etc/squid-deb-proxy/mirror-dstdomain.acl.d/10-default
 
 echo blacklisted-mirror.com > /etc/squid-deb-proxy/pkg-blacklist.d/10-default
-
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/squiddebproxy /etc/init.d/
 
 echo '<ul><li>'$"Starting Squid Deb Proxy"'</li></ul>'
 /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/squiddebproxy_stop 1>/dev/null
