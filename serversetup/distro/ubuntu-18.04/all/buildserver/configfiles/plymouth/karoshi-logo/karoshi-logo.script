@@ -97,7 +97,7 @@ fun TextYOffset() {
 
     if (y < progress_indicator.y + progress_indicator.height)
         return progress_indicator.y + progress_indicator.height;
-    y=y-330;
+    y=y-150;
     return y;
 }
 

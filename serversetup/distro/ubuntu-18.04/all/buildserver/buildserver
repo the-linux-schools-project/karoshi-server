@@ -35,7 +35,7 @@ INSTALL_SOFTWARE=yes
 #Install all software in one go to save time - setting to no installs each package seperately to check for problems.
 INSTALL_BATCH=no
 #Install mailscanner for the email system - kept separate because it is not in the standard repos.
-INSTALL_MAILSCANNER=no # Dependency problems
+INSTALL_MAILSCANNER=yes # Dependency problems
 #Install ZFS
 INSTALL_ZFS=yes
 #Install Monitorix
@@ -300,7 +300,7 @@ function install_mailscanner {
 apt-get install -y gcc g++ cpp zlib1g-dev libgmp3-dev perl bzip2 zip make patch automake libhtml-template-perl linux-headers-"$(uname -r)" build-essential libnewt-dev libusb-dev libconvert-tnef-perl libdbd-sqlite3-perl libfilesys-df-perl libmailtools-perl libmime-tools-perl libmime-perl libnet-cidr-perl libsys-syslog-perl libio-stringy-perl libfile-temp-perl libole-storage-lite-perl libarchive-zip-perl libole-storage-lite-perl libdigest-sha-perl libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl perl-modules libdbd-mysql-perl libsys-hostname-long-perl 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 
 #Install modified mailscanner with dependency changed to perl instead of perl-modules.
-dpkg -i /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/deb/mailscanner-4.85.2-3-noarch.deb
+dpkg -i /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/deb/MailScanner-5.0.7-1-noarch.deb
 }
 
 function install_zfs {
