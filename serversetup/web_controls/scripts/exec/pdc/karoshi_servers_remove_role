@@ -885,7 +885,11 @@ then
 		#Disable starting on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/savapage
 		#Remove savapage folder
-		[ -d /opt/savapage ] && rm -f -R /opt/savapage	 
+		[ -d /opt/savapage ] && rm -f -R /opt/savapage
+		#Remove avahi config
+		[ -f /etc/avahi/services/savapage.service ] && rm -f /etc/avahi/services/savapage.service
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
 	else
 		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		source /opt/karoshi/serversetup/variables/distro
@@ -894,7 +898,11 @@ then
 		#Disable starting on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/savapage
 		#Remove savapage folder
-		[ -d /opt/savapage ] && rm -f -R /opt/savapage	
+		[ -d /opt/savapage ] && rm -f -R /opt/savapage
+		#Remove avahi config
+		[ -f /etc/avahi/services/savapage.service ] && rm -f /etc/avahi/services/savapage.service
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
 		'
 	fi
 
