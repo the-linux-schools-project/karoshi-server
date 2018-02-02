@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/apache_karoshi
+#!/bin/bash
+#Start apache2_karoshi on boot
+systemctl enable apache2_karoshi
+

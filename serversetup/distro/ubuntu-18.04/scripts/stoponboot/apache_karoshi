@@ -1,1 +1,4 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/apache_karoshi
+#!/bin/bash
+#Stop apache2_karoshi on boot
+systemctl disable apache2_karoshi
+

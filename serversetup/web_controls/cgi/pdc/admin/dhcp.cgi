@@ -156,7 +156,7 @@ function check_address {
 PDCIP=$(hostname -i | cut -d" " -f1)
 
 #Get netmask
-MASK=$(ifconfig | grep "$PDCIP" | cut -d: -f4)
+MASK=$(ip -o -f inet addr show | grep "$PDCIP" | awk '/scope global/ {print $4}' | cut -d"/" -f2)
 ZONEINFO1=$(ipcalc -n "$PDCIP"/"$MASK" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 ZONEINFO2=$(ipcalc -n "$ADDRESS"/"$MASK" | grep ^Network | sed "s/ * / /g" | cut -d" " -f2)
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-systemctl isc-dhcp-server start 2>&1
+systemctl start isc-dhcp-server 2>&1
 
 if [ "$?" != 0 ]
 then

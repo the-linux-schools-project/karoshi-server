@@ -1,1 +1,7 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/samba_start
+#!/bin/bash
+Display=$(echo "$1" | tr -cd 'a-z')
+[ -z "$Display" ] && display=html
+
+systemctl start samba4 2>&1
+
+/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status samba start "$Display"

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-service glusterd stop 2>&1
-service glustereventsd stop 2>&1
+systemctl stop glusterd 2>&1
 
 if [ "$?" != 0 ]
 then

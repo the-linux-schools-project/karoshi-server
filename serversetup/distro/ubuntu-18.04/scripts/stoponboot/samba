@@ -1,6 +1,5 @@
 #!/bin/bash
 #Stop samba on boot
-systemctl stop smbd
-systemctl stop nmbd
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status samba4 off 1>/dev/null 2>/dev/null
+systemctl disable samba4
+
 

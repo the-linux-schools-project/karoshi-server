@@ -1,4 +1,3 @@
 #!/bin/bash
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status glusterd off 1>/dev/null 2>/dev/null
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status glustereventsd off 1>/dev/null 2>/dev/null
+systemctl disable glusterd
 
