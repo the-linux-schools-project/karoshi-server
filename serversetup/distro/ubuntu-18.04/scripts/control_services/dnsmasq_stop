@@ -6,7 +6,7 @@ systemctl stop dnsmasq 2>&1
 
 if [ "$?" = 0 ] 
 then
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status dnsmasq stop "$Display"
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status dnsmasq stop "$Display"
 else
 	sleep 5
 fi

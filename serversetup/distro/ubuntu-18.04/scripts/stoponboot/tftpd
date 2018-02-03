@@ -1,7 +1,7 @@
 #!/bin/bash
 #Stop tftp on boot
 
-systemctl disable tftpd-hpa
+systemctl disable tftpd-hpa 1>/dev/null
 
 
 

@@ -4,4 +4,4 @@ Display=$(echo "$1" | tr -cd 'a-z')
 
 systemctl start samba4 2>&1
 
-/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status samba start "$Display"
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status samba start "$Display"

@@ -1,0 +1,14 @@
+[Unit]
+Description=Minidlna
+After=network.target remote-fs.target nss-lookup.target samba4
+
+[Service]
+Type=forking
+
+ExecStart=/etc/init.d/minidlna start
+ExecStop=/etc/init.d/minidlna stop
+PrivateTmp=true
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

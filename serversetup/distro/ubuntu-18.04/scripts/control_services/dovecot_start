@@ -6,7 +6,7 @@ systemctl start dovecot 2>&1
 
 if [ "$?" = 0 ]
 then
-	/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/check_port_status dovecot start "$Display"
+	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status dovecot start "$Display"
 else
 	sleep 5
 fi
