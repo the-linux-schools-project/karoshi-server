@@ -1,0 +1,10 @@
+[Unit]
+Description=Mount gluster volumes
+After=network.target remote-fs.target nss-lookup.target glusterd
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/mount-gluster-volumes
+
+[Install]
+WantedBy=multi-user.target

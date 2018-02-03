@@ -428,12 +428,12 @@ source /opt/karoshi/serversetup/variables/distro
 #Stop karoshi-uptime if it is already running to apply new version
 if [ -f /etc/init.d/karoshi-uptime ]
 then
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/karoshi-uptime_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/karoshi-uptime_stop 1>/dev/null
 fi
 #Copy in files
 
 #Sysvsupport
-/opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/sysvsupport
 
 #Reserve ports
 [ -d /etc/reserveports ] && rm -f -R /etc/reserveports

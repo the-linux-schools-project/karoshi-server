@@ -1,4 +1,5 @@
 #!/bin/bash
+
 systemctl start nfs-kernel-server 2>&1
 
 if [ "$?" != 0 ]
