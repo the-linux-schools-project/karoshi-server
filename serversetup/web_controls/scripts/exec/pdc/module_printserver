@@ -109,6 +109,7 @@ then
 fi
 
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+source /opt/karoshi/serversetup/variables/distro
 
 net rpc rights grant -U Administrator%"$LDAPPASS" "$SAMBADOMAIN\Domain Admins" SeMachineAccountPrivilege \
 SePrintOperatorPrivilege SeAddUsersPrivilege SeDiskOperatorPrivilege SeRemoteShutdownPrivilege 1>/dev/null
@@ -119,13 +120,13 @@ then
 	scp -p -r /opt/karoshi/serversetup/modules/printserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
 
 	#Copy in avahi daemon controls
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_reload root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_start root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_stop root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/avahi_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/avahi root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_reload root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_start root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_stop root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts/avahi-daemon root@"$SERVERNAME":/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts/ 1> /dev/null
 fi
 
 #Create keytab for cups
