@@ -2,7 +2,7 @@
 Display=$(echo "$1" | tr -cd 'a-z')
 [ -z "$Display" ] && Display=html
 
-systemctl stop mariadb 2>&1
+systemctl stop mysql 2>&1
 
 if [ "$?" = 0 ]
 then

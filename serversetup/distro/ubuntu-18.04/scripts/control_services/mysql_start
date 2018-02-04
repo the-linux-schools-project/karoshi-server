@@ -2,7 +2,7 @@
 Display=$(echo "$1" | tr -cd 'a-z')
 [ -z "$Display" ] && Display=html
 
-systemctl start mariadb 2>&1
+systemctl start mysql 2>&1
 if [ "$?" = 0 ]
 then
 	/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status mysql start "$Display"
