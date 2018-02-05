@@ -1,3 +1,4 @@
 #!/bin/bash
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status zfs-mount-all on 1>/dev/null 2>/dev/null
+systemctl enable zfs-mount
+
 

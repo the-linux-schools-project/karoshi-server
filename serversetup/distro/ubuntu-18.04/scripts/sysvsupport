@@ -25,24 +25,6 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/apache2_
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/icecast2 /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/mailscanner /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/initdscripts/samba4 /etc/init.d/
-cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/zfs-mount-all /etc/init.d/
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/minidlna /etc/init.d/
-
-#Check if we have zfs
-if [[ $(ls -1 /etc/rc2.d/ | grep -c "zfs-mount-all") -gt 0 ]]
-then
-	#Make sure we are waiting for ZFS
-
-	#Set minidlna to wait for zfs-mount-all
-	if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
-	then
-		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
-	fi
-	#Set gluster to wait for zfs-mount-all
-	if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
-	then
-		sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-	fi
-fi
 exit
 

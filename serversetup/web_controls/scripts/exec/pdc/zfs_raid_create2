@@ -23,161 +23,160 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
 then
-	echo `date`: zfs_raid_create2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/zfs_raid_create2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $zfs_raid_create2_cgi'check' ]
+if [ "$MD5SUM"'check' != "$zfs_raid_create2_cgi"'check' ]
 then
-	echo `date`: zfs_raid_create2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: zfs_raid_create2 - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9:._,/-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9:._,/-')
 if [ -z "$DATA" ]
 then
-	echo `date`: zfs_raid_create2 - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
-SERVERTYPE=`echo "$DATA" | cut -s -d: -f5`
-SERVERMASTER=`echo "$DATA" | cut -s -d: -f6`
-ACTION=`echo "$DATA" | cut -s -d: -f7`
-PARITY=`echo "$DATA" | cut -s -d: -f8`
-DRIVELIST=`echo "$DATA" | cut -s -d: -f9`
-SPAREDRIVELIST=`echo "$DATA" | cut -s -d: -f10`
-MOUNTPOINT=`echo "$DATA" | cut -s -d: -f11`
-CREATETYPE=`echo "$DATA" | cut -s -d: -f12`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
+SERVERTYPE=$(echo "$DATA" | cut -s -d: -f5)
+SERVERMASTER=$(echo "$DATA" | cut -s -d: -f6)
+ACTION=$(echo "$DATA" | cut -s -d: -f7)
+PARITY=$(echo "$DATA" | cut -s -d: -f8)
+DRIVELIST=$(echo "$DATA" | cut -s -d: -f9)
+SPAREDRIVELIST=$(echo "$DATA" | cut -s -d: -f10)
+MOUNTPOINT=$(echo "$DATA" | cut -s -d: -f11)
+CREATETYPE=$(echo "$DATA" | cut -s -d: -f12)
 
 ZPOOLTOPPATH=dev/zvol
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: zfs_raid_create2 - Not called by zfs_raid_create2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Not called by zfs_raid_create2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: zfs_raid_create2 - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: zfs_raid_create2 - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: zfs_raid_create2 - Blank server >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Blank server" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERTYPE" ]
 then
-	echo `date`: zfs_raid_create2 - Blank servertype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Blank servertype" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
 	if [ -z "$SERVERMASTER" ]
 	then
-		echo `date`: zfs_raid_create2 - Blank servermaster >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): zfs_raid_create2 - Blank servermaster" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
 if [ -z "$CREATETYPE" ]
 then
-	echo `date`: zfs_raid_create2 - Blank createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - Blank createtype" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $CREATETYPE != restore ] && [ $CREATETYPE != create ] && [ $CREATETYPE != reuse ]
+if [ "$CREATETYPE" != restore ] && [ "$CREATETYPE" != create ] && [ "$CREATETYPE" != reuse ]
 then
-	echo `date`: zfs_raid_create2 - incorrect createtype >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - incorrect createtype" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ $CREATETYPE = create ]
+if [ "$CREATETYPE" = create ]
 then
 	if [ -z "$PARITY" ]
 	then
-		echo `date`: zfs_raid_create2 - Blank parity >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): zfs_raid_create2 - Blank parity" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 
 	if [ -z "$DRIVELIST" ]
 	then
-		echo `date`: zfs_raid_create2 - Blank drives >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): zfs_raid_create2 - Blank drives" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 
 	if [ -z "$MOUNTPOINT" ]
 	then
-		echo `date`: zfs_raid_create2 - Blank mountpoint >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): zfs_raid_create2 - Blank mountpoint" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: zfs_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): zfs_raid_create2 - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 
-[ $CREATETYPE = create ] && echo `date`: zfs_raid_create2 - servername $SERVERNAME servertype $SERVERTYPE parity $PARITY drivelist $DRIVELIST $SPAREDRIVELIST mountpoint $MOUNTPOINT by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ "$CREATETYPE" = create ] && echo "$(date): zfs_raid_create2 - servername $SERVERNAME servertype $SERVERTYPE parity $PARITY drivelist $DRIVELIST $SPAREDRIVELIST mountpoint $MOUNTPOINT by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ $CREATETYPE = restore ] && echo `date`: zfs_raid_create2 - restoring zfs raid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ "$CREATETYPE" = restore ] && echo "$(date): zfs_raid_create2 - restoring zfs raid by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ $CREATETYPE = reuse ] && echo `date`: zfs_raid_create2 - reusing drives "for" a new zfs raid by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+[ "$CREATETYPE" = reuse ] && echo "$(date): zfs_raid_create2 - reusing drives for a new zfs raid by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
 ##########################
 #Language
 ##########################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/serversetup/variables/distro
 
-POOLNAME=`echo zfs"$MOUNTPOINT" | sed 's/\//-/g'`
+POOLNAME=$(echo zfs"$MOUNTPOINT" | sed 's/\//-/g')
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Make sure zfs kernel module is loaded
 	modprobe zfs
 	#Make sure zfs is going to load on boot and load created pools
 	echo "zfs zfs_autoimport_disable=0" > /etc/modules-load.d/zfs.conf
 	#Add cron job for zpool scrub
-	[ -d /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs
-	echo 0 0 '*' '*' 6 zpool scrub $POOLNAME > /opt/karoshi/server_network/cronjobs/$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron
+	[ -d /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/"$SERVERNAME"/jobs
+	echo 0 0 '*' '*' 6 zpool scrub "$POOLNAME" > /opt/karoshi/server_network/cronjobs/"$SERVERNAME/jobs/zpool_scrub_$POOLNAME.cron"
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 
@@ -192,21 +191,21 @@ then
 	if [ "$GLUSTERACTION" = stop ]
 	then
 		echo '<ul><li>'$"Stopping Samba4"'</li></ul>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
 		echo '<ul><li>'$"Stopping GlusterFS"'</li></ul>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/glusterfs_stop 1>/dev/null
 	fi
 	if [ "$GLUSTERACTION" = start ]
 	then
 		echo '<ul><li>'$"Starting GlusterFS"'</li></ul>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/glusterfs_start 1>/dev/null
 	fi
-	for GLUSTERVOL in `ls /home/gluster-volumes/`
+	for GLUSTERVOL in $(ls /home/gluster-volumes/)
 	do
 		if [ "$GLUSTERACTION" = stop ]
 		then
 			#Clear out all of the gluster data
-			echo '<ul><li>'$"Glusterfs"' - '$"Removing"' '$GLUSTERVOL' - '$"This will be restored after the ZFS array has been created"'</li></ul>'
+			echo '<ul><li>'$"Glusterfs"' - '$"Removing"' '"$GLUSTERVOL"' - '$"This will be restored after the ZFS array has been created"'</li></ul>'
 			umount /mnt-gluster/"$GLUSTERVOL"
 			rm -f -R /home/gluster-volumes/"$GLUSTERVOL"
 			mkdir -p /home/gluster-volumes/"$GLUSTERVOL"
@@ -216,7 +215,7 @@ then
 		if [ "$GLUSTERACTION" = start ]
 		then
 			#Create new volume id otherwise the gluster volume will not start.
-			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed 's/-//g') $brick)
+			(vol="$GLUSTERVOL"; brick=/home/gluster-volumes/"$GLUSTERVOL"; setfattr -n  trusted.glusterfs.volume-id -v 0x$(grep volume-id /var/lib/glusterd/vols/$vol/info | cut -d= -f2 | sed 's/-//g') "$brick")
 			#Restart the gluster volume
 			echo -e "y\n" | gluster volume stop "$GLUSTERVOL" force
 			sleep 1
@@ -231,62 +230,62 @@ then
 		#Mount gluster volume and start samba4
 		mount -a
 		echo '<ul><li>'$"Starting Samba4"'</li></ul>'
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null
 	fi
 	}
 
-	if [ $CREATETYPE = create ]
+	if [ "$CREATETYPE" = create ]
 	then
-		DRIVELIST=`echo $DRIVELIST | sed "s/,/ /g"`
+		DRIVELIST=$(echo "$DRIVELIST" | sed "s/,/ /g")
 		#Create the zfs raid
 		echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 
 		
 
-		if [ $PARITY = stripe ]
+		if [ "$PARITY" = stripe ]
 		then
 			echo '<ul><li>'$"Creating ZFS stripe"'</li></ul>'
-		elif [ $PARITY = mirror ]
+		elif [ "$PARITY" = mirror ]
 		then
 			echo '<ul><li>'$"Creating ZFS mirror"'</li></ul>'
 		else		
-			echo '<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li></ul>'
+			echo '<ul><li>'$"Creating ZFS raid"' z'"$PARITY"'</li></ul>'
 		fi
 		#Check that there is not already a pool created for this zfs raid
-		if [ `zpool status | grep -c -w $POOLNAME` -gt 0 ]
+		if [[ $(zpool status | grep -c -w "$POOLNAME") -gt 0 ]]
 		then
-			echo $POOLNAME - $"A ZFS raid has already been set up for this pool.""<br>"
+			echo "$POOLNAME" - $"A ZFS raid has already been set up for this pool.""<br>"
 			sleep 3
 			exit 101
 		fi
 
-		if [ $PARITY = stripe ]
+		if [ "$PARITY" = stripe ]
 		then
-			zpool create -o ashift=12 -f $POOLNAME $DRIVELIST
-		elif [ $PARITY = mirror ]
+			zpool create -o ashift=12 -f "$POOLNAME" "$DRIVELIST"
+		elif [ "$PARITY" = mirror ]
 		then
 			#Create a zfs mirror
 			if [ ! -z "$SPAREDRIVELIST" ]
 			then
-				SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
-				zpool create -o ashift=12 -f $POOLNAME mirror $DRIVELIST spare $SPAREDRIVELIST
+				SPAREDRIVELIST=$(echo "$SPAREDRIVELIST" | sed "s/,/ /g")
+				zpool create -o ashift=12 -f "$POOLNAME" mirror "$DRIVELIST" spare "$SPAREDRIVELIST"
 			else
-				zpool create -o ashift=12 -f $POOLNAME mirror $DRIVELIST
+				zpool create -o ashift=12 -f "$POOLNAME" mirror "$DRIVELIST"
 			fi
 		else
 			#Create a raidz volume
 			if [ ! -z "$SPAREDRIVELIST" ]
 			then
-				SPAREDRIVELIST=`echo $SPAREDRIVELIST | sed "s/,/ /g"`
-				zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST spare $SPAREDRIVELIST
+				SPAREDRIVELIST=$(echo "$SPAREDRIVELIST" | sed "s/,/ /g")
+				zpool create -o ashift=12 -f "$POOLNAME" raidz"$PARITY" "$DRIVELIST" spare "$SPAREDRIVELIST"
 			else
-				zpool create -o ashift=12 -f $POOLNAME raidz$PARITY $DRIVELIST
+				zpool create -o ashift=12 -f "$POOLNAME" raidz"$PARITY" "$DRIVELIST"
 			fi
 			
 		fi
 		#Check zfs raid has been created
-		zpool status $POOLNAME
-		if [ $? != 0 ]
+		zpool status "$POOLNAME"
+		if [ "$?" != 0 ]
 		then
 			echo $"A ZFS raid has not been set up on this server.""<br>"
 			sleep 3
@@ -300,30 +299,30 @@ then
 		zfs set dedup=off "$POOLNAME"
 		
 		#Mount partition on a temporary mount point
-		[ ! -d $MOUNTPOINT.$$ ] && mkdir -p $MOUNTPOINT.$$
+		[ ! -d "$MOUNTPOINT.$$" ] && mkdir -p "$MOUNTPOINT.$$"
 
-		zfs set mountpoint=$MOUNTPOINT.$$ $POOLNAME
-		zfs mount $POOLNAME
+		zfs set mountpoint="$MOUNTPOINT.$$" "$POOLNAME"
+		zfs mount "$POOLNAME"
 
 		#Stop services if the mount point is /var
-		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
+		if [[ $(echo "$MOUNTPOINT" | grep -c /var) -gt 0 ]]
 		then
 			source /opt/karoshi/serversetup/variables/distro
 
 			SERVICEARRAY=( apache dansguardian mysql samba squid )
-			SERVICEARRAYCOUNT=${#SERVICEARRAY[@]}
+			SERVICEARRAYCOUNT="${#SERVICEARRAY[@]}"
 
 			#Stop services if they are running
 			COUNTER=0
-			while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+			while [ "$COUNTER" -lt "$SERVICEARRAYCOUNT" ]
 			do
 				#Check if the service is running
 				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_status
-				STATUSARRAY[$COUNTER]=$?
+				STATUSARRAY[$COUNTER]="$?"
 				#Stop service if it is running
-				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+				if [ "${STATUSARRAY[$COUNTER]}" = 0 ]
 				then
-					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Stopping this service."'</li></ul>'
+					echo '<ul><li>'"${SERVICEARRAY[$COUNTER]}"' - '$"Stopping this service."'</li></ul>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
 				fi
 				let COUNTER=$COUNTER+1
@@ -333,42 +332,42 @@ then
 		#Copy data to new array
 		if [ -d "$MOUNTPOINT" ]
 		then
-			if [ $SORTGLUSTER = yes ]
+			if [ "$SORTGLUSTER" = yes ]
 			then
 				GLUSTERACTION=stop
 				sort_gluster
 			fi
 			echo '<ul><li>'$"Copying existing data onto the raid."'</b></li></ul>'
 			sleep 2
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o $MOUNTPOINT/ $MOUNTPOINT.$$/
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o "$MOUNTPOINT/ $MOUNTPOINT.$$/"
 			
 			#Move existing folder and create a new empty folder
-			mv $MOUNTPOINT $MOUNTPOINT-pre-zfs.$$
-			mkdir $MOUNTPOINT
+			mv "$MOUNTPOINT" "$MOUNTPOINT-pre-zfs.$$"
+			mkdir "$MOUNTPOINT"
 		fi
 
 		#Remove any existing partitions from fstab
-		if [ `grep -c -w $MOUNTPOINT /etc/fstab` -gt 0 ]
+		if [[ $(grep -c -w "$MOUNTPOINT" /etc/fstab) -gt 0 ]]
 		then
 			#Umount the partition
-			echo '<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li></ul>'
-			umount $MOUNTPOINT
+			echo '<ul><li>'"$MOUNTPOINT"'- '$"Un mounting existing partition"'</li></ul>'
+			umount "$MOUNTPOINT"
 
 			#Backup /etc/fstab
 			echo "<ul><li>"Backing up fstab"</li></ul>"
 			cp /etc/fstab /etc/fstab-backup.$$
 
 			#Remove entry from fstab
-			sed -i '\%'$MOUNTPOINT'%d' /etc/fstab
+			sed -i '\%'"$MOUNTPOINT"'%d' /etc/fstab
 		fi
 
 		#Unmount zfs partition and mount as /home
-		umount $MOUNTPOINT.$$
-		zfs set mountpoint=$MOUNTPOINT $POOLNAME
-		zfs mount $POOLNAME
+		umount "$MOUNTPOINT.$$"
+		zfs set mountpoint="$MOUNTPOINT" "$POOLNAME"
+		zfs mount "$POOLNAME"
 
 		#Remove temporary mount point
-		[ -d $MOUNTPOINT.$$ ] && rm -f -R $MOUNTPOINT.$$
+		[ -d "$MOUNTPOINT.$$" ] && rm -f -R "$MOUNTPOINT.$$"
 
 		if [ "$SORTGLUSTER" = yes ]
 		then
@@ -379,50 +378,59 @@ then
 		echo "</pre>"
 
 		#Set minidlna to wait for zfs
-		if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+		if [ -f /etc/init.d/minidlna ]
 		then
-			sed -i 's/Required-Start:    $local_fs $network $remote_fs/Required-Start:    $local_fs $network $remote_fs zfs-mount-all/g' /etc/init.d/minidlna
+			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
+			then
+				sed -i 's/Required-Start:    $local_fs $network $remote_fs/Required-Start:    $local_fs $network $remote_fs zfs-mount-all/g' /etc/init.d/minidlna
+			fi
 		fi
 
 		#Mount partition on boot
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
 
 		#Set minidlna to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+		if [ -f /etc/init.d/minidlna ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
 		fi
 
 		#Set gluster to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+		if [ -f /etc/init.d/glusterfs ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-			if [ $SORTGLUSTER = yes ]
+			if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
 			then
-				source /opt/karoshi/serversetup/variables/distro
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				if [ "$SORTGLUSTER" = yes ]
+				then
+					source /opt/karoshi/serversetup/variables/distro
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/glusterfs
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/glusterfs
+				fi
 			fi
 		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
-		if [ `echo $MOUNTPOINT | grep -c /var` -gt 0 ]
+		if [[ $(echo "$MOUNTPOINT" | grep -c /var) -gt 0 ]]
 		then
 			COUNTER=0
-			while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+			while [ "$COUNTER" -lt "$SERVICEARRAYCOUNT" ]
 			do
-				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+				if [ "${STATUSARRAY[$COUNTER]}" = 0 ]
 				then
-					echo '<ul><li>'${SERVICEARRAY[$COUNTER]}' - '$"Starting this service."'</li></ul>'
+					echo '<ul><li>'"${SERVICEARRAY[$COUNTER]}"' - '$"Starting this service."'</li></ul>'
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_start
 				fi
-				let COUNTER=$COUNTER+1
+				let COUNTER="$COUNTER"+1
 			done
 		fi
 	fi
 
 	#Restore existing zfs raid
-	if [ $CREATETYPE = restore ]
+	if [ "$CREATETYPE" = restore ]
 	then
 		if [ "$SORTGLUSTER" = yes ]
 		then
@@ -451,7 +459,7 @@ then
 		if [ -d "$MOUNTPOINT"-pre-zfs.$$ ]
 		then
 			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o "$MOUNTPOINT"-pre-zfs.$$/ $MOUNTPOINT/
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o "$MOUNTPOINT-pre-zfs.$$"/ "$MOUNTPOINT"/
 			echo "</pre>"
 		fi
 
@@ -461,29 +469,35 @@ then
 			sort_gluster
 		fi
 
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
 
-		#Set minidlna to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+		if [ -f /etc/init.d/minidlna ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			#Set minidlna to wait for zfs-mount-all
+			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
 		fi
 
-		#Set gluster to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+		if [ -f etc/init.d/glusterfs ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-			if [ $SORTGLUSTER = yes ]
+			#Set gluster to wait for zfs-mount-all
+			if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
 			then
-				source /opt/karoshi/serversetup/variables/distro
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				if [ "$SORTGLUSTER" = yes ]
+				then
+					source /opt/karoshi/serversetup/variables/distro
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/glusterfs
+					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/glusterfs
+				fi
 			fi
 		fi
 	fi
 
 	#Reuse existing zfs raid
-	if [ $CREATETYPE = reuse ]
+	if [ "$CREATETYPE" = reuse ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
 <input type=\"hidden\" name=\"____SERVERNAME____\" value=\"$SERVERNAME\">
@@ -494,16 +508,16 @@ then
 	fi
 fi
 
-if [ $SERVERTYPE = network ] || [ $SERVERTYPE = federated ] && [ $SERVERNAME != `hostname-fqdn` ]
+if [ "$SERVERTYPE" = network ] || [ "$SERVERTYPE" = federated ] && [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
+ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	#Make sure zfs kernel module is loaded
 	modprobe zfs
 	#Make sure zfs is going to load on boot and load created pools
 	echo "zfs zfs_autoimport_disable=0" > /etc/modules-load.d/zfs.conf
 
 	SORTGLUSTER=no
-	if [ -d /home/gluster-volumes/ ] && [ "'$MOUNTPOINT'" = /home ]
+	if [ -d /home/gluster-volumes/ ] && [ "'"$MOUNTPOINT"'" = /home ]
 	then
 		SORTGLUSTER=yes
 	fi
@@ -513,16 +527,16 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	if [ "$GLUSTERACTION" = stop ]
 	then
 		echo "<ul><li>'$"Stopping Samba4"'</li></ul>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/samba_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
 		echo "<ul><li>'$"Stopping GlusterFS"'</li></ul>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/glusterfs_stop 1>/dev/null
 	fi
 	if [ "$GLUSTERACTION" = start ]
 	then
 		echo "<ul><li>'$"Starting GlusterFS"'</li></ul>"
-		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/glusterfs_start 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/glusterfs_start 1>/dev/null
 	fi
-	for GLUSTERVOL in `ls /home/gluster-volumes/`
+	for GLUSTERVOL in $(ls /home/gluster-volumes/)
 	do
 		if [ "$GLUSTERACTION" = stop ]
 		then
@@ -555,56 +569,56 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	fi
 	}
 
-	if [ '$CREATETYPE' = create ]
+	if [ '"$CREATETYPE"' = create ]
 	then
-		DRIVELIST=`echo '$DRIVELIST' | sed "s/,/ /g"`
+		DRIVELIST=$(echo '"$DRIVELIST"' | sed "s/,/ /g")
 		#Create the zfs raid
 		echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 
-		if [ '$PARITY' = stripe ]
+		if [ '"$PARITY"' = stripe ]
 		then
 			echo "<ul><li>'$"Creating ZFS stripe"'</li></ul>"
-		elif [ '$PARITY' = mirror ]
+		elif [ '"$PARITY"' = mirror ]
 		then
 			echo "<ul><li>'$"Creating ZFS mirror"'</li></ul>"
 		else		
-			echo "<ul><li>'$"Creating ZFS raid"' z'$PARITY'</li></ul>"
+			echo "<ul><li>'$"Creating ZFS raid"' z'"$PARITY"'</li></ul>"
 		fi
 
 		#Check that there is not already a pool created for this zfs raid
-		if [ `zpool status | grep -c -w '$POOLNAME'` -gt 0 ]
+		if [ `zpool status | grep -c -w '"$POOLNAME"'` -gt 0 ]
 		then
-			echo '$POOLNAME' - $"A ZFS raid has already been set up for this pool.""<br>"
+			echo '"$POOLNAME"' - $"A ZFS raid has already been set up for this pool.""<br>"
 			sleep 3
 			exit 101
 		fi
 
-		if [ '$PARITY' = stripe ]
+		if [ '"$PARITY"' = stripe ]
 		then
-			zpool create -o ashift=12 -f '$POOLNAME' $DRIVELIST
-		elif [ '$PARITY' = mirror ]
+			zpool create -o ashift=12 -f '"$POOLNAME"' "$DRIVELIST"
+		elif [ '"$PARITY"' = mirror ]
 		then
 			#Create a zfs mirror
-			if [ ! -z "'$SPAREDRIVELIST'" ]
+			if [ ! -z "'"$SPAREDRIVELIST"'" ]
 			then
-				SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-				zpool create -o ashift=12 -f '$POOLNAME' mirror $DRIVELIST spare $SPAREDRIVELIST
+				SPAREDRIVELIST=$(echo '"$SPAREDRIVELIST"' | sed "s/,/ /g")
+				zpool create -o ashift=12 -f '"$POOLNAME"' mirror "$DRIVELIST" spare "$SPAREDRIVELIST"
 			else
-				zpool create -o ashift=12 -f '$POOLNAME' mirror $DRIVELIST
+				zpool create -o ashift=12 -f '"$POOLNAME"' mirror "$DRIVELIST"
 			fi
 		else
-			if [ ! -z "'$SPAREDRIVELIST'" ]
+			if [ ! -z "'"$SPAREDRIVELIST"'" ]
 			then
-				SPAREDRIVELIST=`echo '$SPAREDRIVELIST' | sed "s/,/ /g"`
-				zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST spare $SPAREDRIVELIST
+				SPAREDRIVELIST=$(echo '"$SPAREDRIVELIST"' | sed "s/,/ /g")
+				zpool create -o ashift=12 -f '"$POOLNAME"' raidz'"$PARITY"' "$DRIVELIST" spare "$SPAREDRIVELIST"
 			else
-				zpool create -o ashift=12 -f '$POOLNAME' raidz'$PARITY' $DRIVELIST
+				zpool create -o ashift=12 -f '"$POOLNAME"' raidz'"$PARITY"' "$DRIVELIST"
 			fi
 		fi
 
 		#Check zfs raid has been created
-		zpool status '$POOLNAME'
-		if [ $? != 0 ]
+		zpool status '"$POOLNAME"'
+		if [ "$?" != 0 ]
 		then
 			echo $"A ZFS raid has not been set up on this server.""<br>"
 			sleep 3
@@ -612,34 +626,34 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		fi
 
 		#Set posix acl support
-		zfs set acltype=posixacl "'$POOLNAME'"
+		zfs set acltype=posixacl "'"$POOLNAME"'"
 
 		#Disable dedup as it needs a lot of memory 
-		zfs set dedup=off "'$POOLNAME'"
+		zfs set dedup=off "'"$POOLNAME"'"
 
 		#Mount partition on a temporary mount point
-		[ ! -d '$MOUNTPOINT'.'$$' ] && mkdir -p '$MOUNTPOINT'.'$$'
+		[ ! -d '"$MOUNTPOINT"'.'"$$"' ] && mkdir -p '"$MOUNTPOINT"'.'"$$"'
 
-		zfs set mountpoint='$MOUNTPOINT'.'$$' '$POOLNAME'
-		zfs mount '$POOLNAME'
+		zfs set mountpoint='"$MOUNTPOINT"'.'"$$"' '"$POOLNAME"'
+		zfs mount '"$POOLNAME"'
 
 		#Stop services if the mount point is /var
-		if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
+		if [ $(echo '"$MOUNTPOINT"' | grep -c /var) -gt 0 ]
 		then
 			source /opt/karoshi/serversetup/variables/distro
 
 			SERVICEARRAY=( apache dansguardian mysql samba squid )
-			SERVICEARRAYCOUNT=${#SERVICEARRAY[@]}
+			SERVICEARRAYCOUNT="${#SERVICEARRAY[@]}"
 
 			#Stop services if they are running
 			COUNTER=0
-			while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+			while [ "$COUNTER" -lt "$SERVICEARRAYCOUNT" ]
 			do
 				#Check if the service is running
 				/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_status
-				STATUSARRAY[$COUNTER]=$?
+				STATUSARRAY[$COUNTER]="$?"
 				#Stop service if it is running
-				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
+				if [ "${STATUSARRAY[$COUNTER]}" = 0 ]
 				then
 					echo "<ul><li>${SERVICEARRAY[$COUNTER]} - '$"Stopping this service."'</li></ul>"
 					/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"${SERVICEARRAY[$COUNTER]}"_stop
@@ -649,7 +663,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		fi
 
 		#Copy data to new array
-		if [ -d '$MOUNTPOINT' ]
+		if [ -d '"$MOUNTPOINT"' ]
 		then
 			if [ "$SORTGLUSTER" = yes ]
 			then
@@ -659,36 +673,36 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 			echo "<ul><li>'$"Copying existing data onto the raid."'</b></li></ul>"
 			sleep 2
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --owner --group -o '$MOUNTPOINT'/ '$MOUNTPOINT'.'$$'/
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --owner --group -o '"$MOUNTPOINT"'/ '"$MOUNTPOINT"'.'"$$"'/
 
 			#Move existing folder and create a new empty folder
-			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.$$
-			mkdir '$MOUNTPOINT'
+			mv '"$MOUNTPOINT"' '"$MOUNTPOINT"'-pre-zfs."$$"
+			mkdir '"$MOUNTPOINT"'
 
 		fi
 
 		#Remove any existing partitions from fstab
-		if [ `grep -c -w '$MOUNTPOINT' /etc/fstab` -gt 0 ]
+		if [ `grep -c -w '"$MOUNTPOINT"' /etc/fstab` -gt 0 ]
 		then
 			#Umount the partition
-			echo "<ul><li>'$MOUNTPOINT'- '$"Un mounting existing partition"'</li></ul>"
-			umount $MOUNTPOINT
+			echo "<ul><li>'"$MOUNTPOINT"'- '$"Un mounting existing partition"'</li></ul>"
+			umount "$MOUNTPOINT"
 
 			#Backup /etc/fstab
 			echo "<ul><li>"Backing up fstab"</li></ul>"
-			cp /etc/fstab /etc/fstab-backup.'$$'
+			cp /etc/fstab /etc/fstab-backup.'"$$"'
 
 			#Remove entry from fstab
-			sed -i "\%'$MOUNTPOINT'%d" /etc/fstab
+			sed -i "\%'"$MOUNTPOINT"'%d" /etc/fstab
 		fi
 
 		#Unmount zfs partition and mount as mountpoint.
 
-		zfs set mountpoint='$MOUNTPOINT' '$POOLNAME'
-		zfs mount '$POOLNAME'
+		zfs set mountpoint='"$MOUNTPOINT"' '"$POOLNAME"'
+		zfs mount '"$POOLNAME"'
 
 		#Remove temporary mount point
-		[ -d '$MOUNTPOINT'.'$$' ] && rm -f -R '$MOUNTPOINT'.'$$'
+		[ -d '"$MOUNTPOINT"'.'"$$"' ] && rm -f -R '"$MOUNTPOINT"'.'"$$"'
 
 		if [ "$SORTGLUSTER" = yes ]
 		then
@@ -698,47 +712,54 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 
 		echo "</pre>"
 
-		if [ $POSIXSUPPORT = no ]
+		if [ "$POSIXSUPPORT" = no ]
 		then
 		#Mount partition on boot
 			echo "#!/bin/bash
 COUNTER=0
-while [ \$COUNTER -le 100 ]
+while [ "$COUNTER" -le 100 ]
 do
-	mount /'$ZPOOLTOPPATH'/'$POOLNAME'/storage '$MOUNTPOINT'
+	mount /'"$ZPOOLTOPPATH"'/'"$POOLNAME"'/storage '"$MOUNTPOINT"'
 	[ \$? = 0 ] && exit
 	sleep 1
 	let COUNTER=\$COUNTER+1
-done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
-			chmod 0700 /etc/rc2.d/S90zfs-mount-'$POOLNAME'
+done" > /etc/rc2.d/S90zfs-mount-'"$POOLNAME"'
+			chmod 0700 /etc/rc2.d/S90zfs-mount-'"$POOLNAME"'
 		else
 			source /opt/karoshi/serversetup/variables/distro
-			/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
 
 			#Set minidlna to wait for zfs-mount-all
-			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			if [ -f /etc/init.d/minidlna ]
 			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+
+				if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+				then
+					sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+				fi
 			fi
 
-			#Set gluster to wait for zfs-mount-all
-			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+			if [ -f etc/init.d/glusterfs ]
 			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-				source /opt/karoshi/serversetup/variables/distro
-				if [ $SORTGLUSTER = yes ]
+				#Set gluster to wait for zfs-mount-all
+				if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 				then
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+					sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+					source /opt/karoshi/serversetup/variables/distro
+					if [ $SORTGLUSTER = yes ]
+					then
+						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+					fi
 				fi
 			fi
 		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
-		if [ `echo '$MOUNTPOINT' | grep -c /var` -gt 0 ]
+		if [ `echo '"$MOUNTPOINT"' | grep -c /var` -gt 0 ]
 		then
 			COUNTER=0
-			while [ $COUNTER -lt $SERVICEARRAYCOUNT ]
+			while [ "$COUNTER" -lt "$SERVICEARRAYCOUNT" ]
 			do
 				if [ ${STATUSARRAY[$COUNTER]} = 0 ]
 				then
@@ -752,7 +773,7 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 	fi
 
 	#Restore existing zfs raid
-	if [ '$CREATETYPE' = restore ]
+	if [ '"$CREATETYPE"' = restore ]
 	then
 		if [ "$SORTGLUSTER" = yes ]
 		then
@@ -761,28 +782,28 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		fi
 
 		#Move existing folder and create a new empty folder
-		if [ -d "'$MOUNTPOINT'" ]
+		if [ -d "'"$MOUNTPOINT"'" ]
 		then
-			mv '$MOUNTPOINT' '$MOUNTPOINT'-pre-zfs.'$$'
+			mv '"$MOUNTPOINT"' '"$MOUNTPOINT"'-pre-zfs.'"$$"'
 		fi
-		mkdir -p '$MOUNTPOINT'
+		mkdir -p '"$MOUNTPOINT"'
 
-		zpool import -f -d /dev/disk/by-id '$POOLNAME'
+		zpool import -f -d /dev/disk/by-id '"$POOLNAME"'
 
 		#Set posix acl support
-		zfs set acltype=posixacl "'$POOLNAME'"
+		zfs set acltype=posixacl "'"$POOLNAME"'"
 
 		#Disable dedup as it needs a lot of memory 
-		zfs set dedup=off "'$POOLNAME'"
+		zfs set dedup=off "'"$POOLNAME"'"
 
-		zfs set mountpoint="'$MOUNTPOINT'" "'$POOLNAME'"
-		zfs mount "'$POOLNAME'"
+		zfs set mountpoint="'"$MOUNTPOINT"'" "'"$POOLNAME"'"
+		zfs mount "'"$POOLNAME"'"
 
 		#Copy any existing data back onto the raid
-		if [ -d '$MOUNTPOINT'-pre-zfs.'$$' ]
+		if [ -d '"$MOUNTPOINT"'-pre-zfs.'"$$"' ]
 		then
 			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
-			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o '$MOUNTPOINT'-pre-zfs.'$$'/ '$MOUNTPOINT'/
+			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --acls --executability --owner --group -o '"$MOUNTPOINT"'-pre-zfs.'"$$"'/ '"$MOUNTPOINT"'/
 			echo "</pre>"
 		fi
 
@@ -796,48 +817,54 @@ done" > /etc/rc2.d/S90zfs-mount-'$POOLNAME'
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
 
 		#Set minidlna to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+		if [ -f /etc/init.d/minidlna ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
+			then
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
+			fi
 		fi
 
-		#Set gluster to wait for zfs-mount-all
-		if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
+		if [ -f etc/init.d/glusterfs ]
 		then
-			sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-			source /opt/karoshi/serversetup/variables/distro
-			if [ $SORTGLUSTER = yes ]
+			#Set gluster to wait for zfs-mount-all
+			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
 			then
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
+				source /opt/karoshi/serversetup/variables/distro
+				if [ $SORTGLUSTER = yes ]
+				then
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
+					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
+				fi
 			fi
 		fi
 	fi
 
 	#Reuse existing zfs raid
-	if [ '$CREATETYPE' = reuse ]
+	if [ '"$CREATETYPE"' = reuse ]
 	then
 		echo "</form><form METHOD=POST ACTION=\"/cgi-bin/admin/zfs_raid_create.cgi\" target=\"_top\" name = \"frm\">
-<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'$SERVERNAME'\">
-<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'$SERVERTYPE'\">
-<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'$SERVERMASTER'\">
+<input type=\"hidden\" name=\"____SERVERNAME____\" value=\"'"$SERVERNAME"'\">
+<input type=\"hidden\" name=\"____SERVERTYPE____\" value=\"'"$SERVERTYPE"'\">
+<input type=\"hidden\" name=\"____SERVERMASTER____\" value=\"'"$SERVERMASTER"'\">
 <input type=\"hidden\" name=\"____CREATETYPE____\" value=\"reuse\">
 </form><script>document.frm.submit();</script><form>"
 	fi
 
 	#Add cron job for zpool scrub
-	[ -d /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs
-	echo 0 0 "*" "*" 6 zpool scrub '$POOLNAME' > /opt/karoshi/server_network/cronjobs/'$SERVERNAME'/jobs/zpool_scrub_'$POOLNAME'.cron
+	[ -d /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs
+	echo 0 0 "*" "*" 6 zpool scrub '"$POOLNAME"' > /opt/karoshi/server_network/cronjobs/'"$SERVERNAME"'/jobs/zpool_scrub_'"$POOLNAME"'.cron
 	/opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs
 	echo "<br>"
 '
 fi
 
-if [ $SERVERTYPE = federatedslave ]
+if [ "$SERVERTYPE" = federatedslave ]
 then
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERMASTER '
-echo `date`: zfs_raid_create2 \(federated mode\) - servername '$SERVERNAME' servertype '$SERVERTYPE' raidtype '$RAIDTYPE' drivelist '$DRIVELIST' mountpoint '$MOUNTPOINT' by '$REMOTE_USER' from '$REMOTE_ADDR' >> /opt/karoshi/logs/karoshi_web_management/'$LOG_DATE'
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '$SERVERNAME' '\''
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERMASTER" '
+echo `date`: zfs_raid_create2 \(federated mode\) - servername '"$SERVERNAME"' servertype '"$SERVERTYPE"' raidtype '"$RAIDTYPE"' drivelist '"$DRIVELIST"' mountpoint '"$MOUNTPOINT"' by '"$REMOTE_USER"' from '"$REMOTE_ADDR"' >> /opt/karoshi/logs/karoshi_web_management/'"$LOG_DATE"'
+ssh -o PasswordAuthentication=no -o ConnectTimeout=3 '"$SERVERNAME"' '\''
 
 echo in ssh2
 '\''
