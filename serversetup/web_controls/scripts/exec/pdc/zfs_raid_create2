@@ -377,41 +377,8 @@ then
 
 		echo "</pre>"
 
-		#Set minidlna to wait for zfs
-		if [ -f /etc/init.d/minidlna ]
-		then
-			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
-			then
-				sed -i 's/Required-Start:    $local_fs $network $remote_fs/Required-Start:    $local_fs $network $remote_fs zfs-mount-all/g' /etc/init.d/minidlna
-			fi
-		fi
-
 		#Mount partition on boot
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
-
-		#Set minidlna to wait for zfs-mount-all
-		if [ -f /etc/init.d/minidlna ]
-		then
-			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
-			fi
-		fi
-
-		#Set gluster to wait for zfs-mount-all
-		if [ -f /etc/init.d/glusterfs ]
-		then
-			if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-				if [ "$SORTGLUSTER" = yes ]
-				then
-					source /opt/karoshi/serversetup/variables/distro
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/glusterfs
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/glusterfs
-				fi
-			fi
-		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
 		if [[ $(echo "$MOUNTPOINT" | grep -c /var) -gt 0 ]]
@@ -470,30 +437,6 @@ then
 		fi
 
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
-
-		if [ -f /etc/init.d/minidlna ]
-		then
-			#Set minidlna to wait for zfs-mount-all
-			if [[ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
-			fi
-		fi
-
-		if [ -f etc/init.d/glusterfs ]
-		then
-			#Set gluster to wait for zfs-mount-all
-			if [[ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-				if [ "$SORTGLUSTER" = yes ]
-				then
-					source /opt/karoshi/serversetup/variables/distro
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/glusterfs
-					/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/glusterfs
-				fi
-			fi
-		fi
 	fi
 
 	#Reuse existing zfs raid
@@ -728,31 +671,6 @@ done" > /etc/rc2.d/S90zfs-mount-'"$POOLNAME"'
 		else
 			source /opt/karoshi/serversetup/variables/distro
 			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/zfs-mount-all
-
-			#Set minidlna to wait for zfs-mount-all
-			if [ -f /etc/init.d/minidlna ]
-			then
-
-				if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
-				then
-					sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
-				fi
-			fi
-
-			if [ -f etc/init.d/glusterfs ]
-			then
-				#Set gluster to wait for zfs-mount-all
-				if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
-				then
-					sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-					source /opt/karoshi/serversetup/variables/distro
-					if [ $SORTGLUSTER = yes ]
-					then
-						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-						/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
-					fi
-				fi
-			fi
 		fi
 
 		#Start services if they were previously running and were stopped to create a raid on /var
@@ -816,29 +734,6 @@ done" > /etc/rc2.d/S90zfs-mount-'"$POOLNAME"'
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/zfs-mount-all
 
-		#Set minidlna to wait for zfs-mount-all
-		if [ -f /etc/init.d/minidlna ]
-		then
-			if [ $(grep -c zfs-mount-all /etc/init.d/minidlna) = 0 ]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/minidlna
-			fi
-		fi
-
-		if [ -f etc/init.d/glusterfs ]
-		then
-			#Set gluster to wait for zfs-mount-all
-			if [ $(grep -c zfs-mount-all /etc/init.d/glusterfs) = 0 ]
-			then
-				sed -i "s%reserveports samba4%reserveports samba4 zfs-mount-all%g" /etc/init.d/glusterfs
-				source /opt/karoshi/serversetup/variables/distro
-				if [ $SORTGLUSTER = yes ]
-				then
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/glusterfs
-					/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/glusterfs
-				fi
-			fi
-		fi
 	fi
 
 	#Reuse existing zfs raid

@@ -173,7 +173,7 @@ then
 		    "host": "'$REALM'",
 		    "share": "dfs\/homes\/$user",
 		    "root": "",
-		    "domain": ""
+		    "domain": "'$REALM'"
 		},
 		"options": {
 		    "encrypt": true,
@@ -200,7 +200,7 @@ then
 		    "host": "'"$REALM"'",
 		    "share": "dfs\/'"$SHARE"'",
 		    "root": "",
-		    "domain": ""
+		    "domain": "'$REALM'"
 		},
 		"options": {
 		    "encrypt": true,
