@@ -220,7 +220,7 @@ then
 
 	if [ "$EDITMODE" = no ]
 	then
-		echo '<input required="required" tabindex="1" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
+		echo '<input required="required" tabindex="1" maxlength="15" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
 	else
 		echo '<b>'"$MONITOR"'</b>'
 		echo '<input name="_GROUPNAME_" value="'"$MONITOR"'" type="hidden">'
