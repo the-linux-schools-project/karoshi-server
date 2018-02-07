@@ -1,0 +1,191 @@
+@import 'standard.css' screen;
+@import 'print.css' print;
+@media screen {
+
+body {
+	color: #000000;
+	background-color: #D4D0C8;
+}
+
+.search-result{
+	color:#34779D;
+}
+
+#pagecontainer {
+	background-image: url(/images/backgrounds/lightblue.jpg);
+}
+
+#photobox {
+	background-color: #CFE2EE;
+	border-color: #34779D;
+}
+
+#actionbox {
+	background-color: #CFE2EE;
+	border-color: #34779D;
+}
+
+#actionbox3 {
+	background-color: #CFE2EE;
+	border-color: #34779D;
+}
+
+#actionbox4 {
+	background-color: #FFFFFF;
+	border-color: #34779D;
+}
+
+.warnlevel2 {
+	color: #204860;
+}
+
+#show1:hover{color: #fff !important }
+
+#hide1:hover{color: #fff !important } 
+
+.button:hover { 
+  color: #FFFFFF;
+  background: #34779D;
+  background-image: -webkit-linear-gradient(top, #34779D, #255672);
+  background-image: -moz-linear-gradient(top, #34779D, #255672);
+  background-image: -ms-linear-gradient(top, #34779D, #255672);
+  background-image: -o-linear-gradient(top, #34779D, #255672);
+  background-image: linear-gradient(to bottom, #34779D, #255672);
+  text-decoration: none;
+ }
+
+.simbutton:hover {
+  color: #FFFFFF;
+  background: #34779D;
+  background-image: -webkit-linear-gradient(top, #34779D, #255672);
+  background-image: -moz-linear-gradient(top, #34779D, #255672);
+  background-image: -ms-linear-gradient(top, #34779D, #255672);
+  background-image: -o-linear-gradient(top, #34779D, #255672);
+  background-image: linear-gradient(to bottom, #34779D, #255672);
+  text-decoration: none;
+}
+
+table.menu th, table.menu td {
+	color: #000000;
+}
+table.headings th, table.headings td {
+	color: #000000;
+}
+
+table.tablesorter {
+	background-color: #C1D1DC;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #D4E3EA;
+	border: 1px solid #FFF;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	background-color: #FFF;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #34779D;
+color: #FFFFFF;
+}
+
+A:link {
+	color: #000000;
+}
+
+A:visited {
+	color: #000000;
+}
+
+A:hover {
+	color: #000000;
+}
+
+.preload1 {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_1.gif);
+}
+.preload2 {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_1a.gif);
+}
+
+#nav {background:#30353B url(/images/pro_dropdown_2_lightblue/three_0.gif) repeat-x; position:relative; z-index:500;
+}
+
+
+#nav li a.top_link {
+	color:#fff;
+	background-image: url(/images/pro_dropdown_2_lightblue/three_0.gif);
+}
+#nav li a.top_link span {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_0.gif);
+}
+#nav li a.top_link span.down {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_0a.gif);
+}
+
+#nav li:hover a.top_link {
+	color:#fff;
+	background-image: url(/images/pro_dropdown_2_lightblue/three_1.gif);
+}
+#nav li:hover a.top_link span {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_1.gif);
+}
+#nav li:hover a.top_link span.down {
+	background-image: url(/images/pro_dropdown_2_lightblue/three_1a.gif);
+}
+
+/* Default list styling */
+
+#nav li:hover ul.sub {
+	background-color: #ffffff;
+	border-color: #34779D;
+}
+#nav li:hover ul.sub li a {
+	color:#000;
+	border-color: #ffffff;
+}
+#nav li ul.sub li a.fly {
+	background-color: #ffffff;
+	background-image: url(/images/pro_dropdown_2_lightblue/arrow.gif);
+}
+#nav li:hover ul.sub li a:hover {
+	background-color: #34779D;
+	color:#fff;
+	border-color:#fff;
+}
+#nav li:hover ul.sub li a.fly:hover {
+	background-color: #34779D;
+	background-image: url(/images/pro_dropdown_2_lightblue/arrow_over.gif);
+	color:#fff;
+}
+
+
+#nav li:hover li:hover ul,
+#nav li:hover li:hover li:hover ul,
+#nav li:hover li:hover li:hover li:hover ul,
+#nav li:hover li:hover li:hover li:hover li:hover ul {
+	background-color: #ffffff;
+	border-color: #34779D;
+}
+
+#nav li:hover li:hover a.fly,
+#nav li:hover li:hover li:hover a.fly,
+#nav li:hover li:hover li:hover li:hover a.fly,
+#nav li:hover li:hover li:hover li:hover li:hover a.fly {
+	background-color: #34779D;
+	background-image: url(/images/pro_dropdown_2_lightblue/arrow_over.gif);
+	color:#fff;
+	border-color:#fff;
+}
+
+#nav li:hover li:hover li a.fly,
+#nav li:hover li:hover li:hover li a.fly,
+#nav li:hover li:hover li:hover li:hover li a.fly {
+	background-color: #ffffff;
+	background-image: url(/images/pro_dropdown_2_lightblue/arrow.gif);
+	color:#000;
+	border-color:#ffffff;
+}
+}
