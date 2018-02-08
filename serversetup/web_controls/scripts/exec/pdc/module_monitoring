@@ -23,107 +23,107 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_monitoring_cgi
 then
-	echo `date`: module_monitoring - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_monitoring_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1`
+MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1)
 [ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_monitoring_cgi'check' ]
+if [ "$MD5SUM"'check' != "$module_monitoring_cgi"'check' ]
 then
-	echo `date`: module_monitoring - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_monitoring - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_monitoring - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
 then
-	echo `date`: module_monitoring - Not called by module_monitoring.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - Not called by module_monitoring.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_monitoring - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_monitoring - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_monitoring - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_monitoring - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_monitoring - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_monitoring - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Create ssl certificate for web access
 source /opt/karoshi/serversetup/variables/distro
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
 [ $? != 0 ] && exit 101 
 
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]][
 then
 	#Run module
-	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME: | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
+	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:" | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 else
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1>/dev/null
+	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1>/dev/null
 
 	#Copy in domain_name information
-	scp /opt/karoshi/server_network/domain_information/domain_name root@$SERVERNAME:/opt/karoshi/server_network/domain_information/ 1>/dev/null
+	scp /opt/karoshi/server_network/domain_information/domain_name root@"$SERVERNAME":/opt/karoshi/server_network/domain_information/ 1>/dev/null
 
 	#Copy in any existing monitors
 	if [ -d /opt/karoshi/server_network/mon/monitors ]
 	then
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		[ ! -d /opt/karoshi/server_network/mon/ ] && mkdir -p /opt/karoshi/server_network/mon/
 		'
 
-		scp -p -r /opt/karoshi/server_network/mon/monitors root@$SERVERNAME:/opt/karoshi/server_network/mon/ 1> /dev/null
+		scp -p -r /opt/karoshi/server_network/mon/monitors root@"$SERVERNAME":/opt/karoshi/server_network/mon/ 1> /dev/null
 		#Create monitor log folders
-		ssh -x -o PasswordAuthentication=no $SERVERNAME '
+		ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 		for MONITORS in /opt/karoshi/server_network/mon/monitors/*
 		do
-		MONITOR=`basename $MONITORS`
-		mkdir -p /opt/karoshi/server_network/mon/events/$MONITOR
-		chown mon /opt/karoshi/server_network/mon/events/$MONITOR
+			MONITOR=$(basename "$MONITORS")
+			mkdir -p /opt/karoshi/server_network/mon/events/"$MONITOR"
+			chown mon /opt/karoshi/server_network/mon/events/"$MONITOR"
 		done
 		'
 	fi
@@ -131,47 +131,47 @@ else
 	#Copy in email alert contacts
 	if [ -d /opt/karoshi/server_network/mon/email_alerts ]
 	then
-		scp -p -r /opt/karoshi/server_network/mon/email_alerts/ root@$SERVERNAME:/opt/karoshi/server_network/mon/ 1>/dev/null
+		scp -p -r /opt/karoshi/server_network/mon/email_alerts/ root@"$SERVERNAME":/opt/karoshi/server_network/mon/ 1>/dev/null
 	fi
 
 	#Run module
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:' | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:"' | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 	'
-	[ `echo $?` = 101 ] && exit 101
+	[ "$?" = 101 ] && exit 101
 
 fi
 
 #Allow monitoring server to send email alerts
 if [ -f /opt/karoshi/server_network/emailserver ]
 then
-	EMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver` 
-	if [ $EMAILSERVER != $SERVERNAME ]
+	EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+	if [ "$EMAILSERVER" != "$SERVERNAME" ]
 	then
-		SERVERIP=`net lookup $SERVERNAME`
-		if [ $EMAILSERVER = `hostname-fqdn` ]
+		SERVERIP=$(net lookup "$SERVERNAME")
+		if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 		then
 			#Add in server ip to main.cf
-			if [ `grep -c -w $SERVERIP /etc/postfix/main.cf` = 0 ]
+			if [[ $(grep -c -w "$SERVERIP" /etc/postfix/main.cf) = 0 ]]
 			then
 				sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $SERVERIP/g" /etc/postfix/main.cf
 				#Restart postfix
 				source /opt/karoshi/serversetup/variables/distro
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null
 				sleep 1
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null
 			fi
 		else
-			ssh -x -o PasswordAuthentication=no $EMAILSERVER '
+			ssh -x -o PasswordAuthentication=no "$EMAILSERVER" '
 			#Add in server ip to main.cf
-			if [ `grep -c -w '$SERVERIP' /etc/postfix/main.cf` = 0 ]
+			if [ `grep -c -w '"$SERVERIP"' /etc/postfix/main.cf` = 0 ]
 			then
-				sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '$SERVERIP'/g" /etc/postfix/main.cf
+				sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '"$SERVERIP"'/g" /etc/postfix/main.cf
 				#Restart postfix
 				source /opt/karoshi/serversetup/variables/distro
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null
 				sleep 1
-				/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
+				/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null
 			fi
 			'
 		fi
@@ -179,20 +179,19 @@ then
 fi
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $"Monitoring Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
-echo '<a href="http://'$SERVERNAME'/cgi-bin/mon.cgi" target="_blank">https://'$SERVERNAME'/cgi-bin/mon.cgi</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/monitoring
-echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
-echo $SERVERNAME > /opt/karoshi/server_network/monitoringserver
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo $"Monitoring Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/monitoring
+echo '<a href="http://'"$SERVERNAME"'/cgi-bin/mon.cgi" target="_blank">https://'"$SERVERNAME"'/cgi-bin/mon.cgi</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/monitoring
+echo "$SERVERNAME" > /opt/karoshi/server_network/monitoringserver
 sed -i 's/MONITORINGCTRL=no/MONITORINGCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
 #Schedule monitor check
 cp -f /opt/karoshi/serversetup/modules/monitoring/"useful scripts"/monitor_check /opt/karoshi/"useful scripts"/
 chmod 0700 /opt/karoshi/"useful scripts"/monitor_check
 
-[ -d /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs ] || mkdir -p /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs
+[ -d "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs" ] || mkdir -p "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs"
 
-echo '*' '*' '*' '*' '*' /opt/karoshi/'"'useful scripts'"'/monitor_check > /opt/karoshi/server_network/cronjobs/`hostname-fqdn`/jobs/monitorcheck.cron
+echo '* * * * * /opt/karoshi/"useful scripts"/monitor_check' > "/opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/monitorcheck.cron"
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Add in default monitors for any existing servers on the system
