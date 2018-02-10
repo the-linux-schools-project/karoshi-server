@@ -118,15 +118,6 @@ sleep 5
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/samba
 }
 
-
-#Make sure /run/lock is large enough for samba
-if [[ $(grep -c /run/lock /etc/rc.local) = 0 ]]
-then
-	echo mount -t tmpfs tmpfs /run/lock -o remount,size=50M > /etc/rc.local
-	echo exit 0 >> /etc/rc.local
-	mount -t tmpfs tmpfs /run/lock -o remount,size=50M
-fi
-
 #Check firewall rules for adc, rodc and domain member
 MODCHECK=$(grep -c -w '"$RULESET"' /etc/shorewall/rules)
 if [ "$MODCHECK" = 0 ]

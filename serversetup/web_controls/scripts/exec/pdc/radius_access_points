@@ -132,15 +132,6 @@ for RADIUSSERVER in $(ls -1 /opt/karoshi/server_network/radius_servers)
 do
 	if [[ "$RADIUSSERVER" = $(hostname-fqdn) ]]
 	then
-		if [ -d /etc/freeradius/3.0/ ]
-		then
-			if [ -f /etc/freeradius/3.0/clients.conf ]
-			then
-				rm -f /etc/freeradius/3.0/clients.conf
-				ln -s /etc/freeradius/clients.conf /etc/freeradius/3.0/clients.conf
-			fi
-		fi
-
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop 1>/dev/null
 		sleep 1
@@ -148,16 +139,6 @@ do
 	else
 		scp -p /etc/freeradius/clients.conf root@"$RADIUSSERVER":/etc/freeradius/ 1> /dev/null
 		ssh -x -o PasswordAuthentication=no "$RADIUSSERVER" '
-
-		if [ -d /etc/freeradius/3.0/ ]
-		then
-			if [ -f /etc/freeradius/3.0/clients.conf ]
-			then
-				rm -f /etc/freeradius/3.0/clients.conf
-				ln -s /etc/freeradius/clients.conf /etc/freeradius/3.0/clients.conf
-			fi
-		fi
-
 		#Reload radius
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/radius_stop 1>/dev/null

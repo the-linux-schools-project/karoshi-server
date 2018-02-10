@@ -1,6 +1,6 @@
 [Unit]
 Description=Minidlna
-After=network.target remote-fs.target nss-lookup.target samba4 zfs-mount mount-gluster-volumes
+After=network.target remote-fs.target nss-lookup.target samba4 zfs-mount.service mount-gluster-volumes.service
 
 [Service]
 Type=forking

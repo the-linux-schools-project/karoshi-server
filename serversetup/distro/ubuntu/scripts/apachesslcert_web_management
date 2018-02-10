@@ -21,9 +21,14 @@ CLIENT_PASS=$(openssl rand -hex 25)
 
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
+
 #Revoke the existing certificate.
-cd /etc/ssl/webmanagement
-[ -d /etc/ssl/webmanagement ] && openssl ca -revoke server_web_management.pem -passin pass:"$LDAPPASS"
+if [ -d /etc/ssl/webmanagement ]
+then
+	cd /etc/ssl/webmanagement
+	openssl ca -revoke server_web_management.pem -passin pass:"$LDAPPASS"
+fi
+
 cd /
 
 #Clear existing certificates

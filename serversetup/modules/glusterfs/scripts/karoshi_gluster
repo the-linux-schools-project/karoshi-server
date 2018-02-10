@@ -87,6 +87,7 @@ then
 	then
 		echo "#glusterfs-$VOLUME" >> /etc/fstab
 		echo "$SERVER:/$VOLUME $MOUNTBASE/$VOLUME glusterfs $MOUNTOPTIONS 0 0" >> /etc/fstab
+		sync /etc/fstab
 	fi
 
 	#Mount volume
@@ -107,6 +108,7 @@ else
 	then
 		echo "#glusterfs-'"$VOLUME"'" >> /etc/fstab
 		echo "'"$SERVER"':/'"$VOLUME"' '"$MOUNTBASE"'/'"$VOLUME"' glusterfs '"$MOUNTOPTIONS"' 0 0" >> /etc/fstab
+		sync /etc/fstab
 	fi
 
 	#Mount volume

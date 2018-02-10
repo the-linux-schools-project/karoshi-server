@@ -52,18 +52,6 @@ sed -i 's/^#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 #Get the network adapter
 source /opt/karoshi/serversetup/variables/network_card_info
 
-#Allow traffic to pass through the server.
-#iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE
-#
-#Add this rule to rc.local
-#if [ `grep -c "#openVPN client rule" /etc/rc.local` = 0 ]
-#then
-#	sed -i '/exit 0/d' /etc/rc.local
-#	echo "#openVPN client rule" >> /etc/rc.local
-#	echo "iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $NETWORK_INT -j MASQUERADE" >> /etc/rc.local
-#	echo "exit 0" >> /etc/rc.local
-#fi
-
 #Open Shorewall on udp 1194
 if [[ $(grep -c -w \#OpenVPN-RoadWarrior /etc/shorewall/rules) = 0 ]]
 then

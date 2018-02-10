@@ -126,7 +126,7 @@ then
 	chown root:winbindd_priv /var/lib/samba/winbindd_privileged
 
 	#Make sure all software is installed
-	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/software
 
 	if [ "$COPYCLIENTS" = no ]
 	then	
@@ -174,7 +174,7 @@ then
 	fi
 else
 	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radius root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
+	scp -p -r /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius root@"$SERVERNAME":/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/ 1> /dev/null
 
 	#Copy in ssl radius cert
 	scp -p -r /etc/ssl/radius root@"$SERVERNAME":/etc/ssl/
@@ -194,7 +194,7 @@ else
 	source /opt/karoshi/serversetup/variables/distro
 
 	#Make sure all software is installed
-	/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/software
 
 	#Set permisisons on radius ssl
 	chown freerad /etc/ssl/radius/radius.key

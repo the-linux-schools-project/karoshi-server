@@ -73,21 +73,18 @@ else
 	echo '<div class="sectiontitle">'$"Setup Printers"'</div><br><br>'$"If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."'<br><br>'$"The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."'<br><br><br><br>
 
 <table class="standard" style="text-align: left;" >
-<tbody><tr VALIGN=TOP><td style="width: 30px;">
-<a href="karoshi_servers_view.cgi"><img src="/images/submenus/system/computer.png" width="16" height="16" border="0" /></a>
-<br><br>
-</td><td>
+<tbody><tr><td style="width: 30px; height: 30px;">
+<a href="karoshi_servers_view.cgi"><img src="/images/submenus/system/computer.png" border="0" /></a>
+</td><td style="width: 100px;">
 <a href="karoshi_servers_view.cgi">'$"Show Servers"'</a>
 </td></tr>
-<tr VALIGN=TOP><td>
+<tr><td style="height: 30px;">
 <a href="printers_add_fm.cgi"><img src="/images/submenus/printer/add_printer.png" border="0" /></a>
-<br><br>
 </td><td>
 <a href="printers_add_fm.cgi">'$"Add Printer"'</a>
 </td></tr>
-<tr VALIGN=TOP><td>
+<tr><td style="height: 30px;">
 <a href="printers.cgi"><img src="/images/submenus/printer/view_print_queues.png" border="0" /></a>
-<br><br>
 </td><td>
 <a href="printers.cgi">'$"Control Printers"'</a>
 </td></tr>
@@ -102,3 +99,8 @@ echo '
 </div></div></div></body></html>
 '
 exit
+
+########################
+#Random Key
+#968R8Gn5R9rBKSn1EgwWj0Tk57wh/Ba7JNQWWHhgCV4=
+########################

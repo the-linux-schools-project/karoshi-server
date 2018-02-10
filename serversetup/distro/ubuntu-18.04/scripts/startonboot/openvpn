@@ -1,9 +1,8 @@
 #!/bin/bash
 
 #Modify /etc/default/openvpn
-sed 's/^#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
+sed -i 's/^#AUTOSTART="all"/AUTOSTART="all"/g' /etc/default/openvpn
 
 systemctl enable openvpn
-
-
+systemctl daemon-reload
 

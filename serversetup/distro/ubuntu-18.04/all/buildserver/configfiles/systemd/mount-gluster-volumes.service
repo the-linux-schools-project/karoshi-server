@@ -1,6 +1,6 @@
 [Unit]
 Description=Mount gluster volumes
-After=network.target remote-fs.target nss-lookup.target glusterd
+After=network.target remote-fs.target nss-lookup.target glusterd.service
 
 [Service]
 Type=OneShot

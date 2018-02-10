@@ -235,7 +235,7 @@ echo server' '$PDCSERVER'	'$PDCSERVER'	'$REALM > /etc/squid/msntauth.conf
 sed -i 's/SERVERNAME/'$HOSTNAME'/g' /etc/squid/squid.conf
 sed -i 's/REALM/'$REALM'/g' /etc/squid/squid.conf
 
-if [ $SQUIDVER = xenial ]
+if [ $SQUIDVER = xenial ] || [ $SQUIDVER = bionic ]
 then
 	sed -i 's/CHANGETHISLDAPBASE/'$LDAPBASE'/g' /etc/squid/squid.conf
 fi

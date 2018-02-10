@@ -1,1 +1,70 @@
-/opt/karoshi/serversetup/distro/ubuntu/modules/radius/software
+#!/bin/bash
+#softwareinstall
+
+source /opt/karoshi/server_network/domain_information/domain_name
+source /opt/karoshi/serversetup/variables/distro
+
+NTLMPATH=/usr/bin
+
+#Check for software
+INSTALL_DEPS=no
+INSTALLRADIUS=no
+INSTALLRADIUSKRB5=no
+
+echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+
+dpkg -S freeradius 1>/dev/null
+if [ $? != 0 ]
+then
+	INSTALLRADIUS=yes
+	INSTALL_DEPS=yes
+fi
+
+dpkg -S freeradius-krb5 1>/dev/null
+if [ "$?" != 0 ]
+then
+	INSTALLRADIUSKRB5=yes
+	INSTALL_DEPS=yes
+fi
+
+if [ "$INSTALL_DEPS" = yes ]
+then
+	echo "<ul><li>"Updating repository list"</li></ul>"
+	apt-get update
+fi
+
+if [ "$INSTALLRADIUS" = yes ]
+then
+	echo "<ul><li>"Installing freeradius"</li></ul>"
+	apt-get install -y freeradius
+fi
+
+if [ "$INSTALLRADIUSKRB5" = yes ]
+then
+	echo "<ul><li>"Installing freeradius-krb5"</li></ul>"
+	apt-get install -y freeradius-krb5
+fi
+
+echo '</pre>'
+
+#Copy in config files
+cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/sites-available/default /etc/freeradius/3.0/sites-available/
+cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/sites-available/inner-tunnel /etc/freeradius/3.0/sites-available/
+cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/users /etc/freeradius/3.0/
+cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/radius/freeradius/eap.conf /etc/freeradius/3.0/
+
+#Create krb5 config file
+echo 'krb5 {
+	keytab = /etc/keytabs/radius.keytab
+	service_principal = radius/'"$REALM"'
+}' > /etc/freeradius/3.0/mods-available/krb5
+
+#Create mschap config file
+echo 'mschap {
+	use_mppe = yes
+	require_encryption = yes
+	require_strong = yes
+	ntlm_auth = "'"$NTLMPATH"'/ntlm_auth --request-nt-key --username=%{%{Stripped-User-Name}:-%{%{User-Name}:-None}} --challenge=%{%{mschap:Challenge}:-00} --nt-response=%{%{mschap:NT-Response}:-00}"
+}' > /etc/freeradius/3.0/mods-available/mschap
+
+

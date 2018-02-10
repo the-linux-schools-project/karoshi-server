@@ -1,5 +1,5 @@
 #!/bin/bash
 #Stop dhcp on boot
 
-systemctl disable dhcp3-server
+systemctl disable isc-dhcp-server
 

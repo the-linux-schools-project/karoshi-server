@@ -1,11 +1,2 @@
 #!/bin/bash
-
-COUNTER=0
-while [[ $(ps aux | grep -w -c /etc/squid/squid.conf) -gt 1 ]]
-do
-	squid -k interrupt
-	let COUNTER="$COUNTER"+1
-	#Give up after 5 tries
-	[ "$COUNTER" = 5 ] && break
-done
-exit
+systemctl stop squid
