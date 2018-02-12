@@ -218,10 +218,11 @@ For the default live system, enter "live".  To run memtest86+, enter "memtest"
 echo -e "Creating isolinux.cfg\n"
 sleep 1	
 echo '
+path 
 default vesamenu.c32
 prompt 0
 timeout 100
-MENU RESOLUTION 1024 768
+ui gfxboot bootlogo
 
 menu title Karoshi Server
 menu background splash.png
@@ -230,12 +231,12 @@ menu color title 1;37;44 #c0ffffff #00000000 std
 label install
   menu label Install Karoshi Server
   kernel /casper/vmlinuz
-  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz quiet splash vga=791 --
+  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz quiet splash --
 
 LABEL Live-CD
   menu label Live CD
   kernel /casper/vmlinuz
-  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.gz quiet splash vga=791 --
+  append  file=/cdrom/preseed/ubuntu.seed boot=casper initrd=/casper/initrd.gz quiet splash --
 
 label memtest
   menu label memtest - Run memtest

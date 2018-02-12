@@ -260,7 +260,7 @@ echo '# Samba4 DLZ and Active Directory Zones (default source installation)
 sed -i 's%#include <local/usr.sbin.named>%include <local/usr.sbin.named>%g' /etc/apparmor.d/usr.sbin.named
 
 #Reload apparmor
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apparmor_restrart
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apparmor_restart
 #Stop samba4
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 

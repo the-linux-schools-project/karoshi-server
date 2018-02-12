@@ -340,9 +340,9 @@ then
 	SERVERID2=$(ssh -x -o PasswordAuthentication=no "$TCPIPNUMBER" '
 	if [ -f /opt/karoshi/server_network/server_identifiers/'"$SERVER"'.'"$REALM"' ]
 	then
-	sed -n 1,1p /opt/karoshi/server_network/server_identifiers/'"$SERVER"'.'"$REALM"'
+		sed -n 1,1p /opt/karoshi/server_network/server_identifiers/'"$SERVER"'.'"$REALM"'
 	else
-	echo notset
+		echo notset
 	fi
 	')
 	if [ "$SERVERID1" != "$SERVERID2" ]
@@ -397,30 +397,11 @@ then
 	samba-tool dns add 127.0.0.1 "$REALM" "$SERVER" A "$TCPIPNUMBER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
-#Copy in boot controls
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/initdscripts $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/sysvsupport $TCPIPNUMBER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/reserveports $SERVER:/opt/karoshi/serversetup/all
-#scp -o PasswordAuthentication=no "/opt/karoshi/serversetup/all/useful scripts/refreshcronjobs" root@$SERVER:"/opt/karoshi/serversetup/all/useful\ scripts/"
-
 #Copy in cacert.pem
 scp -r -o PasswordAuthentication=no /etc/ssl/root-ca/cacert.pem "$TCPIPNUMBER":/etc/ssl/root-ca/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-#Copy uptime daemon to server
-#scp -r /opt/karoshi/serversetup/scripts/uptime $TCPIPNUMBER:/opt/karoshi/serversetup/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-
-#Copy in update server scripts
-scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/distro/ubuntu/scripts/updateserver "$TCPIPNUMBER":/opt/karoshi/serversetup/distro/ubuntu/scripts/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-#scp -r -o PasswordAuthentication=no /opt/karoshi/serversetup/all/samba4/updatesamba4 $TCPIPNUMBER:/opt/karoshi/serversetup/all/samba4/ 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-
 #Copy in show_server_info
 scp /opt/karoshi/serversetup/all/"useful scripts"/show_server_info "$TCPIPNUMBER":/usr/sbin/
-
-#Copy in /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall
-scp /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/shorewall "$TCPIPNUMBER":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/
 
 echo "$(date): karoshi_servers_add - configuring initd scripts and uptime on $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$TCPIPNUMBER" '

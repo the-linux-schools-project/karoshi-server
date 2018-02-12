@@ -92,7 +92,15 @@ then
 
 	#Mount volume
 	echo '<ul><li>'"$SERVER"' - '$"mounting"' '"$MOUNTBASE/$VOLUME"'</li></ul>'
-	mount -a
+
+	MountCounter=0
+	while [[ $(mount | grep -c "$MOUNTBASE/$VOLUME") = 0 ]]
+	do
+		mount -a
+		sleep 1
+		((MountCounter+=1))
+		[ "$MountCounter" = 20 ] && break
+	done
 
 	#Make sure the gluster volume gets mounted on boot
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mount-gluster-volumes
@@ -113,7 +121,15 @@ else
 
 	#Mount volume
 	echo "<ul><li>'"$SERVER"' - '$"mounting"' '"$MOUNTBASE"'/'"$VOLUME"'</li></ul>"
-	mount -a
+
+	MountCounter=0
+	while [[ $(mount | grep -c "'"$MOUNTBASE/$VOLUME"'") = 0 ]]
+	do
+		mount -a
+		sleep 1
+		((MountCounter+=1))
+		[ "$MountCounter" = 20 ] && break
+	done
 
 	#Make sure the gluster volume gets mounted on boot
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mount-gluster-volumes

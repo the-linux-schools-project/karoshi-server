@@ -135,7 +135,7 @@ do
 	EMAILSERVER=no
 	PROXYSERVER=no
 	PRINTSERVER=no
-	DSERVICES=cron
+	DSERVICES=cron,ntp
 
 	[[ "$SERVERNAME" = $(hostname-fqdn) ]] && DSERVICES=cron,apache_karoshi
 
