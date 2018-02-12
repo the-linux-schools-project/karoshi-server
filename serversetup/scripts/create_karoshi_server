@@ -231,7 +231,7 @@ menu color title 1;37;44 #c0ffffff #00000000 std
 label install
   menu label Install Karoshi Server
   kernel /casper/vmlinuz
-  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz quiet splash --
+  append  file=/cdrom/preseed/custom.seed boot=casper automatic-ubiquity initrd=/casper/initrd.gz quiet splash nomodeset vga=791 --
 
 LABEL Live-CD
   menu label Live CD
