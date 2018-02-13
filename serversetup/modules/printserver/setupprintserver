@@ -140,7 +140,7 @@ then
 	chown root:itadmin /var/lib/samba/printers
 
 	#Restart samba
-	echo "<ul><li>$(Hostname-fqdn) - restarting samba4</li></ul>"
+	echo "<ul><li>$(hostname-fqdn) - restarting samba4</li></ul>"
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null
 	sleep 1
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null

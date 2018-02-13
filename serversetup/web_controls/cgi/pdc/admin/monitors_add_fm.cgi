@@ -220,7 +220,7 @@ then
 
 	if [ "$EDITMODE" = no ]
 	then
-		echo '<input required="required" tabindex="1" maxlength="15" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 300px;">'
+		echo '<input required="required" tabindex="1" maxlength="15" name="_GROUPNAME_" value="'"$MONITOR"'" size="20" type="text" style="width: 200px;">'
 	else
 		echo '<b>'"$MONITOR"'</b>'
 		echo '<input name="_GROUPNAME_" value="'"$MONITOR"'" type="hidden">'
@@ -248,7 +248,7 @@ then
 	      </tr>
 
 	<tr><td>'$"Monitor day interval"'</td><td>
-	<select name="_DAYSTART_" style="width: 80px;">
+	<select name="_DAYSTART_" style="width: 93px;">
 	<option label="blank" value=""></option>
 	<option>Mon</option>
 	<option>Tue</option>
@@ -259,7 +259,7 @@ then
 	<option>Sun</option>
 	</select>
 	 - 
-	<select name="_DAYEND_" style="width: 80px;">
+	<select name="_DAYEND_" style="width: 93px;">
 	<option label="blank" value=""></option>
 	<option>Mon</option>
 	<option>Tue</option>
@@ -272,7 +272,7 @@ then
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the start and end days."'</span></a></td></tr>
 
 	<tr><td>'$"Monitor time interval"'</td><td>
-	<select name="_HOURSTART_" style="width: 80px;">
+	<select name="_HOURSTART_" style="width: 93px;">
 	<option label="blank" value=""></option>
 	<option>1am</option>
 	<option>2am</option>
@@ -288,7 +288,7 @@ then
 	<option>12am</option>
 	</select>
 	 - 
-	<select name="_HOUREND_" style="width: 80px;">
+	<select name="_HOUREND_" style="width: 93px;">
 	<option label="blank" value=""></option>
 	<option>1pm</option>
 	<option>2pm</option>
@@ -304,7 +304,7 @@ then
 	<option>12pm</option>
 	</select>
 	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Leave blank for continuous monitoring or add in the hour start and end times."'</span></a></td></tr>
-	<tr><td>'$"TCPIP numbers"'</td><td><input required="required" tabindex="4" name="_TCPIP_" value="'"$TCPIPS"'" type="text" style="width: 300px;"></td><td>
+	<tr><td>'$"TCPIP numbers"'</td><td><input required="required" tabindex="4" name="_TCPIP_" value="'"$TCPIPS"'" type="text" style="width: 200px;"></td><td>
 	<a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"You need to enter in the TCPIP numbers separated by spaces of the devices that you want to monitor."'</span></a></td></tr></tbody></table>
 	<br><br><b>'$"Services to monitor"'</b> <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Adding_in_Custom_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Pick the services that you want monitored for this group."'</span></a><br><br>
 	<table class="standard" style="text-align: left;" ><tbody>

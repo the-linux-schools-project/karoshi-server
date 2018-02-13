@@ -77,39 +77,9 @@ export TEXTDOMAIN=karoshi-server
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/apache
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/mysql
 
-#Make sure we have all of the software installed for nextcloud and collabora online
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-echo '<ul><li>'$"Updating repositories"'</li></ul>'
-apt-get update
-echo '<ul><li>'$"Installing"' php-apcu redis-server php-redis</li></ul>'
-apt-get install -y php-apcu redis-server php-redis
+#Start redis caching service
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_status
 [ "$?" != 0 ] && /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/redis_start
-
-#Install software required for collabora online
-echo '<ul><li>'$"Installing"' apt-transport-https ca-certificates curl</li></ul>'
-apt-get install -y apt-transport-https ca-certificates curl
-
-
-dpkg -s docker-engine 1>/dev/null
-if [ "$?" != 0 ]
-then
-	echo '<ul><li>'$"Adding Docker Repository"'</li></ul>'
-	curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
-
-	add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
-	apt-get update
-
-	echo '<ul><li>'$"Installing"' docker</li></ul>'
-	apt-get -mqy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--no-triggers" install docker-engine
-
-	#Stop docker as it is has been started with init or systemd
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/docker_stop
-
-	#Sysv support
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/sysvsupport
-fi
-echo '</pre>'
 
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/docker
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/redis

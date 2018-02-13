@@ -583,10 +583,11 @@ apt-get install -y -f
 }
 
 function install_docker {
-curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add - 1>/dev/null
-add-apt-repository "deb https://apt.dockerproject.org/repo/ ubuntu-$(lsb_release -cs) main"
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb https://download.docker.com/linux/ubuntu artful stable"
+
 apt-get update
-apt-get -y install docker-engine
+apt-get -y install docker-ce
 }
 
 function reboot_server {

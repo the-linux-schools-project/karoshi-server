@@ -10,9 +10,6 @@ source /opt/karoshi/serversetup/variables/distro
 #Set bind not to start on boot
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/bind
 
-#Disable bind9 from starting on boot
-update-rc.d bind9 remove defaults
-
 #Modify smb.conf to remove server services = -dns
 sed -i '/server services = -dns/d' /etc/samba/smb.conf
 

@@ -16,7 +16,7 @@ RemainAfterExit=yes
 EnvironmentFile=-/etc/default/shorewall
 StandardOutput=syslog
 ExecStart=/sbin/shorewall $OPTIONS start $STARTOPTIONS
-ExecStartPost=[ -x /opt/karoshi/"useful scripts"/configure_vpn_rules ] && /opt/karoshi/"useful scripts"/configure_vpn_rules
+ExecStartPost=/opt/karoshi/serversetup/modules/authentication/configure_vpn_rules
 ExecStop=/sbin/shorewall $OPTIONS clear
 ExecReload=/sbin/shorewall $OPTIONS reload $RELOADOPTIONS
 

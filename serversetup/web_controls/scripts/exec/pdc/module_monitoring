@@ -98,7 +98,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 [ $? != 0 ] && exit 101 
 
 
-if [[ "$SERVERNAME" = $(hostname-fqdn) ]][
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Run module
 	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:" | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring

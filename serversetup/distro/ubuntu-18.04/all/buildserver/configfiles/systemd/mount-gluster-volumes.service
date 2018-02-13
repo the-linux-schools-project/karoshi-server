@@ -3,7 +3,7 @@ Description=Mount gluster volumes
 After=network.target remote-fs.target nss-lookup.target glusterd.service
 
 [Service]
-Type=OneShot
+Type=oneshot
 ExecStart=/opt/karoshi/serversetup/modules/glusterfs/scripts/mount-gluster-volumes
 KillMode=process
 

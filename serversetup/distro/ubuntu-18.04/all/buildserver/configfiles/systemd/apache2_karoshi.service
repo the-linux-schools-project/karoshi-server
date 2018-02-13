@@ -8,7 +8,6 @@ Type=forking
 ExecStart=/etc/init.d/apache2_karoshi start
 ExecStop=/etc/init.d/apache2_karoshi stop
 ExecReload=/etc/init.d/apache2_karoshi reload
-PrivateTmp=true
 Restart=on-abort
 
 [Install]

@@ -76,6 +76,7 @@ function mount_volume {
 MOUNTOPTIONS=defaults,acl,_netdev
 [ "$VOLUME" = dc-data ] && MOUNTOPTIONS=defaults,acl,selinux,_netdev
 
+echo "$(date): karoshi_gluster configuring /etc/fstab for $SERVER and mounting the gluster volume." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 if [[ "$SERVER" = $(hostname-fqdn) ]]
 then
 
@@ -93,9 +94,10 @@ then
 	#Mount volume
 	echo '<ul><li>'"$SERVER"' - '$"mounting"' '"$MOUNTBASE/$VOLUME"'</li></ul>'
 
-	MountCounter=0
+	MountCounter=1
 	while [[ $(mount | grep -c "$MOUNTBASE/$VOLUME") = 0 ]]
 	do
+		echo "$(date): karoshi_gluster attempting to mount $VOLUME on $SERVER try $MountCounter." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		mount -a
 		sleep 1
 		((MountCounter+=1))
@@ -339,6 +341,7 @@ then
 		SERVER=$(basename "$SERVERS")
 		GLUSTERCLUSTER=$(echo "$GLUSTERCLUSTER" "$SERVER:$GLUSTERBASE/$VOLUME")
 		#Open shorewall ports and make sure that glusterfs is running
+		echo "$(date): karoshi_gluster configuring shorewall for $SERVER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		openshorewall
 		if [[ "$SERVER" = $(hostname-fqdn) ]]
 		then
@@ -366,6 +369,7 @@ then
 	#Add all listed servers to the pool
 	add_to_pool
 
+	echo "$(date): karoshi_gluster creating gluster volume $VOLUME on $FIRSTSERVER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	if [[ "$FIRSTSERVER" = $(hostname-fqdn) ]]
 	then
 		#Create glusterfs volume
@@ -410,20 +414,24 @@ then
 		[ "$?" = 101 ] && exit 101
 	fi
 
-	for SERVERS in $(echo "$SERVERLIST" | sed 's/,/ /g')
-	do
-		SERVER=$(basename "$SERVERS")
-		mount_volume
-		echo GlusterFS Server"<br>" > /opt/karoshi/server_network/servers/"$SERVER"/glusterfs_server
-	done
-
+	echo "$(date): karoshi_gluster restricting access to $VOLUME to 127.0.0.1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Restrict access to the gluster volume
 	gluster volume set "$VOLUME" auth.allow 127.0.0.1
 
+	echo "$(date): karoshi_gluster settting features.cache-invalidation on, features.cache-invalidation-timeout 600, performance.stat-prefetch on to $VOLUME to 127.0.0.1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	#Speed up the gluster volume
 	gluster volume set "$VOLUME" features.cache-invalidation on
 	gluster volume set "$VOLUME" features.cache-invalidation-timeout 600
 	gluster volume set "$VOLUME" performance.stat-prefetch on
+
+	for SERVERS in $(echo "$SERVERLIST" | sed 's/,/ /g')
+	do
+		SERVER=$(basename "$SERVERS")
+		echo "$(date): karoshi_gluster mounting volume on $VOLUME for $SERVER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		mount_volume
+		echo GlusterFS Server"<br>" > /opt/karoshi/server_network/servers/"$SERVER"/glusterfs_server
+	done
+
 
 	#gluster volume set "$VOLUME" performance.cache-samba-metadata on
 	#gluster volume set "$VOLUME" performance.cache-invalidation on

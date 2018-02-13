@@ -1,27 +1,49 @@
 #!/bin/bash
-sleep 20
-DO_MOUNT=no
-#Check that gluster volumes in /etc/fstab have started
-for GLUSTERDATA in $(grep "/mnt-gluster/" /etc/fstab | sed 's/ /,/g')
-do
-	GLUSTERSERVER=$(echo $GLUSTERDATA | cut -d, -f1)
-	MOUNTPATH=$(echo $GLUSTERDATA | cut -d, -f2)
-	GLUSTERVOL=$(basename $MOUNTPATH)
-	#Check if the gluster volume is mounted
-	if [ $(mount | grep -c $MOUNTPATH) = 0 ]
-	then
-		DO_MOUNT=yes
-		echo Attempting to start $GLUSTERVOL >> /tmp/glusterlog
-		#Force start the gluster volume
-		gluster volume start $GLUSTERVOL force >> /tmp/glusterlog 2>&1
-	fi
-done
 
-if [ $DO_MOUNT = yes ]
+#Wait for glusterfs server to be ready before trying to start volumes
+sleep 20
+
+MountVolume=no
+LogDate=$(date +%F)
+Logpath=/opt/karoshi/logs/gluster/mount-gluster-volumes
+[ ! -d "$Logpath" ] && mkdir -p "$Logpath"
+
+#Check that gluster volumes in /etc/fstab have started
+while IFS= read -r GlusterData
+do
+	GlusterServer=$(echo "$GlusterData" | cut -d, -f1)
+	MountPath=$(echo "$GlusterData" | cut -d, -f2)
+	Volume=$(basename "$MountPath")
+
+	#Check if the gluster volume is mounted
+	if [[ $(mount | grep -c "$MountPath") = 0 ]]
+	then
+		MountVolume=yes
+		echo "$(date): Starting $Volume on $GlusterServer" >> "$Logpath/$LogDate"
+		#All gluster servers may have been restarted so force start the gluster volume
+		gluster volume start "$Volume" force >> "$Logpath/$LogDate" 2>&1
+	fi
+done < <(grep "/mnt-gluster/" /etc/fstab | sed 's/ /,/g')
+
+#Make sure that all gluster volumes have been mounted
+if [ "$MountVolume" = yes ]
 then
 	sleep 5
-	echo "Attempting to mount all" >> /tmp/glusterlog
-	mount -a >> /tmp/glusterlog 2>&1
+
+	while IFS= read -r GlusterData
+	do
+		GlusterServer=$(echo "$GlusterData" | cut -d, -f1)
+		MountPath=$(echo "$GlusterData" | cut -d, -f2)
+		Volume=$(basename "$MountPath")
+		MountCounter=1
+		while [[ $(mount | grep -c "$MountPath") = 0 ]]
+		do
+			echo "$(date): Mounting $Volume on $GlusterServer" >> "$Logpath/$LogDate"
+			mount -a
+			sleep 1
+			((MountCounter+=1))
+			[ "$MountCounter" = 20 ] && break
+		done
+	done < <(grep "/mnt-gluster/" /etc/fstab | sed 's/ /,/g')
 fi
-exit
 
