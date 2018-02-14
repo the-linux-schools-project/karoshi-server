@@ -254,7 +254,9 @@ echo '# Samba4 DLZ and Active Directory Zones (default source installation)
 /usr/lib/x86_64-linux-gnu/samba/bind9/** rm,
 /var/lib/samba/private/dns.keytab r,
 /var/lib/samba/private/named.conf r,
-/var/lib/samba/private/dns/** rwk,' > /etc/apparmor.d/local/usr.sbin.named
+/var/lib/samba/private/dns/** rwk,
+/usr/lib/x86_64-linux-gnu/samba/ldb/** rm,
+' > /etc/apparmor.d/local/usr.sbin.named
 
 #Modify /etc/apparmor.d/usr.sbin.named to include /etc/apparmor.d/local/usr.sbin.named
 sed -i 's%#include <local/usr.sbin.named>%include <local/usr.sbin.named>%g' /etc/apparmor.d/usr.sbin.named

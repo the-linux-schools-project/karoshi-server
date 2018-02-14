@@ -161,7 +161,7 @@ fi
 
 #Squirt data into cert generators
 function pipe_data {
-echo -e "US\nKaroshi\nKaroshi\nKaroshi\n$SERVER\n$SERVER\n$SERVER\n$SERVER@$REALM\n$OPENVPNPASS\nKaroshi\n"
+echo -e "US\nKaroshi\nKaroshi\nKaroshi\n$SERVER.$REALM\n$SERVER.$REALM\n$SERVER.$REALM\n$SERVER@$REALM\n$OPENVPNPASS\nKaroshi\n"
 sleep 1
 echo -e "y\ny\n"
 }
@@ -173,7 +173,7 @@ if [ ! -f /etc/openvpn/openvpn.secret ]
 then
 	touch /etc/openvpn/openvpn.secret
 	chmod 0600 /etc/openvpn/openvpn.secret
-	OPENVPNPASS=$(openssl rand -hex 16)
+	OPENVPNPASS=$(openssl rand -hex 10)
 	echo "$OPENVPNPASS" > /etc/openvpn/openvpn.secret
 else
 	#Get openvpn password
@@ -195,7 +195,9 @@ then
 fi
 
 #Allow keys to be regenerated
+[ ! -d /etc/openvpn/easy-rsa/keys ] && mkdir /etc/openvpn/easy-rsa/keys
 echo unique_subject = no > /etc/openvpn/easy-rsa/keys/index.txt.attr
+
 
 #Change keysize to 2048
 sed -i 's/export KEY_SIZE=1024/export KEY_SIZE=2048/g' /etc/openvpn/easy-rsa/vars
@@ -214,7 +216,7 @@ then
 	#Build Server Certificates
 	echo '<ul><li>'$"Generating certificate and private key"'</li></ul>'
 	sleep 1
-	SERVER="$HOSTNAMEFQDN"
+	SERVER="$HOSTNAME"
 	pipe_data | ./build-key-server "$HOSTNAMEFQDN" 1>/dev/null 2>/dev/null
 
 	#Generate Diffie Hellmam parameters
@@ -244,7 +246,7 @@ then
 	sed -i "s/ca ca_$HOSTNAMEFQDN.crt//g" /etc/openvpn/server.conf
 	sed -i "s/cert server.crt//g" /etc/openvpn/server.conf
 	sed -i "s/key server.key  # This file should be kept secret//g" /etc/openvpn/server.conf
-
+	echo >> /etc/openvpn/server.conf
 	[[ $(grep -c "^cert $HOSTNAMEFQDN.crt" /etc/openvpn/server.conf) = 0 ]] && echo cert "$HOSTNAMEFQDN".crt >> /etc/openvpn/server.conf
 	[[ $(grep -c "^key $HOSTNAMEFQDN.key" /etc/openvpn/server.conf) = 0 ]] && echo key "$HOSTNAMEFQDN".key >> /etc/openvpn/server.conf
 
@@ -255,24 +257,32 @@ then
 	[[ $(grep -c "client-config-dir ccd") = 0 ]] && echo client-config-dir ccd >> /etc/openvpn/server.conf
 fi
 
+if [ ! -f /etc/openvpn/ta.key ]
+then
+	cd /etc/openvpn/
+	openvpn --genkey --secret ta.key
+	cd /etc/openvpn/easy-rsa
+fi
+
 #Create custom client config
 [ ! -d /etc/openvpn/ccd ] && mkdir /etc/openvpn/ccd
 echo ifconfig-push "$TUNNELIP_CLIENT" "$TUNNELIP1" > /etc/openvpn/ccd/"$SERVERNAME"
+sync /etc/openvpn/ccd/"$SERVERNAME"
+
+#Make sure service runs on boot
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
 
 #Restart service
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop 1>/dev/null
 sleep 1
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
-#Make sure service runs on boot
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
-
 }
 
 function configure_openvpn_client {
 
 #Create client certificates
 echo '<ul><li>'"$SERVERNAME"' - '$"Generating client certificate"'</li></ul>'
-SERVER="$SERVERNAME"
+SERVER=$(echo "$SERVERNAME" | cut -d. -f1)
 pipe_data | ./build-key "$SERVERNAME" 1>/dev/null 2>/dev/null
 
 ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVERNAME" '
@@ -289,6 +299,7 @@ cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/
 scp /etc/openvpn/ca_"$HOSTNAMEFQDN".crt root@"$SERVERNAME:/etc/openvpn/ca_$HOSTNAMEFQDN.crt"
 scp /etc/openvpn/easy-rsa/keys/"$SERVERNAME".crt root@"$SERVERNAME:/etc/openvpn/"
 scp /etc/openvpn/easy-rsa/keys/"$SERVERNAME".key root@"$SERVERNAME:/etc/openvpn/"
+scp /etc/openvpn/ta.key root@"$SERVERNAME:/etc/openvpn/"
 
 #Delete keys from the vpn server
 rm -f /etc/openvpn/easy-rsa/keys/"$SERVERNAME".crt
@@ -323,12 +334,13 @@ then
 	echo '"$SERVERNAMEIP"'"	"'"$SERVERNAME"'"	"$HOSTNAME >> /etc/hosts
 fi
 
+#Make sure service runs on boot
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
+
 #Restart openvpn client
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_stop 1>/dev/null
 sleep 2
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/openvpn_start 1>/dev/null
-#Make sure service runs on boot
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/openvpn
 
 sleep 2
 
@@ -379,9 +391,9 @@ iptables -m comment --comment \"karoshi_vpn_rule\" -t nat -A INPUT -s \$PDC_VPN_
 chmod 0700 /opt/karoshi/useful\ scripts/configure_vpn_rules
 
 #Restart shorewall to apply rules
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
 sleep 2
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 '
 
 }
@@ -406,7 +418,7 @@ echo '*/5 * * * *' /opt/karoshi/serversetup/modules/authentication/openvpnclient
 echo '<br><br>'
 }
 
-echo "<ul><li><b>"$"Configure OpenVPN""</b></li></ul>"
+echo "<ul><li>"$"Configure OpenVPN""</li></ul>"
 get_tunnel_details
 configure_shorewall
 create_secret
