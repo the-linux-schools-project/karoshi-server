@@ -87,9 +87,9 @@ then
 		if [ ! -L "$FOLDER" ]
 		then
 			echo "<ul><li>$SERVER - "$"Copying"" $FOLDER</li></ul>"
-			echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
+			echo '<ul><li><pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "$FOLDER" "$MOUNTBASE"/"$GLUSTERVOL"
-			echo '</pre>'
+			echo '</pre></li></ul>'
 		fi
 	fi
 	[ ! -d "$MOUNTBASE/$GLUSTERVOL/$FOLDER_SHORT" ] && mkdir -p "/$MOUNTBASE/$GLUSTERVOL/$FOLDER_SHORT"
@@ -100,9 +100,9 @@ else
 		if [ ! -L "'"$FOLDER"'" ]
 		then
 			echo "<ul><li>'"$SERVER"' - "'$"Copying"'" '"$FOLDER"'</li></ul>"
-			echo "<pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
+			echo "<ul><li><pre style=\"font-size: 10pt; font-family:Arial, Times, Georgia, serif\">"
 			rsync --timeout=30 --verbose --dirs --recursive --links --compress --times --perms --executability --acls --owner --group -o "'"$FOLDER"'" "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"
-			echo "</pre>"
+			echo "</pre></li></ul>"
 		fi
 	fi
 	[ ! -d "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'" ] && mkdir -p "'"$MOUNTBASE"'"/"'"$GLUSTERVOL"'"/"'"$FOLDER_SHORT"'"

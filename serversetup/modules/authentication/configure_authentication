@@ -98,12 +98,6 @@ fi
 #Get samba 4 database password
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
-if [ "$AUTHTYPE" = adc ] || [ "$AUTHTYPE" = rodc ]
-then
-	echo "<ul><li>$(hostname-fqdn) - "$"Converting DNS to use internal dns""</li></ul>"
-	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_internal 1>/dev/null
-fi
-
 ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 source /opt/karoshi/serversetup/variables/distro
 
@@ -219,7 +213,8 @@ echo "[dfs]
 
 " >> /etc/samba/smb.conf
 
-	restart_samba
+	#restart_samba
+	#Restart samba later when we convert it to use bind for dns
 
 fi
 
@@ -659,9 +654,6 @@ echo timeout:1 >> /etc/resolv.conf
 
 if [ "$AUTHTYPE" = adc ] || [ "$AUTHTYPE" = rodc ]
 then
-	#Convert PDC back to bind
-	echo "<ul><li>$(hostname-fqdn) - "$"Converting DNS to use Bind""</li></ul>"
-	/opt/karoshi/serversetup/pdc/scripts/convert_dns_to_bind 1>/dev/null
 	configure_adc_resolv
 fi
 exit
