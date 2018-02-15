@@ -77,9 +77,9 @@ samba)
 	then
 		if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) -gt 0 ]]
 		then
-			Ports="88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses 
+			Ports="88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #Samba ports with bind for dns
 		else
-			Ports="53 88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #The major ports that samba4 uses minus dns since this is now being handled by bind
+			Ports="53 88 135 137 138 139 389 445 464 636 1024\|49152 1025\|49153 3268" #Samba ports including dns
 		fi
 	else
 		Ports="139 445"

@@ -1,7 +1,8 @@
 # Samba4 DLZ and Active Directory Zones (default source installation)
 /usr/lib/x86_64-linux-gnu/samba/bind9/** rm,
-/var/lib/samba/private/dns.keytab r,
+/var/lib/samba/private/dns.keytab rk,
 /var/lib/samba/private/named.conf r,
 /var/lib/samba/private/dns/** rwk,
 /usr/lib/x86_64-linux-gnu/samba/ldb/** rm,
-
+/usr/lib/x86_64-linux-gnu/samba/gensec/krb5.so m,
+/run/nslcd/socket wr,

@@ -60,6 +60,11 @@ then
 	UBUNTUVER=precise
 fi
 
+if [[ $(lsb_release -a 2>/dev/null | grep -c bionic) -gt 0 ]]
+then
+	UBUNTUVER=bionic
+fi
+
 #Create /etc/bind/samba_dns.conf to declare ad-zones
 echo 'dlz "AD DNS Zone" {
     # For BIND 9.8
@@ -88,7 +93,7 @@ then
     database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_9.so";' >> /etc/bind/samba_dns.conf
 fi
 
-if [ "$UBUNTUVER" = xenial ]
+if [ "$UBUNTUVER" = xenial ] || [ "$UBUNTUVER" = bionic ]
 then
 	echo '    #Added by Karoshi for BIND 9.10
     database "dlopen /usr/lib/x86_64-linux-gnu/samba/bind9/dlz_bind9_10.so";' >> /etc/bind/samba_dns.conf
@@ -266,9 +271,10 @@ then
 
 	#Reload apparmor
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apparmor_restart
-	#Stop samba4
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 fi
+
+#Stop samba4
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_stop 1>/dev/null 2>/dev/null
 
 #Modify smb.conf to disable internal dns
 if [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) = 0 ]]

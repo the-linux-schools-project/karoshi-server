@@ -8,6 +8,8 @@ then
 	sleep 5
 fi
 
+/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status samba stop "$Display"
+
 #Check to see if this is a pdc or adc
 if [[ $(grep -w -c sysvol /etc/samba/smb.conf) -gt 0 ]]
 then
@@ -19,4 +21,3 @@ then
 	done
 fi
 
-/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/check_port_status samba stop "$Display"

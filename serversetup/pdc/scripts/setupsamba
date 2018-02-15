@@ -1267,7 +1267,7 @@ if [ "$INSTALL_TYPE" != adcrestore ] && [ "$INSTALL_TYPE" != archiverestore ]
 then
 	echo $"Copying in logon files"
 	echo "$(date): Copying in netlogon files" >> /opt/karoshi/serversetup/install_log
-	[ -d /var/lib/samba/netlogon ] && cp -R "/var/lib/samba/netlogon /var/lib/samba/netlogon_$(date +%s)"
+	[ -d /var/lib/samba/netlogon ] && cp -R "/var/lib/samba/netlogon" "/var/lib/samba/netlogon_$(date +%s)"
 	[ ! -d /var/lib/samba/netlogon ] && mkdir /var/lib/samba/netlogon
 
 	cp -R /opt/karoshi/serversetup/pdc/logonscripts/kix /var/lib/samba/netlogon/
