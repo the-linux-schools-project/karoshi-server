@@ -88,6 +88,7 @@ EMAILADDRESS="administrator@$REALM"
 
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
+touch /etc/ssl/root-ca/index.txt.attr
 
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 

@@ -20,6 +20,10 @@ fi
 [ ! -d /run/samba-cache ] && mkdir -p /run/samba-cache 
 [ ! -e /run/lock/samba ] && ln -s /run/samba-cache /run/lock/samba
 
+
+#Set permissions as this is being changed on a samba4 adc when added to the domain stopping nslcd from accessing the ldapi socket
+chmod 0755 /var/lib/samba/private
+
 #Set samba exec path
 
 [ -f /usr/local/sbin/samba ] && SAMBAPATH=/usr/local/sbin

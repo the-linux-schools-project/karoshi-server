@@ -295,7 +295,7 @@ samba_upgradedns --dns-backend=BIND9_DLZ
 
 #Set permissions on dns.keytab so that bind can read it.
 chown root:bind "$SambaDNSPath"/dns.keytab
-chmod 640 "$SambaDNSPath"/private/dns.keytab
+chmod 640 "$SambaDNSPath"/dns.keytab
 
 #Restart bind
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
