@@ -132,7 +132,7 @@ echo "$(date): Stopping karoshi setup from running on login" >> /opt/karoshi/ser
 #Do desktop change
 ###########################
 cd /
-cp -f /opt/karoshi/serversetup/all/"useful scripts"/* /opt/karoshi/"useful scripts"/
+cp -f -r /opt/karoshi/serversetup/all/"useful scripts" /opt/karoshi/
 cp -f /opt/karoshi/serversetup/all/"useful scripts"/.alphabet /opt/karoshi/"useful scripts"/
 chmod -R 0700 /opt/karoshi/"useful scripts"
 chmod 0700 /opt/karoshi/karoshimanagement/admin_file_manager

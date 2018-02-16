@@ -50,6 +50,7 @@ fi
 
 #Get ubuntu version
 UBUNTUVER=xenial
+SambaDNSPath=/var/lib/samba/private
 if [[ $(lsb_release -a 2>/dev/null | grep -c trusty) -gt 0 ]]
 then
 	UBUNTUVER=trusty
@@ -63,6 +64,7 @@ fi
 if [[ $(lsb_release -a 2>/dev/null | grep -c bionic) -gt 0 ]]
 then
 	UBUNTUVER=bionic
+	SambaDNSPath=/var/lib/samba/bind-dns
 fi
 
 #Create /etc/bind/samba_dns.conf to declare ad-zones
@@ -248,7 +250,7 @@ options {
 	dnssec-validation yes;
 
 
-	tkey-gssapi-keytab "/var/lib/samba/private/dns.keytab";
+	tkey-gssapi-keytab "'"$SambaDNSPath"'/dns.keytab";
 
 	auth-nxdomain no;    # conform to RFC1035
 	listen-on-v6 { any; };
@@ -260,9 +262,9 @@ then
 	#Modify apparmor to allow bind to access samba
 	echo '# Samba4 DLZ and Active Directory Zones (default source installation)
 	/usr/lib/x86_64-linux-gnu/samba/bind9/** rm,
-	/var/lib/samba/private/dns.keytab r,
-	/var/lib/samba/private/named.conf r,
-	/var/lib/samba/private/dns/** rwk,
+	'"$SambaDNSPath"'/dns.keytab r,
+	'"$SambaDNSPath"'/named.conf r,
+	'"$SambaDNSPath"'/dns/** rwk,
 	/usr/lib/x86_64-linux-gnu/samba/ldb/** rm,
 	' > /etc/apparmor.d/local/usr.sbin.named
 
@@ -292,8 +294,8 @@ fi
 samba_upgradedns --dns-backend=BIND9_DLZ
 
 #Set permissions on dns.keytab so that bind can read it.
-chown root:bind /var/lib/samba/private/dns.keytab
-chmod 640 /var/lib/samba/private/dns.keytab
+chown root:bind "$SambaDNSPath"/dns.keytab
+chmod 640 "$SambaDNSPath"/private/dns.keytab
 
 #Restart bind
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_stop 1>/dev/null 2>/dev/null
