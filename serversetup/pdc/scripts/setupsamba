@@ -1866,7 +1866,7 @@ then
 	[[ $(grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt) = 0 ]] && echo "$LINUXCLIENTVERSION" >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 	#Point icons at the correct path
-	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/all/Change Password.desktop
+	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION/desktop-icons/all/Change Password.desktop"
 	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/itadmin/Helpdesk.desktop
 	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/itadmin/karoshimanagement.desktop
 	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"/desktop-icons/staff/Helpdesk.desktop

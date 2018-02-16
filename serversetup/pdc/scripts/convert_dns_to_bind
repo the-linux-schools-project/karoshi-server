@@ -301,4 +301,7 @@ sleep 1
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/bind_start 1>/dev/null 2>/dev/null
 #Start samba4
 /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/samba_start 1>/dev/null 2>/dev/null
+#Restart nslcd
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nslcd_stop 1>/dev/null 2>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nslcd_start 1>/dev/null 2>/dev/null
 

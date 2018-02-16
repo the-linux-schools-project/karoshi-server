@@ -47,6 +47,13 @@ fi
 #Exit if this was running live
 [ $? = 101 ] && exit
 
+#Try and make sure that we are in a useful resolution
+Resolution=$(xrandr 2>/dev/null | grep '+$' | sed 's/ * / /g' | sed 's/^ //g' | cut -d" " -f1)
+if [ ! -z "$Resolution" ]
+then
+	xrandr -s "$Resolution" 	
+fi
+
 ############################
 #View the full agreement
 ############################

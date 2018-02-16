@@ -4,5 +4,18 @@ systemctl start nslcd 2>&1
 if [ "$?" != 0 ]
 then
 	sleep 5
+	exit 1
 fi
+
+#Wait for nslcd to be running
+Count=1
+until $(/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/nslcd_status)
+do
+	if [ "$Count" = 20 ]
+	then
+		exit 1
+	fi
+	sleep 1
+	((Count+=1))
+done
 

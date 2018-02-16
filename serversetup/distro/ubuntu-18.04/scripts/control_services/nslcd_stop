@@ -9,3 +9,15 @@ then
 	done
 	sleep 5
 fi
+
+#Wait for nslcd to stop
+Count=1
+until ! $(/opt/karoshi/serversetup/distro/ubuntu-18.04/scripts/control_services/nslcd_status)
+do
+	if [ "$Count" = 20 ]
+	then
+		exit 1
+	fi
+	sleep 1
+	((Count+=1))
+done
