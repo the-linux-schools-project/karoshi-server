@@ -1,5 +1,4 @@
 #!/bin/bash
-#Start mon on boot
-/opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status minidlna on 1>/dev/null 2>/dev/null
-
+#Start minidlna on boot
+systemctl enable minidlna 
 
