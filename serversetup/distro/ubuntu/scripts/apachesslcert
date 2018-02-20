@@ -89,10 +89,15 @@ EMAILADDRESS="administrator@$REALM"
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
 
-LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+if [ -f /etc/ssl/root-ca/signingpassword.secret ]
+then
+	SigningPassword=$(sed -n 1,1p /etc/ssl/root-ca/signingpassword.secret)
+else
+	SigningPassword=$(sed -n 1,1p /etc/ldap.secret)
+fi
 
 #Revoke the existing certificate.
-[ -d /etc/ssl/apache/"$REALM".pem ] && openssl ca -revoke "$REALM".pem -passin pass:"$LDAPPASS"
+[ -d /etc/ssl/apache/"$REALM".pem ] && openssl ca -revoke "$REALM".pem -passin pass:"$SigningPassword"
 
 #Clear existing keys
 [ ! -d /etc/ssl/apache ] && mkdir /etc/ssl/apache
@@ -109,7 +114,7 @@ chmod 0600 /etc/ssl/apache/"$REALM".key
 chmod 0600 /etc/ssl/apache/"$REALM".req
 
 #Create client pem
-openssl ca -passin pass:"$LDAPPASS" -days 3650 -batch -out "$REALM".pem -infiles "$REALM".req 
+openssl ca -passin pass:"$SigningPassword" -days 3650 -batch -out "$REALM".pem -infiles "$REALM".req 
 
 chmod 0600 /etc/ssl/apache/"$REALM".pem
 }
