@@ -233,9 +233,9 @@ echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="p
 
 echo '<form action="/cgi-bin/admin/cron_edit.cgi" name="selectservers" method="post">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/cron_view.cgi | cut -d' ' -f1)
 #View cron jobs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_view
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_view
 
 echo '</form>'
 

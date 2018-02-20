@@ -245,9 +245,9 @@ fi
 #Convert INTERVAL to numbers
 [ $INTERVAL'null' = null ] && INTERVAL=5
 INTERVAL=`echo $INTERVAL | tr -cd '0-9\._:\n-'`
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1`
 #Add monitor
-sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 GROUPNAME=`echo $GROUPNAME | sed 's/+/ /g'`
 MESSAGE=`echo $GROUPNAME: $"Monitor added."`

@@ -479,8 +479,8 @@ else
 fi
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:$DBNAME:$DBUSERNAME:$DBPASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:$NEWFOLDER:$SEARCH:$TEXTDATA:$ACLOWNER:$ACLGROUP:$ACLPERMISSIONS:$DBNAME:$DBUSERNAME:$DBPASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></form></div></body></html>'

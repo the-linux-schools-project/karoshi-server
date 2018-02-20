@@ -124,9 +124,9 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.cgi | cut -d' ' -f1`
 #Enable or disable all exam accounts
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_enable_disable $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EXAMSTATUS:$EXCEPTIONLIST:
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_enable_disable $REMOTE_USER:$REMOTE_ADDR:$Checksum:$EXAMSTATUS:$EXCEPTIONLIST:
 EXEC_STATUS=$?
 if [ $EXEC_STATUS = 0 ]
 then

@@ -137,13 +137,13 @@ then
 MESSAGE=$"You have not uploaded a bmp file."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_background_select.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/windows_client_background_select.cgi | cut -d' ' -f1`
 #Copy profiles to groups
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo "<div id="actionbox">"
-sudo -H /opt/karoshi/web_controls/exec/windows_client_background_select $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/windows_client_background_select $REMOTE_USER:$REMOTE_ADDR:$Checksum:$FILENAME:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

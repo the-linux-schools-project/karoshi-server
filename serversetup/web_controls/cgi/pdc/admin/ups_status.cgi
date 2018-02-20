@@ -139,9 +139,9 @@ echo '
 </tr></tbody></table>
 <br>'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/ups_status.cgi | cut -d' ' -f1)
 #Show UPS status
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/ups_status
 if [ "$?" = 106 ]
 then
 	echo $"No UPS devices have been added.""<br>"

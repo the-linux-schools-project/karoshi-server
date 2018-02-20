@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
-[[ -z "$MD5SUM" ]] && MD5SUM=not_set
-if [[ $MD5SUM'check' != $add_user_cgi'check' ]]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
+[[ -z "$Checksum" ]] && Checksum=not_set
+if [[ $Checksum'check' != $add_user_cgi'check' ]]
 then
 	echo "$(date): add_user - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -47,9 +47,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1)
-[[ -z "$MD5SUM2" ]] && MD5SUM2=not_set
-if [[ $MD5SUM2'check' != $add_user_cgi'check' ]]
+Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1)
+[[ -z "$Checksum2" ]] && Checksum2=not_set
+if [[ $Checksum2'check' != $add_user_cgi'check' ]]
 then
 	echo "$(date): add_user - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,9 +61,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_create_cgi
-MD5SUM3=$(md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1)
-[[ -z "$MD5SUM3" ]] && MD5SUM3=not_set
-if [[ $MD5SUM3'check' != $bulk_user_creation_create_cgi'check' ]]
+Checksum3=$(sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1)
+[[ -z "$Checksum3" ]] && Checksum3=not_set
+if [[ $Checksum3'check' != $bulk_user_creation_create_cgi'check' ]]
 then
 	echo "$(date): add_user - Incorrect admin bulk user creation MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -88,7 +88,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 FIRSTNAME=$(echo "$DATA" | cut -s -d: -f4)
 SURNAME=$(echo "$DATA" | cut -s -d: -f5)
 NEWUSERNAME=$(echo "$DATA" | cut -s -d: -f6)
@@ -103,7 +103,7 @@ USERSGROUPS=$(echo "$DATA" | cut -s -d: -f14-)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM3"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum2"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum3"'check' ]
 then
 	echo "$(date): add_user - Not called by add_user.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -566,8 +566,8 @@ then
 	#Set E-Mail access level if it has been set for the group.
 	if [ ! -z "$EMAIL_LEVEL" ]
 	then
-		MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+		Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
+		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum2:change:$NEWUSERNAME:$EMAIL_LEVEL:$GROUP:$MOBILE:add_user:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 	fi
 fi
 
@@ -623,8 +623,8 @@ fi
 #Ban email use if needed
 if [ -f "/opt/karoshi/server_network/email_restrictions/$PRIMARYGROUP" ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$NEWUSERNAME:$PRIMARYGROUP:deny:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 fi
 
 #Add user to moodle

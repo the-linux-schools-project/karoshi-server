@@ -153,9 +153,9 @@ MESSAGE=$"Incorrect minute value."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | cut -d' ' -f1`
 #Set shutdown time
-sudo -H /opt/karoshi/web_controls/exec/client_shutdown_time $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOUR:$MINUTES:$IDLETIME:
+sudo -H /opt/karoshi/web_controls/exec/client_shutdown_time $REMOTE_USER:$REMOTE_ADDR:$Checksum:$HOUR:$MINUTES:$IDLETIME:
 if [ `echo $?` = 101 ]
 then
 MESSAGE=$"There was a problem changing the shutdown time. Please check the Karoshi web administration logs."

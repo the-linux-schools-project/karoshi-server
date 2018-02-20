@@ -175,8 +175,8 @@ show_status
 fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_reset_room_controls.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HOURS:$MINUTES:$TIME:" | sudo -H /opt/karoshi/web_controls/exec/dg_reset_room_controls
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_reset_room_controls.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$HOURS:$MINUTES:$TIME:" | sudo -H /opt/karoshi/web_controls/exec/dg_reset_room_controls
 completed
 echo '</div></body></html>'
 exit

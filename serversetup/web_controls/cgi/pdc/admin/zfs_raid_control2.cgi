@@ -272,7 +272,7 @@ else
 	echo '<b>'$"ZFS Status" - $SERVERNAME'</b><br><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$POOL:$ACTION:$DRIVE:$DRIVE2:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_control2
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/zfs_raid_control2.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$POOL:$ACTION:$DRIVE:$DRIVE2:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_control2
 show_status2
 exit

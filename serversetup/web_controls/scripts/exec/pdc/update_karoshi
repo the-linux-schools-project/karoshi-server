@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,73 +31,73 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_karoshi_cgi
 then
-	echo `date`: update_karoshi - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_karoshi_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set1
-if [ $MD5SUM'check' != $update_karoshi_cgi'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set1
+if [ "$Checksum"'check' != "$update_karoshi_cgi"'check' ]
 then
-	echo `date`: update_karoshi - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [ "$numArgs" != 1 ]
 then
-	echo `date`: update_karoshi - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-PATCHNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+PATCHNAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+MOBILE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: update_karoshi - Not called by update_karoshi.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - Not called by update_karoshi.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: update_karoshi - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: update_karoshi - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-echo `date`: update_karoshi - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): update_karoshi - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 if [ -z "$PATCHNAME" ]
 then
-	echo `date`: update_karoshi - Blank patchname by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - Blank patchname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check that there is an updatelist
 if [ ! -f /opt/karoshi/updates/updatelist ]
 then
-	echo `date`: update_karoshi - /opt/karoshi/updates/updatelist does not exist "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - /opt/karoshi/updates/updatelist does not exist for $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Check that there is an update source
 if [ ! -f /opt/karoshi/serversetup/variables/updatesource ]
 then
-	echo `date`: update_karoshi - No update source has been set "for" $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): update_karoshi - No update source has been set for $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -108,26 +108,24 @@ source /opt/karoshi/serversetup/variables/updatesource
 #Language
 ############################
 
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 
 ##########################
 #Apply Patch
 ##########################
 function apply_patch {
-echo `date`: update_karoshi - Applying $PATCHNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-echo '<b>'$"Applying update" - $PATCHNAME'</b><br>'
+echo "$(date): update_karoshi - Applying $PATCHNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo '<b>'$"Applying update"' - '"$PATCHNAME"'</b><br>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-chmod 0700 /opt/karoshi/updates/$PATCHNAME.sh
-/opt/karoshi/updates/$PATCHNAME.sh
+chmod 0700 /opt/karoshi/updates/"$PATCHNAME".sh
+/opt/karoshi/updates/"$PATCHNAME".sh
 echo '</pre>'
 ######################
 #Add this patchname to the completed jobs list
 ######################
 [ ! -d /opt/karoshi/logs/karoshi_updates ] && mkdir -p /opt/karoshi/logs/karoshi_updates
-echo '<tr><td>'$PATCHNAME'<\td><td>'$KAROSHISERVER'<\td><td>'`date`'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/$PATCHNAME
+echo '<tr><td>'"$PATCHNAME"'</td><td>'"$KAROSHISERVER"'</td><td>'"$(date)"'</td></tr>' >> /opt/karoshi/logs/karoshi_updates/"$PATCHNAME"
 #Delete warning message
 /opt/karoshi/serversetup/web_controls/scripts/web_management_warn delete karoshi_updates
 }
@@ -142,14 +140,14 @@ then
 	chmod 0700 /opt/karoshi/updates/
 fi
 #Delete patch if it already exists
-[ -f /opt/karoshi/updates/$PATCHNAME.sh ] && rm -f /opt/karoshi/updates/$PATCHNAME.sh
-[ -f /opt/karoshi/updates/$PATCHNAME.txt ] && rm -f /opt/karoshi/updates/$PATCHNAME.txt
+[ -f /opt/karoshi/updates/"$PATCHNAME".sh ] && rm -f /opt/karoshi/updates/"$PATCHNAME".sh
+[ -f /opt/karoshi/updates/"$PATCHNAME".txt ] && rm -f /opt/karoshi/updates/"$PATCHNAME".txt
 cd /opt/karoshi/updates/
 echo '<b>'$"Downloading update"'</b>'
 echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh 2>&1
-wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.sh.sig 2>&1
-wget --no-cache --read-timeout=5 --connect-timeout=5 $UPDATESOURCE/$VERSION/$PATCHNAME.txt 2>&1
+wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 "$UPDATESOURCE/$VERSION/$PATCHNAME.sh" 2>&1
+wget --no-cache --progress=dot:mega --read-timeout=5 --connect-timeout=5 "$UPDATESOURCE/$VERSION/$PATCHNAME.sh.sig" 2>&1
+wget --no-cache --read-timeout=5 --connect-timeout=5 "$UPDATESOURCE/$VERSION/$PATCHNAME.txt" 2>&1
 echo '</pre>'
 cd /
 }
@@ -160,42 +158,51 @@ cd /
 ###########################
 function check_data {
 
-if [ -z "$MD5SUM" ]
+if [ -z "$ListChecksum" ]
 then
 	echo $"The MD5 data is not set."'<br>'
 	exit
 else
-	echo MD5: $MD5SUM'<br>'
+	echo "MD5: $ListChecksum<br>"
 fi
 if [ -z "$SERVERARRAY" ]
 then
 	echo $"The server data is not set."'<br>'
 	exit
 else
-	echo Servers: ${SERVERARRAY[@]:0}'<br>'
+	echo "Servers: ${SERVERARRAY[@]:0}<br>"
 fi
 if [ -z "$DESCRIPTION" ]
 then
 	echo $"The description data is not set."'<br>'
 	exit
 else
-	echo $DESCRIPTION'<br><br>'
+	echo "$DESCRIPTION<br><br>"
 fi
 #Download patch
 download_patch
 
 #Check that files have downloaded
-if [ ! -f /opt/karoshi/updates/$PATCHNAME.txt ] || [ ! -f /opt/karoshi/updates/$PATCHNAME.sh ]
+if [ ! -f /opt/karoshi/updates/"$PATCHNAME.txt" ] || [ ! -f /opt/karoshi/updates/"$PATCHNAME.sh" ]
 then
-echo $"The patch file did not have a .sh file extension."'<br>'
-break
+	echo $"The patch file did not have a .sh file extension."'<br>'
+	return
 fi
 
 #Check md5 sum
-MD5SUMTXT=`sed -n 1,1p /opt/karoshi/updates/$PATCHNAME.txt | tr -cd 'A-Za-z0-9\._:\-'`
-MD5SUMFILE=`md5sum /opt/karoshi/updates/$PATCHNAME.sh | cut -d' ' -f1`
-[ -z "$MD5SUMTXT" ] && MD5SUMTXT=txtsumnotset
-if [ $MD5SUMTXT != $MD5SUM ] || [ $MD5SUMFILE != $MD5SUM ]
+PatchChecksumTxt=$(sed -n 1,1p /opt/karoshi/updates/"$PATCHNAME.txt" | tr -cd 'A-Za-z0-9\._:\-')
+
+#All newer patches use sha256 instead of md5sum so we get the date from the patch name to see which type to use.
+#Patch name convention is karoshi-web-controls-YYMMDD-hhmm.sh 
+if [[ $(echo "$PATCHNAME" | cut -d"-" -f4) -gt 180220 ]]
+then
+	PatchChecksumFile=$(sha256sum /opt/karoshi/updates/"$PATCHNAME.sh" | cut -d' ' -f1)
+else
+	PatchChecksumFile=$(md5sum /opt/karoshi/updates/"$PATCHNAME.sh" | cut -d' ' -f1)
+fi
+
+[ -z "$PatchChecksumTxt" ] && PatchChecksumTxt=txtsumnotset
+if [ "$PatchChecksumTxt" != "$ListChecksum" ] || [ "$PatchChecksumFile" != "$ListChecksum" ]
 then
 	echo $"Incorrect MD5 checksum for this patch."'<br>'
 	exit
@@ -209,7 +216,7 @@ then
 fi
 
 gpg /opt/karoshi/updates/"$PATCHNAME.sh.sig"
-GPGSTATUS=$?
+GPGSTATUS="$?"
 if [ "$GPGSTATUS" != 0 ]
 then
 	echo $"The patch file did not verify correctly."'<br>'
@@ -223,18 +230,18 @@ apply_patch
 #Proccess patch
 ############################
 
-MD5SUM=notset
+ListChecksum=notset
 
-echo \<b\>$"Processing update" - $PATCHNAME\</b\>\<br\>\<br\>
+echo "<b>"$"Processing update"" - $PATCHNAME</b><br><br>"
 
-[ $MOBILE = no ] && echo '</div><div id="infobox">'
+[ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 #Get information on patch
-PATCHDATALINE=`grep -n ^$PATCHNAME /opt/karoshi/updates/updatelist | cut -d: -f1`
+PATCHDATALINE=$(grep -n ^"$PATCHNAME" /opt/karoshi/updates/updatelist | cut -d: -f1)
 if [ ! -z "$PATCHDATALINE" ]
 then
-	MD5SUM=`sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f2`
-	SERVERARRAY=( `sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f3 | sed 's/,/ /g'` )
-	DESCRIPTION=`sed -n $PATCHDATALINE,$PATCHDATALINE'p' /opt/karoshi/updates/updatelist | cut -f4`
+	ListChecksum=$(sed -n "$PATCHDATALINE,$PATCHDATALINE"'p' /opt/karoshi/updates/updatelist | cut -f2)
+	SERVERARRAY=( $(sed -n "$PATCHDATALINE,$PATCHDATALINE"'p' /opt/karoshi/updates/updatelist | cut -f3 | sed 's/,/ /g') )
+	DESCRIPTION=$(sed -n "$PATCHDATALINE,$PATCHDATALINE"'p' /opt/karoshi/updates/updatelist | cut -f4)
 	check_data
 else
 	echo $"The update type must not be blank."
@@ -243,3 +250,4 @@ fi
 #Update html list
 /opt/karoshi/web_controls/exec/update_karoshi_create_list
 exit
+

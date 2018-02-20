@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/groups_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM" != "$groups_cgi" ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum" != "$groups_cgi" ]
 then
 	echo "$(date): groups - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -60,7 +60,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 GROUPNAME=$(echo "$DATA" | cut -s -d: -f4)
 ACTION=$(echo "$DATA" | cut -s -d: -f5)
 TYPE=$(echo "$DATA" | cut -s -d: -f6)
@@ -75,7 +75,7 @@ MOBILE=$(echo "$DATA" | cut -s -d: -f13)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5" != "$MD5SUM" ]
+if [ "$RemoteCheckSum" != "$Checksum" ]
 then
 	echo "$(date): groups - Not called by groups.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -393,8 +393,8 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 		#Add group to restriction list if an email server has been setup.
 		if [ -f /opt/karoshi/server_network/emailserver ]
 		then
-			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:4:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+			Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:change:$GROUPNAME:4:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 		fi
 
 		#Add the folder to the backup configuration
@@ -547,8 +547,8 @@ changetype: delete
 		then
 			source /opt/karoshi/server_network/domain_information/domain_name
 			EMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
-			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:change:$GROUPNAME:1:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+			Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:change:$GROUPNAME:1:$GROUPNAME:$MOBILE:groups:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 			#Remove the group from the protected distribution lists
 			if [[ "$EMAILSERVER" = $(hostname-fqdn) ]]
 			then

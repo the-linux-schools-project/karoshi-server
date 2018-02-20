@@ -280,9 +280,9 @@ then
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/time.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/time.cgi | cut -d' ' -f1`
 #set the time
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$SECS:$SERVERNAME:$SERVERTYPE:$SERVERMASTER" | sudo -H /opt/karoshi/web_controls/exec/time
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$SECS:$SERVERNAME:$SERVERTYPE:$SERVERMASTER" | sudo -H /opt/karoshi/web_controls/exec/time
 comleted
 exit

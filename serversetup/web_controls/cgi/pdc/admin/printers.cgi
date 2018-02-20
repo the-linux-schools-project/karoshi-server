@@ -314,8 +314,8 @@ fi
 
 [ "$MOBILE" = no ] && echo '<div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/printers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/printers "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$PRINTER:"
 [ "$MOBILE" = no ] && echo '</div>'
 echo "</div></div></body></html>"
 exit

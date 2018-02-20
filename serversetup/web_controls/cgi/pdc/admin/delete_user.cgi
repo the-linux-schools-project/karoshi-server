@@ -180,8 +180,8 @@ then
 	show_status
 fi
 PRIMARYGROUP=$(id -G -n "$USERNAME" | cut -d' ' -f1)
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$REQUESTFILE:$ARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/delete_user
 EXEC_STATUS="$?"
 if [ "$EXEC_STATUS" = 105 ]
 then

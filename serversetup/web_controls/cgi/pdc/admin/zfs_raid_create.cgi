@@ -230,9 +230,9 @@ else
 
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create.cgi | cut -d' ' -f1`
 echo '<form action="/cgi-bin/admin/zfs_raid_create2.cgi" name="selectservers" method="post">'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$CREATETYPE:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$CREATETYPE:" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create
 
 echo "</form></div></div></div></body></html>"
 exit

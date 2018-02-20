@@ -124,7 +124,7 @@ else
 fi
 
 echo '<div id="'"$DIV_ID"'">'
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1)
 
 #Show back button for mobiles
 if [ "$MOBILE" = yes ]
@@ -153,7 +153,7 @@ else
 '
 fi
 
-sudo -H /opt/karoshi/web_controls/exec/printers_staff "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$PRINTER:"
+sudo -H /opt/karoshi/web_controls/exec/printers_staff "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$PRINTER:"
 
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'

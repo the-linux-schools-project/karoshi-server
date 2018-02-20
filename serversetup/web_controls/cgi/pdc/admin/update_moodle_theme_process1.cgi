@@ -122,10 +122,10 @@ MESSAGE=`echo $"The zip file is faulty." - footer.html`
 show_status
 fi
 
-ARCHIVEMD5=`md5sum /var/www/karoshi/moodle_theme/"$MOODLETHEME" | cut -d' ' -f1`
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_moodle_theme_process1.cgi | cut -d' ' -f1`
+ARCHIVEMD5=`sha256sum /var/www/karoshi/moodle_theme/"$MOODLETHEME" | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/update_moodle_theme_process1.cgi | cut -d' ' -f1`
 #Do update
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ARCHIVEMD5:$MOODLETHEME:" | sudo -H /opt/karoshi/web_controls/exec/update_moodle_theme
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ARCHIVEMD5:$MOODLETHEME:" | sudo -H /opt/karoshi/web_controls/exec/update_moodle_theme
 EXITSTATUS=`echo $?`
 MESSAGE=`echo "$MOODLETHEME" : $COMPLETEDMSG`
 if [ $EXITSTATUS = 102 ]

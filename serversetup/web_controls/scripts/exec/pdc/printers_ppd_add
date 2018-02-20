@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_upload3_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_upload3.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printers_ppd_upload3_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printers_ppd_upload3.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $printers_ppd_upload3_cgi'check' ]
 then
 	echo `date`: printers_ppd_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -54,14 +54,14 @@ fi
 
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 PRINTERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4 | sed 's/+//g'`
 PAGESIZE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5`
 COLOUR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 	echo `date`: printers_ppd_add - Not called by printers_ppd_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -121,10 +121,10 @@ then
 	echo `date`: printers_ppd_add - upload error by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-#Check to see that ppd md5sum exists
+#Check to see that ppd sha256sum exists
 if [ ! -f /var/www/karoshi/ppd_files/ppdcheck.md5 ]
 then
-	echo `date`: printers_ppd_add - no ppd md5sum by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_add - no ppd sha256sum by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 #Check that ppd has .ppd or ppd.gz file extension
@@ -146,7 +146,7 @@ fi
 PPDFILE=`ls /var/www/karoshi/ppd_files/*.$PPDEXT`
 
 #Check that ppd ms5sum matches
-PPDMD5=`md5sum "$PPDFILE" | cut -d' ' -f1 | sed 's/ //g'`
+PPDMD5=`sha256sum "$PPDFILE" | cut -d' ' -f1 | sed 's/ //g'`
 PPDMD52=`sed -n 1,1p /var/www/karoshi/ppd_files/ppdcheck.md5 | cut -d' ' -f1 | sed 's/ //g'`
 if [ -z "$PPDMD5" ]
 then
@@ -160,7 +160,7 @@ fi
 
 if [ $PPDMD5 != $PPDMD52 ]
 then
-	echo `date`: printers_ppd_add - md5sums 'do' not match by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_ppd_add - sha256sums 'do' not match by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

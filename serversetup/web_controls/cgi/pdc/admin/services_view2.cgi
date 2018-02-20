@@ -223,9 +223,9 @@ else
 fi
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/services_view2.cgi | cut -d' ' -f1)
 #Show service status
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$SERVICE" | sudo -H /opt/karoshi/web_controls/exec/services_view2
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$SERVICE" | sudo -H /opt/karoshi/web_controls/exec/services_view2
 [ "$MOBILE" = no ] && echo '</div>'
 echo "</div></div></body></html>"
 exit

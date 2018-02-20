@@ -81,9 +81,9 @@ fi
 #########################
 #Check data
 #########################
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/clear_warnings.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/clear_warnings.cgi | cut -d' ' -f1`
 #Clear Warnings
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/clear_warnings
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/clear_warnings
 STATUS=`echo $?`
 if [ $STATUS != 0 ]
 then

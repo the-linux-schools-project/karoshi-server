@@ -235,8 +235,8 @@ else
 	</div><div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/server_info "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$INFO:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/server_info.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/server_info "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$INFO:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
 EXEC_STATUS="$?"
 
 if [ "$EXEC_STATUS" = 102 ]

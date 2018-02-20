@@ -104,8 +104,8 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_enable_disable.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_enable_disable
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_enable_disable.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_enable_disable
 EXEC_STATUS=`$?
 if [ $EXEC_STATUS != 0 ]
 then

@@ -122,8 +122,8 @@ else
 echo '<b>'$SERVER'</b><br><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_show_disks
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_show_disks
 
 echo "</div></div></body></html>"
 exit

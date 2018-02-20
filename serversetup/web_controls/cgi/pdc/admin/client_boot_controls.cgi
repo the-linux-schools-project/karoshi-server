@@ -291,8 +291,8 @@ if [ "$MOBILE" = no ]
 then
 	echo '</div><div id="infobox">'
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/client_boot_controls "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$SEARCH:$MOBILE:$NETBOOT:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/client_boot_controls.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/client_boot_controls "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:$SEARCH:$MOBILE:$NETBOOT:"
 
 [ "$MOBILE" = no ] && echo '</div>'
 echo "</div></form></div></body></html>"

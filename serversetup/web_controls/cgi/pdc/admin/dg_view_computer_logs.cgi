@@ -279,9 +279,9 @@ do
 	'
 	fi
 
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1)
 	#View logs
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TCPIP:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_computer_logs
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$TCPIP:$DAY:$MONTH:$YEAR:$DETAILED:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_computer_logs
 	EXEC_STATUS="$?"
 	if [ "$EXEC_STATUS" = 101 ]
 	then

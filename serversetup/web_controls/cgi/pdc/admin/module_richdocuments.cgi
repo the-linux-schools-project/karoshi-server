@@ -163,9 +163,9 @@ if [ "$ADMINPASS1" != "$ADMINPASS2" ]; then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_richdocuments.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_richdocuments.cgi | cut -d' ' -f1)
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ADMINPASS1:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_richdocuments
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ADMINPASS1:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_richdocuments
 EXEC_STATUS=$?
 if [ $EXEC_STATUS = 101 ]; then
 MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`

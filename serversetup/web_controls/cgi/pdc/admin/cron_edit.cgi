@@ -207,9 +207,9 @@ then
 fi
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/cron_edit.cgi | cut -d' ' -f1)
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$JOBNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_edit
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$JOBNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/cron_edit
 if [ "$?" = 102 ]
 then
 	show_jobs

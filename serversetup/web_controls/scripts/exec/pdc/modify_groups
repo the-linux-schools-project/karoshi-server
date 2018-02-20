@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/modify_groups_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$modify_groups_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$modify_groups_cgi"'check' ]
 then
 	echo "$(date): modify_groups - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -59,7 +59,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 OPTIONCHOICE=$(echo "$DATA" | cut -s -d: -f4)
 PRIMARYGROUP=$(echo "$DATA" | cut -s -d: -f5)
 NEWPASSWORD=$(echo "$DATA" | cut -s -d: -f6)
@@ -69,7 +69,7 @@ NEWGROUP=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): modify_groups - Not called by modify_groups.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -183,7 +183,7 @@ fi
 #########################
 if [ "$OPTIONCHOICE" = resetpasswords ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
 	COUNTER=0
 	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
@@ -193,7 +193,7 @@ then
 			PASSWORD1="$RANDOM"
 			echo "<ul><li>Reseting password for $USERNAME to $PASSWORD1</li></ul>"
 			#reset password
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1" | /opt/karoshi/web_controls/exec/change_password
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$PASSWORD1" | /opt/karoshi/web_controls/exec/change_password
 		fi
 		let COUNTER="$COUNTER"+1
 	done
@@ -210,7 +210,7 @@ fi
 
 if [ "$OPTIONCHOICE" = deleteaccounts ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/delete_user.cgi | cut -d' ' -f1)
 	COUNTER=0
 	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
@@ -218,7 +218,7 @@ then
 		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
 			echo "<ul><li<Deleting $USERNAME</li></ul>"
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
 		fi
 		let COUNTER="$COUNTER"+1
 	done
@@ -306,7 +306,7 @@ then
 	source /opt/karoshi/server_network/group_information/"$PRIMARYGROUP"
 	LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 	COUNTER=0
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_primary_group.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_primary_group.cgi | cut -d' ' -f1)
 	while [ "$COUNTER" -lt "${#USERLIST[@]}" ]
 	do
 		USERNAME="${USERLIST[$COUNTER]}"
@@ -314,7 +314,7 @@ then
 		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
 			echo "<ul><li>moving $USERNAME from $PRIMARYGROUP to $NEWGROUP</ul></li>"
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWGROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group				
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$NEWGROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group				
 		fi
 		let COUNTER="$COUNTER"+1
 	done

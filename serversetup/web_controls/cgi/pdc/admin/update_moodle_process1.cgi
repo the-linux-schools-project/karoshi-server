@@ -133,10 +133,10 @@ MESSAGE=`echo $"This is not a correct moodle archive and is missing files" - bac
 show_status
 fi
 
-ARCHIVEMD5=`md5sum /var/www/karoshi/moodle/"$MOODLEARCHIVE" | cut -d' ' -f1`
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_moodle_process1.cgi | cut -d' ' -f1`
+ARCHIVEMD5=`sha256sum /var/www/karoshi/moodle/"$MOODLEARCHIVE" | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/update_moodle_process1.cgi | cut -d' ' -f1`
 #Do update
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ARCHIVEMD5:$MOODLEARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/update_moodle
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ARCHIVEMD5:$MOODLEARCHIVE:" | sudo -H /opt/karoshi/web_controls/exec/update_moodle
 EXITSTATUS=`echo $?`
 if [ $EXITSTATUS = 102 ]
 then

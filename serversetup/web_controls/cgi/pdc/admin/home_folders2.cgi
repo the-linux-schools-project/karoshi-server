@@ -175,8 +175,8 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS:$GLUSTER" | sudo -H /opt/karoshi/web_controls/exec/home_folders
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CURRENTSERVER:$SERVERNAME:$PRIGROUP:$COPYHOMEAREAS:$GLUSTER" | sudo -H /opt/karoshi/web_controls/exec/home_folders
 
 if [ "$?" = 101 ]
 then

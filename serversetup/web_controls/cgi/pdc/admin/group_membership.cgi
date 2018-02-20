@@ -141,7 +141,7 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/group_membership.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -237,7 +237,7 @@ echo '
 '
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/group_membership
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/group_membership
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

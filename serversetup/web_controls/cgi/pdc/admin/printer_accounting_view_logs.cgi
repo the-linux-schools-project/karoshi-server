@@ -124,8 +124,8 @@ DIV_ID=menubox
 fi
 echo '<div id="'$DIV_ID'">'
 echo '<b>'$"View Printer Quota Logs"'</b><br><br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
 #View printer logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOGTYPE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_logs
 echo '</div></div></body></html>'
 exit

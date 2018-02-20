@@ -218,9 +218,9 @@ then
 MESSAGE=$"You have entered duplicate data."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_edit.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_edit.cgi | cut -d' ' -f1`
 #add remote management user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$JOBTITLE:$FORENAME:$SURNAME:$USERNAME:$PASSWORD1:$PRIMARYADMIN:$TCPACCESS" | sudo -H /opt/karoshi/web_controls/exec/remote_management_edit
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$JOBTITLE:$FORENAME:$SURNAME:$USERNAME:$PASSWORD1:$PRIMARYADMIN:$TCPACCESS" | sudo -H /opt/karoshi/web_controls/exec/remote_management_edit
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $USERNAME $"has been edited."`
 if [ $EXEC_STATUS = 103 ]

@@ -112,13 +112,13 @@ then
 	MESSAGE=$ERRORMSG1
 	show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_process.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_process.cgi | cut -d' ' -f1`
 if [ `echo $USERACTION | grep -c deleteuser` = 1 ]
 then
 	USERNAME=`echo $USERACTION | sed 's/deleteuser//g'`
 	if [ $USERNAME != $REMOTE_USER ]
 	then
-		sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
+		sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME
 		EXITSTATUS=`echo $?`
 		view_users
 	else
@@ -134,7 +134,7 @@ then
 	echo '<div id="actionbox">'
 	echo '<form action="/cgi-bin/admin/remote_management_edit.cgi" method="post">'
 	USERNAME=`echo $USERACTION | sed 's/edituser//g'`
-	sudo -H /opt/karoshi/web_controls/exec/remote_management_edit2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
+	sudo -H /opt/karoshi/web_controls/exec/remote_management_edit2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME
 	echo "</div>"
 	echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
 	echo "</div></body></html>"

@@ -159,7 +159,7 @@ then
 fi
 
 #Check to see that the user exists
-echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
+echo "$Checksum:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
 if [ "$?" = 111 ]
 then
 	MESSAGE=$"This username does not exist."
@@ -171,7 +171,7 @@ fi
 #MESSAGE=$"The display name name cannot be blank."
 #show_status
 #fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/show_user_info.cgi | cut -d' ' -f1)
 #Show User info
 
 WIDTH=100
@@ -217,6 +217,6 @@ echo '
 
 </tr></table></div><div id="infobox">'
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/show_user_info
 echo "</div></div></div></body></html>"
 exit

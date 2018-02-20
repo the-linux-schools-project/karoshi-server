@@ -220,8 +220,8 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo "<div id="actionbox">"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPADDRESS:$TCPCOMMENT:$PRIMARYADMIN
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$TCPADDRESS:$TCPCOMMENT:$PRIMARYADMIN
 EXEC_STATUS=`echo $?`
 echo "</div>"
 if [ $EXEC_STATUS = 100 ]

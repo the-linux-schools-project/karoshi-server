@@ -229,9 +229,9 @@ do
 	echo "$CLIENTNAME","$MAC","$TCPIP" >> /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$
 	let COUNTER=$COUNTER+1
 done
-CSVMDSUM=$(md5sum /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ | cut -d' ' -f1)
+CSVMDSUM=$(sha256sum /var/www/karoshi/dhcp-static_lease_import/karoshi_import_static_leases.csv.$$ | cut -d' ' -f1)
 rm -f /var/www/karoshi/dhcp-static_lease_import/"$CSVFILE"
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_import_reservations_process.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CSVMDSUM:$$:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_import_reservations
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp_import_reservations_process.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CSVMDSUM:$$:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_import_reservations
 show_dhcp_reservations
 echo "</div></div></div></body></html>"

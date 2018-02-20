@@ -33,9 +33,9 @@ echo `date`: time - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_manage
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/time_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/time.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $time_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/time.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $time_cgi'check' ]
 then
 echo `date`: time - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,7 +60,7 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 DAY=`echo "$DATA" | cut -s -d: -f4`
 MONTH=`echo "$DATA" | cut -s -d: -f5`
 YEAR=`echo "$DATA" | cut -s -d: -f6`
@@ -74,7 +74,7 @@ SERVERMASTER=`echo "$DATA" | cut -s -d: -f12`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: time - Not called by time.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

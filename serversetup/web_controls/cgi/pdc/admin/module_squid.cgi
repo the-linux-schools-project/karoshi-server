@@ -125,8 +125,8 @@ fi
 echo '<div id="actionbox3"><div id="infobox">'
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_squid
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_squid
 EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 101 ]

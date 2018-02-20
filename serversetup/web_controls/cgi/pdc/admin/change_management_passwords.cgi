@@ -169,9 +169,9 @@ then
 	MESSAGE=$"The passwords do not match."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_management_passwords.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_management_passwords.cgi | cut -d' ' -f1)
 #Change password
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$USERACCOUNT:$PASSWORD1:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/change_management_passwords
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$USERACCOUNT:$PASSWORD1:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/change_management_passwords
 
 if [ "$?" = 0 ]
 then

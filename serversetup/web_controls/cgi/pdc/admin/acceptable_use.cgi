@@ -124,8 +124,8 @@ fi
 echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--480--></head><body onLoad="start()"><div id="pagecontainer">'
 
 function send_data {
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$GRACETIME:$USERNAMES:" | sudo -H /opt/karoshi/web_controls/exec/acceptable_use
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$GRACETIME:$USERNAMES:" | sudo -H /opt/karoshi/web_controls/exec/acceptable_use
 }
 
 #########################
@@ -212,8 +212,8 @@ then
 	get_data
 	GROUP="$DATAENTRY"
 
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:::$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/acceptable_use	
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:::$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/acceptable_use	
 fi
 
 [ -f /opt/karoshi/server_network/acceptable_use_authorisations/grace_time ] && GRACETIME=$(sed -n 1,1p /opt/karoshi/server_network/acceptable_use_authorisations/grace_time | tr -cd 0-9)

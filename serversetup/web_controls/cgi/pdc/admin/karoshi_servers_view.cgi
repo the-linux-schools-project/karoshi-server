@@ -89,8 +89,8 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_view.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_view
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_view.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_view
 
 if [ "$?" = 102 ]
 then

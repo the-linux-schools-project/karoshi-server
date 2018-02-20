@@ -22,7 +22,7 @@ for CGIScript in /var/www/cgi-bin_karoshi/"$ScriptFolder"/*;
 do
 	AppendRandomString
 	Scriptname=$(basename "$CGIScript" | sed 's/\./_/g' | sed 's/ /_/g')
-	Checksum=$(md5sum "$CGIScript" | cut -d' ' -f1)
+	Checksum=$(sha256sum "$CGIScript" | cut -d' ' -f1)
 	echo "$Scriptname=$Checksum" > /opt/karoshi/web_controls/checksums/"$ScriptFolder""_checksums/$Scriptname"
 	chmod 0400 /opt/karoshi/web_controls/checksums/"$ScriptFolder""_checksums/$Scriptname"
 done

@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/banned_users_view2_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view2.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$banned_users_view2_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/banned_users_view2.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$banned_users_view2_cgi"'check' ]
 then
 	echo "$(date): banned_users_view2 - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -49,9 +49,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/banned_users_view2_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/banned_users_view2.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ "$MD5SUM2"'check' != "$banned_users_view2_cgi"'check' ]
+Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/banned_users_view2.cgi | cut -d' ' -f1)
+[ -z "$Checksum2" ] && Checksum2=not_set
+if [ "$Checksum2"'check' != "$banned_users_view2_cgi"'check' ]
 then
 	echo "$(date): banned_users_view2 - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -68,12 +68,12 @@ then
 fi
 REMOTE_USER=$(echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-')
 REMOTE_ADDR=$(echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-')
-REMOTE_MD5=$(echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-')
+RemoteCheckSum=$(echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-')
 USERARRAY=( `echo $* | cut -s -d: -f4- | tr -cd 'A-Za-z0-9\._:\-' | sed 's/:/ /g'` )
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum2"'check' ]
 then
 	echo "$(date): banned_users_view2 - Not called by banned_users_view2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

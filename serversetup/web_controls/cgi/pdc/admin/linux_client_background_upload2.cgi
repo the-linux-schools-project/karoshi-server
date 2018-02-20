@@ -128,9 +128,9 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1)
 
-sudo -H /opt/karoshi/web_controls/exec/linux_client_background_upload2 "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME2:"
+sudo -H /opt/karoshi/web_controls/exec/linux_client_background_upload2 "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FILENAME2:"
 if [ "$?" = 0 ]
 then
 	MESSAGE=''$"Uploaded file"': '$FILENAME'\n\n'$"The background has been uploaded."''

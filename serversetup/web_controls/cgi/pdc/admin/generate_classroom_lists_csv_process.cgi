@@ -147,10 +147,10 @@ done
 #Sort data
 sort /var/www/karoshi/classroom_lists/"$CSVFILE".$$ > /var/www/karoshi/classroom_lists/processed_data.$$
 
-MD5SUMCSV=`md5sum /var/www/karoshi/classroom_lists/processed_data.$$ | cut -d' ' -f1`
+ChecksumCSV=`sha256sum /var/www/karoshi/classroom_lists/processed_data.$$ | cut -d' ' -f1`
 #rm -f /var/www/karoshi/classroom_lists/"$CSVFILE"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MD5SUMCSV:$$:" | sudo -H /opt/karoshi/web_controls/exec/generate_classroom_lists_csv
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ChecksumCSV:$$:" | sudo -H /opt/karoshi/web_controls/exec/generate_classroom_lists_csv
 MESSAGE=`echo $COMPLETEDMSG`
 show_status
 echo "</div></body></html>"

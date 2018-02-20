@@ -133,9 +133,9 @@ show_status
 fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_relay2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_relay2.cgi | cut -d' ' -f1`
 #Make changes
-sudo -H /opt/karoshi/web_controls/exec/email_relay $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$RELAY:$RADDRESS
+sudo -H /opt/karoshi/web_controls/exec/email_relay $REMOTE_USER:$REMOTE_ADDR:$Checksum:$RELAY:$RADDRESS
 if [ $RELAY = direct ]
 then
 MESSAGE=$"System configured to send e-mails directly."

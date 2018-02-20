@@ -175,7 +175,7 @@ then
 MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/find_student_files.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/find_student_files.cgi | cut -d' ' -f1`
 #########################
 #Check data
 #########################
@@ -207,7 +207,7 @@ show_status
 fi
 
 #search
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME:$OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/find_student_files
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FILENAME:$OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/find_student_files
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

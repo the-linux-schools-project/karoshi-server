@@ -121,11 +121,11 @@ fi
 ZONE=`echo $ZONECHOICE | sed 's/^edit//g' | sed 's/^delete//g'`
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones.cgi | cut -d' ' -f1`
 
 if [ $ACTION = delete ]
 then
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ZONE:" | sudo -H /opt/karoshi/web_controls/exec/wireless_delete_zone
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ZONE:" | sudo -H /opt/karoshi/web_controls/exec/wireless_delete_zone
 fi
 
 if $ACTION = edit ]

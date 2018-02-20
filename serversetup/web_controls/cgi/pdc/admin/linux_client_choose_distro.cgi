@@ -148,9 +148,9 @@ fi
 echo '<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Linux Client - Choose Distribution"'<br></div></div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro.cgi | cut -d' ' -f1`
 #Copy iso
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DISTROCHOICE:$CONTROL:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro2
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DISTROCHOICE:$CONTROL:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro2
 EXEC_STATUS=`echo $?`
 
 if [ $CONTROL = copy ]

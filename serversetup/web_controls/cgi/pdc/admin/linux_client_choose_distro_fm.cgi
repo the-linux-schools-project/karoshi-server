@@ -68,8 +68,8 @@ echo '<div id="actionbox3"><div id="titlebox">
 
 #Get list of distributions in /home/itadminshare/distributions in the main server and get a list of netboots from the distribution server.
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_distro_fm.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_distro
 
 echo '</form></div></div></div></body></html>'
 exit

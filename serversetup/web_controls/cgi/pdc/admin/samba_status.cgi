@@ -215,9 +215,9 @@ else
 	<div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/samba_status.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/samba_status.cgi | cut -d' ' -f1)
 #Shutdown server
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_status
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$OPTION:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/samba_status
 
 echo "</div></div></div></body></html>"
 exit

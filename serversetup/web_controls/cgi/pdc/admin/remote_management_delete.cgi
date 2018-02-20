@@ -101,8 +101,8 @@ then
 MESSAGE=$"The username must not be blank."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_delete.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_delete.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/remote_management_delete $REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then

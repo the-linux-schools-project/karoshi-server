@@ -38,9 +38,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ntp2.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $ntp2_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ntp2.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $ntp2_cgi'check' ]
 then
 	echo `date`: ntp - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -66,7 +66,7 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 NTPSERVER1=`echo "$DATA" | cut -s -d: -f4`
 NTPSERVER2=`echo "$DATA" | cut -s -d: -f5`
 NTPSERVER3=`echo "$DATA" | cut -s -d: -f6`
@@ -78,7 +78,7 @@ SERVERMASTER=`echo "$DATA" | cut -s -d: -f10`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: ntp - Not called by ntp.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

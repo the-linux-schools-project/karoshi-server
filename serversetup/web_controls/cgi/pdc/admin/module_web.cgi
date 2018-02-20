@@ -133,7 +133,7 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$MYSQLDB:$MYSQLUSER:$MYSQLPASS:$MYSQLPORT:" | sudo -H /opt/karoshi/web_controls/exec/module_web
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_web.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$MYSQLDB:$MYSQLUSER:$MYSQLPASS:$MYSQLPORT:" | sudo -H /opt/karoshi/web_controls/exec/module_web
 echo '<ul><li>'$"Setup Web Server" - $"Completed"'</li></div></div></div></body></html>'
 exit

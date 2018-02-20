@@ -121,8 +121,8 @@ MESSAGE=$"The default page cannot be blank."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/set_default_page.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DEFAULTPAGE:" | sudo -H /opt/karoshi/web_controls/exec/set_default_page
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/set_default_page.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DEFAULTPAGE:" | sudo -H /opt/karoshi/web_controls/exec/set_default_page
 MESSAGE=$"Your default web management page has been set."
 completed_status
 exit

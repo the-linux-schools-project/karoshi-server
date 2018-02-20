@@ -126,7 +126,7 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -259,14 +259,14 @@ then
 fi
 
 #Change password
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/change_password
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$PASSWORD1:$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/change_password
 EXEC_STATUS="$?"
 if [ "$EXEC_STATUS" = 0 ]
 then
 
 	#Reset user lockout just in case
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 
 	MESSAGE=''$"Password changed for"' '"$USERNAME"'.'
 	if [ "$SHOW_PASSWORD" = yes ]

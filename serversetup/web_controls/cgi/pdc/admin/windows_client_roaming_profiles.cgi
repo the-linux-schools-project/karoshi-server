@@ -302,9 +302,9 @@ fi
 
 if [ "$ACTION" = roaming ] || [ "$ACTION" = mandatory ] || [ "$ACTION" = status ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/windows_client_roaming_profiles.cgi | cut -d' ' -f1)
 	#Enable roaming profile
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$EXCEPTIONLIST:$ACTION:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/windows_client_roaming_profiles
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$GROUP:$EXCEPTIONLIST:$ACTION:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/windows_client_roaming_profiles
 fi
 
 #Show menu options for the page

@@ -33,9 +33,9 @@ echo `date`: printer_accounting_clear_page_counts - No admin MD5Checksum >> /opt
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_clear_page_counts_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_clear_page_counts.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printer_accounting_clear_page_counts_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_clear_page_counts.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $printer_accounting_clear_page_counts_cgi'check' ]
 then
 echo `date`: printer_accounting_clear_page_counts - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,12 +60,12 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: printer_accounting_clear_page_counts - Not called by printer_accounting_clear_page_counts.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

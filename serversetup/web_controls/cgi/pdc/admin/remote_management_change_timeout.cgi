@@ -133,9 +133,9 @@ MESSAGE=$"The timeout value must be a number between 1 and 99."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_timeout.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_change_timeout.cgi | cut -d' ' -f1`
 #Change password
-sudo -H /opt/karoshi/web_controls/exec/remote_management_change_timeout $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TIMEOUT:$NOTIMEOUT:
+sudo -H /opt/karoshi/web_controls/exec/remote_management_change_timeout $REMOTE_USER:$REMOTE_ADDR:$Checksum:$TIMEOUT:$NOTIMEOUT:
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

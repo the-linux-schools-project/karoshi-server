@@ -141,9 +141,9 @@ then
 	MESSAGE=$"The server type cannot be blank."
 	show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_enable.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/quotas_enable.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/quotas_enable
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/quotas_enable
 EXEC_STATUS=`echo $?`
 MESSAGE=''$SERVERNAME' - '$"Quotas have been enabled on /home for this server."''
 if [ $EXEC_STATUS = 101 ]

@@ -164,7 +164,7 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><div class="sectiontitle">'$"Exam Accounts - Copy Data"'</div><br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_copy_data.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_copy_data.cgi | cut -d' ' -f1`
 #Copy data to exam accounts
 
 ########################
@@ -198,7 +198,7 @@ do
 	let COUNTER=$COUNTER+1 
 done
 
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_copy_data $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EXAMSTART:$EXAMEND:$ALL:$READONLY:
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_copy_data $REMOTE_USER:$REMOTE_ADDR:$Checksum:$EXAMSTART:$EXAMEND:$ALL:$READONLY:
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

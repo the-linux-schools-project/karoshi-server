@@ -261,8 +261,8 @@ then
 fi
 echo '</tr></tbody></table></div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/backup_configure.cgi | cut -d' ' -f1)
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$BACKUPSERVER:$BACKUPSTATUS:$HOURS:$MINUTES:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ACTION:$BACKUPNAME:$BACKUPFOLDER:$DURATION:$BACKUPSERVER:$BACKUPSTATUS:$HOURS:$MINUTES:" | sudo -H /opt/karoshi/web_controls/exec/backup_configure
 echo "</div></div></div></body></html>"
 exit

@@ -115,9 +115,9 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox3"><div id=infobox>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_create.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_create.cgi | cut -d' ' -f1`
 #Enable or disable all exam accounts
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_create $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NEWEXAMS
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_create $REMOTE_USER:$REMOTE_ADDR:$Checksum:$NEWEXAMS
 MESSAGE=$"The Additional exam accounts have been created."
 show_status
 exit

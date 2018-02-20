@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_vpn_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_vpn_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $module_vpn_cgi'check' ]
 then
 	echo `date`: module_vpn - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -61,13 +61,13 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: module_vpn - Not called by module_vpn.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -108,7 +108,7 @@ echo '<div class="sectiontitle">'$"Setup a VPN Server"' - '$SERVERNAME'</div><br
 DNSSERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/`"
 
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DNSSERVERLIST:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
+echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DNSSERVERLIST:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
 '
 [ $? = 101 ] && exit 101
 

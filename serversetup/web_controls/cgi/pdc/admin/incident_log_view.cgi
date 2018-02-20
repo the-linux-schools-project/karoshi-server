@@ -135,8 +135,8 @@ echo '<div id="actionbox3"><div id="titlebox">
 <br></div><div id="infobox">
 '
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_view.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/incident_log_view.cgi | cut -d' ' -f1`
 #Show logs
-sudo -H /opt/karoshi/web_controls/exec/incident_log_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET
+sudo -H /opt/karoshi/web_controls/exec/incident_log_view $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALPHABET
 echo '</div></div></div></body></html>'
 exit

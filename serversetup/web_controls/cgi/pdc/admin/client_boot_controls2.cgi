@@ -238,9 +238,9 @@ fi
 
 echo '<form name="myForm" id="myForm" action="/cgi-bin/admin/client_boot_controls.cgi" method="post"><input name="_LOCATION_" value="'"$LOCATION"'" type="hidden">''<input name="_ASSETTYPE_" value="'"$ASSETTYPE"'" type="hidden"><input name="_NETBOOT_" value="'"$NETBOOT"'" type="hidden"></form>
 '
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | cut -d' ' -f1)
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$ACTION:$ASSET:$TCPIP:$MACADDRESS:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/client_boot_controls2
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:$ACTION:$ASSET:$TCPIP:$MACADDRESS:$NETBOOT:" | sudo -H /opt/karoshi/web_controls/exec/client_boot_controls2
 
 [ "$MOBILE" = no ] && echo '</div>'
 

@@ -113,8 +113,8 @@ echo '<div id="actionbox3"><div id="titlebox"><b>'$"Run Network Backup Now"'</b>
 <br><br></div><div id="infobox">'
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/backup_now.cgi | cut -d' ' -f1)
 #backup now
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_now
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/backup_now
 echo "</div></div></div></body></html>"
 exit

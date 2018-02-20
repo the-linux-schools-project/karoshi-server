@@ -226,7 +226,7 @@ echo `date`: Helpdesk - $JOBNAME marked as not complete by $REMOTE_USER from $RE
 [ -f /opt/karoshi/server_network/helpdesk/completed/$JOBNAME ] && mv /opt/karoshi/server_network/helpdesk/completed/$JOBNAME /opt/karoshi/server_network/helpdesk/todo/
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 
 exit
 

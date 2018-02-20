@@ -327,8 +327,8 @@ then
 	#Show list of servers
 	/opt/karoshi/web_controls/show_servers $MOBILE servers $"View Rules" view "" "___"
 else
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/postfwd.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$RULESET:" | sudo -H /opt/karoshi/web_controls/exec/postfwd
+	Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/postfwd.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$RULESET:" | sudo -H /opt/karoshi/web_controls/exec/postfwd
 fi
 
 echo '</form>'

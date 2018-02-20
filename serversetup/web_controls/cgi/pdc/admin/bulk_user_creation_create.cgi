@@ -81,7 +81,7 @@ do
 	let COUNTER=$COUNTER+1
 done
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -409,7 +409,7 @@ do
 				USERGROUP=$PRI_GROUP
 			fi
 
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
 	fi
 	let COUNTER=$COUNTER+1

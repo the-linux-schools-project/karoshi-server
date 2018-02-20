@@ -74,8 +74,8 @@ echo '<form action="/cgi-bin/admin/email_quota_settings2.cgi" method="post">'
 echo '<div id="actionbox"><div class="sectiontitle">'$"E-Mail Quota Warning Settings"'</div><br>'
 echo '<table class="standard" style="text-align: left; height: 30px;" ><tbody>'
 #Get current email quota settings
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_view $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_quota_settings.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_view $REMOTE_USER:$REMOTE_ADDR:$Checksum
 echo '</tbody></table></div>'
 echo '<div id="submitbox"><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">
 </div></form></div></body></html>'

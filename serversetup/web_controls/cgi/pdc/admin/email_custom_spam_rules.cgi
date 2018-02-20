@@ -237,8 +237,8 @@ echo '</tr></tbody></table>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$RULEDATA:$RULEDATA2:$RULESCORE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_custom_spam_rules
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_custom_spam_rules.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$RULEDATA:$RULEDATA2:$RULESCORE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_custom_spam_rules
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

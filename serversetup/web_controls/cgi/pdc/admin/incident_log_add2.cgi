@@ -324,8 +324,8 @@ input_error
 fi
 let COUNTER=$COUNTER+1
 done
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/incident_log_add2.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/incident_log_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/incident_log_add2.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/incident_log_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$ACTIONTAKEN:$STUDENTS
 MESSAGE=$"This incident has been added to the logs."
 show_status
 exit

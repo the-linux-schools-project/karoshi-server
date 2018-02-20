@@ -111,14 +111,14 @@ MESSAGE=$"This group does not exist."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/copy_files_select.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/copy_files_select.cgi | cut -d' ' -f1`
 #Copy data to group
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo "<div id="actionbox">"
 echo '<pre>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/copy_files_select
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/copy_files_select
 echo "</pre></div>"
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]

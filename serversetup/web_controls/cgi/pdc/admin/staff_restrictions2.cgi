@@ -134,6 +134,6 @@ MESSAGE=$"This user is not a member of staff."
 show_status
 fi
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/staff_restrictions $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DELETE:$STAFFNAME
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/staff_restrictions $REMOTE_USER:$REMOTE_ADDR:$Checksum:$DELETE:$STAFFNAME
 exit

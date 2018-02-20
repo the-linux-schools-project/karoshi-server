@@ -120,11 +120,11 @@ MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/banned_users_view2.cgi | cut -d' ' -f1`
 if [ $USERARRAY'null' != null ]
 then
 #Allow users
-sudo -H /opt/karoshi/web_controls/exec/banned_users_view2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${USERARRAY[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/banned_users_view2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:`echo ${USERARRAY[@]:0} | sed 's/ /:/g'`
 #View any chosen logs
 MESSAGE=$"The selected users have been removed from the banned list."
 show_status
@@ -135,7 +135,7 @@ then
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo "<div id="actionbox">"
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${VIEWARRAY[@]:0} | sed 's/ /:/g'`" | sudo -H /opt/karoshi/web_controls/exec/incident_log_view2
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:`echo ${VIEWARRAY[@]:0} | sed 's/ /:/g'`" | sudo -H /opt/karoshi/web_controls/exec/incident_log_view2
 echo "</div>"
 fi
 echo "</div></body></html>"

@@ -117,7 +117,7 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/group_membership2.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -158,7 +158,7 @@ then
 	show_status
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$ACTION:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/group_membership2
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$ACTION:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/group_membership2
 echo "<form action=\"group_membership.cgi\" method=\"post\" id=\"membershipview\">
 <input type=\"hidden\" name=\"____USERNAME____$USERNAME""____\" value=\"\">
 </form>

@@ -159,8 +159,8 @@ fi
 
 if [ "$ACTION" = allow ] || [ "$ACTION" = allowall ] || [ "$ACTION" = deny ] || [ "$ACTION" = denyall ] || [ "$ACTION" = activatechanges ] && [ ! -z "$GROUP" ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_controls	
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_controls	
 fi
 
 #Show back button for mobiles

@@ -33,9 +33,9 @@ echo `date`: software_raid_show_disks - No admin MD5Checksum >> /opt/karoshi/log
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_show_disks_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $software_raid_show_disks_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $software_raid_show_disks_cgi'check' ]
 then
 echo `date`: software_raid_show_disks - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,12 +60,12 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 SERVER=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: software_raid_show_disks - Not called by software_raid_show_disks.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

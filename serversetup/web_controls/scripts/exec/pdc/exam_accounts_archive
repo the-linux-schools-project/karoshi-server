@@ -34,7 +34,7 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_archive_cgi
-MD5Sum=$(md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
+MD5Sum=$(sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
 [ -z "$MD5Sum" ] && MD5Sum=not_set
 if [ "$MD5Sum"'check' != "$exam_accounts_archive_cgi"'check' ]
 then

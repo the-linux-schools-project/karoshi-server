@@ -41,9 +41,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/asset_register_view_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$asset_register_view_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$asset_register_view_cgi"'check' ]
 then
 	echo "$(date): asset_register_view - Incorrect Admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -55,9 +55,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_view_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/asset_register_view.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $asset_register_view_cgi'check' ]
+Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/asset_register_view.cgi | cut -d' ' -f1)
+[ -z "$Checksum2" ] && Checksum2=not_set
+if [ $Checksum2'check' != $asset_register_view_cgi'check' ]
 then
 	echo "$(date): asset_register_view - Incorrect Tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -77,7 +77,7 @@ DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._,:\-+%')
 
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 MOBILE=$(echo "$DATA" | cut -s -d: -f4)
 LOCATION=$(echo "$DATA" | cut -s -d: -f5 | sed 's/+/ /g')
 ACTION=$(echo "$DATA" | cut -s -d: -f6)
@@ -88,7 +88,7 @@ ASSETCHOICE=$(echo "$DATA" | cut -s -d: -f9)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum2"'check' ]
 then
 	echo "$(date): asset_register_view - Not called by asset_register_view.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -379,7 +379,7 @@ then
 	#Redirect to internet logs
 	TODAY=`date +%d-%m-%Y`
 
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
+	Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_computer_logs.cgi | cut -d' ' -f1`
 	#View logs
 	echo '</form><form action="dg_view_computer_logs.cgi" id="foo" method="post">
 	<input name="_TCPIP_'$TCPIP1'_DATE_'$TODAY'_DAYCOUNT_1_" value="" type="hidden">

@@ -47,9 +47,9 @@ echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/h
 #########################
 TCPIP_ADDR=$REMOTE_ADDR
 DATA=`cat | tr -cd 'A-Za-z0-9\._:%\-+'`
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/label_groups.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/label_groups.cgi | cut -d' ' -f1`
 #label_groups
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DATA:" | sudo -H /opt/karoshi/web_controls/exec/label_groups
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DATA:" | sudo -H /opt/karoshi/web_controls/exec/label_groups
 
 

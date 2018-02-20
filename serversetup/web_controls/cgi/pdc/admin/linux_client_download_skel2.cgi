@@ -121,8 +121,8 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox"><div class="sectiontitle">'$"Linux Client Download Skel"'</div><br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_download_skel2.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/linux_client_download_skel $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LINUXVERSION
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_download_skel2.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/linux_client_download_skel $REMOTE_USER:$REMOTE_ADDR:$Checksum:$LINUXVERSION
 DOWNLOADSTATUS=`echo $?`
 if [ $DOWNLOADSTATUS = 0 ]
 then

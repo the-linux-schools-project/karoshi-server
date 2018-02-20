@@ -351,9 +351,9 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/default_user_settings.cgi | cut -d' ' -f1`
 #Modify settings
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$MAXIMUMPASSWORDAGE:$USERNAMESTYLE:$MINPASSWORDLENGTH:$PASSWORDCOMPLEXITY:$PASSWORDHISTORYLENGTH:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:SETDATA:$LOCKOUTDURATION:$LOCKOUTTHRESHOLD:$LOCKOUTOBS:$MAXIMUMPASSWORDAGE:$USERNAMESTYLE:$MINPASSWORDLENGTH:$PASSWORDCOMPLEXITY:$PASSWORDHISTORYLENGTH:$CHANGEPASSFIRSTLOGIN:$PASSWORDEXPIRY:$HOMEDRIVE:" | sudo -H /opt/karoshi/web_controls/exec/default_user_settings
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

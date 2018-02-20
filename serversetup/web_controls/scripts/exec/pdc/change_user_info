@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/change_user_info_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$change_user_info_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$change_user_info_cgi"'check' ]
 then
 	echo "$(date): change_user_info - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -62,7 +62,7 @@ fi
 
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 USERNAME=$(echo "$DATA" | cut -s -d: -f4)
 SN=$(echo "$DATA" | cut -s -d: -f5)
 GIVENNAME=$(echo "$DATA" | cut -s -d: -f6)
@@ -76,7 +76,7 @@ NEWUSERNAME=$(echo "$DATA" | cut -s -d: -f12)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): change_user_info - Not called by change_user_info.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -188,16 +188,16 @@ echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $
 #Change the primary group if it has changed
 if [ "$PrimaryGroup" != "$GROUP" ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/change_primary_group
 fi
 
 #Change the username if it has changed
 if [ "$USERNAME" != "$NEWUSERNAME" ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
 	#Change username
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$NEWUSERNAME:$GIVENNAME:$SN:" | sudo -H /opt/karoshi/web_controls/exec/change_username
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$NEWUSERNAME:$GIVENNAME:$SN:" | sudo -H /opt/karoshi/web_controls/exec/change_username
 fi
 
 #Change info on federated ldap servers

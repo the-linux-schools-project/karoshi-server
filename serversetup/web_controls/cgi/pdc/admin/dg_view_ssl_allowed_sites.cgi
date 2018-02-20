@@ -132,12 +132,12 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<form action="/cgi-bin/admin/dg_view_ssl_allowed_sites2.cgi" name="selectedsites" method="post"><b></b><div id="actionbox3"><div id="titlebox"><b>'$"View SSL Allowed Sites"'</b><br><br></div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites.cgi | cut -d' ' -f1`
 #Show sites
 echo '<input class="button" value="Submit" type="submit">'
 echo '<input class="button" value="Reset" type="reset">'
 echo '<'input class='"'button'"' type='"'button'"' onclick='"'SetAllCheckBoxes'('"'"selectedsites"'", "'"_SITENAME_"'", true')'';''"' value='"'Select all'"''>'
-sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET:
+sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALPHABET:
 SITESTATUS=`echo $?`
 if [ $SITESTATUS = 101 ]
 then

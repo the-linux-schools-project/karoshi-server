@@ -146,12 +146,12 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select.cgi | cut -d' ' -f1`
 #Copy data to group
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="infobox">'
-sudo -H /opt/karoshi/web_controls/exec/web_management_upload_files $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPLOADFOLDER:$UPLOADID:$SERVERNAME:
+sudo -H /opt/karoshi/web_controls/exec/web_management_upload_files $REMOTE_USER:$REMOTE_ADDR:$Checksum:$UPLOADFOLDER:$UPLOADID:$SERVERNAME:
 
 UPLOADFOLDER=`echo $UPLOADFOLDER | sed 's/UNDERSCORE/_/g'`
 MESSAGE=`echo $"The files have been uploaded to the following path" : $UPLOADFOLDER`

@@ -223,9 +223,9 @@ echo '
 </tr></tbody></table><br>
 '
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_whitelists.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_whitelists.cgi | cut -d' ' -f1)
 #Show aliases
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ADDRESS:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_whitelists
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$ADDRESS:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_whitelists
 
 [ "$MOBILE" = no ] && echo '</div>'
 

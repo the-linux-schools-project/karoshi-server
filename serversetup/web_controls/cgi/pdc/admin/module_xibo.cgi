@@ -150,8 +150,8 @@ MESSAGE=$"The server cannot be blank."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_xibo.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_xibo
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_xibo.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALIAS:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_xibo
 EXEC_STATUS=$?
 if [ $EXEC_STATUS = 101 ]
 then

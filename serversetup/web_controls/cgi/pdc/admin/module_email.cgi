@@ -137,8 +137,8 @@ then
 	show_status
 fi
 echo '<div class="sectiontitle">'$"Setup E-Mail"' - '"$SERVERNAME"'</div><br></div><div id="infobox">'
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$COPYEMAIL:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_email
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALIAS:$COPYEMAIL:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_email
 if [ "$?" = 101 ]
 then
 	MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''

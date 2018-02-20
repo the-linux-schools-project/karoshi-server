@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_xerte_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_xerte.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_xerte_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_xerte.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $module_xerte_cgi'check' ]
 then
 	echo `date`: module_xerte - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -60,14 +60,14 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: module_xerte - Not called by module_xerte.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -105,7 +105,7 @@ echo `date`: setupxerte by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/k
 #Check that this server has been setup with the correct authentication
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 	if [ $? = 101 ]
 	then
 		echo $AUTHENTICATIONFAILMSG"<br><br>"
@@ -169,7 +169,7 @@ function install_xerte {
 #Install
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-	echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS: | /opt/karoshi/serversetup/modules/xerte/setupxerte
+	echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALIAS: | /opt/karoshi/serversetup/modules/xerte/setupxerte
 else
 	echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
 	#Remote server
@@ -184,7 +184,7 @@ else
 
 	#Install xerte
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:' | /opt/karoshi/serversetup/modules/xerte/setupxerte
+	echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALIAS:' | /opt/karoshi/serversetup/modules/xerte/setupxerte
 	'
 fi
 }

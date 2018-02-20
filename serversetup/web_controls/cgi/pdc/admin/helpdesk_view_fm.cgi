@@ -276,7 +276,7 @@ echo '</tbody></table>'
 
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 exit
 
 

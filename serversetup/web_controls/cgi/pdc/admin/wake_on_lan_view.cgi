@@ -141,7 +141,7 @@ echo '<form action="/cgi-bin/admin/wake_on_lan_view2.cgi" name="selectwol" metho
 
 </tr></tbody></table><br></div><div id="infobox">'
 #Show scheduled wake on lan locations
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:"
 echo '</div></div></form></div></body></html>'
 exit

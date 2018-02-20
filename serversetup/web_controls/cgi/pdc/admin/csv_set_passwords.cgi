@@ -105,7 +105,7 @@ rm -f /var/www/karoshi/csv_set_passwords/"$CSVFILE"
 mv /var/www/karoshi/csv_set_passwords/"$CSVFILE"2 /var/www/karoshi/csv_set_passwords/"$CSVFILE"
 sed -i '/^$/d' /var/www/karoshi/csv_set_passwords/"$CSVFILE"
 CSVFILE_LINES=$(cat /var/www/karoshi/csv_set_passwords/"$CSVFILE" | wc -l)
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_password.cgi | cut -d' ' -f1)
 COUNTER=1
 while [ "$COUNTER" -le "$CSVFILE_LINES" ]
 do
@@ -122,7 +122,7 @@ do
 	echo '<ul><li>'"$USERNAME"' - '$"changing password"'</li></ul>'
 
 	#Change password
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/change_password
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$PASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/change_password
 	let COUNTER="$COUNTER"+1
 done
 rm -f -R /var/www/karoshi/csv_set_passwords

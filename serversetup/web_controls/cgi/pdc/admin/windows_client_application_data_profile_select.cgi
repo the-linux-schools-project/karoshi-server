@@ -166,13 +166,13 @@ MESSAGE=$"You have not uploaded a zip or tar.gz archive."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_application_data_profile_select.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/windows_client_application_data_profile_select.cgi | cut -d' ' -f1`
 #Copy application folder to groups
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">'
-sudo -H /opt/karoshi/web_controls/exec/windows_client_application_data_profile_select $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FILENAME:$WINDOWSVER:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/windows_client_application_data_profile_select $REMOTE_USER:$REMOTE_ADDR:$Checksum:$FILENAME:$WINDOWSVER:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

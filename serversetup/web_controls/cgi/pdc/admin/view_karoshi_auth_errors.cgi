@@ -91,7 +91,7 @@ echo '<div id="actionbox">
 TD{font-size: 8pt;}"
 --->
 </STYLE>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_auth_errors.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/view_karoshi_auth_errors $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/view_karoshi_auth_errors.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/view_karoshi_auth_errors $REMOTE_USER:$REMOTE_ADDR:$Checksum
 echo '</div></div></body></html>'
 exit

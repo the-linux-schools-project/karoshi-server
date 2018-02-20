@@ -115,9 +115,9 @@ DIV_ID=menubox
 fi
 echo '<div id="'$DIV_ID'">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_clear_page_counts.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_clear_page_counts.cgi | cut -d' ' -f1`
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_clear_page_counts
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_clear_page_counts
 MESSAGE=$"All of the user page count data has been reset."
 show_status
 echo '</div></div></body></html>'

@@ -281,8 +281,8 @@ fi
 
 echo '<form action="/cgi-bin/admin/domain_trusts.cgi" method="post">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/domain_trusts.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$DOMAIN:$USERNAME:$PASSWORD:$IPADDRESS1:$IPADDRESS2:" | sudo -H /opt/karoshi/web_controls/exec/domain_trusts
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/domain_trusts.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$DOMAIN:$USERNAME:$PASSWORD:$IPADDRESS1:$IPADDRESS2:" | sudo -H /opt/karoshi/web_controls/exec/domain_trusts
 
 echo '</form>'
 [ $MOBILE = no ] && echo '</div>'

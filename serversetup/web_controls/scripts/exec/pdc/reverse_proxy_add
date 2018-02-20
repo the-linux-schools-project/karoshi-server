@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/reverse_proxy_add_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_add.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $reverse_proxy_add_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_add.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $reverse_proxy_add_cgi'check' ]
 then
 	echo `date`: reverse_proxy_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -60,7 +60,7 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 TARGET=`echo "$DATA" | cut -s -d: -f4 | sed 's/^http//g' | tr -cd 'A-Za-z0-9-'`
 #TARGET2=`echo $TARGET | sed 's/%3A//g' | sed 's/%2F/\//g' | sed 's/\/\///g'`
 DESTINATION=`echo "$DATA" | cut -s -d: -f5`
@@ -69,7 +69,7 @@ DESTINATION=`echo $DESTINATION | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: reverse_proxy_add - Not called by reverse_proxy_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

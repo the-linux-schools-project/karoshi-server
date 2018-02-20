@@ -182,9 +182,9 @@ then
 MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/update_server_proxy_settings.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/update_server_proxy_settings.cgi | cut -d' ' -f1`
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$TCPIP:$PORT:$USERNAME:$PASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/update_server_proxy_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$TCPIP:$PORT:$USERNAME:$PASSWORD:" | sudo -H /opt/karoshi/web_controls/exec/update_server_proxy_settings
 
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]

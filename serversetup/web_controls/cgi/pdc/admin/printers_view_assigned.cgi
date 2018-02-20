@@ -163,8 +163,8 @@ then
 	MESSAGE=$"The printer queue does not exist."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_view_assigned.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/printers_view_assigned "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$LOCATION:$PRINTER"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_view_assigned.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/printers_view_assigned "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$LOCATION:$PRINTER"
 if [ "$?" = 101 ]
 then
 	MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''

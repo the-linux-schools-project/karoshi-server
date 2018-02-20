@@ -150,8 +150,8 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_xerte.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALIAS:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_xerte
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_xerte.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALIAS:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_xerte
 EXEC_STATUS=$?
 if [ $EXEC_STATUS = 101 ]
 then

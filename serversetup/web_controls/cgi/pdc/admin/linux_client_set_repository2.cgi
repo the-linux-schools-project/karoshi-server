@@ -176,8 +176,8 @@ MESSAGE=$"There was a problem setting the repository. Please check the Karoshi w
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_set_repository2.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/linux_client_set_repository $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LINUXVERSION:$URI:$DISTRIBUTION:$SECTIONS
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_set_repository2.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/linux_client_set_repository $REMOTE_USER:$REMOTE_ADDR:$Checksum:$LINUXVERSION:$URI:$DISTRIBUTION:$SECTIONS
 SOFTWARESTATUS=`echo $?`
 MESSAGE=`echo $LINUXVERSION: $COMPLETEDMSG`
 if [ $SOFTWARESTATUS = 101 ]

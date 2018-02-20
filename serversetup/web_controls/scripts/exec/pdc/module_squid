@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_squid_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$module_squid_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_squid.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$module_squid_cgi"'check' ]
 then
 	echo "$(date): module_squid - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,12 +61,12 @@ exit 101
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): module_squid - Not called by module_squid.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -105,7 +105,7 @@ source /opt/karoshi/serversetup/variables/distro
 if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	#Check that this server has been setup with the correct authentication
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 	if [ "$?" = 101 ]
 	then
 		echo $"This server does not have the correct authentication set up on it.""<br><br>"
@@ -132,11 +132,11 @@ echo "$SERVERNAME" > /var/lib/samba/netlogon/domain_information/proxy_servers/"$
 /opt/karoshi/serversetup/modules/squid/scripts/create_proxy_dns_entries
 
 #Create keytab for proxy
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:proxy:proxy.$REALM:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:HTTP:proxy:proxy.$REALM:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 
 #Create keytab for squid
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:squid:$SERVERNAME:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:HTTP:squid:$SERVERNAME:proxy:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 #Merge proxy keytab into squid keytab
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
@@ -169,12 +169,12 @@ then
 	#########################
 
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:"' | /opt/karoshi/serversetup/modules/squid/setupsquid
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$Checksum:$HOSTNAME:$PDCIP:$SYNC_CONFIG:"' | /opt/karoshi/serversetup/modules/squid/setupsquid
 	'
 	[ "$?" = 101 ] && exit 101
 
 	else
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOSTNAME:$PDCIP:$SYNC_CONFIG:" | /opt/karoshi/serversetup/modules/squid/setupsquid
+		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$HOSTNAME:$PDCIP:$SYNC_CONFIG:" | /opt/karoshi/serversetup/modules/squid/setupsquid
 	[ "$?" = 101 ] && exit 101
 fi
 

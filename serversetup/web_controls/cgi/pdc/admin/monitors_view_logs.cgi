@@ -157,9 +157,9 @@ else
 '
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_view_logs.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_view_logs.cgi | cut -d' ' -f1`
 #Show monitor logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$SERVICE:" | sudo -H /opt/karoshi/web_controls/exec/monitors_view_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$SERVICE:" | sudo -H /opt/karoshi/web_controls/exec/monitors_view_logs
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

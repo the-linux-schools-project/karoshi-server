@@ -109,9 +109,9 @@ then
 MESSAGE=$"This theme choice does not exist."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_theme2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_change_theme2.cgi | cut -d' ' -f1`
 #Change language
-sudo -H /opt/karoshi/web_controls/exec/remote_management_change_theme $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$THEMECHOICE
+sudo -H /opt/karoshi/web_controls/exec/remote_management_change_theme $REMOTE_USER:$REMOTE_ADDR:$Checksum:$THEMECHOICE
 THEMESTATUS=`echo $?`
 if [ $THEMESTATUS = 101 ]
 then

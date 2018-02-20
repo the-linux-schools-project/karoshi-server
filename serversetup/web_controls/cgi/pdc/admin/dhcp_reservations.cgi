@@ -544,8 +544,8 @@ echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"
 if [ "$ACTION" = reallyedit ] || [ "$ACTION" = reallydelete ] || [ "$ACTION" = delete ] || [ "$ACTION" = canceldelete ] || [ "$ACTION" = deleteall ] || [ "$ACTION" = clearall ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = restartdhcp ]
 then
 	MACADDRESS=$(echo "$MACADDRESS" | sed 's/:/%3A/g')
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$CLIENTHOSTNAME:$MACADDRESS:$TCPIPADDRESS:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_reservations
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$CLIENTHOSTNAME:$MACADDRESS:$TCPIPADDRESS:" | sudo -H /opt/karoshi/web_controls/exec/dhcp_reservations
 	#view_reservations
 	FORMID=reservations
 	if [ "$ACTION" = delete ] || [ "$ACTION" = canceldelete ]

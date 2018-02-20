@@ -249,8 +249,8 @@ echo '
 
 	</tr></tbody></table><br>'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_disk_usage_logs.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/view_disk_usage_logs "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVER:$MOBILE:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/view_disk_usage_logs.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/view_disk_usage_logs "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVER:$MOBILE:"
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

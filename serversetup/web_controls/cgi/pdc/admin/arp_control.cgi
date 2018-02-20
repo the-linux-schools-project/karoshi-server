@@ -234,8 +234,8 @@ fi
 
 echo '<form action="/cgi-bin/admin/arp_control.cgi" method="post">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$DEVICE:$MACADDR" | sudo -H /opt/karoshi/web_controls/exec/arp_control
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/arp_control.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$DEVICE:$MACADDR" | sudo -H /opt/karoshi/web_controls/exec/arp_control
 
 echo '</form>'
 [ "$MOBILE" = no ] && echo '</div>'

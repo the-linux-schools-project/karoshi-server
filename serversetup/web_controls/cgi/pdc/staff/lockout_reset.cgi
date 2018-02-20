@@ -88,7 +88,7 @@ then
 fi
 
 #Check to see that the user exists
-echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
+echo "$Checksum:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
 if [ "$?" = 111 ]
 then
 	MESSAGE=$"This user does not exist."
@@ -107,9 +107,9 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/lockout_reset.cgi | cut -d' ' -f1)
 #Reset lockout
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 if [ "$?" = 0 ]
 then
 	MESSAGE="$USERNAME: "$"Lockout attempts reset."

@@ -108,10 +108,10 @@ MESSAGE=$"The group name must not be blank."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
 #Delete monitor
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_delete
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_delete
 MONITOR=`echo $MONITOR | sed 's/%25%25%25%25%25/_/g'`
 
 EXEC_STATUS=`echo $?`

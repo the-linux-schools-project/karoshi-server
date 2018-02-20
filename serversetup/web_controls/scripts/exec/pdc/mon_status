@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/mon_status_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $mon_status_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $mon_status_cgi'check' ]
 then
 	echo `date`: mon_status - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -49,9 +49,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/mon_status_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/mon_status.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM2"  ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $mon_status_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/mon_status.cgi | cut -d' ' -f1`
+[ -z "$Checksum2"  ] && Checksum2=not_set
+if [ $Checksum2'check' != $mon_status_cgi'check' ]
 then
 	echo `date`: mon_status - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -67,13 +67,13 @@ then
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 	echo `date`: mon_status - Not called by mon_status.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

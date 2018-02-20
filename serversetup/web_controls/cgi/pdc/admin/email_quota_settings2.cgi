@@ -281,9 +281,9 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
 #Create config file
-sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ADMINEMAIL:$THRESHOLD1:$THRESHOLD2:$THRESHOLD3:$THRESHOLD4:$INTERVAL1:$INTERVAL2:$INTERVAL3:$INTERVAL4
+sudo -H /opt/karoshi/web_controls/exec/email_quota_settings_apply $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ADMINEMAIL:$THRESHOLD1:$THRESHOLD2:$THRESHOLD3:$THRESHOLD4:$INTERVAL1:$INTERVAL2:$INTERVAL3:$INTERVAL4
 MESSAGE=$"E-mail quota warning settings have been applied."
 show_status
 exit

@@ -259,8 +259,8 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$FORCEREBOOT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_servers.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DAY:$HOURS:$MINUTES:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$FORCEREBOOT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_servers
 show_page
 
 echo "</div></body></html>"

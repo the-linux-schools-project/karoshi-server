@@ -253,9 +253,9 @@ echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 echo '<form action="/cgi-bin/admin/radius_access_points.cgi" method="post">
 '
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_points.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/radius_access_points.cgi | cut -d' ' -f1)
 #View access points
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$SHORTNAME:$SECRETKEY:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_points
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$SHORTNAME:$SECRETKEY:$TCPIP:" | sudo -H /opt/karoshi/web_controls/exec/radius_access_points
 
 echo '</form></div>'
 

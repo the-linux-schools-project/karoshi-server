@@ -115,8 +115,8 @@ MESSAGE=$"Please enter the full address without http://www or subdirectories."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_ssl_allowed_sites.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/dg_ssl_allowed_sites $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WEBADDRESS:
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_ssl_allowed_sites.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/dg_ssl_allowed_sites $REMOTE_USER:$REMOTE_ADDR:$Checksum:$WEBADDRESS:
 MESSAGE=`echo $WEBADDRESS $"The site has been added."`
 show_status
 exit

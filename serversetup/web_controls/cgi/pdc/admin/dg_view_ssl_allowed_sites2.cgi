@@ -85,9 +85,9 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites2.cgi | cut -d' ' -f1`
 #Delete sites
-sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:`echo ${SITEARRAY[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/dg_view_ssl_allowed_sites2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:`echo ${SITEARRAY[@]:0} | sed 's/ /:/g'`
 MESSAGE=$"The selected sites have been deleted."
 show_status
 echo '</form>'

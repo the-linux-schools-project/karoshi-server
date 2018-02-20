@@ -266,8 +266,8 @@ else
 fi
 
 echo '<form action="/cgi-bin/admin/gluster_control.cgi" method="post" id="form1" name="combobox">'
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$VOLUME:$SERVER:$SERVERS:$FOLDER:" | sudo -H /opt/karoshi/web_controls/exec/gluster_control
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/gluster_control.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$VOLUME:$SERVER:$SERVERS:$FOLDER:" | sudo -H /opt/karoshi/web_controls/exec/gluster_control
 echo '</form>'
 
 [ "$MOBILE" = no ] && echo '</div>'

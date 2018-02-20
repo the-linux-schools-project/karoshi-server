@@ -101,9 +101,9 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_view_passwords.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_view_passwords.cgi | cut -d' ' -f1`
 #View Reset passwords
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/bulk_user_creation_view_passwords
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/bulk_user_creation_view_passwords
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS != 0 ]
 then

@@ -117,8 +117,8 @@ MESSAGE=$ACCESS_ERROR1
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_show_qrcodes.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/asset_register_show_qrcodes
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/asset_register_show_qrcodes.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/asset_register_show_qrcodes
 
 echo '</div></body></html>'
 exit

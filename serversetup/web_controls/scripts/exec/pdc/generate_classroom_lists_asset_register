@@ -33,9 +33,9 @@ echo `date`: generate_classroom_lists_asset_register_cgi - No admin MD5Checksum 
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/generate_classroom_lists_asset_register_cgi
-MD5SUM1=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
-[ $MD5SUM1'null' = null ] && MD5SUM1=not_set
-if [ $MD5SUM1'check' != $generate_classroom_lists_asset_register_cgi'check' ]
+Checksum1=`sha256sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
+[ $Checksum1'null' = null ] && Checksum1=not_set
+if [ $Checksum1'check' != $generate_classroom_lists_asset_register_cgi'check' ]
 then
 echo `date`: generate_classroom_lists_asset_register - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -47,9 +47,9 @@ echo `date`: generate_classroom_lists_asset_register_cgi - No tech MD5Checksum >
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/generate_classroom_lists_asset_register_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $generate_classroom_lists_asset_register_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $generate_classroom_lists_asset_register_cgi'check' ]
 then
 echo `date`: generate_classroom_lists_asset_register - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -76,12 +76,12 @@ fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM1'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] 
+if [ $RemoteCheckSum'check' != $Checksum1'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ] 
 then
 echo `date`: generate_classroom_lists_asset_register - Not called by generate_classroom_lists_asset_register.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

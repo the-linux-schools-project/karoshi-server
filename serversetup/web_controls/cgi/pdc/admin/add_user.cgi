@@ -494,9 +494,9 @@ then
 	</form></div></div></body></html>'
 	exit
 else
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
 	#Add user
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/add_user
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 EXEC_STATUS="$?"
 	MESSAGE=''$"Forename":' '"${FIRSTNAME^}"'\n'$"Surname"': '"${SURNAME^}"'\n'$"Username"': '"$USERNAME"'\n'$"Created with primary group"' '"$GROUP"'.'
 	if [ "$EXEC_STATUS" = 101 ]

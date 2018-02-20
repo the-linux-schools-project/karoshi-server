@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/vpn_certificates_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$vpn_certificates_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$vpn_certificates_cgi"'check' ]
 then
 	echo "$(date): vpn_certificates - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,7 +61,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f4)
 USERNAME=$(echo "$DATA" | cut -s -d: -f5)
 
@@ -71,7 +71,7 @@ USERNAME=$(echo "$DATA" | cut -s -d: -f5)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): vpn_certificates - Not called by vpn_certificates.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -108,7 +108,7 @@ document.frm.submit();
 if [ "$ACTION" = downloadcert ]
 then
 
-	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/get_client_cert 1>/dev/null
+	echo "$REMOTE_USER:$REMOTE_ADDR:$RemoteCheckSum:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/get_client_cert 1>/dev/null
 
 	#Redirect to the backup folder
 	echo '<SCRIPT language="Javascript">
@@ -122,13 +122,13 @@ fi
 
 if [ "$ACTION" = reallyunrevoke ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/unrevoke_client_cert 1>/dev/null
+	echo "$REMOTE_USER:$REMOTE_ADDR:$RemoteCheckSum:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/unrevoke_client_cert 1>/dev/null
 	reloadform
 fi
 
 if [ "$ACTION" = reallyrevoke ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/revoke_client_cert 1>/dev/null
+	echo "$REMOTE_USER:$REMOTE_ADDR:$RemoteCheckSum:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/revoke_client_cert 1>/dev/null
 	reloadform
 fi
 
@@ -157,7 +157,7 @@ fi
 
 if [ "$ACTION" = reallyadd ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$REMOTE_MD5:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/create_client_cert 1>/dev/null
+	echo "$REMOTE_USER:$REMOTE_ADDR:$RemoteCheckSum:$USERNAME:" | sudo -H /opt/karoshi/serversetup/modules/vpn/create_client_cert 1>/dev/null
 	reloadform
 fi
 

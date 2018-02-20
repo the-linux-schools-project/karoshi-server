@@ -122,7 +122,7 @@ fi
 
 if [ "$ACTION" = add ] || [ "$ACTION" = delete ] && [ ! -z "$CATEGORY" ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$CATEGORY:" | sudo -H /opt/karoshi/web_controls/exec/categories
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$CATEGORY:" | sudo -H /opt/karoshi/web_controls/exec/categories
 fi
 
 #Generate navigation bar

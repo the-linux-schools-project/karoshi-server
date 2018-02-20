@@ -154,9 +154,9 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/monitors_add_email_alert.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add_email_alert.cgi | cut -d' ' -f1)
 #Add alert information
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILTO:$EMAILFROM:$MAILSERVER:$NAME" | sudo -H /opt/karoshi/web_controls/exec/monitors_add_email_alert
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$EMAILTO:$EMAILFROM:$MAILSERVER:$NAME" | sudo -H /opt/karoshi/web_controls/exec/monitors_add_email_alert
 if [ "$?" = 101 ]
 then
 	MESSAGE=$"There was a problem with this action." $"Please check the karoshi web administration logs for more details."

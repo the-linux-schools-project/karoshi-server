@@ -74,13 +74,13 @@ MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_upload_distro2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_upload_distro2.cgi | cut -d' ' -f1`
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox"><div class="sectiontitle">'$"Linux Client - Upload Distribution"'</div><br>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/linux_client_upload_distro
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUP" | sudo -H /opt/karoshi/web_controls/exec/linux_client_upload_distro
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

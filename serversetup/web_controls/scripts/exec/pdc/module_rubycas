@@ -33,9 +33,9 @@ echo `date`: module_rubycas - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_ma
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_rubycas_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_rubycas.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_rubycas_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_rubycas.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $module_rubycas_cgi'check' ]
 then
 echo `date`: module_rubycas - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,13 +60,13 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 LDAPSERVER=`echo "$DATA" | cut -s -d: -f4`
 CASSERVER=`echo "$DATA" | cut -s -d: -f5`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: module_rubycas - Not called by module_rubycas.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -181,7 +181,7 @@ echo $ROLE3"<br>" > /opt/karoshi/server_network/servers/$CASSERVER/ldapserver
 else
 PDCIP=`net lookup $HOSTNAME`
 ssh -x -o PasswordAuthentication=no $CASSERVER '
-echo "'$REMOTE_USER':'$REMOTE_ADDR':'$MD5SUM':'$HOSTNAME':'$PDCIP':" | /opt/karoshi/serversetup/modules/ldap/configureldap 
+echo "'$REMOTE_USER':'$REMOTE_ADDR':'$Checksum':'$HOSTNAME':'$PDCIP':" | /opt/karoshi/serversetup/modules/ldap/configureldap 
 '
 #Copy in /etc/ldap.secret
 scp -p /etc/ldap.secret root@$CASSERVER:/etc/ 1> /dev/null
@@ -197,7 +197,7 @@ fi
 CASSERVERIP=127.0.0.1
 if [ $CASSERVER = `hostname-fqdn` ]
 then
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CASSERVER:$CASSERVERIP: | /opt/karoshi/serversetup/modules/rubycas/setuprubycas
+echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$CASSERVER:$CASSERVERIP: | /opt/karoshi/serversetup/modules/rubycas/setuprubycas
 fi
 
 #Remote server
@@ -223,7 +223,7 @@ scp -p -r /opt/karoshi/serversetup/modules/rubycas root@$CASSERVER:/opt/karoshi/
 scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/rubycas root@$CASSERVER:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 #Install cas
 ssh -x -o PasswordAuthentication=no $CASSERVER '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CASSERVER:$CASSERVERIP:' | /opt/karoshi/serversetup/modules/rubycas/setuprubycas
+echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CASSERVER:$CASSERVERIP:' | /opt/karoshi/serversetup/modules/rubycas/setuprubycas
 '
 fi
 

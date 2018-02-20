@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
 then
 	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -47,9 +47,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
 then
 	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -73,13 +73,13 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 CSVMD5=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 	echo `date`: bulk_user_creation_import_enrollment_numbers - Not called by bulk_user_creation_import_enrollment_numbers.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -110,7 +110,7 @@ then
 	echo `date`: bulk_user_creation_import_enrollment_numbers - No CSV file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
-CSVMD52=`md5sum /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -d' ' -f1`
+CSVMD52=`sha256sum /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -d' ' -f1`
 if [ $CSVMD5 != $CSVMD52 ]
 then
 	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect MD5sum "for" the CSV file by $REMOTE_USER from $REMOTE_ADDR>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE

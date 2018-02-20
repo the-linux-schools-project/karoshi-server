@@ -239,7 +239,7 @@ COMMONNAME="${COMMONNAME//+/ }"
 EMAIL="${EMAIL//+/ }"
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate2.cgi | cut -d' ' -f1)
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
@@ -251,7 +251,7 @@ else
 	echo "<b>$SERVER - "$"E-mail Certificate""</b><br><br>"
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$COUNTRYCODE:$STATE:$LOCALITY:$INSTITUTENAME:$DEPARTMENT:$COMMONNAME:$EMAIL:$EMAILCERT:$WEBCERT:$CERTTYPE" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:$COUNTRYCODE:$STATE:$LOCALITY:$INSTITUTENAME:$DEPARTMENT:$COMMONNAME:$EMAIL:$EMAILCERT:$WEBCERT:$CERTTYPE" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
 STATUS="$?"
 if [ "$STATUS" = 101 ]
 then

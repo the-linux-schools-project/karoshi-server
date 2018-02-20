@@ -118,8 +118,8 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_federation_control.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_federation_control
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_federation_control.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_federation_control
 completed
 echo '</div></form></div></body></html>'
 exit

@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/radius_access_controls_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$radius_access_controls_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$radius_access_controls_cgi"'check' ]
 then
 	echo "$(date): radius_access_controls - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -62,14 +62,14 @@ fi
 
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\-')
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2 | tr -cd '0-9.')
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f5 | tr -cd '[:lower:]')
 GROUP=$(echo "$DATA" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\-')
 
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): radius_access_controls - Not called by radius_access_controls.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

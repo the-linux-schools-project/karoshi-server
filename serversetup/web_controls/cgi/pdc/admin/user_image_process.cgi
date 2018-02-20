@@ -104,8 +104,8 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/user_image_process.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$IMAGEFILE:" | sudo -H /opt/karoshi/web_controls/exec/user_image_upload
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/user_image_process.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$IMAGEFILE:" | sudo -H /opt/karoshi/web_controls/exec/user_image_upload
 STATUS=`echo $?`
 MESSAGE=`echo $IMAGEFILE - $"User Image uploaded."`
 

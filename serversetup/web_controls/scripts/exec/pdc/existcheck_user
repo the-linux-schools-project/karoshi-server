@@ -5,7 +5,7 @@
 #112 user exists
 read -t 1 -s DATA
 DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\n\-+'`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f1`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f1`
 USERTOCHECK=`echo "$DATA" | cut -s -d: -f2`
 USERTOCHECK=`echo $USERTOCHECK | tr -cd 'A-Za-z0-9\._:\n\-+'`
 [ `echo $USERTOCHECK'null' | sed 's/ //g'` = null ] && exit 110

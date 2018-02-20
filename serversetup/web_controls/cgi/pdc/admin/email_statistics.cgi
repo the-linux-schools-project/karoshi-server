@@ -259,7 +259,7 @@ TABLECLASS=mobilestandard2
 WIDTH=160
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_statistics.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_statistics.cgi | cut -d' ' -f1`
 #Show logs
 
 
@@ -284,7 +284,7 @@ fi
 echo '</div><div id="infobox">'
 fi
 
-sudo -H /opt/karoshi/web_controls/exec/email_statistics $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
+sudo -H /opt/karoshi/web_controls/exec/email_statistics $REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
 
 LOG_STATUS=`echo $?`
 if [ $LOG_STATUS = 101 ]

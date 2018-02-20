@@ -231,9 +231,9 @@ then
 	echo '<b>'$"Student Internet Logs"'</b><br><br>'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/dg_view_student_user_logs.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/dg_view_student_user_logs.cgi | cut -d' ' -f1)
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$DAY:$MONTH:$YEAR:$REMOTE_USER:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dg_view_student_user_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$DAY:$MONTH:$YEAR:$REMOTE_USER:$MOBILE" | sudo -H /opt/karoshi/web_controls/exec/dg_view_student_user_logs
 EXEC_STATUS="$?"
 if [ "$EXEC_STATUS" = 101 ]
 then

@@ -158,8 +158,8 @@ else
 echo '<b>'$"E-Mail Queue" - $EMAILSERVER'</b><br><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_control_queue.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$MAILID:" | sudo -H /opt/karoshi/web_controls/exec/email_control_queue
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_control_queue.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$MAILID:" | sudo -H /opt/karoshi/web_controls/exec/email_control_queue
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

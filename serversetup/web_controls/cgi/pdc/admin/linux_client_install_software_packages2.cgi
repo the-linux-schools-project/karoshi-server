@@ -189,8 +189,8 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_install_software_packages2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_install_software_packages2.cgi | cut -d' ' -f1`
 #Set software control options
-sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$VERSION:$ACTION:$INSTALL:$SOFTWARE:$LOCATION:
+sudo -H /opt/karoshi/web_controls/exec/linux_client_install_software_packages $REMOTE_USER:$REMOTE_ADDR:$Checksum:$VERSION:$ACTION:$INSTALL:$SOFTWARE:$LOCATION:
 completed
 exit

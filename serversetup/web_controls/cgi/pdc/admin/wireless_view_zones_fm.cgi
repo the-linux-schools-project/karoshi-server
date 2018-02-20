@@ -56,8 +56,8 @@ echo '
 
 echo '<form action="/cgi-bin/admin/wireless_view_zones.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"View Wireless Zones"'</div><br>'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones_fm.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/wireless_view_zones
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones_fm.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/wireless_view_zones
 
 echo '  <br>
   <br>

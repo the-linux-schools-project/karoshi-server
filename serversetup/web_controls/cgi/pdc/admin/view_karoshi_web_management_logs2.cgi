@@ -211,7 +211,7 @@ then
 	/opt/karoshi/web_controls/generate_navbar_admin
 	echo '<div id="actionbox3"><div id="titlebox">'
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/view_karoshi_web_management_logs2.cgi | cut -d' ' -f1)
 #Show logs
 
 
@@ -235,7 +235,7 @@ fi
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-sudo -H /opt/karoshi/web_controls/exec/view_karoshi_web_management_logs "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$MOBILE:"
+sudo -H /opt/karoshi/web_controls/exec/view_karoshi_web_management_logs "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOGVIEW:$DAY:$MONTH:$YEAR:$MOBILE:"
 LOG_STATUS="$?"
 if [ "$LOG_STATUS" = 101 ]
 then

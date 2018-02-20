@@ -165,9 +165,9 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_name.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_name.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHORTNAME:$LONGNAME:$SERVERNAME:$SERVERTYPE" | sudo -H /opt/karoshi/web_controls/exec/remote_management_name
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SHORTNAME:$LONGNAME:$SERVERNAME:$SERVERTYPE" | sudo -H /opt/karoshi/web_controls/exec/remote_management_name
 EXEC_STATUS="$?"
 LONGNAME=$(echo $LONGNAME | sed 's/+/ /g')
 MESSAGE=''$"The web management has been changed."'\n\n'$"Short Site Name"': '$SHORTNAME'\n\n'$"Site Name"': '$LONGNAME''

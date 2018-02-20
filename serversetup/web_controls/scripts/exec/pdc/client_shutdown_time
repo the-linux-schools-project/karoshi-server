@@ -33,9 +33,9 @@ echo `date`: client_shutdown_time - No MD5Checksum >> /opt/karoshi/logs/karoshi_
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/client_shutdown_time2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $client_shutdown_time2_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $client_shutdown_time2_cgi'check' ]
 then
 echo `date`: client_shutdown_time - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -52,14 +52,14 @@ exit 101
 fi
 REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
+RemoteCheckSum=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
 HOUR=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
 MINUTES=`echo $* | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-'`
 IDLETIME=`echo $* | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:\-'`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: client_shutdown_time - Not called by client_shutdown_time.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

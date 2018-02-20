@@ -165,8 +165,8 @@ MESSAGE=$"You have not entered a correct action."
 show_status
 fi
 #echo $DATA'<br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/file_manager.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:$LOCATION:$FILENAME:$ACTION:$PERMISSIONS:$OWNER:$GROUP:$ITEMMOVE:" | sudo -H /opt/karoshi/web_controls/exec/file_manager
 
 echo '
 

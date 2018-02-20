@@ -98,7 +98,7 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/remote_management_view.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_view.cgi | cut -d' ' -f1)
 #Show web admin users
-sudo -H /opt/karoshi/web_controls/exec/remote_management_view "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM"
+sudo -H /opt/karoshi/web_controls/exec/remote_management_view "$REMOTE_USER:$REMOTE_ADDR:$Checksum"
 exit

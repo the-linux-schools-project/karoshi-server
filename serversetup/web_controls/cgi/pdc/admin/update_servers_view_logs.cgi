@@ -229,7 +229,7 @@ else
 	DIV_ID=mobileactionbox
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_servers_view_logs.cgi | cut -d' ' -f1)
 #Show logs
 
 
@@ -265,7 +265,7 @@ else
 	'
 fi
 
-sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
+sudo -H /opt/karoshi/web_controls/exec/update_servers_view_logs "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOGVIEW:$DAY:$MONTH:$YEAR:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
 LOG_STATUS="$?"
 echo '</div>'
 if [ "$LOG_STATUS" = 101 ]

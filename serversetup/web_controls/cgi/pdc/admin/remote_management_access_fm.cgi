@@ -72,8 +72,8 @@ echo '<form action="/cgi-bin/admin/remote_management_access.cgi" method="post">
 <div id="actionbox"><span style="font-weight: bold;">'$"Remote Management Secure Access"'</span><br><br>'
 
 #Check to see the level of user
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_access_fm.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/remote_management_level
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_access_fm.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/remote_management_level
 
 USERLEVEL=`echo $?`
 #Check the level is correct
