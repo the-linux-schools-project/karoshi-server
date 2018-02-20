@@ -134,7 +134,7 @@ then
 	#Make sure that ssl is enabled
 	a2enmod ssl 1>/dev/null
 	#Copy in ssl config file
-	[ ! -e /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
+	[ ! -e /etc/apache2/sites-enabled/default-ssl ] && cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/configfiles/apache/default-ssl /etc/apache2/sites-enabled/
 	#Link default-ssl to default-ssl.conf for later versions of apache on Ubuntu 14.04
 	if [[ $(grep -c "IncludeOptional sites-enabled/\*.conf" /etc/apache2/apache2.conf) -gt 0 ]]
 	then
