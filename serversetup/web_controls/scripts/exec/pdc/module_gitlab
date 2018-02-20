@@ -27,9 +27,9 @@ then
 fi
 
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_gitlab_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_gitlab.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_gitlab_cgi'check' ]; then
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_gitlab.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $module_gitlab_cgi'check' ]; then
 	echo `date`: module_gitlab - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
@@ -51,14 +51,14 @@ if [ -z "$DATA" ]; then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]; then
+if [ $RemoteCheckSum'check' != $Checksum'check' ]; then
 	echo `date`: module_gitlab - Not called by module_gitlab.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
@@ -88,7 +88,7 @@ echo `date`: setupgitlab by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/
 
 #Check that this server has been setup with the correct authentication
 if [ $SERVERNAME != `hostname-fqdn` ]; then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 	if [ $? = 101 ]; then
 		echo $AUTHENTICATIONFAILMSG"<br><br>"
 		echo `date`: module_gitlab - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
@@ -148,7 +148,7 @@ fi
 function install_gitlab {
 	#Install
 	if [ $SERVERNAME == `hostname-fqdn` ]; then
-		echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:$PDCIP: | /opt/karoshi/serversetup/modules/gitlab/setupgitlab
+		echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:$PDCIP: | /opt/karoshi/serversetup/modules/gitlab/setupgitlab
 	else
 		echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
 		#Remote server
@@ -160,7 +160,7 @@ function install_gitlab {
 
 		#Install gitlab
 		ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:$PDCIP:' | /opt/karoshi/serversetup/modules/gitlab/setupgitlab
+echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:$PDCIP:' | /opt/karoshi/serversetup/modules/gitlab/setupgitlab
 '
 	fi
 }

@@ -245,8 +245,8 @@ get_data
 fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_servers_add.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/windows_servers_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$ADMINUSER:$ROLE
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/windows_servers_add.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/windows_servers_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$ADMINUSER:$ROLE
 STATUSCHECK=`echo $?`
 
 if [ $STATUSCHECK = 102 ]

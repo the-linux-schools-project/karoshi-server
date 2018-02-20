@@ -171,7 +171,7 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_top_sites.cgi | cut -d' ' -f1)
 #View logs
 
 WIDTH=100
@@ -195,7 +195,7 @@ echo '<div class="sectiontitle">'$"Top Sites" "$DAY-$MONTH-$YEAR"'</div>
 
 </div><div id="infobox">'
 echo \<form action=\"/cgi-bin/admin/dg_view_site_logs2.cgi\" method=\"post\"\>
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_top_sites
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_top_sites
 EXEC_STATUS="$?"
 if [ $EXEC_STATUS = 102 ]
 then

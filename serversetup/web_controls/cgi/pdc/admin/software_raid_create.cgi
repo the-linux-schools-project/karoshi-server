@@ -187,9 +187,9 @@ else
 </td></tr></tbody></table><br></div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_create.cgi | cut -d' ' -f1`
 echo '<form action="/cgi-bin/admin/software_raid_create2.cgi" name="selectservers" method="post">'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create
 
 echo "</form></div></div></div></body></html>"
 exit

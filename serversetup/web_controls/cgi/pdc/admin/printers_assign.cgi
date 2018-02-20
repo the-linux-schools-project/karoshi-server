@@ -112,9 +112,9 @@ do
 	let COUNTER="$COUNTER"+1
 done
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_assign.cgi | cut -d' ' -f1)
 #Assign printers
-sudo -H /opt/karoshi/web_controls/exec/printers_assign "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTER:$(echo "${LOCATIONS[@]:0}" | sed 's/ /:/g')"
+sudo -H /opt/karoshi/web_controls/exec/printers_assign "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PRINTER:$(echo "${LOCATIONS[@]:0}" | sed 's/ /:/g')"
 
 echo "</div></body></html>"
 exit

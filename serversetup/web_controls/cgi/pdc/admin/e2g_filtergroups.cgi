@@ -205,8 +205,8 @@ else
 	echo '<div id="'$DIV_ID'"><div id=titlebox>'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:$MOBILE:$HOUR1:$MINUTES1:$HOUR2:$MINUTES2:$DAYOFWEEK:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/e2g_filtergroups.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$FILTERNAME:$FILTERDATA:$FILTERDATA2:$FILTERDATA3:$FILTERDATA4:$MOBILE:$HOUR1:$MINUTES1:$HOUR2:$MINUTES2:$DAYOFWEEK:" | sudo -H /opt/karoshi/web_controls/exec/e2g_filtergroups
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

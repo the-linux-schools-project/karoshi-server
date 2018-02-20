@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/web_management_upload_files_select_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $web_management_upload_files_select_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $web_management_upload_files_select_cgi'check' ]
 then
 	echo `date`: web_management_upload_files - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -52,14 +52,14 @@ then
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f3`
 UPLOADFOLDER=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f4`
 UPLOADID=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f5`
 SERVERNAME=`echo $* | tr -cd 'A-Za-z0-9\_:\-.%' | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: web_management_upload_files - Not called by web_management_upload_files.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

@@ -303,8 +303,8 @@ else
 echo '<b>'$"Create Software Raid" - $SERVERNAME'</b><br><br></div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_create2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RAIDTYPE:$DRIVES:$MOUNTPOINT" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create2
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_create2.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RAIDTYPE:$DRIVES:$MOUNTPOINT" | sudo -H /opt/karoshi/web_controls/exec/software_raid_create2
 control_raid
 echo '</div></div></body></html>'
 exit

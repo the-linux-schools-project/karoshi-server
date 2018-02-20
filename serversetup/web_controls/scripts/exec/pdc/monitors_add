@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_add_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set1
-if [ "$MD5SUM"'check' != "$monitors_add_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set1
+if [ "$Checksum"'check' != "$monitors_add_cgi"'check' ]
 then
 	echo "$(date): monitors_add - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -53,7 +53,7 @@ then
 fi
 REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f3)
 GROUPNAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f4 | sed 's/+/-/g')
 TCPIP=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f5)
 ALERTAFTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f6)
@@ -66,7 +66,7 @@ MONITORTYPES=( $(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f12- | sed 
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): monitors_add - Not called by monitors_add.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

@@ -147,8 +147,8 @@ show_status
 fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_ban_use.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILUSER:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_use
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_ban_use.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$EMAILUSER:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_use
 
 if [ $EMAILUSER'null' != null ]
 then

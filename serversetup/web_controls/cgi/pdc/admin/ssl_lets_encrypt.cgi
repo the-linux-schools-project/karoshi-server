@@ -227,8 +227,8 @@ else
 			ALIASLIST="${CUSTOMWEBADDRESS// /,}"
 		fi
 		ACTION=addcert
-		MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1)
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIASLIST:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_lets_encrypt
+		Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/ssl_lets_encrypt.cgi | cut -d' ' -f1)
+		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIASLIST:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/ssl_lets_encrypt
 	else
 		echo "<ul><li>$SERVERNAME: This server has not been set up as a web server</li></ul>"	
 	fi

@@ -231,8 +231,8 @@ echo '
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_protected_distribution_lists.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_protected_distribution_lists.cgi | cut -d' ' -f1)
 #Show aliases
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAME:$GROUP:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_protected_distribution_lists
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USERNAME:$GROUP:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_protected_distribution_lists
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'

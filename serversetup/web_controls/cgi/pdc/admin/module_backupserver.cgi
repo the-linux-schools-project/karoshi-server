@@ -123,8 +123,8 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="infobox">'
 #Add backup server
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_backupserver.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1" | sudo -H /opt/karoshi/web_controls/exec/module_backupserver
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_backupserver.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$PASSWORD1" | sudo -H /opt/karoshi/web_controls/exec/module_backupserver
 completed
 echo '</div></div></div></body></html>'
 exit

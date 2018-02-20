@@ -249,8 +249,8 @@ else
 	</div><div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/vpn_certificates
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/vpn_certificates
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

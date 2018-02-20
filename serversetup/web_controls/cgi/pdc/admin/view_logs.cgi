@@ -231,8 +231,8 @@ then
 	/opt/karoshi/web_controls/show_servers "$MOBILE" servers $"View Event Logs" viewlist
 	echo '</form>'
 else
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$SERVERNAME:$ACTION:$LOGFILE:$TAIL_LENGTH:" | sudo -H /opt/karoshi/web_controls/exec/view_logs
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/view_logs.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$SERVERNAME:$ACTION:$LOGFILE:$TAIL_LENGTH:" | sudo -H /opt/karoshi/web_controls/exec/view_logs
 fi
 
 [ $MOBILE = no ] && echo '</div>'

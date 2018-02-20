@@ -148,13 +148,13 @@ then
 MESSAGE=$"You have not uploaded a file."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/windows_client_icon_select.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/windows_client_icon_select.cgi | cut -d' ' -f1`
 #Copy profiles to groups
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo '<div id="actionbox">'
-sudo -H /opt/karoshi/web_controls/exec/windows_client_icon_select $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$WINDOWSVER:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/windows_client_icon_select $REMOTE_USER:$REMOTE_ADDR:$Checksum:$WINDOWSVER:`echo ${PRIGROUP[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

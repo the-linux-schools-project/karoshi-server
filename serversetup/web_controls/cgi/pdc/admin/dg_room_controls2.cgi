@@ -117,8 +117,8 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:$ACTION:$ASSET:" | sudo -H /opt/karoshi/web_controls/exec/dg_room_controls
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_room_controls2.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:$ACTION:$ASSET:" | sudo -H /opt/karoshi/web_controls/exec/dg_room_controls
 
 
 #Redirect to room controls location page

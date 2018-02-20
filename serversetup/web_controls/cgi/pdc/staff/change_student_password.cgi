@@ -123,7 +123,7 @@ then
 fi
 
 #Check to see that the user exists
-echo "$MD5SUM:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
+echo "$Checksum:$USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
 if [ "$?" != 112 ]
 then
 	MESSAGE=$"The username does not exist."
@@ -231,16 +231,16 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/change_student_password.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/change_student_password.cgi | cut -d' ' -f1)
 #Change student password
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:" | sudo -H /opt/karoshi/web_controls/exec/change_student_password
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$PASSWORD1:" | sudo -H /opt/karoshi/web_controls/exec/change_student_password
 if [ "$?" = 0 ]
 then
 	MESSAGE=$"Password changed for"" $USERNAME."
 
 	#Reset user lockout just in case
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/lockout_reset.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/lockout_reset
 else
 	MESSAGE=$"The password was not changed for"" $USERNAME."
 fi

@@ -36,9 +36,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/printers_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printers_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $printers_cgi'check' ]
 then
 	echo `date`: printers_staff - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -55,13 +55,13 @@ then
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 MOBILE=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4`
 PRINTER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: printers_staff - Not called by printers_staff.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

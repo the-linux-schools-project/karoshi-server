@@ -122,11 +122,11 @@ then
 MESSAGE=$"You have not uploaded a tar.gz file."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_upload_skel3.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_upload_skel3.cgi | cut -d' ' -f1`
 #Convert Spaces
 SKELFILENAME=`echo $SKELFILENAME | sed 's/ /1234567890/g'`
 #Upload Skel
-sudo -H /opt/karoshi/web_controls/exec/linux_client_upload_skel $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LINUXVERSION:$SKELFILENAME
+sudo -H /opt/karoshi/web_controls/exec/linux_client_upload_skel $REMOTE_USER:$REMOTE_ADDR:$Checksum:$LINUXVERSION:$SKELFILENAME
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

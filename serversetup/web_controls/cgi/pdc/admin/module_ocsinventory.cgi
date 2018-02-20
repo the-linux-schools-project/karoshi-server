@@ -115,7 +115,7 @@ fi
 
 echo '<div class="sectiontitle">'$"Setup OCS-Inventory"' - '$SERVERNAME'</div><br></div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ocsinventory.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_ocsinventory
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_ocsinventory.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_ocsinventory
 echo '</div></form></div></div></body></html>'
 exit

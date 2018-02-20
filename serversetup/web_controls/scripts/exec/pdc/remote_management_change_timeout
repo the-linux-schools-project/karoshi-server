@@ -34,9 +34,9 @@ echo `date`: remote_management_change_timeout - No Admin MD5Checksum >> /opt/kar
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_change_timeout_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_change_timeout.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $remote_management_change_timeout_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_change_timeout.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $remote_management_change_timeout_cgi'check' ]
 then
 echo `date`: remote_management_change_timeout - Incorrect Admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -48,9 +48,9 @@ echo `date`: remote_management_change_timeout - No tech MD5Checksum >> /opt/karo
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/remote_management_change_timeout_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/remote_management_change_timeout.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM2'check' != $remote_management_change_timeout_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/remote_management_change_timeout.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum=not_set
+if [ $Checksum2'check' != $remote_management_change_timeout_cgi'check' ]
 then
 echo `date`: remote_management_change_timeout - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -66,13 +66,13 @@ exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 TIMEOUT=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
 NOTIMEOUT=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'number' != $MD5SUM'number' ] && [ $REMOTE_MD5'number' != $MD5SUM2'number' ]
+if [ $RemoteCheckSum'number' != $Checksum'number' ] && [ $RemoteCheckSum'number' != $Checksum2'number' ]
 then
 echo `date`: remote_management_change_timeout - Not called by remote_management_change_timeout.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

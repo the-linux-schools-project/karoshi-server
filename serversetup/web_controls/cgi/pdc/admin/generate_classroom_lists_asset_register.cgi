@@ -87,9 +87,9 @@ MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_asset_register.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/generate_classroom_lists_asset_register
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/generate_classroom_lists_asset_register
 MESSAGE=$COMPLETEDMSG
 show_status
 exit

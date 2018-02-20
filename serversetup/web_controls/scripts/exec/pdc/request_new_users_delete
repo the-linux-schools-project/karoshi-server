@@ -34,9 +34,9 @@ echo `date`: request_new_users_delete - No MD5Checksum >> /opt/karoshi/logs/karo
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/request_new_users_delete_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/request_new_users_delete.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $request_new_users_delete_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/request_new_users_delete.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $request_new_users_delete_cgi'check' ]
 then
 echo `date`: request_new_users_delete - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,15 +60,15 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 REQUESTFILE=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
-echo the remote md5 is $REMOTE_MD5 
+echo the remote md5 is $RemoteCheckSum 
 echo `date`: request_new_users_delete - Not called by request_new_users_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi

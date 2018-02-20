@@ -490,8 +490,8 @@ else
 echo '<div id="actionbox3"><div id="titlebox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MAC1:$MAC2:$MAC3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$ASSIGNED:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/asset_register_view.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$LOCATION:$ACTION:$ASSET:$OPTION:$ASSETCHOICE:$ASSETTYPE:$TCPIP1:$TCPIP2:$TCPIP3:$MAC1:$MAC2:$MAC3:$SERIALKEY:$PURCHASEDATE:$IDENTITY:$DESCRIPTION:$ASSIGNED:$VALUE:$SUPPLIER:$BUDGET:$IMPORTDATA:$EXTRAINFO" | sudo -H /opt/karoshi/web_controls/exec/asset_register_view
 
 [ $MOBILE = no ] && echo '</div>'
 

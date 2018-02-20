@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/karoshi_servers_add_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$karoshi_servers_add_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$karoshi_servers_add_cgi"'check' ]
 then
 	echo "$(date): karoshi_servers_add - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,7 +61,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 SERVER=$(echo "$DATA" | cut -s -d: -f4 | tr "[:upper:]" "[:lower:]")
 PASSWORD=$(echo "$DATA" | cut -s -d: -f5)
 TCPIPNUMBER=$(echo "$DATA" | cut -s -d: -f6)
@@ -71,7 +71,7 @@ ZONE=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): karoshi_servers_add - Not called by karoshi_servers_add.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -485,14 +485,14 @@ then
 	if [ "$AUTHENTICATION" = adc ] || [ "$AUTHENTICATION" = rodc ]
 	then
 		echo "$(date): karoshi_servers_add - setting up a vpn tunnel for $SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | /opt/karoshi/serversetup/modules/authentication/setupopenvpn
+		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:" | /opt/karoshi/serversetup/modules/authentication/setupopenvpn
 	fi
 fi
 
 #Sort out authentication for the server
 
 echo "$(date): karoshi_servers_add - configuring authentication for $SSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$AUTHENTICATION:$ZONE:$TCPIPNUMBER" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER.$REALM:$AUTHENTICATION:$ZONE:$TCPIPNUMBER" | /opt/karoshi/serversetup/modules/authentication/configure_authentication
 if [ $? != 0 ]
 then
 	echo "$(date): karoshi_servers_add - configure_authentication failure for $SERVER authtype $AUTHENTICATION zone $ZONE by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -713,9 +713,9 @@ if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER.$REA
 then
 	#Get the name of the backup server that has been assigned
 	BACKUPSERVER=$(cat /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVER.$REALM"/backupserver)
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1)
 	#Sort out the ssh key for the backup server
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER.$REALM:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER.$REALM:$BACKUPSERVER:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
 fi
 
 
@@ -736,9 +736,9 @@ then
 		SECONDARY_DHCP_SERVER=$(ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ | sed -n 1,1p)
 		if [ "$SERVER.$REALM" = "$SECONDARY_DHCP_SERVER" ]
 		then
-			MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
+			Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp.cgi | cut -d' ' -f1)
 			source /opt/karoshi/server_network/dhcp/dhcp_settings
-			echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARY_DHCP_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DOMAINNAMESERVER:$NETBIOSSERVER:$ROUTER:$SUBNET:$SUBNETMASK:$STARTADDRESS:$ENDADDRESS:$DEFAULTLEASETIME:$MAXLEASETIME:$SECONDARY_DHCP_SERVER:" | sudo -H /opt/karoshi/web_controls/exec/dhcp
 		fi
 	fi
 else

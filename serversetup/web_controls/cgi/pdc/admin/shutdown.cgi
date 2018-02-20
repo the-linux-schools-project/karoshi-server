@@ -242,9 +242,9 @@ else
 	echo '<div id="'"$DIV_ID"'"><div id="titlebox"><div class="sectiontitle">'$"Shutdown-Reboot Server"'</div></div><div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
 #Shutdown server
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SHUTDOWN_OPTION:$FORCE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/shutdown
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SHUTDOWN_OPTION:$FORCE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/shutdown
 if [ "$?" = 102 ]
 then
 	MESSAGE=$"The form code must not be blank."

@@ -100,9 +100,9 @@ else
 	echo '<div class="sectiontitle">'$"Update Web Management"'</div><br></div><div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_karoshi_upload2.cgi | cut -d' ' -f1)
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CSVMD5:$CSVFILE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_karoshi_upload
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CSVMD5:$CSVFILE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/update_karoshi_upload
 PATCHSTATUS="$?"
 if [ "$PATCHSTATUS" = 101 ]
 then

@@ -88,7 +88,7 @@ rm -f -R /opt/karoshi/.tempdata/updatedata.$$
 #########################
 #Check that MD5 of List matches listcheck
 ########################
-UPDATELISTMD5=`md5sum /opt/karoshi/updates/updatelist | cut -d' ' -f1`
+UPDATELISTMD5=`sha256sum /opt/karoshi/updates/updatelist | cut -d' ' -f1`
 if [ $LISTCHECK != $UPDATELISTMD5 ]
 then
 rm -f /opt/karoshi/updates/updatelist

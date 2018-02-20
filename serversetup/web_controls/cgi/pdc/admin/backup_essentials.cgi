@@ -215,8 +215,8 @@ echo "<b>"$"Note:""</b>" $"This is only a backup of the server essential configu
 echo $"The memory stick must be stored in a secure place such as a safe. Do not leave it in an unsecured area under any circumstances.""<br><br>"
 echo $"You have 60 seconds to save this archive before it is deleted from the server.""<br><br>"
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/backup_essentials
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/backup_essentials
 
 echo "</div></div></body></html>"
 exit

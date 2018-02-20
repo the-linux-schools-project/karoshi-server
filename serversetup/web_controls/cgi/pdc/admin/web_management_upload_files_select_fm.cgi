@@ -117,7 +117,7 @@ else
 ###########################
 echo $$ > /var/www/karoshi/webfiles/web_management_upload_id
 UPLOADID=`echo $$`
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select_fm.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/web_management_upload_files_select_fm.cgi | cut -d' ' -f1`
 
 echo '<input name="___SERVERNAME___" value="'$SERVERNAME'" type="hidden">'
 echo '<input name="___UPLOADID___" value="'$UPLOADID'" type="hidden">'
@@ -127,7 +127,7 @@ echo '<table class="standard" style="text-align: left;" >
 
 #Create folder list
 echo '<option>/var/www/html</option>'
-sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:
+sudo -H /opt/karoshi/web_controls/exec/web_management_create_folder_list $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:
 
 echo '
 </select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Please select the folder that you want to upload the files to."'</span></a></td></tr></tbody></table>

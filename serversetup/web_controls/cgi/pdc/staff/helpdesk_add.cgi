@@ -177,6 +177,6 @@ echo COMPLETEDDATE2="" >> /opt/karoshi/server_network/helpdesk/todo/"$REQUESTNAM
 LOG_DATE=$(date +%F)
 echo "$(date): Helpdesk - $REQUESTNAME added by $REMOTE_USER from $REMOTE_ADDR" >> /opt/karoshi/server_network/helpdesk/log/"$LOG_DATE"
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:yes:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:yes:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 
 exit

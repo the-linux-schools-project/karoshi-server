@@ -33,9 +33,9 @@ echo `date`: printer_accounting_view_logs - No admin MD5Checksum >> /opt/karoshi
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printer_accounting_view_logs_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printer_accounting_view_logs_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_logs.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $printer_accounting_view_logs_cgi'check' ]
 then
 echo `date`: printer_accounting_view_logs - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -47,9 +47,9 @@ echo `date`: printer_accounting_view_logs - No tech MD5Checksum >> /opt/karoshi/
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/printer_accounting_view_logs_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/printer_accounting_view_logs.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM2'check' != $printer_accounting_view_logs_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/printer_accounting_view_logs.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum=not_set
+if [ $Checksum2'check' != $printer_accounting_view_logs_cgi'check' ]
 then
 echo `date`: printer_accounting_view_logs - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -74,12 +74,12 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 LOGTYPE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: printer_accounting_view_logs - Not called by printer_accounting_view_logs.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

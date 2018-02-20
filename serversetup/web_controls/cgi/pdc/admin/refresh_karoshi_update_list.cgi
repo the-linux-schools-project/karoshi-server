@@ -108,10 +108,10 @@ else
 		echo '<div class="sectiontitle">'$"Checking for updates"'</div><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/refresh_karoshi_update_list.cgi | cut -d' ' -f1`
 #update list
 echo '<pre>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/refresh_karoshi_update_list
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/refresh_karoshi_update_list
 sleep 1
 echo '</pre></div></div></div></body></html>'
 exit

@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/shutdown_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$shutdown_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/shutdown.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$shutdown_cgi"'check' ]
 then
 	echo "$(date): shutdown - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,7 +61,7 @@ fi
 
 REMOTE_USER=$(echo "$DATA" | cut -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -d: -f3)
 SHUTDOWN_OPTION=$(echo "$DATA" | cut -d: -f4)
 FORCE=$(echo "$DATA" | cut -d: -f5)
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f6)
@@ -73,7 +73,7 @@ SERVERMASTER=$(echo "$DATA" | cut -s -d: -f8)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): shutdown - Not called by shutdown.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

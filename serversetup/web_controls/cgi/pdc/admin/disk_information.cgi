@@ -209,8 +209,8 @@ echo '
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/disk_information.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/disk_information "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/disk_information.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/disk_information "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:"
 
 if [ "$?" = 102 ]
 then

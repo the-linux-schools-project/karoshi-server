@@ -143,7 +143,7 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_limits2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_limits2.cgi | cut -d' ' -f1`
 #Make changes
-sudo -H /opt/karoshi/web_controls/exec/email_limits "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MESSAGESIZE:$MAILBOXSIZE:$MAILWARN"
+sudo -H /opt/karoshi/web_controls/exec/email_limits "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MESSAGESIZE:$MAILBOXSIZE:$MAILWARN"
 exit

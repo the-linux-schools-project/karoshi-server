@@ -33,9 +33,9 @@ echo `date`: set_default_page - No admin MD5Checksum >> /opt/karoshi/logs/karosh
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/set_default_page_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/set_default_page.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $set_default_page_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/set_default_page.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $set_default_page_cgi'check' ]
 then
 echo `date`: set_default_page - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -47,9 +47,9 @@ echo `date`: set_default_page - No tech MD5Checksum >> /opt/karoshi/logs/karoshi
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/set_default_page_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/set_default_page.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $set_default_page_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/set_default_page.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $set_default_page_cgi'check' ]
 then
 echo `date`: set_default_page - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -73,13 +73,13 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 DEFAULTPAGE=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: set_default_page - Not called by set_default_page.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

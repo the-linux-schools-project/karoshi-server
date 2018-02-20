@@ -33,9 +33,9 @@ echo `date`: logout - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/logout_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/logout.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $logout_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/logout.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $logout_cgi'check' ]
 then
 echo `date`: logout - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -47,9 +47,9 @@ echo `date`: logout - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/logout_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/logout.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $logout_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/logout.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $logout_cgi'check' ]
 then
 echo `date`: logout - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -65,11 +65,11 @@ exit 101
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: logout - Not called by logout.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

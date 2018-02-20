@@ -476,7 +476,7 @@ cp -f -R /opt/karoshi/serversetup/web_controls/scripts/exec/pdc/* /opt/karoshi/w
 cp -f /opt/karoshi/serversetup/web_controls/allowed_custom_commands /opt/karoshi/web_controls
 chmod 0755 /opt/karoshi/web_controls
 chmod 0700 /opt/karoshi/web_controls/rotate_log
-chmod 0700 /opt/karoshi/web_controls/generate_md5sums
+chmod 0700 /opt/karoshi/web_controls/generate_checksums
 chmod 0600 /opt/karoshi/web_controls/allowed_custom_commands
 chmod -R 0700 /opt/karoshi/web_controls/exec
 chmod -R 0660 /opt/karoshi/web_controls/user_prefs
@@ -486,7 +486,7 @@ chown -R root:apache_karoshi /opt/karoshi/web_controls/user_prefs
 chmod 0644 -R /opt/karoshi/serversetup/variables/
 chmod u+X,g+X,o+X -R /opt/karoshi/serversetup/variables/
 #Generate md5checksums
-/opt/karoshi/web_controls/generate_md5sums
+/opt/karoshi/web_controls/generate_checksums
 }
 
 ##############################

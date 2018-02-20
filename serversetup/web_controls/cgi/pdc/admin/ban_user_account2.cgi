@@ -347,7 +347,7 @@ do
 STUDENT_USERNAME=`echo ${STUDENT_ARRAY[$COUNTER]}`
 [ $STUDENT_USERNAME'null' = null ] && STUDENT_USERNAME=not_set
 #Check to see that the user exists
-echo "$MD5SUM:$STUDENT_USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
+echo "$Checksum:$STUDENT_USERNAME" | sudo -H /opt/karoshi/web_controls/exec/existcheck_user
 USEREXISTSTATUS=`echo $?`
 if [ $USEREXISTSTATUS = 111 ]
 then
@@ -356,7 +356,7 @@ show_status
 fi
 let COUNTER=$COUNTER+1
 done
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ban_user_account2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$"User account banned.":$STUDENTS:$BANLENGTH" | sudo -H /opt/karoshi/web_controls/exec/ban_user_account
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ban_user_account2.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DAY:$MONTH:$YEAR:$HOUR:$MINUTES:$INCIDENT:$"User account banned.":$STUDENTS:$BANLENGTH" | sudo -H /opt/karoshi/web_controls/exec/ban_user_account
 MESSAGE=$"Ban User account completed."
 show_status

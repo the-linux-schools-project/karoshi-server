@@ -78,10 +78,10 @@ fi
 
 echo "<div id="actionbox">"
 echo '<div class="sectiontitle">'$"Generate Internet Logs"'</div>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/dg_gen_logs.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_gen_logs.cgi | cut -d' ' -f1`
 #Generate logs
 echo '<pre>'
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:" | sudo -H /opt/karoshi/web_controls/exec/dg_gen_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:" | sudo -H /opt/karoshi/web_controls/exec/dg_gen_logs
 echo '</pre>'
 echo '</div></div></body></html>'
 exit

@@ -119,8 +119,8 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_delete_banned_domains.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_delete_banned_domains.cgi | cut -d' ' -f1)
 #Delete domain
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$DOMAIN" | sudo -H /opt/karoshi/web_controls/exec/email_delete_banned_domains
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$DOMAIN" | sudo -H /opt/karoshi/web_controls/exec/email_delete_banned_domains
 echo "</div></body></html>"
 exit

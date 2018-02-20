@@ -163,8 +163,8 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 SERVER2=`echo $SERVER | sed 's/%26/\&/g' | sed 's/+/ /g'`
 echo '<div id="actionbox"><b>'$"Delete UPS"'</b><br><br>'$"Deleting" - "$UPSMODEL" "$SERVER2".''
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_delete.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ups_delete.cgi | cut -d' ' -f1`
 #DELETE UPS
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$SERVERTYPE:$SERVERMASTER:$UPSMODEL:" | sudo -H /opt/karoshi/web_controls/exec/ups_delete
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:$SERVERTYPE:$SERVERMASTER:$UPSMODEL:" | sudo -H /opt/karoshi/web_controls/exec/ups_delete
 echo '</div></div></body></html>'
 exit

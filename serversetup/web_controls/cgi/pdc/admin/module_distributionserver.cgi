@@ -128,8 +128,8 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Setup Distribution Server"" - $SERVERNAME"'</div><div id="infobox">'
 #Add distribution server
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_distributionserver
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_distributionserver.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_distributionserver
 completed
 echo '</div></div></div></body></html>'
 exit

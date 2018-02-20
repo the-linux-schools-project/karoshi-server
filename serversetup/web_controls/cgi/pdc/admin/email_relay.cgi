@@ -75,8 +75,8 @@ fi
 
 echo '<form action="/cgi-bin/admin/email_relay2.cgi" method="post">'
 echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"E-mail relay"'</div><br>'
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/email_relay_view "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_relay.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/email_relay_view "$REMOTE_USER:$REMOTE_ADDR:$Checksum"
 
 
 echo '<input value="Submit" class="button" type="submit"> <input value="Reset" class="button" type="reset">

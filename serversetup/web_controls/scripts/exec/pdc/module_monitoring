@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_monitoring_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$module_monitoring_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_monitoring.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$module_monitoring_cgi"'check' ]
 then
 	echo "$(date): module_monitoring - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -61,12 +61,12 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): module_monitoring - Not called by module_monitoring.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -101,7 +101,7 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serverse
 if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Run module
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:" | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PASSWORD:$HOSTNAME:" | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 else
 	#Copy in module
 	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1>/dev/null
@@ -136,7 +136,7 @@ else
 
 	#Run module
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
-	echo '"$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD:$HOSTNAME:"' | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PASSWORD:$HOSTNAME:"' | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 	'
 	[ "$?" = 101 ] && exit 101
 

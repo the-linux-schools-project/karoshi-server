@@ -33,9 +33,9 @@ echo `date`: module_extra_domain_controler- No MD5Checksum >> /opt/karoshi/logs/
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_moodle_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_moodle.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_moodle_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_moodle.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $module_moodle_cgi'check' ]
 then
 echo `date`: module_extra_domain_controler- Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -60,14 +60,14 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 DOMAINNAME=`echo "$DATA" | cut -s -d: -f4 | tr -cd 'A-Za-z0-9'`
 DOMAINPASS=`echo "$DATA" | cut -s -d: -f5`
 DOMAINSERVER=`echo "$DATA" | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: module_extra_domain_controler- Not called by module_extra_domain_controller.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

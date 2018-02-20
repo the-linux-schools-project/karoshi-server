@@ -285,8 +285,8 @@ fi
 
 if [ "$ACTION" = reallyaddcategory ] || [ "$ACTION" = reallydeletecategory ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:" | sudo -H /opt/karoshi/web_controls/exec/ist
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:" | sudo -H /opt/karoshi/web_controls/exec/ist
 	ACTION=viewcategories
 	check_categories
 fi
@@ -348,8 +348,8 @@ fi
 
 if [ "$ACTION" = viewdata ] || [ "$ACTION" = viewuserdata ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:$USERNAME:$SEARCHDATE:" | sudo -H /opt/karoshi/web_controls/exec/ist
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/ist.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$CATEGORY:$SEARCHTERMS:$USERNAME:$SEARCHDATE:" | sudo -H /opt/karoshi/web_controls/exec/ist
 fi
 
 [ "$MOBILE" = no ] && echo '</div>'

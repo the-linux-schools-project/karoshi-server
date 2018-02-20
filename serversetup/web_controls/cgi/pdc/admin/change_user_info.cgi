@@ -137,7 +137,7 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -d' ' -f1)
 #########################
 #Check data
 #########################
@@ -176,7 +176,7 @@ then
 fi
 
 #Change information
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL:$GROUP:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL:$GROUP:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
 SERVERNAME=$(hostname-fqdn)
 
 echo '<form METHOD=POST ACTION="show_user_info.cgi" target="_top" name = "frm">

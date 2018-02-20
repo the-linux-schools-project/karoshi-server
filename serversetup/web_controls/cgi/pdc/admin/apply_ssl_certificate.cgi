@@ -119,8 +119,8 @@ fi
 
 echo '<div id="actionbox3"><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/apply_ssl_certificate
 MESSAGE=$"The SSL Certificate has been applied."
 show_status
 exit

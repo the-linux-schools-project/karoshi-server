@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ups_slave_add_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_slave_add.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $ups_slave_add_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ups_slave_add.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $ups_slave_add_cgi'check' ]
 then
 	echo `date`: ups_slave_add - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -73,7 +73,7 @@ fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 UPSSERVER=`echo "$DATA" | cut -s -d: -f4 | sed 's/%2C/,/g'`
 UPSMODEL=`echo "$UPSSERVER" | cut -d, -f2`
 UPSSERVER=`echo "$UPSSERVER" | cut -d, -f1`
@@ -84,7 +84,7 @@ SERVERTPCIP=`net lookup "$SERVER" 2>> /opt/karoshi/logs/karoshi_web_management/$
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo `date`: ups_slave_add - Not called by ups_slave_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

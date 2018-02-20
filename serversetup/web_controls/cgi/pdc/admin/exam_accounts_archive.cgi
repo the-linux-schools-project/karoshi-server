@@ -177,10 +177,10 @@ TIME=$(date +%T)
 YEAR=$(date +%Y)
 ARCHIVEFOLDER=$(echo "$DAY""-$MONTH""-$YEAR"".$TIME")
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_archive.cgi | cut -d' ' -f1)
 
 #Archive exam accounts
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:$SERVER:$SHARE:$EXCEPTIONLIST:$DELETE:" | sudo -H /opt/karoshi/web_controls/exec/exam_accounts_archive
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$GROUP:$SERVER:$SHARE:$EXCEPTIONLIST:$DELETE:" | sudo -H /opt/karoshi/web_controls/exec/exam_accounts_archive
 
 if [ "$?" = 0 ]
 then

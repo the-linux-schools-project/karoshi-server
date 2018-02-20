@@ -34,9 +34,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$user_internet_access_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$user_internet_access_cgi"'check' ]
 then
 	echo "$(date): user_internet_access - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -48,9 +48,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/user_internet_access_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/user_internet_access.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM2" ] && MD5SUM=not_set
-if [ "$MD5SUM2"'check' != "$user_internet_access_cgi"'check' ]
+Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/user_internet_access.cgi | cut -d' ' -f1)
+[ -z "$Checksum2" ] && Checksum=not_set
+if [ "$Checksum2"'check' != "$user_internet_access_cgi"'check' ]
 then
 	echo "$(date): user_internet_access - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -77,7 +77,7 @@ fi
 
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f4)
 USERNAMES=$(echo "$DATA" | cut -s -d: -f5)
 HOUR=$(echo "$DATA" | cut -s -d: -f6)
@@ -95,7 +95,7 @@ PROXYSERVER=$(sed -n 1,1p /opt/karoshi/server_network/proxyserver)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum2"'check' ]
 then
 	echo "$(date): user_internet_access - Not called by user_internet_access.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

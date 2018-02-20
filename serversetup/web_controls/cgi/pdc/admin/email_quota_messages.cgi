@@ -79,9 +79,9 @@ echo '<div id="actionbox3"><div id="titlebox"><b>'$"E-Mail Quota Warning Message
 ###########################
 if [ ! -f /opt/karoshi/postfixdata/warning_messages/level1 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level2 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level3 ] || [ ! -f /opt/karoshi/postfixdata/warning_messages/level4 ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages.cgi | cut -d' ' -f1`
+	Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_quota_messages.cgi | cut -d' ' -f1`
 	#Get messages from colossus
-	sudo -H /opt/karoshi/web_controls/exec/email_get_quota_messages $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
+	sudo -H /opt/karoshi/web_controls/exec/email_get_quota_messages $REMOTE_USER:$REMOTE_ADDR:$Checksum
 fi
 
 #Level1

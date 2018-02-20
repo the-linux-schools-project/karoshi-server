@@ -47,13 +47,13 @@ fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict_cgi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict2_cgi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_restrict3_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict.cgi | cut -d' ' -f1`
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict2.cgi | cut -d' ' -f1`
-MD5SUM3=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict3.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-[ -z "$MD5SUM2" ] && MD5SUM2=not_set
-[ -z "$MD5SUM3" ] && MD5SUM3=not_set
-if [ $MD5SUM'check' != $remote_management_restrict_cgi'check' ] || [ $MD5SUM2'check' != $remote_management_restrict2_cgi'check' ] || [ $MD5SUM3'check' != $remote_management_restrict3_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict.cgi | cut -d' ' -f1`
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict2.cgi | cut -d' ' -f1`
+Checksum3=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict3.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+[ -z "$Checksum2" ] && Checksum2=not_set
+[ -z "$Checksum3" ] && Checksum3=not_set
+if [ $Checksum'check' != $remote_management_restrict_cgi'check' ] || [ $Checksum2'check' != $remote_management_restrict2_cgi'check' ] || [ $Checksum3'check' != $remote_management_restrict3_cgi'check' ]
 then
 	echo `date`: remote_management_restrict - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -69,7 +69,7 @@ then
 fi
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f3`
 ACTION=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f4`
 TCPADDRESS=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f5`
 TCPCOMMENT=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f6 | sed 's/+/ /g'`
@@ -77,7 +77,7 @@ ADMINLEVEL=`echo $* | tr -cd 'A-Za-z0-9\._:\%+-' | cut -s -d: -f7`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ] && [ $REMOTE_MD5'check' != $MD5SUM3'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ] && [ $RemoteCheckSum'check' != $Checksum3'check' ]
 then
 	echo `date`: remote_management_restrict - Not called by remote_management_restrict.cgi or remote_management_restrict2.cgi or remote_management_restrict3.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 100

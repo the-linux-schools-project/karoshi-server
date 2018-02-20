@@ -254,8 +254,8 @@ fi
 
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USERSELECT:$ACCESSLEVEL:$GROUP:$MOBILE:email_access:" | sudo -H /opt/karoshi/web_controls/exec/email_access
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_access.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USERSELECT:$ACCESSLEVEL:$GROUP:$MOBILE:email_access:" | sudo -H /opt/karoshi/web_controls/exec/email_access
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

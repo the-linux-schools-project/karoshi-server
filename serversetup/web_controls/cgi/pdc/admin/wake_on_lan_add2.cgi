@@ -155,8 +155,8 @@ MESSAGE=$"The time has not be entered correctly."
 show_status
 fi
 #Add in wake on lan
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_add.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$HOUR:$MINUTES:$LOCATION
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_add.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$HOUR:$MINUTES:$LOCATION
 if [ `echo $?` = 0 ]
 then
 MESSAGE=`echo $LOCATION - $"Wake on Lan Schedule completed."`

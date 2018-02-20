@@ -112,9 +112,9 @@ then
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/monitors_delete_email_alert.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete_email_alert.cgi | cut -d' ' -f1`
 #Delete alert information
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:" | sudo -H /opt/karoshi/web_controls/exec/monitors_delete_email_alert
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$NAME:" | sudo -H /opt/karoshi/web_controls/exec/monitors_delete_email_alert
 EXEC_STATUS=`echo $?`
 
 if [ $EXEC_STATUS = 101 ]

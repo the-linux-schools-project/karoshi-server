@@ -103,9 +103,9 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/dg_ban_location.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/dg_ban_location.cgi | cut -d' ' -f1)
 #Ban location
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_ban_location
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_ban_location
 BAN_STATUS="$?"
 MESSAGE="$LOCATION - "$"Internet access banned."
 [ "$BAN_STATUS" = 105 ] && MESSAGE="$LOCATION - "$"There is no computer data for this room."

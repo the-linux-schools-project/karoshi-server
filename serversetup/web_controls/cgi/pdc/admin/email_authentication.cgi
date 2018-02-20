@@ -261,8 +261,8 @@ echo '<form action="/cgi-bin/admin/email_authentication.cgi" method="post">
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">' 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPIP:$COMMENT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_authentication
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_authentication.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$TCPIP:$COMMENT:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_authentication
 EXIT_STATUS="$?"
 
 if [ "$EXIT_STATUS" = 102 ]

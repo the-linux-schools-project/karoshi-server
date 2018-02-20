@@ -197,8 +197,8 @@ else
 	</div><div id="infobox">'
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/mon_status "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/mon_status.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/mon_status "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:"
 if [ "$?" = 102 ]
 then
 	echo '<br><br>'$"A monitoring server has not been setup."'<br>'

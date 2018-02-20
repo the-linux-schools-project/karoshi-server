@@ -292,8 +292,8 @@ fi
 
 echo '<div id="titlebox"><div class="sectiontitle">'$"Add Server"' - '"$SERVERNAME"'</div><br></div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_add.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$PASSWORD1:$TCPIPNUMBER:$AUTHENTICATION:$ZONE" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_add
 EXEC_STATUS="$?"
 
 MESSAGE=''"$SERVERNAME"' - '$"ssh has been enabled."''

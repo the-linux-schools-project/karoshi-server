@@ -122,26 +122,26 @@ MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wake_on_lan_view2.cgi | cut -d' ' -f1`
 if [ $ENABLEARRAY'null' != null ]
 then
 ACTION=enable
 #ENABLE
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:`echo ${ENABLEARRAY[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:`echo ${ENABLEARRAY[@]:0} | sed 's/ /:/g'`
 fi
 
 if [ $DISABLEARRAY'null' != null ]
 then
 #DISABLE
 ACTION=disable
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:`echo ${DISABLEARRAY[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:`echo ${DISABLEARRAY[@]:0} | sed 's/ /:/g'`
 fi
 
 if [ $REMOVEARRAY'null' != null ]
 then
 #REMOVE
 ACTION=remove
-sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:`echo ${REMOVEARRAY[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/wake_on_lan_view2 $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:`echo ${REMOVEARRAY[@]:0} | sed 's/ /:/g'`
 fi
 exit
 

@@ -33,9 +33,9 @@ echo `date`: generate_classroom_lists_csv_process_cgi - No admin MD5Checksum >> 
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/generate_classroom_lists_csv_process_cgi
-MD5SUM1=`md5sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
-[ $MD5SUM1'null' = null ] && MD5SUM1=not_set
-if [ $MD5SUM1'check' != $generate_classroom_lists_csv_process_cgi'check' ]
+Checksum1=`sha256sum /var/www/cgi-bin_karoshi/admin/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
+[ $Checksum1'null' = null ] && Checksum1=not_set
+if [ $Checksum1'check' != $generate_classroom_lists_csv_process_cgi'check' ]
 then
 echo `date`: generate_classroom_lists_csv - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -47,9 +47,9 @@ echo `date`: generate_classroom_lists_csv_process_cgi - No tech MD5Checksum >> /
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/generate_classroom_lists_csv_process_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $generate_classroom_lists_csv_process_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/generate_classroom_lists_csv_process.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $generate_classroom_lists_csv_process_cgi'check' ]
 then
 echo `date`: generate_classroom_lists_csv - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -75,14 +75,14 @@ fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
-MD5SUMCSV=`echo "$DATA" | cut -s -d: -f4`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
+ChecksumCSV=`echo "$DATA" | cut -s -d: -f4`
 PROCESSNUMBER=`echo "$DATA" | cut -s -d: -f5`
 
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM1'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum1'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: generate_classroom_lists_csv - Not called by generate_classroom_lists_csv.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -97,9 +97,9 @@ then
 echo `date`: generate_classroom_lists_csv - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-if [ $MD5SUMCSV'null' = null ]
+if [ $ChecksumCSV'null' = null ]
 then
-echo `date`: generate_classroom_lists_csv - Blank csv md5sum by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: generate_classroom_lists_csv - Blank csv sha256sum by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit
 fi
 if [ $PROCESSNUMBER'null' = null ]
@@ -120,9 +120,9 @@ then
 echo `date`: generate_classroom_lists_csv - no data file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
-#Check that csv file has correct md5sum
-MD5SUMCSV2=`md5sum /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER | cut -d' ' -f1`
-if [ $MD5SUMCSV'check' != $MD5SUMCSV2'check' ]
+#Check that csv file has correct sha256sum
+ChecksumCSV2=`sha256sum /var/www/karoshi/classroom_lists/processed_data.$PROCESSNUMBER | cut -d' ' -f1`
+if [ $ChecksumCSV'check' != $ChecksumCSV2'check' ]
 then
 echo `date`: generate_classroom_lists_csv - no data file by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

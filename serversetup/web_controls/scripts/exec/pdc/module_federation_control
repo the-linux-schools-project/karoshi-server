@@ -47,7 +47,7 @@ fi
 
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 
 ########################
@@ -92,7 +92,7 @@ mkdir -p /opt/karoshi/server_network/federated_ldap_servers/$SERVERNAME
 #Get list of users
 USERLIST=`getent passwd | grep /home/users | sed "s/ /SPACE/g"`
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d" " -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d" " -f1`
 USERNAMESTYLE=userstyleS1
 for USERDATA in `echo -e "'$USERLIST'"`
 do
@@ -110,7 +110,7 @@ do
 	then
 		echo "<ul><li>"Creating User"</li></ul>""<br>"Username: $USERNAME"<br>"Forename: $FORENAME"<br>"Surname: $SURNAME"<br>"Primary group: $PRIMARYGROUP"<br>"
 		#Add user
-		echo "'$REMOTE_USER':'$REMOTE_ADDR':$MD5SUM:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
+		echo "'$REMOTE_USER':'$REMOTE_ADDR':$Checksum:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE" | sudo -H /opt/karoshi/web_controls/exec/add_user
 	fi
 done
 '

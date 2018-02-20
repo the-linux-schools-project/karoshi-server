@@ -33,9 +33,9 @@ echo `date`: email_quota_settings_apply - No MD5Checksum >> /opt/karoshi/logs/ka
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_quota_settings2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $email_quota_settings2_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_quota_settings2.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $email_quota_settings2_cgi'check' ]
 then
 echo `date`: email_quota_settings2 - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -52,7 +52,7 @@ exit 101
 fi
 REMOTE_USER=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f2`
-REMOTE_MD5=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f3`
+RemoteCheckSum=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f3`
 ADMIN_EMAIL=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f4`
 THRESHOLD1=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f5`
 THRESHOLD2=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f6`
@@ -66,7 +66,7 @@ INTERVAL4=`echo "$*" | tr -cd 'A-Za-z0-9\._:\%-' | cut -s -d: -f12`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: email_quota_settings_apply - Not called by email_quota_settings2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

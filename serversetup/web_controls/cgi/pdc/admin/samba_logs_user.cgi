@@ -160,8 +160,8 @@ show_status
 fi
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_logs_user.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/samba_logs_user.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USER:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/samba_logs_user
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USER:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/samba_logs_user
 echo '</div></div></body></html>'
 exit

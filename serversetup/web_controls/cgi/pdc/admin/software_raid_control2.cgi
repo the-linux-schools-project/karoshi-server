@@ -261,7 +261,7 @@ else
 	echo '<b>'$"Control Software Raid" - $SERVERNAME'</b><br><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/software_raid_control2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RAIDDEVICE:$DRIVE:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_control2
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_control2.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$RAIDDEVICE:$DRIVE:" | sudo -H /opt/karoshi/web_controls/exec/software_raid_control2
 show_status2
 exit

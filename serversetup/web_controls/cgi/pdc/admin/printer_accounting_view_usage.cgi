@@ -224,8 +224,8 @@ echo '<b>'$TITLE'</b> <a class="info" href="javascript:void(0)"><img class="imag
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_usage.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_view_usage.cgi | cut -d' ' -f1`
 #View Usage
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:$TYPE:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_usage
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$NAME:$TYPE:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_view_usage
 echo '</div></div></body></html>'
 exit

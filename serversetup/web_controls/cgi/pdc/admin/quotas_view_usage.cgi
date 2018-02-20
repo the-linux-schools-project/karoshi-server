@@ -152,9 +152,9 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/quotas_view_usage.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/quotas_view_usage.cgi | cut -d' ' -f1`
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/quotas_view_usage
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$GROUP:" | sudo -H /opt/karoshi/web_controls/exec/quotas_view_usage
 echo "</div></div></body></html>"
 exit
 

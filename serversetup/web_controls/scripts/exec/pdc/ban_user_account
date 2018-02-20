@@ -37,9 +37,9 @@ echo `date`: ban_user_account2 - No admin MD5Checksum >> /opt/karoshi/logs/karos
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ban_user_account2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ban_user_account2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $ban_user_account2_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ban_user_account2.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $ban_user_account2_cgi'check' ]
 then
 echo `date`: ban_user_account2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -51,9 +51,9 @@ echo `date`: ban_user_account2 - No tech MD5Checksum >> /opt/karoshi/logs/karosh
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/ban_user_account2_cgi
-MD5SUM2=`md5sum /var/www/cgi-bin_karoshi/tech/ban_user_account2.cgi | cut -d' ' -f1`
-[ $MD5SUM2'null' = null ] && MD5SUM2=not_set
-if [ $MD5SUM2'check' != $ban_user_account2_cgi'check' ]
+Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/ban_user_account2.cgi | cut -d' ' -f1`
+[ $Checksum2'null' = null ] && Checksum2=not_set
+if [ $Checksum2'check' != $ban_user_account2_cgi'check' ]
 then
 echo `date`: ban_user_account - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -76,7 +76,7 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 DAY=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4`
 MONTH=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5`
 YEAR=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6`
@@ -89,7 +89,7 @@ BANLENGTH=`echo "$DATA" | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f12`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: ban_user_account - Not called by ban_user_account2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

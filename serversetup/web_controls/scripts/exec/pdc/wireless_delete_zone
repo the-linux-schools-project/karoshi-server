@@ -34,9 +34,9 @@ echo `date`: wireless_delete_zone - No admin MD5Checksum >> /opt/karoshi/logs/ka
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/wireless_view_zones_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $wireless_view_zones_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wireless_view_zones.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $wireless_view_zones_cgi'check' ]
 then
 echo `date`: wireless_delete_zone - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -61,12 +61,12 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 ZONE=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 echo `date`: wireless_delete_zone - Not called by wireless_delete_zone.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

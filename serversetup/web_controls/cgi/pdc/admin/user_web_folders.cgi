@@ -212,8 +212,8 @@ else
 	exit
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/user_web_folders.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/user_web_folders.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUP:$ACTION:$USERNAME:$SERVICECHECK:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/user_web_folders
 
 [ "$MOBILE" = no ] && echo '</div>'
 

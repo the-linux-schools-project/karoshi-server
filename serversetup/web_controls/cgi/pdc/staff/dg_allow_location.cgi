@@ -104,9 +104,9 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/staff/dg_allow_location.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/staff/dg_allow_location.cgi | cut -d' ' -f1)
 #Ban location
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_allow_location
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LOCATION:" | sudo -H /opt/karoshi/web_controls/exec/dg_allow_location
 MESSAGE="$LOCATION - "$"Internet access allowed."
 show_status
 exit

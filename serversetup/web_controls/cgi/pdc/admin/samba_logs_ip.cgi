@@ -206,9 +206,9 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/samba_logs_ip.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/samba_logs_ip.cgi | cut -d' ' -f1`
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$TCPIP:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/samba_logs_ip
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$TCPIP:$DAY:$MONTH:$YEAR:" | sudo -H /opt/karoshi/web_controls/exec/samba_logs_ip
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

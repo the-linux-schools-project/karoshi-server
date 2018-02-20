@@ -176,8 +176,8 @@ DIV_ID=menubox
 fi
 echo '<div id="'$DIV_ID'">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_edit_limits.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_edit_limits.cgi | cut -d' ' -f1`
 #Change Printer status
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$NAME:$TYPE:$LIMIT:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_edit_limits
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$NAME:$TYPE:$LIMIT:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_edit_limits
 echo '</div></div></body></html>'
 exit

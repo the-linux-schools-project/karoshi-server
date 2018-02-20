@@ -163,9 +163,9 @@ MESSAGE=$"The level description is blank."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_quota_messages2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_quota_messages2.cgi | cut -d' ' -f1`
 #Apply changes
-sudo -H /opt/karoshi/web_controls/exec/email_quota_messages_apply $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:"$LEVEL1":"$LEVEL2":"$LEVEL3":"$LEVEL4":
+sudo -H /opt/karoshi/web_controls/exec/email_quota_messages_apply $REMOTE_USER:$REMOTE_ADDR:$Checksum:"$LEVEL1":"$LEVEL2":"$LEVEL3":"$LEVEL4":
 EXEC_STATUS=`echo $?`
 MESSAGE=$"E-Mail Quota Warning messages have been saved."
 show_status

@@ -178,8 +178,8 @@ fi
 
 
 #set wpakey
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/wireless_add_zone.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CLIENTNAME:$TCPIP:$WPAKEY:" | sudo -H /opt/karoshi/web_controls/exec/wireless_add_zone
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/wireless_add_zone.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CLIENTNAME:$TCPIP:$WPAKEY:" | sudo -H /opt/karoshi/web_controls/exec/wireless_add_zone
 if [ `echo $?` = 101 ]
 then
 MESSAGE=`echo $"There was a problem with this action." $"Please check the karoshi web administration logs for more details."`

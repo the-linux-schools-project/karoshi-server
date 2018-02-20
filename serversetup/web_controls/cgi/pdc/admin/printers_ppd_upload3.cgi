@@ -125,7 +125,7 @@ fi
 #Create MD5 sum for the ppd file
 touch /var/www/karoshi/ppd_files/ppdcheck.md5
 chmod 0600 /var/www/karoshi/ppd_files/ppdcheck.md5
-md5sum /var/www/karoshi/ppd_files/"$PPDFILE" > /var/www/karoshi/ppd_files/ppdcheck.md5
+sha256sum /var/www/karoshi/ppd_files/"$PPDFILE" > /var/www/karoshi/ppd_files/ppdcheck.md5
 
 #########################
 #Check data
@@ -149,9 +149,9 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_upload3.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printers_ppd_upload3.cgi | cut -d' ' -f1`
 #Add ppd file to printer
-sudo -H /opt/karoshi/web_controls/exec/printers_ppd_add $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PAGESIZE:$COLOUR
+sudo -H /opt/karoshi/web_controls/exec/printers_ppd_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$PRINTERNAME:$PAGESIZE:$COLOUR
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

@@ -103,9 +103,9 @@ MESSAGE=$"You have not chosen a requested user to delete."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/request_new_users_delete.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/request_new_users_delete.cgi | cut -d' ' -f1`
 #Delete requested users
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$REQUESTFILE:" | sudo -H /opt/karoshi/web_controls/exec/request_new_users_delete
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$REQUESTFILE:" | sudo -H /opt/karoshi/web_controls/exec/request_new_users_delete
 MESSAGE=$"The requested user entry has been removed."
 show_status
 exit

@@ -166,6 +166,6 @@ else
 echo '<div class="sectiontitle">'$"Federated File Synchronisation"'</div><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/federated_file_sync.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUP:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/federated_file_sync
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/federated_file_sync.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUP:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/federated_file_sync
 exit

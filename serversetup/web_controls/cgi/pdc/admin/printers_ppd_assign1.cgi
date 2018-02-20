@@ -201,8 +201,8 @@ echo '<tr><td>'$"Printer Make"'</td><td><select style="width: 200px;" name="____
 echo '<option value="" label="blank"></option>'
 echo '<option value="uploadppd">'$"Upload PPD File"'</option>'
 #Get list of printer drivers
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/printers_show_drivers "$REMOTE_USER:$REMOTE_ADDR:$Checksum:"
 
 echo '</select></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the make of your printer from this list. If the printer make is not listed you will need to get a PPD from the internet and use the Upload PPD option."'</span></a></td></tr></tbody></table><br><input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">'
 

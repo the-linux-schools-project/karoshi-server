@@ -221,7 +221,7 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs.cgi | cut -d' ' -f1)
 #View logs
 echo '<form action="/cgi-bin/admin/dg_view_site_logs2.cgi" name="selectedsites" method="post">'
 echo '<input name="_LOGDATE_" value="'"$DAY"'-'"$MONTH"'-'"$YEAR"'" type="hidden">'
@@ -255,7 +255,7 @@ else
 	</div><div id="infobox">'
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SEARCH:$DAY:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SEARCH:$DAY:$MONTH:$YEAR:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_site_logs
 EXEC_STATUS="$?"
 if [ "$EXEC_STATUS" = 102 ]
 then

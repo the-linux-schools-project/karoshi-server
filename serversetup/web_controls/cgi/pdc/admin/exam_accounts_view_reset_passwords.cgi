@@ -77,13 +77,13 @@ then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_view_reset_passwords.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_view_reset_passwords.cgi | cut -d' ' -f1`
 #View Reset passwords
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="infobox">
 '
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_view_reset_passwords $REMOTE_USER:$REMOTE_ADDR:$MD5SUM
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_view_reset_passwords $REMOTE_USER:$REMOTE_ADDR:$Checksum
 EXEC_STATUS=`echo $?`
 echo '</div>'
 if [ $EXEC_STATUS != 0 ]

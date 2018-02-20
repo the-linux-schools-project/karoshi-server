@@ -128,8 +128,8 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_ban_domain.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_ban_domain.cgi | cut -d' ' -f1)
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EMAILDOMAIN:$DROPTYPE:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_domain
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$EMAILDOMAIN:$DROPTYPE:" | sudo -H /opt/karoshi/web_controls/exec/email_ban_domain
 completed_status
 exit

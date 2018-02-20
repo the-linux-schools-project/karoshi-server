@@ -105,7 +105,7 @@ then
 MESSAGE=$"You must be a Karoshi Management User to complete this action."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/client_wireless_settings.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/client_wireless_settings.cgi | cut -d' ' -f1`
 #########################
 #Check data
 #########################
@@ -123,7 +123,7 @@ MESSAGE=$"No ssid has been entered."
 show_status
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$KEY:$SSID" | sudo -H /opt/karoshi/web_controls/exec/client_wireless_settings
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$KEY:$SSID" | sudo -H /opt/karoshi/web_controls/exec/client_wireless_settings
 MESSAGE=$"The Wifi settings have been saved to the netlogon folder."
 show_status
 exit

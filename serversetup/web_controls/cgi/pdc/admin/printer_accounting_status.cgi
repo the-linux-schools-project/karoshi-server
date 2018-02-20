@@ -138,8 +138,8 @@ else
 fi
 echo '<div id="'$DIV_ID'">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printer_accounting_status.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printer_accounting_status.cgi | cut -d' ' -f1`
 #Change Printer status
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$PRINTER:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_status
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$PRINTER:" | sudo -H /opt/karoshi/web_controls/exec/printer_accounting_status
 echo '</div></div></body></html>'
 exit

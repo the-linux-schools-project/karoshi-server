@@ -127,8 +127,8 @@ then
 	show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_background.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$BACKGROUND:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_background
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_choose_background.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$BACKGROUND:" | sudo -H /opt/karoshi/web_controls/exec/linux_client_choose_background
 
 show_result
 

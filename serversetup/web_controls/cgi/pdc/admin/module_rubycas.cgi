@@ -127,8 +127,8 @@ MESSAGE=$LDAPSERVERERRORMSG1
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_rubycas.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$LDAPSERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_rubycas
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_rubycas.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$LDAPSERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_rubycas
 echo '</div>
 </form>
 </div></body>

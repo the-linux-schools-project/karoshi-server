@@ -116,9 +116,9 @@ MESSAGE=$"The printer name cannot be blank."
 show_status
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_delete2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printers_delete2.cgi | cut -d' ' -f1`
 #Delete printer queue
-sudo -H /opt/karoshi/web_controls/exec/printers_delete $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME
+sudo -H /opt/karoshi/web_controls/exec/printers_delete $REMOTE_USER:$REMOTE_ADDR:$Checksum:$PRINTERNAME
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 101 ]
 then

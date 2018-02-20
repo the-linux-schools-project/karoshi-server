@@ -135,8 +135,8 @@ MESSAGE=$"The server cannot be blank."
 show_status
 fi
 echo '<b>'$"Custom Application"' - '$SERVERNAME'</b><br><br>'
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_custom.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CUSTOM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_custom
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_custom.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CUSTOM:$SERVERNAME" | sudo -H /opt/karoshi/web_controls/exec/module_custom
 completed
 echo '</div>
 </div></body>

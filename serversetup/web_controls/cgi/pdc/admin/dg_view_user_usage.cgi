@@ -174,9 +174,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_user_usage.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_user_usage.cgi | cut -d' ' -f1)
 #View logs
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_usage
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/dg_view_user_usage
 EXEC_STATUS="$?"
 if [ "$EXEC_STATUS" = 101 ]
 then

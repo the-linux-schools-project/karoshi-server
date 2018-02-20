@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_bans_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$dhcp_bans_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$dhcp_bans_cgi"'check' ]
 then
 	echo "$(date): dhcp_bans - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -60,7 +60,7 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f4)
 CLIENTHOSTNAME=$(echo "$DATA" | cut -s -d: -f5 | sed 's/+/-/g' | tr -cd 'A-Za-z0-9\._\-')
 MACADDRESS=$(echo "$DATA" | cut -s -d: -f6 | sed 's/%3A/:/g')
@@ -69,7 +69,7 @@ COMMENT=$(echo "$DATA" | cut -s -d: -f7 | sed 's/+/ /g')
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] 
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] 
 then
 	echo "$(date): dhcp_bans - Not called by dhcp_bans.cgi or bulk_user_creation_create.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

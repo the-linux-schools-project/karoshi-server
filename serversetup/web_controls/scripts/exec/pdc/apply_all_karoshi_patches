@@ -56,7 +56,7 @@ while [ "$COUNTER" -le "$LINECOUNT" ]
 do
 	LINEDATA=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/updates/updatelist.$$)
 	PATCHNAME=$(echo "$LINEDATA" | cut -f1)
-	MD5SUM=$(echo "$LINEDATA" | cut -f2)
+	Checksum=$(echo "$LINEDATA" | cut -f2)
 
 	#Apply the patch if it has not already been applied
 
@@ -84,10 +84,10 @@ do
 		fi
 
 		#Check md5 sum
-		MD5SUMTXT=`sed -n 1,1p /opt/karoshi/updates/$PATCHNAME.txt | tr -cd 'A-Za-z0-9\._:\-'`
-		MD5SUMFILE=`md5sum /opt/karoshi/updates/$PATCHNAME.sh | cut -d' ' -f1`
-		[ -z "$MD5SUMTXT" ] && MD5SUMTXT=txtsumnotset
-		if [ "$MD5SUMTXT" != "$MD5SUM" ] || [ "$MD5SUMFILE" != "$MD5SUM" ]
+		ChecksumTXT=`sed -n 1,1p /opt/karoshi/updates/$PATCHNAME.txt | tr -cd 'A-Za-z0-9\._:\-'`
+		ChecksumFILE=`sha256sum /opt/karoshi/updates/$PATCHNAME.sh | cut -d' ' -f1`
+		[ -z "$ChecksumTXT" ] && ChecksumTXT=txtsumnotset
+		if [ "$ChecksumTXT" != "$Checksum" ] || [ "$ChecksumFILE" != "$Checksum" ]
 		then
 			echo $"Incorrect MD5 checksum for this patch."'<br>'
 			exit

@@ -35,9 +35,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_site_logs2_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$dg_view_site_logs2_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_site_logs2.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$dg_view_site_logs2_cgi"'check' ]
 then
 	echo "$(date): dg_view_site_logs2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -49,9 +49,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_site_logs2_cgi
-MD5SUM2=$(md5sum /var/www/cgi-bin_karoshi/tech/dg_view_site_logs2.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM2" ] && MD5SUM2=not_set
-if [ "$MD5SUM2"'check' != "$dg_view_site_logs2_cgi"'check' ]
+Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/dg_view_site_logs2.cgi | cut -d' ' -f1)
+[ -z "$Checksum2" ] && Checksum2=not_set
+if [ "$Checksum2"'check' != "$dg_view_site_logs2_cgi"'check' ]
 then
 	echo "$(date): dg_view_site_logs2 - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -75,14 +75,14 @@ then
 fi
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
-REMOTE_MD5=$(echo "$DATA" | cut -s -d: -f3)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 WEBSITE=$(echo "$DATA" | cut -s -d: -f4)
 LOGDATE=$(echo "$DATA" | cut -s -d: -f5)
 MOBILE=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ] && [ "$REMOTE_MD5"'check' != "$MD5SUM2"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ] && [ "$RemoteCheckSum"'check' != "$Checksum2"'check' ]
 then
 	echo "$(date): dg_view_top_sites - Not called by dg_view_site_logs2.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

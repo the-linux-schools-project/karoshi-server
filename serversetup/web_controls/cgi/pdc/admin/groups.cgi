@@ -311,8 +311,8 @@ else
 fi
 
 function do_action {
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMESERVER:$CATEGORY:$SECGROUP:$EXTRAGROUPS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/groups
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/groups.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$ACTION:$TYPE:$PROFILE:$HOMESERVER:$CATEGORY:$SECGROUP:$EXTRAGROUPS:$USERNAME:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/groups
 }
 
 #Delete a user from a group

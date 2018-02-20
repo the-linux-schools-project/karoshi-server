@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_view_assigned_cgi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_view_assigned.cgi | cut -d' ' -f1)
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ "$MD5SUM"'check' != "$printers_view_assigned_cgi"'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_view_assigned.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$printers_view_assigned_cgi"'check' ]
 then
 	echo "$(date): printers_view_assigned - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -52,7 +52,7 @@ then
 fi
 REMOTE_USER=$(echo "$*" | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-')
 REMOTE_ADDR=$(echo "$*" | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-')
-REMOTE_MD5=$(echo "$*" | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-')
+RemoteCheckSum=$(echo "$*" | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-')
 ACTION=$(echo "$*" | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-')
 LOCATION=$(echo "$*" | cut -s -d: -f5 | tr -cd 'A-Za-z0-9\._:\-')
 PRINTERNAME=$(echo "$*" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:\-')
@@ -60,7 +60,7 @@ PRINTERNAME=$(echo "$*" | cut -s -d: -f6 | tr -cd 'A-Za-z0-9\._:\-')
 ########################
 #Check data
 ########################
-if [ "$REMOTE_MD5"'check' != "$MD5SUM"'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
 	echo "$(date): printers_view_assigned - Not called by printers_view_assigned.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101

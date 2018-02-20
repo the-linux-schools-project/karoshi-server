@@ -34,9 +34,9 @@ echo `date`: module_ksso - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_manag
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_ksso_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ksso.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_ksso_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_ksso.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $module_ksso_cgi'check' ]
 then
 echo `date`: module_ksso - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -61,12 +61,12 @@ exit 101
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: module_ksso - Not called by module_ksso.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -103,7 +103,7 @@ TEXTDOMAIN=karoshi-server
 
 if [ $SERVERNAME = `hostname-fqdn` ]
 then
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM: | /opt/karoshi/serversetup/modules/ksso/setupksso
+echo $REMOTE_USER:$REMOTE_ADDR:$Checksum: | /opt/karoshi/serversetup/modules/ksso/setupksso
 else
 #Copy in mysql_root_pass
 scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
@@ -111,7 +111,7 @@ scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SE
 scp -p -r /opt/karoshi/serversetup/modules/ksso root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 #Install ksso
 ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:' | /opt/karoshi/serversetup/modules/ksso/setupksso
+echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:' | /opt/karoshi/serversetup/modules/ksso/setupksso
 '
 
 fi

@@ -34,9 +34,9 @@ echo `date`: linux_client_background_upload2 - No admin MD5Checksum >> /opt/karo
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/linux_client_background_upload2_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1`
-[ $MD5SUM'null' = null ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $linux_client_background_upload2_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/linux_client_background_upload2.cgi | cut -d' ' -f1`
+[ $Checksum'null' = null ] && Checksum=not_set
+if [ $Checksum'check' != $linux_client_background_upload2_cgi'check' ]
 then
 echo `date`: linux_client_background_upload2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
@@ -53,12 +53,12 @@ exit 101
 fi
 REMOTE_USER=`echo $* | cut -s -d: -f1 | tr -cd 'A-Za-z0-9\._:\-'`
 REMOTE_ADDR=`echo $* | cut -s -d: -f2 | tr -cd 'A-Za-z0-9\._:\-'`
-REMOTE_MD5=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
+RemoteCheckSum=`echo $* | cut -s -d: -f3 | tr -cd 'A-Za-z0-9\._:\-'`
 FILENAME=`echo $* | cut -s -d: -f4 | tr -cd 'A-Za-z0-9\._:\-'`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 echo `date`: linux_client_background_upload2 - Not called by linux_client_background_upload2.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101

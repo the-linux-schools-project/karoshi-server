@@ -148,9 +148,9 @@ echo '<form action="/cgi-bin/admin/banned_users_view2.cgi" name="selectedusers" 
 <br>
 '
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/banned_users_view.cgi | cut -d' ' -f1)
 #Show sites
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ALPHABET" | sudo -H /opt/karoshi/web_controls/exec/banned_users_view
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ALPHABET" | sudo -H /opt/karoshi/web_controls/exec/banned_users_view
 if [ "$?" = 101 ]
 then
 	MESSAGE=$"No users listed."

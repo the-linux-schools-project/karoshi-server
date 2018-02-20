@@ -155,8 +155,8 @@ else
 	echo '<div id="'$DIV_ID'"><div id=titlebox><table class="standard" style="text-align: left;" ><tbody><tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Package Cache Control"'</div></td><td style="vertical-align: top;"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Package_Cache_Control"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows sites to be accessed via squid deb proxy for updating packages on client computers."'</span></a></td></tr></tbody></table><br>'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/package_cache_control.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$FILTERDATA:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/package_cache_control
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/package_cache_control.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$FILTERDATA:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/package_cache_control
 [ $MOBILE = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

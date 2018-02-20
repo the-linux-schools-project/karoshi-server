@@ -263,8 +263,8 @@ echo '
 </form><br>
 '
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/email_aliases.cgi | cut -d' ' -f1)
 #Show aliases
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$ALIAS:$USERNAME:$DOMAIN:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$ALIAS:$USERNAME:$DOMAIN:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_aliases
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'

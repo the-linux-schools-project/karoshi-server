@@ -286,8 +286,8 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="infobox">'
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$OPTIONCHOICE:$GROUP:$PASSWORD1:$EXCEPTIONLIST:$NEWGROUP:" | sudo -H /opt/karoshi/web_controls/exec/modify_groups
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/modify_groups.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$OPTIONCHOICE:$GROUP:$PASSWORD1:$EXCEPTIONLIST:$NEWGROUP:" | sudo -H /opt/karoshi/web_controls/exec/modify_groups
 MODIFY_STATUS="$?"
 if [ "$MODIFY_STATUS" = 102 ]
 then

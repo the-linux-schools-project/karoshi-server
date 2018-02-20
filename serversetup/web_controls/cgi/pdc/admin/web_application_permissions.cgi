@@ -191,9 +191,9 @@ fi
 echo '<form action="/cgi-bin/admin/web_application_permissions.cgi" method="post">
 '
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/web_application_permissions.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/web_application_permissions.cgi | cut -d' ' -f1)
 #View access points
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:$ACTION:$APPNAME:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/web_application_permissions
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:$ACTION:$APPNAME:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/web_application_permissions
 
 echo '</form></div>'
 

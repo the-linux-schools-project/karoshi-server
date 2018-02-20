@@ -106,8 +106,8 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><b>'$"Restart UPS daemon"'</b><br><br>'$"Restarting UPS daemon."''
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_restart.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ups_restart.cgi | cut -d' ' -f1`
 #Restart UPS
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/ups_restart
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:" | sudo -H /opt/karoshi/web_controls/exec/ups_restart
 echo '</div></div></body></html>'
 exit

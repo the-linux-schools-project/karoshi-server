@@ -148,9 +148,9 @@ then
 MESSAGE=$"The passwords do not match."
 show_status
 fi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_change_passwords.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_change_passwords.cgi | cut -d' ' -f1`
 #Change password
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_change_passwords $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PASSWORD1:$EXCEPTIONLIST:
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_change_passwords $REMOTE_USER:$REMOTE_ADDR:$Checksum:$PASSWORD1:$EXCEPTIONLIST:
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 0 ]
 then

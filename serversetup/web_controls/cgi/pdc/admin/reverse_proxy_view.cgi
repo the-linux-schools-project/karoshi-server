@@ -120,8 +120,8 @@ then
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_view.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/reverse_proxy_view.cgi | cut -d' ' -f1`
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$FOLDER:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/reverse_proxy_view
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FOLDER:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/reverse_proxy_view
 echo '</body></html>'
 exit

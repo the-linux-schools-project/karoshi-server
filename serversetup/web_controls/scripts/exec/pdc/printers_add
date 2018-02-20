@@ -36,9 +36,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_add_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_add.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $printers_add_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printers_add.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $printers_add_cgi'check' ]
 then
 	echo `date`: printers_add - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -56,7 +56,7 @@ fi
 
 REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f1`
 REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f2`
-REMOTE_MD5=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
+RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f3`
 PRINTERNAME=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f4 | sed 's/+//g'`
 LOCATION=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f5 | sed 's/+/ /g'`
 PRINTERADDRESS=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f6 | sed 's/+//g'`
@@ -68,7 +68,7 @@ PRINTERPORT=`echo $* | tr -cd 'A-Za-z0-9\._:%/+-' | cut -s -d: -f10 | sed 's/+//
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ] && [ $REMOTE_MD5'check' != $MD5SUM2'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ] && [ $RemoteCheckSum'check' != $Checksum2'check' ]
 then
 	echo `date`: printers_add - Not called by printers_add.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101

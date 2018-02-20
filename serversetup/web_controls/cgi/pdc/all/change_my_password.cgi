@@ -195,9 +195,9 @@ then
 	fi
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/all/change_my_password.cgi | cut -d' ' -f1)
 #Change password
-echo "$REMOTE_ADDR:$MD5SUM:$USERNAME:$PASSWORD1:$PASSWORD2" | sudo -H /opt/karoshi/web_controls/exec/change_my_password
+echo "$REMOTE_ADDR:$Checksum:$USERNAME:$PASSWORD1:$PASSWORD2" | sudo -H /opt/karoshi/web_controls/exec/change_my_password
 if [ "$?" = 102 ]
 then
 	sleep 4

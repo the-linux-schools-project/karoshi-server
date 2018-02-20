@@ -84,7 +84,7 @@ then
 	/opt/karoshi/web_controls/generate_navbar_admin
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/printers_control.cgi | cut -d' ' -f1`
 
 PRINTER_ACTION=none
 #Get printer name
@@ -146,7 +146,7 @@ fi
 #Show action to be taken
 if [ $PRINTER_ACTION != none ]
 then
-	sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PRINTER_ACTION:$JOBID
+	sudo -H /opt/karoshi/web_controls/exec/printers_control $REMOTE_USER:$REMOTE_ADDR:$Checksum:$PRINTERNAME:$PRINTER_ACTION:$JOBID
 fi
 
 echo "</div></body></html>"

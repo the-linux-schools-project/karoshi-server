@@ -123,8 +123,8 @@ exit
 fi
 
 #Get postfix queue data
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_show_queue_fm.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/email_show_queue
 
 echo '</div></div></form></div></body></html>'
 exit

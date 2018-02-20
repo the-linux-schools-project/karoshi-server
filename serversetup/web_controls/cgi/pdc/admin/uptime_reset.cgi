@@ -186,9 +186,9 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 '
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/uptime_reset.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/uptime_reset.cgi | cut -d' ' -f1`
 #Shutdown server
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/uptime_reset
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/uptime_reset
 #MESSAGE=`echo $SERVERNAME - $"Reset"`
 #show_status
 

@@ -122,7 +122,7 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/module_joomla.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS" | sudo -H /opt/karoshi/web_controls/exec/module_joomla
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_joomla.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS" | sudo -H /opt/karoshi/web_controls/exec/module_joomla
 echo '</div></div></div></body></html>'
 exit

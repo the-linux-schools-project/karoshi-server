@@ -52,21 +52,37 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+ICON1=/images/submenus/system/lock.png
+ICON2=/images/submenus/system/dhcp.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/dhcp_import_reservations.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
-<table class="standard" style="text-align: left;" ><tbody>
-<tr><td style="vertical-align: top;"><div class="sectiontitle">'$"Import DHCP Reservations"'</div></td>
-<td style="vertical-align: top;">
-<button class="button" formaction="/cgi-bin/admin/dhcp_reservations.cgi" name="DHCPreservations" value="_">
-'$"DHCP Reservations"'
-</button>
+
+
+<div class="sectiontitle">'$"Import DHCP Reservations"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Hostname, Mac Address, TCPIP Address"'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<button class="info infonavbutton" formaction="dhcp_reservations.cgi" name="_DoDHCPReservations_" value="_">
+		<img src="'$ICON1'" alt="'$"DHCP Reservations"'">
+		<span>'$"View and edit DHCP Reservations"'</span><br>
+		'$"Reservations"'
+	</button>
 </td>
-<td style="vertical-align: top;">
-<button class="button" formaction="/cgi-bin/admin/dhcp_view_leases.cgi" name="ViewNewPasswords" value="_">
-'$"View DHCP Leases"'
-</button>
+
+<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+	<button class="info infonavbutton" formaction="dhcp_view_leases.cgi" name="_ConfigureDHCP_" value="_">
+		<img src="'$ICON2'" alt="'$"DHCP Leases"'">
+		<span>'$"View DHCP Leases"'</span><br>
+		'$"DHCP Leases"'
+	</button>
 </td>
-<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=DHCP_Reservation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The CSV file format is"':<br><br>'$"Hostname, Mac Address, TCPIP Address"'</span></a></td></tr></tbody></table><br>
+
+
+
+</tr></tbody></table>
+<br>
 <b>'$"CSV file format"'</b><br><br>'$"Hostname, Mac Address, TCPIP Address"'<br><br>
         <table class="standard">
         <tr>

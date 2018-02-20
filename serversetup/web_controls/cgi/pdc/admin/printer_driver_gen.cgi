@@ -243,10 +243,10 @@ echo '</tr></tbody></table>'
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printer_driver_gen.cgi | cut -d' ' -f1)
 if [ "$ACTION" = gendrivers ]
 then
-	sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MOBILE:"
+	sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen2 "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MOBILE:"
 	EXEC_STATUS="$?"
 	[ "$EXEC_STATUS" = 0 ] && MESSAGE=$"Windows printer driver generation completed."
 
@@ -266,7 +266,7 @@ else
 	NOOFLINES=$(wc -l < /var/lib/samba/netlogon/printers.txt)
 	if [ "$COUNTER" -lt "$NOOFLINES" ]
 	then
-		echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
+		echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$QUEUE:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/printer_driver_gen
 	else
 		echo '<ul><li>'$"No Printers have been assigned"'</li></ul>'
 	fi

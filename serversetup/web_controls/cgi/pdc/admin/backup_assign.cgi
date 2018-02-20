@@ -123,9 +123,9 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/backup_assign.cgi | cut -d' ' -f1)
 #Add user
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/backup_assign
 if [ "$?" = 101 ]
 then
 	MESSAGE=''$"There was a problem with this action."' '$"Please check the karoshi web administration logs for more details."''

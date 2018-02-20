@@ -209,8 +209,8 @@ else
 	echo '<b>'$SERVERNAME'</b><br></div><div id="infobox">'
 fi
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/custom_command.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/custom_command $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CUSTOMCOMMAND:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/custom_command.cgi | cut -d' ' -f1`
+sudo -H /opt/karoshi/web_controls/exec/custom_command $REMOTE_USER:$REMOTE_ADDR:$Checksum:$CUSTOMCOMMAND:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:
 CUSTOM_COMMAND_STATUS=`echo $?`
 echo "</div></div>"
 if [ $CUSTOM_COMMAND_STATUS = 102 ]

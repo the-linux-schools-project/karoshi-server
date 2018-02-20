@@ -143,9 +143,9 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><div class="sectiontitle">'$"Add a UPS"'</div><br>'$UPSMODEL $SERVER.''
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_add.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ups_add.cgi | cut -d' ' -f1`
 #Add UPS
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSDRIVER:$UPSPORT:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_add
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$UPSDRIVER:$UPSPORT:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_add
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $SERVER - $"The UPS has been added."`
 if [ $EXEC_STATUS = 101 ]

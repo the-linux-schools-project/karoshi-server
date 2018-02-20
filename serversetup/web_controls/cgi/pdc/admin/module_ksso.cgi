@@ -123,8 +123,8 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox">'
 #Add ksso
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_ksso.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_ksso
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_ksso.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:" | sudo -H /opt/karoshi/web_controls/exec/module_ksso
 echo '</div></div></body></html>'
 exit
 

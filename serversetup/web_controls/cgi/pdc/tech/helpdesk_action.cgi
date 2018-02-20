@@ -199,7 +199,7 @@ sed -i 12c\COMPLETEDDATE='"'`date +%d-%m-%y`'"' /opt/karoshi/server_network/help
 sed -i 13c\COMPLETEDDATE2='"'`date +%s`'"' /opt/karoshi/server_network/helpdesk/completed/$JOBNAME
 fi
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:no:" | sudo -H /opt/karoshi/web_controls/exec/helpdesk_warning_message
 
 exit
 

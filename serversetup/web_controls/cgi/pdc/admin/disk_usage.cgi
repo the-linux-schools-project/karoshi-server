@@ -221,8 +221,8 @@ echo '
 
 [ "$MOBILE" = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CHOICE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/disk_usage
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/disk_usage.cgi | cut -d' ' -f1)
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CHOICE:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$MOBILE:" | sudo -H /opt/karoshi/web_controls/exec/disk_usage
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></form></div></body></html>'
 exit

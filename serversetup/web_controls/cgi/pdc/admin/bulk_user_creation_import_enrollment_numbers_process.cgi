@@ -121,9 +121,9 @@ do
 	echo "$USERNAME","$ENROLLMENT_NO" >> /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv
 	let COUNTER=$COUNTER+1
 done
-CSVMDSUM=`md5sum /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -d' ' -f1`
+CSVMDSUM=`sha256sum /var/www/karoshi/bulk_user_creation_enrollment_numbers/karoshi_enrollmentnumbers.csv | cut -d' ' -f1`
 rm -f /var/www/karoshi/bulk_user_creation_enrollment_numbers/"$CSVFILE"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$CSVMDSUM:" | sudo -H /opt/karoshi/web_controls/exec/bulk_user_creation_import_enrollment_numbers
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enrollment_numbers_process.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$CSVMDSUM:" | sudo -H /opt/karoshi/web_controls/exec/bulk_user_creation_import_enrollment_numbers
 
 echo "</div></div></div></body></html>"

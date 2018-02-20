@@ -221,9 +221,9 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/cron_add.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/cron_add.cgi | cut -d' ' -f1)
 #Add cron job
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$MINUTES:$HOUR:$DAY:$MONTH:$DOFW:$COMMAND:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/cron_add
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MINUTES:$HOUR:$DAY:$MONTH:$DOFW:$COMMAND:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:" | sudo -H /opt/karoshi/web_controls/exec/cron_add
 show_jobs
 echo "</div></body></html>"
 exit

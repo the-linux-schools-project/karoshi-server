@@ -183,9 +183,9 @@ echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Remov
 
 if [ "$ACTION" = reallyremove ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1)
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/karoshi_servers_remove_role.cgi | cut -d' ' -f1)
 	#Remove module
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$MODULE:" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_remove_role
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$MODULE:" | sudo -H /opt/karoshi/web_controls/exec/karoshi_servers_remove_role
 
 	echo "<form METHOD=POST ACTION=\"/cgi-bin/admin/karoshi_servers_view.cgi\" target=\"_top\" name = \"frm\">
 		</form><script>document.frm.submit();</script><form>"

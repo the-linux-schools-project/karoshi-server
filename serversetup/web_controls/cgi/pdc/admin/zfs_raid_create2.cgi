@@ -338,7 +338,7 @@ fi
 
 [ $MOBILE = no ] && echo '</div><div id="infobox">'
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$PARITY:$DRIVES:$SPAREDRIVES:$MOUNTPOINT:$CREATETYPE" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create2
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/zfs_raid_create2.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$SERVERTYPE:$SERVERMASTER:$ACTION:$PARITY:$DRIVES:$SPAREDRIVES:$MOUNTPOINT:$CREATETYPE" | sudo -H /opt/karoshi/web_controls/exec/zfs_raid_create2
 control_raid
 exit

@@ -139,9 +139,9 @@ fi
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox"><b>'$"Add a device"'</b><br><br>'$UPSMODEL $SERVER.''
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/ups_device_add.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ups_device_add.cgi | cut -d' ' -f1`
 #Add UPS
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$UPSSERVER:$SERVER:$DEVICENAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_device_add
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$UPSSERVER:$SERVER:$DEVICENAME:" | sudo -H /opt/karoshi/web_controls/exec/ups_device_add
 EXEC_STATUS=`echo $?`
 MESSAGE=`echo $SERVER - $"The UPS has been added."`
 if [ $EXEC_STATUS = 101 ]

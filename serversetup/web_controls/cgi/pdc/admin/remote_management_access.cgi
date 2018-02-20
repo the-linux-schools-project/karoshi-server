@@ -140,6 +140,6 @@ show_status
 fi
 
 
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_access.cgi | cut -d' ' -f1`
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$USER:" | sudo -H /opt/karoshi/web_controls/exec/remote_management_access
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_access.cgi | cut -d' ' -f1`
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USER:" | sudo -H /opt/karoshi/web_controls/exec/remote_management_access
 

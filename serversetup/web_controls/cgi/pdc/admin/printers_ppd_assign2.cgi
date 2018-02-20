@@ -176,9 +176,9 @@ then
 fi
 
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign2.cgi | cut -d' ' -f1)
 #Add ppd file to printer
-sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$PRINTERNAME:$PAGESIZE:$COLOUR:$PRINTERPPD"
+sudo -H /opt/karoshi/web_controls/exec/printers_ppd_assign "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PRINTERNAME:$PAGESIZE:$COLOUR:$PRINTERPPD"
 if [ "$?" != 0 ]
 then
 	MESSAGE=$"There was a problem adding this ppd. Please consult the Karoshi web administration logs."

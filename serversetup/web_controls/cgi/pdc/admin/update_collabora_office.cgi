@@ -142,8 +142,8 @@ fi
 
 if [ "$ACTION" =  update ]
 then
-	MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/update_collabora_office.cgi | cut -d' ' -f1)
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/update_collabora_office
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_collabora_office.cgi | cut -d' ' -f1)
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:" | sudo -H /opt/karoshi/web_controls/exec/update_collabora_office
 	if [ "$?" = 0 ]
 	then
 		echo "<ul><li>"$"Collabora has now been updated""</li></ul>"

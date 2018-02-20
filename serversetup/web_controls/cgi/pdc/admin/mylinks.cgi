@@ -223,8 +223,8 @@ fi
 
 if [ "$ACTION" = add ] || [ "$ACTION" = delete ] || [ "$ACTION" = up ] || [ "$ACTION" = down ]
 then
-	MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/mylinks.cgi | cut -d' ' -f1`
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$HYPERLINK:$QUICKLINKSTYLE:" | sudo -H /opt/karoshi/web_controls/exec/mylinks
+	Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/mylinks.cgi | cut -d' ' -f1`
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$HYPERLINK:$QUICKLINKSTYLE:" | sudo -H /opt/karoshi/web_controls/exec/mylinks
 	#Reload page
 fi
 

@@ -115,6 +115,6 @@ then
 	show_status
 fi
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/locations2.cgi | cut -d' ' -f1)
-sudo -H /opt/karoshi/web_controls/exec/locations "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$DELETE:$NEWLOCATION:"
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/locations2.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/locations "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DELETE:$NEWLOCATION:"
 exit

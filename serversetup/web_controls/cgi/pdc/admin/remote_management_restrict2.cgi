@@ -164,10 +164,10 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 
 echo "<div id="actionbox">"
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict2.cgi | cut -d' ' -f1`
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_restrict2.cgi | cut -d' ' -f1`
 if [ $ACTION = remove ]
 then
-sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPADDRESS::$ACCESSLEVEL
+sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$TCPADDRESS::$ACCESSLEVEL
 EXEC_STATUS=`echo $?`
 if [ $EXEC_STATUS = 102 ]
 then
@@ -178,7 +178,7 @@ view_tcpip
 fi
 if [ $ACTION = edit ]
 then
-sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$ACTION:$TCPADDRESS::$ACCESSLEVEL
+sudo -H /opt/karoshi/web_controls/exec/remote_management_restrict $REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$TCPADDRESS::$ACCESSLEVEL
 fi
 echo "</div>"
 echo "</div></body></html>"

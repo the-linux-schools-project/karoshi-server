@@ -100,9 +100,9 @@ fi
 /opt/karoshi/web_controls/generate_navbar_admin
 echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Exam Accounts - Reset Passwords"'</div></div><div id="infobox"><br>'
 
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/exam_accounts_reset_passwords.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_reset_passwords.cgi | cut -d' ' -f1)
 #Reset passwords
-sudo -H /opt/karoshi/web_controls/exec/exam_accounts_reset_passwords "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$EXCEPTIONLIST:"
+sudo -H /opt/karoshi/web_controls/exec/exam_accounts_reset_passwords "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$EXCEPTIONLIST:"
 if [ "$?" != 0 ]
 then
 	MESSAGE=$"The passwords were not reset for all the exam accounts."

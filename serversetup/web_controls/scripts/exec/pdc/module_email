@@ -33,9 +33,9 @@ then
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
-MD5SUM=`md5sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
-[ -z "$MD5SUM" ] && MD5SUM=not_set
-if [ $MD5SUM'check' != $module_email_cgi'check' ]
+Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
+[ -z "$Checksum" ] && Checksum=not_set
+if [ $Checksum'check' != $module_email_cgi'check' ]
 then
 	echo `date`: module_email - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -60,7 +60,7 @@ then
 fi
 REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
 REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-REMOTE_MD5=`echo "$DATA" | cut -s -d: -f3`
+RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
 ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
 COPYEMAIL=`echo "$DATA" | cut -s -d: -f5`
 [ -z "$COPYEMAIL" ] && COPYEMAIL=no
@@ -68,7 +68,7 @@ SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
 ########################
 #Check data
 ########################
-if [ $REMOTE_MD5'check' != $MD5SUM'check' ]
+if [ $RemoteCheckSum'check' != $Checksum'check' ]
 then
 	echo `date`: module_email - Not called by module_email.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
@@ -108,7 +108,7 @@ TEXTDOMAIN=karoshi-server
 #Check that this server has been setup with the correct authentication
 if [ $SERVERNAME != `hostname-fqdn` ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
 	if [ $? = 101 ]
 	then
 		echo $"This server does not have the correct authentication set up on it.""<br><br>"
@@ -158,9 +158,9 @@ then
 fi
 
 #Create keytab for mail
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:imap:mail:$SERVERNAME:dovecot:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:smtp:postfix:$SERVERNAME:postfix:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:HTTP:sogo:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:imap:mail:$SERVERNAME:dovecot:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:smtp:postfix:$SERVERNAME:postfix:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:HTTP:sogo:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 #Create ssl certificate for web access
 echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
@@ -181,7 +181,7 @@ fi
 if [ $SERVERNAME = `hostname-fqdn` ] 
 then
 #Install email
-echo $REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/email/setupemail
+echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/email/setupemail
 fi
 
 if [ $SERVERNAME != `hostname-fqdn` ]
@@ -216,7 +216,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 #Make sure that home areas exist for users to store email folders in.
 
 
-echo '$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/email/setupemail
+echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/email/setupemail
 '
 fi
 

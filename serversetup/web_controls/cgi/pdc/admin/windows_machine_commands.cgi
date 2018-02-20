@@ -165,9 +165,9 @@ then
 else
 	echo '<b>'$"Windows Commands"' - '"$COMMAND2"' '"$TCPIP"'</b><br><br>'
 fi
-MD5SUM=$(md5sum /var/www/cgi-bin_karoshi/admin/windows_machine_commands.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/windows_machine_commands.cgi | cut -d' ' -f1)
 #Run command
-echo "$REMOTE_USER:$REMOTE_ADDR:$MD5SUM:$SERVER:$COMMAND:$OPTIONS:" | sudo -H /opt/karoshi/web_controls/exec/windows_machine_commands
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVER:$COMMAND:$OPTIONS:" | sudo -H /opt/karoshi/web_controls/exec/windows_machine_commands
 EXEC_STATUS="$?"
 
 if [ "$EXEC_STATUS" = 101 ]
