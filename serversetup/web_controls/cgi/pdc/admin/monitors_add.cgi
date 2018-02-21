@@ -36,153 +36,97 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="0; URL=monitors_view.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Add Monitors"'</title><meta http-equiv="REFRESH" content="0; URL=monitors_view.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=40
+function get_data {
+COUNTER=2
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
+do
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
+done
+}
+
 #Assign GROUPNAME
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = GROUPNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-GROUPNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=GROUPNAME
+get_data
+GROUPNAME="$DATAENTRY"
+
 #Assign TCPIP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = TCPIPcheck ]
-then
-let COUNTER=$COUNTER+1
-TCPIP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=TCPIP
+get_data
+TCPIP="$DATAENTRY"
 
 #Assign INTERVAL
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = INTERVALcheck ]
-then
-let COUNTER=$COUNTER+1
-INTERVAL=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=INTERVAL
+get_data
+INTERVAL="$DATAENTRY"
 
 #Assign ALERTAFTER
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = ALERTAFTERcheck ]
-then
-let COUNTER=$COUNTER+1
-ALERTAFTER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=ALERTAFTER
+get_data
+ALERTAFTER="$DATAENTRY"
 
 #Assign DAYSTART
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DAYSTARTcheck ]
-then
-let COUNTER=$COUNTER+1
-DAYSTART=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=DAYSTART
+get_data
+DAYSTART="$DATAENTRY"
 
 #Assign DAYEND
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DAYENDcheck ]
-then
-let COUNTER=$COUNTER+1
-DAYEND=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=DAYEND
+get_data
+DAYEND="$DATAENTRY"
 
 #Assign HOURSTART
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = HOURSTARTcheck ]
-then
-let COUNTER=$COUNTER+1
-HOURSTART=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=HOURSTART
+get_data
+HOURSTART="$DATAENTRY"
 
 #Assign HOUREND
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = HOURENDcheck ]
-then
-let COUNTER=$COUNTER+1
-HOUREND=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+DATANAME=HOUREND
+get_data
+HOUREND="$DATAENTRY"
 
 #Assign MONITORTYPES
 COUNTER=2
 ARRAY_COUNT=0
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MONITORTYPEScheck ]
-then
-let COUNTER=$COUNTER+1
-MONITORTYPES[$ARRAY_COUNT]=`echo $DATA | cut -s -d'_' -f$COUNTER`
-let ARRAY_COUNT=$ARRAY_COUNT+1
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = MONITORTYPES ]]
+	then
+		let COUNTER=$COUNTER+1
+		MONITORTYPES["$ARRAY_COUNT"]=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	let ARRAY_COUNT="$ARRAY_COUNT"+1
+	fi
+	let COUNTER="$COUNTER"+1
 done
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 echo "</div></body></html>"
 exit
@@ -190,78 +134,78 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -Z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that GROUPNAME is not blank
-if [ $GROUPNAME'null' = null ]
+if [ -z "$GROUPNAME" ]
 then
-MESSAGE=$"The group name must not be blank."
-show_status
+	MESSAGE=$"The group name must not be blank."
+	show_status
 fi
 
-if [ $TCPIP'null' = null ]
+if [ -z "$TCPIP" ]
 then
-MESSAGE=$"The TCPIP numbers cannot be blank."
-show_status
+	MESSAGE=$"The TCPIP numbers cannot be blank."
+	show_status
 fi
 #Check to see that MONITORTYPES is not blank
-if [ $MONITORTYPES'null' = null ]
+if [ -z "$MONITORTYPES" ]
 then
-MESSAGE=$"The monitor type cannot be blank."
-show_status
+	MESSAGE=$"The monitor type cannot be blank."
+	show_status
 fi
 
 #Check to see that monitor interval is correct if not blank
 
-if [ $HOURSTART'null' != null ] || [ $HOUREND'null' != null ]
+if [ ! -z "$HOURSTART" ] || [ ! -z "$HOUREND" ]
 then
-#Check that all times are not blank
-if [ $HOURSTART'null' = null ] || [ $HOUREND'null' = null ]
-then
-MESSAGE=$"You must fill in all of the time interval boxes if you do not want continuous monitoring."
-show_status
-fi
+	#Check that all times are not blank
+	if [ -z "$HOURSTART" ] || [ -z "$HOUREND" ]
+	then
+		MESSAGE=$"You must fill in all of the time interval boxes if you do not want continuous monitoring."
+		show_status
+	fi
 fi
 #Convert INTERVAL to numbers
-[ $INTERVAL'null' = null ] && INTERVAL=5
-INTERVAL=`echo $INTERVAL | tr -cd '0-9\._:\n-'`
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1`
+[ -z "$INTERVAL" ] && INTERVAL=5
+INTERVAL=$(echo "$INTERVAL" | tr -cd '0-9\._:\n-')
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1)
 #Add monitor
-sudo -H /opt/karoshi/web_controls/exec/monitors_add $REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
-EXEC_STATUS=`echo $?`
-GROUPNAME=`echo $GROUPNAME | sed 's/+/ /g'`
-MESSAGE=`echo $GROUPNAME: $"Monitor added."`
-if [ $EXEC_STATUS = 101 ]
+sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:add:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:"`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
+EXEC_STATUS="$?"
+GROUPNAME=$(echo "$GROUPNAME" | sed 's/+/ /g')
+MESSAGE=$(echo "$GROUPNAME: "$"Monitor added.")
+if [ "$EXEC_STATUS" = 101 ]
 then
-MESSAGE=$"There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
+	MESSAGE=$"There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
 fi
-if [ $EXEC_STATUS = 102 ]
+if [ "$EXEC_STATUS" = 102 ]
 then
-MESSAGE=$"A monitor group already exists with this name."
+	MESSAGE=$"A monitor group already exists with this name."
 fi
-if [ $EXEC_STATUS = 103 ]
+if [ "$EXEC_STATUS" = 103 ]
 then
-MESSAGE=$"A monitoring server has not been added to the network."
+	MESSAGE=$"A monitoring server has not been added to the network."
 fi
 show_status
 exit
