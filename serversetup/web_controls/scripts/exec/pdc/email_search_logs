@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/email_search_logs_cgi
 then
-	echo `date`: email_search_logs - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: email_search_logs - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/email_search_logs_cgi
@@ -37,7 +37,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/email_search_logs.cgi | cut -
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $email_search_logs_cgi'check' ]
 then
-	echo `date`: email_search_logs - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: email_search_logs - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

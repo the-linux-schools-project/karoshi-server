@@ -29,7 +29,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/radius_access_controls_cgi
 then
-	echo "$(date): radius_access_controls - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): radius_access_controls - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/radius_access_controls_cgi
@@ -37,7 +37,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/radius_access_controls.cgi |
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$radius_access_controls_cgi"'check' ]
 then
-	echo "$(date): radius_access_controls - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): radius_access_controls - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

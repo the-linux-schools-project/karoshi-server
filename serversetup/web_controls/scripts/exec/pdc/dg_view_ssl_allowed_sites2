@@ -33,7 +33,7 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_ssl_allowed_sites2_cgi
 then
-echo `date`: dg_view_ssl_allowed_sites2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_ssl_allowed_sites2 - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_ssl_allowed_sites2_cgi
@@ -41,13 +41,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_ssl_allowed_sites2.cg
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $dg_view_ssl_allowed_sites2_cgi'check' ]
 then
-echo `date`: dg_view_ssl_allowed_sites2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_ssl_allowed_sites2 - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_ssl_allowed_sites2_cgi
 then
-echo `date`: dg_view_ssl_allowed_sites2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_ssl_allowed_sites2 - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_ssl_allowed_sites2_cgi
@@ -55,7 +55,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/dg_view_ssl_allowed_sites2.cg
 [ $Checksum2'null' = null ] && Checksum2=not_set
 if [ $Checksum2'check' != $dg_view_ssl_allowed_sites2_cgi'check' ]
 then
-echo `date`: dg_view_ssl_allowed_sites2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_ssl_allowed_sites2 - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 

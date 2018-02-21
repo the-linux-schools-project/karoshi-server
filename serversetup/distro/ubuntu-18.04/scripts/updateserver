@@ -135,8 +135,8 @@ do
 
 	if [ -f "$ConfigPath" ] && [ -f "$ConfigPath.$LogDate.preupdate" ]
 	then
-		#Get md5sum and check against the backup config file
-		if [[ $(md5sum "$ConfigPath" | cut -d" " -f1) != $(md5sum "$ConfigPath.$LogDate.preupdate" | cut -d" " -f1) ]]
+		#Get checksum and check against the backup config file
+		if [[ $(sha256sum "$ConfigPath" | cut -d" " -f1) != $(sha256sum "$ConfigPath.$LogDate.preupdate" | cut -d" " -f1) ]]
 		then
 			echo -e "$HOSTNAME: $(date) - $ConfigPath has been altered.\n" >>"/opt/karoshi/logs/server_upgrades/$LogDate"
 			#Copy current config file

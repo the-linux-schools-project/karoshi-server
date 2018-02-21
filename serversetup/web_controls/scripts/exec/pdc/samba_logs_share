@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_share_cgi
 then
-echo `date`: samba_logs_share - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: samba_logs_share - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_share_cgi
@@ -38,13 +38,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/samba_logs_share.cgi | cut -d
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $samba_logs_share_cgi'check' ]
 then
-echo `date`: samba_logs_share - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: samba_logs_share - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_share_cgi
 then
-echo `date`: samba_logs_share - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: samba_logs_share - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_share_cgi
@@ -52,7 +52,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/samba_logs_share.cgi | cut -d
 [ $Checksum2'null' = null ] && Checksum2=not_set
 if [ $Checksum2'check' != $samba_logs_share_cgi'check' ]
 then
-echo `date`: samba_logs_share - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: samba_logs_share - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 ########################

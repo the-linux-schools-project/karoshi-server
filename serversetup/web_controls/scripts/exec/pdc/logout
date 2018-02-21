@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/logout_cgi
 then
-echo `date`: logout - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: logout - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/logout_cgi
@@ -37,13 +37,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/logout.cgi | cut -d' ' -f1`
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $logout_cgi'check' ]
 then
-echo `date`: logout - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: logout - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/logout_cgi
 then
-echo `date`: logout - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: logout - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/logout_cgi
@@ -51,7 +51,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/logout.cgi | cut -d' ' -f1`
 [ $Checksum2'null' = null ] && Checksum2=not_set
 if [ $Checksum2'check' != $logout_cgi'check' ]
 then
-echo `date`: logout - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: logout - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 ########################

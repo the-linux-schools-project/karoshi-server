@@ -29,7 +29,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_bans_cgi
 then
-	echo "$(date): dhcp_bans - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): dhcp_bans - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_bans_cgi
@@ -37,7 +37,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp_bans.cgi | cut -d' ' -f
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$dhcp_bans_cgi"'check' ]
 then
-	echo "$(date): dhcp_bans - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): dhcp_bans - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

@@ -31,7 +31,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign1_cgi
 then
-	echo "$(date): printers_show_drivers - No MD5Checksum for printers_ppd_assign1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): printers_show_drivers - No Checksum for printers_ppd_assign1" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/printers_ppd_assign1_cgi
@@ -39,7 +39,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_ppd_assign1.cgi | c
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$printers_ppd_assign1_cgi"'check' ]
 then
-	echo "$(date): printers_show_drivers - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): printers_show_drivers - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################

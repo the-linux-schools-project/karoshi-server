@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_access_fm_cgi
 then
-echo `date`: remote_management_level - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: remote_management_level - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_access_fm_cgi
@@ -38,7 +38,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_access_fm.c
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $remote_management_access_fm_cgi'check' ]
 then
-echo `date`: remote_management_level - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: remote_management_level - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 ########################

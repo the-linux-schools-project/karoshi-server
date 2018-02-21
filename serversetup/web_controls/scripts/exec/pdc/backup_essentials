@@ -31,7 +31,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
 then
-	echo "$(date): backup_essentials - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): backup_essentials - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/backup_essentials_cgi
@@ -39,7 +39,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/backup_essentials.cgi | cut 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$backup_essentials_cgi"'check' ]
 then
-	echo "$(date): backup_essentials - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): backup_essentials - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################

@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
 then
-	echo `date`: dg_bypass - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_bypass - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_bypass_cgi
@@ -38,13 +38,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_bypass.cgi | cut -d' ' -f1
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $dg_bypass_cgi'check' ]
 then
-	echo `date`: dg_bypass - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_bypass - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
 then
-	echo `date`: dg_bypass - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_bypass - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_bypass_cgi
@@ -52,7 +52,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/dg_bypass.cgi | cut -d' ' -f1
 [ -z "$Checksum2" ] && Checksum2=not_set
 if [ $Checksum2'check' != $dg_bypass_cgi'check' ]
 then
-	echo `date`: dg_bypass - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_bypass - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 ########################

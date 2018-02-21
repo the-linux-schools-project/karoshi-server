@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_shutdown_time2_cgi
 then
-echo `date`: client_shutdown_time - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: client_shutdown_time - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/client_shutdown_time2_cgi
@@ -37,7 +37,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/client_shutdown_time2.cgi | c
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $client_shutdown_time2_cgi'check' ]
 then
-echo `date`: client_shutdown_time - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: client_shutdown_time - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 

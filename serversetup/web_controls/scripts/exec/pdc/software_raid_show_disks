@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_show_disks_cgi
 then
-echo `date`: software_raid_show_disks - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: software_raid_show_disks - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/software_raid_show_disks_cgi
@@ -37,7 +37,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/software_raid_show_disks.cgi 
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $software_raid_show_disks_cgi'check' ]
 then
-echo `date`: software_raid_show_disks - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: software_raid_show_disks - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 

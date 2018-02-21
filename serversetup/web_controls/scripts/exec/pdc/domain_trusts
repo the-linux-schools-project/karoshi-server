@@ -28,7 +28,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/domain_trusts_cgi
 then
-	echo `date`: domain_trusts - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: domain_trusts - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/domain_trusts_cgi
@@ -36,7 +36,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/domain_trusts.cgi | cut -d' '
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $domain_trusts_cgi'check' ]
 then
-	echo `date`: domain_trusts - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: domain_trusts - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

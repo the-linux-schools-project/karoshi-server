@@ -30,7 +30,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
 then
-	echo "$(date): user_internet_access - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): user_internet_access - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/user_internet_access_cgi
@@ -38,13 +38,13 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/user_internet_access.cgi | c
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$user_internet_access_cgi"'check' ]
 then
-	echo "$(date): user_internet_access - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): user_internet_access - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/user_internet_access_cgi
 then
-	echo "$(date): user_internet_access - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): user_internet_access - No tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/user_internet_access_cgi
@@ -52,7 +52,7 @@ Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/user_internet_access.cgi | c
 [ -z "$Checksum2" ] && Checksum=not_set
 if [ "$Checksum2"'check' != "$user_internet_access_cgi"'check' ]
 then
-	echo "$(date): user_internet_access - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): user_internet_access - Incorrect tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

@@ -34,7 +34,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
 then
-	echo `date`: ntp2 - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: ntp2 - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/ntp2_cgi
@@ -42,7 +42,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/ntp2.cgi | cut -d' ' -f1`
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $ntp2_cgi'check' ]
 then
-	echo `date`: ntp - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: ntp - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

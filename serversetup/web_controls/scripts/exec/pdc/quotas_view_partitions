@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
 then
-	echo `date`: quotas_view_partitions - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: quotas_view_partitions - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/quotas_view_partitions_cgi
@@ -37,7 +37,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/quotas_view_partitions.cgi | 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $quotas_view_partitions_cgi'check' ]
 then
-	echo `date`: quotas_view_partitions - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: quotas_view_partitions - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

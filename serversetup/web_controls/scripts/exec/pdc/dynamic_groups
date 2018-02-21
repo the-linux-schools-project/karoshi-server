@@ -6,7 +6,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dynamic_groups_cgi
 then
-	echo `date`: dynamic_groups - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dynamic_groups - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dynamic_groups_cgi
@@ -14,7 +14,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dynamic_groups.cgi | cut -d' 
 [[ -z "$Checksum" ]] && Checksum=not_set
 if [[ $Checksum'check' != $dynamic_groups_cgi'check' ]]
 then
-	echo `date`: dynamic_groups - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dynamic_groups - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

@@ -30,7 +30,7 @@ FAILED_SERVER=no
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
 then
-	echo `date`: dhcp_reservations - No admin MD5Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo `date`: dhcp_reservations - No admin Checksum >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dhcp_reservations_cgi
@@ -38,7 +38,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/dhcp_reservations.cgi | cut 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum" != "$dhcp_reservations_cgi" ]
 	then
-	echo "$(date): dhcp_reservations - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): dhcp_reservations - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/update_server_proxy_settings_cgi
 then
-echo `date`: update_server_proxy_settings - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: update_server_proxy_settings - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/update_server_proxy_settings_cgi
@@ -38,7 +38,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/update_server_proxy_settings.
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $update_server_proxy_settings_cgi'check' ]
 then
-echo `date`: update_server_proxy_settings - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: update_server_proxy_settings - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 

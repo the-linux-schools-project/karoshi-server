@@ -31,7 +31,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/services_view_cgi
 then
-	echo "$(date): services_view - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/services_view_cgi
@@ -39,7 +39,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/services_view.cgi | cut -d' 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$services_view_cgi"'check' ]
 then
-	echo "$(date): services_view - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): services_view - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################

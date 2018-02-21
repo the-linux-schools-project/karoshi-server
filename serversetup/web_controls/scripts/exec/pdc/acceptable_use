@@ -29,7 +29,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/acceptable_use_cgi
 then
-	echo "$(date): acceptable_use - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): acceptable_use - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/acceptable_use_cgi
@@ -37,13 +37,13 @@ Checksum1=$(sha256sum /var/www/cgi-bin_karoshi/admin/acceptable_use.cgi | cut -d
 [ -z "$Checksum1" ] && Checksum1=not_set
 if [ "$Checksum1"'check' != "$acceptable_use_cgi"'check' ]
 then
-	echo "$(date): acceptable_use - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): acceptable_use - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
 then
-	echo "$(date): acceptable_use - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): acceptable_use - No tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/acceptable_use_cgi
@@ -51,7 +51,7 @@ Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/acceptable_use.cgi | cut -d'
 [ -z "$Checksum2" ] && Checksum2=not_set
 if [ "$Checksum2"'check' != "$acceptable_use_cgi"'check' ]
 then
-	echo "$(date): acceptable_use - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): acceptable_use - Incorrect tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

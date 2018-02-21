@@ -46,7 +46,7 @@ EXCEPTIONLIST=`echo $* | tr -cd 'A-Za-z0-9\._:\-+' | cut -s -d: -f5`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
 then
-	echo `date`: exam_accounts_enable_disable - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: exam_accounts_enable_disable - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/exam_accounts_enable_disable_cgi
@@ -54,7 +54,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/exam_accounts_enable_disable.
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $exam_accounts_enable_disable_cgi'check' ]
 then
-	echo `date`: exam_accounts_enable_disable - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: exam_accounts_enable_disable - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

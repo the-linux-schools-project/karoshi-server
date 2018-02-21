@@ -38,7 +38,7 @@ USERMSG2="Username"
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_banned_users2_cgi
 then
-echo `date`: dg_view_banned_users2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_banned_users2 - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_view_banned_users2_cgi
@@ -46,13 +46,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_view_banned_users2.cgi | c
 [ $Checksum'null' = null ] && Checksum=not_set
 if [ $Checksum'check' != $dg_view_banned_users2_cgi'check' ]
 then
-echo `date`: dg_view_banned_users2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_banned_users2 - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_banned_users2_cgi
 then
-echo `date`: dg_view_banned_users2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_banned_users2 - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/dg_view_banned_users2_cgi
@@ -60,13 +60,13 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/dg_view_banned_users2.cgi | c
 [ $Checksum2'null' = null ] && Checksum2=not_set
 if [ $Checksum2'check' != $dg_view_banned_users2_cgi'check' ]
 then
-echo `date`: dg_view_banned_users2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: dg_view_banned_users2 - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/banned_users_view2_cgi
 then
-echo `date`: banned_users_view2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: banned_users_view2 - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/banned_users_view2_cgi
@@ -74,13 +74,13 @@ Checksum3=`sha256sum /var/www/cgi-bin_karoshi/admin/banned_users_view2.cgi | cut
 [ $Checksum3'null' = null ] && Checksum3=not_set
 if [ $Checksum3'check' != $banned_users_view2_cgi'check' ]
 then
-echo `date`: banned_users_view2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: banned_users_view2 - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/banned_users_view2_cgi
 then
-echo `date`: banned_users_view2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: banned_users_view2 - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/banned_users_view2_cgi
@@ -88,7 +88,7 @@ Checksum4=`sha256sum /var/www/cgi-bin_karoshi/tech/banned_users_view2.cgi | cut 
 [ $Checksum4'null' = null ] && Checksum4=not_set
 if [ $Checksum4'check' != $banned_users_view2_cgi'check' ]
 then
-echo `date`: banned_users_view2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo `date`: banned_users_view2 - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 exit 101
 fi
 ########################

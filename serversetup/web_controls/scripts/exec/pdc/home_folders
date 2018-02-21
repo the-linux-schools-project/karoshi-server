@@ -28,7 +28,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/home_folders2_cgi
 then
-	echo "$(date): home_folders - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): home_folders - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/home_folders2_cgi
@@ -37,7 +37,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/home_folders2.cgi | cut -d' 
 
 if [ "$Checksum"'check' != "$home_folders2_cgi"'check' ]
 then
-	echo "$(date): home_folders - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): home_folders - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

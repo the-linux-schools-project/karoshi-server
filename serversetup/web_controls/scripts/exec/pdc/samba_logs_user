@@ -30,7 +30,7 @@ LOG_DATE=`date +%F`
 
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_user_cgi
 then
-	echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: samba_logs_user - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/samba_logs_user_cgi
@@ -38,13 +38,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/samba_logs_user.cgi | cut -d'
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $samba_logs_user_cgi'check' ]
 then
-	echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: samba_logs_user - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_user_cgi
 then
-	echo `date`: samba_logs_user - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: samba_logs_user - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/samba_logs_user_cgi
@@ -52,7 +52,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/samba_logs_user.cgi | cut -d'
 [ -z "$Checksum2" ] && Checksum2=not_set
 if [ $Checksum2'check' != $samba_logs_user_cgi'check' ]
 then
-	echo `date`: samba_logs_user - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: samba_logs_user - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 ########################

@@ -50,7 +50,7 @@ fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi
 then
-	echo "$(date): client_boot_controls - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): client_boot_controls - No tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls_cgi

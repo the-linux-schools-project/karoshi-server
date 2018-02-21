@@ -50,7 +50,7 @@ fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_show_qrcodes_cgi
 then
-	echo `date`: asset_register_show_qrcodes - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: asset_register_show_qrcodes - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/asset_register_show_qrcodes_cgi

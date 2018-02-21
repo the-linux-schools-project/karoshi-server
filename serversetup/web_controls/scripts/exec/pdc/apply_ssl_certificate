@@ -29,7 +29,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate_cgi
 then
-	echo "$(date): apply_ssl_certificate - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): apply_ssl_certificate - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/apply_ssl_certificate_cgi
@@ -37,7 +37,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/apply_ssl_certificate.cgi | 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$apply_ssl_certificate_cgi"'check' ]
 then
-	echo "$(date): apply_ssl_certificate - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): apply_ssl_certificate - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

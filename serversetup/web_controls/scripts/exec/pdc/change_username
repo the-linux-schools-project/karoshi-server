@@ -28,7 +28,7 @@ LOG_DATE=$(date +%F)
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/change_user_info_cgi
 then
-	echo "$(date): change_username - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): change_username - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/change_user_info_cgi
@@ -36,7 +36,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/change_user_info.cgi | cut -
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$change_user_info_cgi"'check' ]
 then
-	echo "$(date): change_username - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): change_username - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

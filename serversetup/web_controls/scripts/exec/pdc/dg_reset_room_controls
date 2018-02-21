@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/dg_reset_room_controls_cgi
 then
-	echo `date`: dg_reset_room_controls - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_reset_room_controls - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/dg_reset_room_controls_cgi
@@ -37,7 +37,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/dg_reset_room_controls.cgi | 
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $dg_reset_room_controls_cgi'check' ]
 then
-	echo `date`: dg_reset_room_controls - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: dg_reset_room_controls - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

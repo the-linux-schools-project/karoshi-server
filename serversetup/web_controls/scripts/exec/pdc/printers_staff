@@ -32,7 +32,7 @@ SSHWARNMSG="SSH is not enabled for this server."
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/staff_checksums/printers_cgi
 then
-	echo `date`: printers - No MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/staff_checksums/printers_cgi
@@ -40,7 +40,7 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/staff/printers.cgi | cut -d' ' -f1`
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $printers_cgi'check' ]
 then
-	echo `date`: printers_staff - Incorrect MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: printers_staff - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 

@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls2_cgi
 then
-	echo `date`: client_boot_controls2 - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: client_boot_controls2 - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/client_boot_controls2_cgi
@@ -37,13 +37,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/client_boot_controls2.cgi | c
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $client_boot_controls2_cgi'check' ]
 then
-	echo `date`: client_boot_controls2 - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: client_boot_controls2 - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls2_cgi
 then
-	echo `date`: client_boot_controls2 - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: client_boot_controls2 - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/client_boot_controls2_cgi
@@ -51,7 +51,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/client_boot_controls2.cgi | c
 [ -z "$Checksum2" ] && Checksum2=not_set
 if [ $Checksum2'check' != $client_boot_controls2_cgi'check' ]
 then
-	echo `date`: client_boot_controls2 - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: client_boot_controls2 - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 ########################

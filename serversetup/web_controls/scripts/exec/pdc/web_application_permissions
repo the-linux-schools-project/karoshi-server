@@ -32,7 +32,7 @@ WebAppList="joomla nextcloud"
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/web_application_permissions_cgi
 then
-	echo "$(date): web_application_permissions - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): web_application_permissions - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/web_application_permissions_cgi
@@ -40,7 +40,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/web_application_permissions.
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$web_application_permissions_cgi"'check' ]
 then
-	echo "$(date): web_application_permissions - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): web_application_permissions - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

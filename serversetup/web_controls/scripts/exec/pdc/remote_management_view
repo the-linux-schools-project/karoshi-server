@@ -48,7 +48,7 @@ export TEXTDOMAIN=karoshi-server
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_view_cgi
 then
-	echo "$(date): remote_management_view - No MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): remote_management_view - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/remote_management_view_cgi
@@ -56,7 +56,7 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/remote_management_view.cgi |
 [ -z "$Checksum" ] && Checksum=not_set
 if [ "$Checksum"'check' != "$remote_management_view_cgi"'check' ]
 then
-	echo "$(date): remote_management_view - Incorrect MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): remote_management_view - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 ########################

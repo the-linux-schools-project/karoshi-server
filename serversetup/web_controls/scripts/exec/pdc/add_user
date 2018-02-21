@@ -29,7 +29,7 @@ FAILED_SERVER=no
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
 then
-	echo "$(date): add_user - No admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/add_user_cgi
@@ -37,13 +37,13 @@ Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1
 [[ -z "$Checksum" ]] && Checksum=not_set
 if [[ $Checksum'check' != $add_user_cgi'check' ]]
 then
-	echo "$(date): add_user - Incorrect admin MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
 then
-	echo "$(date): add_user - No tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - No tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/add_user_cgi
@@ -51,13 +51,13 @@ Checksum2=$(sha256sum /var/www/cgi-bin_karoshi/tech/add_user.cgi | cut -d' ' -f1
 [[ -z "$Checksum2" ]] && Checksum2=not_set
 if [[ $Checksum2'check' != $add_user_cgi'check' ]]
 then
-	echo "$(date): add_user - Incorrect tech MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - Incorrect tech Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if ! test -f /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi
 then
-	echo "$(date): add_user - No admin bulk user creation MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - No admin bulk user creation Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_create_cgi
@@ -65,7 +65,7 @@ Checksum3=$(sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.c
 [[ -z "$Checksum3" ]] && Checksum3=not_set
 if [[ $Checksum3'check' != $bulk_user_creation_create_cgi'check' ]]
 then
-	echo "$(date): add_user - Incorrect admin bulk user creation MD5Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo "$(date): add_user - Incorrect admin bulk user creation Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 

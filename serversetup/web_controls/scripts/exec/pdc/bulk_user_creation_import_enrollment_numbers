@@ -29,7 +29,7 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_import_enrollment_numbers_cgi
 then
-	echo `date`: bulk_user_creation_import_enrollment_numbers - No admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: bulk_user_creation_import_enrollment_numbers - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
@@ -37,13 +37,13 @@ Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_import_enr
 [ -z "$Checksum" ] && Checksum=not_set
 if [ $Checksum'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
 then
-	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect admin MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 
 if ! test -f /opt/karoshi/web_controls/checksums/tech_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
 then
-	echo `date`: bulk_user_creation_import_enrollment_numbers - No tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: bulk_user_creation_import_enrollment_numbers - No tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/tech_checksums/bulk_user_creation_import_enrollment_numbers_process_cgi
@@ -51,7 +51,7 @@ Checksum2=`sha256sum /var/www/cgi-bin_karoshi/tech/bulk_user_creation_import_enr
 [ $Checksum2'null' = null ] && Checksum2=not_set
 if [ $Checksum2'check' != $bulk_user_creation_import_enrollment_numbers_process_cgi'check' ]
 then
-	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect tech MD5Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo `date`: bulk_user_creation_import_enrollment_numbers - Incorrect tech Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
 	exit 101
 fi
 ########################
