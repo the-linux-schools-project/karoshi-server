@@ -34,15 +34,15 @@ source /opt/karoshi/web_controls/version
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/update_karoshi_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -59,8 +59,7 @@ exit
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
@@ -70,24 +69,24 @@ DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
 END_POINT=19
 #Assign PATCHNAME
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = PATCHNAMEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = PATCHNAME ]]
 	then
-		let COUNTER=$COUNTER+1
-		PATCHNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		PATCHNAME=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
 
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Web Management"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script>'
-if [ $MOBILE = yes ]
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Update Web Management"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>'
+if [ "$MOBILE" = yes ]
 then
-echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
+	echo '<link rel="stylesheet" type="text/css" href="/all/mobile_menu/sdmenu.css">
 	<script src="/all/mobile_menu/sdmenu.js">
 		/***********************************************
 		* Slashdot Menu script- By DimX
@@ -109,7 +108,7 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1"> <!--4
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -117,13 +116,13 @@ fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -139,7 +138,7 @@ then
 fi
 
 #Generate navigation bar
-if [ $MOBILE = no ]
+if [ "$MOBILE" = no ]
 then
 	DIV_ID=actionbox3
 	#Generate navigation bar
@@ -149,7 +148,7 @@ else
 fi
 
 #Show back button for mobiles
-if [ $MOBILE = yes ]
+if [ "$MOBILE" = yes ]
 then
 echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
@@ -158,33 +157,32 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 </div></div>
 '
 else
-	echo '<div id="'$DIV_ID'"><div id="titlebox">'
+	echo '<div id="'"$DIV_ID"'"><div id="titlebox">'
 fi
 
 if [ "$PATCHNAME" = applyallpatches ]
 then
-	sudo -H /opt/karoshi/web_controls/exec/apply_all_karoshi_patches $MOBILE:
+	sudo -H /opt/karoshi/web_controls/exec/apply_all_karoshi_patches "$MOBILE":
 else
-	Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1`
-	sudo -H /opt/karoshi/web_controls/exec/update_karoshi $REMOTE_USER:$REMOTE_ADDR:$Checksum:$PATCHNAME:$MOBILE:
+	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/update_karoshi.cgi | cut -d' ' -f1)
+	sudo -H /opt/karoshi/web_controls/exec/update_karoshi "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PATCHNAME:$MOBILE:"
 fi
-EXEC_STATUS=$?
+EXEC_STATUS="$?"
 
-[ $MOBILE = no ] && echo '</div></div>'
+[ "$MOBILE" = no ] && echo '</div></div>'
 
-if [ $EXEC_STATUS = 102 ]
+if [ "$EXEC_STATUS" = 102 ]
 then
-	MESSAGE=`echo $"The updates have been completed." $"Please check the karoshi web administration logs for more details."`
+	MESSAGE=''$"The updates have been completed."' '$"Please check the karoshi web administration logs for more details."''
 	show_status
 	exit
 fi
 
-if [ $EXEC_STATUS = 103 ]
+if [ "$EXEC_STATUS" = 103 ]
 then
 	echo '<br><b>'$"Showing available updates completed."'</b><br>'
 	show_status
 	exit
 fi
 completed
-
 
