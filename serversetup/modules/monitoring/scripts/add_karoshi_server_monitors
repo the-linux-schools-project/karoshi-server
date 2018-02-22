@@ -48,7 +48,7 @@ then
 		TCPIP=$(net lookup "$SERVERNAME")
 		get_monitors
 		#Dont get the monitoring server to ping it self
-		sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:add:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS" 1> /dev/null
+		sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS" 1> /dev/null
 	done
 else
 	SERVERNAME="$SERVER"
@@ -57,7 +57,7 @@ else
 	get_monitors
 	sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:$MONITORS" 1> /dev/null
 fi
-Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_aactivate_changes.cgi | cut -d' ' -f1)
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_activate_changes.cgi | cut -d' ' -f1)
 sudo -H /opt/karoshi/web_controls/exec/monitors_activate_changes "$REMOTE_USER:$REMOTE_ADDR:$Checksum:"
 exit
 
