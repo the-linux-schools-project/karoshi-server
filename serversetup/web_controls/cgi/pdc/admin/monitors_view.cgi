@@ -111,6 +111,7 @@ fi
 WIDTH=100
 ICON1=/images/submenus/system/add.png
 ICON2=/images/submenus/system/monitor_status.png
+ICON3=/images/submenus/system/update.png
 
 echo '<div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"View Monitors"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Monitor_Server#Viewing_Monitors"><img class="images" alt="" src="/images/help/info.png"><span>'$"Deleting a monitor will stop the monitoring server from monitoring the monitor group."'</span></a></div>
@@ -134,9 +135,24 @@ echo '<div id="actionbox3"><div id="titlebox">
 				'$"Status"'
 			</button>
 		</form>
-	</td>
+	</td>'
 
-</tr></tbody></table>
+if [ -f /opt/karoshi/server_network/mon/activate_changes ]
+then
+	echo '
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH'px; text-align:center;">
+		<form action="/cgi-bin/admin/monitors_activate_changes.cgi" method="post">
+			<button class="info infonavbutton" name="_NetworkStatus_" value="_">
+				<img src="'$ICON3'" alt="'$"Activate Changes"'">
+				<span>'$"Activate Changes"'</span><br>
+				'$"Activate Changes"'
+			</button>
+		</form>
+	</td>
+	'
+fi
+
+echo '</tr></tbody></table>
 <br></div><div id="infobox">'
 
 #Show monitors

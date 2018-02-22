@@ -38,12 +38,6 @@ then
 	SERVERNAME="$REALM"
 	EMAILADDRESS=administrator@"$REALM"
 
-	#Create signing password
-	SigningPassword=$(openssl rand -hex 10)
-	touch /etc/ssl/root-ca/signingpassword.secret
-	chmod 0600 /etc/ssl/root-ca/signingpassword.secret
-	echo "$SigningPassword" > /etc/ssl/root-ca/signingpassword.secret
-
 	#Clear existing certificates
 	[ -d /etc/ssl/root-ca ] && rm -f -R /etc/ssl/root-ca
 
@@ -54,6 +48,12 @@ then
 	[ ! -d /etc/ssl/root-ca/private ] && mkdir -m 0700 /etc/ssl/root-ca/private
 	[ ! -d /etc/ssl/root-ca/newcerts ] && mkdir -m 0700 /etc/ssl/root-ca/newcerts
 	[ ! -d /etc/ssl/root-ca/crl ] && mkdir -m 0700 /etc/ssl/root-ca/crl
+
+	#Create signing password
+	SigningPassword=$(openssl rand -hex 10)
+	touch /etc/ssl/root-ca/signingpassword.secret
+	chmod 0600 /etc/ssl/root-ca/signingpassword.secret
+	echo "$SigningPassword" > /etc/ssl/root-ca/signingpassword.secret
 
 	#Create index file
 	touch /etc/ssl/root-ca/index.txt

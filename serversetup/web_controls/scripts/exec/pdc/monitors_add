@@ -55,16 +55,15 @@ fi
 REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f2)
 RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f3)
-ACTION=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f4)
-GROUPNAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f5 | sed 's/+/-/g')
-TCPIP=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f6)
-ALERTAFTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f7)
-INTERVAL=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f8)
-DAYSTART=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f9)
-DAYEND=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f10)
-HOURSTART=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f11)
-HOUREND=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f12)
-MONITORTYPES=( $(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f13- | sed 's/:/ /g') )
+GROUPNAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f4 | sed 's/+/-/g')
+TCPIP=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f5)
+ALERTAFTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f6)
+INTERVAL=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f7)
+DAYSTART=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f8)
+DAYEND=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f9)
+HOURSTART=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f10)
+HOUREND=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f11)
+MONITORTYPES=( $(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f12- | sed 's/:/ /g') )
 ########################
 #Check data
 ########################
@@ -95,69 +94,67 @@ fi
 #Exit if no monitoring server has been set up.
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
 
-if [ "$ACTION" = add ]
+
+if [ -z "$GROUPNAME" ]
 then
+	echo "$(date): monitors_add - Blank groupname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
 
-	if [ -z "$GROUPNAME" ]
-	then
-		echo "$(date): monitors_add - Blank groupname by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		exit 101
-	fi
+if [ -z "$TCPIP" ]
+then
+	echo "$(date): monitors_add - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+TCPIP="${TCPIP//+/ }"
 
-	if [ -z "$TCPIP" ]
-	then
-		echo "$(date): monitors_add - Blank tcpip by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		exit 101
-	fi
-	TCPIP="${TCPIP//+/ }"
+if [ -z "$INTERVAL" ]
+then
+	INTERVAL=5
+fi
 
-	if [ -z "$INTERVAL" ]
-	then
-		INTERVAL=5
-	fi
+if [ -z "$ALERTAFTER" ]
+then
+	ALERTAFTER=1
+fi
 
-	if [ -z "$ALERTAFTER" ]
-	then
-		ALERTAFTER=1
-	fi
+if [ -z "$MONITORTYPES" ]
+then
+	echo "$(date): monitors_add - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
 
-	if [ -z "$MONITORTYPES" ]
-	then
-		echo "$(date): monitors_add - Blank monitortypes by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-		exit 101
-	fi
+#Make mon directories
+[ -d /opt/karoshi/server_network/mon/monitors ] || mkdir -p /opt/karoshi/server_network/mon/monitors
 
-	#Make mon directories
-	[ -d /opt/karoshi/server_network/mon/monitors ] || mkdir -p /opt/karoshi/server_network/mon/monitors
+#Log custom monitor addition
+echo "$(date): monitors_add - Adding $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-	#Log custom monitor addition
-	echo "$(date): monitors_add - Adding $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+[ -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ] || mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+################################
+#Create mon file for this custom group
+################################
 
-	[ -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ] || mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
-	################################
-	#Create mon file for this custom group
-	################################
+[ -z "$DAYSTART" ] && DAYSTART=Sun
+[ -z "$DAYEND" ] && DAYEND=Sat
 
-	[ -z "$DAYSTART" ] && DAYSTART=Sun
-	[ -z "$DAYEND" ] && DAYEND=Sat
+if [ -z "$HOURSTART" ] && [ -z "$HOUREND" ]
+then
+	MON_PERIOD=""
+else
+	MON_PERIOD="hr {$HOURSTART-$HOUREND}"
+fi
 
-	if [ -z "$HOURSTART" ] && [ -z "$HOUREND" ]
-	then
-		MON_PERIOD=""
-	else
-		MON_PERIOD="hr {$HOURSTART-$HOUREND}"
-	fi
-
-	#Create header
-	echo "######################
+#Create header
+echo "######################
 #$GROUPNAME
 ######################
 hostgroup $GROUPNAME $TCPIP
 
 watch $GROUPNAME" > /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
 
-	function add_monitor {
-	echo "	service $ServiceName
+function add_monitor {
+echo "	service $ServiceName
 		description $Description
 		interval $INTERVAL""m
 		monitor $MonitorType
@@ -167,124 +164,124 @@ watch $GROUPNAME" > /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
 			alert send_mail.alert :SERVICE:$ServiceName:GROUP:$GROUPNAME:LOGNAME:$ServiceName.log
 			upalert file.alert -d /opt/karoshi/server_network/mon/events/$GROUPNAME $ServiceName.log
 			alertevery 480m" >> /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
-	}
+}
 
-	#Create checks
-	COUNTER=0
-	CHECKCOUNT="${#MONITORTYPES[@]}"
-	while [ "$COUNTER" -lt "$CHECKCOUNT" ] 
-	do
-		MONITORTYPE="${MONITORTYPES[$COUNTER]}"
-		#Ping
-		if [ "$MONITORTYPE" = ping ]
-		then
-			ServiceName=ping
-			Description="Network Connection"
-			MonitorType=ping.monitor
-			add_monitor		
-
-		fi
-		#Pop3
-		if [ "$MONITORTYPE" = pop3 ]
-		then
-			ServiceName=pop
-			Description="Pop3"
-			MonitorType=pop3.monitor
-			add_monitor
-		fi
-		#Pop3s
-		if [ "$MONITORTYPE" = pop3s ]
-		then
-			ServiceName=pop3s
-			Description="Secure Pop3"
-			MonitorType="tcp.monitor -p 995"
-			add_monitor
-		fi
-		#imap
-		if [ "$MONITORTYPE" = imap ]
-		then
-			ServiceName=imap
-			Description="Dovecot Imap"
-			MonitorType="tcp.monitor -p 143"
-			add_monitor
-		fi
-		#imaps
-		if [ "$MONITORTYPE" = imaps ]
-		then
-			ServiceName=imaps
-			Description="Dovecot Imap over SSL"
-			MonitorType="tcp.monitor -p 993"
-			add_monitor
-		fi
-		#samba
-		if [ "$MONITORTYPE" = samba ]
-		then
-			ServiceName=samba
-			Description="Samba"
-			MonitorType="tcp.monitor -p 139"
-			add_monitor
-		fi
-		#http
-		if [ "$MONITORTYPE" = http ]
-		then
-			ServiceName=http
-			Description="Webserver"
-			MonitorType="tcp.monitor -p 80"
-			add_monitor
-		fi
-		#https
-		if [ "$MONITORTYPE" = https ]
-		then
-			ServiceName=https
-			Description="Secure Webserver"
-			MonitorType="tcp.monitor -p 443"
-			add_monitor
-		fi
-		#smtp
-		if [ "$MONITORTYPE" = smtp ]
-		then
-			ServiceName=smtp
-			Description="Simple Mail Transfer Protocol"
-			MonitorType="smtp.monitor"
-			add_monitor
-		fi
-		#cups
-		if [ "$MONITORTYPE" = cups ]
-		then
-			ServiceName=cups
-			Description="Common Unix Printing System"
-			MonitorType="tcp.monitor -p 631"
-			add_monitor
-		fi
-		#proxy
-		if [ "$MONITORTYPE" = proxy ]
-		then
-			ServiceName=proxy
-			Description="Proxy Server"
-			MonitorType="tcp.monitor -p 3128"
-			add_monitor
-		fi
-		#dns
-		if [ "$MONITORTYPE" = dns ]
-		then
-			ServiceName=dns
-			Description="dns"
-			MonitorType="tcp.monitor -p 53"
-			add_monitor
-		fi
-		let COUNTER="$COUNTER"+1
-	done
-	echo -e "\n" >> /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
-
-	#######################
-	#Delete monitor if it already exists but is disabled
-	#######################
-	[ -f /opt/karoshi/server_network/mon/monitors_disabled/"$GROUPNAME" ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/"$GROUPNAME"
-	######################
-	#Make mon.cf file
-	######################
-	if [ ! -f /opt/karoshi/server_network/mon/global ]
+#Create checks
+COUNTER=0
+CHECKCOUNT="${#MONITORTYPES[@]}"
+while [ "$COUNTER" -lt "$CHECKCOUNT" ] 
+do
+	MONITORTYPE="${MONITORTYPES[$COUNTER]}"
+	#Ping
+	if [ "$MONITORTYPE" = ping ]
 	then
+		ServiceName=ping
+		Description="Network Connection"
+		MonitorType=ping.monitor
+		add_monitor		
+
+	fi
+	#Pop3
+	if [ "$MONITORTYPE" = pop3 ]
+	then
+		ServiceName=pop
+		Description="Pop3"
+		MonitorType=pop3.monitor
+		add_monitor
+	fi
+	#Pop3s
+	if [ "$MONITORTYPE" = pop3s ]
+	then
+		ServiceName=pop3s
+		Description="Secure Pop3"
+		MonitorType="tcp.monitor -p 995"
+		add_monitor
+	fi
+	#imap
+	if [ "$MONITORTYPE" = imap ]
+	then
+		ServiceName=imap
+		Description="Dovecot Imap"
+		MonitorType="tcp.monitor -p 143"
+		add_monitor
+	fi
+	#imaps
+	if [ "$MONITORTYPE" = imaps ]
+	then
+		ServiceName=imaps
+		Description="Dovecot Imap over SSL"
+		MonitorType="tcp.monitor -p 993"
+		add_monitor
+	fi
+	#samba
+	if [ "$MONITORTYPE" = samba ]
+	then
+		ServiceName=samba
+		Description="Samba"
+		MonitorType="tcp.monitor -p 139"
+		add_monitor
+	fi
+	#http
+	if [ "$MONITORTYPE" = http ]
+	then
+		ServiceName=http
+		Description="Webserver"
+		MonitorType="tcp.monitor -p 80"
+		add_monitor
+	fi
+	#https
+	if [ "$MONITORTYPE" = https ]
+	then
+		ServiceName=https
+		Description="Secure Webserver"
+		MonitorType="tcp.monitor -p 443"
+		add_monitor
+	fi
+	#smtp
+	if [ "$MONITORTYPE" = smtp ]
+	then
+		ServiceName=smtp
+		Description="Simple Mail Transfer Protocol"
+		MonitorType="smtp.monitor"
+		add_monitor
+	fi
+	#cups
+	if [ "$MONITORTYPE" = cups ]
+	then
+		ServiceName=cups
+		Description="Common Unix Printing System"
+		MonitorType="tcp.monitor -p 631"
+		add_monitor
+	fi
+	#proxy
+	if [ "$MONITORTYPE" = proxy ]
+	then
+		ServiceName=proxy
+		Description="Proxy Server"
+		MonitorType="tcp.monitor -p 3128"
+		add_monitor
+	fi
+	#dns
+	if [ "$MONITORTYPE" = dns ]
+	then
+		ServiceName=dns
+		Description="dns"
+		MonitorType="tcp.monitor -p 53"
+		add_monitor
+	fi
+	let COUNTER="$COUNTER"+1
+done
+echo -e "\n" >> /opt/karoshi/server_network/mon/monitors/"$GROUPNAME"
+
+#######################
+#Delete monitor if it already exists but is disabled
+#######################
+[ -f /opt/karoshi/server_network/mon/monitors_disabled/"$GROUPNAME" ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/"$GROUPNAME"
+######################
+#Make mon.cf file
+######################
+if [ ! -f /opt/karoshi/server_network/mon/global ]
+then
 		#Make mon global file
 		echo 'cfbasedir   = /etc/mon
 pidfile     = /var/run/mon/mon.pid
@@ -303,45 +300,8 @@ dtlogging   = yes
 ' >> /opt/karoshi/server_network/mon/global
 fi
 
-	cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
-fi
-
-if [ "$ACTION" = activatechanges ]
-then 
-	###############################
-	#Transfer mon.cf to the monitoring server
-	###############################
-	MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
-	if [[ "$MONITORING_SERVER" = $(hostname-fqdn) ]]
-	then
-		cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
-		if [ ! -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
-		then
-			mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
-			chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
-		fi
-		source /opt/karoshi/serversetup/variables/distro
-		#Restart Mon
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_start 1>/dev/null
-		/opt/karoshi/"useful scripts"/gen_status
-	else
-		scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@"$MONITORING_SERVER":/etc/mon/ 2>&1
-		ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$MONITORING_SERVER" '
-		if [ ! -d /opt/karoshi/server_network/mon/events/'"$GROUPNAME"' ]
-		then
-			mkdir -p /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
-			chown mon /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
-		fi
-		source /opt/karoshi/serversetup/variables/distro
-		#Restart Mon
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
-		sleep 1
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_start 1>/dev/null
-		/opt/karoshi/"useful scripts"/gen_status
-	'
-	}
-	fi
-fi
+#Create mon.cf
+cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
+#Create flag file for activate changes button
+touch /opt/karoshi/server_network/mon/activate_changes
 exit

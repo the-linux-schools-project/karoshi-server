@@ -36,41 +36,48 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Karoshi Monitors"'</title><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Edit Karoshi Monitors"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\%+-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\%+-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=8
 #Assign _MONITOR_
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+while [ "$COUNTER" -le "$END_POINT" ]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = MONITORcheck ]
-then
-let COUNTER=$COUNTER+1
-MONITOR=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = MONITOR ]]
+	then
+		let COUNTER=$COUNTER+1
+		MONITOR=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER="$COUNTER"+1
 done
+
+function show_mon_status {
+echo '<SCRIPT language="Javascript">'
+echo 'window.location = "/cgi-bin/admin/monitors_view.cgi";'
+echo '</script>'
+echo "</div></body></html>"
+exit
+}
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/monitors_view.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -79,55 +86,60 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that MONITOR is not blank
-if [ $MONITOR'null' = null ]
+if [ -z "$MONITOR" ]
 then
-MESSAGE=$"The group name must not be blank."
-show_status
+	MESSAGE=$"The group name must not be blank."
+	show_status
 fi
 
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1)
 #Delete monitor
 
 echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$MONITOR:" | sudo -H /opt/karoshi/web_controls/exec/monitors_delete
-MONITOR=`echo $MONITOR | sed 's/%25%25%25%25%25/_/g'`
+EXEC_STATUS="$?"
+MONITOR=$(echo "$MONITOR" | sed 's/%25%25%25%25%25/_/g')
 
-EXEC_STATUS=`echo $?`
-MONITOR=`echo $MONITOR | sed 's/+/ /g'`
-MESSAGE=`echo $MONITOR - $"Deleted"`
-if [ $EXEC_STATUS = 101 ]
+MONITOR=$(echo "$MONITOR" | sed 's/+/ /g')
+MESSAGE=$(echo "$MONITOR" - $"Deleted")
+if [ "$EXEC_STATUS" = 101 ]
 then
-MESSAGE=$"There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
+	MESSAGE=$"There was a problem adding this monitor. Please check the Karoshi Web administration Logs."
 fi
-if [ $EXEC_STATUS = 102 ]
+if [ "$EXEC_STATUS" = 102 ]
 then
-MESSAGE=$"The group name must not be blank."
+	MESSAGE=$"The group name must not be blank."
 fi
-if [ $EXEC_STATUS = 103 ]
+if [ "$EXEC_STATUS" = 103 ]
 then
-MESSAGE=$"A monitoring server has not been setup."
+	MESSAGE=$"A monitoring server has not been setup."
 fi
-show_status
+if [ "$EXEC_STATUS" != 0 ]
+then
+	show_status
+else
+	show_mon_status
+fi
 exit

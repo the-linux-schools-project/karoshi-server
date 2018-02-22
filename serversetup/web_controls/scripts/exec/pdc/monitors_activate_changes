@@ -1,0 +1,124 @@
+#!/bin/bash
+#Copyright (C) 2018 Paul Sharrad
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_activate_changes_cgi
+then
+	echo "$(date): monitors_activate_changes - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_activate_changes_cgi
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_activate_changes.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set1
+if [ "$Checksum"'check' != "$monitors_activate_changes_cgi"'check' ]
+then
+	echo "$(date): monitors_activate_changes - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 1 ]
+then
+	echo "$(date): monitors_activate_changes - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\+-' | cut -s -d: -f3)
+
+########################
+#Check data
+########################
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
+then
+	echo "$(date): monitors_activate_changes - Not called by monitors_activate_changes.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo "$(date): monitors_activate_changes - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo "$(date): monitors_activate_changes - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ "$REMOTE_USER" != karoshi ]
+then
+	if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
+	then
+		echo "$(date): monitors_activate_changes - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+		exit 101
+	fi
+fi
+
+#Exit if no monitoring server has been set up.
+[ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
+
+#Transfer mon.cf to the monitoring server and restart mon
+MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
+if [[ "$MONITORING_SERVER" = $(hostname-fqdn) ]]
+then
+	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
+	if [ ! -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
+	then
+		mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+		chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	#Restart Mon
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_start 1>/dev/null
+	/opt/karoshi/"useful scripts"/gen_status
+else
+	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@"$MONITORING_SERVER":/etc/mon/ 2>&1
+	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$MONITORING_SERVER" '
+	if [ ! -d /opt/karoshi/server_network/mon/events/'"$GROUPNAME"' ]
+	then
+		mkdir -p /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
+		chown mon /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
+	fi
+	source /opt/karoshi/serversetup/variables/distro
+	#Restart Mon
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
+	sleep 1
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_start 1>/dev/null
+	/opt/karoshi/"useful scripts"/gen_status
+'
+fi
+#Delete the flag file
+[ -f /opt/karoshi/server_network/mon/activate_changes ] && rm -f /opt/karoshi/server_network/mon/activate_changes 
+
+exit

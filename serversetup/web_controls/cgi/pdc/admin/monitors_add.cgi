@@ -191,7 +191,7 @@ fi
 INTERVAL=$(echo "$INTERVAL" | tr -cd '0-9\._:\n-')
 Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_add.cgi | cut -d' ' -f1)
 #Add monitor
-sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:add:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:"`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
+sudo -H /opt/karoshi/web_controls/exec/monitors_add "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$GROUPNAME:$TCPIP:$ALERTAFTER:$INTERVAL:$DAYSTART:$DAYEND:$HOURSTART:$HOUREND:"`echo ${MONITORTYPES[@]:0} | sed 's/ /:/g'`
 EXEC_STATUS="$?"
 GROUPNAME=$(echo "$GROUPNAME" | sed 's/+/ /g')
 MESSAGE=$(echo "$GROUPNAME: "$"Monitor added.")
@@ -207,5 +207,8 @@ if [ "$EXEC_STATUS" = 103 ]
 then
 	MESSAGE=$"A monitoring server has not been added to the network."
 fi
-show_status
+if [ "$EXEC_STATUS" != 0 ]
+then
+	show_status
+fi
 exit

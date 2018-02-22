@@ -23,7 +23,7 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 
 ########################
@@ -31,15 +31,15 @@ LOG_DATE=`date +%F`
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
 then
-	echo `date`: monitors_delete - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/monitors_delete_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/monitors_delete.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set1
-if [ $Checksum'check' != $monitors_delete_cgi'check' ]
+if [ "$Checksum"'check' != "$monitors_delete_cgi"'check' ]
 then
-	echo `date`: monitors_delete - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -48,112 +48,88 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: add_user - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: add_user - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-MONITOR=`echo "$DATA" | cut -s -d: -f4 | sed 's/+/_/g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+MONITOR=$(echo "$DATA" | cut -s -d: -f4 | sed 's/+/_/g')
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: monitors_delete - Not called by monitors_delete.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - Not called by monitors_delete.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: monitors_delete - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: monitors_delete - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: monitors_delete - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 if [ -z "$MONITOR" ]
 then
-	echo `date`: monitors_delete - Blank monitor by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): monitors_delete - Blank monitor by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 #Exit if no monitoring server has been set up.
 [ ! -f /opt/karoshi/server_network/monitoringserver ] && exit 103
 #Delete monitor
-MONITOR=`echo $MONITOR | sed 's/%25%25%25%25%25/_/g'`
-echo `date`: monitors_delete - Deleting $MONITOR by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ -f /opt/karoshi/server_network/mon/monitors/$MONITOR ] && rm -f /opt/karoshi/server_network/mon/monitors/$MONITOR
-[ -f /opt/karoshi/server_network/mon/monitors_disabled/$MONITOR ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/$MONITOR
+MONITOR=$(echo "$MONITOR" | sed 's/%25%25%25%25%25/_/g')
+echo "$(date): monitors_delete - Deleting $MONITOR by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+[ -f /opt/karoshi/server_network/mon/monitors/"$MONITOR" ] && rm -f /opt/karoshi/server_network/mon/monitors/"$MONITOR"
+[ -f /opt/karoshi/server_network/mon/monitors_disabled/"$MONITOR" ] && rm -f /opt/karoshi/server_network/mon/monitors_disabled/"$MONITOR"
 
-###############################
+######################
 #Make mon.cf file
-###############################
+######################
 if [ ! -f /opt/karoshi/server_network/mon/global ]
 then
-	#Make mon global file
-	######################
-	# global options
-	######################
-	echo 'cfbasedir   = /etc/mon' > /opt/karoshi/server_network/mon/global
-	echo 'pidfile     = /var/run/mon/mon.pid' >> /opt/karoshi/server_network/mon/global
-	echo 'statedir    = /var/lib/mon/state.d' >> /opt/karoshi/server_network/mon/global
-	echo 'logdir      = /var/lib/mon/log.d' >> /opt/karoshi/server_network/mon/global
-	echo 'dtlogfile   = /var/lib/mon/log.d/downtime.log' >> /opt/karoshi/server_network/mon/global
-	echo 'alertdir    = /usr/lib/mon/alert.d' >> /opt/karoshi/server_network/mon/global
-	echo 'mondir      = /usr/lib/mon/mon.d' >> /opt/karoshi/server_network/mon/global
-	echo 'maxprocs    = 20' >> /opt/karoshi/server_network/mon/global
-	echo 'histlength  = 100' >> /opt/karoshi/server_network/mon/global
-	echo 'randstart   = 60s' >> /opt/karoshi/server_network/mon/global
-	echo 'authtype    = pam' >> /opt/karoshi/server_network/mon/global
-	echo 'userfile    = /etc/mon/userfile' >> /opt/karoshi/server_network/mon/global
-	echo 'dtlogging   = yes' >> /opt/karoshi/server_network/mon/global
-	echo  >> /opt/karoshi/server_network/mon/global
+		#Make mon global file
+		echo 'cfbasedir   = /etc/mon
+pidfile     = /var/run/mon/mon.pid
+statedir    = /var/lib/mon/state.d
+logdir      = /var/lib/mon/log.d
+dtlogfile   = /var/lib/mon/log.d/downtime.log
+alertdir    = /usr/lib/mon/alert.d
+mondir      = /usr/lib/mon/mon.d
+maxprocs    = 20
+histlength  = 100
+randstart   = 60s
+authtype    = pam
+userfile    = /etc/mon/userfile
+dtlogging   = yes
+
+' >> /opt/karoshi/server_network/mon/global
+
 fi
+#Create mon.cf
 cat /opt/karoshi/server_network/mon/global /opt/karoshi/server_network/mon/monitors/* > /opt/karoshi/server_network/mon/mon.cf 2>/dev/null
-###############################
-#Transfer mon.cf to the monitoring server
-###############################
-MONITORING_SERVER=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-
-if [ $MONITORING_SERVER = `hostname-fqdn` ]
-then
-	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
-	source /opt/karoshi/serversetup/variables/distro
-	#Restart Mon
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-	/opt/karoshi/"useful scripts"/gen_status
-else
-	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@$MONITORING_SERVER:/etc/mon/ 2>&1
-	#Restart Mon
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $MONITORING_SERVER '
-	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_stop 1>/dev/null
-	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/mon_start 1>/dev/null
-	/opt/karoshi/"useful scripts"/gen_status
-	'
-fi
-
+#Create flag file for activate changes button
+touch /opt/karoshi/server_network/mon/activate_changes
 exit
 
