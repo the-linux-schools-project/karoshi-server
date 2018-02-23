@@ -93,6 +93,6 @@ echo `date`: setup_shellinabox by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi
 
 #Turn on menu entry
 sed -i 's/SHELLCTRL=no/SHELLCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-echo "Shell Server" > /opt/karoshi/server_network/servers/`hostname-fqdn`/shellserver
+echo "Shell Server""<br>" > /opt/karoshi/server_network/servers/`hostname-fqdn`/shellserver
 
 exit
