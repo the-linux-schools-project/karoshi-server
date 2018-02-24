@@ -23,132 +23,131 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_moodle_cgi
 then
-	echo `date`: module_moodle - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_moodle_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_moodle.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_moodle.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
-if [ $Checksum'check' != $module_moodle_cgi'check' ]
+if [ "$Checksum"'check' != "$module_moodle_cgi"'check' ]
 then
-	echo `date`: module_moodle - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_moodle - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_moodle - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f5`
-COPYMOODLE=`echo "$DATA" | cut -s -d: -f6 | tr -cd 'yes'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+ALIAS=$(echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g')
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f5)
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: module_moodle - Not called by module_moodle.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Not called by module_moodle.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_moodle - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_moodle - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ALIAS" ]
 then
-	echo `date`: module_moodle - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Blank alias by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_moodle - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: module_moodle - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): setupmoodle by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 
 #Check that this server has been setup with the correct authentication
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-	if [ $? = 101 ]
+	if [ "$?" = 101 ]
 	then
-		echo $AUTHENTICATIONFAILMSG"<br><br>"
-		echo `date`: module_moodle - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$AUTHENTICATIONFAILMSG<br><br>"
+		echo "$(date): module_moodle - $SERVERNAME does not have the correct authentication for this module by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		sleep 2
 		exit 101
 	fi
 fi
 
-echo '<div class="sectiontitle">'$"Setup Moodle"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Setup Moodle"' - '"$SERVERNAME"'</div><br></div><div id="infobox">'
 
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-touch /opt/karoshi/server_network/aliases/$SERVERNAME
-[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
+touch /opt/karoshi/server_network/aliases/"$SERVERNAME"
+[[ $(grep -c -w "$ALIAS" /opt/karoshi/server_network/aliases/"$SERVERNAME") = 0 ]] && echo "$ALIAS" >> /opt/karoshi/server_network/aliases/"$SERVERNAME"
 
 #Create keytab for moodle
 echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:HTTP:moodle:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 function check_already_installed {
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 #Check to see if moodle is already installed
 if [ -d /var/www/html/moodle ]
 then
-	echo `date`: module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	echo $"Moodle is already installed on this server."
 	exit 101
 	fi
 else
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	#Check to see if moodle is already installed
 	if [ -d /var/www/html/moodle ]
 	then
 	echo '$"Moodle is already installed on this server."'
 	exit 101
 	fi'
-	if [ `echo $?` = 101 ]
+	if [ "$?" = 101 ]
 	then
-		echo `date`: module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): module_moodle - moodle is already installed on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		exit 101
 	fi
 fi
@@ -156,112 +155,79 @@ fi
 
 function add_dns_entry {
 #Add entry to samba4 dns
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
-echo `date`: module_moodle - checking "if" $ALIAS.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $? != 0 ]
+echo "$(date): module_moodle - checking if $ALIAS.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$ALIAS.$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-	echo `date`: module_moodle - adding $ALIAS "for" $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_moodle - adding $ALIAS for $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" "$ALIAS" CNAME "$SERVERNAME" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 }
 
 function install_moodle {
 
 #Edit moodle.sql with the correct subnet
-THISIP=`net lookup $HOSTNAME`
-THISSUBNETMASK=`grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2`
-NETWORK=`ipcalc $THISIP/$THISSUBNETMASK | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2`
+THISIP=$(net lookup "$HOSTNAME")
+THISSUBNETMASK=$(grep -w netmask /etc/network/interfaces | sed -n 1,1p | cut -d' ' -f2)
+NETWORK=$(ipcalc "$THISIP/$THISSUBNETMASK" | grep -w ^Network: | sed 's/ * / /g' | cut -d' ' -f2)
 
 cp /opt/karoshi/serversetup/modules/moodle/moodle.sql /opt/karoshi/serversetup/modules/moodle/moodle_backup.$$.sql
-sed -i 's@CHANGETHISSUBNET@'$NETWORK'@g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
+sed -i 's@CHANGETHISSUBNET@'"$NETWORK"'@g' /opt/karoshi/serversetup/modules/moodle/moodle.sql
 
 #Install
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-	echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/moodle/setupmoodle
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:" | /opt/karoshi/serversetup/modules/moodle/setupmoodle
 else
-echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
-#Remote server
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/moodle root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
 
-#Copy in domain information
-scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
+	#Copy in domain information
+	scp -p -r /opt/karoshi/server_network/domain_information root@"$SERVERNAME":/opt/karoshi/server_network/ 1> /dev/null
 
-#Copy in mysql_root_pass
-scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
-
-#Install moodle
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/moodle/setupmoodle
-'
+	#Install moodle
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:"' | /opt/karoshi/serversetup/modules/moodle/setupmoodle
+	'
 fi
 
 #Restore moodle.sql
-cp -f /opt/karoshi/serversetup/modules/moodle/moodle_backup.$$.sql /opt/karoshi/serversetup/modules/moodle/moodle.sql 
+cp -f /opt/karoshi/serversetup/modules/moodle/moodle_backup."$$".sql /opt/karoshi/serversetup/modules/moodle/moodle.sql 
 
 }
 
 function add_role_information {
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo ''$"Moodle E-Learning Server"'<br>' > /opt/karoshi/server_network/servers/$SERVERNAME/moodle
-echo '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">https://'$ALIAS.$REALM'/moodle</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/moodle
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
-echo $SERVERNAME > /opt/karoshi/server_network/moodleserver
-echo $DOMAINPATH > /opt/karoshi/server_network/moodledomain
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo ''$"Moodle E-Learning Server"'<br>' > /opt/karoshi/server_network/servers/"$SERVERNAME"/moodle
+echo '<a href="https://'"$ALIAS.$REALM"'/moodle" target="_blank">https://'"$ALIAS.$REALM"'/moodle</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/moodle
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver
+echo "$SERVERNAME" > /opt/karoshi/server_network/moodleserver
+echo "$DOMAINPATH" > /opt/karoshi/server_network/moodledomain
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
-echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
+echo "$SERVERNAME" > /opt/karoshi/server_network/webservers/"$SERVERNAME"
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-#sed -i 's/MOODLECTRL=no/MOODLECTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
-}
-
-function check_ports {
-if [ $SERVERNAME != `hostname-fqdn` ]
-then
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
-	PORTCHECK=53,88,389
-	echo "<ul><li>"Checking to see that the Ldap server  can be contacted on ports: $PORTCHECK"</li></ul>"
-	SCANRESULT=`nmap '$LDAPSERVER' -p $PORTCHECK -PN`
-	for PORT in `echo $PORTCHECK | sed "s/,/ /g"`
-	do
-		echo "<ul><li>"Checking $PORT"</li></ul>"
-		if [ `echo $SCANRESULT | grep -c "$PORT/tcp open"` = 0 ]
-		then
-			echo Error - The ldap server cannot be contacted on $PORT"<br>"
-			exit $PORT
-		fi
-	done
-	'
-	EXITSTATUS=$?
-	if [ $EXITSTATUS != 0 ]
-	then
-		exit $EXITSTATUS
-	fi
-fi
 }
 
 function apply_ssl_certificate {
 #######################
 #Apply certificate
 #######################
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-[ `echo $?` != 0 ] && exit 101 
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
+[ "$?" != 0 ] && exit 101 
 }
 
 function create_linux_client_icon {
 for KAROSHICLIENT in $(ls -1 /var/lib/samba/netlogon/linuxclient/ | grep ^karoshi) 
 do
-	[ ! -d /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all
+	[ ! -d /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all
 	echo '[Desktop Entry]
 	Version=1.0
 	Type=Link
 	Name=Moodle
 	Comment=Moodle
 	Icon=moodle
-	URL=https://'$ALIAS.$REALM'/moodle' > /var/lib/samba/netlogon/linuxclient/$KAROSHICLIENT/desktop-icons/all/Moodle.desktop
+	URL=https://'"$ALIAS.$REALM"'/moodle' > /var/lib/samba/netlogon/linuxclient/"$KAROSHICLIENT"/desktop-icons/all/Moodle.desktop
 done
 }
 
@@ -273,13 +239,11 @@ echo '<ul><li>'$"Adding users to the moodle database"'</li></ul>'
 check_already_installed
 apply_ssl_certificate
 add_dns_entry
-#check_ports
 #if not transferring an existing setup then install moodle
 install_moodle
 add_role_information
 create_linux_client_icon
 add_moodle_users
-
 
 ########################
 #Modify prefs.js for windows firefox
@@ -287,26 +251,25 @@ add_moodle_users
 function modify_prefs.js {
 
 #Set clipboard setting for moodle
-if [ `grep -c 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH"` -gt 0 ]
+if [[ $(grep -c 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH") -gt 0 ]]
 then
-LINE=`grep -n 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH" | cut -d: -f1`
-sed -i $LINE'c''user_pref("capability.policy.allowclipboard.sites", "http://'$SERVERNAME'.internal");' "$PREFSJSPATH"
+	LINE=$(grep -n 'user_pref("capability.policy.allowclipboard.sites",' "$PREFSJSPATH" | cut -d: -f1)
+	sed -i "$LINE"'c''user_pref("capability.policy.allowclipboard.sites", "http://'"$SERVERNAME"'.internal");' "$PREFSJSPATH"
 else
-echo 'user_pref("capability.policy.allowclipboard.sites", "http://'$SERVERNAME'.internal");' >> "$PREFSJSPATH"
+	echo 'user_pref("capability.policy.allowclipboard.sites", "http://'"$SERVERNAME"'.internal");' >> "$PREFSJSPATH"
 fi
 
-
 #Set no proxy settings
-NOPROXYSERVERS=`ls /opt/karoshi/server_network/servers/`
-NOPROXYSERVERS=`echo $NOPROXYSERVERS | sed 's/ /, /g'`
-NOPROXYSERVERS2=`ls /opt/karoshi/server_network/servers/`
-NOPROXYSERVERS2=`echo $NOPROXYSERVERS2 | sed 's/ /.internal, /g' | sed 's/$/.internal/g'`
-NOPROXYSERVERS=`echo $NOPROXYSERVERS, $NOPROXYSERVERS2`
+NOPROXYSERVERS=$(ls /opt/karoshi/server_network/servers/)
+NOPROXYSERVERS="${NOPROXYSERVERS// /,}"
+NOPROXYSERVERS2=$(ls /opt/karoshi/server_network/servers/)
+NOPROXYSERVERS2=$(echo "$NOPROXYSERVERS2" | sed 's/ /.internal, /g' | sed 's/$/.internal/g')
+NOPROXYSERVERS="$NOPROXYSERVERS, $NOPROXYSERVERS2"
 
-if [ `grep -c 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH"` -gt 0 ]
+if [[ $(grep -c 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH") -gt 0 ]]
 then
-	LINE=`grep -n 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH" | cut -d: -f1`
-	sed -i $LINE'c''user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' "$PREFSJSPATH"
+	LINE=$(grep -n 'user_pref("network.proxy.no_proxies_on",' "$PREFSJSPATH" | cut -d: -f1)
+	sed -i "$LINE"'c''user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' "$PREFSJSPATH"
 else
 	echo 'user_pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1, '"$NOPROXYSERVERS"'");' >> "$PREFSJSPATH"
 fi
@@ -317,7 +280,7 @@ for PROFILE in /home/applications/profiles/*
 do
 	unset PREFSJSPATH 
 	#Find prefs.js
-	PREFSJSPATH=`find $PROFILE/ -name "prefs.js"`
+	PREFSJSPATH=$(find "$PROFILE"/ -name "prefs.js")
 	#Check that PREFSJSPATH has been set
 	if [ -n "$PREFSJSPATH" ]
 	then
@@ -328,254 +291,15 @@ done
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVERNAME"
 fi
 
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$"Moodle has been installed and can be accessed from" - '<a href="https://'$ALIAS.$REALM'/moodle" target="_blank">'$ALIAS.$REALM'/moodle</a>'
-echo '<br>'$"username":admin - $"password": admin
+echo '<br>'$"Moodle has been installed and can be accessed from" - '<a href="https://'"$ALIAS.$REALM"'/moodle" target="_blank">'"$ALIAS.$REALM"'/moodle</a>'
+echo '<br>'$"username"":admin - "$"password"": admin"
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 
 exit
-
-
-##########################
-#Migrate existing moodle setup
-##########################
-if [ $COPYMOODLE'null' != null ]
-then
-if [ $COPYMOODLE = yes ]
-then
-CURRENTSERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/SERVERNAME`
-echo "<b>"$TRANSFERMSG1"</b><br><br>"
-echo "<ul><li>"$CURRENTSERVERNAMEMSG - $CURRENTSERVERNAME - $NEWSERVERNAMEMSG - $SERVERNAME"</li></ul>"
-
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-
-
-function set_moodle_perms {
-
-echo "<ul><li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/html/moodle"</li></ul>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-chmod 0440 -R /var/www/html/moodle
-chmod u+X,g+X -R /var/www/html/moodle
-chown -R root.$APACHEGROUP /var/www/html/moodle
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-chmod 0440 -R /var/www/html/moodle
-chmod u+X,g+X -R /var/www/html/moodle
-chown -R root.$APACHEGROUP /var/www/html/moodle
-'
-fi
-echo "<li>"$SERVERNAME - $SETMOODLEPERMS - /var/www/moodle-data"</li></ul>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-chmod 0600 -R /var/www/moodle-data
-chmod u+X -R /var/www/moodle-data
-chown -R $APACHEUSER.$APACHEGROUP /var/www/moodle-data
-else
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-chmod 0600 -R /var/www/moodle-data
-chmod u+X -R /var/www/moodle-data
-chown -R $APACHEUSER.$APACHEGROUP /var/www/moodle-data
-'
-fi
-}
-
-
-############################
-#Make transfer folder
-############################
-if [ ! -d /home/transfer ]
-then
-mkdir /home/transfer
-chown 0700 /home/transfer
-fi
-############################
-#Copy /var/www/html/moodle
-############################
-echo "<ul><li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/html/moodle"</li></ul><br>"
-sleep 2
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-#Copy /var/www/html/moodle back to this server
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r root@$CURRENTSERVERNAME:/var/www/html/moodle /var/www/html/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/html/moodle /var/www/html/
-echo '</pre>'
-fi
-if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
-then
-#Copy /var/www/html/moodle from this server to a new server
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r /var/www/html/moodle root@$SERVERNAME:/var/www/html/
-rsync --timeout=30 --dirs --recursive --links --compress /var/www/html/moodle root@$SERVERNAME:/var/www/html/
-echo '</pre>'
-fi
-if [ $CURRENTSERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /var/www/html/moodle ] && rm -f -R /var/www/html/moodle
-'
-#Copy /var/www/html/moodle between remote servers
-#copy /var/www/html/moodle to the pdc
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r root@$CURRENTSERVERNAME:/var/www/html/moodle /home/transfer/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/html/moodle /home/transfer/
-echo '</pre>'
-#Copy /var/www/html/moodle to the new server
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r /home/transfer/moodle root@$SERVERNAME:/var/www/html/
-rsync --timeout=30 --dirs --recursive --links --compress /home/transfer/moodle root@$SERVERNAME:/var/www/html/
-echo '</pre>'
-fi
-############################
-#Copy /var/www/moodle-data
-############################
-echo "<ul><li>"$CURRENTSERVERNAME - $SERVERNAME - $COPYMSG - /var/www/moodle-data"</li></ul><br>"
-sleep 2
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-#Copy /var/www/moodle-data back to this server
-[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r root@$CURRENTSERVERNAME:/var/www/moodle-data /var/www/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/moodle-data /var/www/
-echo '</pre>'
-fi
-if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
-'
-#Copy /var/www/moodle-data from this server to a new server
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r /var/www/moodle-data root@$SERVERNAME:/var/www/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress /var/www/moodle-data root@$SERVERNAME:/var/www/
-echo '</pre>'
-fi
-if [ $CURRENTSERVERNAME != `hostname-fqdn` ] && [ $SERVERNAME != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ -d /var/www/moodle-data ] && rm -f -R /var/www/moodle-data
-'
-#Copy /var/www/moodle-data between remote servers
-#Copy /var/www/moodle-data to the pdc
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r root@$CURRENTSERVERNAME:/var/www/moodle-data /home/transfer/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress root@$CURRENTSERVERNAME:/var/www/moodle-data /home/transfer/
-echo '</pre>'
-#Copy /var/www/moodle-data to the new server
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-#scp -p -r /home/transfer/moodle-data root@$SERVERNAME:/var/www/
-rsync --timeout=30 --verbose --dirs --perms --recursive --links --compress /home/transfer/moodle-data root@$SERVERNAME:/var/www/
-echo '</pre>'
-fi
-
-#Set permissions
-set_moodle_perms
-
-##########################
-#Dump existing moodle database
-##########################
-echo "<ul><li>"$CURRENTSERVERNAME - $DUMPDBMSG"</li></ul><br>"
-
-if [ $CURRENTSERVERNAME = `hostname-fqdn` ]
-then
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqldump -u root -p$MYSQLPASS moodle > /home/transfer/moodle.sql
-else
-ssh -x -o PasswordAuthentication=no $CURRENTSERVERNAME '
-if [ ! -d /home/transfer ]
-then
-mkdir /home/transfer
-chown root.root /home/transfer
-chown 0700 /home/transfer
-fi
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqldump -u root -p$MYSQLPASS moodle > /home/transfer/moodle.sql
-'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-scp -p -r root@$CURRENTSERVERNAME:/home/transfer/moodle.sql /home/transfer/
-echo '</pre>'
-fi
-
-#Copy moodle database to new moodle server
-if [ $SERVERNAME != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-if [ ! -d /home/transfer ]
-then
-mkdir /home/transfer
-chown root.root /home/transfer
-chown 0700 /home/transfer
-fi
-'
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-scp -p -r /home/transfer/moodle.sql root@$SERVERNAME:/home/transfer/
-echo '</pre>'
-fi
-######################
-#Pipe in database
-######################
-echo "<ul><li>"$SERVERNAME - $PIPEDBMSG"</li></ul><br>"
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-#Get moodle password
-MOODLEPASS=`grep '$CFG->dbpass' /var/www/html/moodle/config.php | cut -d"'" -f2 | sed -n 1,1p`
-else
-MOODLEPASS=`grep '$CFG->dbpass' /home/transfer/moodle/config.php | cut -d"'" -f2 | sed -n 1,1p`
-fi
-
-echo GRANT ALL PRIVILEGES ON moodle.\* TO "'"moodle_user"'"@"'"localhost"'" IDENTIFIED BY "'"$MOODLEPASS"'"';' > /home/transfer/mysqlperms.sql
-echo ALTER DATABASE moodle DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci';' >> /home/transfer/mysqlperms.sql
-
-if [ $SERVERNAME = `hostname-fqdn` ]
-then
-/opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
-sleep 1
-mysqladmin --password=$MYSQLPASS create moodle
-sleep 1
-mysql --password=$MYSQLPASS moodle < /home/transfer/moodle.sql
-mysql --password=$MYSQLPASS < /home/transfer/mysqlperms.sql
-else
-echo '<pre style="font-size: 10pt; font-family:Arial, Times, Georgia, serif">'
-scp -p -r /home/transfer/mysqlperms.sql root@$SERVERNAME:/home/transfer/
-echo '</pre>'
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Get root mysql password
-MYSQLPASS=`cat /opt/karoshi/server_network/mysql/.key | gpg --no-tty --passphrase-fd 0 -o - /opt/karoshi/server_network/mysql/mysql_password.gpg 2>/dev/null`
-mysqladmin -f --password=$MYSQLPASS drop moodle 1>/dev/null 2>/dev/null
-sleep 1
-mysqladmin --password=$MYSQLPASS create moodle
-sleep 1
-mysql --password=$MYSQLPASS moodle < /home/transfer/moodle.sql
-mysql --password=$MYSQLPASS < /home/transfer/mysqlperms.sql
-'
-fi
-
-[ -d /home/transfer ] && rm -f -R /home/transfer
-
-echo "<b>"$SERVERNAME - $COMPLETEDMSG5"</b><br><br>"
-echo "<b>"$MIGRATECHECKMSG"</b><br><br>"
-fi
-fi
 

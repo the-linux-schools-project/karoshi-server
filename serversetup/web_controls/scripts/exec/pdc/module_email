@@ -23,96 +23,96 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
 then
-	echo `date`: module_email - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_email_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_email.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
-if [ $Checksum'check' != $module_email_cgi'check' ]
+if [ "$Checksum"'check' != "$module_email_cgi"'check' ]
 then
-	echo `date`: module_email - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_email - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_email - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-ALIAS=`echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
-COPYEMAIL=`echo "$DATA" | cut -s -d: -f5`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+ALIAS=$(echo "$DATA" | cut -s -d: -f4 | sed 's/%3A/:/g' | sed 's/%2F/\//g')
+COPYEMAIL=$(echo "$DATA" | cut -s -d: -f5)
 [ -z "$COPYEMAIL" ] && COPYEMAIL=no
-SERVERNAME=`echo "$DATA" | cut -s -d: -f6`
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f6)
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: module_email - Not called by module_email.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Not called by module_email.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_email - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_email - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$ALIAS" ]
 then
-	echo `date`: module_email - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Blank alias by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: module_email - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_email - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-echo `date`: setupemail "for" $DOMAINPATH on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): setupemail for $DOMAINPATH on $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 source /opt/karoshi/server_network/domain_information/domain_name
 source /opt/karoshi/serversetup/variables/distro
-TEXTDOMAIN=karoshi-server
+export TEXTDOMAIN=karoshi-server
 
 #Check that this server has been setup with the correct authentication
-if [ $SERVERNAME != `hostname-fqdn` ]
+if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
 	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:users:" | /opt/karoshi/serversetup/modules/authentication/check_auth
-	if [ $? = 101 ]
+	if [ "$?" = 101 ]
 	then
 		echo $"This server does not have the correct authentication set up on it.""<br><br>"
-		echo `date`: module_email - $SERVERNAME does not have the correct authentication "for" this module by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+		echo "$(date): module_email - $SERVERNAME does not have the correct authentication for this module by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 		sleep 2
 		exit 101
 	fi
@@ -120,41 +120,41 @@ fi
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-touch /opt/karoshi/server_network/aliases/$SERVERNAME
-[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$SERVERNAME` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$SERVERNAME
+touch /opt/karoshi/server_network/aliases/"$SERVERNAME"
+[[ $(grep -c -w "$ALIAS" /opt/karoshi/server_network/aliases/"$SERVERNAME") = 0 ]] && echo "$ALIAS" >> /opt/karoshi/server_network/aliases/"$SERVERNAME"
 
 
-SHORTSERVERNAME=`echo $SERVERNAME | cut -d. -f1`
+SHORTSERVERNAME=$(echo "$SERVERNAME" | cut -d. -f1)
 [ ! -d /var/lib/samba/netlogon/domain_information/aliases ] && mkdir -p /var/lib/samba/netlogon/domain_information/aliases
-[ ! -f /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME ] && echo $ALIAS > /var/lib/samba/netlogon/domain_information/aliases/$SHORTSERVERNAME
+[ ! -f /var/lib/samba/netlogon/domain_information/aliases/"$SHORTSERVERNAME" ] && echo "$ALIAS" > /var/lib/samba/netlogon/domain_information/aliases/"$SHORTSERVERNAME"
 
 #Add entry to samba4 dns for web alias
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
-echo `date`: module_email - checking "if" $DOMAINPATH is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $? != 0 ]
+echo "$(date): module_email - checking if $DOMAINPATH is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$ALIAS.$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-	echo `date`: dnsadd - adding $ALIAS.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsadd - adding $ALIAS.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" "$ALIAS" CNAME "$SERVERNAME" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Add entry to samba4 dns for autodiscover
-#echo `date`: module_email - checking "if" autodiscover.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#samba-tool dns query 127.0.0.1 $REALM autodiscover.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#echo "$(date): module_email - checking "if" autodiscover.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+#samba-tool dns query 127.0.0.1 $REALM autodiscover.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #if [ $? != 0 ]
 #then
-#	echo `date`: dnsadd - adding autodiscover.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-#	samba-tool dns add 127.0.0.1 $REALM autodiscover CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+#	echo `date`: dnsadd - adding autodiscover.$REALM $SERVERNAME to the dns records by $REMOTE_USER from $REMOTE_ADDR >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+#	samba-tool dns add 127.0.0.1 $REALM autodiscover CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 #fi
 
 #Add entry to samba4 dns for mail alias
-echo `date`: module_email - checking "if" mail.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM mail.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ $? != 0 ]
+echo "$(date): module_email - checking if mail.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" mail."$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-	echo `date`: dnsadd - adding mail.$REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM mail CNAME $SERVERNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsadd - adding mail.$REALM to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" mail CNAME "$SERVERNAME" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Create keytab for mail
@@ -163,170 +163,149 @@ echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:smtp:postfix:$SERVERNAME:p
 echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:HTTP:sogo:$SERVERNAME:www-data:" | /opt/karoshi/serversetup/modules/authentication/add_keytab
 
 #Create ssl certificate for web access
-echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-[ $? != 0 ] && exit 101 
+echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
+[ "$?" != 0 ] && exit 101 
 
 
 #Create ssl certificate for mail access
 if [ ! -f /etc/ssl/mail/dovecot.key ]
 then
-	echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:mail.$REALM:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/mailsslcert
-	[ $? != 0 ] && exit 101
+	echo "$REMOTE_USER:$REMOTE_ADDR:$SERVERNAME:mail.$REALM:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/mailsslcert
+	[ "$?" != 0 ] && exit 101
 fi
 
 #########################
 #Install new mail system
 #########################
 
-if [ $SERVERNAME = `hostname-fqdn` ] 
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
-#Install email
-echo $REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS: | /opt/karoshi/serversetup/modules/email/setupemail
-fi
+	#Install email
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:" | /opt/karoshi/serversetup/modules/email/setupemail
+else
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
+	'
 
-if [ $SERVERNAME != `hostname-fqdn` ]
-then
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
-'
+	#Copy in domain information
+	scp -p -r /opt/karoshi/server_network/domain_information root@"$SERVERNAME":/opt/karoshi/server_network/ 1> /dev/null
 
-echo '<ul><li>'$SERVERNAME' - '$"Copying module"'</li></ul>'
+	#Copy in ssl certificates
+	scp -p -r /etc/ssl/mail root@"$SERVERNAME":/etc/ssl/ 1> /dev/null
 
-#Copy in domain information
-scp -p -r /opt/karoshi/server_network/domain_information root@$SERVERNAME:/opt/karoshi/server_network/ 1> /dev/null
+	#Copy in group information
+	scp -r /opt/karoshi/server_network/group_information "$SERVERNAME":/opt/karoshi/server_network/
+	[ -d /opt/karoshi/server_network/group_information_dynamic ] && scp -r /opt/karoshi/server_network/group_information_dynamic "$SERVERNAME":/opt/karoshi/server_network/
 
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-#Copy in mysql_root_pass
-scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$SERVERNAME:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
-#Copy in distro files 
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/mailscanner root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/email root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
-#Copy in ssl certificates
-scp -p -r /etc/ssl/mail root@$SERVERNAME:/etc/ssl/ 1> /dev/null
-#Copy in fail2ban files
-scp -p -r /opt/karoshi/serversetup/all/fail2ban root@$SERVERNAME:/opt/karoshi/serversetup/all/ 1> /dev/null
-
-#Copy in group information
-scp -r /opt/karoshi/server_network/group_information $SERVERNAME:/opt/karoshi/server_network/
-[ -d /opt/karoshi/server_network/group_information_dynamic ] && scp -r /opt/karoshi/server_network/group_information_dynamic $SERVERNAME:/opt/karoshi/server_network/
-
-#Install email
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-#Make sure that home areas exist for users to store email folders in.
+	#Install email
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+	#Make sure that home areas exist for users to store email folders in.
 
 
-echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:' | /opt/karoshi/serversetup/modules/email/setupemail
-'
+	echo '"$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:"' | /opt/karoshi/serversetup/modules/email/setupemail
+	'
 fi
 
 
 function mount_servers {
 if [ ! -d /opt/karoshi/server_network/server_mount ]
 then
-mkdir -p /opt/karoshi/server_network/server_mount
-chmod 0700 /opt/karoshi/server_network/server_mount
+	mkdir -p /opt/karoshi/server_network/server_mount
+	chmod 0700 /opt/karoshi/server_network/server_mount
 fi
-if [ ! -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER ] && [ $CURRENTMAILSERVER != `hostname-fqdn` ]
+if [ ! -d /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER" ] && [[ "$CURRENTMAILSERVER" != $(hostname-fqdn) ]]
 then
-mkdir /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
-chmod 0700 /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
+	mkdir /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"
+	chmod 0700 /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"
 fi
 
-if [ ! -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER ] && [ $NEWMAILSERVER != `hostname-fqdn` ]
+if [ ! -d /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER" ] && [[ "$NEWMAILSERVER" != $(hostname-fqdn) ]]
 then
-mkdir /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
-chmod 0700 /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
+	mkdir /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"
+	chmod 0700 /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"
 fi
 #Mount drives
-if [ $CURRENTMAILSERVER != `hostname-fqdn` ]
+if [[ "$CURRENTMAILSERVER" != $(hostname-fqdn) ]]
 then
-sshfs root@$CURRENTMAILSERVER:/ /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-[ `echo $?` != 0 ] && exit 101
+	sshfs root@"$CURRENTMAILSERVER":/ /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	[ "$?" != 0 ] && exit 101
 fi
 
-if [ $NEWMAILSERVER != `hostname-fqdn` ]
+if [[ "$NEWMAILSERVER" != $(hostname-fqdn) ]]
 then
-sshfs root@$NEWMAILSERVER:/ /opt/karoshi/server_network/server_mount/$NEWMAILSERVER 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
-then
-[ $CURRENTMAILSERVER != `hostname-fqdn` ] && umount /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
-exit 101
-fi
-[ ! -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP ] && mkdir -p /opt/karoshi/server_network/server_mount/$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP
+	sshfs root@"$NEWMAILSERVER":/ /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [ "$?" != 0 ]
+	then
+		[[ "$CURRENTMAILSERVER" != $(hostname-fqdn) ]] && umount /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"
+		exit 101
+	fi
+	[ ! -d /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP" ] && mkdir -p /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER$DESTFOLDERPATH/$PRIGROUP"
 fi
 }
 
 function unmount_servers {
-[ $CURRENTMAILSERVER != `hostname-fqdn` ] && umount /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER
-[ $NEWMAILSERVER != `hostname-fqdn` ] && umount /opt/karoshi/server_network/server_mount/$NEWMAILSERVER
+[[ "$CURRENTMAILSERVER" != $(hostname-fqdn) ]] && umount /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"
+[[ "$NEWMAILSERVER" != $(hostname-fqdn) ]] && umount /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"
 }
 
 ##############################
 #Migrate existing mail system not completed yet
 ##############################
-if [ $COPYEMAIL = yes222 ]
+if [ "$COPYEMAIL" = yes222 ]
 then
-#Copy email to the new server
-CURRENTMAILSERVER=`sed -n 1,1p /opt/karoshi/server_network/emailserver`
-NEWMAILSERVER=$SERVERNAME
+	#Copy email to the new server
+	CURRENTMAILSERVER=$(sed -n 1,1p /opt/karoshi/server_network/emailserver)
+	NEWMAILSERVER="$SERVERNAME"
+
+	#Copy E-Mail from this server to new server
+	if [[ "$CURRENTMAILSERVER" = $(hostname-fqdn) ]]
+	then
+	mount_servers
+
+	#Copy /var/spool/mail
+	[ -d /var/spool/mail ] && cp -f -p -r -v /var/spool/mail /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/var/spool/
+	#Copy mail in home folders
+	[ -d /home ] && cp -f -p -r -v /home /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/
+
+	unmount_servers
+
+	fi
+
+	#Copy E-mail back to this server
+	if [ "$NEWMAILSERVER" = "$HOSTNAME" ]
+	then
+
+	mount_servers
+
+	#Copy /var/spool/mail
+	[ -d /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/var/spool/mail /var/spool/
+	#Copy mail in home folders
+	[ -d /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/home /
+
+	unmount_servers
+	fi
+
+	#Copy E-mail from between remote servers
+	if [[ "$NEWMAILSERVER" != $(hostname-fqdn) ]] && [[ "$CURRENTMAILSERVER" != $(hostname-fqdn) ]]
+	then
 
 
-#Copy E-Mail from this server to new server
-if [ $CURRENTMAILSERVER = `hostname-fqdn` ]
-then
-mount_servers
+	mount_servers
 
-#Copy /var/spool/mail
-[ -d /var/spool/mail ] && cp -f -p -r -v /var/spool/mail /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/
-#Copy mail in home folders
-[ -d /home ] && cp -f -p -r -v /home /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/
+	#Copy /var/spool/mail
+	[ -d /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/var/spool/mail /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/var/spool/
+	#Copy mail in home folders
+	[ -d /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/"$CURRENTMAILSERVER"/home /opt/karoshi/server_network/server_mount/"$NEWMAILSERVER"/
 
-unmount_servers
-
-fi
-
-#Copy E-mail back to this server
-if [ $NEWMAILSERVER=$HOSTNAME ]
-then
-
-mount_servers
-
-#Copy /var/spool/mail
-[ -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail /var/spool/
-#Copy mail in home folders
-[ -d /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home /
-
-unmount_servers
-fi
-
-#Copy E-mail from between remote servers
-if [ $NEWMAILSERVER != `hostname-fqdn` ] && [ $CURRENTMAILSERVER != `hostname-fqdn` ]
-then
-
-
-mount_servers
-
-#Copy /var/spool/mail
-[ -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/var/spool/mail /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/var/spool/
-#Copy mail in home folders
-[ -d /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home ] && cp -f -p -r -v /opt/karoshi/server_network/server_mount/$CURRENTMAILSERVER/home /opt/karoshi/server_network/server_mount/$NEWMAILSERVER/
-
-unmount_servers
-fi
+	unmount_servers
+	fi
 fi
 
 #Create completed info file
 
-[ ! -d /opt/karoshi/modules/email ] && mkdir -p /opt/karoshi/modules/email
-echo '<a href="http://www.squirrelmail.org" target="_blank"><img style="border: 0px solid ;" alt="" src="/images/help/info.png"></a>' > /opt/karoshi/modules/email/weblink
-echo '<a href="http://www.egroupware.org" target="_blank"><img style="border: 0px solid ;" alt="" src="/images/help/info.png"></a>' >> /opt/karoshi/modules/email/weblink
-echo '<b>'Server'</b>': $EMAILSERVER > /opt/karoshi/modules/email/installed_information
-echo '<b>'Domain'</b>': $DOMAINPATH >> /opt/karoshi/modules/email/installed_information
+echo "$DOMAINPATH" >  /opt/karoshi/serversetup/variables/emaildomain
 
-echo $DOMAINPATH >  /opt/karoshi/serversetup/variables/emaildomain
-
-[ ! -d /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all
+[ ! -d /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVER"/desktop-icons/all ] && mkdir -p /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVER"/desktop-icons/all
 
 #Create thunderbird icon for the linux client
 echo '[Desktop Entry]
@@ -337,92 +316,92 @@ Type=Application
 Name=E-Mail
 Comment=Email reader
 Icon=internet-mail
-Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/$LINUXCLIENTVER/desktop-icons/all/Thunderbird.desktop
+Exec=exo-open --launch MailReader' > /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVER"/desktop-icons/all/Thunderbird.desktop
 
 #Add role information
-[ ! -d /opt/karoshi/server_network/servers/$SERVERNAME ] && mkdir -p /opt/karoshi/server_network/servers/$SERVERNAME
-echo $"E-Mail Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
-echo '<a href="https://'$ALIAS'.'$REALM'/SOGo" target="_blank">https://'$ALIAS'.'$REALM'/SOGo</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
-echo '<a href="https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync" target="_blank">https://'$ALIAS'.'$REALM'/Microsoft-Server-ActiveSync</a><br>' >> /opt/karoshi/server_network/servers/$SERVERNAME/emailserver
-echo $DOMAINPATH > /opt/karoshi/server_network/emaildomain
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
-echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/apacheserver
-echo $SERVERNAME > /opt/karoshi/server_network/emailserver
+[ ! -d /opt/karoshi/server_network/servers/"$SERVERNAME" ] && mkdir -p /opt/karoshi/server_network/servers/"$SERVERNAME"
+echo $"E-Mail Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/emailserver
+echo '<a href="https://'"$ALIAS.$REALM"'/SOGo" target="_blank">https://'"$ALIAS.$REALM"'/SOGo</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/emailserver
+echo '<a href="https://'"$ALIAS.$REALM"'/Microsoft-Server-ActiveSync" target="_blank">https://'"$ALIAS.$REALM"'/Microsoft-Server-ActiveSync</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/emailserver
+echo "$DOMAINPATH" > /opt/karoshi/server_network/emaildomain
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/apacheserver
+echo "$SERVERNAME" > /opt/karoshi/server_network/emailserver
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
-echo $SERVERNAME > /opt/karoshi/server_network/webservers/$SERVERNAME
+echo "$SERVERNAME" > /opt/karoshi/server_network/webservers/"$SERVERNAME"
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 sed -i 's/EMAILCTRL=no/EMAILCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Add mail flag for clients
-SERVERNAME2=`echo $SERVERNAME | sed 's/.'$REALM'//g'`
-echo $SERVERNAME2 > /var/lib/samba/netlogon/domain_information/mail_server
+SERVERNAME2=$(echo "$SERVERNAME" | sed 's/.'"$REALM"'//g')
+echo "$SERVERNAME2" > /var/lib/samba/netlogon/domain_information/mail_server
 #echo $SERVERNAME.$REALM > /var/lib/samba/netlogon/domain_information/mail_server_fqdn
 
 #Add in a cron job to check the mail queue for excessive mail
-echo '*/15' '*' '*' '*' '1-7' /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/server_network/cronjobs/$(hostname-fqdn)/jobs/check_mail_queue.cron
+echo '*/15' '*' '*' '*' '1-7' /opt/karoshi/serversetup/modules/email/scripts/check_mail_queue > /opt/karoshi/server_network/cronjobs/"$(hostname-fqdn)"/jobs/check_mail_queue.cron
 /opt/karoshi/serversetup/all/"useful scripts"/refreshcronjobs 1>/dev/null
 
 #Allow monitoring server and the main server to send email alerts
-PDCIP=`net lookup $HOSTNAME`
+PDCIP=$(net lookup "$HOSTNAME")
 
 MONITORING=no
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	MONITORSERVERNAME=`sed -n 1,1p /opt/karoshi/server_network/monitoringserver`
-	MONITORSERVERIP=`net lookup $MONITORSERVERNAME`
+	MONITORSERVERNAME=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
+	MONITORSERVERIP=$(net lookup "$MONITORSERVERNAME")
 	MONITORING=yes
 fi
 
-if [ $SERVERNAME = `hostname-fqdn` ]
+if [[ "$SERVERNAME" = $(hostname-fqdn) ]]
 then
 	#Add in main server ip to main.cf
-	[ `grep -c -w $PDCIP /etc/postfix/main.cf` = 0 ] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $PDCIP/g" /etc/postfix/main.cf
+	[[ $(grep -c -w "$PDCIP" /etc/postfix/main.cf) = 0 ]] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $PDCIP/g" /etc/postfix/main.cf
 	#Add in monitor server ip to main.cf
-	if [ $MONITORING = yes ]
+	if [ "$MONITORING" = yes ]
 	then
-		[ `grep -c -w $MONITORSERVERIP /etc/postfix/main.cf` = 0 ] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $MONITORSERVERIP/g" /etc/postfix/main.cf
+		[[ $(grep -c -w "$MONITORSERVERIP" /etc/postfix/main.cf) = 0 ]] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , $MONITORSERVERIP/g" /etc/postfix/main.cf
 	fi
 
 	#Restart postfix
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null
 
 else
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 
 	#Add in main server ip to main.cf
-	[ `grep -c -w '$PDCIP' /etc/postfix/main.cf` = 0 ] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '$PDCIP'/g" /etc/postfix/main.cf
+	[[ $(grep -c -w '"$PDCIP"' /etc/postfix/main.cf) = 0 ]] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '"$PDCIP"'/g" /etc/postfix/main.cf
 	#Add in monitor server ip to main.cf
-	if [ '$MONITORING' = yes ]
+	if [ '"$MONITORING"' = yes ]
 	then
-		[ `grep -c -w '$MONITORSERVERIP' /etc/postfix/main.cf` = 0 ] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '$MONITORSERVERIP'/g" /etc/postfix/main.cf
+		[[ $(grep -c -w '"$MONITORSERVERIP"' /etc/postfix/main.cf) = 0 ]] && sed -i "s/mynetworks = 127.0.0.1/mynetworks = 127.0.0.1 , '"$MONITORSERVERIP"'/g" /etc/postfix/main.cf
 	fi
 
 	#Restart postfix
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_stop 1>/dev/null
 	sleep 1
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/postfix_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/postfix_start 1>/dev/null
 	'
 fi
 
 #Add home folder path to the backup config for the E-Mail server
-if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders ]
+if [ -f /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders ]
 then
-	if [ $(grep -c "/home/users/email,email" /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders) = 0 ]
+	if [[ $(grep -c "/home/users/email,email" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]]
 	then
-		echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+		echo /home/users/email,email,21 >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 	fi
 
 	#Add in home area paths from primary group information
 	for PRIGROUP in $(ls -1 /opt/karoshi/server_network/group_information/)
 	do
 		source /opt/karoshi/server_network/group_information/"$PRIGROUP"
-		if [ $(grep -c "$HOMEPATH,$PRIGROUP" /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders) = 0 ]
+		if [[ $(grep -c "$HOMEPATH,$PRIGROUP" /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders) = 0 ]]
 		then
-			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/$SERVERNAME/backup_folders
+			echo "$HOMEPATH,$PRIGROUP,21" >> /opt/karoshi/server_network/backup_servers/backup_settings/"$SERVERNAME"/backup_folders
 		fi
 	done
 fi
@@ -434,7 +413,7 @@ sed -i 's/;ConfigureThunderbird()/ConfigureThunderbird()/g' /var/lib/samba/netlo
 /opt/karoshi/serversetup/modules/email/scripts/group_email_access
 
 #Add in monitoring for the server
-[ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+[ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVERNAME"
 
 exit
 

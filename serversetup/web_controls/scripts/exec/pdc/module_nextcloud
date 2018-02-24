@@ -180,29 +180,6 @@ then
 	echo "$(date): module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$SERVERNAME:$ALIAS:$SERVERIP:" | /opt/karoshi/serversetup/modules/nextcloud/setupnextcloud
 else
-	#Make sure that this server is configured to have dns running - either samba4 or dnsmasq
-	/opt/karoshi/serversetup/all/scripts/configure_dnsmasq "$SERVERNAME"
-
-	echo '<ul><li>'"$SERVERNAME"' - '$"Copying module"'</li></ul>'
-	#Copy in module
-	echo "$(date): module_nextcloud - copying module to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
-	scp -p -r /opt/karoshi/serversetup/modules/nextcloud root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/redis_start root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/redis_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/redis_stop root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/docker_start root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/docker_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/docker_stop root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/docker root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/redis-server root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/docker root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/redis root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/docker root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/redis root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/sysvsupport root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/set_boot_status root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/scripts/
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/php.ini root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/all/buildserver/configfiles/
-
 	#Copy in domain information
 	echo "$(date): module_nextcloud - copying domain information to $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	scp -p -r /opt/karoshi/server_network/domain_information root@"$SERVERNAME":/opt/karoshi/server_network/ 1> /dev/null
@@ -212,9 +189,6 @@ else
 	[ ! -d /etc/ssl/root-ca ] && mkdir -p /etc/ssl/root-ca
 	'
 	scp /etc/ssl/root-ca/cacert.pem root@"$SERVERNAME":/etc/ssl/root-ca
-
-	#Copy in mysql_root_pass
-	scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@"$SERVERNAME:/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
 
 	#Install nextcloud
 	echo "$(date): module_nextcloud - running setupnextcloud by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"

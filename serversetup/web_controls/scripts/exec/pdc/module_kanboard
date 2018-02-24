@@ -23,22 +23,22 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_kanboard_cgi
 then
-	echo `date`: module_kanboard - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_kanboard_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_kanboard.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_kanboard.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
 
-if [ $Checksum'check' != $module_kanboard_cgi'check' ]
+if [ "$Checksum"'check' != "$module_kanboard_cgi"'check' ]
 then
-	echo `date`: module_kanboard - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
@@ -46,137 +46,122 @@ fi
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 0 ]
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_kanboard - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_kanboard - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-KANBOARDSERVER=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f5 | cut -d"." -f1`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+KANBOARDSERVER=$(echo "$DATA" | cut -s -d: -f4)
+ALIAS=$(echo "$DATA" | cut -s -d: -f5 | cut -d"." -f1)
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: module_kanboard - Not called by module_kanboard.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Not called by module_kanboard.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_kanboard - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_kanboard - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$KANBOARDSERVER" ]
 then
-	echo `date`: module_kanboard - Blank domain by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Blank domain by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
 if [ -z "$ALIAS" ]
 then
-	echo `date`: module_kanboard - Blank alias by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - Blank alias by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: module_kanboard - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_kanboard - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-echo `date`: setup_kanboard by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): setup_kanboard by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
-
-TEXTDOMAIN=karoshi-server
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
 #Add entry to samba4 dns
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-KANBOARDSERVERIP=`net lookup $KANBOARDSERVER`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
-echo `date`: module_kanboard - checking "if" $ALIAS.$REALM is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
+echo "$(date): module_kanboard - checking if $ALIAS.$REALM is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$ALIAS.$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-	echo `date`: dnsadd - adding $ALIAS "for" $KANBOARDSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-	samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $KANBOARDSERVER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): dnsadd - adding $ALIAS for $KANBOARDSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	samba-tool dns add 127.0.0.1 "$REALM" "$ALIAS" CNAME "$KANBOARDSERVER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-touch /opt/karoshi/server_network/aliases/$KANBOARDSERVER
-[ `grep -c -w $ALIAS /opt/karoshi/server_network/aliases/$KANBOARDSERVER` = 0 ] && echo $ALIAS >> /opt/karoshi/server_network/aliases/$KANBOARDSERVER
+touch /opt/karoshi/server_network/aliases/"$KANBOARDSERVER"
+[[ $(grep -c -w "$ALIAS" /opt/karoshi/server_network/aliases/"$KANBOARDSERVER") = 0 ]] && echo "$ALIAS" >> /opt/karoshi/server_network/aliases/"$KANBOARDSERVER"
 
 #Create ssl cert
-echo "$REMOTE_USER:$REMOTE_ADDR:$KANBOARDSERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-
+echo "$REMOTE_USER:$REMOTE_ADDR:$KANBOARDSERVER:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
 
 #Get install type
 INSTALL_TYPE=education
 if [ -f /opt/karoshi/server_network/install_type ]
 then
-	INSTALL_TYPE=`sed -n 1,1p /opt/karoshi/server_network/install_type`
+	INSTALL_TYPE=$(sed -n 1,1p /opt/karoshi/server_network/install_type)
 fi
 
-if [ $KANBOARDSERVER = `hostname-fqdn` ]
+if [[ "$KANBOARDSERVER" = $(hostname-fqdn) ]]
 then
 	#Install kanboard
-	/opt/karoshi/serversetup/modules/kanboard/setupkanboard $INSTALL_TYPE
+	/opt/karoshi/serversetup/modules/kanboard/setupkanboard "$INSTALL_TYPE"
 else
-	ssh -x -o PasswordAuthentication=no $KANBOARDSERVER '
-	[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
-	'
-
-	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/kanboard root@$KANBOARDSERVER:/opt/karoshi/serversetup/modules/ 1> /dev/null
-	#Copy in mysql_root_pass
-	scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@$KANBOARDSERVER:"/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
 	#Install kanboard
-	ssh -x -o PasswordAuthentication=no $KANBOARDSERVER '
-	/opt/karoshi/serversetup/modules/kanboard/setupkanboard '$INSTALL_TYPE'
+	ssh -x -o PasswordAuthentication=no "$KANBOARDSERVER" '
+	/opt/karoshi/serversetup/modules/kanboard/setupkanboard '"$INSTALL_TYPE"'
 '
 fi
 
-
-#########################
 #Add role information
-#########################
-[ ! -d /opt/karoshi/server_network/servers/$KANBOARDSERVER ] && mkdir -p /opt/karoshi/server_network/servers/$KANBOARDSERVER
-[ -f /opt/karoshi/server_network/servers/$KANBOARDSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$KANBOARDSERVER/no_role
-echo $"Kanboard Project Management""<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/kanboardserver
-echo '<a href="http://'$ALIAS.$REALM'/kanboard" target="_blank">http://'$ALIAS.$REALM'/kanboard</a><br>' >> /opt/karoshi/server_network/servers/$KANBOARDSERVER/kanboardserver
-echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/$KANBOARDSERVER/apacheserver
+[ ! -d /opt/karoshi/server_network/servers/"$KANBOARDSERVER" ] && mkdir -p /opt/karoshi/server_network/servers/"$KANBOARDSERVER"
+[ -f /opt/karoshi/server_network/servers/"$KANBOARDSERVER"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$KANBOARDSERVER"/no_role
+echo $"Kanboard Project Management""<br>" > /opt/karoshi/server_network/servers/"$KANBOARDSERVER"/kanboardserver
+echo '<a href="https://'"$ALIAS.$REALM"'/kanboard" target="_blank">https://'"$ALIAS.$REALM"'/kanboard</a><br>' >> /opt/karoshi/server_network/servers/"$KANBOARDSERVER"/kanboardserver
+echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/"$KANBOARDSERVER"/apacheserver
 
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
-echo $KANBOARDSERVER > /opt/karoshi/server_network/webservers/$KANBOARDSERVER
+echo "$KANBOARDSERVER" > /opt/karoshi/server_network/webservers/"$KANBOARDSERVER"
 
 sed -i 's/WEBCTRL=no/WEBCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Add in monitoring for the server
-[ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $KANBOARDSERVER
+[ -f /opt/karoshi/server_network/monitoringserver ] && /opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$KANBOARDSERVER"
 
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$"Kanboard has been installed and can be accessed from" - '<a href="http://'$ALIAS.$REALM'/kanboard" target="_blank">http://'$ALIAS.$REALM'/kanboard</a>'
-echo '<br>'$"Username":admin - $"password": admin
+echo "<br>"$"Kanboard has been installed and can be accessed from"' - <a href="https://'"$ALIAS.$REALM"'/kanboard" target="_blank">http://'"$ALIAS.$REALM"'/kanboard</a>'
+echo "<br>"$"Username"":admin - "$"password"": admin"
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit
 

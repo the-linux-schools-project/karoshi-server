@@ -103,8 +103,6 @@ then
 	#Run module
 	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$PASSWORD:$HOSTNAME:" | /opt/karoshi/serversetup/modules/monitoring/scripts/setupmonitoring
 else
-	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/monitoring root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1>/dev/null
 
 	#Copy in domain_name information
 	scp /opt/karoshi/server_network/domain_information/domain_name root@"$SERVERNAME":/opt/karoshi/server_network/domain_information/ 1>/dev/null

@@ -112,15 +112,6 @@ LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 if [[ "$SERVERNAME" != $(hostname-fqdn) ]]
 then
-	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/printserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_start root@"$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_status root@"$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/savapage_stop root@"$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/savapage root@"$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/"
-	scp /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/savapage root@"$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/"
-	scp /opt/karoshi/serversetup/all/"useful scripts"/get_currency_symbol root@"$SERVERNAME:/opt/karoshi/serversetup/all/useful\ scripts/"
-
 	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 	mkdir -p /opt/karoshi/server_network/domain_information 
 	' 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"

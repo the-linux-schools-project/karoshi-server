@@ -158,12 +158,6 @@ then
 		rsync --timeout=30 --dirs --recursive --xattrs --links --compress --delete --times --perms --executability --acls --owner --group /etc/e2guardian "$SERVERNAME":/etc	
 	fi
 
-	#Copy in module
-	echo '<ul><li>'$"Copying module"'</li></ul>'
-	scp -p -r /opt/karoshi/serversetup/modules/squid root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
-	#Copy in fail2ban files
-	#scp -p -r /opt/karoshi/serversetup/all/fail2ban root@$SERVERNAME:/opt/karoshi/serversetup/all/ 1> /dev/null
-
 	#########################
 	#Run module
 	#########################

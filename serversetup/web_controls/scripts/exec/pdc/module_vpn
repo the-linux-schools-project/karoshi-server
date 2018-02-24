@@ -23,103 +23,99 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 [ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_vpn_cgi
 then
-	echo `date`: module_vpn - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_vpn_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_vpn.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
-if [ $Checksum'check' != $module_vpn_cgi'check' ]
+if [ "$Checksum"'check' != "$module_vpn_cgi"'check' ]
 then
-	echo `date`: module_vpn - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_vpn - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:%\n-+-'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:%\n-+-')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_vpn - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-SERVERNAME=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+SERVERNAME=$(echo "$DATA" | cut -s -d: -f4)
 
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: module_vpn - Not called by module_vpn.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - Not called by module_vpn.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_vpn - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_vpn - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$SERVERNAME" ]
 then
-	echo `date`: module_vpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_vpn - Blank servername by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
-echo `date`: module_vpn - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_vpn - Setting up $SERVERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/vpn root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-
-STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Run module
-echo '<div class="sectiontitle">'$"Setup a VPN Server"' - '$SERVERNAME'</div><br></div><div id="infobox">'
+echo '<div class="sectiontitle">'$"Setup a VPN Server"' - '"$SERVERNAME"'</div><br></div><div id="infobox">'
 
 #Get a list of all of the domain controllers in the internal zone.
-DNSSERVERLIST="`hostname-fqdn` `[ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/`"
+DNSSERVERLIST="$(hostname-fqdn) $([ -d /opt/karoshi/server_network/zones/internal/additional_domain_controllers/ ] && ls -1 /opt/karoshi/server_network/zones/internal/additional_domain_controllers/)"
 
-ssh -x -o PasswordAuthentication=no $SERVERNAME '
-echo '$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DNSSERVERLIST:' | /opt/karoshi/serversetup/modules/vpn/setupvpn
+ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
+echo '"$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DNSSERVERLIST:"' | /opt/karoshi/serversetup/modules/vpn/setupvpn
 '
-[ $? = 101 ] && exit 101
+[ "$?" = 101 ] && exit 101
 
-echo $SERVERNAME > /opt/karoshi/server_network/vpnserver
+echo "$SERVERNAME" > /opt/karoshi/server_network/vpnserver
 
-echo $"VPN Server""<br>" > /opt/karoshi/server_network/servers/$SERVERNAME/openvpn
-[ -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role ] && rm -f /opt/karoshi/server_network/servers/$SERVERNAME/no_role
+echo $"VPN Server""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/openvpn
+[ -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$SERVERNAME"/no_role
 sed -i 's/VPNCTRL=no/VPNCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $SERVERNAME
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$SERVERNAME"
 fi
 

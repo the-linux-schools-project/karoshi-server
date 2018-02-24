@@ -313,7 +313,7 @@ then
 	#echo binddn cn=nslcd-server,cn=karoshi,cn=other,cn=Users,$LDAPBASE >> /etc/nslcd.conf
 	#echo bindpw $LDAPPASS >> /etc/nslcd.conf
 	echo >> /etc/nslcd.conf
-	echo nss_min_uid 1000 >> /etc/nslcd.conf
+	echo nss_min_uid 1001 >> /etc/nslcd.conf
 	echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /etc/nslcd.conf
 	echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
 	echo map passwd uid sAMAccountName >> /etc/nslcd.conf
@@ -328,7 +328,6 @@ then
 	echo filter group \(objectClass=group\) >> /etc/nslcd.conf
 	echo map group cn sAMAccountName >> /etc/nslcd.conf
 	echo map group gidNumber objectSid:"$DOMAINSID" >> /etc/nslcd.conf
-	echo nss_min_uid 1001 >> /etc/nslcd.conf
 	#echo map group member nogroupmembers >> /etc/nslcd.conf
 
 	source /opt/karoshi/serversetup/variables/distro
@@ -397,8 +396,8 @@ then
 	#echo binddn cn=nslcd-server,OU=karoshi,OU=other,OU=People,'"$LDAPBASE"' >> /etc/nslcd.conf
 	#echo bindpw '"$LDAPPASS"' >> /etc/nslcd.conf
 	echo >> /etc/nslcd.conf
-	echo nss_min_uid 1000 >> /etc/nslcd.conf
-	echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /tmp/nslcd.conf
+	echo nss_min_uid 1001 >> /etc/nslcd.conf
+	echo pam_authz_search \(!\(userAccountControl:1.2.840.113556.1.4.803:=2\)\) >> /etc/nslcd.conf
 	echo filter passwd \(\&\(objectClass=user\)\(!\(objectClass=computer\)\)\) >> /etc/nslcd.conf
 	echo map passwd uid sAMAccountName >> /etc/nslcd.conf
 	echo map passwd uidNumber objectSid:'"$DOMAINSID"' >> /etc/nslcd.conf
@@ -412,7 +411,7 @@ then
 	echo filter group \(objectClass=group\) >> /etc/nslcd.conf
 	echo map group cn sAMAccountName >> /etc/nslcd.conf
 	echo map group gidNumber objectSid:'"$DOMAINSID"' >> /etc/nslcd.conf
-	echo map group member nogroupmembers >> /etc/nslcd.conf
+	>> /etc/nslcd.conf
 	#Stop nslcd
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nslcd_stop 1>/dev/null
 	#Start nslcd

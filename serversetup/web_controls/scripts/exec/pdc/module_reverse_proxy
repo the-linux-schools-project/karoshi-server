@@ -23,159 +23,148 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/module_reverse_proxy_cgi
 then
-	echo `date`: module_reverse_proxy - No admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - No admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/module_reverse_proxy_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/module_reverse_proxy.cgi | cut -d' ' -f1`
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_reverse_proxy.cgi | cut -d' ' -f1)
 [ -z "$Checksum" ] && Checksum=not_set
-if [ $Checksum'check' != $module_reverse_proxy_cgi'check' ]
+if [ "$Checksum"'check' != "$module_reverse_proxy_cgi"'check' ]
 then
-	echo `date`: module_reverse_proxy - Incorrect admin Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - Incorrect admin Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 ########################
 #Get variables
 ########################
-numArgs=$#
-if [ $numArgs != 0 ]
+numArgs="$#"
+if [ "$numArgs" != 0 ]
 then
-	echo `date`: module_reverse_proxy - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-%'`
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-%')
 if [ -z "$DATA" ]
 then
-	echo `date`: module_reverse_proxy - no data >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-RemoteCheckSum=`echo "$DATA" | cut -s -d: -f3`
-WEBSERVER=`echo "$DATA" | cut -s -d: -f4`
-ALIAS=`echo "$DATA" | cut -s -d: -f5 | sed 's/%3A/:/g' | sed 's/%2F/\//g'`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
+WEBSERVER=$(echo "$DATA" | cut -s -d: -f4)
+ALIAS=$(echo "$DATA" | cut -s -d: -f5 | sed 's/%3A/:/g' | sed 's/%2F/\//g')
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-	echo `date`: module_reverse_proxy - Not called by module_reverse_proxy.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - Not called by module_reverse_proxy.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_USER" ]
 then
-	echo `date`: module_reverse_proxy - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$REMOTE_ADDR" ]
 then
-	echo `date`: module_reverse_proxy - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
 if [ -z "$WEBSERVER" ]
 then
-	echo `date`: module_reverse_proxy - Blank server by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - Blank server by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-	echo `date`: module_reverse_proxy - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-echo `date`: setupmoodle by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): setupmoodle by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
 #Update alias entry for the server
 [ ! -d /opt/karoshi/server_network/aliases ] && mkdir -p /opt/karoshi/server_network/aliases
-[ ! -f /opt/karoshi/server_network/aliases/$WEBSERVER ] && echo $ALIAS > /opt/karoshi/server_network/aliases/$WEBSERVER
+[ ! -f /opt/karoshi/server_network/aliases/"$WEBSERVER" ] && echo "$ALIAS" > /opt/karoshi/server_network/aliases/"$WEBSERVER"
 
 #Add entry to samba4 dns
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 source /opt/karoshi/server_network/domain_information/domain_name
-echo `date`: module_reverse_proxy - checking "if" $DOMAINPATH is "in" the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns query 127.0.0.1 $REALM $ALIAS.$REALM CNAME --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-if [ `echo $?` != 0 ]
+echo "$(date): module_reverse_proxy - checking if $DOMAINPATH is in the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns query 127.0.0.1 "$REALM" "$ALIAS.$REALM" CNAME --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+if [ "$?" != 0 ]
 then
-echo `date`: module_reverse_proxy - adding $ALIAS "for" $WEBSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-samba-tool dns add 127.0.0.1 $REALM $ALIAS CNAME $WEBSERVER --username=Administrator --password=$LDAPPASS 1>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): module_reverse_proxy - adding $ALIAS for $WEBSERVER to the dns records by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+samba-tool dns add 127.0.0.1 "$REALM" "$ALIAS" CNAME "$WEBSERVER" --username=Administrator --password="$LDAPPASS" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
-if [ $WEBSERVER = `hostname-fqdn` ]
+if [[ "$WEBSERVER" = $(hostname-fqdn) ]]
 then
 	echo '<ul><li>'$"You cannot setup a reverse proxy on the main server."'</li></ul>'
-	echo `date`: module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	echo "$(date): module_reverse_proxy not allowed to set this up on $HOSTNNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
-
-#Copy in module
-scp -p -r /opt/karoshi/serversetup/modules/reverseproxy root@$WEBSERVER:/opt/karoshi/serversetup/modules/ 1> /dev/null
-#Copy in control_services
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services root@$WEBSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 1> /dev/null
-#Copy in start on boot
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot root@$WEBSERVER:/opt/karoshi/serversetup/distro/ubuntu/scripts/ 1> /dev/null
-#Copy in distro support
-scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/reverseproxy root@$WEBSERVER:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
 
 #######################
 #Apply certificate
 #######################
 
-echo "$REMOTE_USER:$REMOTE_ADDR:$WEBSERVER:enablecert:" | /opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/apachesslcert
-[ `echo $?` != 0 ] && exit 101 
+echo "$REMOTE_USER:$REMOTE_ADDR:$WEBSERVER:enablecert:" | /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/apachesslcert
+[ "$?" != 0 ] && exit 101 
 
-ssh -x -o PasswordAuthentication=no $WEBSERVER '
-#####################################
+ssh -x -o PasswordAuthentication=no "$WEBSERVER" '
 #Ensure that apache ports are open in shorewall
-#####################################
 
 source /opt/karoshi/serversetup/variables/distro
-source /opt/karoshi/serversetup/distro/$DISTROCHOICE/all/software
+source /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/all/software
 
-MODCHECK=`grep -c -w 80 /etc/shorewall/rules`
-MODCHECK2=`grep -c -w 443 /etc/shorewall/rules`
+MODCHECK=$(grep -c -w 80 /etc/shorewall/rules)
+MODCHECK2=$(grep -c -w 443 /etc/shorewall/rules)
 
 MOD_SHOREWALL=no
-if [ $MODCHECK = 0 ]
+if [ "$MODCHECK" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80"
 fi
 
-if [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="443"
 fi
 
-if [ $MODCHECK = 0 ] && [ $MODCHECK2 = 0 ]
+if [ "$MODCHECK" = 0 ] && [ "$MODCHECK2" = 0 ]
 then
 	MOD_SHOREWALL=yes
 	PORTS="80,443"
 fi
 
-if [ $MOD_SHOREWALL = yes ]
+if [ "$MOD_SHOREWAL" = yes ]
 then
 	echo "<ul><li>"'$"Modifying shorewall rules to allow ports 80 and 443."'"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`
 	sed -i $LINENUM"c"\ACCEPT"	"net"	"fw"	"tcp"	"$PORTS"	"-"#"apacherule /etc/shorewall/rules
 	echo "#"LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
 	echo "<ul><li>"'$"Restarting shorewall"'"</li></ul>"
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Copy in config files
@@ -183,57 +172,39 @@ cp -f /opt/karoshi/serversetup/modules/reverseproxy/default /etc/nginx/sites-ava
 
 #Point certificates at the correct place
 SSLCertificateFileline=`grep -w -n ssl_certificate /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
-sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'$REALM'.pem";" /etc/nginx/sites-available/default
+sed -i $SSLCertificateFileline"c"\ssl_certificate" "/etc/ssl/apache/'"$REALM"'.pem";" /etc/nginx/sites-available/default
 SSLCertificateKeyFileline=`grep -w -n ssl_certificate_key /etc/nginx/sites-available/default | grep -v "#" | cut -d: -f1`
-sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'$REALM'.key";" /etc/nginx/sites-available/default
+sed -i $SSLCertificateKeyFileline"c"\ssl_certificate_key" "/etc/ssl/apache/'"$REALM"'.key";" /etc/nginx/sites-available/default
 
 
 source /opt/karoshi/serversetup/variables/distro
 
-###########################
 #Make sure apache is not running
-###########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/stoponboot/apache
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/apache_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/apache
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/apache_stop 1>/dev/null
 
-##########################
-#Install nginx
-##########################
-echo "<ul><li>"'$"Checking for modules"'"</li></ul>"
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/modules/reverseproxy/software
 
-###########################
 #Ensure that nginx is running on boot
-###########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/nginx
 
 touch /etc/nginx/proxysites
 
-###########################
 #Restart nginx
-###########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_start 1>/dev/null
-###########################
-#Ensure that nginx is running on boot
-###########################
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/nginx
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nginx_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/nginx_start 1>/dev/null
 
-###########################
-#Show completed message
-###########################
 echo "<ul><li>'$"Setup Reverse Proxy Completed"'</li></ul>"
 '
 
 #Add in any existing reverse proxy rules
 if [ -d /opt/karoshi/server_network/reverseproxy/sites ]
 then
-	if [ `ls -1 /opt/karoshi/server_network/reverseproxy/sites | wc -l` -gt 0 ]
+	if [[ $(ls -1 /opt/karoshi/server_network/reverseproxy/sites | wc -l) -gt 0 ]]
 	then
 		cat /opt/karoshi/server_network/reverseproxy/sites/* > /opt/karoshi/server_network/reverseproxy/proxysites
 		#Copy proxysites to /etc/nginx
-		scp /opt/karoshi/server_network/reverseproxy/proxysites root@$WEBSERVER:"/etc/nginx/"
-		ssh -x -o PasswordAuthentication=no $WEBSERVER '
+		scp /opt/karoshi/server_network/reverseproxy/proxysites root@"$WEBSERVER:/etc/nginx/"
+		ssh -x -o PasswordAuthentication=no "$WEBSERVER" '
 		#Reload nginx
 		source /opt/karoshi/serversetup/variables/distro
 		/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/nginx_reload
@@ -244,15 +215,15 @@ fi
 #########################
 #Add role information
 #########################
-echo $"Reverse Proxy Server""<br>" > /opt/karoshi/server_network/servers/$WEBSERVER/reverseproxyserver
-[ -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role ] && rm -f /opt/karoshi/server_network/servers/$WEBSERVER/no_role
-echo $WEBSERVER > /opt/karoshi/server_network/reverseproxyserver
+echo $"Reverse Proxy Server""<br>" > /opt/karoshi/server_network/servers/"$WEBSERVER"/reverseproxyserver
+[ -f /opt/karoshi/server_network/servers/"$WEBSERVER"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$WEBSERVER"/no_role
+echo "$WEBSERVER" > /opt/karoshi/server_network/reverseproxyserver
 sed -i 's/REVERSEPROXYCTRL=no/REVERSEPROXYCTRL=yes/g' /opt/karoshi/server_network/web_controls/menusettings
 
 #Add in monitoring for the server
 if [ -f /opt/karoshi/server_network/monitoringserver ]
 then
-	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors $WEBSERVER
+	/opt/karoshi/serversetup/modules/monitoring/scripts/add_karoshi_server_monitors "$WEBSERVER"
 fi
 
 exit

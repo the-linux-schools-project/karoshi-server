@@ -184,7 +184,6 @@ then
 		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/cups_start 1>/dev/null
 
 	else
-		scp -r /opt/karoshi/serversetup/modules/printserver/ root@"$PRINTSERVER:/opt/karoshi/serversetup/modules/"
 		scp "/opt/karoshi/serversetup/modules/printserver/printer_info" root@"$PRINTSERVER:/opt/karoshi/useful\ scripts/"
 		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$PRINTSERVER" '
 		source /opt/karoshi/serversetup/variables/distro

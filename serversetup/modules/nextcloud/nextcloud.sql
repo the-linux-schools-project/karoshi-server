@@ -672,16 +672,6 @@ CREATE TABLE `oc_external_applicable` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `oc_external_applicable`
---
-
-LOCK TABLES `oc_external_applicable` WRITE;
-/*!40000 ALTER TABLE `oc_external_applicable` DISABLE KEYS */;
-INSERT INTO `oc_external_applicable` VALUES (2,2,1,NULL),(8,8,1,NULL),(1,1,2,'itadmin'),(3,3,2,'itadmin'),(5,5,2,'itadmin'),(4,4,2,'officestaff'),(6,6,2,'officestaff'),(7,7,2,'staff');
-/*!40000 ALTER TABLE `oc_external_applicable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `oc_external_config`
 --
 
@@ -700,16 +690,6 @@ CREATE TABLE `oc_external_config` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `oc_external_config`
---
-
-LOCK TABLES `oc_external_config` WRITE;
-/*!40000 ALTER TABLE `oc_external_config` DISABLE KEYS */;
-INSERT INTO `oc_external_config` VALUES (1,1,'host','CHANGETHISREALM'),(2,1,'share','dfs/applications'),(3,1,'root',''),(4,1,'domain',''),(5,2,'host','CHANGETHISREALM'),(6,2,'share','dfs/homes/$user'),(7,2,'root',''),(8,2,'domain',''),(9,3,'host','CHANGETHISREALM'),(10,3,'share','dfs/itadminshare'),(11,3,'root',''),(12,3,'domain',''),(13,4,'host','CHANGETHISREALM'),(14,4,'share','dfs/officeshare'),(15,4,'root',''),(16,4,'domain',''),(17,5,'host','CHANGETHISREALM'),(18,5,'share','dfs/staffshare'),(19,5,'root',''),(20,5,'domain',''),(21,6,'host','CHANGETHISREALM'),(22,6,'share','dfs/staffshare'),(23,6,'root',''),(24,6,'domain',''),(25,7,'host','CHANGETHISREALM'),(26,7,'share','dfs/staffshare'),(27,7,'root',''),(28,7,'domain',''),(29,8,'host','CHANGETHISREALM'),(30,8,'share','dfs/subjects'),(31,8,'root',''),(32,8,'domain','');
-/*!40000 ALTER TABLE `oc_external_config` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `oc_external_mounts`
 --
 
@@ -726,16 +706,6 @@ CREATE TABLE `oc_external_mounts` (
   PRIMARY KEY (`mount_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_external_mounts`
---
-
-LOCK TABLES `oc_external_mounts` WRITE;
-/*!40000 ALTER TABLE `oc_external_mounts` DISABLE KEYS */;
-INSERT INTO `oc_external_mounts` VALUES (1,'/applications','smb','password::logincredentials',100,1),(2,'/home','smb','password::logincredentials',100,1),(3,'/itadminshare','smb','password::logincredentials',100,1),(4,'/officeshare','smb','password::logincredentials',100,1),(5,'/staffshare','smb','password::logincredentials',100,1),(6,'/staffshare','smb','password::logincredentials',100,1),(7,'/staffshare','smb','password::logincredentials',100,1),(8,'/subjects','smb','password::logincredentials',100,1);
-/*!40000 ALTER TABLE `oc_external_mounts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `oc_external_options`
@@ -1062,16 +1032,6 @@ CREATE TABLE `oc_ldap_group_mapping` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `oc_ldap_group_mapping`
---
-
-LOCK TABLES `oc_ldap_group_mapping` WRITE;
-/*!40000 ALTER TABLE `oc_ldap_group_mapping` DISABLE KEYS */;
-INSERT INTO `oc_ldap_group_mapping` VALUES ('cn=exams,ou=groups,ou=people,CHANGETHISLDAPBASE','exams','F0D61CD0-E32D-48B7-A3B8-0B6FA78CDFDB'),('cn=governors,ou=groups,ou=people,CHANGETHISLDAPBASE','governors','9ED60CE1-4E75-4593-86EB-481EEDF1E64F'),('cn=guardians,ou=groups,ou=people,CHANGETHISLDAPBASE','guardians','25E428CC-042F-4FEA-A1D8-5C540F8B00FE'),('cn=guestusers,ou=groups,ou=people,CHANGETHISLDAPBASE','guestusers','B65C4974-C54E-4FA5-BABE-EA61D3A19A68'),('cn=itadmin,ou=groups,ou=people,CHANGETHISLDAPBASE','itadmin','7A9ACD50-2C56-472D-B487-B1511E4109F8'),('cn=nonteachingstaff,ou=groups,ou=people,CHANGETHISLDAPBASE','nonteachingstaff','50F67796-8825-4477-8D2F-E077EBC48523'),('cn=officestaff,ou=groups,ou=people,CHANGETHISLDAPBASE','officestaff','0C37C783-63B4-4C73-AD35-20254882549F'),('cn=profilemanagement,ou=groups,ou=people,CHANGETHISLDAPBASE','profilemanagement','0E9717E4-35A3-4580-8CFE-B8F55D0620DA'),('cn=staff,ou=groups,ou=people,CHANGETHISLDAPBASE','staff','712F7BE3-7494-4932-A265-59EFF76C0177'),('cn=studentstaff,ou=groups,ou=people,CHANGETHISLDAPBASE','studentstaff','E81CCC0B-1818-4DBE-BEF6-CFFEDD6C6CCE'),('cn=tech,ou=groups,ou=people,CHANGETHISLDAPBASE','tech','7493C46F-1311-4D2D-B446-91D9B8EE6A65'),('cn=yr2016,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2016','D7061AC9-7C46-4FB9-817B-7D180755AFC2'),('cn=yr2017,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2017','2D1D2A46-D2B6-4EA6-8F35-A986FE66ABA7'),('cn=yr2018,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2018','66738AC9-CD32-49B3-84D9-877B4FD5CB8E'),('cn=yr2019,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2019','740D637C-1496-48D5-87BE-E8345114E7DB'),('cn=yr2020,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2020','CBD14138-39F7-4C00-9999-CC9C6B813EB0'),('cn=yr2021,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2021','8B75585C-BA95-4A7D-AE94-9DA6FA9A18FB'),('cn=yr2022,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2022','05EB25FE-B83A-4456-A4C8-EF233E9F5E4C'),('cn=yr2023,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2023','71348C2F-326A-4DB0-82D5-C3A84DD7E0F9'),('cn=yr2024,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2024','94847037-B811-46AD-9D56-FDB78DD3CC54'),('cn=yr2025,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2025','A503EDA4-1AC6-43C4-827D-3A65F37A09BA'),('cn=yr2026,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2026','6C819FF6-BC87-47E6-842C-146AC9E72B88'),('cn=yr2027,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2027','549990AC-77FD-4697-ACC0-F4CC47DB59A9'),('cn=yr2028,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2028','2AD7B1E9-A644-47FA-994D-0BA5216F6978'),('cn=yr2029,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2029','921D9D6E-61C9-4F7A-BCA0-65DAFC1EED17'),('cn=yr2030,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2030','50ABC7EA-7197-4660-9740-0B207D22C54C'),('cn=yr2031,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2031','79BA8419-CCDB-4C3C-BB84-85D54BBA02D9'),('cn=yr2032,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2032','2185448E-9330-4D60-B2E7-628689A2DDB1'),('cn=yr2033,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2033','3AB9A4D4-2699-4A26-A4E6-EB825DFF88AD'),('cn=yr2034,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2034','97295AE6-5D27-4833-80A6-7948C61B2B15'),('cn=yr2035,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2035','C2246AFA-D8A4-4C28-B3B6-88C83D38AAC3'),('cn=yr2036,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2036','45FBDBD7-221C-46D6-8C1B-1678770165E8'),('cn=yr2037,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2037','936CB5DB-07AA-4436-BE79-017DBE3E6F82'),('cn=yr2038,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2038','985301DA-F517-43AE-9760-2CB7310E7037'),('cn=yr2039,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2039','32283591-6F74-48F6-96F8-1236A5E6213C'),('cn=yr2040,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2040','9BCB0AA3-A928-4FC2-BB0A-AB99C302010B'),('cn=yr2041,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2041','F23372A2-01B0-4915-BCA5-AB809F72B10B'),('cn=yr2042,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2042','FFC16D4C-590D-476D-B592-3B6981FD720D'),('cn=yr2043,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2043','80E0B3CC-DBD3-4E85-A78F-E49B7491BFF8'),('cn=yr2044,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2044','1D5082DE-752D-4DA0-B99F-B2629DAB7394'),('cn=yr2045,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2045','CEB7896B-EE52-44F4-8F2B-D0402704CBE3'),('cn=yr2046,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2046','8C756F40-9EB5-4832-85E1-A8AC096AD40B'),('cn=yr2047,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2047','CAFAE4E1-8CAF-44AE-9BD7-30ED3B7CBC7A'),('cn=yr2048,ou=groups,ou=people,CHANGETHISLDAPBASE','yr2048','F6D87AD6-D81D-41BA-823F-544543F9E02E');
-/*!40000 ALTER TABLE `oc_ldap_group_mapping` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `oc_ldap_group_members`
 --
 
@@ -1084,16 +1044,6 @@ CREATE TABLE `oc_ldap_group_members` (
   PRIMARY KEY (`owncloudname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_ldap_group_members`
---
-
-LOCK TABLES `oc_ldap_group_members` WRITE;
-/*!40000 ALTER TABLE `oc_ldap_group_members` DISABLE KEYS */;
-INSERT INTO `oc_ldap_group_members` VALUES ('exams','a:5:{i:0;s:5:\"exam1\";i:1;s:5:\"exam2\";i:2;s:5:\"exam3\";i:3;s:5:\"exam4\";i:4;s:5:\"exam5\";}'),('governors','a:0:{}'),('guardians','a:0:{}'),('guestusers','a:10:{i:0;s:6:\"guest1\";i:1;s:6:\"guest2\";i:2;s:6:\"guest3\";i:3;s:6:\"guest4\";i:4;s:6:\"guest5\";i:5;s:6:\"guest6\";i:6;s:6:\"guest7\";i:7;s:6:\"guest8\";i:8;s:6:\"guest9\";i:9;s:7:\"guest10\";}'),('itadmin','a:1:{i:0;s:8:\"sysadmin\";}'),('nonteachingstaff','a:0:{}'),('officestaff','a:0:{}'),('profilemanagement','a:1:{i:0;s:11:\"profileuser\";}'),('staff','a:2:{i:0;s:6:\"ismith\";i:1;s:6:\"jjones\";}'),('studentstaff','a:0:{}'),('tech','a:4:{i:0;s:5:\"tech1\";i:1;s:5:\"tech2\";i:2;s:5:\"tech3\";i:3;s:5:\"tech4\";}'),('yr2016','a:0:{}'),('yr2017','a:0:{}'),('yr2018','a:0:{}'),('yr2019','a:0:{}'),('yr2020','a:0:{}'),('yr2021','a:0:{}'),('yr2022','a:0:{}'),('yr2023','a:0:{}'),('yr2024','a:0:{}'),('yr2025','a:0:{}'),('yr2026','a:0:{}'),('yr2027','a:0:{}'),('yr2028','a:0:{}'),('yr2029','a:0:{}'),('yr2030','a:0:{}'),('yr2031','a:0:{}'),('yr2032','a:0:{}'),('yr2033','a:0:{}'),('yr2034','a:0:{}'),('yr2035','a:0:{}'),('yr2036','a:0:{}'),('yr2037','a:0:{}'),('yr2038','a:0:{}'),('yr2039','a:0:{}'),('yr2040','a:0:{}'),('yr2041','a:0:{}'),('yr2042','a:0:{}'),('yr2043','a:0:{}'),('yr2044','a:0:{}'),('yr2045','a:0:{}'),('yr2046','a:0:{}'),('yr2047','a:0:{}'),('yr2048','a:0:{}');
-/*!40000 ALTER TABLE `oc_ldap_group_members` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `oc_ldap_user_mapping`
@@ -1110,16 +1060,6 @@ CREATE TABLE `oc_ldap_user_mapping` (
   UNIQUE KEY `ldap_dn_users` (`ldap_dn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `oc_ldap_user_mapping`
---
-
-LOCK TABLES `oc_ldap_user_mapping` WRITE;
-/*!40000 ALTER TABLE `oc_ldap_user_mapping` DISABLE KEYS */;
-INSERT INTO `oc_ldap_user_mapping` VALUES ('cn=exam1,ou=exams,ou=other,ou=people,CHANGETHISLDAPBASE','exam1','B6708436-6214-49F2-B503-FD0B0DEA9DAE'),('cn=exam2,ou=exams,ou=other,ou=people,CHANGETHISLDAPBASE','exam2','08C4049E-B5C9-48F8-84D5-F8A968E044CD'),('cn=exam3,ou=exams,ou=other,ou=people,CHANGETHISLDAPBASE','exam3','383F8CFA-C3A2-4314-A781-26B6A7BC107E'),('cn=exam4,ou=exams,ou=other,ou=people,CHANGETHISLDAPBASE','exam4','5B3EAEBC-F071-4C7C-84A4-172D97080657'),('cn=exam5,ou=exams,ou=other,ou=people,CHANGETHISLDAPBASE','exam5','005602E3-A1F0-4620-AE1D-DE6464CB7A86'),('cn=guest1,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest1','27455322-4897-48E7-8322-ADCDD88923B3'),('cn=guest10,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest10','38093A21-1219-4E92-94BC-CE0BD20D05FE'),('cn=guest2,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest2','D9816B0D-7005-4760-B29D-B6CD1C22B910'),('cn=guest3,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest3','BBDB650C-33BF-4D78-B397-F7CF7D77D41B'),('cn=guest4,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest4','12660A9D-582F-4AFB-9C0F-68407DB2373B'),('cn=guest5,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest5','6D6B068B-71F5-4DD2-8AA8-CE24B57B6C2D'),('cn=guest6,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest6','63E1AFD1-825A-42E2-9082-B13FADD16E56'),('cn=guest7,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest7','D85B6DB0-1F45-4AB0-87A1-A223496552B7'),('cn=guest8,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest8','8276C70D-CEEB-4D79-AB17-EF56020902E4'),('cn=guest9,ou=guestusers,ou=other,ou=people,CHANGETHISLDAPBASE','guest9','390EF987-331A-4F62-8715-ACF45D16A681'),('cn=ismith,ou=staff,ou=personnel,ou=people,CHANGETHISLDAPBASE','ismith','85135983-275D-4240-BDB9-E35F3C6A739F'),('cn=jjones,ou=staff,ou=personnel,ou=people,CHANGETHISLDAPBASE','jjones','D25A948A-E575-444C-8A5A-374C15E5D6F9'),('cn=profileuser,ou=other,ou=people,CHANGETHISLDAPBASE','profileuser','D24BB484-1DB1-4805-8A81-E9237F398A5D'),('cn=sysadmin,ou=itadmin,ou=personnel,ou=people,CHANGETHISLDAPBASE','sysadmin','73E9650F-30AA-4A1E-B669-D7EBF51E6AAF'),('cn=tech1,ou=tech,ou=personnel,ou=people,CHANGETHISLDAPBASE','tech1','78E9E02E-AC48-4D4E-86FE-DFE0A756B8CC'),('cn=tech2,ou=tech,ou=personnel,ou=people,CHANGETHISLDAPBASE','tech2','7668D51F-2491-41E6-9401-3F4602E34843'),('cn=tech3,ou=tech,ou=personnel,ou=people,CHANGETHISLDAPBASE','tech3','54409BC9-AD00-4534-BD9F-B60C029A31A5'),('cn=tech4,ou=tech,ou=personnel,ou=people,CHANGETHISLDAPBASE','tech4','3C6E22A1-B501-4EEA-BE17-E326EAAA202B');
-/*!40000 ALTER TABLE `oc_ldap_user_mapping` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `oc_migrations`
@@ -1431,7 +1371,7 @@ CREATE TABLE `oc_preferences` (
 
 LOCK TABLES `oc_preferences` WRITE;
 /*!40000 ALTER TABLE `oc_preferences` DISABLE KEYS */;
-INSERT INTO `oc_preferences` VALUES ('admin','avatar','generated','true'),('admin','core','lang','en'),('admin','core','timezone','Europe/London'),('admin','files_external','config_version','0.5.0'),('admin','firstrunwizard','show','0'),('admin','login','lastLogin','1519457013'),('exam1','files_external','config_version','0.5.0'),('exam1','user_ldap','displayName','Exam 1'),('exam1','user_ldap','homePath',''),('exam1','user_ldap','lastFeatureRefresh','1519457004'),('exam1','user_ldap','uid','exam1'),('exam2','files_external','config_version','0.5.0'),('exam2','user_ldap','displayName','Exam 2'),('exam2','user_ldap','homePath',''),('exam2','user_ldap','lastFeatureRefresh','1519457004'),('exam2','user_ldap','uid','exam2'),('exam3','files_external','config_version','0.5.0'),('exam3','user_ldap','displayName','Exam 3'),('exam3','user_ldap','homePath',''),('exam3','user_ldap','lastFeatureRefresh','1519457004'),('exam3','user_ldap','uid','exam3'),('exam4','files_external','config_version','0.5.0'),('exam4','user_ldap','displayName','Exam 4'),('exam4','user_ldap','homePath',''),('exam4','user_ldap','lastFeatureRefresh','1519457004'),('exam4','user_ldap','uid','exam4'),('exam5','files_external','config_version','0.5.0'),('exam5','user_ldap','displayName','Exam 5'),('exam5','user_ldap','homePath',''),('exam5','user_ldap','lastFeatureRefresh','1519457004'),('exam5','user_ldap','uid','exam5'),('guest1','files_external','config_version','0.5.0'),('guest1','user_ldap','displayName','Guest 1'),('guest1','user_ldap','homePath',''),('guest1','user_ldap','lastFeatureRefresh','1519457004'),('guest1','user_ldap','uid','guest1'),('guest10','files_external','config_version','0.5.0'),('guest10','user_ldap','displayName','Guest 10'),('guest10','user_ldap','homePath',''),('guest10','user_ldap','lastFeatureRefresh','1519457004'),('guest10','user_ldap','uid','guest10'),('guest2','files_external','config_version','0.5.0'),('guest2','user_ldap','displayName','Guest 2'),('guest2','user_ldap','homePath',''),('guest2','user_ldap','lastFeatureRefresh','1519457004'),('guest2','user_ldap','uid','guest2'),('guest3','files_external','config_version','0.5.0'),('guest3','user_ldap','displayName','Guest 3'),('guest3','user_ldap','homePath',''),('guest3','user_ldap','lastFeatureRefresh','1519457004'),('guest3','user_ldap','uid','guest3'),('guest4','files_external','config_version','0.5.0'),('guest4','user_ldap','displayName','Guest 4'),('guest4','user_ldap','homePath',''),('guest4','user_ldap','lastFeatureRefresh','1519457004'),('guest4','user_ldap','uid','guest4'),('guest5','files_external','config_version','0.5.0'),('guest5','user_ldap','displayName','Guest 5'),('guest5','user_ldap','homePath',''),('guest5','user_ldap','lastFeatureRefresh','1519457004'),('guest5','user_ldap','uid','guest5'),('guest6','files_external','config_version','0.5.0'),('guest6','user_ldap','displayName','Guest 6'),('guest6','user_ldap','homePath',''),('guest6','user_ldap','lastFeatureRefresh','1519457004'),('guest6','user_ldap','uid','guest6'),('guest7','files_external','config_version','0.5.0'),('guest7','user_ldap','displayName','Guest 7'),('guest7','user_ldap','homePath',''),('guest7','user_ldap','lastFeatureRefresh','1519457004'),('guest7','user_ldap','uid','guest7'),('guest8','files_external','config_version','0.5.0'),('guest8','user_ldap','displayName','Guest 8'),('guest8','user_ldap','homePath',''),('guest8','user_ldap','lastFeatureRefresh','1519457004'),('guest8','user_ldap','uid','guest8'),('guest9','files_external','config_version','0.5.0'),('guest9','user_ldap','displayName','Guest 9'),('guest9','user_ldap','homePath',''),('guest9','user_ldap','lastFeatureRefresh','1519457004'),('guest9','user_ldap','uid','guest9'),('ismith','files_external','config_version','0.5.0'),('ismith','user_ldap','displayName','Ian Smith'),('ismith','user_ldap','homePath',''),('ismith','user_ldap','lastFeatureRefresh','1519457004'),('ismith','user_ldap','uid','ismith'),('jjones','files_external','config_version','0.5.0'),('jjones','user_ldap','displayName','John Jones'),('jjones','user_ldap','homePath',''),('jjones','user_ldap','lastFeatureRefresh','1519457004'),('jjones','user_ldap','uid','jjones'),('profileuser','files_external','config_version','0.5.0'),('profileuser','user_ldap','displayName','Profile User'),('profileuser','user_ldap','homePath',''),('profileuser','user_ldap','lastFeatureRefresh','1519457004'),('profileuser','user_ldap','uid','profileuser'),('sysadmin','files_external','config_version','0.5.0'),('sysadmin','user_ldap','displayName','Sysadmin User'),('sysadmin','user_ldap','homePath',''),('sysadmin','user_ldap','lastFeatureRefresh','1519457004'),('sysadmin','user_ldap','uid','sysadmin'),('tech1','files_external','config_version','0.5.0'),('tech1','user_ldap','displayName','Tech 1'),('tech1','user_ldap','homePath',''),('tech1','user_ldap','lastFeatureRefresh','1519457004'),('tech1','user_ldap','uid','tech1'),('tech2','files_external','config_version','0.5.0'),('tech2','user_ldap','displayName','Tech 2'),('tech2','user_ldap','homePath',''),('tech2','user_ldap','lastFeatureRefresh','1519457004'),('tech2','user_ldap','uid','tech2'),('tech3','files_external','config_version','0.5.0'),('tech3','user_ldap','displayName','Tech 3'),('tech3','user_ldap','homePath',''),('tech3','user_ldap','lastFeatureRefresh','1519457004'),('tech3','user_ldap','uid','tech3'),('tech4','files_external','config_version','0.5.0'),('tech4','user_ldap','displayName','Tech 4'),('tech4','user_ldap','homePath',''),('tech4','user_ldap','lastFeatureRefresh','1519457004'),('tech4','user_ldap','uid','tech4');
+INSERT INTO `oc_preferences` VALUES ('admin','avatar','generated','true'),('admin','core','lang','en'),('admin','core','timezone','Europe/London'),('admin','files_external','config_version','0.5.0'),('admin','firstrunwizard','show','0'),('admin','login','lastLogin','1519457013');
 /*!40000 ALTER TABLE `oc_preferences` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1738,7 +1678,7 @@ CREATE TABLE `oc_storages` (
 
 LOCK TABLES `oc_storages` WRITE;
 /*!40000 ALTER TABLE `oc_storages` DISABLE KEYS */;
-INSERT INTO `oc_storages` VALUES ('local::/home/nextcloud/data/',1,1,NULL),('home::admin',2,1,NULL),('home::exam1',3,1,NULL),('home::exam2',4,1,NULL),('home::exam3',5,1,NULL),('home::exam4',6,1,NULL),('home::exam5',7,1,NULL),('home::guest1',8,1,NULL),('home::guest10',9,1,NULL),('home::guest2',10,1,NULL),('home::guest3',11,1,NULL),('home::guest4',12,1,NULL),('home::guest5',13,1,NULL),('home::guest6',14,1,NULL),('home::guest7',15,1,NULL),('home::guest8',16,1,NULL),('home::guest9',17,1,NULL),('home::ismith',18,1,NULL),('home::jjones',19,1,NULL),('home::profileuser',20,1,NULL),('home::sysadmin',21,1,NULL),('home::tech1',22,1,NULL),('home::tech2',23,1,NULL),('home::tech3',24,1,NULL),('home::tech4',25,1,NULL),('smb::admin@CHANGETHISREALM//dfs/homes/admin//',26,0,1519457283),('smb::admin@CHANGETHISREALM//dfs/subjects//',27,0,1519457283);
+INSERT INTO `oc_storages` VALUES ('local::/home/nextcloud/data/',1,1,NULL),('home::admin',2,1,NULL);
 /*!40000 ALTER TABLE `oc_storages` ENABLE KEYS */;
 UNLOCK TABLES;
 

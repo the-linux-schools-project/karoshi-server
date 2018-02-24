@@ -130,14 +130,6 @@ then
 	#Install joomla
 	/opt/karoshi/serversetup/modules/joomla/setupjoomla
 else
-	ssh -x -o PasswordAuthentication=no "$JOOMLASERVER" '
-	[ ! -d /opt/karoshi/serversetup/modules/ ] && mkdir -p /opt/karoshi/serversetup/modules/
-	'
-
-	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/joomla root@"$JOOMLASERVER":/opt/karoshi/serversetup/modules/ 1> /dev/null
-	#Copy in mysql_root_pass
-	scp -p -r /opt/karoshi/serversetup/all/"useful scripts"/mysql_root_pass root@"$JOOMLASERVER:/opt/karoshi/serversetup/all/useful\ scripts/" 1> /dev/null
 	#Install joomla
 	ssh -x -o PasswordAuthentication=no "$JOOMLASERVER" '
 	/opt/karoshi/serversetup/modules/joomla/setupjoomla
@@ -151,7 +143,7 @@ fi
 [ ! -d /opt/karoshi/server_network/servers/"$JOOMLASERVER" ] && mkdir -p /opt/karoshi/server_network/servers/"$JOOMLASERVER"
 [ -f /opt/karoshi/server_network/servers/"$JOOMLASERVER"/no_role ] && rm -f /opt/karoshi/server_network/servers/"$JOOMLASERVER"/no_role
 echo $"Joomla""<br>" > /opt/karoshi/server_network/servers/"$JOOMLASERVER"/joomla
-echo '<a href="http://'"$ALIAS.$REALM"'/joomla" target="_blank">http://'"$ALIAS.$REALM"'/joomla</a><br>' >> /opt/karoshi/server_network/servers/"$JOOMLASERVER"/joomla
+echo '<a href="https://'"$ALIAS.$REALM"'/joomla" target="_blank">https://'"$ALIAS.$REALM"'/joomla</a><br>' >> /opt/karoshi/server_network/servers/"$JOOMLASERVER"/joomla
 echo $"Apache Web Server""<br>" > /opt/karoshi/server_network/servers/"$JOOMLASERVER"/apacheserver
 
 [ ! -d /opt/karoshi/server_network/webservers/ ] && mkdir -p /opt/karoshi/server_network/webservers
@@ -168,7 +160,7 @@ fi
 ###########################
 #Show completed message
 ###########################
-echo '<br>'$"Joomla has been installed and can be accessed from" - '<a href="http://'"$ALIAS.$REALM"'/joomla" target="_blank">http://'"$ALIAS.$REALM"'/joomla</a>'
+echo '<br>'$"Joomla has been installed and can be accessed from" - '<a href="https://'"$ALIAS.$REALM"'/joomla" target="_blank">http://'"$ALIAS.$REALM"'/joomla</a>'
 echo '<br>'$"Username":admin - $"password": admin
 echo '<br><p style="font-weight:bold; font-size:20px;">'$"Please login and change this password immediately."'</p><br>'
 exit

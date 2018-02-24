@@ -1,61 +1,64 @@
 #!/bin/bash
-#apache2config
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
 source /opt/karoshi/serversetup/variables/distro
 source /opt/karoshi/server_network/domain_information/domain_name
 
 #Assign variables
 read DATA
-DATA=`echo $DATA | tr -cd 'A-Za-z0-9\._:\-'`
-if [ $DATA'null' = null ]
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
+if [ -z "$DATA" ]
 then
-exit 101
+	exit 101
 fi
 
-REMOTE_USER=`echo "$DATA" | cut -s -d: -f1`
-REMOTE_ADDR=`echo "$DATA" | cut -s -d: -f2`
-SERVER=`echo "$DATA" | cut -s -d: -f3`
-DOMAIN=`echo "$DATA" | cut -s -d: -f4`
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+SERVER=$(echo "$DATA" | cut -s -d: -f3)
+DOMAIN=$(echo "$DATA" | cut -s -d: -f4)
 
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: mailsslcert - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): mailsslcert - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: mailsslcert - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): mailsslcert - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $SERVER'null' = null ]
+if [ -z "$SERVER" ]
 then
-echo `date`: mailsslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): mailsslcert - Blank remote server from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $DOMAIN'null' = null ]
+if [ -z "$DOMAIN" ]
 then
-echo `date`: mailsslcert - Blank domain from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): mailsslcert - Blank domain from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
-echo `date`: mailsslcert - creating a certificate "for" $DOMAIN from $REMOTE_ADDR by $REMOTE_USER >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+echo "$(date): mailsslcert - creating a certificate for $DOMAIN from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
 source /etc/default/locale
-COUNTRY=`echo $LANG | cut -d_ -f2 | cut -d. -f1`
-STATE=`cat /etc/timezone | cut -d/ -f1`
-CITY=`cat /etc/timezone | cut -d/ -f2`
-NAME=$HOSTNAME
-LOCALNAME=$DOMAIN
-SERVERNAME=$DOMAIN
-EMAILADDRESS=administrator@$REALM
+COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+STATE=$(cut -d/ -f1 < /etc/timezone)
+CITY=$(cut -d/ -f2 < /etc/timezone)
+NAME="$HOSTNAME"
+EMAILADDRESS=administrator@"$REALM"
 
 rm -f /etc/ssl/root-ca/index.txt
 touch /etc/ssl/root-ca/index.txt
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
+if [ -f /etc/ssl/root-ca/signingpassword.secret ]
+then
+	SigningPassword=$(sed -n 1,1p /etc/ssl/root-ca/signingpassword.secret)
+else
+	SigningPassword=$(sed -n 1,1p /etc/ldap.secret)
+fi
 
 #Revoke the existing certificate.
-[ -d /etc/ssl/mail/dovecot.pem ] && openssl ca -revoke $dovecot.pem -passin pass:$LDAPPASS
+[ -d /etc/ssl/mail/dovecot.pem ] && openssl ca -revoke dovecot.pem -passin pass:"$SigningPassword"
 
 #Clear existing keys
 [ ! -d /etc/ssl/mail ] && mkdir /etc/ssl/mail
@@ -65,29 +68,29 @@ LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
 
 cd /etc/ssl/mail
 
-echo -e ""$COUNTRY"\n"$STATE"\n"$CITY"\n"$NAME"\n"$DOMAIN"\n"$DOMAIN"\n"$EMAILADDRESS"\n"postfix"\n" | openssl req -newkey rsa:4096 -days 3650 -keyout dovecot.key -nodes -out dovecot.req
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n$DOMAIN\n$DOMAIN\n$EMAILADDRESS\npostfix\n" | openssl req -newkey rsa:4096 -days 3650 -keyout dovecot.key -nodes -out dovecot.req
 
 chmod 0600 /etc/ssl/mail/dovecot.key
 chmod 0600 /etc/ssl/mail/dovecot.req
 
 #Create client pem
-openssl ca -passin pass:$LDAPPASS -days 3650 -batch -out dovecot.pem -infiles dovecot.req 
+openssl ca -passin pass:"$SigningPassword" -days 3650 -batch -out dovecot.pem -infiles dovecot.req 
 
 chmod 0600 /etc/ssl/mail/dovecot.pem
 
 cp -f /etc/ssl/mail/dovecot.key /etc/ssl/mail/postfix.key
 cp -f /etc/ssl/mail/dovecot.pem /etc/ssl/mail/postfix.pem
 
-if [ $SERVER != `hostname-fqdn` ]
+if [[ "$SERVER" != $(hostname-fqdn) ]]
 then
-#Make sure /etc/ssl/mail exists on the remote server
-ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVER '
-[ ! -d /etc/ssl/mail ] && mkdir -p /etc/ssl/mail
-'
-#Copy certificates to the correct server
-scp /etc/ssl/mail/dovecot.key root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp /etc/ssl/mail/dovecot.pem root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp /etc/ssl/mail/postfix.key root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-scp /etc/ssl/mail/postfix.pem root@$SERVER:"/etc/ssl/mail/" 2>> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
+	#Make sure /etc/ssl/mail exists on the remote server
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SERVER" '
+	[ ! -d /etc/ssl/mail ] && mkdir -p /etc/ssl/mail
+	'
+	#Copy certificates to the correct server
+	scp /etc/ssl/mail/dovecot.key root@"$SERVER:/etc/ssl/mail/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/mail/dovecot.pem root@"$SERVER:/etc/ssl/mail/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/mail/postfix.key root@"$SERVER:/etc/ssl/mail/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	scp /etc/ssl/mail/postfix.pem root@"$SERVER:/etc/ssl/mail/" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 

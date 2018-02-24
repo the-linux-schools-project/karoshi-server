@@ -247,17 +247,7 @@ then
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/tftpd
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/rpcbind
 else
-
-	#Copy in distro module
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/distributionserver root@"$SERVERNAME":/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
-	#Remove existing module
-	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 $SERVERNAME '
-	rm -f -R /opt/karoshi/serversetup/modules/distributionserver
-	'
-	#Copy in module
-	scp -p -r /opt/karoshi/serversetup/modules/distributionserver root@"$SERVERNAME":/opt/karoshi/serversetup/modules/ 1> /dev/null
-
-	ssh -x -o PasswordAuthentication=no $SERVERNAME '
+	ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 
 	##########################
 	#Make sure software is installed

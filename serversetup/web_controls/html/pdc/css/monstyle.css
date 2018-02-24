@@ -1,7 +1,7 @@
 body {
 	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
 	color: #ffffff;
-	font-size: 16pt;
+	font-size: 12pt;
 	background-color: #010204;
 	margin: 0;
 	position:fixed;
@@ -14,8 +14,7 @@ body {
 
 
 #pagecontainer {
-	background-repeat: repeat-x;
-	background-image: url(/images/backgrounds/inkblack.jpg);
+	background: linear-gradient(to bottom right, #005E99, #011422);
 	margin: 0 auto 0 auto;
 	height: 100%;
 	min-width: 1200px;
@@ -42,7 +41,7 @@ body {
 
 .webmanagement-title {
 	font-weight: bold;
-	font-size : 18pt;
+	font-size : 17pt;
 	vertical-align: text-top;	
 }
 
@@ -97,23 +96,24 @@ table.standard th, table.standard td {
 table.mon {
     margin-left:auto; 
     margin-right:auto; 
-    width 100%;
+    width: 100%;
+    /*border-collapse: collapse;*/
 }
 
 
 table.mon th, table.mon td {
 	text-align: center;
-	font-size : 14pt;
-	border: 1px solid #1A2650;
+	font-size : 13pt;
+	border: 6px solid #013445;
 	font-family: Arial, Times, Georgia, "Times New Roman", Times, serif;
 }
 
 table.mon td {
-	background-color: #000000;
+	background-color: #013445;
 }
 
 table.mon th {
-	background-color: #111832;
+	background-color: #013445;
 }
 
 table.menu th, table.menu td {
@@ -182,9 +182,7 @@ A:hover {
 
 #actionbox3 {
 	position: relative;
-	display: flex;
-	flex: auto;
-	flex-direction: column;
+	height: 100%;
 	text-align: center;
         margin: 2px 2px 2px 2px;
 	-moz-border-radius: 5px;
@@ -192,8 +190,7 @@ A:hover {
 	border-style:solid;
 	border-width:3px;
 	padding: 10px;
-	background-color: #030F20;
-	border-color: #1A2650;
+	border-color: #014876;
 }
 
 #submitbox {

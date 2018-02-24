@@ -182,16 +182,6 @@ then
 		echo "<br><br>"
 	fi
 else
-
-	#Copy module files to remote server
-	scp -p -r /opt/karoshi/serversetup/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/modules/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_start root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/icecast_stop root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/control_services/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/startonboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/icecast root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/scripts/stoponboot/ 1> /dev/null
-	scp -p -r /opt/karoshi/serversetup/distro/ubuntu/modules/radioserver root@$SERVERNAME:/opt/karoshi/serversetup/distro/ubuntu/modules/ 1> /dev/null
-
-
 	ssh -x -o PasswordAuthentication=no $SERVERNAME '
 	source /opt/karoshi/serversetup/variables/distro
 	#Check that the server is running ubuntu
