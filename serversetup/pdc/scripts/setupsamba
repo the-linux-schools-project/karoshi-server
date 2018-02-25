@@ -534,7 +534,7 @@ then
 	server signing = auto
 	allow insecure wide links = yes
 	bind interfaces only = yes
-	bind interfaces = lo '"$NETWORK_INT"'
+	interfaces = lo '"$NETWORK_INT"'
 
 [dfs]
 	path = /var/lib/samba/dfs

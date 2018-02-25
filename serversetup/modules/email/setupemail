@@ -314,26 +314,6 @@ echo "mail.$REALM" > /etc/mailname
 
 echo '<ul><li>'$"Configuring MailScanner"'</li></ul>'
 
-#Update MailScanner
-MAILSCANNERVER=4.85.2-3
-if [[ $(dpkg -l | grep mailscanner | tr -cd "0-9\-.\n") != "$MAILSCANNERVER" ]]
-then
-	echo "<ul><li>$EMAILSERVER - updating MailScanner</li>"
-
-	#Install dependencies
-	apt-get update
-	apt-get install -y libhtml-tokeparser-simple-perl tnef libsys-sigaction-perl
-
-	[ -f /tmp/mailscanner.tar.gz ] && rm -f /tmp/mailscanner.tar.gz
-	[ -d "/tmp/MailScanner-$MAILSCANNERVER" ] && rm -f -R "/tmp/MailScanner-$MAILSCANNERVER"
-	wget https://s3.amazonaws.com/mailscanner/release/v4/deb/MailScanner-"$MAILSCANNERVER".deb.tar.gz -O /tmp/mailscanner.tar.gz
-	tar -xvzf /tmp/mailscanner.tar.gz -C /tmp
-	dpkg -i "/tmp/MailScanner-$MAILSCANNERVER/mailscanner-$MAILSCANNERVER-noarch.deb"
-	#Tidy up
-	rm -f /tmp/mailscanner.tar.gz
-	rm -f -R /tmp/MailScanner-"$MAILSCANNERVER"
-fi
-
 [ -f /etc/MailScanner/MailScanner.conf ] && mv /etc/MailScanner/MailScanner.conf /etc/MailScanner/MailScannerold.conf
 cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/mailscanner/MailScanner.conf /etc/MailScanner/
 cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/mailscanner/mailscanner /etc/cron.hourly/
@@ -345,6 +325,10 @@ chown -R postfix.postfix /var/spool/MailScanner/spamassassin 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/incoming 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
 [ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
+if [ -f /etc/MailScanner/defaults ]
+then
+	sed -i 's/run_mailscanner=0/run_mailscanner=1/g'
+fi
 
 #Create watermark secret
 MAILSCANNER_SECRET=$(openssl rand -hex 20 | base64 | head -c 35)

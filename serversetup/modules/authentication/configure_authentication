@@ -167,7 +167,7 @@ echo -e "# Global parameters
 	server signing = auto
 	allow insecure wide links = yes
 	bind interfaces only = yes
-	bind interfaces = lo '"$NETWORK_INT"'
+	interfaces = lo $NETWORK_INT
 " > /etc/samba/smb.conf
 
 if [ '"$ZONE"' = internal ]
@@ -237,7 +237,7 @@ then
 	realm = '"$REALM"'
 	encrypt passwords = true
 	bind interfaces only = yes
-	bind interfaces = lo '"$NETWORK_INT"'
+	interfaces = lo $NETWORK_INT
 
 " > /etc/samba/smb.conf
 
