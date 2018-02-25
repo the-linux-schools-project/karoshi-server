@@ -250,7 +250,7 @@ then
 			DRIVE=${ALL_DRIVES[$COUNTER]}
 			DRIVE_SHORT=$(readlink -f "/dev/disk/by-id/$DRIVE" | sed "s/\/dev\///g")
 			
-			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(mount | grep -c "$DRIVE_SHORT") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
+			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
 			then
 				#Get drive information
 				SMARTINFO=`smartctl -i /dev/$DRIVE_SHORT | tr -cd "A-Za-z0-9:=,/\n "`
@@ -442,7 +442,7 @@ ssh -x -o PasswordAuthentication=no $SERVERNAME '
 		do
 			DRIVE=${ALL_DRIVES[$COUNTER]}
 			DRIVE_SHORT=$(readlink -f "/dev/disk/by-id/$DRIVE" | sed "s/\/dev\///g")
-			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(mount | grep -c "$DRIVE_SHORT") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
+			if [ $(mount | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE") = 0 ] && [ $(zpool status 2>/dev/null | grep -c "$DRIVE_SHORT") = 0 ] && [ $(cat /proc/mdstat | grep -c "$DRIVE_SHORT") = 0 ]
 			then
 				#Get drive information
 				SMARTINFO=`smartctl -i /dev/$DRIVE_SHORT | tr -cd "A-Za-z0-9:=,/\n "`

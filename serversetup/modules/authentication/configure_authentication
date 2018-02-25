@@ -100,6 +100,7 @@ LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
 
 ssh -x -o PasswordAuthentication=no "$SERVERNAME" '
 source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/serversetup/variables/network_card_info
 
 function restart_samba {
 echo "<ul><li>"'"$SERVERNAME"' - '$"Restarting Samba"'"</li></ul>"
@@ -165,6 +166,8 @@ echo -e "# Global parameters
 	ldap server require strong auth = No
 	server signing = auto
 	allow insecure wide links = yes
+	bind interfaces only = yes
+	bind interfaces = lo '"$NETWORK_INT"'
 " > /etc/samba/smb.conf
 
 if [ '"$ZONE"' = internal ]
@@ -233,6 +236,8 @@ then
 	security = ADS
 	realm = '"$REALM"'
 	encrypt passwords = true
+	bind interfaces only = yes
+	bind interfaces = lo '"$NETWORK_INT"'
 
 " > /etc/samba/smb.conf
 
