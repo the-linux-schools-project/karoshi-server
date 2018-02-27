@@ -194,7 +194,7 @@ PatchChecksumTxt=$(sed -n 1,1p /opt/karoshi/updates/"$PATCHNAME.txt" | tr -cd 'A
 
 #All newer patches use sha256 instead of md5sum so we get the date from the patch name to see which type to use.
 #Patch name convention is karoshi-web-controls-YYMMDD-hhmm.sh 
-if [[ $(echo "$PATCHNAME" | cut -d"-" -f4) -gt 180220 ]]
+if [[ $(echo "$PATCHNAME" | cut -d"-" -f4) -gt 180320 ]]
 then
 	PatchChecksumFile=$(sha256sum /opt/karoshi/updates/"$PATCHNAME.sh" | cut -d' ' -f1)
 else
@@ -204,7 +204,7 @@ fi
 [ -z "$PatchChecksumTxt" ] && PatchChecksumTxt=txtsumnotset
 if [ "$PatchChecksumTxt" != "$ListChecksum" ] || [ "$PatchChecksumFile" != "$ListChecksum" ]
 then
-	echo $"Incorrect MD5 checksum for this patch."'<br>'
+	echo $"Incorrect checksum for this patch."'<br>'
 	exit
 fi
 

@@ -108,7 +108,7 @@ then
 	ACTION=notset
 fi
 
-if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != SQLRESTORE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ] && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ]
+if [ "$ACTION" != ENTER ] && [ "$ACTION" != DELETE ] && [ "$ACTION" != REALLYDELETE ] && [ "$ACTION" != SETPERMS ] && [ "$ACTION" != REALLYSETPERMS ] && [ "$ACTION" != MOVE ] && [ "$ACTION" != REALLYMOVE ] && [ "$ACTION" != REALLYCOPY ] && [ "$ACTION" != CANCELCOPY ] && [ "$ACTION" != RENAME ] && [ "$ACTION" != REALLYRENAME ] && [ "$ACTION" != EDIT ] && [ "$ACTION" != REALLYEDIT ] && [ "$ACTION" != CREATEDIR ] && [ "$ACTION" != REALLYCREATEDIR ] && [ "$ACTION" != CREATEFILE ] && [ "$ACTION" != REALLYCREATEFILE ] && [ "$ACTION" != SQLRESTORE ] && [ "$ACTION" != RESTORE ] && [ "$ACTION" != REALLYRESTORE ] && [ "$ACTION" != SEARCHBACKUP ] && [ "$ACTION" != REALLYSEARCHBACKUP ] && [ "$ACTION" != notset ] && [ "$ACTION" != DELETEACLPERMS ] && [ "$ACTION" != REALLYDELETEACLPERMS ] && [ "$ACTION" != ADDACLPERMS ] && [ "$ACTION" != REALLYADDACLPERMS ] && [ "$ACTION" != UPLOADFILE ]
 then
 	echo "$(date): file_manager - incorrect action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
@@ -308,6 +308,14 @@ then
 			<img src="'"$ICON15"'" alt="'$"New File"'">
 			<span>'$"Create a new file."'</span><br>
 			'$"New File"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '$WIDTH8'px; text-align:center;">
+		<button class="info infonavbutton" name="_NewFile_" value="_ACTION_UPLOADFILE_SERVERTYPE_'$SERVERTYPE'_SERVERMASTER_'$SERVERMASTER'_SERVERNAME_'$SERVERNAME'_LOCATION_'$LOCATION2'_">
+			<img src="'"$ICON15"'" alt="'$"Upload a File"'">
+			<span>'$"Upload a file."'</span><br>
+			'$"Upload File"'
 		</button>
 	</td>
 
@@ -2575,6 +2583,38 @@ echo '<b>'$"Add ACL"'</b><br><table class="tablesorter"><tbody>
 '
 }
 
+function upload_file {
+[ -z "$LOCATION" ] && LOCATION=/
+LOCATION2=$(echo "$LOCATION" | sed "s/_/Z%%%%%Z/g")
+convert_special_chars
+getlastlocation
+show_title
+CREATEFILEMSG="Create File"
+echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/adminfile_manager_upload.cgi" METHOD="POST">
+<table class="tablesorter" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;"><b>'$"Current Location"'</b></td>'
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+echo '<td>'$LOCATION2'</td></tr>
+<tr>
+	<td>'$"Upload file 1"'</td>
+	<td><INPUT TYPE="FILE"  NAME="file-to-upload-01" SIZE="35"></td>
+</tr>
+<tr>
+	<td>'$"Upload file 2"'</td>
+	<td><INPUT TYPE="FILE"  NAME="file-to-upload-02" SIZE="35"></td>
+</tr>
+<tr>
+	<td>'$"Upload file 3"'</td>
+	<td><INPUT TYPE="FILE"  NAME="file-to-upload-03" SIZE="35"></td>
+</tr>
+
+</tbody></table><br>
+<input name="_ACTION_REALLYUPLOADFILES_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Upload Files"'">
+<input name="_ACTION_ENTER_SERVERTYPE_'"$SERVERTYPE"'_SERVERMASTER_'"$SERVERMASTER"'_SERVERNAME_'"$SERVERNAME"'_LOCATION_'"$LOCATION2"'_" type="submit" class="button" value="'$"Cancel"'">
+<br><br>
+'
+}
+
 [ $ACTION = ENTER ] && show_directory #converted to federated_mode
 [ $ACTION = DELETE ] && delete_item #converted to federated_mode
 [ $ACTION = ADDACLPERMS ] && add_acl_perms
@@ -2600,5 +2640,5 @@ echo '<b>'$"Add ACL"'</b><br><table class="tablesorter"><tbody>
 [ $ACTION = REALLYCREATEFILE ] && really_create_file
 [ $ACTION = SEARCHBACKUP ] && search_backup
 [ $ACTION = REALLYSEARCHBACKUP ] && really_search_backup
-
+[ $ACTION = UPLOADFILE ] && upload_file
 exit
