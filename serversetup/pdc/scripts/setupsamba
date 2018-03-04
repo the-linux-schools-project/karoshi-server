@@ -46,8 +46,8 @@ EXAMACCOUNTS=5
 DAY=$(date +%d)
 MONTH=$(date +%m)
 WP_VERSIONS="V2 V3 V4 V5 V6"
-LINUXCLIENTVERSION=karoshi5.0
-OLDERCLIENTVERSIONS="karoshi4.0 karoshi4.2 karoshi4.3 karoshi4.4 karoshi4.4"
+LINUXCLIENTVERSION=karoshi6.0
+OLDERCLIENTVERSIONS="karoshi4.0 karoshi4.2 karoshi4.3 karoshi4.4 karoshi4.4 karoshi 5.0"
 
 #Get install type
 INSTALL_TYPE=education
@@ -1853,7 +1853,7 @@ then
 
 	[ ! -d /var/lib/samba/netlogon/linuxclient ] && mkdir -p /var/lib/samba/netlogon/linuxclient
 	cp -f -R /opt/karoshi/serversetup/pdc/linuxclient/karoshi /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION"
-	tar -xvzf /opt/karoshi/serversetup/pdc/linuxclient/"$LINUXCLIENTVERSION".tar.gz -C /var/lib/samba/netlogon/linuxclient 1>/dev/null
+	[ -f /opt/karoshi/serversetup/pdc/linuxclient/"$LINUXCLIENTVERSION".tar.gz ] && tar -xvzf /opt/karoshi/serversetup/pdc/linuxclient/"$LINUXCLIENTVERSION".tar.gz -C /var/lib/samba/netlogon/linuxclient 1>/dev/null
 
 	cp -f /opt/karoshi/serversetup/all/backgrounds/linuxclient.png /var/lib/samba/netlogon/linuxclient/background.png
 
@@ -1868,7 +1868,7 @@ then
 
 	#Add LINUXCLIENTVERSION to versions.txt
 	touch /var/lib/samba/netlogon/linuxclient/versions.txt
-	[[ $(grep -c ^LINUXCLIENTVERSION /var/lib/samba/netlogon/linuxclient/versions.txt) = 0 ]] && echo "$LINUXCLIENTVERSION" >> /var/lib/samba/netlogon/linuxclient/versions.txt
+	[[ $(grep -c ^"$LINUXCLIENTVERSION" /var/lib/samba/netlogon/linuxclient/versions.txt) = 0 ]] && echo "$LINUXCLIENTVERSION" >> /var/lib/samba/netlogon/linuxclient/versions.txt
 
 	#Point icons at the correct path
 	sed -i 's/xen:50001/manage.'"$REALM"':50001/g' /var/lib/samba/netlogon/linuxclient/"$LINUXCLIENTVERSION/desktop-icons/all/Change Password.desktop"

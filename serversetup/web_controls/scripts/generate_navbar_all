@@ -30,8 +30,8 @@ source /opt/karoshi/server_network/domain_information/domain_name
 export TEXTDOMAIN=karoshi-server
 
 echo '<div id="header"><img class="texttop" src="/images/small_logo.png" alt="logo"> <span class="webmanagement-title">'$"Web Management"' '"$SHORTNAME"' <span class="version">'$"Version"' : '"$VERSION"'</span></span>
-</div><div id="navbar"><span class="preload1"></span>
-<span class="preload2"></span>
+</div><div id="navbar"><span class="preload1"><!--preload--></span>
+<span class="preload2"><!--preload--></span>
 <ul id="nav">
 	<li class="top"><a href="/cgi-bin/menu.cgi" class="top_link"><span>Home</span></a></li>
 </ul>

@@ -313,6 +313,11 @@ echo -e '\n#Show mounted shares on desktop\ndefaults write /Users/$LoggedInUser/
 
 #Complete pam_mount.conf.xml.krb5
 echo -e '\n</pam_mount>' >> /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+sync /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5
+
+#Add in pam_mount.conf.xml for karoshi v6 client
+[ ! -d /var/lib/samba/netlogon/linuxclient/karoshi6.0 ] && mkdir -p /var/lib/samba/netlogon/linuxclient/karoshi6.0
+sed 's/dir_mode=0700/dir_mode=0700,vers=3.0,domain='"$REALM"'/g' /var/lib/samba/netlogon/linuxclient/pam_mount.conf.xml.krb5 > /var/lib/samba/netlogon/linuxclient/karoshi6.0/pam_mount.conf.xml
 
 #Import json files to Nextcloud or Owncloud
 if [ "$CLOUDSTORAGE" = yes ]
