@@ -260,6 +260,7 @@ d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
 d-i finish-install/reboot_in_progress note
 ubiquity ubiquity/summary note
+ubiquity ubiquity/reboot boolean true
 
 " > image/preseed/custom.seed
 

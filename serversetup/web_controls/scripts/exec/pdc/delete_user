@@ -266,6 +266,20 @@ then
 	fi
 fi
 
+#Delete the user from Nextcloud
+if [ -f /opt/karoshi/server_network/nextcloudserver ]
+then
+	NEXTCLOUDSERVER=$(sed -n 1,1p /opt/karoshi/server_network/nextcloudserver)
+	echo "$(date): delete_user - deleting $DELETEUSER from Nextcloud on $NEXTCLOUDSERVER by $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$NEXTCLOUDSERVER" = $(hostname-fqdn) ]]
+	then
+		sudo -u www-data php /var/www/html/nextcloud/occ user:delete "$DELETEUSER" 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	else
+		ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$NEXTCLOUDSERVER" '
+		sudo -u www-data php /var/www/html/nextcloud/occ user:delete "'"$DELETEUSER"'"
+		' 1>/dev/null 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	fi
+fi
 #######################
 #Delete the account on any federated ldap servers
 #######################
