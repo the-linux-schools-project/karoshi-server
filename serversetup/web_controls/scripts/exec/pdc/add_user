@@ -755,6 +755,10 @@ then
 		cp -f "/var/www/karoshi/add_user_image/$REMOTE_USER/$ImageFile" "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
 		chown root.apache_karoshi "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
 		chmod 0440 "/var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg"
+
+		#Add the image to ldap
+		echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE\nchangetype: modify\nreplace: jpegPhoto\njpegPhoto:<file:///var/www/html_karoshi/images/user_images/$PRIMARYGROUP/$NEWUSERNAME.jpg" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+
 	fi
 	rm -f -R "/var/www/karoshi/add_user_image/$REMOTE_USER"
 fi

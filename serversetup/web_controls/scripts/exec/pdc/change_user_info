@@ -143,6 +143,25 @@ fi
 echo "$(date): change_user_info - for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 PrimaryGroup=$(id -g -n "$USERNAME")
 
+
+MAIL="${MAIL//%40/@}"
+CN="${CN//+/ }"
+DISPLAYNAME="${DISPLAYNAME//+/ }"
+
+LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
+source /opt/karoshi/server_network/domain_information/domain_name
+USERDN=$(ldapsearch -o ldif-wrap=no -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep ^dn:)
+ENROLLMENTCHECK=$(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep -c employeeNumber:)
+
+if [ "$ENROLLMENTCHECK" = 0 ]
+then
+	ACTION=add
+else
+	ACTION=replace
+fi
+
+echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+
 #Update the user photo
 if [ -d "/var/www/karoshi/show_user_image/$REMOTE_USER" ]
 then
@@ -164,26 +183,12 @@ then
 		chown root.apache_karoshi "/var/www/html_karoshi/images/user_images/$PrimaryGroup/$USERNAME.jpg"
 		chmod 0440 "/var/www/html_karoshi/images/user_images/$PrimaryGroup/$USERNAME.jpg"
 	fi
+
+	#Add the image to ldap
+	echo -e "$USERDN\nchangetype: modify\nreplace: jpegPhoto\njpegPhoto:<file:///var/www/html_karoshi/images/user_images/$PrimaryGroup/$USERNAME.jpg" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+
 	rm -f -R "/var/www/karoshi/show_user_image/$REMOTE_USER"
 fi
-
-MAIL="${MAIL//%40/@}"
-CN="${CN//+/ }"
-DISPLAYNAME="${DISPLAYNAME//+/ }"
-
-LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
-source /opt/karoshi/server_network/domain_information/domain_name
-USERDN=$(ldapsearch -o ldif-wrap=no -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep ^dn:)
-ENROLLMENTCHECK=$(ldapsearch -x -w "$LDAPPASS" -b "OU=People,$LDAPBASE" -D "cn=Administrator,cn=Users,$LDAPBASE" cn="$USERNAME" | grep -c employeeNumber:)
-
-if [ "$ENROLLMENTCHECK" = 0 ]
-then
-	ACTION=add
-else
-	ACTION=replace
-fi
-
-echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 
 #Change the primary group if it has changed
 if [ "$PrimaryGroup" != "$GROUP" ]
