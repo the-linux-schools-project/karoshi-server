@@ -101,12 +101,11 @@ fi
 #Create initial disk usage report
 /opt/karoshi/serversetup/all/"useful scripts"/disk_usage
 
-#Do businesses want google safesearch?
-#if [ "$INSTALL_TYPE" = education ] || [ "$INSTALL_TYPE" = joindomain_education ] || [ "$INSTALL_TYPE" = home ]
-#then
+#Add in safesearch settings for google bing and yahoo
 /opt/karoshi/serversetup/pdc/"useful scripts"/googlesafesearch add
 /opt/karoshi/serversetup/pdc/"useful scripts"/youtubesafesearch add
-#fi
+/opt/karoshi/serversetup/pdc/"useful scripts"/bingsafesearch add
+
 exit
 
 

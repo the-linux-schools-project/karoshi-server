@@ -205,18 +205,21 @@ then
 		[ -z "$COL2" ] && COL2=notset
 		if [[ $(echo "$DONTDISPLAY" | grep -c "$COL2") = 0 ]]
 		then
-
 			if [ "$COL1" = Name ]
 			then
 				PROCESS=yes
 				NAME="$COL2"
 			fi
+
 			if [ "$PROCESS" = yes ]
 			then
-				if [ "$COL1" = A ] || [ "$COL1" = CNAME ] && [ "$NAME" != notset ]
-				then 
-					#echo $NAME - $COL2"<br>"
+				if [ "$NAME" = notset ]
+				then
+					[ "$COL1" = CNAME ] && NAME="$COL2"
+				fi
 
+				if [ "$COL1" = A ] || [ "$COL1" = CNAME ] && [ "$NAME" != notset ]
+				then
 					[ "$CREATETABLETOP" = yes ] && createtabletop
 					echo "<tr><td>$NAME</td>"
 					[ "$MOBILE" = no ] && echo "<td>$COL1</td>"

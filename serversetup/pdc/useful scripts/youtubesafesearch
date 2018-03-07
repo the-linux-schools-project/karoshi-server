@@ -4,13 +4,9 @@
 #User action - add / delete
 ACTION=$(tr -cd "a-z" <<< "$1")
 
-#Get the ip address for forcesafesearch.youtube.com
-YOUTUBESAFEIP=$(tr -cd "0-9." <<< "$2")
-[[ -z "$YOUTUBESAFEIP" ]] && YOUTUBESAFEIP=216.239.38.120
-
 if [[ ! "$ACTION" == "add" ]] && [[ ! "$ACTION" == "delete" ]]
 then
-	echo -e "\nUsage: youtubesafesearch add,delete youtubesafeip(optional)\n\nadd - add youtube dns zones to force youtubesafesearch.\ndelete - delete any youtube dns zones that have been added by this script.\n\nyoutubesafeip - this is the tcpip address for forcesafesearch.youtube.com.\n"
+	echo -e "\nUsage: youtubesafesearch add,delete\n\nadd - add youtube dns zones to force youtubesafesearch.\ndelete - delete any youtube dns zones that have been added by this script.\n\n"
 fi
 
 #List of youtube zones to add to samba4 dns
@@ -25,7 +21,7 @@ do
 	if [[ "$ACTION" == add ]]
 	then
 		#Create dns zones
-		if [[ $(grep -c -w www.$YOUTUBEZONE <<< $YOUTUBEINFO) = 0 ]]
+		if [[ $(grep -c -w www."$YOUTUBEZONE" <<< "$YOUTUBEINFO") = 0 ]]
 		then
 			RESTARTSAMBA=yes
 			echo Creating www."$YOUTUBEZONE"
@@ -46,13 +42,6 @@ do
 		fi
 	fi
 done
-
-if [[ "$ACTION" == add ]]
-then
-	#Add in an A record for forcesafesearch.youtube.com	
-	samba-tool dns add 127.0.0.1 www.youtube.com restrict.youtube.com A "$YOUTUBESAFEIP" --username=Administrator --password="$LDAPPASS" 1>/dev/null
-fi
-
 
 #Restart samba4 to activate any zones that have been added or deleted.
 if [[ "$RESTARTSAMBA" == yes ]]
