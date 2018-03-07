@@ -1,58 +1,57 @@
 #!/bin/bash
-#Force youtube to use safesearch - this will create google dns zones and redirect to restrict.youtube.com
+#Force youtube to use safesearch - this will create bing dns zones and redirect to strict.bing.com
 
 #User action - add / delete
-ACTION=$(tr -cd "a-z" <<< "$1")
+Action=$(tr -cd "[:lower:]" <<< "$1")
 
 #Get the ip address for forcesafesearch
-BINGSAFEIP=$(tr -cd "0-9." <<< "$2")
-[[ -z "$BINGSAFEIP" ]] && BINGSAFEIP=204.79.197.220
+BingSafesearchIP=$(tr -cd "0-9." <<< "$2")
+[[ -z "$BingSafesearchIP" ]] && BingSafesearchIP=204.79.197.220
 
-if [[ ! "$ACTION" == "add" ]] && [[ ! "$ACTION" == "delete" ]]
+if [[ ! "$Action" == "add" ]] && [[ ! "$Action" == "delete" ]]
 then
-	echo -e "\nUsage: bingsafesearch add,delete safeip(optional)\n\nadd - add dns zones to force bingsafesearch.\ndelete - delete any google dns zones that have been added by this script.\n\nsafeip - this is the tcpip address for forcesafesearch.youtube.com.\n"
+	echo -e "\nUsage: bingsafesearch add,delete safeip(optional)\n\nadd - add dns zones to force bingsafesearch.\ndelete - delete any google dns zones that have been added by this script.\n\nsafeip - this is the tcpip address for strict.bing.com.\n"
 fi
 
 #List of google zones to add to samba4 dns
-BINGZONES="bing.com"
+BingZones="bing.com"
 
-LDAPPASS=`sed -n 1,1p /etc/ldap.secret`
-RESTARTSAMBA=no
-GOOGLEINFO=`samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LDAPPASS" | grep google`
+LdapPass=$(sed -n 1,1p /etc/ldap.secret)
+RestartSamba=no
+BingDnsZones=$(samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LdapPass" | grep bing)
 
 
-
-for BINGZONE in $BINGZONES
+for BingZone in $BingZones
 do
-	if [[ "$ACTION" == add ]]
+	if [[ "$Action" == add ]]
 	then
 		#Create dns zones
-		if [[ `grep -c -w $BINGZONE <<< $GOOGLEINFO` = 0 ]]
+		if [[ $(grep -c -w "$BingZone" <<< $BingDnsZones) = 0 ]]
 		then
-			RESTARTSAMBA=yes
-			echo Creating "$BINGZONE"
-			samba-tool dns zonecreate 127.0.0.1 $BINGZONE --username=Administrator --password="$LDAPPASS"
+			RestartSamba=yes
+			echo Creating "$BingZone"
+			samba-tool dns zonecreate 127.0.0.1 "$BingZone" --username=Administrator --password="$LdapPass"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 $BINGZONE restrict.youtube.com.$BINGZONE CNAME restrict.youtube.com --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 www."$BingZone" www."$BingZone" CNAME strict.bing.com --username=Administrator --password="$LdapPass" 1>/dev/null
 			#Add in dns record for restrict.youtube.com
-			samba-tool dns add 127.0.0.1 $BINGZONE www.$BINGZONE A $BINGSAFEIP --username=Administrator --password="$LDAPPASS" 1>/dev/null
+			samba-tool dns add 127.0.0.1 "$BingZone" www."$BingZone" A "$BingSafesearchIP" --username=Administrator --password="$LdapPass" 1>/dev/null
 		fi
 	fi
 
-	if [[ "$ACTION" == delete ]]
+	if [[ "$Action" == delete ]]
 	then
 		#Remove dns zone if it exists
-		if [[ `grep -c -w $BINGZONE <<< $GOOGLEINFO` > 0 ]]
+		if [[ $(grep -c -w "$BingZone" <<< $BingDnsZones) -gt 0 ]]
 		then
-			RESTARTSAMBA=yes
-			echo Deleting "$BINGZONE"
-			samba-tool dns zonedelete 127.0.0.1 $BINGZONE --username=Administrator --password="$LDAPPASS"
+			RestartSamba=yes
+			echo Deleting "$BingZone"
+			samba-tool dns zonedelete 127.0.0.1 "$BingZone" --username=Administrator --password="$LdapPass"
 		fi
 	fi
 done
 
 #Restart samba4 to activate any zones that have been added or deleted.
-if [[ "$RESTARTSAMBA" == yes ]] && [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) == 0 ]]
+if [[ "$RestartSamba" == yes ]] && [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) == 0 ]]
 then
 	service samba4 stop
 	service samba4 start
