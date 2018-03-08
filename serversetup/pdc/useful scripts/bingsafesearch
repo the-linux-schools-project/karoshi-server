@@ -39,7 +39,7 @@ do
 		then
 			RestartSamba=yes
 			echo Deleting "$BingZone"
-			samba-tool dns zonedelete 127.0.0.1 "$BingZone" --username=Administrator --password="$LdapPass"
+			samba-tool dns zonedelete 127.0.0.1 www."$BingZone" --username=Administrator --password="$LdapPass"
 		fi
 	fi
 done

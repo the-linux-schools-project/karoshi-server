@@ -1,0 +1,54 @@
+#!/bin/bash
+#Force youtube to use safesearch - this will create bing dns zones and redirect to strict.bing.com
+
+#User action - add / delete
+Action=$(tr -cd "a-z" <<< "$1")
+
+if [[ ! "$Action" == "add" ]] && [[ ! "$Action" == "delete" ]]
+then
+	echo -e "\nUsage: Qwantsafesearch add,delete\n\nadd - add dns zones to force Qwantsafesearch.\ndelete - delete any bing dns zones that have been added by this script.\n"
+fi
+
+#List of google zones to add to samba4 dns
+QwantZones="qwant.com"
+(^https://api.qwant.com*)"->"https://safe.api.qwant.com
+
+LdapPass=$(sed -n 1,1p /etc/ldap.secret)
+RestartSamba=no
+QwantDnsZones=$(samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LdapPass" | grep bing)
+
+
+for QwantZone in $QwantZones
+do
+	if [[ "$Action" == add ]]
+	then
+		#Create dns zones
+		if [[ $(grep -c -w "$QwantZone" <<< $QwantDnsZones) = 0 ]]
+		then
+			RestartSamba=yes
+			echo Creating "$QwantZone"
+			samba-tool dns zonecreate 127.0.0.1 www."$QwantZone" --username=Administrator --password="$LdapPass"
+			#Add in cname entry
+			samba-tool dns add 127.0.0.1 api."$QwantZone" api."$QwantZone" CNAME safe.api.qwant.com --username=Administrator --password="$LdapPass" 1>/dev/null
+		fi
+	fi
+
+	if [[ "$Action" == delete ]]
+	then
+		#Remove dns zone if it exists
+		if [[ $(grep -c -w "$QwantZone" <<< $QwantDnsZones) -gt 0 ]]
+		then
+			RestartSamba=yes
+			echo Deleting "$QwantZone"
+			samba-tool dns zonedelete 127.0.0.1 api."$QwantZone" --username=Administrator --password="$LdapPass"
+		fi
+	fi
+done
+
+#Restart samba4 to activate any zones that have been added or deleted.
+if [[ "$RestartSamba" == yes ]] && [[ $(grep -c "server services = -dns" /etc/samba/smb.conf) == 0 ]]
+then
+	service samba4 stop
+	service samba4 start
+fi
+exit
