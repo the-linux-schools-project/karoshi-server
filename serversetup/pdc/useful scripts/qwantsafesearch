@@ -11,12 +11,10 @@ fi
 
 #List of google zones to add to samba4 dns
 QwantZones="qwant.com"
-(^https://api.qwant.com*)"->"https://safe.api.qwant.com
 
 LdapPass=$(sed -n 1,1p /etc/ldap.secret)
 RestartSamba=no
 QwantDnsZones=$(samba-tool dns zonelist 127.0.0.1 --username=Administrator --password="$LdapPass" | grep bing)
-
 
 for QwantZone in $QwantZones
 do
@@ -29,7 +27,7 @@ do
 			echo Creating "$QwantZone"
 			samba-tool dns zonecreate 127.0.0.1 www."$QwantZone" --username=Administrator --password="$LdapPass"
 			#Add in cname entry
-			samba-tool dns add 127.0.0.1 api."$QwantZone" api."$QwantZone" CNAME safe.api.qwant.com --username=Administrator --password="$LdapPass" 1>/dev/null
+			samba-tool dns add 127.0.0.1 api."$QwantZone" api."$QwantZone" CNAME safeapi.qwant.com --username=Administrator --password="$LdapPass" 1>/dev/null
 		fi
 	fi
 
