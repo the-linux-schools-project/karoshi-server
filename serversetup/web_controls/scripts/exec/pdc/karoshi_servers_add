@@ -557,6 +557,10 @@ then
 				fi
 			done
 		fi
+
+	#Check sysvol permissions
+	/opt/karoshi/serversetup/pdc/scripts/set_sysvol_permissions
+
 	#Configure dfs
 	for SHAREPATH in netlogon sysvol applications
 	do

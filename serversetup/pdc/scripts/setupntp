@@ -41,18 +41,6 @@ locale 1>/dev/null
 #Add log entry
 #########################
 echo "$(date): ##############setupntp##############" >> /opt/karoshi/serversetup/install_log
-
-######################
-#Final ntp Install check
-######################
-
-if ! test -f /etc/init.d/"$NTPVER"
-then
-	echo /etc/init.d/"$NTPVER" does not exist >> /opt/karoshi/serversetup/install_log
-	yad --title ''$"Setup"' '$"NTP"'' --image="/opt/karoshi/serversetup/essentials/smalllogo.png" --window-icon="/opt/karoshi/serversetup/essentials/smalllogo.png" --width 400 --timeout=4 --timeout-indicator=bottom --image=dialog-question --text='NTP - '$"This package is not installed."'' --no-buttons 2>/dev/null
-	exit 101
-fi
-
 #############################
 #Ensure that NTP is running on boot
 ##############################
