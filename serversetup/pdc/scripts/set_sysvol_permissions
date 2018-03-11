@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source /opt/karoshi/server_network/domain_information/domain_name
+Counter=1
+until samba-tool ntacl sysvolcheck 1>/dev/null 2>/dev/null
+do
+	#Get the current security.NTACL from /var/lib/samba/sysvol/"$REALM"/scripts
+	getfattr --dump -n security.NTACL /var/lib/samba/sysvol/"$REALM"/scripts 2>/dev/null | sed "1c\# file: /var/lib/samba/netlogon" > /opt/karoshi/.tempdata/xattrdata."$$"
+
+	#Apply the same security.NTACL to /var/lib/samba/netlogon
+	setfattr --restore /opt/karoshi/.tempdata/xattrdata."$$" /var/lib/samba/netlogon 2>/dev/null
+
+	#Reset sysvol permissions
+	samba-tool ntacl sysvolreset --use-ntvfs
+
+	((Counter+=1))
+	[ "$Counter" = 1000 ] && break
+done
+rm -f /opt/karoshi/.tempdata/xattrdata."$$"
+exit
+

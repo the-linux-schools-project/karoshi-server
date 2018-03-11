@@ -750,10 +750,10 @@ whencreated: $CREATETIME" | ldapadd -x -D "CN=Administrator,CN=Users,$LDAPBASE" 
 
 function creategpos {
 #Create GPO
-echo "$(date): Adding gpo: $LDAPPATH $GPOREF" >> /opt/karoshi/serversetup/install_log
 GPOINFO=$(samba-tool gpo create ''"$DESC"' Group Policy' --username=Administrator --password="$LDAPPASS")
 echo gpoinfo: "$GPOINFO"
 GPOREF=$(echo "$GPOINFO" | cut -d"{" -f2 | sed 's/^/{/g')
+echo "$(date): Adding gpo: $LDAPPATH $GPOREF" >> /opt/karoshi/serversetup/install_log
 #Link GPO
 echo gporef: "$GPOREF"
 samba-tool gpo setlink "$LDAPPATH" "$GPOREF" --username=Administrator --password="$LDAPPASS"
@@ -1505,7 +1505,6 @@ echo "$(date): Creating windows profiles" >> /opt/karoshi/serversetup/install_lo
 ###################################
 #Copying profiles
 ###################################
-[ -d /home/remastersys ] && rm -f -R /home/remastersys
 echo $"Copying in windows client profiles"
 
 #Extract profiles
@@ -2155,5 +2154,8 @@ then
 	rm -f /opt/karoshi/server_network/install_type
 	mv /opt/karoshi/server_network/install_type_pre_restore /opt/karoshi/server_network/install_type
 fi
+
+#Make sure that sysvol permissions are correct
+/opt/karoshi/serversetup/pdc/scripts/set_sysvol_permissions
 
 exit
