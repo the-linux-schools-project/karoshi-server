@@ -5,3 +5,14 @@ if [ "$?" != 0 ]
 then
 	sleep 5
 fi
+
+#Wait for shorewall to stop
+
+Counter=1
+while [ "$Counter" -le 30 ]
+do
+	shorewall status 1>/dev/null
+	[ "$?" != 0 ] && break
+	sleep 1
+	((Counter+=1))	
+done 
