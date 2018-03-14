@@ -62,7 +62,7 @@ dpkg-divert --local --rename --add /sbin/initctl
 #Install Packages needed for the live system
 echo -e "\nChroot: Installing packages for the live system\n"
 sleep 1	
-apt-get install --yes ubuntu-standard casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
 echo -e "\nChroot: Installing discover and os-prober\n"
