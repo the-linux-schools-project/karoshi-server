@@ -138,7 +138,7 @@ apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
 add-apt-repository -y ppa:webupd8team/y-ppa-manager
 
 #samba-latest
-add-apt-repository -y "ppa:linux-schools/staging"
+add-apt-repository -y "ppa:linux-schools/samba-latest"
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
 
 #Glusterfs
