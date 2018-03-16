@@ -25,10 +25,10 @@
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
-ALIAS=$1
+ALIAS="$1"
 
 if [ -z "$ALIAS" ]
 then
@@ -43,7 +43,7 @@ then
 	PHPINIPATH=/etc/php/7.0/apache2
 fi
 
-if [ `grep -c /usr/share/awl/inc "$PHPINIPATH"/php.ini` = 0 ]
+if [[ $(grep -c /usr/share/awl/inc "$PHPINIPATH"/php.ini) = 0 ]]
 then
 	echo '<ul><li>'$"Activating"' libawl.php</li></ul>'
 	echo include_path = ".:/usr/share/php:/usr/share/awl/inc" >> "$PHPINIPATH"/php.ini
@@ -53,7 +53,7 @@ echo '<ul><li>'$"Installing"' z-push</li></ul>'
 
 LDAPSERVER=127.0.0.1
 #Get ldap server to use
-[ `grep -c -w "kdc" /etc/krb5.conf` -gt 0 ] && LDAPSERVER=`grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p`
+[[ $(grep -c -w "kdc" /etc/krb5.conf) -gt 0 ]] && LDAPSERVER=$(grep -w "kdc" /etc/krb5.conf | sed "s/ //g" | cut -d"=" -f2 | sed -n 1,1p)
 
 #Create folders needed for z-push
 [ -d /var/lib/z-push ] && rm -f -R /var/lib/z-push
@@ -70,8 +70,8 @@ chmod 0644 -R /usr/share/z-push
 chmod u+X,g+X,o+X -R /usr/share/z-push
 
 #Modify z-push with the correct ldap settings
-sed -i 's/CHANGETHISSERVER/'$LDAPSERVER'/g' /usr/share/z-push/backend/ldap/config.php
-sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /usr/share/z-push/backend/ldap/config.php
+sed -i 's/CHANGETHISSERVER/'"$LDAPSERVER"'/g' /usr/share/z-push/backend/ldap/config.php
+sed -i 's/CHANGETHISBASEDN/'"$LDAPBASE"'/g' /usr/share/z-push/backend/ldap/config.php
 
 
 #Add in z-push configuration file to apache
@@ -82,21 +82,21 @@ sed -i 's/CHANGETHISBASEDN/'$LDAPBASE'/g' /usr/share/z-push/backend/ldap/config.
 [ -d /etc/apache2/conf.d ] && SOGoPath=/etc/apache2/conf.d
 [ -d /etc/apache2/conf-enabled ] && SOGoPath=/etc/apache2/conf-enabled
 
-[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync.conf $SOGoPath/sogoactivesync.conf
-[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync-2.4.conf $SOGoPath/sogoactivesync.conf
+[ -d /etc/apache2/conf.d ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync.conf "$SOGoPath"/sogoactivesync.conf
+[ -d /etc/apache2/conf-enabled ] && cp -f /opt/karoshi/serversetup/modules/email/activesync/sogoactivesync-2.4.conf "$SOGoPath"/sogoactivesync.conf
 
-sed -i 's%CHANGETHISWEBDOMAIN%'$ALIAS.$REALM'%g' $SOGoPath/sogoactivesync.conf
-sed -i 's%CHANGETHISKRBPATH%'$HOSTNAME.$REALM'%g' $SOGoPath/sogoactivesync.conf
-sed -i 's%CHANGETHISSERVERNAME%'$HOSTNAME'%g' $SOGoPath/sogoactivesync.conf
-sed -i 's%CHANGETHISLDAPSERVER%'$LDAPSERVER'%g' $SOGoPath/sogoactivesync.conf
-sed -i 's%CHANGETHISBASEDN%'$LDAPBASE'%g' $SOGoPath/sogoactivesync.conf
+sed -i 's%CHANGETHISWEBDOMAIN%'"$ALIAS.$REALM"'%g' "$SOGoPath"/sogoactivesync.conf
+sed -i 's%CHANGETHISKRBPATH%'"$HOSTNAME.$REALM"'%g' "$SOGoPath"/sogoactivesync.conf
+sed -i 's%CHANGETHISSERVERNAME%'"$HOSTNAME"'%g' "$SOGoPath"/sogoactivesync.conf
+sed -i 's%CHANGETHISLDAPSERVER%'"$LDAPSERVER"'%g' "$SOGoPath"/sogoactivesync.conf
+sed -i 's%CHANGETHISBASEDN%'"$LDAPBASE"'%g' "$SOGoPath"/sogoactivesync.conf
 
 #Set path to the correct version of sogo - /usr/local/lib or /usr/lib
 
 if [ -f /usr/local/sbin/sogod ]
 then
 	#Assume we are running a compiled version of sogo
-	sed -i 's/\/usr\/lib/\/usr\/local\/lib/g' $SOGoPath/sogoactivesync.conf
+	sed -i 's/\/usr\/lib/\/usr\/local\/lib/g' "$SOGoPath"/sogoactivesync.conf
 fi
 
 #Modify sogo path
@@ -105,11 +105,9 @@ then
 	#Symlink sogoactivesync
 	[ ! -e /usr/local/lib/GNUstep/sogoactivesync ] && ln -s /usr/local/lib/GNUstep/SOGo /usr/local/lib/GNUstep/sogoactivesync
 else
-	sed -i 's/\/usr\/local\/lib/\/usr\/lib/g' $SOGoPath/sogoactivesync.conf
 	#Symlink sogoactivesync
 	[ ! -e /usr/lib/GNUstep/sogoactivesync ] && ln -s /usr/lib/GNUstep/SOGo /usr/lib/GNUstep/sogoactivesync
 fi
-
 
 #Activate extra apache modules
 [ ! -e /etc/apache2/mods-enabled/authnz_ldap.load ] && ln -s /etc/apache2/mods-available/authnz_ldap.load /etc/apache2/mods-enabled/authnz_ldap.load

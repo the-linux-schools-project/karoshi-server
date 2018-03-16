@@ -400,7 +400,7 @@ sleep 1
 #Create sogo_user in mysql
 echo "DROP USER 'sogo_user'@'localhost';" > /opt/karoshi/.tempdata/mysqlperms.sql
 mysql --password="$MYSQLPASS" < /opt/karoshi/.tempdata/mysqlperms.sql
-echo "CREATE USER 'sogo_user'@'localhost'  IDENTIFIED BY '"$SOGOPASS"';" > /opt/karoshi/.tempdata/mysqlperms.sql
+echo "CREATE USER 'sogo_user'@'localhost'  IDENTIFIED BY '$SOGOPASS';" > /opt/karoshi/.tempdata/mysqlperms.sql
 #Grant mysql permissions to sogo
 echo "GRANT ALL PRIVILEGES ON sogo.* TO 'sogo_user'@'localhost';" >> /opt/karoshi/.tempdata/mysqlperms.sql
 echo "ALTER DATABASE sogo DEFAULT CHARACTER SET utf8" >> /opt/karoshi/.tempdata/mysqlperms.sql
