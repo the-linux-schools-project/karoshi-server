@@ -2,32 +2,26 @@
 
 BUILDPATH=/tmp/sogo
 
-[ -d $BUILDPATH ] && rm -f -R $BUILDPATH
-mkdir $BUILDPATH
-
-UBUNTUVER=14.04
-[ `lsb_release -a 2>/dev/null | grep -c 12.04` -gt 0 ] && UBUNTUVER=12.04
+[ -d "$BUILDPATH" ] && rm -f -R "$BUILDPATH"
+mkdir "$BUILDPATH"
 
 
 PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev libgnustep-base1.24-dbg gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil mysql-client postgresql-client  tmpreaper libcurl4-openssl-dev postgresql-server-dev-all libmapi-dev libmapistore-dev libmapiproxy-dev"
 
-[ $UBUNTUVER = 12.04 ] && PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev libgnustep-base1.22-dbg gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil mysql-client postgresql-client  tmpreaper libcurl4-openssl-dev postgresql-server-dev-all libmapi-dev libmapistore-dev libmapiproxy-dev git"
-
 function install_deps {
-for package in `echo "$PACKAGELLIST"`
+for package in $PACKAGELLIST
 do
-	echo -e "\n\nInstalling $package\n"
-	apt-get -y install $package
-	if [ $? != 0 ]
+	echo -e "\nInstalling $package\n"
+	#apt-get -y install "$package"
+	if [ "$?" != 0 ]
 	then
-		echo There was a problem installing $package.
-		read pause
+		read -p "There was a problem installing $package. Press any key to continue... " -n1 -s
 	fi
 done
 }
 
 function get_sogo {
-cd $BUILDPATH
+cd "$BUILDPATH"
 echo -e "\n\nDownloading SOGO\n"
 git clone https://github.com/inverse-inc/sogo.git
 echo -e "\n\nDownloading Sope\n"
@@ -36,7 +30,7 @@ git clone https://github.com/inverse-inc/sope.git
 
 function compile_sope {
 echo -e "\n\nCompiling Sope\n"
-cd $BUILDPATH/sope
+cd "$BUILDPATH/sope"
 ./configure --with-gnustep --enable-debug --disable-strip
 make
 make install
@@ -44,8 +38,8 @@ make install
 
 function compile_sogo {
 echo -e "\n\nCompiling Sogo\n"
-sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' $BUILDPATH/sogo/Main/SOGo.m
-cd $BUILDPATH/sogo
+sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' "$BUILDPATH"/sogo/Main/SOGo.m
+cd "$BUILDPATH/sogo"
 make clean
 #./configure --enable-debug --disable-strip
 ./configure --disable-strip
@@ -56,25 +50,25 @@ make install
 function compile_openchange {
 #Extra software for openchange? ibmagic-dev libical-dev libsqlite3-dev swig bison flex libboost-thread-dev python-paste python-pastedeploy python-mako
 echo -e "\n\nCompiling Openchange\n"
-cd $BUILDPATH/sogo/OpenChange
+cd "$BUILDPATH/sogo/OpenChange"
 make clean
 make install
 }
 
 #Backup logo
-[ -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png ] && cp -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png /tmp/sogo-logo.png.$$
+[ -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png ] && cp -f /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png /tmp/sogo-logo.png."$$"
 
 install_deps
 get_sogo
 compile_sope
 compile_sogo
-#compile_openchange
+#compile_openchange"
 
 #Copy in init.d script
 cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init.d/
 
 #Copy existing logo back
-[ -f /tmp/sogo-logo.png.$$ ] && mv -f /tmp/sogo-logo.png.$$ /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
+[ -f /tmp/sogo-logo.png."$$" ] && mv -f /tmp/sogo-logo.png."$$" /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
 
 #Add in missing symlinks - may not be needed in future versions
 [ ! -e /usr/local/lib/libSOGo.so.2 ] && ln -s /usr/local/lib/sogo/libSOGo.so.2 /usr/local/lib/libSOGo.so.2
