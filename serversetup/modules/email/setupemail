@@ -324,7 +324,7 @@ cp -f /opt/karoshi/serversetup/distro/"$DISTROCHOICE"/modules/mailscanner/mailsc
 chown -R postfix.postfix /var/spool/MailScanner/spamassassin 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/incoming 1>/dev/null
 chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
-[ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
+echo run_mailscanner=1 >> /etc/default/mailscanner
 if [ -f /etc/MailScanner/defaults ]
 then
 	sed -i 's/run_mailscanner=0/run_mailscanner=1/g' /etc/MailScanner/defaults
