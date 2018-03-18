@@ -1,0 +1,14 @@
+[Unit]
+Description=MailScanner
+After=network-online.target remote-fs.target rsyslog.service
+Wants=network-online.target
+
+[Service]
+Type=forking
+GuessMainPID=no
+ExecStart=/etc/init.d/mailscanner start
+ExecStop=/etc/init.d/mailscanner stop
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

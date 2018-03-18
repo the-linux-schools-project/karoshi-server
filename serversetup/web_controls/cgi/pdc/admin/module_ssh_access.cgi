@@ -131,7 +131,7 @@ then
 	MESSAGE=$"The server cannot be blank."
 	show_status
 fi
-echo '<b>'$"Remote SSH Access"' - '"$SERVERNAME"'</b><br><br>'
+echo '<div class="sectiontitle">'$"Remote SSH Access"' - '"$SERVERNAME"'</div><br>'
 Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/module_ssh_access.cgi | cut -d' ' -f1)
 echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$TCPIP:$SERVERNAME:$RESTRICTTYPE" | sudo -H /opt/karoshi/web_controls/exec/module_ssh_access
 completed

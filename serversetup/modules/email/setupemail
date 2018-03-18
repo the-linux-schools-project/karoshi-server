@@ -327,7 +327,7 @@ chown -R postfix.postfix /var/spool/MailScanner/quarantine 1>/dev/null
 [ -f /etc/default/mailscanner ] && echo run_mailscanner=1 >> /etc/default/mailscanner
 if [ -f /etc/MailScanner/defaults ]
 then
-	sed -i 's/run_mailscanner=0/run_mailscanner=1/g'
+	sed -i 's/run_mailscanner=0/run_mailscanner=1/g' /etc/MailScanner/defaults
 fi
 
 #Create watermark secret
@@ -338,11 +338,21 @@ sed -i "s/MAILSCANNER_SECRET/$MAILSCANNER_SECRET/g" /etc/MailScanner/MailScanner
 sed -i "s/CHANGETHISNAME/$REALM/g" /etc/MailScanner/MailScanner.conf
 sed -i "s/X-YOURDOMAIN-COM/X-$REALM/g" /etc/MailScanner/spam.assassin.prefs.conf
 
+#Check for spamassassin config file
+if [ ! -f /etc/MailScanner/spam.assassin.prefs.conf ]
+then
+	if [ - f/etc/MailScanner/spam.assassin.prefs.conf ]
+	then
+		ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/MailScanner/spamassassin.conf
+	fi
+fi
+
 #Link Mailscanner spamassasin
 ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/spamassassin/mailscanner-spamassassin.cf
 
 #Link MailScanner custom functions
-ln -s /usr/share/MailScanner/MailScanner/CustomFunctions/ /etc/MailScanner/CustomFunctions
+[ -d /usr/share/MailScanner/MailScanner/CustomFunctions/ ] && ln -s /usr/share/MailScanner/MailScanner/CustomFunctions/ /etc/MailScanner/CustomFunctions
+
 
 ########################
 #Ensure htaccess is enabled
@@ -485,7 +495,7 @@ MYSQLSTATUS=$(ps -e | grep -c -w "$MYSQLDVER")
 APACHESTATUS=$(ps -e | grep -c -w "$APACHEVER")
 if [ "$MYSQLSTATUS" = 0 ]
 then
-	echo '<ul><li>'$"Starting MYSQL"'</li></ul>'
+	echo '<ul><li>'$"Starting MySQL"'</li></ul>'
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mysql_start 1>/dev/null
 fi
 if [ "$APACHESTATUS" = 0 ]

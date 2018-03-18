@@ -6,13 +6,13 @@ BUILDPATH=/tmp/sogo
 mkdir "$BUILDPATH"
 
 
-PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev libgnustep-base1.24-dbg gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil mysql-client postgresql-client  tmpreaper libcurl4-openssl-dev postgresql-server-dev-all libmapi-dev libmapistore-dev libmapiproxy-dev"
+PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil libcurl4-openssl-dev postgresql-server-dev-all"
 
 function install_deps {
 for package in $PACKAGELLIST
 do
 	echo -e "\nInstalling $package\n"
-	#apt-get -y install "$package"
+	apt-get -y install "$package"
 	if [ "$?" != 0 ]
 	then
 		read -p "There was a problem installing $package. Press any key to continue... " -n1 -s
@@ -71,12 +71,12 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 [ -f /tmp/sogo-logo.png."$$" ] && mv -f /tmp/sogo-logo.png."$$" /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
 
 #Add in missing symlinks - may not be needed in future versions
-[ ! -e /usr/local/lib/libSOGo.so.2 ] && ln -s /usr/local/lib/sogo/libSOGo.so.2 /usr/local/lib/libSOGo.so.2
+[ ! -e /usr/local/lib/libSOGo.so.4 ] && ln -s /usr/local/lib/sogo/libSOGo.so.4 /usr/local/lib/libSOGo.so.4
 [ ! -e /usr/local/lib/libGDLContentStore.so.4.9 ] && ln -s /usr/local/lib/sogo/libGDLContentStore.so.4.9 /usr/local/lib/libGDLContentStore.so.4.9
 [ ! -e /usr/local/lib/libNGCards.so.4.9 ] && ln -s /usr/local/lib/sogo/libNGCards.so.4.9 /usr/local/lib/libNGCards.so.4.9
 
 #Tidy up
-rm -f -R $BUILDPATH
+rm -f -R "$BUILDPATH"
 exit
 
 

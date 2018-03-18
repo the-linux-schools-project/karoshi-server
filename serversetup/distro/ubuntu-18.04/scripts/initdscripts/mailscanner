@@ -31,13 +31,17 @@ CONFFILE=/etc/MailScanner/MailScanner.conf
 [ ! -d /var/lock/subsys/MailScanner ] && mkdir -p /var/lock/subsys/MailScanner
 chown -R postfix:postfix /var/run/MailScanner
 chown -R postfix:postfix /var/lock/subsys/MailScanner
+chown postfix:postfix /var/spool/MailScanner/incoming
+chown postfix:postfix /var/spool/MailScanner/archive/
+chown postfix:postfix /var/spool/MailScanner/spamassassin
+chown postfix:postfix /var/spool/MailScanner/quarantine
 
 run_mailscanner=0
 run_nice=0
 stopped_lockfile=/var/lock/MailScanner/MailScanner.off
 
 # Read configuration variable file if it is present
-[ -r /etc/default/$PNAME ] && . /etc/default/$PNAME
+[ -r /etc/MailScanner/defaults ] && . /etc/MailScanner/defaults
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
