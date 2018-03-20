@@ -23,110 +23,93 @@
 
 #
 #Website: http://www.karoshi.org.uk
-LOG_DATE=`date +%F`
-[ $LOG_DATE'null' = null ] && exit
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
 ########################
 #Check md5checksum
 ########################
 if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/staff_restrictions2_cgi
 then
-echo `date`: staff_restrictions2 - No Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 source /opt/karoshi/web_controls/checksums/admin_checksums/staff_restrictions2_cgi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1`
-[ $Checksum'null' = null ] && Checksum=not_set
-if [ $Checksum'check' != $staff_restrictions2_cgi'check' ]
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$staff_restrictions2_cgi"'check' ]
 then
-echo `date`: staff_restrictions2 - Incorrect Checksum >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions- Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 ########################
 #Get variables
 ########################
 numArgs=$#
-if [ $numArgs != 1 ]
+if [ "$numArgs" != 1 ]
 then
-echo `date`: locations - incorrect number of arguments >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-REMOTE_USER=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1`
-REMOTE_ADDR=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2`
-RemoteCheckSum=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3`
-DELETE=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4`
-STAFFNAME=`echo $* | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5`
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+DELETE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+STAFFNAME=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
 
 ########################
 #Check data
 ########################
-if [ $RemoteCheckSum'check' != $Checksum'check' ]
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
 then
-echo `date`: locations - Not called by locations.cgi >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - Not called by locations.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_USER'null' = null ]
+if [ -z "$REMOTE_USER" ]
 then
-echo `date`: locations - Blank remote user >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $REMOTE_ADDR'null' = null ]
+if [ -z "$REMOTE_ADDR" ]
 then
-echo `date`: locations - Blank remote tcpip address >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
-if [ $DELETE'null' = null ] && [ $STAFFNAME'null' = null ]
+if [ -z "$DELETE" ] && [ -z "$STAFFNAME" ]
 then
-echo `date`: locations - No Action by $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	echo "$(date): staff_restrictions - No Action by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit
 fi
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-echo `date`: locations - access denied to $REMOTE_USER from $REMOTE_ADDR >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit 101
+	echo "$(date): staff_restrictions - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
 fi
 
 touch /opt/karoshi/web_controls/staff_restrictions.txt
 chmod 0640 /opt/karoshi/web_controls/staff_restrictions.txt
 chown root.apache_karoshi /opt/karoshi/web_controls/staff_restrictions.txt
-###########################
-#Add staffname
-###########################
-if [ $STAFFNAME'null' != null ]
+
+#Add staff user to the restriction list
+if [ ! -z "$STAFFNAME" ]
 then
-STAFFCHECK=`grep -c -w $STAFFNAME /opt/karoshi/web_controls/staff_restrictions.txt`
-if [ $STAFFCHECK = 0 ]
+	STAFFCHECK=$(grep -c -w "$STAFFNAME" /opt/karoshi/web_controls/staff_restrictions.txt)
+	if [ "$STAFFCHECK" = 0 ]
+	then
+		#Modify restrictions.txt
+		echo "$STAFFNAME" >> /opt/karoshi/web_controls/staff_restrictions.txt
+	fi
+fi
+
+#Remove staff user from the restriction list
+if [ ! -z "$DELETE" ]
 then
-#Modify restrictions.txt
-echo $STAFFNAME >> /opt/karoshi/web_controls/staff_restrictions.txt
+	sed 's/'"$DELETE"'//g' /opt/karoshi/web_controls/staff_restrictions.txt > /opt/karoshi/web_controls/staff_restrictions.txt1
+	sed '/^$/d' /opt/karoshi/web_controls/staff_restrictions.txt1 > /opt/karoshi/web_controls/staff_restrictions.txt
+	rm -f /opt/karoshi/web_controls/staff_restrictions.txt1
 fi
-fi
-###########################
-#Remove location
-###########################
-if [ $DELETE'null' != null ]
-then
-sed 's/'$DELETE'//g' /opt/karoshi/web_controls/staff_restrictions.txt > /opt/karoshi/web_controls/staff_restrictions.txt1
-sed '/^$/d' /opt/karoshi/web_controls/staff_restrictions.txt1 > /opt/karoshi/web_controls/staff_restrictions.txt
-rm -f /opt/karoshi/web_controls/staff_restrictions.txt1
-fi
-###########################
-#Sort location file
-###########################
+
+#Sort restriction file
 sort /opt/karoshi/web_controls/staff_restrictions.txt > /opt/karoshi/web_controls/staff_restrictions.tmp
 mv -f /opt/karoshi/web_controls/staff_restrictions.tmp /opt/karoshi/web_controls/staff_restrictions.txt
-###########################
-#Modify wsetup.kix
-###########################
-KIXLOCATIONLIST=`cat /var/lib/samba/netlogon/locations.txt | tr '\n' ',' ; echo NoGroup`
-COMBOXBOX1LINENO=`grep -n '$'ComboBox1.List /var/lib/samba/netlogon/kix/WSsetup.kix | cut -d: -f1`
-sed $COMBOXBOX1LINENO'c'\$ComboBox1.List" "=" "$KIXLOCATIONLIST /var/lib/samba/netlogon/kix/WSsetup.kix > /var/lib/samba/netlogon/kix/WSsetup.kix1
-rm -f /var/lib/samba/netlogon/kix/WSsetup.kix
-mv /var/lib/samba/netlogon/kix/WSsetup.kix1 /var/lib/samba/netlogon/kix/WSsetup.kix
-chmod 0644 /var/lib/samba/netlogon/kix/WSsetup.kix
-LOCCHECK=`cat /var/lib/samba/netlogon/locations.txt | wc -l`
-if [ $LOCCHECK = 0 ]
-then
-rm -f /var/lib/samba/netlogon/locations.txt
-fi
 exit

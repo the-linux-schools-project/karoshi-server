@@ -564,6 +564,9 @@ fi
 #Configure dhclient to only wait 10 seconds instead of 5 minutes
 sed -i 's/timeout 300;/timeout 10;/g' /etc/dhcp/dhclient.conf
 
+#Configure easy-rsa
+cp /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+
 #Copy in systemd scripts
 cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/all/buildserver/configfiles/systemd/* /etc/systemd/system/
 

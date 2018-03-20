@@ -144,7 +144,7 @@ then
 fi
 
 #Verify patch
-gpg /opt/karoshi/updates/"$SIGNAME" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+gpg --verify /opt/karoshi/updates/"$SIGNAME" /opt/karoshi/updates/"$PATCHNAME" 1>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE" 2>> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 GPGSTATUS="$?"
 #echo checking /opt/karoshi/updates/"$SIGNAME"
 #echo status is $GPGSTATUS

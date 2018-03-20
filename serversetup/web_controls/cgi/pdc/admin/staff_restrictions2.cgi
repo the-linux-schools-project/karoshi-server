@@ -33,55 +33,52 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="0; URL='$HTTP_REFERER'"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="0; URL='"$HTTP_REFERER"'"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"></head><body><div id="pagecontainer">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=4
-#Assign delete
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = DELETEcheck ]
-then
-let COUNTER=$COUNTER+1
-DELETE=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
+	then
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+		break
+	fi
+	let COUNTER=$COUNTER+1
 done
-#Assign staffname
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-if [ `echo $DATAHEADER'check'` = STAFFNAMEcheck ]
-then
-let COUNTER=$COUNTER+1
-STAFFNAME=`echo $DATA | cut -s -d'_' -f$COUNTER`
-break
-fi
-let COUNTER=$COUNTER+1
-done
+}
 
+#Assign delete
+DATANAME=DELETE
+get_data
+DELETE="$DATAENTRY"
+
+#Assign staffname
+DATANAME=STAFFNAME
+get_data
+STAFFNAME="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/staff_restrictions.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -90,50 +87,50 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 #########################
 #Check data
 #########################
 #Check to see that delete is not blank
-if [ $DELETE'null' = null ] && [ $STAFFNAME'null' = null ]
+if [ -z "$DELETE" ] && [ -z "$STAFFNAME" ]
 then
-MESSAGE=$"You have not selected an action."
-show_status
+	MESSAGE=$"You have not selected an action."
+	show_status
 fi
 #Check to see that username exists
-if [ $STAFFNAME'null' != null ]
+getent passwd "$STAFFNAME" 1>/dev/null 2>/dev/null
+if [ "$?" != 0 ]
 then
-if [ `grep -c ^$STAFFNAME: /etc/passwd` = 0 ]
-then
-MESSAGE=$"This user does not exist."
-show_status
+	MESSAGE=$"This user does not exist."
+	show_status
 fi
+
 #Check to see that the username is a member of staff
-PRIGROUP=`id -g -n $STAFFNAME`
-if [ $PRIGROUP != staff ] && [ $PRIGROUP != officestaff ]
+PRIGROUP=$(id -g -n "$STAFFNAME")
+if [ "$PRIGROUP" != staff ] && [ "$PRIGROUP" != officestaff ]
 then
-MESSAGE=$"This user is not a member of staff."
-show_status
+	MESSAGE=$"This user is not a member of staff."
+	show_status
 fi
-fi
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1`
-sudo -H /opt/karoshi/web_controls/exec/staff_restrictions $REMOTE_USER:$REMOTE_ADDR:$Checksum:$DELETE:$STAFFNAME
+
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/staff_restrictions2.cgi | cut -d' ' -f1)
+sudo -H /opt/karoshi/web_controls/exec/staff_restrictions "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$DELETE:$STAFFNAME"
 exit
