@@ -64,6 +64,7 @@ REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
 ACTION=$(echo "$DATA" | cut -s -d: -f4)
 USERNAME=$(echo "$DATA" | cut -s -d: -f5)
+COMMENT=$(echo "$DATA" | cut -s -d: -f6)
 
 #echo data:$DATA"<br>"
 #sleep 3
@@ -95,6 +96,7 @@ fi
 ICON1=/images/submenus/system/vpn_cert_enabled.png
 ICON2=/images/submenus/system/vpn_cert_revoked.png
 ICON3=/images/submenus/system/cert.png
+ICON4=/images/submenus/system/edit.png
 
 source /opt/karoshi/server_network/domain_information/domain_name
 
@@ -175,6 +177,42 @@ then
 '
 fi
 
+if [ "$ACTION" = addcomment ]
+then
+	USERNAME2=$(echo "$USERNAME" | cut -d"-" -f1)
+	FullName=$(getent passwd "$USERNAME2" | cut -d: -f5 | cut -d, -f1 )
+	PrimaryGroup=$(id -g -n "$USERNAME2")
+
+	#See if there is already a comment
+	VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
+	COMMENT=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
+	[ -f "/opt/karoshi/server_network/vpn/comments/'"$USERNAME"'" ] && cat "/opt/karoshi/server_network/vpn/comments/'"$USERNAME"'"
+	')
+
+	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">
+	<table id="myTable" class="tablesorter" style="text-align: left;">
+	<thead><tr><th style="width: 120px;"><b>'$"Username"'</b></th><th style="width: 120px;"><b>'$"Full Name"'</b></th><th style="width: 120px;"><b>'$"Primary Group"'</b></th></tr>
+	</thead><tbody><tr><td>'"$USERNAME"'</td><td>'"$FullName"'</td><td>'"$PrimaryGroup"'</td></tr>
+	</tbody></table>
+	<input type="hidden" name="_ACTION_" value="reallyaddcomment">
+	<input type="hidden" name="_USERNAME_" value="'"$USERNAME"'">
+	<textarea name="_COMMENT_" rows="4" cols="55">'"$COMMENT"'</textarea><br><br>
+	<input value="'$"Submit"'" class="button" type="submit"></form>
+	'
+fi
+
+if [ "$ACTION" = reallyaddcomment ]
+then
+	echo "$(date): vpn_certificates - adding comment for $USERNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	VPNSERVER=$(sed -n 1,1p /opt/karoshi/server_network/vpnserver)
+	COMMENT=$(echo $COMMENT | sed 's/%0D%0A/ /g' | sed 's/+/ /g' | sed 's/%3E//g' | sed 's/%27//g'  | sed 's/%22//g' | sed 's/%3F/?/g' | sed 's/%2C/,/g' | sed 's/%21/!/g' | sed 's/%2F/\//g' | sed 's/%28/(/g' | sed 's/%29/)/g' | sed 's/%3A/:/g' | sed 's/%26/\&/g')
+	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$VPNSERVER" '
+	[ ! -d /opt/karoshi/server_network/vpn/comments ] && mkdir -p /opt/karoshi/server_network/vpn/comments
+	echo "'"$COMMENT"'" > "/opt/karoshi/server_network/vpn/comments/'"$USERNAME"'"
+	'
+	ACTION=view
+fi
+
 if [ "$ACTION" = view ]
 then
 	echo '<form action="/cgi-bin/admin/vpn_certificates.cgi" method="post">'
@@ -187,16 +225,30 @@ then
 		if [ $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn | wc -l) -gt 0 ]
 		then
 			echo "<table id=\"myTable\" class=\"tablesorter\" style=\"text-align: left;\">
-			<thead><tr><th style=\"width: 180px;\"><b>'$"Username"'</b></th><th style=\"width: 80px;\"><b>'$"Status"'</b></th><th style=\"width: 80px;\"><b>'$"Download"'</b></th></tr></thead><tbody>"
+			<thead><tr><th style=\"width: 120px;\"><b>'$"Username"'</b></th><th style=\"width: 120px;\"><b>'$"Full Name"'</b></th><th style=\"width: 120px;\"><b>'$"Primary Group"'</b></th><th style=\"width: 300px;\"><b>'$"Comments"'</b></th><th style=\"width: 80px;\"><b>'$"Status"'</b></th><th style=\"width: 80px;\"><b>'$"Download"'</b></th></tr></thead><tbody>"
 			for USERNAME in $(ls -1 /etc/openvpn/easy-rsa/keys/*.ovpn)
 			do
-				USERNAME=$(basename $USERNAME | cut -d. -f1)
-				echo "<tr><td>$USERNAME</td><td>"
+				USERNAME=$(basename "$USERNAME" | cut -d. -f1)
+				USERNAME2=$(echo "$USERNAME" | cut -d"-" -f1)
+				#Get the name of the user
+				FullName=$(getent passwd "$USERNAME2" | cut -d: -f5 | cut -d, -f1 )
+				#Get the primary group of the user
+				PrimaryGroup=$(id -g -n "$USERNAME2")
+				
+				echo "<tr><td>$USERNAME</td><td>$FullName</td><td>$PrimaryGroup</td><td>
+				<button class=\"info\" name=\"_AddComment_\" value=\"_ACTION_addcomment_USERNAME_"$USERNAME"_\">
+				<img src=\"'"$ICON4"'\" alt=\"'$"Add comment"'\">
+				<span>'$"Add comment"'<br>$USERNAME</span>
+				</button>"
 
-				if [ -f /etc/openvpn/easy-rsa/keys/$USERNAME.'"$REALM"'.revoked ]
+				[ -f "/opt/karoshi/server_network/vpn/comments/$USERNAME" ] && cat "/opt/karoshi/server_network/vpn/comments/$USERNAME"
+
+				echo "</td><td>"
+
+				if [ -f /etc/openvpn/easy-rsa/keys/"$USERNAME".'"$REALM"'.revoked ]
 				then
 					#Get revokation date
-					REVODATE=$(cat /etc/openvpn/easy-rsa/keys/$USERNAME.'"$REALM"'.revoked)
+					REVODATE=$(cat /etc/openvpn/easy-rsa/keys/"$USERNAME".'"$REALM"'.revoked)
 					echo "
 	<button class=\"info\" name=\"_DoRevoke_\" value=\"_ACTION_unrevoke_USERNAME_"$USERNAME"_\">
 				<img src=\"'"$ICON2"'\" alt=\"'$"Revoked"'\">
