@@ -6,7 +6,7 @@ BUILDPATH=/tmp/sogo
 mkdir "$BUILDPATH"
 
 
-PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil libcurl4-openssl-dev postgresql-server-dev-all"
+PACKAGELLIST="gnustep-make gnustep-base-runtime libgnustep-base-dev gobjc gobjc-multilib libxml2-dev libldap2-dev libssl-dev zlib1g-dev libpq-dev libmysqlclient-dev libmemcached-dev python-m2crypto python-simplejson python-vobject python-dateutil libcurl4-openssl-dev postgresql-server-dev-all tmpreaper"
 
 function install_deps {
 for package in $PACKAGELLIST
@@ -38,7 +38,6 @@ make install
 
 function compile_sogo {
 echo -e "\n\nCompiling Sogo\n"
-sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[context request] headerForKey: @"x-webobjects-remote-user"])/g' "$BUILDPATH"/sogo/Main/SOGo.m
 cd "$BUILDPATH/sogo"
 make clean
 #./configure --enable-debug --disable-strip
@@ -74,6 +73,10 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 [ ! -e /usr/local/lib/libSOGo.so.4 ] && ln -s /usr/local/lib/sogo/libSOGo.so.4 /usr/local/lib/libSOGo.so.4
 [ ! -e /usr/local/lib/libGDLContentStore.so.4.9 ] && ln -s /usr/local/lib/sogo/libGDLContentStore.so.4.9 /usr/local/lib/libGDLContentStore.so.4.9
 [ ! -e /usr/local/lib/libNGCards.so.4.9 ] && ln -s /usr/local/lib/sogo/libNGCards.so.4.9 /usr/local/lib/libNGCards.so.4.9
+[ ! -e /usr/local/lib/libSOGoUI.so.4.0 ] && ln -s /usr/local/lib/sogo/libSOGoUI.so.4.0 /usr/local/lib/libSOGoUI.so.4.0
+
+#Configure tmpreaper
+sed -i 's/SHOWWARNING=true/SHOWWARNING=false/g' /etc/tmpreaper.conf
 
 #Tidy up
 rm -f -R "$BUILDPATH"
