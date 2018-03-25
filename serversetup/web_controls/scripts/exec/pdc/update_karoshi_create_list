@@ -6,7 +6,7 @@ source /opt/karoshi/serversetup/variables/updatesource
 ########################
 #Create html list
 ########################
-echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 250px;"><b>'$"CHecksum"'</b></td><td style="width: 250px;"></td></tr>'  | tee /opt/karoshi/updates/updatelist.html > /opt/karoshi/updates/updatelist_all.html
+echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 250px;"><b>'$"Checksum"'</b></td><td style="width: 250px;"></td></tr>'  | tee /opt/karoshi/updates/updatelist.html > /opt/karoshi/updates/updatelist_all.html
 
 echo '<table class="tablesorter" style="text-align: left;"><tbody><tr><td style="width: 80px;"><b>'$"Applied"'</b></td><td style="width: 80px;"><b>'$"Descripton"'</b></td><td style="width: 250px;"><b>'$"Name"'</b></td><td style="width: 40px;"></td></tr>' | tee /opt/karoshi/updates/updatelist_mobile.html > /opt/karoshi/updates/updatelist_all_mobile.html
 
