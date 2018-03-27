@@ -31,7 +31,7 @@ git clone https://github.com/inverse-inc/sope.git
 function compile_sope {
 echo -e "\n\nCompiling Sope\n"
 cd "$BUILDPATH/sope"
-./configure --with-gnustep --enable-debug --disable-strip
+./configure --prefix=/usr/System --with-gnustep --enable-debug --disable-strip
 make
 make install
 }
@@ -41,7 +41,7 @@ echo -e "\n\nCompiling Sogo\n"
 cd "$BUILDPATH/sogo"
 make clean
 #./configure --enable-debug --disable-strip
-./configure --disable-strip
+./configure --prefix=/usr/System --disable-strip
 make
 make install
 }
@@ -81,5 +81,6 @@ sed -i 's/SHOWWARNING=true/SHOWWARNING=false/g' /etc/tmpreaper.conf
 #Tidy up
 rm -f -R "$BUILDPATH"
 exit
+
 
 
