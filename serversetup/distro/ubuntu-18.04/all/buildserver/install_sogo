@@ -31,7 +31,7 @@ git clone https://github.com/inverse-inc/sope.git
 function compile_sope {
 echo -e "\n\nCompiling Sope\n"
 cd "$BUILDPATH/sope"
-./configure --with-gnustep --enable-debug --disable-strip
+./configure --prefix=/usr/System --with-gnustep --enable-debug --disable-strip
 make
 make install
 }
@@ -42,7 +42,7 @@ sed -i 's/if (trustProxyAuthentication)/if (trustProxyAuthentication \&\& [[cont
 cd "$BUILDPATH/sogo"
 make clean
 #./configure --enable-debug --disable-strip
-./configure --disable-strip
+./configure --prefix=/usr/System --disable-strip
 make
 make install
 }
@@ -69,11 +69,6 @@ cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/sogo /etc/init
 
 #Copy existing logo back
 [ -f /tmp/sogo-logo.png."$$" ] && mv -f /tmp/sogo-logo.png."$$" /usr/local/lib/GNUstep/SOGo/WebServerResources/sogo-logo.png
-
-#Add in missing symlinks - may not be needed in future versions
-[ ! -e /usr/local/lib/libSOGo.so.4 ] && ln -s /usr/local/lib/sogo/libSOGo.so.4 /usr/local/lib/libSOGo.so.4
-[ ! -e /usr/local/lib/libGDLContentStore.so.4.9 ] && ln -s /usr/local/lib/sogo/libGDLContentStore.so.4.9 /usr/local/lib/libGDLContentStore.so.4.9
-[ ! -e /usr/local/lib/libNGCards.so.4.9 ] && ln -s /usr/local/lib/sogo/libNGCards.so.4.9 /usr/local/lib/libNGCards.so.4.9
 
 #Tidy up
 rm -f -R "$BUILDPATH"
