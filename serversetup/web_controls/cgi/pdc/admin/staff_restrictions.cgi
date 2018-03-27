@@ -30,29 +30,24 @@
 STYLESHEET=defaultstyle.css
 TIMEOUT=300
 NOTIMEOUT=127.0.0.1
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
+export TEXTDOMAIN=karoshi-server
 
 #Check if timout should be disabled
-if [ `echo $REMOTE_ADDR | grep -c $NOTIMEOUT` = 1 ]
+if [[ $(echo "$REMOTE_ADDR" | grep -c "$NOTIMEOUT") = 1 ]]
 then
-TIMEOUT=86400
+	TIMEOUT=86400
 fi
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="'$TIMEOUT'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
-#########################
-#Get data input
-#########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '                window.location = "/cgi-bin/admin/staff_restrictions.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -61,29 +56,29 @@ exit
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
-export MESSAGE=$"You must access this page via https."
-show_status
+	export MESSAGE=$"You must access this page via https."
+	show_status
 fi
 #########################
 #Check user accessing this script
 #########################
-if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ $REMOTE_USER'null' = null ]
+if [ ! -f /opt/karoshi/web_controls/web_access_admin ] || [ -z "$REMOTE_USER" ]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
-MESSAGE=$"You must be a Karoshi Management User to complete this action."
-show_status
+	MESSAGE=$"You must be a Karoshi Management User to complete this action."
+	show_status
 fi
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox"><div class="sectiontitle">'$"Staff Restrictions"'</div><br>'
+echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Staff Restrictions"'</div><br></div><div id="infobox">'
 echo '<table class="standard" style="text-align: left; height: 20px;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$"Add staff name"'</td><td><input name="_STAFFNAME_" size="25" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."'</span></a></td></tr>'
@@ -91,29 +86,25 @@ echo '</tbody></table>'
 
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
-STAFF_COUNT=`cat /opt/karoshi/web_controls/staff_restrictions.txt | wc -l`
+	STAFF_COUNT=$(wc -l < /opt/karoshi/web_controls/staff_restrictions.txt)
 else
-STAFF_COUNT=0
+	STAFF_COUNT=0
 fi
 #Show restricted staff list
-if [ $STAFF_COUNT -gt 0 ]
+if [ "$STAFF_COUNT" -gt 0 ]
 then
-echo '<table class="standard" style="text-align: left;" >'
-echo '<tbody>'
-echo '<tr><td style="width: 150px;"><b>'$"Retricted Staff"'</b></td><td><b>Remove</b></td></tr>'
-echo '</tbody></table><br>'
-echo '<table class="standard" style="text-align: left; width: 334px;" >'
-echo '<tbody>'
-COUNTER=1
-while [ $COUNTER -le $STAFF_COUNT ]
-do
-STAFFNAME=`sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/staff_restrictions.txt`
-echo '<tr><td style="width: 150px;">'$STAFFNAME'</td><td><input type="radio" name="_DELETE_" value="'$STAFFNAME'"><br></td></tr>'
-let COUNTER=$COUNTER+1
-done
-echo '</tbody></table>'
+	echo '<table class="standard" style="text-align: left;" ><tbody>
+	<tr><td style="width: 150px;"><b>'$"Retricted Staff"'</b></td><td><b>Remove</b></td></tr></tbody></table><br>
+	<table class="standard" style="text-align: left; width: 334px;" ><tbody>'
+	COUNTER=1
+	while [ "$COUNTER" -le "$STAFF_COUNT" ]
+	do
+		STAFFNAME=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/staff_restrictions.txt)
+		echo '<tr><td style="width: 150px;">'"$STAFFNAME"'</td><td><input type="radio" name="_DELETE_" value="'"$STAFFNAME"'"><br></td></tr>'
+		let COUNTER="$COUNTER"+1
+	done
+	echo '</tbody></table>'
 fi
-echo "</div>"
-echo '<div id="submitbox"><input value="Submit" type="submit"> <input value="Reset" type="reset"></div>'
-echo '</form></div></body></html>'
+
+echo '<br><input value="Submit" type="submit"> <input value="Reset" type="reset"></div></div></form></div></body></html>'
 exit

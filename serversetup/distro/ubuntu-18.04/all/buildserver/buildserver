@@ -36,6 +36,8 @@ INSTALL_SOFTWARE=yes
 INSTALL_BATCH=no
 #Install mailscanner for the email system - kept separate because it is not in the standard repos.
 INSTALL_MAILSCANNER=yes # Dependency problems
+#Install the packages required to compile sogo and compile it - currently there is no sogo version for Ubuntu 18.04 that works with mysql / mariadb.
+COMPILE_SOGO=yes
 #Install ZFS
 INSTALL_ZFS=yes
 #Install Monitorix
@@ -564,6 +566,9 @@ fi
 #Configure dhclient to only wait 10 seconds instead of 5 minutes
 sed -i 's/timeout 300;/timeout 10;/g' /etc/dhcp/dhclient.conf
 
+#Configure easy-rsa
+cp /etc/openvpn/easy-rsa/openssl-1.0.0.cnf /etc/openvpn/easy-rsa/openssl.cnf
+
 #Copy in systemd scripts
 cp -f /opt/karoshi/serversetup/distro/ubuntu-18.04/all/buildserver/configfiles/systemd/* /etc/systemd/system/
 
@@ -590,6 +595,10 @@ ischroot
 [ "$?" != 0 ] && shutdown -r now
 }
 
+function compile_sogo {
+/opt/karoshi/serversetup/distro/ubuntu-18.04/all/buildserver/install_sogo
+}
+
 echo "VERSION=$KaroshiVersion" > /opt/karoshi/serversetup/variables/version
 echo "DISTROCHOICE=$DistroVersion" > /opt/karoshi/serversetup/variables/distro
 
@@ -605,7 +614,7 @@ echo "DISTROCHOICE=$DistroVersion" > /opt/karoshi/serversetup/variables/distro
 [ $INSTALL_MAILSCANNER = yes ] && install_mailscanner
 [ $INSTALL_E2GUARDIAN = yes ] && install_e2guardian
 [ $INSTALL_ZFS = yes ] && install_zfs
-#[ $INSTALL_SAMBA4 = yes ] && install_samba4
+[ $COMPILE_SOGO = yes ] && compile_sogo
 [ $INSTALL_MONITORIX = yes ] && install_monitorix
 [ $INSTALL_DOCKER = yes ] && install_docker
 [ $SYSVSUPPORT = yes ] && sysvsupport

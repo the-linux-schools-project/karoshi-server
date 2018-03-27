@@ -1,22 +1,21 @@
 #!/bin/bash
-LOG_DATE=`date +%F`
+LOG_DATE=$(date +%F)
 
-ALL_APPLIED=yes
 source /opt/karoshi/serversetup/variables/version
 source /opt/karoshi/serversetup/variables/updatesource
 ########################
 #Create temp folder for data
 ########################
 [ ! -d /opt/karoshi/.tempdata/ ] && mkdir /opt/karoshi/.tempdata/
-[ -d /opt/karoshi/.tempdata/updatedata.$$ ] && rm -f -R /opt/karoshi/.tempdata/updatedata.$$
-mkdir /opt/karoshi/.tempdata/updatedata.$$
-cd /opt/karoshi/.tempdata/updatedata.$$
+[ -d /opt/karoshi/.tempdata/updatedata."$$" ] && rm -f -R /opt/karoshi/.tempdata/updatedata.$$
+mkdir /opt/karoshi/.tempdata/updatedata."$$"
+cd /opt/karoshi/.tempdata/updatedata."$$"
 ########################
 #Download updatelist and information
 ########################
-wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 $UPDATESOURCE/$VERSION/updatelist 2>&1
-wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 $UPDATESOURCE/$VERSION/updatelist.md5 2>&1
-wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 $INFORMATIONSOURCE/$VERSION/information 2>&1
+wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 "$UPDATESOURCE/$VERSION"/updatelist 2>&1
+wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 "$UPDATESOURCE/$VERSION"/updatelist.md5 2>&1
+wget --read-timeout=5 --no-cache --tries=3 --connect-timeout=5 "$INFORMATIONSOURCE/$VERSION"/information 2>&1
 
 cd /
 
@@ -24,58 +23,58 @@ cd /
 #Copy any Karoshi news onto the server
 #######################
 [ -f /opt/karoshi/information ] && rm -f /opt/karoshi/information
-if [ -f /opt/karoshi/.tempdata/updatedata.$$/information ]
+if [ -f /opt/karoshi/.tempdata/updatedata."$$"/information ]
 then
-cat /opt/karoshi/.tempdata/updatedata.$$/information | tr -cd 'A-Za-z0-9\._: \n-()<>""=:/-' > /opt/karoshi/information
-chmod 0444 /opt/karoshi/information
+	cat /opt/karoshi/.tempdata/updatedata."$$"/information | tr -cd 'A-Za-z0-9\._: \n-()<>""=:/-' > /opt/karoshi/information
+	chmod 0444 /opt/karoshi/information
 fi
 
 ########################
 #Check that files have downloaded
 ########################
-if [ ! -f /opt/karoshi/.tempdata/updatedata.$$/updatelist ]
+if [ ! -f /opt/karoshi/.tempdata/updatedata."$$"/updatelist ]
 then
-echo No update data available "for" download
-echo `date`: update_karoshi - No update data available "for" download >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/updatedata.$$
-exit
+	echo "No update data available for download"
+	echo "$(date): update_karoshi - No update data available for download" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	rm -f -R /opt/karoshi/.tempdata/updatedata."$$"
+	exit
 fi
 
-if [ ! -f /opt/karoshi/.tempdata/updatedata.$$/updatelist.md5 ]
+if [ ! -f /opt/karoshi/.tempdata/updatedata."$$"/updatelist.md5 ]
 then
-echo No update MD5 available "for" download
-echo `date`: update_karoshi - No update MD5 available "for" download >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/updatedata.$$
-exit
+	echo "No update MD5 available for download"
+	echo "$(date): update_karoshi - No update MD5 available for download" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	rm -f -R /opt/karoshi/.tempdata/updatedata."$$"
+	exit
 fi
 
 ########################
 #Get update list length
 ########################
-UPDATELIST_LENGTH=`cat /opt/karoshi/.tempdata/updatedata.$$/updatelist | wc -l`
-if [ $UPDATELIST_LENGTH -lt 2 ]
+UPDATELIST_LENGTH=$(wc -l < /opt/karoshi/.tempdata/updatedata."$$"/updatelist)
+if [ "$UPDATELIST_LENGTH" -lt 2 ]
 then
-echo No updates available in the updatelist
-echo `date`: update_karoshi - No updates available in the updatelist >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/updatedata.$$
+	echo No updates available in the updatelist
+	echo "$(date): update_karoshi - No updates available in the updatelist" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	rm -f -R /opt/karoshi/.tempdata/updatedata."$$"
 exit
 fi
 ########################
 #Get Listcheck
 ########################
-LISTCHECK=`sed -n $UPDATELIST_LENGTH,$UPDATELIST_LENGTH'p' /opt/karoshi/.tempdata/updatedata.$$/updatelist | tr -cd 'A-Za-z0-9'`
+LISTCHECK=$(sed -n "$UPDATELIST_LENGTH","$UPDATELIST_LENGTH"'p' /opt/karoshi/.tempdata/updatedata."$$"/updatelist | tr -cd 'A-Za-z0-9')
 #Check to see that MD5 has been assigned for the listcheck
-if [ $LISTCHECK'null' = null ]
+if [ -z "$LISTCHECK" ]
 then
-echo No Listcheck
-echo `date`: update_karoshi - No Listcheck >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-rm -f -R /opt/karoshi/.tempdata/updatedata.$$
-exit
+	echo No Listcheck
+	echo "$(date): update_karoshi - No Listcheck" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	rm -f -R /opt/karoshi/.tempdata/updatedata."$$"
+	exit
 fi
 ########################
 #Extract list
 ########################
-let LASTLINE=$UPDATELIST_LENGTH-1
+let LASTLINE="$UPDATELIST_LENGTH"-1
 [ ! -d /opt/karoshi/updates ] && mkdir -p /opt/karoshi/updates
 [ -f /opt/karoshi/updates/updatelist ] && rm -f /opt/karoshi/updates/updatelist
 touch /opt/karoshi/updates/updatelist
@@ -83,17 +82,17 @@ chmod 0750 /opt/karoshi/updates
 chown root.apache_karoshi /opt/karoshi/updates
 chmod 0640 /opt/karoshi/updates/updatelist
 chown root.apache_karoshi /opt/karoshi/updates/updatelist
-sed -n 1,$LASTLINE'p' /opt/karoshi/.tempdata/updatedata.$$/updatelist > /opt/karoshi/updates/updatelist
-rm -f -R /opt/karoshi/.tempdata/updatedata.$$
+sed -n 1,"$LASTLINE"'p' /opt/karoshi/.tempdata/updatedata."$$"/updatelist > /opt/karoshi/updates/updatelist
+rm -f -R /opt/karoshi/.tempdata/updatedata."$$"
 #########################
 #Check that MD5 of List matches listcheck
 ########################
-UPDATELISTMD5=`sha256sum /opt/karoshi/updates/updatelist | cut -d' ' -f1`
-if [ $LISTCHECK != $UPDATELISTMD5 ]
+UPDATELISTMD5=$(md5sum /opt/karoshi/updates/updatelist | cut -d' ' -f1)
+if [ "$LISTCHECK" != "$UPDATELISTMD5" ]
 then
-rm -f /opt/karoshi/updates/updatelist
-echo `date`: update_karoshi - Incorrect Checksum on updatelist >> /opt/karoshi/logs/karoshi_web_management/$LOG_DATE
-exit
+	rm -f /opt/karoshi/updates/updatelist
+	echo "$(date): update_karoshi - Incorrect Checksum on updatelist" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit
 fi
 
 #Make html list

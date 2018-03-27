@@ -117,7 +117,15 @@ then
 	ACTION=view
 fi
 
-if [ "$ACTION" = view ]
+if [ "$ACTION" = reallyaddcomment ]
+then
+	#Assign COMMENT
+	DATANAME=COMMENT
+	get_data
+	COMMENT="$DATAENTRY"
+fi
+
+if [ "$ACTION" = view ] || [ "$ACTION" = reallyaddcomment ]
 then
 	TITLEMSG=$"VPN Certificates"
 	ACTION2=add
@@ -126,7 +134,7 @@ then
 	ICON1=/images/submenus/system/add.png
 fi
 
-if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = unrevoke ] || [ "$ACTION" = revoke ] || [ "$ACTION" = reallyunrevoke ]  || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = downloadcert ]
+if [ "$ACTION" = add ] || [ "$ACTION" = reallyadd ] || [ "$ACTION" = unrevoke ] || [ "$ACTION" = revoke ] || [ "$ACTION" = reallyunrevoke ]  || [ "$ACTION" = reallyrevoke ] || [ "$ACTION" = downloadcert ] || [ "$ACTION" = addcomment ]
 then
 	ACTION2=view
 	ACTIONMSG=$"View Certificates"
@@ -147,6 +155,11 @@ fi
 if [ "$ACTION" = unrevoke ] || [ "$ACTION" = reallyunrevoke ]
 then
 	TITLEMSG=$"Un-Revoke Client VPN Certificate"
+fi
+
+if [ "$ACTION" = addcomment ]
+then
+	TITLEMSG=$"Add a comment to a VPN account"
 fi
 
 
@@ -250,7 +263,7 @@ else
 fi
 
 Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/vpn_certificates.cgi | cut -d' ' -f1)
-echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USERNAME:" | sudo -H /opt/karoshi/web_controls/exec/vpn_certificates
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$ACTION:$USERNAME:$COMMENT:" | sudo -H /opt/karoshi/web_controls/exec/vpn_certificates
 [ "$MOBILE" = no ] && echo '</div>'
 echo '</div></div></body></html>'
 exit

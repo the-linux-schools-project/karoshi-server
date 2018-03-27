@@ -85,16 +85,8 @@ do
 
 		#Check md5 sum
 		ChecksumTXT=$(sed -n 1,1p /opt/karoshi/updates/"$PATCHNAME".txt | tr -cd 'A-Za-z0-9\._:\-')
+		ChecksumFILE=$(md5sum /opt/karoshi/updates/"$PATCHNAME".sh | cut -d' ' -f1)
 
-
-		#All newer patches use sha256 instead of md5sum so we get the date from the patch name to see which type to use.
-		#Patch name convention is karoshi-web-controls-YYMMDD-hhmm.sh 
-		if [[ $(echo "$PATCHNAME" | cut -d"-" -f4) -gt 180220 ]]
-		then
-			ChecksumFILE=$(sha256sum /opt/karoshi/updates/"$PATCHNAME".sh | cut -d' ' -f1)
-		else
-			ChecksumFILE=$(md5sum /opt/karoshi/updates/"$PATCHNAME".sh | cut -d' ' -f1)
-		fi
 
 		[ -z "$ChecksumTXT" ] && ChecksumTXT=txtsumnotset
 		if [ "$ChecksumTXT" != "$Checksum" ] || [ "$ChecksumFILE" != "$Checksum" ]

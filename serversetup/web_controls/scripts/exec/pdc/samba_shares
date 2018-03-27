@@ -207,6 +207,7 @@ WIDTH11=30
 
 ICON1=/images/submenus/file/edit.png
 ICON2=/images/submenus/file/delete.png
+ICON3=/images/submenus/system/ups_add.png
 
 if [ "$ACTION" = reallyadd ] || [ $ACTION = reallyedit ]
 then
@@ -857,7 +858,7 @@ do
 	echo '<tr id="row'"$COUNTER"'" style="display: '"$SHOWROW"';"><td style="vertical-align:middle">'$"Group"'</td><td style="vertical-align:middle">'
 		if [ ! -z "${!GROUPNAME}" ]
 		then
-			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'"$COUNTER"'____/g' | sed 's/<option label="blank"><\/option>/<option value="'${!GROUPNAME}'">'${!GROUPNAME}'<\/option><option class="select-dash" disabled="disabled">----------<\/option><option label="blank"><\/option>/g' | sed 's/200/170/g'
+			/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_" style="width: 200px;">/<select name="_GROUP_" style="width: 200px;"><option selected value="'${!GROUPNAME}'">'${!GROUPNAME}'<\/option>/g' | sed 's/<option disabled selected value>/<option disabled value>/g' | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'"$COUNTER"'____/g'  | sed 's/200/170/g'
 		else
 			/opt/karoshi/web_controls/group_dropdown_list | sed 's/_/____/g' | sed 's/____GROUP____/____GROUP'"$COUNTER"'____/g' | sed 's/200/170/g'
 		fi
@@ -891,8 +892,13 @@ do
 	echo '<option value="1">'$"Map drive"'</option>
 	<option value="0">'$"Do not map drive"'</option>
 	</select>
-	</td><td><a style="display: '"$SHOWLINK"';" id="link'"$COUNTER"'" href="javascript: void(0);"onclick="showRow('\''row'"$COUNTER2"''\''); hideLink('\''link'"$COUNTER"''\'');"><img src="/images/submenus/system/ups_add.png" alt="Add"></a>
-	</td></tr>'
+	<td>
+	<button type="button" style="display: '"$SHOWLINK"';" id="link'"$COUNTER"'" class="info" onclick="showRow('\''row'"$COUNTER2"''\''); hideLink('\''link'"$COUNTER"''\'');">
+	<img src="'"$ICON3"'" alt="'$"Add group"'">
+	<span>'$"Add another group."'</span><br>
+	</button>
+	</td>
+	</tr>'
 
 	let "COUNTER += 1"
 	let "COUNTER2 += 1"
