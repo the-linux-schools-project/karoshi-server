@@ -45,7 +45,7 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:%\-+')
 #########################
 #Assign data to variables
 #########################
-END_POINT=21
+END_POINT=30
 function get_data {
 COUNTER=2
 DATAENTRY=""
@@ -106,6 +106,26 @@ NEWUSERNAME="$DATAENTRY"
 DATANAME=GROUP
 get_data
 GROUP="$DATAENTRY"
+
+#Assign ROOMNUMBER
+DATANAME=ROOMNUMBER
+get_data
+ROOMNUMBER="$DATAENTRY"
+
+#Assign TELEPHONENUMBER
+DATANAME=TELEPHONENUMBER
+get_data
+TELEPHONENUMBER="$DATAENTRY"
+
+#Assign FAXNUMBER
+DATANAME=FAXNUMBER
+get_data
+FAXNUMBER="$DATAENTRY"
+
+#Assign MOBILENUMBER
+DATANAME=MOBILENUMBER
+get_data
+MOBILENUMBER="$DATAENTRY"
 
 function show_status {
 echo '<SCRIPT language="Javascript">
@@ -176,7 +196,7 @@ then
 fi
 
 #Change information
-echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL:$GROUP:$NEWUSERNAME" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
+echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$SN:$GIVENNAME:$DISPLAYNAME:$EMPLOYEENUMBER:$MAILLOCALADDRESS:$MAIL:$GROUP:$NEWUSERNAME:$ROOMNUMBER:$TELEPHONENUMBER:$FAXNUMBER:$MOBILENUMBER:" | sudo -H /opt/karoshi/web_controls/exec/change_user_info
 SERVERNAME=$(hostname-fqdn)
 
 echo '<form METHOD=POST ACTION="show_user_info.cgi" target="_top" name = "frm">

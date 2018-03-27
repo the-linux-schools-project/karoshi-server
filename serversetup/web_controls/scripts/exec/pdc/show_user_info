@@ -182,6 +182,11 @@ SAMBAPWDLASTSET=$(echo -e "$LDAPDATA" | grep -i ^PwdLastSet: | cut -d: -f2 | sed
 BADPASSWORDTIME=$(echo -e "$LDAPDATA" | grep -i ^badPasswordTime: | cut -d: -f2 | sed 's/^ //g')
 BADPASSWORDCOUNT=$(echo -e "$LDAPDATA" | grep -i ^badPwdCount: | cut -d: -f2 | sed 's/^ //g')
 LOCKOUTTIME=$(echo -e "$LDAPDATA" | grep -i ^lockoutTime: | cut -d: -f2 | sed 's/^ //g')
+RoomNumber=$(echo -e "$LDAPDATA" | grep -i ^roomnumber: | cut -d: -f2 | sed 's/^ //g')
+
+TelNumber=$(echo -e "$LDAPDATA" | grep -i ^telephonenumber: | cut -d: -f2 | sed 's/^ //g')
+FaxNumber=$(echo -e "$LDAPDATA" | grep -i ^facsimiletelephonenumber: | cut -d: -f2 | sed 's/^ //g')
+MobileNumber=$(echo -e "$LDAPDATA" | grep -i ^mobile: | cut -d: -f2 | sed 's/^ //g')
 
 [ -z "$BADPASSWORDTIME" ] && BADPASSWORDTIME=0
 [ -z "$BADPASSWORDCOUNT" ] && BADPASSWORDCOUNT=0
@@ -220,13 +225,18 @@ echo '<form name="myform" action="/cgi-bin/admin/change_user_info.cgi" method="p
 <tr><td>'$"Lockout Time"'</td><td colspan="2">'"$LOCKOUTTIME2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"If this value is not zero it indicates that this account has been locked out from the date shown."'</span></a></td></tr>
 <tr><td>'$"Password last changed"'</td><td colspan="2">'"$SAMBAPWDLASTSET2"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Edit_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"The date that the password was last changed for this user."'</span></a></td></tr>
 <tr><td>'$"Username"'</td><td colspan="2"><input tabindex= "2" value="'"$CN"'" name="_NEWUSERNAME_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"Surname"'</td><td><input tabindex= "2" value="'"$SN"'" name="_SN_" style="width: 200px;" size="20" type="text"></td>
+<tr><td>'$"Surname"'</td><td colspan="2"><input tabindex= "2" value="'"$SN"'" name="_SN_" style="width: 200px;" size="20" type="text"></td></tr>
+
+<tr><td>'$"Given Name"'</td><td colspan="2"><input tabindex= "3" value="'"$GIVENNAME"'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>Employee / student number</td><td colspan="2"><input tabindex= "4" value="'"$EMPLOYEENUMBER"'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Display Name"'</td><td colspan="2"><input tabindex= "5" value="'"$DISPLAYNAME"'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Room Number"'</td><td colspan="2"><input tabindex= "6" value="'"$RoomNumber"'" name="_ROOMNUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Telephone Number"'</td><td><input tabindex= "7" value="'"$TelNumber"'" name="_TELEPHONENUMBER_" style="width: 200px;" size="20" type="text"></td>
 <td style="max-width: 200px; vertical-align:middle;" colspan="1" rowspan="6">
 <iframe src="show_user_info_upload_image_fm.cgi?_username_='"$USERNAME"'&_primarygroup_='"$PRIMARYGROUP"'" width="136" height="180" style="overflow:hidden; border: none;"></iframe></tr>
-<tr><td>'$"Given Name"'</td><td><input tabindex= "3" value="'"$GIVENNAME"'" name="_GIVENNAME_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>Employee / student number</td><td><input tabindex= "4" value="'"$EMPLOYEENUMBER"'" name="_EMPLOYEENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"Display Name"'</td><td><input tabindex= "5" value="'"$DISPLAYNAME"'" name="_DISPLAYNAME_" style="width: 200px;" size="20" type="text"></td></tr>
-<tr><td>'$"E-Mail address"'</td><td><input tabindex= "7" value="'"$MAIL"'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Fax Number"'</td><td><input tabindex= "7" value="'"$FaxNumber"'" name="_FAXNUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"Mobile Number"'</td><td><input tabindex= "7" value="'"$MobileNumber"'" name="_MOBILENUMBER_" style="width: 200px;" size="20" type="text"></td></tr>
+<tr><td>'$"E-Mail address"'</td><td><input tabindex= "8" value="'"$MAIL"'" name="_MAIL_" style="width: 200px;" size="20" type="text"></td></tr>
 <tr><td>'$"Primary Group"'</td><td>'
 
 /opt/karoshi/web_controls/group_dropdown_list | sed 's/.*<option disabled selected value>.*/<option selected="selected">'"$PRIMARYGROUP"'<\/option><option disabled value>-----------------<\/option>/g'

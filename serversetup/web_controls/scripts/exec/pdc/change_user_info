@@ -72,6 +72,10 @@ MAILLOCALADDRESS=$(echo "$DATA" | cut -s -d: -f9)
 MAIL=$(echo "$DATA" | cut -s -d: -f10)
 GROUP=$(echo "$DATA" | cut -s -d: -f11)
 NEWUSERNAME=$(echo "$DATA" | cut -s -d: -f12)
+ROOMNUMBER=$(echo "$DATA" | cut -s -d: -f13 | sed 's/+/ /g' | tr -cd "A-Za-z0-9 ")
+TELEPHONENUMBER=$(echo "$DATA" | cut -s -d: -f14 | sed 's/+/ /g' | tr -cd "0-9 ")
+FAXNUMBER=$(echo "$DATA" | cut -s -d: -f15 | sed 's/+/ /g' | tr -cd "0-9 ")
+MOBILENUMBER=$(echo "$DATA" | cut -s -d: -f16 | sed 's/+/ /g' | tr -cd "0-9 ")
 
 ########################
 #Check data
@@ -161,6 +165,27 @@ else
 fi
 
 echo -e "$USERDN\nchangetype: modify\n$ACTION: employeeNumber\nemployeeNumber: $EMPLOYEENUMBER\n-\nreplace: sn\nsn: $SN\n-\nreplace: givenName\ngivenName: $GIVENNAME\n-\nreplace: displayName\ndisplayName: $DISPLAYNAME\n-\nreplace: mail\nmail: $MAIL\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+
+
+if [ ! -z "$ROOMNUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: roomnumber\nroomnumber: $ROOMNUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$TELEPHONENUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: telephonenumber\ntelephonenumber: $TELEPHONENUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$FAXNUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: facsimiletelephonenumber\nfacsimiletelephonenumber: $FAXNUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$MOBILENUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: mobile\nmobile: $MOBILENUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
 
 #Update the user photo
 if [ -d "/var/www/karoshi/show_user_image/$REMOTE_USER" ]
