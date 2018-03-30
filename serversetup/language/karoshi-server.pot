@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-11-05 06:22+0000\n"
+"POT-Creation-Date: 2018-03-30 14:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-msgid "Updating repositories"
-msgstr ""
-
-msgid "Installing"
-msgstr ""
-
-msgid "Adding Docker Repository"
-msgstr ""
 
 msgid "Extracting Nextcloud"
 msgstr ""
@@ -152,6 +143,9 @@ msgstr ""
 msgid "Activating"
 msgstr ""
 
+msgid "Installing"
+msgstr ""
+
 msgid "Checking for users"
 msgstr ""
 
@@ -186,6 +180,9 @@ msgid "Starting Memcached"
 msgstr ""
 
 msgid "Starting SOGo"
+msgstr ""
+
+msgid "Starting MySQL"
 msgstr ""
 
 msgid "Starting Postfix"
@@ -290,6 +287,9 @@ msgstr ""
 msgid "Setup Airprint"
 msgstr ""
 
+msgid "Updating repositories"
+msgstr ""
+
 msgid "Installing Avahi Daemon"
 msgstr ""
 
@@ -389,7 +389,7 @@ msgstr ""
 msgid "Clear Queue"
 msgstr ""
 
-msgid "No Printer queues have been added"
+msgid "No printer queues have been added"
 msgstr ""
 
 msgid "Creating the xerte database in mysql"
@@ -422,10 +422,7 @@ msgstr ""
 msgid "Requests"
 msgstr ""
 
-msgid "Back"
-msgstr ""
-
-msgid "All"
+msgid "Menu"
 msgstr ""
 
 msgid "There are no new requests to view."
@@ -494,6 +491,9 @@ msgstr ""
 msgid "Set Default Page"
 msgstr ""
 
+msgid "Back"
+msgstr ""
+
 msgid "Choose the default page that you want to have for this section of the web management."
 msgstr ""
 
@@ -534,9 +534,6 @@ msgid "Reset"
 msgstr ""
 
 msgid "Client Internet Controls"
-msgstr ""
-
-msgid "Menu"
 msgstr ""
 
 msgid "Choose the location that you want to allow or deny internet access for."
@@ -1169,6 +1166,9 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+msgid "All"
+msgstr ""
+
 msgid "Associated groups"
 msgstr ""
 
@@ -1215,6 +1215,9 @@ msgid "This will reset the lockout attempts for a user after too many login atte
 msgstr ""
 
 msgid "Enter in the username that you want to reset the user lockout for."
+msgstr ""
+
+msgid "User Photo"
 msgstr ""
 
 msgid "Setup VPN Server"
@@ -1835,6 +1838,9 @@ msgstr ""
 msgid "The UPS could not be contacted on that port."
 msgstr ""
 
+msgid "Activate Changes"
+msgstr ""
+
 msgid "Add Monitors"
 msgstr ""
 
@@ -1938,9 +1944,6 @@ msgid "Configure DHCP"
 msgstr ""
 
 msgid "Delete DHCP bans"
-msgstr ""
-
-msgid "Activate Changes"
 msgstr ""
 
 msgid "Host name"
@@ -2133,18 +2136,6 @@ msgid "Select the icons that you want to upload."
 msgstr ""
 
 msgid "Icon"
-msgstr ""
-
-msgid "Change Primary Group"
-msgstr ""
-
-msgid "Edit User"
-msgstr ""
-
-msgid "Enter in a username that you want to change the primary group for."
-msgstr ""
-
-msgid "The user home area will be moved to the new group location."
 msgstr ""
 
 msgid "Exam Accounts - Reset Passwords"
@@ -2685,10 +2676,16 @@ msgstr ""
 msgid "No option."
 msgstr ""
 
+msgid "Hostname, Mac Address, TCPIP Address"
+msgstr ""
+
 msgid "DHCP Reservations"
 msgstr ""
 
-msgid "Hostname, Mac Address, TCPIP Address"
+msgid "View and edit DHCP Reservations"
+msgstr ""
+
+msgid "Reservations"
 msgstr ""
 
 msgid "CSV file format"
@@ -2776,6 +2773,9 @@ msgid "All Servers"
 msgstr ""
 
 msgid "Create ZFS Raid"
+msgstr ""
+
+msgid "Select a server."
 msgstr ""
 
 msgid "ZFS Status"
@@ -3561,6 +3561,15 @@ msgstr ""
 msgid "Incorrect droptype"
 msgstr ""
 
+msgid "CPU Usage"
+msgstr ""
+
+msgid "Samba information"
+msgstr ""
+
+msgid "Hard disk usage"
+msgstr ""
+
 msgid "Update Moodle"
 msgstr ""
 
@@ -3681,13 +3690,19 @@ msgstr ""
 msgid "Assigned Printers"
 msgstr ""
 
-msgid "View Assigned Printers"
+msgid "View Assigned Printers."
 msgstr ""
 
 msgid "Edit PPD"
 msgstr ""
 
 msgid "Edit a printer driver."
+msgstr ""
+
+msgid "Windows printer drivers."
+msgstr ""
+
+msgid "Windows Drivers"
 msgstr ""
 
 msgid "Configure printing with Savapage."
@@ -3919,6 +3934,9 @@ msgid "Revoke Client VPN Certificate"
 msgstr ""
 
 msgid "Un-Revoke Client VPN Certificate"
+msgstr ""
+
+msgid "Add a comment to a VPN account"
 msgstr ""
 
 msgid "Download Client VPN Certificate"
@@ -4368,15 +4386,6 @@ msgstr ""
 msgid "Select the user you want to view."
 msgstr ""
 
-msgid "Change Username"
-msgstr ""
-
-msgid "Change the username for this user."
-msgstr ""
-
-msgid "Change the primary group for this user."
-msgstr ""
-
 msgid "Change the groups that this user is a member of."
 msgstr ""
 
@@ -4464,16 +4473,16 @@ msgstr ""
 msgid "An E-Mail alert has been sent."
 msgstr ""
 
+msgid "Choose the printer you want to delete."
+msgstr ""
+
 msgid "Add Printers"
 msgstr ""
 
 msgid "Add a network printer queue."
 msgstr ""
 
-msgid "There are no printer queues to delete."
-msgstr ""
-
-msgid "Please choose the printer you want to delete."
+msgid "There are no printer queues to delete"
 msgstr ""
 
 msgid "Requested Deleted Users"
@@ -4815,6 +4824,9 @@ msgstr ""
 msgid "View and add E-Mail Alerts"
 msgstr ""
 
+msgid "View Assigned Printers"
+msgstr ""
+
 msgid "This shows the printers that have been assigned to locations."
 msgstr ""
 
@@ -4834,6 +4846,9 @@ msgid "Default Printer"
 msgstr ""
 
 msgid "Remove Printer"
+msgstr ""
+
+msgid "No Printers have been assigned"
 msgstr ""
 
 msgid "Locations are used to assign printers."
@@ -4947,10 +4962,16 @@ msgstr ""
 msgid "Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 msgstr ""
 
-msgid "Owncloud Server"
+msgid "Nextcloud Server"
 msgstr ""
 
-msgid "Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
+msgid "Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
+msgstr ""
+
+msgid "Savapage"
+msgstr ""
+
+msgid "Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
 msgstr ""
 
 msgid "Federated Server"
@@ -5017,30 +5038,6 @@ msgid "Add a DNS Zone"
 msgstr ""
 
 msgid "View server DNS Settings"
-msgstr ""
-
-msgid "Change a Username"
-msgstr ""
-
-msgid "The new username must not be blank."
-msgstr ""
-
-msgid "The new username is already in use."
-msgstr ""
-
-msgid "You have not entered in a forename."
-msgstr ""
-
-msgid "You have not entered in a surname."
-msgstr ""
-
-msgid "You cannot change that username."
-msgstr ""
-
-msgid "You cannot change the name of a system user."
-msgstr ""
-
-msgid "There was a problem changing the username."
 msgstr ""
 
 msgid "Apply Self Signed SSL Certificate"
@@ -5409,6 +5406,9 @@ msgstr ""
 msgid "Change User Password"
 msgstr ""
 
+msgid "Password length required:"
+msgstr ""
+
 msgid "Change at next logon"
 msgstr ""
 
@@ -5584,6 +5584,15 @@ msgid "Enter a username"
 msgstr ""
 
 msgid "Primary group from CSV"
+msgstr ""
+
+msgid "Update Collabora Office"
+msgstr ""
+
+msgid "This will update Collabora Office to the latest version."
+msgstr ""
+
+msgid "Collabora has now been updated"
 msgstr ""
 
 msgid "Setup Print Server"
@@ -6093,7 +6102,7 @@ msgstr ""
 msgid "arnoldu"
 msgstr ""
 
-msgid "Enrollment number as username."
+msgid "Enrollment number"
 msgstr ""
 
 msgid "Enter the firstname for this user."
@@ -6118,6 +6127,9 @@ msgid "Only members of itadmin and the tech groups gain administrator access to 
 msgstr ""
 
 msgid "Choose the username style you require."
+msgstr ""
+
+msgid "Click on the image to upload a JPG image for this user."
 msgstr ""
 
 msgid "Record Incident"
@@ -6360,6 +6372,9 @@ msgstr ""
 msgid "Choose a user to view."
 msgstr ""
 
+msgid "Edit User"
+msgstr ""
+
 msgid "Edit this user."
 msgstr ""
 
@@ -6391,18 +6406,6 @@ msgid "Current backup server"
 msgstr ""
 
 msgid "Un-assign"
-msgstr ""
-
-msgid "You cannot change the primary group for a system user."
-msgstr ""
-
-msgid "The new primary group must not be blank."
-msgstr ""
-
-msgid "The new primary group does not exist."
-msgstr ""
-
-msgid "Primary group changed for"
 msgstr ""
 
 msgid "The user cannot be blank."
@@ -6510,7 +6513,7 @@ msgstr ""
 msgid "The mail address cannot be blank."
 msgstr ""
 
-msgid "information changed."
+msgid "The new username must not be blank."
 msgstr ""
 
 msgid "You have not chosen an action."
@@ -6579,6 +6582,12 @@ msgstr ""
 msgid "Run Command"
 msgstr ""
 
+msgid "This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."
+msgstr ""
+
+msgid "Select a server"
+msgstr ""
+
 msgid "Choose the date that you want to view the email statistics for."
 msgstr ""
 
@@ -6592,6 +6601,9 @@ msgid "Warnings"
 msgstr ""
 
 msgid "Quick Links"
+msgstr ""
+
+msgid "Change Username"
 msgstr ""
 
 msgid "Update logs"
@@ -6819,30 +6831,6 @@ msgstr ""
 msgid "The Commercial SSl Certificate has now been created. Please proceed to step two."
 msgstr ""
 
-msgid "Edit the user's information."
-msgstr ""
-
-msgid "Current Username"
-msgstr ""
-
-msgid "Enter in the username that you want to change."
-msgstr ""
-
-msgid "New username"
-msgstr ""
-
-msgid "Enter in the new username for this user."
-msgstr ""
-
-msgid "New forename"
-msgstr ""
-
-msgid "New surname"
-msgstr ""
-
-msgid "Current username"
-msgstr ""
-
 msgid "Upload a Moodle Theme"
 msgstr ""
 
@@ -6862,12 +6850,6 @@ msgid "Control Printers"
 msgstr ""
 
 msgid "Enter in the settings that you want to use for your client devices."
-msgstr ""
-
-msgid "View and edit DHCP Reservations"
-msgstr ""
-
-msgid "Reservations"
 msgstr ""
 
 msgid "DNS Servers"
@@ -7020,6 +7002,12 @@ msgstr ""
 msgid "The list is empty. All TCPIP addresses are allowed."
 msgstr ""
 
+msgid "stopping"
+msgstr ""
+
+msgid "starting"
+msgstr ""
+
 msgid "User Connection Logs"
 msgstr ""
 
@@ -7167,9 +7155,6 @@ msgstr ""
 msgid "Nextcloud"
 msgstr ""
 
-msgid "Nextcloud Server"
-msgstr ""
-
 msgid "This will provide a cloud file storage and home access system for web access to files."
 msgstr ""
 
@@ -7234,9 +7219,6 @@ msgid "This will setup the Gitlab module."
 msgstr ""
 
 msgid "This will setup the Gitlab Server."
-msgstr ""
-
-msgid "Savapage"
 msgstr ""
 
 msgid "This module can only be applied to a server that already has the print server module applied."
@@ -8151,7 +8133,7 @@ msgstr ""
 msgid "external access"
 msgstr ""
 
-msgid "Port 50002 needs a client certificate available in the itadmin share."
+msgid "Port '"
 msgstr ""
 
 msgid "Staff"
@@ -8181,7 +8163,7 @@ msgstr ""
 msgid "The description data is not set."
 msgstr ""
 
-msgid "Incorrect MD5 checksum for this patch."
+msgid "Incorrect checksum for this patch."
 msgstr ""
 
 msgid "There is no signature file for this patch."
@@ -8622,6 +8604,39 @@ msgstr ""
 msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
 msgstr ""
 
+msgid "Process ID"
+msgstr ""
+
+msgid "Connection"
+msgstr ""
+
+msgid "Protocol Version"
+msgstr ""
+
+msgid "Additional"
+msgstr ""
+
+msgid "Machine"
+msgstr ""
+
+msgid "Day of Month"
+msgstr ""
+
+msgid "UID"
+msgstr ""
+
+msgid "Deny Mode"
+msgstr ""
+
+msgid "R/W"
+msgstr ""
+
+msgid "Oplock"
+msgstr ""
+
+msgid "Sharepath"
+msgstr ""
+
 msgid "Go up one directory."
 msgstr ""
 
@@ -8647,6 +8662,21 @@ msgid "New File"
 msgstr ""
 
 msgid "Create a new file."
+msgstr ""
+
+msgid "Upload a File"
+msgstr ""
+
+msgid "Upload a file."
+msgstr ""
+
+msgid "Upload File"
+msgstr ""
+
+msgid "Refresh"
+msgstr ""
+
+msgid "Refresh the folder."
 msgstr ""
 
 msgid "Move here?"
@@ -8698,6 +8728,36 @@ msgid "Last accessed"
 msgstr ""
 
 msgid "Last modified"
+msgstr ""
+
+msgid "Database name"
+msgstr ""
+
+msgid "Enter in the database name that you want this file restored to."
+msgstr ""
+
+msgid "This will overwrite the data stored in this database if it already exits."
+msgstr ""
+
+msgid "Database Username"
+msgstr ""
+
+msgid "Enter in a mysql username to access the database."
+msgstr ""
+
+msgid "This mysql user will be created if it does not already exist."
+msgstr ""
+
+msgid "This field can be left blank to use an existing mysql username and password that has already been set for this database."
+msgstr ""
+
+msgid "Database Password"
+msgstr ""
+
+msgid "Enter in a mysql password to access the database."
+msgstr ""
+
+msgid "Restore SQL"
 msgstr ""
 
 msgid "Basic Permissions"
@@ -8758,39 +8818,6 @@ msgid ""
 msgstr ""
 
 msgid "Files in this folder are not allowed to be edited."
-msgstr ""
-
-msgid "Process ID"
-msgstr ""
-
-msgid "Connection"
-msgstr ""
-
-msgid "Protocol Version"
-msgstr ""
-
-msgid "Additional"
-msgstr ""
-
-msgid "Machine"
-msgstr ""
-
-msgid "Day of Month"
-msgstr ""
-
-msgid "UID"
-msgstr ""
-
-msgid "Deny Mode"
-msgstr ""
-
-msgid "R/W"
-msgstr ""
-
-msgid "Oplock"
-msgstr ""
-
-msgid "Sharepath"
 msgstr ""
 
 msgid "New Exam Account"
@@ -8865,7 +8892,10 @@ msgstr ""
 msgid "Removing Moodle"
 msgstr ""
 
-msgid "Removing Owncloud"
+msgid "Removing Nextcloud"
+msgstr ""
+
+msgid "Removing Savapage"
 msgstr ""
 
 msgid "Removing Gitlab"
@@ -9195,13 +9225,22 @@ msgstr ""
 msgid "The date that the password was last changed for this user."
 msgstr ""
 
-msgid "Common Name"
-msgstr ""
-
 msgid "Given Name"
 msgstr ""
 
 msgid "Display Name"
+msgstr ""
+
+msgid "Room Number"
+msgstr ""
+
+msgid "Telephone Number"
+msgstr ""
+
+msgid "Fax Number"
+msgstr ""
+
+msgid "Mobile Number"
 msgstr ""
 
 msgid "E-Mail address"
@@ -9297,9 +9336,6 @@ msgstr ""
 msgid "Modifying shorewall rules to allow ports 80 and 443."
 msgstr ""
 
-msgid "Checking for modules"
-msgstr ""
-
 msgid "The upload file process has been overwritten by another admin user."
 msgstr ""
 
@@ -9360,7 +9396,7 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-msgid "CPU Usage"
+msgid "Elapsed"
 msgstr ""
 
 msgid "Samba Status"
@@ -9551,6 +9587,9 @@ msgstr ""
 msgid "If a password has to contain upper and lower case characters and numbers."
 msgstr ""
 
+msgid "Enrollment number as username."
+msgstr ""
+
 msgid "Choose the default username style."
 msgstr ""
 
@@ -9648,6 +9687,12 @@ msgid "Map drive"
 msgstr ""
 
 msgid "Choose the group that you want to allow access to the folder."
+msgstr ""
+
+msgid "Add group"
+msgstr ""
+
+msgid "Add another group."
 msgstr ""
 
 msgid "Add share"
@@ -9773,6 +9818,15 @@ msgstr ""
 msgid "View the filter groups."
 msgstr ""
 
+msgid "Monday to Friday"
+msgstr ""
+
+msgid "Friday to Monday"
+msgstr ""
+
+msgid "Saturday and Sunday"
+msgstr ""
+
 msgid "This shows the internet filter groups that are available and the groups that are assigned to them."
 msgstr ""
 
@@ -9783,6 +9837,9 @@ msgid "Add a new filter group."
 msgstr ""
 
 msgid "Assigned Groups"
+msgstr ""
+
+msgid "Times"
 msgstr ""
 
 msgid "Default Filter Group"
@@ -9807,6 +9864,24 @@ msgid "Are you sure you want to delete this filter group?"
 msgstr ""
 
 msgid "This allows you assign user groups to filter groups. Groups that are not assigned to a filter group are automatically assigned to the default filter group."
+msgstr ""
+
+msgid "Filter Name"
+msgstr ""
+
+msgid "Add Filter Fallback Time"
+msgstr ""
+
+msgid "Start Time"
+msgstr ""
+
+msgid "End Time"
+msgstr ""
+
+msgid "Fallback filter"
+msgstr ""
+
+msgid "Assigned Filter Group Fallback Times"
 msgstr ""
 
 msgid "Filter Group Options"
@@ -9938,12 +10013,6 @@ msgstr ""
 msgid "Allowing ntlm auth for mschapV2"
 msgstr ""
 
-msgid "Kanboard Project Management"
-msgstr ""
-
-msgid "Kanboard has been installed and can be accessed from"
-msgstr ""
-
 msgid "Copying start menu to"
 msgstr ""
 
@@ -9963,6 +10032,9 @@ msgid "Mail ID"
 msgstr ""
 
 msgid "Recipient"
+msgstr ""
+
+msgid "Errors"
 msgstr ""
 
 msgid "Delete E-Mail"
@@ -10592,9 +10664,6 @@ msgstr ""
 msgid "Network Monitoring"
 msgstr ""
 
-msgid "OCS-Inventory"
-msgstr ""
-
 msgid "Logs"
 msgstr ""
 
@@ -10626,6 +10695,9 @@ msgid "Change a user's password."
 msgstr ""
 
 msgid "Add a new user to the syatem"
+msgstr ""
+
+msgid "This will show the LDAP information for that user and allow you to change the username, firstname, surname, and primary group."
 msgstr ""
 
 msgid "Ban a user from logging into the system"
@@ -10850,6 +10922,9 @@ msgstr ""
 msgid "Upload Moodle Theme"
 msgstr ""
 
+msgid "Update Collabora Office to the latest version."
+msgstr ""
+
 msgid "Configure the NTP settings for your servers."
 msgstr ""
 
@@ -10953,6 +11028,9 @@ msgid "Show client connections to a server."
 msgstr ""
 
 msgid "Show the domain information."
+msgstr ""
+
+msgid "OCS-Inventory"
 msgstr ""
 
 msgid "Show client locations."
@@ -11163,6 +11241,9 @@ msgid "Configure reverse proxy sites."
 msgstr ""
 
 msgid "Creating an SSL certificate"
+msgstr ""
+
+msgid "Restarting nginx to apply the ssl certificate"
 msgstr ""
 
 msgid "Enabling Certificate"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-11-05 06:22+0000\n"
+"POT-Creation-Date: 2018-03-30 14:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-msgid "Updating repositories"
-msgstr "Update van repositories"
-
-msgid "Installing"
-msgstr "installeren"
-
-msgid "Adding Docker Repository"
-msgstr "Docker Repository toevoegen"
 
 msgid "Extracting Nextcloud"
 msgstr "Het extraheren van Nextcloud"
@@ -152,6 +143,9 @@ msgstr "Geen volume-informatie"
 msgid "Activating"
 msgstr "activeren"
 
+msgid "Installing"
+msgstr "installeren"
+
 msgid "Checking for users"
 msgstr "Controleren op gebruikers"
 
@@ -187,6 +181,9 @@ msgstr "Memcached starten"
 
 msgid "Starting SOGo"
 msgstr "SOGo starten"
+
+msgid "Starting MySQL"
+msgstr "MySQL starten"
 
 msgid "Starting Postfix"
 msgstr "Postfix starten"
@@ -264,7 +261,7 @@ msgid "Network Events"
 msgstr "Netwerk evenementen"
 
 msgid "Show"
-msgstr "Tonen"
+msgstr "Laten zien"
 
 msgid "Hide"
 msgstr "Verbergen"
@@ -289,6 +286,9 @@ msgstr "Meld u aan en wijzig dit wachtwoord onmiddellijk."
 
 msgid "Setup Airprint"
 msgstr "Luchtdruk instellen"
+
+msgid "Updating repositories"
+msgstr "Update van repositories"
 
 msgid "Installing Avahi Daemon"
 msgstr "Avahi Daemon installeren"
@@ -389,7 +389,7 @@ msgstr "Bekijk vacatures"
 msgid "Clear Queue"
 msgstr "Wachtrij wissen"
 
-msgid "No Printer queues have been added"
+msgid "No printer queues have been added"
 msgstr "Er zijn geen printerwachtrijen toegevoegd"
 
 msgid "Creating the xerte database in mysql"
@@ -422,11 +422,8 @@ msgstr "Technische hulp"
 msgid "Requests"
 msgstr "verzoeken"
 
-msgid "Back"
-msgstr "Terug"
-
-msgid "All"
-msgstr "Alle"
+msgid "Menu"
+msgstr "Menu"
 
 msgid "There are no new requests to view."
 msgstr "Er zijn geen nieuwe verzoeken om te bekijken."
@@ -494,6 +491,9 @@ msgstr "Zoek Karoshi Web Management"
 msgid "Set Default Page"
 msgstr "Stel de standaardpagina in"
 
+msgid "Back"
+msgstr "Terug"
+
 msgid "Choose the default page that you want to have for this section of the web management."
 msgstr "Kies de standaardpagina die u voor dit gedeelte van het webbeheer wilt hebben."
 
@@ -536,14 +536,11 @@ msgstr "Reset"
 msgid "Client Internet Controls"
 msgstr "Client Internet Controls"
 
-msgid "Menu"
-msgstr "Menu"
-
 msgid "Choose the location that you want to allow or deny internet access for."
 msgstr "Kies de locatie waarvoor u internettoegang wilt toestaan ​​of weigeren."
 
 msgid "Choose Location"
-msgstr "Kies Locatie"
+msgstr "Kies locatie"
 
 msgid "You have not chosen a location."
 msgstr "U hebt geen locatie gekozen."
@@ -810,7 +807,7 @@ msgid "Enter in the year group if this is a student or the role if it is a membe
 msgstr "Voer de jaargroep in als dit een student is of de rol als het een personeelslid is."
 
 msgid "Admission Number"
-msgstr "Toegangsnummer"
+msgstr "Toelatingsnummer"
 
 msgid "Enter in the admission number for a student or leave blank for a member of staff."
 msgstr "Voer het toelatingsnummer voor een student in of laat blanco voor een personeelslid."
@@ -849,10 +846,10 @@ msgid "Password changed for"
 msgstr "Wachtwoord gewijzigd voor"
 
 msgid "The password was not changed for"
-msgstr "Het wachtwoord is niet gewijzigd voor"
+msgstr "Het wachtwoord is niet veranderd voor"
 
 msgid "User Menu"
-msgstr "gebruikers menu"
+msgstr "gebruikersmenu"
 
 msgid "This will change the password of the user for access to all servers on the Karoshi system."
 msgstr "Hiermee wordt het wachtwoord van de gebruiker gewijzigd voor toegang tot alle servers op het Karoshi-systeem."
@@ -1038,7 +1035,7 @@ msgid "Rename"
 msgstr "andere naam geven"
 
 msgid "Group Management"
-msgstr "Groepsbeheer"
+msgstr "Groep management"
 
 msgid "An incorrect action has been entered."
 msgstr "Er is een foutieve actie ingevoerd."
@@ -1169,6 +1166,9 @@ msgstr "Aantal gebruikers"
 msgid "Type"
 msgstr "Type"
 
+msgid "All"
+msgstr "Alle"
+
 msgid "Associated groups"
 msgstr "Geassocieerde groepen"
 
@@ -1216,6 +1216,9 @@ msgstr "Hiermee worden de vergrendelpogingen voor een gebruiker na te veel aanme
 
 msgid "Enter in the username that you want to reset the user lockout for."
 msgstr "Voer de gebruikersnaam in waarvoor u de gebruikersblokkering opnieuw wilt instellen."
+
+msgid "User Photo"
+msgstr "Gebruikersfoto"
 
 msgid "Setup VPN Server"
 msgstr "VPN-server instellen"
@@ -1299,7 +1302,7 @@ msgid "Enter in the code displayed on the page to confirm this action."
 msgstr "Voer de code in die op de pagina wordt weergegeven om deze actie te bevestigen."
 
 msgid "Search E-Mail logs"
-msgstr "Zoek e-mail logs"
+msgstr "Zoeken in e-maillogboeken"
 
 msgid "Choose the date that you want to search the logs for."
 msgstr "Kies de datum waarop u in de logboeken wilt zoeken."
@@ -1581,7 +1584,7 @@ msgid "File Server"
 msgstr "Bestanden server"
 
 msgid "Print Server"
-msgstr "Print Server"
+msgstr "Printserver"
 
 msgid "Squid Internet Proxy"
 msgstr "Squid Internet Proxy"
@@ -1835,6 +1838,9 @@ msgstr "De UPS is toegevoegd."
 msgid "The UPS could not be contacted on that port."
 msgstr "De UPS kon niet worden gecontacteerd op die poort."
 
+msgid "Activate Changes"
+msgstr "Wijzigingen activeren"
+
 msgid "Add Monitors"
 msgstr "Monitors toevoegen"
 
@@ -1940,9 +1946,6 @@ msgstr "Configureer DHCP"
 msgid "Delete DHCP bans"
 msgstr "DHCP-bans verwijderen"
 
-msgid "Activate Changes"
-msgstr "Wijzigingen activeren"
-
 msgid "Host name"
 msgstr "Hostnaam"
 
@@ -2028,7 +2031,7 @@ msgid "Wake a location"
 msgstr "Een locatie wakker maken"
 
 msgid "This will turn on all of the computers in your selected location."
-msgstr "Hiermee worden alle computers op de door u geselecteerde locatie ingeschakeld."
+msgstr "Hiermee worden alle computers op uw geselecteerde locatie ingeschakeld."
 
 msgid "The computers have to be declared in the asset register with a valid mac address."
 msgstr "De computers moeten in het activaregister worden aangegeven met een geldig mac-adres."
@@ -2134,18 +2137,6 @@ msgstr "Selecteer de pictogrammen die u wilt uploaden."
 
 msgid "Icon"
 msgstr "Icoon"
-
-msgid "Change Primary Group"
-msgstr "Primaire groep wijzigen"
-
-msgid "Edit User"
-msgstr "Bewerk gebruiker"
-
-msgid "Enter in a username that you want to change the primary group for."
-msgstr "Voer een gebruikersnaam in waarvoor u de primaire groep wilt wijzigen."
-
-msgid "The user home area will be moved to the new group location."
-msgstr "Het thuisveld van de gebruiker wordt verplaatst naar de nieuwe groepslocatie."
 
 msgid "Exam Accounts - Reset Passwords"
 msgstr "Examenaccounts - Wachtwoorden opnieuw instellen"
@@ -2403,7 +2394,7 @@ msgid "Archive exam accounts"
 msgstr "Archief-examenaccounts"
 
 msgid "All data will be archived from the exam accounts to an examfiles folder in the network share that you choose."
-msgstr "Alle gegevens worden gearchiveerd van de examenaccounts naar een examenbestand in de netwerkshare die u kiest."
+msgstr "Alle gegevens worden gearchiveerd van de examenaccounts naar een examenmap in de netwerkshare die u kiest."
 
 msgid "Only a member of the selected group can access this folder."
 msgstr "Alleen een lid van de geselecteerde groep heeft toegang tot deze map."
@@ -2684,11 +2675,17 @@ msgstr "Client-verbindingen"
 msgid "No option."
 msgstr "Geen optie."
 
+msgid "Hostname, Mac Address, TCPIP Address"
+msgstr "Hostnaam, Mac-adres, TCPIP-adres"
+
 msgid "DHCP Reservations"
 msgstr "DHCP-reserveringen"
 
-msgid "Hostname, Mac Address, TCPIP Address"
-msgstr "Hostnaam, Mac-adres, TCPIP-adres"
+msgid "View and edit DHCP Reservations"
+msgstr "Bekijk en bewerk DHCP-reserveringen"
+
+msgid "Reservations"
+msgstr "Reserveringen"
 
 msgid "CSV file format"
 msgstr "CSV-bestandsindeling"
@@ -2703,7 +2700,7 @@ msgid "Supplier"
 msgstr "Leverancier"
 
 msgid "Budget Holder"
-msgstr "Budgethouder"
+msgstr "Budget houder"
 
 msgid "Ref"
 msgstr "Ref"
@@ -2776,6 +2773,9 @@ msgstr "Alle servers"
 
 msgid "Create ZFS Raid"
 msgstr "Maak ZFS Raid"
+
+msgid "Select a server."
+msgstr "Selecteer een server."
 
 msgid "ZFS Status"
 msgstr "ZFS-status"
@@ -2952,7 +2952,7 @@ msgid "DNS Settings"
 msgstr "DNS-instellingen"
 
 msgid "This allows you to view, edit, and delete the local dns entries on your system."
-msgstr "Hiermee kunt u de lokale dns-vermeldingen op uw systeem weergeven, bewerken en verwijderen."
+msgstr "Hiermee kunt u de lokale dns-vermeldingen op uw systeem bekijken, bewerken en verwijderen."
 
 msgid "View DNS entries"
 msgstr "DNS-vermeldingen bekijken"
@@ -3180,7 +3180,7 @@ msgid "Enter in the mac address of the client computer or device that you want t
 msgstr "Voer het MAC-adres in van de clientcomputer of het apparaat waaraan u een statisch TCP-adres wilt geven."
 
 msgid "Enter in the tcpip address that you want the client computer or device to have."
-msgstr "Voer het TCP-adres in dat u wilt dat de clientcomputer of het apparaat heeft."
+msgstr "Voer het TCP-adres in dat u op de clientcomputer of het apparaat wilt hebben."
 
 msgid "Group Membership"
 msgstr "Groepslidmaatschap"
@@ -3560,6 +3560,15 @@ msgstr "Hiermee kunt u de machtigingen voor webtoepassingen wijzigen zodat de to
 msgid "Incorrect droptype"
 msgstr "Onjuist droptype"
 
+msgid "CPU Usage"
+msgstr "CPU gebruik"
+
+msgid "Samba information"
+msgstr "Samba-informatie"
+
+msgid "Hard disk usage"
+msgstr "Gebruik van de harde schijf"
+
 msgid "Update Moodle"
 msgstr "Update Moodle"
 
@@ -3680,14 +3689,20 @@ msgstr "Verwijder een nieuwe printerwachtrij."
 msgid "Assigned Printers"
 msgstr "Toegekende printers"
 
-msgid "View Assigned Printers"
-msgstr "Toegewezen printers bekijken"
+msgid "View Assigned Printers."
+msgstr "Toegewezen printers bekijken."
 
 msgid "Edit PPD"
 msgstr "Bewerk PPD"
 
 msgid "Edit a printer driver."
 msgstr "Bewerk een printerstuurprogramma."
+
+msgid "Windows printer drivers."
+msgstr "Windows printerstuurprogramma's."
+
+msgid "Windows Drivers"
+msgstr "Windows-stuurprogramma's"
 
 msgid "Configure printing with Savapage."
 msgstr "Configureer afdrukken met Savapage."
@@ -3919,6 +3934,9 @@ msgstr "VPN-certificaat intrekken"
 
 msgid "Un-Revoke Client VPN Certificate"
 msgstr "Client-VPN-certificaat intrekken"
+
+msgid "Add a comment to a VPN account"
+msgstr "Voeg een opmerking toe aan een VPN-account"
 
 msgid "Download Client VPN Certificate"
 msgstr "Client-VPN-certificaat downloaden"
@@ -4284,7 +4302,7 @@ msgid "Deny all groups."
 msgstr "Weiger alle groepen."
 
 msgid "Deny all"
-msgstr "Alles weigeren"
+msgstr "Alles ontkennen"
 
 msgid "Activate changes"
 msgstr "Wijzigingen activeren"
@@ -4335,7 +4353,7 @@ msgid "This module is for advanced use for users that want ssh access to the mai
 msgstr "Deze module is voor geavanceerd gebruik voor gebruikers die SSH-toegang tot de hoofdserver willen."
 
 msgid "It can also be used to join this server to another Karoshi system via the federated server module so that when users are created on the master system they will also be created here."
-msgstr "Het kan ook worden gebruikt om via de federated servermodule deze server met een ander Karoshi-systeem te verbinden, zodat wanneer gebruikers op het mastersysteem worden gemaakt, ze hier ook worden gemaakt."
+msgstr "Het kan ook worden gebruikt om via de federated servermodule deze server met een ander Karoshi-systeem te verbinden, zodat wanneer gebruikers op het mastersysteem worden gemaakt, deze hier ook worden gemaakt."
 
 msgid "MAC"
 msgstr "MAC"
@@ -4366,15 +4384,6 @@ msgstr "Selecteer gebruiker"
 
 msgid "Select the user you want to view."
 msgstr "Selecteer de gebruiker die u wilt bekijken."
-
-msgid "Change Username"
-msgstr "Gebruikersnaam wijzigen"
-
-msgid "Change the username for this user."
-msgstr "Wijzig de gebruikersnaam voor deze gebruiker."
-
-msgid "Change the primary group for this user."
-msgstr "Wijzig de primaire groep voor deze gebruiker."
 
 msgid "Change the groups that this user is a member of."
 msgstr "Wijzig de groepen waarvan deze gebruiker lid is."
@@ -4463,17 +4472,17 @@ msgstr "U hebt geen naam ingevoerd voor deze melding."
 msgid "An E-Mail alert has been sent."
 msgstr "Er is een e-mailwaarschuwing verzonden."
 
+msgid "Choose the printer you want to delete."
+msgstr "Kies de printer die u wilt verwijderen."
+
 msgid "Add Printers"
 msgstr "Printers toevoegen"
 
 msgid "Add a network printer queue."
 msgstr "Voeg een wachtrij voor een netwerkprinter toe."
 
-msgid "There are no printer queues to delete."
-msgstr "Er zijn geen printerwachtrijen om te verwijderen."
-
-msgid "Please choose the printer you want to delete."
-msgstr "Kies de printer die u wilt verwijderen."
+msgid "There are no printer queues to delete"
+msgstr "Er zijn geen printerwachtrijen om te verwijderen"
 
 msgid "Requested Deleted Users"
 msgstr "Gevraagde verwijderde gebruikers aangevraagd"
@@ -4641,7 +4650,7 @@ msgid "Choose the client computers that you want to allow or deny internet acces
 msgstr "Kies de clientcomputers die u wilt toestaan ​​of weigeren internettoegang."
 
 msgid "Choose location."
-msgstr "Kies een locatie."
+msgstr "Kies locatie."
 
 msgid "Allow All"
 msgstr "Sta alles toe"
@@ -4650,7 +4659,7 @@ msgid "Allow internet access for all assets."
 msgstr "Sta internettoegang toe voor alle bezittingen."
 
 msgid "Deny All"
-msgstr "Alles weigeren"
+msgstr "Alles ontkennen"
 
 msgid "Deny internet access for all assets."
 msgstr "Ontken de internettoegang voor alle bezittingen."
@@ -4698,7 +4707,7 @@ msgid "The monitor type cannot be blank."
 msgstr "Het monitortype mag niet leeg zijn."
 
 msgid "You must fill in all of the time interval boxes if you do not want continuous monitoring."
-msgstr "U moet alle tijdsintervalvakjes invullen als u geen continue bewaking wenst."
+msgstr "U moet alle tijdsintervalvakjes invullen als u geen continue monitoring wenst."
 
 msgid "Monitor added."
 msgstr "Monitor toegevoegd."
@@ -4809,10 +4818,13 @@ msgid "View existing monitors"
 msgstr "Bekijk bestaande monitoren"
 
 msgid "E-Mail Alerts"
-msgstr "E-mailwaarschuwingen"
+msgstr "Email waarschuwingen"
 
 msgid "View and add E-Mail Alerts"
 msgstr "Bekijk en voeg e-mailwaarschuwingen toe"
+
+msgid "View Assigned Printers"
+msgstr "Toegewezen printers bekijken"
 
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Dit toont de printers die aan locaties zijn toegewezen."
@@ -4835,6 +4847,9 @@ msgstr "Standaard printer"
 msgid "Remove Printer"
 msgstr "Printer verwijderen"
 
+msgid "No Printers have been assigned"
+msgstr "Er zijn geen printers toegewezen"
+
 msgid "Locations are used to assign printers."
 msgstr "Locaties worden gebruikt om printers toe te wijzen."
 
@@ -4851,7 +4866,7 @@ msgid "Remove Server Role"
 msgstr "Serverrole verwijderen"
 
 msgid "The module cannot be blank."
-msgstr "De module mag niet leeg zijn."
+msgstr "De module kan niet leeg zijn."
 
 msgid "The code cannot be blank."
 msgstr "De code mag niet leeg zijn."
@@ -4920,7 +4935,7 @@ msgid "Unflags this server as a print server. Stops cups on the server."
 msgstr "Ontgrendelt deze server als een printserver. Stopt kopjes op de server."
 
 msgid "Unflags this server as an Internet Proxy server. Stops squid and dansguardian from running on the server."
-msgstr "Ontslaat deze server als een Internet Proxy-server. Stopt pijlinktvis en dansguardian van het uitvoeren op de server."
+msgstr "Ontslaat deze server als een Internet Proxy-server. Stopt squid en dansguardian van het uitvoeren op de server."
 
 msgid "Unflags this server as a monitor server. Stops mon from running."
 msgstr "Ontvinkt deze server als monitorserver. Stopt mon van hardlopen."
@@ -4946,11 +4961,17 @@ msgstr "OpenVPN-server"
 msgid "Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 msgstr "Ontslaat deze server als een OpenVPN-server. Stopt openvpn van het uitvoeren op de server."
 
-msgid "Owncloud Server"
-msgstr "Owncloud-server"
+msgid "Nextcloud Server"
+msgstr "Nextcloud Server"
 
-msgid "Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
-msgstr "Ontvinkt deze server als een Owncloud-server. Wist alle owncloud-bestanden en gebruikersgegevens."
+msgid "Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
+msgstr "Ontvinkt deze server als een Nextcloud-server. Wist alle owncloud-bestanden en gebruikersgegevens."
+
+msgid "Savapage"
+msgstr "Savapage"
+
+msgid "Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
+msgstr "Verwijdert de Savapage-gegevensmap. Ontvinkt deze server als Savapage-server. Stopt Savapage van hardlopen."
 
 msgid "Federated Server"
 msgstr "Gefederaliseerde server"
@@ -5017,30 +5038,6 @@ msgstr "Voeg een DNS-zone toe"
 
 msgid "View server DNS Settings"
 msgstr "Bekijk de DNS-instellingen van de server"
-
-msgid "Change a Username"
-msgstr "Verander een gebruikersnaam"
-
-msgid "The new username must not be blank."
-msgstr "De nieuwe gebruikersnaam mag niet leeg zijn."
-
-msgid "The new username is already in use."
-msgstr "De nieuwe gebruikersnaam is al in gebruik."
-
-msgid "You have not entered in a forename."
-msgstr "U hebt geen voornaam ingevuld."
-
-msgid "You have not entered in a surname."
-msgstr "U hebt geen achternaam ingevuld."
-
-msgid "You cannot change that username."
-msgstr "U kunt die gebruikersnaam niet wijzigen."
-
-msgid "You cannot change the name of a system user."
-msgstr "U kunt de naam van een systeemgebruiker niet wijzigen."
-
-msgid "There was a problem changing the username."
-msgstr "Er is een probleem opgetreden bij het wijzigen van de gebruikersnaam."
 
 msgid "Apply Self Signed SSL Certificate"
 msgstr "Zelfondertekend SSL-certificaat toepassen"
@@ -5244,7 +5241,7 @@ msgid "Add a Reverse Proxy site."
 msgstr "Voeg een Reverse Proxy-site toe."
 
 msgid "Target"
-msgstr "Doel"
+msgstr "Doelwit"
 
 msgid "Edit User Information"
 msgstr "Bewerk gebruikersinformatie"
@@ -5286,7 +5283,7 @@ msgid "Enter in any exam accounts that you do not want to have the passwords res
 msgstr "Voer in de examenaccounts in dat u de wachtwoorden niet opnieuw wilt laten instellen voor gescheiden door spaties."
 
 msgid "Top Sites"
-msgstr "Top Sites"
+msgstr "Top websites"
 
 msgid "Change Date"
 msgstr "Verander de datum"
@@ -5325,7 +5322,7 @@ msgid "Setup Web Server"
 msgstr "Webserver instellen"
 
 msgid "This will ensure that apache and mysql are running on the server and that the correct ports are open. It will also create a mysql database of your choice to use with your website."
-msgstr "Dit zorgt ervoor dat apache en mysql op de server worden uitgevoerd en dat de juiste poorten open zijn. Het zal ook een MySQL-database van uw keuze maken om te gebruiken met uw website."
+msgstr "Dit zorgt ervoor dat apache en mysql op de server worden uitgevoerd en dat de juiste poorten open zijn. Het zal ook een mysql-database van uw keuze maken om te gebruiken met uw website."
 
 msgid "Leave the database fields blank if you do not require a database to be created."
 msgstr "Laat de databasevelden leeg als u niet wilt dat er een database wordt aangemaakt."
@@ -5408,6 +5405,9 @@ msgstr "Gebruiker of primaire groep"
 msgid "Change User Password"
 msgstr "Wijzig gebruikerswachtwoord"
 
+msgid "Password length required:"
+msgstr "Wachtwoord lengte vereist:"
+
 msgid "Change at next logon"
 msgstr "Wijzigen bij volgende aanmelding"
 
@@ -5460,13 +5460,13 @@ msgid "Enter a short name for this E-Mail alert."
 msgstr "Voer een korte naam in voor deze e-mailwaarschuwing."
 
 msgid "Send E-Mail to"
-msgstr "Stuur een e-mail naar"
+msgstr "Stuur een email naar"
 
 msgid "Enter in the email address you want the alert sent to."
 msgstr "Voer het e-mailadres in waarnaar u de waarschuwing wilt sturen."
 
 msgid "E-Mail from"
-msgstr "E-mail van"
+msgstr "Email van"
 
 msgid "Enter in the email address of the sender."
 msgstr "Voer het e-mailadres van de afzender in."
@@ -5478,7 +5478,7 @@ msgid "Banned E-mail Domains"
 msgstr "Geblokkeerde e-maildomeinen"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
-msgstr "Alle e-maildomeinen in de onderstaande lijst zijn toegestaan ​​en er zijn geen DNS-cheques op geplaatst of het verzenden van e-mailberichten naar uw server is geblokkeerd."
+msgstr "Alle e-maildomeinen in de onderstaande lijst zijn toegestaan ​​en er worden geen DNS-cheques op geplaatst of het verzenden van e-mailberichten naar uw server wordt geblokkeerd."
 
 msgid "Allow"
 msgstr "Toestaan"
@@ -5583,7 +5583,16 @@ msgid "Enter a username"
 msgstr "Vul een gebruikersnaam in"
 
 msgid "Primary group from CSV"
-msgstr "Primaire groep uit CSV"
+msgstr "Primaire groep van CSV"
+
+msgid "Update Collabora Office"
+msgstr "Update Collabora Office"
+
+msgid "This will update Collabora Office to the latest version."
+msgstr "Hiermee wordt Collabora Office bijgewerkt naar de nieuwste versie."
+
+msgid "Collabora has now been updated"
+msgstr "Collabora is nu bijgewerkt"
 
 msgid "Setup Print Server"
 msgstr "Stel de afdrukserver in"
@@ -5595,7 +5604,7 @@ msgid "Windows Roaming Profiles"
 msgstr "Windows zwervende profielen"
 
 msgid "Show Menu"
-msgstr "Menu tonen"
+msgstr "Laat het menu zien"
 
 msgid "Choose a different group to view."
 msgstr "Kies een andere groep om te bekijken."
@@ -5808,7 +5817,7 @@ msgid "You have not chosen a server master."
 msgstr "U hebt geen servermaster gekozen."
 
 msgid "This is a protected path and cannot be added as a share."
-msgstr "Dit is een beschermd pad en kan niet als een share worden toegevoegd."
+msgstr "Dit is een beveiligd pad en kan niet als een share worden toegevoegd."
 
 msgid "This drive letter is already in use for"
 msgstr "Deze stationsletter is al in gebruik voor"
@@ -5934,7 +5943,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Als u een netwerkkaart moet wijzigen, moet u eerst het mac-adres uit uw statische arps verwijderen."
 
 msgid "View E-Mail Statistics"
-msgstr "Bekijk e-mail statistieken"
+msgstr "Bekijk e-mailstatistieken"
 
 msgid "The log view must not be blank."
 msgstr "De logweergave mag niet leeg zijn."
@@ -6018,7 +6027,7 @@ msgid "Daily"
 msgstr "Dagelijks"
 
 msgid "Weekly"
-msgstr "wekelijks"
+msgstr "Wekelijks"
 
 msgid "Monthly"
 msgstr "Maandelijks"
@@ -6027,7 +6036,7 @@ msgid "Yearly"
 msgstr "jaar-"
 
 msgid "Show statistics"
-msgstr "Statistieken tonen"
+msgstr "Toon statistieken"
 
 msgid "Setup Radius Server"
 msgstr "Setup Radius Server"
@@ -6092,8 +6101,8 @@ msgstr "09arnoldu"
 msgid "arnoldu"
 msgstr "arnoldu"
 
-msgid "Enrollment number as username."
-msgstr "Inschrijvingsnummer als gebruikersnaam."
+msgid "Enrollment number"
+msgstr "Inschrijvingsnummer"
 
 msgid "Enter the firstname for this user."
 msgstr "Voer de voornaam in voor deze gebruiker."
@@ -6118,6 +6127,9 @@ msgstr "Alleen leden van itadmin en de technische groepen krijgen beheerderstoeg
 
 msgid "Choose the username style you require."
 msgstr "Kies de gewenste gebruikersnaamstijl."
+
+msgid "Click on the image to upload a JPG image for this user."
+msgstr "Klik op de afbeelding om een ​​JPG-afbeelding voor deze gebruiker te uploaden."
 
 msgid "Record Incident"
 msgstr "Recordincident"
@@ -6359,6 +6371,9 @@ msgstr "Kies Gebruiker"
 msgid "Choose a user to view."
 msgstr "Kies een gebruiker om te bekijken."
 
+msgid "Edit User"
+msgstr "bewerk gebruiker"
+
 msgid "Edit this user."
 msgstr "Bewerk deze gebruiker."
 
@@ -6391,18 +6406,6 @@ msgstr "Huidige back-upserver"
 
 msgid "Un-assign"
 msgstr "Un-assign"
-
-msgid "You cannot change the primary group for a system user."
-msgstr "U kunt de primaire groep voor een systeemgebruiker niet wijzigen."
-
-msgid "The new primary group must not be blank."
-msgstr "De nieuwe primaire groep mag niet leeg zijn."
-
-msgid "The new primary group does not exist."
-msgstr "De nieuwe primaire groep bestaat niet."
-
-msgid "Primary group changed for"
-msgstr "Primaire groep veranderd voor"
 
 msgid "The user cannot be blank."
 msgstr "De gebruiker mag niet leeg zijn."
@@ -6509,8 +6512,8 @@ msgstr "De naam van de weergavenaam mag niet leeg zijn."
 msgid "The mail address cannot be blank."
 msgstr "Het e-mailadres mag niet leeg zijn."
 
-msgid "information changed."
-msgstr "informatie veranderd."
+msgid "The new username must not be blank."
+msgstr "De nieuwe gebruikersnaam mag niet leeg zijn."
 
 msgid "You have not chosen an action."
 msgstr "Je hebt geen actie gekozen."
@@ -6578,6 +6581,12 @@ msgstr "Gebruik deze functie met zorg."
 msgid "Run Command"
 msgstr "Voer opdracht uit"
 
+msgid "This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."
+msgstr "Deze pagina toont de status van uw ZFS-raid-array. U kunt hier ook schijven van de raid-array toevoegen en verwijderen."
+
+msgid "Select a server"
+msgstr "Selecteer een server"
+
 msgid "Choose the date that you want to view the email statistics for."
 msgstr "Kies de datum waarvoor u de e-mailstatistieken wilt bekijken."
 
@@ -6592,6 +6601,9 @@ msgstr "waarschuwingen"
 
 msgid "Quick Links"
 msgstr "Snelle links"
+
+msgid "Change Username"
+msgstr "Gebruikersnaam wijzigen"
 
 msgid "Update logs"
 msgstr "Logs bijwerken"
@@ -6630,7 +6642,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Verboden EMail-domeinen"
+msgstr "Geblokkeerde e-maildomeinen"
 
 msgid "Whitelists"
 msgstr "Whitelists"
@@ -6818,30 +6830,6 @@ msgstr "Het SSL-certificaat is geïnstalleerd."
 msgid "The Commercial SSl Certificate has now been created. Please proceed to step two."
 msgstr "Het commerciële SSl-certificaat is nu gecreëerd. Ga door naar stap twee."
 
-msgid "Edit the user's information."
-msgstr "Bewerk de gebruikersinformatie."
-
-msgid "Current Username"
-msgstr "Huidige gebruikersnaam"
-
-msgid "Enter in the username that you want to change."
-msgstr "Voer de gebruikersnaam in die u wilt wijzigen."
-
-msgid "New username"
-msgstr "Nieuwe gebruikersnaam"
-
-msgid "Enter in the new username for this user."
-msgstr "Voer de nieuwe gebruikersnaam in voor deze gebruiker."
-
-msgid "New forename"
-msgstr "Nieuwe voornaam"
-
-msgid "New surname"
-msgstr "Nieuwe achternaam"
-
-msgid "Current username"
-msgstr "Huidige gebruikersnaam"
-
 msgid "Upload a Moodle Theme"
 msgstr "Upload een Moodle-thema"
 
@@ -6862,12 +6850,6 @@ msgstr "Bedien Printers"
 
 msgid "Enter in the settings that you want to use for your client devices."
 msgstr "Voer de instellingen in die u wilt gebruiken voor uw clientapparaten."
-
-msgid "View and edit DHCP Reservations"
-msgstr "Bekijk en bewerk DHCP-reserveringen"
-
-msgid "Reservations"
-msgstr "Reserveringen"
 
 msgid "DNS Servers"
 msgstr "DNS-servers"
@@ -7019,6 +7001,12 @@ msgstr "Het TCPIP-adres stond niet in de lijst."
 msgid "The list is empty. All TCPIP addresses are allowed."
 msgstr "De lijst is leeg. Alle TCPIP-adressen zijn toegestaan."
 
+msgid "stopping"
+msgstr "stoppen"
+
+msgid "starting"
+msgstr "beginnend"
+
 msgid "User Connection Logs"
 msgstr "Gebruikersaansluitingslogboeken"
 
@@ -7166,11 +7154,8 @@ msgstr "Deze module kan alleen worden toegepast op de hoofdserver of een extra d
 msgid "Nextcloud"
 msgstr "Nextcloud"
 
-msgid "Nextcloud Server"
-msgstr "Nextcloud-server"
-
 msgid "This will provide a cloud file storage and home access system for web access to files."
-msgstr "Dit biedt een cloud-opslag en een thuistoegangssysteem voor webtoegang tot bestanden."
+msgstr "Dit levert een cloud-opslag en een thuistoegangssysteem voor webtoegang tot bestanden."
 
 msgid "Users will be able to access their network shares over the internet."
 msgstr "Gebruikers hebben via internet toegang tot hun netwerkshares."
@@ -7234,9 +7219,6 @@ msgstr "Hiermee wordt de Gitlab-module ingesteld."
 
 msgid "This will setup the Gitlab Server."
 msgstr "Hiermee wordt de Gitlab-server ingesteld."
-
-msgid "Savapage"
-msgstr "Savapage"
 
 msgid "This module can only be applied to a server that already has the print server module applied."
 msgstr "Deze module kan alleen worden toegepast op een server waarop de printservermodule al is toegepast."
@@ -7392,7 +7374,7 @@ msgid "This will create an ssl certificate signed by the root signing authority 
 msgstr "Hiermee wordt een SSL-certificaat gemaakt dat is ondertekend door de autoriteit voor het ondertekenen van de root op uw server."
 
 msgid "Your client computers will need to have the root signing authority installed into their web browsers."
-msgstr "Op uw clientcomputers moet de root-signingmachtiging in hun webbrowser zijn geïnstalleerd."
+msgstr "Op uw clientcomputers moet de ondertekenaar van root zijn geïnstalleerd in hun webbrowser."
 
 msgid "Apply Certificate"
 msgstr "Certificaat toepassen"
@@ -7626,7 +7608,7 @@ msgid "Auto"
 msgstr "Auto"
 
 msgid "Manual"
-msgstr "handboek"
+msgstr "Met de hand"
 
 msgid "In auto mode the web addresses of the server are automatically entered for the certificate based on the modules that have been applied to the server. Manual mode allows you to enter in custom web addresses for the certificate."
 msgstr "In de automatische modus worden de webadressen van de server automatisch ingevoerd voor het certificaat op basis van de modules die op de server zijn toegepast. In de handmatige modus kunt u aangepaste webadressen voor het certificaat invoeren."
@@ -7755,7 +7737,7 @@ msgid "There is no PPD file available."
 msgstr "Er is geen PPD-bestand beschikbaar."
 
 msgid "The file you have chosen does not have a ppd extension."
-msgstr "Het bestand dat u hebt gekozen heeft geen ppd-extensie."
+msgstr "Het bestand dat je hebt gekozen heeft geen ppd-extensie."
 
 msgid "The printer address cannot be blank."
 msgstr "Het printeradres mag niet leeg zijn."
@@ -7899,7 +7881,7 @@ msgid "Read only"
 msgstr "Alleen lezen"
 
 msgid "This will set the exam_files folder and the uploaded files to read only in each account. Students will need to copy the files out of the folder to use them."
-msgstr "Hierdoor worden de map exam_files en de geüploade bestanden ingesteld om alleen in elk account te worden gelezen. Studenten moeten de bestanden uit de map kopiëren om ze te gebruiken."
+msgstr "Hiermee worden de map exam_files en de geüploade bestanden ingesteld om alleen in elk account te worden gelezen. Studenten moeten de bestanden uit de map kopiëren om ze te gebruiken."
 
 msgid "View and edit the DHCP setttings"
 msgstr "Bekijk en bewerk de DHCP-instellingen"
@@ -8067,7 +8049,7 @@ msgid "Servername"
 msgstr "Server naam"
 
 msgid "DNS Server"
-msgstr "DNS-server"
+msgstr "DNS server"
 
 msgid "This server uses your Domain Controllers for DNS."
 msgstr "Deze server gebruikt uw domeincontrollers voor DNS."
@@ -8150,8 +8132,8 @@ msgstr "interne toegang"
 msgid "external access"
 msgstr "externe toegang"
 
-msgid "Port 50002 needs a client certificate available in the itadmin share."
-msgstr "Port 50002 heeft een clientcertificaat nodig dat beschikbaar is in de itadmin-share."
+msgid "Port '"
+msgstr "Poort '"
 
 msgid "Staff"
 msgstr "Personeel"
@@ -8163,7 +8145,7 @@ msgid "Add Site"
 msgstr "Site toevoegen"
 
 msgid "Add in a site that you want to allow for the clients to connect to."
-msgstr "Voeg een site toe waarvan u wilt toestaan ​​dat de clients verbinding kunnen maken."
+msgstr "Voeg een site toe die u wilt toestaan ​​zodat de clients verbinding kunnen maken."
 
 msgid "Applying update"
 msgstr "Update toepassen"
@@ -8180,8 +8162,8 @@ msgstr "De servergegevens zijn niet ingesteld."
 msgid "The description data is not set."
 msgstr "De beschrijvingsgegevens zijn niet ingesteld."
 
-msgid "Incorrect MD5 checksum for this patch."
-msgstr "Ongeldige MD5-controlesom voor deze patch."
+msgid "Incorrect checksum for this patch."
+msgstr "Onjuiste controlesom voor deze patch."
 
 msgid "There is no signature file for this patch."
 msgstr "Er is geen handtekeningbestand voor deze patch."
@@ -8253,13 +8235,13 @@ msgid "Avahi daemon"
 msgstr "Avahi daemon"
 
 msgid "DNS server"
-msgstr "DNS-server"
+msgstr "DNS server"
 
 msgid "Clamav daemon"
 msgstr "Clamav daemon"
 
 msgid "Print server"
-msgstr "Print server"
+msgstr "Printserver"
 
 msgid "Schedular"
 msgstr "analytisch"
@@ -8568,7 +8550,7 @@ msgid "Layout"
 msgstr "lay-out"
 
 msgid "Chunk Size"
-msgstr "Chunk Size"
+msgstr "Formaat van een blokje"
 
 msgid "Active Disks"
 msgstr "Actieve schijven"
@@ -8601,7 +8583,7 @@ msgid "Copying iso from"
 msgstr "Iso kopiëren vanaf"
 
 msgid "to"
-msgstr "tot"
+msgstr "naar"
 
 msgid "Change password on next logon for"
 msgstr "Wachtwoord wijzigen bij volgende aanmelding voor"
@@ -8620,6 +8602,39 @@ msgstr "E-mail adres of domein"
 
 msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
 msgstr "Voer het e-mailadres of domein in dat u aan de witte lijst wilt toevoegen."
+
+msgid "Process ID"
+msgstr "Proces-ID"
+
+msgid "Connection"
+msgstr "Verbinding"
+
+msgid "Protocol Version"
+msgstr "Protocol versie"
+
+msgid "Additional"
+msgstr "Extra"
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "Day of Month"
+msgstr "Dag van de maand"
+
+msgid "UID"
+msgstr "UID"
+
+msgid "Deny Mode"
+msgstr "Weigeren modus"
+
+msgid "R/W"
+msgstr "R / W"
+
+msgid "Oplock"
+msgstr "oplock"
+
+msgid "Sharepath"
+msgstr "SharePath"
 
 msgid "Go up one directory."
 msgstr "Ga één map omhoog."
@@ -8648,6 +8663,21 @@ msgstr "Nieuw bestand"
 msgid "Create a new file."
 msgstr "Maak een nieuw bestand."
 
+msgid "Upload a File"
+msgstr "Een bestand uploaden"
+
+msgid "Upload a file."
+msgstr "Een bestand uploaden."
+
+msgid "Upload File"
+msgstr "Upload bestand"
+
+msgid "Refresh"
+msgstr "verversen"
+
+msgid "Refresh the folder."
+msgstr "Vernieuw de map."
+
 msgid "Move here?"
 msgstr "Verhuis naar hier?"
 
@@ -8655,7 +8685,7 @@ msgid "Move to this location?"
 msgstr "Ga naar deze locatie?"
 
 msgid "Copy here?"
-msgstr "Hier kopiëren?"
+msgstr "Kopieer hier?"
 
 msgid "Copy to this location?"
 msgstr "Kopiëren naar deze locatie?"
@@ -8698,6 +8728,36 @@ msgstr "Laatst geopend"
 
 msgid "Last modified"
 msgstr "Laatst gewijzigd"
+
+msgid "Database name"
+msgstr "Database naam"
+
+msgid "Enter in the database name that you want this file restored to."
+msgstr "Voer de databasenaam in waarnaar dit bestand moet worden hersteld."
+
+msgid "This will overwrite the data stored in this database if it already exits."
+msgstr "Hiermee worden de gegevens die in deze database zijn opgeslagen overschreven als deze al bestaat."
+
+msgid "Database Username"
+msgstr "Database gebruikersnaam"
+
+msgid "Enter in a mysql username to access the database."
+msgstr "Voer een mysql-gebruikersnaam in om toegang te krijgen tot de database."
+
+msgid "This mysql user will be created if it does not already exist."
+msgstr "Deze mysql-gebruiker wordt gemaakt als deze nog niet bestaat."
+
+msgid "This field can be left blank to use an existing mysql username and password that has already been set for this database."
+msgstr "Dit veld kan leeg worden gelaten om een ​​bestaande mysql-gebruikersnaam en -wachtwoord te gebruiken dat al is ingesteld voor deze database."
+
+msgid "Database Password"
+msgstr "Database wachtwoord"
+
+msgid "Enter in a mysql password to access the database."
+msgstr "Voer een mysql-wachtwoord in om toegang te krijgen tot de database."
+
+msgid "Restore SQL"
+msgstr "SQL herstellen"
 
 msgid "Basic Permissions"
 msgstr "Basisrechten"
@@ -8746,39 +8806,6 @@ msgstr "Er bestaat al een item met deze naam."
 
 msgid "Files in this folder are not allowed to be edited."
 msgstr "Bestanden in deze map mogen niet worden bewerkt."
-
-msgid "Process ID"
-msgstr "Proces-ID"
-
-msgid "Connection"
-msgstr "Verbinding"
-
-msgid "Protocol Version"
-msgstr "Protocol versie"
-
-msgid "Additional"
-msgstr "Extra"
-
-msgid "Machine"
-msgstr "Machine"
-
-msgid "Day of Month"
-msgstr "Dag van de maand"
-
-msgid "UID"
-msgstr "UID"
-
-msgid "Deny Mode"
-msgstr "Weigeren modus"
-
-msgid "R/W"
-msgstr "R / W"
-
-msgid "Oplock"
-msgstr "oplock"
-
-msgid "Sharepath"
-msgstr "SharePath"
 
 msgid "New Exam Account"
 msgstr "Nieuw examenaccount"
@@ -8852,8 +8879,11 @@ msgstr "Ssh-toegang verwijderen."
 msgid "Removing Moodle"
 msgstr "Moodle verwijderen"
 
-msgid "Removing Owncloud"
-msgstr "Owncloud verwijderen"
+msgid "Removing Nextcloud"
+msgstr "Nextcloud verwijderen"
+
+msgid "Removing Savapage"
+msgstr "Savapage verwijderen"
 
 msgid "Removing Gitlab"
 msgstr "Gitlab verwijderen"
@@ -9015,7 +9045,7 @@ msgid "Enter in a TCPIP address that you want to allow or deny. Leave this blank
 msgstr "Voer een TCPIP-adres in dat u wilt toestaan ​​of weigeren. Laat dit veld leeg als u wilt dat de regel op alle apparaten van toepassing is."
 
 msgid "Accept"
-msgstr "Accepteren"
+msgstr "Aanvaarden"
 
 msgid "Drop"
 msgstr "Laten vallen"
@@ -9168,7 +9198,7 @@ msgid "Bad Password Count"
 msgstr "Slecht wachtwoord tellen"
 
 msgid "The number of incorrect password attempts that have occured for this user over the time period set on the default user settings page."
-msgstr "Het aantal onjuiste wachtwoordpogingen dat voor deze gebruiker is gebeurd gedurende de periode die is ingesteld op de standaardpagina voor gebruikersinstellingen."
+msgstr "Het aantal onjuiste pogingen tot wachtwoord die voor deze gebruiker zijn opgetreden gedurende de periode die is ingesteld op de standaardpagina voor gebruikersinstellingen."
 
 msgid "Lockout Time"
 msgstr "Vergrendelingstijd"
@@ -9182,14 +9212,23 @@ msgstr "Wachtwoord laatst gewijzigd"
 msgid "The date that the password was last changed for this user."
 msgstr "De datum waarop het wachtwoord voor deze gebruiker voor het laatst is gewijzigd."
 
-msgid "Common Name"
-msgstr "Gemeenschappelijke naam"
-
 msgid "Given Name"
 msgstr "Gegeven naam"
 
 msgid "Display Name"
 msgstr "Weergavenaam"
+
+msgid "Room Number"
+msgstr "Kamernummer"
+
+msgid "Telephone Number"
+msgstr "Telefoon nummer"
+
+msgid "Fax Number"
+msgstr "Faxnummer"
+
+msgid "Mobile Number"
+msgstr "Mobiel nummer"
 
 msgid "E-Mail address"
 msgstr "E-mailadres"
@@ -9284,9 +9323,6 @@ msgstr "U kunt geen omgekeerde proxy instellen op de hoofdserver."
 msgid "Modifying shorewall rules to allow ports 80 and 443."
 msgstr "Modificeren van shorewall-regels om poorten 80 en 443 toe te staan."
 
-msgid "Checking for modules"
-msgstr "Controleren op modules"
-
 msgid "The upload file process has been overwritten by another admin user."
 msgstr "Het uploadbestandproces is overschreven door een andere beheerder."
 
@@ -9347,8 +9383,8 @@ msgstr "Er zijn geen aangepaste spamregels toegevoegd."
 msgid "Summary"
 msgstr "Overzicht"
 
-msgid "CPU Usage"
-msgstr "CPU gebruik"
+msgid "Elapsed"
+msgstr "verstreken"
 
 msgid "Samba Status"
 msgstr "Sambastatus"
@@ -9411,7 +9447,7 @@ msgid "Extracting the new moodle archive."
 msgstr "Het nieuwe moodle-archief extraheren."
 
 msgid "Copying in the existing moodle config file and any custom themes."
-msgstr "Kopiëren in het bestaande Moodle-configuratiebestand en eventuele eigen thema's."
+msgstr "Kopiëren in het bestaande Moodle-configuratiebestand en eventuele aangepaste thema's."
 
 msgid "Setting permissions on the new moodle installation."
 msgstr "Rechten instellen voor de nieuwe Moodle-installatie."
@@ -9468,7 +9504,7 @@ msgid "Ban duration"
 msgstr "Verbod duur"
 
 msgid "Incident Report"
-msgstr "Incident rapport"
+msgstr "Proces verbaal"
 
 msgid "Action Taken"
 msgstr "Maatregelen die zijn genomen"
@@ -9532,6 +9568,9 @@ msgstr "Wachtwoordcomplexiteit"
 
 msgid "If a password has to contain upper and lower case characters and numbers."
 msgstr "Als een wachtwoord hoofdletters en kleine letters en cijfers moet bevatten."
+
+msgid "Enrollment number as username."
+msgstr "Inschrijvingsnummer als gebruikersnaam."
 
 msgid "Choose the default username style."
 msgstr "Kies de standaard gebruikersnaamstijl."
@@ -9631,6 +9670,12 @@ msgstr "Map rijden"
 
 msgid "Choose the group that you want to allow access to the folder."
 msgstr "Kies de groep die u toegang tot de map wilt geven."
+
+msgid "Add group"
+msgstr "Groep toevoegen"
+
+msgid "Add another group."
+msgstr "Voeg nog een groep toe."
 
 msgid "Add share"
 msgstr "Voeg share toe"
@@ -9755,6 +9800,15 @@ msgstr "Bekijk filtergroepen"
 msgid "View the filter groups."
 msgstr "Bekijk de filtergroepen."
 
+msgid "Monday to Friday"
+msgstr "maandag tot vrijdag"
+
+msgid "Friday to Monday"
+msgstr "Vrijdag tot maandag"
+
+msgid "Saturday and Sunday"
+msgstr "zaterdag en zondag"
+
 msgid "This shows the internet filter groups that are available and the groups that are assigned to them."
 msgstr "Hier worden de beschikbare internetfiltergroepen weergegeven en de groepen waaraan ze zijn toegewezen."
 
@@ -9766,6 +9820,9 @@ msgstr "Voeg een nieuwe filtergroep toe."
 
 msgid "Assigned Groups"
 msgstr "Toegewezen groepen"
+
+msgid "Times"
+msgstr "Times"
 
 msgid "Default Filter Group"
 msgstr "Standaard filtergroep"
@@ -9790,6 +9847,24 @@ msgstr "Weet je zeker dat je deze filtergroep wilt verwijderen?"
 
 msgid "This allows you assign user groups to filter groups. Groups that are not assigned to a filter group are automatically assigned to the default filter group."
 msgstr "Hiermee kunt u gebruikersgroepen aan filtergroepen toewijzen. Groepen die niet zijn toegewezen aan een filtergroep, worden automatisch toegewezen aan de standaardfiltergroep."
+
+msgid "Filter Name"
+msgstr "Naam filteren"
+
+msgid "Add Filter Fallback Time"
+msgstr "Filtersterugvaltijd toevoegen"
+
+msgid "Start Time"
+msgstr "Starttijd"
+
+msgid "End Time"
+msgstr "Eindtijd"
+
+msgid "Fallback filter"
+msgstr "Terugvalfilter"
+
+msgid "Assigned Filter Group Fallback Times"
+msgstr "Toegekende filtergroep Terugvaltijden"
 
 msgid "Filter Group Options"
 msgstr "Filter Groep Opties"
@@ -9920,12 +9995,6 @@ msgstr "Poorten openen"
 msgid "Allowing ntlm auth for mschapV2"
 msgstr "Het toestaan ​​van ntlm auth voor mschapV2"
 
-msgid "Kanboard Project Management"
-msgstr "Kanboard Project Management"
-
-msgid "Kanboard has been installed and can be accessed from"
-msgstr "Kanboard is geïnstalleerd en is toegankelijk vanaf"
-
 msgid "Copying start menu to"
 msgstr "Startmenu kopiëren naar"
 
@@ -9946,6 +10015,9 @@ msgstr "E-mail-ID"
 
 msgid "Recipient"
 msgstr "Ontvanger"
+
+msgid "Errors"
+msgstr "fouten"
 
 msgid "Delete E-Mail"
 msgstr "E-mail verwijderen"
@@ -10299,7 +10371,7 @@ msgid "There are no assets allocated to this location."
 msgstr "Er zijn geen activa toegewezen aan deze locatie."
 
 msgid "Enter in the search criteria. This can be part of the mac address, serial number, purchase date, TCP-IP number etc."
-msgstr "Voer de zoekcriteria in. Dit kan onderdeel zijn van het mac-adres, serienummer, aankoopdatum, TCP-IP-nummer, enz."
+msgstr "Voer de zoekcriteria in. Dit kan onderdeel zijn van het mac-adres, het serienummer, de aankoopdatum, het TCP-IP-nummer enz."
 
 msgid "Search Assets"
 msgstr "Zoek activa"
@@ -10509,7 +10581,7 @@ msgid "Copying background to"
 msgstr "Achtergrond kopiëren naar"
 
 msgid "Remove this domain from the restriction list?"
-msgstr "Dit domein verwijderen uit de lijst met beperkingen?"
+msgstr "Dit domein verwijderen uit de beperkingslijst?"
 
 msgid "Enter in a domain that you want to add to the restricted list."
 msgstr "Voer een domein in dat u aan de beperkte lijst wilt toevoegen."
@@ -10524,7 +10596,7 @@ msgid "Full access"
 msgstr "Volledige toegang"
 
 msgid "Restricted"
-msgstr "Begrensd"
+msgstr "Beperkt"
 
 msgid "Receive only"
 msgstr "Alleen ontvangen"
@@ -10574,9 +10646,6 @@ msgstr "Gebruikersafbeeldingen"
 msgid "Network Monitoring"
 msgstr "Netwerk monitoring"
 
-msgid "OCS-Inventory"
-msgstr "OCS-Inventory"
-
 msgid "Logs"
 msgstr "logs"
 
@@ -10609,6 +10678,9 @@ msgstr "Verander het wachtwoord van een gebruiker."
 
 msgid "Add a new user to the syatem"
 msgstr "Voeg een nieuwe gebruiker toe aan het systeem"
+
+msgid "This will show the LDAP information for that user and allow you to change the username, firstname, surname, and primary group."
+msgstr "Hiermee wordt de LDAP-informatie voor die gebruiker weergegeven en kunt u de gebruikersnaam, voornaam, achternaam en primaire groep wijzigen."
 
 msgid "Ban a user from logging into the system"
 msgstr "Verbied een gebruiker om zich aan te melden bij het systeem"
@@ -10832,6 +10904,9 @@ msgstr "Configureer een server om een ​​upstream-proxy te gebruiken."
 msgid "Upload Moodle Theme"
 msgstr "Upload Moodle Theme"
 
+msgid "Update Collabora Office to the latest version."
+msgstr "Update Collabora Office naar de nieuwste versie."
+
 msgid "Configure the NTP settings for your servers."
 msgstr "Configureer de NTP-instellingen voor uw servers."
 
@@ -10936,6 +11011,9 @@ msgstr "Toon clientverbindingen met een server."
 
 msgid "Show the domain information."
 msgstr "Toon de domeininformatie."
+
+msgid "OCS-Inventory"
+msgstr "OCS-Inventory"
 
 msgid "Show client locations."
 msgstr "Toon klantlocaties."
@@ -11079,7 +11157,7 @@ msgid "Configure custom spam rules."
 msgstr "Configureer aangepaste spamregels."
 
 msgid "Search E-Mail Logs"
-msgstr "Zoek e-mail logs"
+msgstr "Zoeken in e-maillogboeken"
 
 msgid "Search the E-Mail logs for details of E-Mails sent or received."
 msgstr "Doorzoek de e-maillogboeken voor informatie over verzonden of ontvangen e-mailberichten."
@@ -11146,6 +11224,9 @@ msgstr "Configureer reverse proxy-sites."
 
 msgid "Creating an SSL certificate"
 msgstr "Een SSL-certificaat maken"
+
+msgid "Restarting nginx to apply the ssl certificate"
+msgstr "Nginx opnieuw starten om het SSL-certificaat toe te passen"
 
 msgid "Enabling Certificate"
 msgstr "Certificaat inschakelen"
@@ -11445,7 +11526,7 @@ msgid "Restore from an additional domain controller"
 msgstr "Herstellen vanaf een extra domeincontroller"
 
 msgid "Use this option if you already have an additional domain controller that is a Karoshi Server."
-msgstr "Gebruik deze optie als u al een extra domeincontroller hebt die een Karoshi-server is."
+msgstr "Gebruik deze optie als u al een extra domeincontroller heeft die een Karoshi-server is."
 
 msgid "This option will still require an essential backup archive."
 msgstr "Voor deze optie is nog steeds een essentieel back-uparchief vereist."

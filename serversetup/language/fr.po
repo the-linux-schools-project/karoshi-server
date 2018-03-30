@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-11-05 06:22+0000\n"
+"POT-Creation-Date: 2018-03-30 14:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-msgid "Updating repositories"
-msgstr "Mise à jour des référentiels"
-
-msgid "Installing"
-msgstr "Installation"
-
-msgid "Adding Docker Repository"
-msgstr "Ajout du référentiel Docker"
 
 msgid "Extracting Nextcloud"
 msgstr "Extraire Nextcloud"
@@ -152,6 +143,9 @@ msgstr "Aucune information sur le volume"
 msgid "Activating"
 msgstr "Activation"
 
+msgid "Installing"
+msgstr "Installation"
+
 msgid "Checking for users"
 msgstr "Vérification des utilisateurs"
 
@@ -187,6 +181,9 @@ msgstr "Démarrage de Memcached"
 
 msgid "Starting SOGo"
 msgstr "Démarrer SOGo"
+
+msgid "Starting MySQL"
+msgstr "Démarrage de MySQL"
 
 msgid "Starting Postfix"
 msgstr "Démarrer Postfix"
@@ -290,6 +287,9 @@ msgstr "Veuillez vous connecter et modifier ce mot de passe immédiatement."
 msgid "Setup Airprint"
 msgstr "Configuration Airprint"
 
+msgid "Updating repositories"
+msgstr "Mise à jour des référentiels"
+
 msgid "Installing Avahi Daemon"
 msgstr "Installation du démon Avahi"
 
@@ -389,7 +389,7 @@ msgstr "Voir les offres"
 msgid "Clear Queue"
 msgstr "Effacer la file d'attente"
 
-msgid "No Printer queues have been added"
+msgid "No printer queues have been added"
 msgstr "Aucune file d'attente d'imprimante n'a été ajoutée"
 
 msgid "Creating the xerte database in mysql"
@@ -422,11 +422,8 @@ msgstr "Support technique"
 msgid "Requests"
 msgstr "Requêtes"
 
-msgid "Back"
-msgstr "Arrière"
-
-msgid "All"
-msgstr "Tout"
+msgid "Menu"
+msgstr "Menu"
 
 msgid "There are no new requests to view."
 msgstr "Il n'y a pas de nouvelles demandes à afficher."
@@ -494,6 +491,9 @@ msgstr "Rechercher Karoshi Web Management"
 msgid "Set Default Page"
 msgstr "Définir la page par défaut"
 
+msgid "Back"
+msgstr "Arrière"
+
 msgid "Choose the default page that you want to have for this section of the web management."
 msgstr "Choisissez la page par défaut que vous souhaitez avoir pour cette section de la gestion Web."
 
@@ -535,9 +535,6 @@ msgstr "Réinitialiser"
 
 msgid "Client Internet Controls"
 msgstr "Contrôles Internet client"
-
-msgid "Menu"
-msgstr "Menu"
 
 msgid "Choose the location that you want to allow or deny internet access for."
 msgstr "Choisissez l'emplacement que vous souhaitez autoriser ou refuser l'accès à Internet pour."
@@ -750,7 +747,7 @@ msgid "Log Date"
 msgstr "Date du journal"
 
 msgid "Enter in the name of the student that you want to check the internet logs for."
-msgstr "Entrez dans le nom de l'étudiant que vous souhaitez vérifier les journaux Internet pour."
+msgstr "Entrez dans le nom de l'étudiant que vous voulez vérifier les journaux Internet pour."
 
 msgid "Request Delete Users"
 msgstr "Demander la suppression des utilisateurs"
@@ -1035,7 +1032,7 @@ msgid "Choose the primary group that you want to restore user files to."
 msgstr "Choisissez le groupe principal auquel vous voulez restaurer les fichiers utilisateur."
 
 msgid "Rename"
-msgstr "Rebaptiser"
+msgstr "Renommer"
 
 msgid "Group Management"
 msgstr "Gestion de groupe"
@@ -1169,6 +1166,9 @@ msgstr "Nombre d'utilisateurs"
 msgid "Type"
 msgstr "Type"
 
+msgid "All"
+msgstr "Tout"
+
 msgid "Associated groups"
 msgstr "Groupes associés"
 
@@ -1216,6 +1216,9 @@ msgstr "Cela réinitialisera les tentatives de verrouillage pour un utilisateur 
 
 msgid "Enter in the username that you want to reset the user lockout for."
 msgstr "Entrez le nom d'utilisateur pour lequel vous voulez réinitialiser le verrouillage de l'utilisateur."
+
+msgid "User Photo"
+msgstr "Photo d'utilisateur"
 
 msgid "Setup VPN Server"
 msgstr "Configurer le serveur VPN"
@@ -1299,7 +1302,7 @@ msgid "Enter in the code displayed on the page to confirm this action."
 msgstr "Entrez le code affiché sur la page pour confirmer cette action."
 
 msgid "Search E-Mail logs"
-msgstr "Rechercher les journaux EMail"
+msgstr "Rechercher les journaux de messagerie"
 
 msgid "Choose the date that you want to search the logs for."
 msgstr "Choisissez la date à laquelle vous voulez rechercher les journaux."
@@ -1638,7 +1641,7 @@ msgid "Linux Client - Upload Distribution"
 msgstr "Client Linux - Distribution de téléchargement"
 
 msgid "This will upload a linux client iso for use in installing linux clients over the network."
-msgstr "Cela va télécharger un client iso linux pour l'installation de clients Linux sur le réseau."
+msgstr "Cela va télécharger un client iso Linux à utiliser pour installer les clients Linux sur le réseau."
 
 msgid "Choose the linux client iso that you want to distribute to your linux clients over the network."
 msgstr "Choisissez le client Linux que vous souhaitez distribuer à vos clients Linux sur le réseau."
@@ -1835,6 +1838,9 @@ msgstr "L'onduleur a été ajouté."
 msgid "The UPS could not be contacted on that port."
 msgstr "L'onduleur n'a pas pu être contacté sur ce port."
 
+msgid "Activate Changes"
+msgstr "Activer les modifications"
+
 msgid "Add Monitors"
 msgstr "Ajouter des moniteurs"
 
@@ -1939,9 +1945,6 @@ msgstr "Configurer DHCP"
 
 msgid "Delete DHCP bans"
 msgstr "Supprimer les interdictions DHCP"
-
-msgid "Activate Changes"
-msgstr "Activer les modifications"
 
 msgid "Host name"
 msgstr "Nom d'hôte"
@@ -2076,7 +2079,7 @@ msgid "Start service"
 msgstr "Démarrer le service"
 
 msgid "Stop service"
-msgstr "Arrêter le service"
+msgstr "Aire d'autoroute"
 
 msgid "Service status"
 msgstr "État du service"
@@ -2134,18 +2137,6 @@ msgstr "Sélectionnez les icônes que vous souhaitez télécharger."
 
 msgid "Icon"
 msgstr "Icône"
-
-msgid "Change Primary Group"
-msgstr "Changer le groupe principal"
-
-msgid "Edit User"
-msgstr "Modifier l'utilisateur"
-
-msgid "Enter in a username that you want to change the primary group for."
-msgstr "Entrez un nom d'utilisateur pour lequel vous souhaitez modifier le groupe principal."
-
-msgid "The user home area will be moved to the new group location."
-msgstr "La zone d'accueil de l'utilisateur sera déplacée vers le nouvel emplacement du groupe."
 
 msgid "Exam Accounts - Reset Passwords"
 msgstr "Comptes d'examen - Réinitialiser les mots de passe"
@@ -2684,11 +2675,17 @@ msgstr "Connexions client"
 msgid "No option."
 msgstr "Pas d'option."
 
+msgid "Hostname, Mac Address, TCPIP Address"
+msgstr "Nom d'hôte, adresse Mac, adresse TCPIP"
+
 msgid "DHCP Reservations"
 msgstr "Réservations DHCP"
 
-msgid "Hostname, Mac Address, TCPIP Address"
-msgstr "Nom d'hôte, adresse Mac, adresse TCPIP"
+msgid "View and edit DHCP Reservations"
+msgstr "Afficher et modifier les réservations DHCP"
+
+msgid "Reservations"
+msgstr "Réservations"
 
 msgid "CSV file format"
 msgstr "Format de fichier CSV"
@@ -2703,7 +2700,7 @@ msgid "Supplier"
 msgstr "Fournisseur"
 
 msgid "Budget Holder"
-msgstr "Titulaire du budget"
+msgstr "Responsable du budget"
 
 msgid "Ref"
 msgstr "Ref"
@@ -2776,6 +2773,9 @@ msgstr "Tous les serveurs"
 
 msgid "Create ZFS Raid"
 msgstr "Créer un raid ZFS"
+
+msgid "Select a server."
+msgstr "Sélectionnez un serveur."
 
 msgid "ZFS Status"
 msgstr "Statut ZFS"
@@ -3006,7 +3006,7 @@ msgid "The grace time is the amount of time a new user is allowed to log into th
 msgstr "Le délai de grâce est la durée pendant laquelle un nouvel utilisateur est autorisé à se connecter au système avant de signer et de renvoyer la politique d'utilisation acceptable. Cette heure est définie en jours."
 
 msgid "Reset Status"
-msgstr "Ré-initialiser"
+msgstr "Statut de réinitialisation"
 
 msgid "All Users"
 msgstr "Tous les utilisateurs"
@@ -3177,7 +3177,7 @@ msgid "Enter in the host name of the client computer or device that you want to 
 msgstr "Entrez le nom d'hôte de l'ordinateur client ou de l'appareil auquel vous souhaitez attribuer une adresse tcpip statique."
 
 msgid "Enter in the mac address of the client computer or device that you want to give a static tcpip address to."
-msgstr "Entrez dans l'adresse MAC de l'ordinateur client ou de l'appareil auquel vous souhaitez attribuer une adresse tcpip statique."
+msgstr "Entrez dans l'adresse MAC de l'ordinateur client ou de l'appareil auquel vous voulez attribuer une adresse tcpip statique."
 
 msgid "Enter in the tcpip address that you want the client computer or device to have."
 msgstr "Entrez dans l'adresse tcpip que vous voulez que l'ordinateur ou le périphérique client possède."
@@ -3560,6 +3560,15 @@ msgstr "Cela vous permet de modifier les autorisations sur les applications Web 
 msgid "Incorrect droptype"
 msgstr "Droptype incorrect"
 
+msgid "CPU Usage"
+msgstr "L'utilisation du processeur"
+
+msgid "Samba information"
+msgstr "Informations sur Samba"
+
+msgid "Hard disk usage"
+msgstr "Utilisation du disque dur"
+
 msgid "Update Moodle"
 msgstr "Mettre à jour Moodle"
 
@@ -3680,14 +3689,20 @@ msgstr "Supprimer une nouvelle file d'attente d'imprimante."
 msgid "Assigned Printers"
 msgstr "Imprimantes attribuées"
 
-msgid "View Assigned Printers"
-msgstr "Afficher les imprimantes attribuées"
+msgid "View Assigned Printers."
+msgstr "Afficher les imprimantes attribuées."
 
 msgid "Edit PPD"
 msgstr "Modifier PPD"
 
 msgid "Edit a printer driver."
 msgstr "Modifier un pilote d'imprimante"
+
+msgid "Windows printer drivers."
+msgstr "Pilotes d'imprimante Windows."
+
+msgid "Windows Drivers"
+msgstr "Pilotes Windows"
 
 msgid "Configure printing with Savapage."
 msgstr "Configurez l'impression avec Savapage."
@@ -3919,6 +3934,9 @@ msgstr "Révoquer le certificat VPN client"
 
 msgid "Un-Revoke Client VPN Certificate"
 msgstr "Certificat VPN client Un-Revoke"
+
+msgid "Add a comment to a VPN account"
+msgstr "Ajouter un commentaire à un compte VPN"
 
 msgid "Download Client VPN Certificate"
 msgstr "Télécharger le certificat VPN client"
@@ -4260,7 +4278,7 @@ msgid "Connected Shares"
 msgstr "Actions connectées"
 
 msgid "Open Files"
-msgstr "Ouvrir les fichiers"
+msgstr "Ouvrir des fichiers"
 
 msgid "Select"
 msgstr "Sélectionner"
@@ -4284,7 +4302,7 @@ msgid "Deny all groups."
 msgstr "Refuser tous les groupes."
 
 msgid "Deny all"
-msgstr "Tout refuser"
+msgstr "Nier tous"
 
 msgid "Activate changes"
 msgstr "Activer les modifications"
@@ -4366,15 +4384,6 @@ msgstr "Sélectionner un utilisateur"
 
 msgid "Select the user you want to view."
 msgstr "Sélectionnez l'utilisateur que vous voulez voir."
-
-msgid "Change Username"
-msgstr "Changer le nom d'utilisateur"
-
-msgid "Change the username for this user."
-msgstr "Changez le nom d'utilisateur pour cet utilisateur."
-
-msgid "Change the primary group for this user."
-msgstr "Changez le groupe principal pour cet utilisateur."
 
 msgid "Change the groups that this user is a member of."
 msgstr "Changez les groupes dont cet utilisateur est membre."
@@ -4463,17 +4472,17 @@ msgstr "Vous n'avez pas entré de nom pour cette alerte."
 msgid "An E-Mail alert has been sent."
 msgstr "Une alerte par e-mail a été envoyée."
 
+msgid "Choose the printer you want to delete."
+msgstr "Choisissez l'imprimante que vous voulez supprimer."
+
 msgid "Add Printers"
 msgstr "Ajouter des imprimantes"
 
 msgid "Add a network printer queue."
 msgstr "Ajouter une file d'attente d'imprimante réseau."
 
-msgid "There are no printer queues to delete."
-msgstr "Il n'y a aucune file d'attente d'imprimante à supprimer."
-
-msgid "Please choose the printer you want to delete."
-msgstr "Veuillez choisir l'imprimante que vous voulez supprimer."
+msgid "There are no printer queues to delete"
+msgstr "Il n'y a aucune file d'attente d'imprimante à supprimer"
 
 msgid "Requested Deleted Users"
 msgstr "Utilisateurs supprimés demandés"
@@ -4593,7 +4602,7 @@ msgid "The reverse proxy feature allows incoming web connections on port 80 and 
 msgstr "La fonction de proxy inverse permet aux connexions Web entrantes sur les ports 80 et 443 de passer par le proxy inverse aux autres serveurs de votre réseau."
 
 msgid "This bypasses the need for sub domains and alias tcpip numbers for external access and will also allow all external ssl traffic to use one ssl certificate to authenticate the sites."
-msgstr "Ceci contourne le besoin de sous-domaines et de numéros d'alias tcpip pour l'accès externe et permettra également à tout le trafic SSL externe d'utiliser un certificat SSL pour authentifier les sites."
+msgstr "Cela contourne le besoin de sous-domaines et de numéros d'appel pseudonymes tcpip pour l'accès externe et permettra également à tout le trafic SSL externe d'utiliser un certificat SSL pour authentifier les sites."
 
 msgid "Reverse Proxies"
 msgstr "Proxy inversé"
@@ -4650,7 +4659,7 @@ msgid "Allow internet access for all assets."
 msgstr "Autoriser l'accès à Internet pour tous les actifs."
 
 msgid "Deny All"
-msgstr "Tout refuser"
+msgstr "Nier tous"
 
 msgid "Deny internet access for all assets."
 msgstr "Refuser l'accès à Internet pour tous les actifs."
@@ -4809,10 +4818,13 @@ msgid "View existing monitors"
 msgstr "Voir les moniteurs existants"
 
 msgid "E-Mail Alerts"
-msgstr "Alertes par e-mail"
+msgstr "Alertes courrier électronique"
 
 msgid "View and add E-Mail Alerts"
 msgstr "Afficher et ajouter des alertes par e-mail"
+
+msgid "View Assigned Printers"
+msgstr "Afficher les imprimantes attribuées"
 
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Ceci montre les imprimantes qui ont été assignées aux emplacements."
@@ -4834,6 +4846,9 @@ msgstr "Imprimante par défaut"
 
 msgid "Remove Printer"
 msgstr "Supprimer l'imprimante"
+
+msgid "No Printers have been assigned"
+msgstr "Aucune imprimante n'a été affectée"
 
 msgid "Locations are used to assign printers."
 msgstr "Les emplacements sont utilisés pour attribuer des imprimantes."
@@ -4884,7 +4899,7 @@ msgid "Unflags this server as an E-Mail server. Stops Sogo, Postfix, Dovecot, an
 msgstr "Déroule ce serveur en tant que serveur de messagerie. Empêche Sogo, Postfix, Dovecot et Mailscanner de s'exécuter sur le serveur."
 
 msgid "Unflags this server as a file server. Re-maps any groups using this server back to the main server."
-msgstr "Dérame ce serveur en tant que serveur de fichiers. Re-mappe tous les groupes utilisant ce serveur vers le serveur principal."
+msgstr "Déroule ce serveur en tant que serveur de fichiers. Re-mappe tous les groupes utilisant ce serveur vers le serveur principal."
 
 msgid "Unflags this server from using joomla. Deletes all joomla files and the joomla database."
 msgstr "Déroule ce serveur de l'utilisation de joomla. Supprime tous les fichiers joomla et la base de données joomla."
@@ -4946,11 +4961,17 @@ msgstr "OpenVPN Server"
 msgid "Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 msgstr "Déroue ce serveur en tant que serveur OpenVPN. Arrête openvpn de s'exécuter sur le serveur."
 
-msgid "Owncloud Server"
-msgstr "Serveur Owncloud"
+msgid "Nextcloud Server"
+msgstr "Nextcloud Server"
 
-msgid "Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
-msgstr "Déroue ce serveur en tant que serveur Owncloud. Supprime tous les fichiers owncloud et les données utilisateur."
+msgid "Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
+msgstr "Dérame ce serveur en tant que serveur Nextcloud. Supprime tous les fichiers owncloud et les données utilisateur."
+
+msgid "Savapage"
+msgstr "Savapage"
+
+msgid "Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
+msgstr "Supprime le dossier de données Savapage. Déroule ce serveur en tant que serveur Savapage. Arrête Savapage de courir."
 
 msgid "Federated Server"
 msgstr "Serveur fédéré"
@@ -4980,7 +5001,7 @@ msgid "Code"
 msgstr "Code"
 
 msgid "Enter in the code above to confirm the action that you want to take."
-msgstr "Entrez le code ci-dessus pour confirmer l'action que vous voulez effectuer."
+msgstr "Entrez le code ci-dessus pour confirmer l'action que vous souhaitez effectuer."
 
 msgid "DNS Controls"
 msgstr "Contrôles DNS"
@@ -5017,30 +5038,6 @@ msgstr "Ajouter une zone DNS"
 
 msgid "View server DNS Settings"
 msgstr "Afficher les paramètres DNS du serveur"
-
-msgid "Change a Username"
-msgstr "Changer un nom d'utilisateur"
-
-msgid "The new username must not be blank."
-msgstr "Le nouveau nom d'utilisateur ne doit pas être vide."
-
-msgid "The new username is already in use."
-msgstr "Le nouveau nom d'utilisateur est déjà utilisé."
-
-msgid "You have not entered in a forename."
-msgstr "Vous n'avez pas entré de prénom."
-
-msgid "You have not entered in a surname."
-msgstr "Vous n'avez pas entré de nom de famille."
-
-msgid "You cannot change that username."
-msgstr "Vous ne pouvez pas changer ce nom d'utilisateur."
-
-msgid "You cannot change the name of a system user."
-msgstr "Vous ne pouvez pas changer le nom d'un utilisateur du système."
-
-msgid "There was a problem changing the username."
-msgstr "Un problème est survenu lors de la modification du nom d'utilisateur."
 
 msgid "Apply Self Signed SSL Certificate"
 msgstr "Appliquer un certificat SSL auto-signé"
@@ -5286,7 +5283,7 @@ msgid "Enter in any exam accounts that you do not want to have the passwords res
 msgstr "Entrez dans les comptes d'examen pour lesquels vous ne souhaitez pas que les mots de passe soient réinitialisés en les séparant par des espaces."
 
 msgid "Top Sites"
-msgstr "Top Sites"
+msgstr "Meilleurs sites"
 
 msgid "Change Date"
 msgstr "Date de modification"
@@ -5408,6 +5405,9 @@ msgstr "Utilisateur ou groupe principal"
 msgid "Change User Password"
 msgstr "Changer le mot de passe utilisateur"
 
+msgid "Password length required:"
+msgstr "Mot de passe requis:"
+
 msgid "Change at next logon"
 msgstr "Changer à la prochaine ouverture de session"
 
@@ -5466,7 +5466,7 @@ msgid "Enter in the email address you want the alert sent to."
 msgstr "Entrez l'adresse e-mail à laquelle vous souhaitez envoyer l'alerte."
 
 msgid "E-Mail from"
-msgstr "E-mail de"
+msgstr "Email de"
 
 msgid "Enter in the email address of the sender."
 msgstr "Entrez dans l'adresse e-mail de l'expéditeur."
@@ -5584,6 +5584,15 @@ msgstr "Entrez un nom d'utilisateur"
 
 msgid "Primary group from CSV"
 msgstr "Groupe principal de CSV"
+
+msgid "Update Collabora Office"
+msgstr "Mettre à jour le Bureau Collabora"
+
+msgid "This will update Collabora Office to the latest version."
+msgstr "Cela mettra à jour Collabora Office vers la dernière version."
+
+msgid "Collabora has now been updated"
+msgstr "Collabora a été mis à jour"
 
 msgid "Setup Print Server"
 msgstr "Configurer le serveur d'impression"
@@ -5934,7 +5943,7 @@ msgid "If you need to change a network card remove the mac address from your sta
 msgstr "Si vous devez changer une carte réseau, supprimez d'abord l'adresse MAC de vos arps statiques."
 
 msgid "View E-Mail Statistics"
-msgstr "Voir les statistiques EMail"
+msgstr "Afficher les statistiques par e-mail"
 
 msgid "The log view must not be blank."
 msgstr "La vue du journal ne doit pas être vide."
@@ -6027,7 +6036,7 @@ msgid "Yearly"
 msgstr "Annuel"
 
 msgid "Show statistics"
-msgstr "Afficher les statistiques"
+msgstr "Montrez les statistiques"
 
 msgid "Setup Radius Server"
 msgstr "Configurer le serveur Radius"
@@ -6092,8 +6101,8 @@ msgstr "09arnoldu"
 msgid "arnoldu"
 msgstr "arnoldu"
 
-msgid "Enrollment number as username."
-msgstr "Numéro d'inscription en tant que nom d'utilisateur."
+msgid "Enrollment number"
+msgstr "Numéro d'inscription"
 
 msgid "Enter the firstname for this user."
 msgstr "Entrez le prénom pour cet utilisateur."
@@ -6111,13 +6120,16 @@ msgid "The groups give different levels of access."
 msgstr "Les groupes donnent différents niveaux d'accès."
 
 msgid "The itadmin group is for the network administrator."
-msgstr "Le groupe itadmin est destiné à l'administrateur réseau."
+msgstr "Le groupe itadmin est pour l'administrateur réseau."
 
 msgid "Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."
 msgstr "Seuls les membres de itadmin et les groupes technologiques obtiennent un accès administrateur aux ordinateurs Windows joints au domaine."
 
 msgid "Choose the username style you require."
 msgstr "Choisissez le style de nom d'utilisateur dont vous avez besoin."
+
+msgid "Click on the image to upload a JPG image for this user."
+msgstr "Cliquez sur l'image pour télécharger une image JPG pour cet utilisateur."
 
 msgid "Record Incident"
 msgstr "Incident d'enregistrement"
@@ -6359,6 +6371,9 @@ msgstr "Choisissez l'utilisateur"
 msgid "Choose a user to view."
 msgstr "Choisissez un utilisateur à afficher."
 
+msgid "Edit User"
+msgstr "Modifier l'utilisateur"
+
 msgid "Edit this user."
 msgstr "Modifier cet utilisateur"
 
@@ -6391,18 +6406,6 @@ msgstr "Serveur de sauvegarde actuel"
 
 msgid "Un-assign"
 msgstr "Désattribuer"
-
-msgid "You cannot change the primary group for a system user."
-msgstr "Vous ne pouvez pas modifier le groupe principal pour un utilisateur système."
-
-msgid "The new primary group must not be blank."
-msgstr "Le nouveau groupe principal ne doit pas être vide."
-
-msgid "The new primary group does not exist."
-msgstr "Le nouveau groupe principal n'existe pas."
-
-msgid "Primary group changed for"
-msgstr "Groupe principal modifié pour"
 
 msgid "The user cannot be blank."
 msgstr "L'utilisateur ne peut pas être vide."
@@ -6509,8 +6512,8 @@ msgstr "Le nom du nom d'affichage ne peut pas être vide."
 msgid "The mail address cannot be blank."
 msgstr "L'adresse mail ne peut pas être vide."
 
-msgid "information changed."
-msgstr "information changée."
+msgid "The new username must not be blank."
+msgstr "Le nouveau nom d'utilisateur ne doit pas être vide."
 
 msgid "You have not chosen an action."
 msgstr "Vous n'avez pas choisi une action."
@@ -6578,6 +6581,12 @@ msgstr "Veuillez utiliser cette fonctionnalité avec soin."
 msgid "Run Command"
 msgstr "Exécuter la commande"
 
+msgid "This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."
+msgstr "Cette page affiche l'état de votre tableau de raid ZFS. Vous pouvez également ajouter et supprimer des lecteurs du tableau de raid ici."
+
+msgid "Select a server"
+msgstr "Sélectionnez un serveur"
+
 msgid "Choose the date that you want to view the email statistics for."
 msgstr "Choisissez la date pour laquelle vous voulez voir les statistiques d'email."
 
@@ -6592,6 +6601,9 @@ msgstr "Avertissements"
 
 msgid "Quick Links"
 msgstr "Liens rapides"
+
+msgid "Change Username"
+msgstr "Changer le nom d'utilisateur"
 
 msgid "Update logs"
 msgstr "Mettre à jour"
@@ -6630,7 +6642,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Domaines EMail interdits"
+msgstr "Domaines de courrier électronique interdits"
 
 msgid "Whitelists"
 msgstr "Whitelists"
@@ -6818,30 +6830,6 @@ msgstr "Le certificat SSL a été installé."
 msgid "The Commercial SSl Certificate has now been created. Please proceed to step two."
 msgstr "Le certificat commercial SSl a maintenant été créé. Veuillez passer à l'étape deux."
 
-msgid "Edit the user's information."
-msgstr "Modifier les informations de l'utilisateur"
-
-msgid "Current Username"
-msgstr "Nom d'utilisateur actuel"
-
-msgid "Enter in the username that you want to change."
-msgstr "Entrez le nom d'utilisateur que vous voulez changer."
-
-msgid "New username"
-msgstr "Nouveau nom d'utilisateur"
-
-msgid "Enter in the new username for this user."
-msgstr "Entrez le nouveau nom d'utilisateur pour cet utilisateur."
-
-msgid "New forename"
-msgstr "Nouveau prénom"
-
-msgid "New surname"
-msgstr "Nouveau nom de famille"
-
-msgid "Current username"
-msgstr "Nom d'utilisateur actuel"
-
 msgid "Upload a Moodle Theme"
 msgstr "Télécharger un thème Moodle"
 
@@ -6862,12 +6850,6 @@ msgstr "Imprimantes de contrôle"
 
 msgid "Enter in the settings that you want to use for your client devices."
 msgstr "Entrez les paramètres que vous souhaitez utiliser pour vos appareils clients."
-
-msgid "View and edit DHCP Reservations"
-msgstr "Afficher et modifier les réservations DHCP"
-
-msgid "Reservations"
-msgstr "Réservations"
 
 msgid "DNS Servers"
 msgstr "Serveurs DNS"
@@ -7019,6 +7001,12 @@ msgstr "L'adresse TCPIP n'était pas dans la liste."
 msgid "The list is empty. All TCPIP addresses are allowed."
 msgstr "La liste est vide. Toutes les adresses TCPIP sont autorisées."
 
+msgid "stopping"
+msgstr "arrêt"
+
+msgid "starting"
+msgstr "départ"
+
 msgid "User Connection Logs"
 msgstr "Journaux de connexion utilisateur"
 
@@ -7166,9 +7154,6 @@ msgstr "Ce module ne peut être appliqué qu'au serveur principal ou à un contr
 msgid "Nextcloud"
 msgstr "Nextcloud"
 
-msgid "Nextcloud Server"
-msgstr "Nextcloud Server"
-
 msgid "This will provide a cloud file storage and home access system for web access to files."
 msgstr "Cela fournira un stockage de fichiers dans le nuage et un système d'accès à domicile pour l'accès Web aux fichiers."
 
@@ -7234,9 +7219,6 @@ msgstr "Cela va configurer le module Gitlab."
 
 msgid "This will setup the Gitlab Server."
 msgstr "Cela va configurer le serveur Gitlab."
-
-msgid "Savapage"
-msgstr "Savapage"
 
 msgid "This module can only be applied to a server that already has the print server module applied."
 msgstr "Ce module ne peut être appliqué qu'à un serveur sur lequel le module de serveur d'impression est déjà appliqué."
@@ -7422,7 +7404,7 @@ msgid "Windows client computers are joined to the domain in the same way as for 
 msgstr "Les ordinateurs clients Windows sont joints au domaine de la même manière que pour un réseau Windows."
 
 msgid "The username required to do this is Administrator. The password will be the system password that you chose earlier."
-msgstr "Le nom d'utilisateur requis pour ce faire est Administrator. Le mot de passe sera le mot de passe du système que vous avez choisi plus tôt."
+msgstr "Le nom d'utilisateur requis pour ce faire est Administrator. Le mot de passe sera le mot de passe du système que vous avez choisi précédemment."
 
 msgid "You can also join client computers to the domain using any accounts that are members of the itadmin group."
 msgstr "Vous pouvez également joindre des ordinateurs clients au domaine en utilisant tous les comptes membres du groupe itadmin."
@@ -8067,7 +8049,7 @@ msgid "Servername"
 msgstr "Nom du serveur"
 
 msgid "DNS Server"
-msgstr "Serveur DNS"
+msgstr "Serveur dns"
 
 msgid "This server uses your Domain Controllers for DNS."
 msgstr "Ce serveur utilise vos contrôleurs de domaine pour DNS."
@@ -8150,8 +8132,8 @@ msgstr "accès interne"
 msgid "external access"
 msgstr "accès externe"
 
-msgid "Port 50002 needs a client certificate available in the itadmin share."
-msgstr "Le port 50002 a besoin d'un certificat client disponible dans le partage itadmin."
+msgid "Port '"
+msgstr "Port '"
 
 msgid "Staff"
 msgstr "Personnel"
@@ -8180,8 +8162,8 @@ msgstr "Les données du serveur ne sont pas définies."
 msgid "The description data is not set."
 msgstr "Les données de description ne sont pas définies."
 
-msgid "Incorrect MD5 checksum for this patch."
-msgstr "Somme de contrôle MD5 incorrecte pour ce correctif."
+msgid "Incorrect checksum for this patch."
+msgstr "Somme de contrôle incorrecte pour ce patch."
 
 msgid "There is no signature file for this patch."
 msgstr "Il n'y a pas de fichier de signature pour ce patch."
@@ -8244,7 +8226,7 @@ msgid "start service"
 msgstr "démarrer le service"
 
 msgid "stop service"
-msgstr "arrêter le service"
+msgstr "aire d'autoroute"
 
 msgid "Web server"
 msgstr "serveur Web"
@@ -8253,7 +8235,7 @@ msgid "Avahi daemon"
 msgstr "Daemon Avahi"
 
 msgid "DNS server"
-msgstr "Serveur DNS"
+msgstr "Serveur dns"
 
 msgid "Clamav daemon"
 msgstr "Démon de Clamav"
@@ -8352,7 +8334,7 @@ msgid "Squid deb proxy"
 msgstr "Squid deb proxy"
 
 msgid "FTP server"
-msgstr "Serveur FTP"
+msgstr "Serveur ftp"
 
 msgid "Distributed FS server"
 msgstr "Serveur FS distribué"
@@ -8621,6 +8603,39 @@ msgstr "Adresse e-mail ou domaine"
 msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
 msgstr "Entrez l'adresse e-mail ou le domaine que vous souhaitez ajouter à la liste blanche."
 
+msgid "Process ID"
+msgstr "ID de processus"
+
+msgid "Connection"
+msgstr "Connexion"
+
+msgid "Protocol Version"
+msgstr "Version du protocole"
+
+msgid "Additional"
+msgstr "Additionnel"
+
+msgid "Machine"
+msgstr "Machine"
+
+msgid "Day of Month"
+msgstr "Jour du mois"
+
+msgid "UID"
+msgstr "UID"
+
+msgid "Deny Mode"
+msgstr "Refuser le mode"
+
+msgid "R/W"
+msgstr "R / W"
+
+msgid "Oplock"
+msgstr "Oplock"
+
+msgid "Sharepath"
+msgstr "Sharepath"
+
 msgid "Go up one directory."
 msgstr "Montez un répertoire."
 
@@ -8648,6 +8663,21 @@ msgstr "Nouveau fichier"
 msgid "Create a new file."
 msgstr "Créez un nouveau fichier"
 
+msgid "Upload a File"
+msgstr "Télécharger un fichier"
+
+msgid "Upload a file."
+msgstr "Télécharger un fichier."
+
+msgid "Upload File"
+msgstr "Téléverser un fichier"
+
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+msgid "Refresh the folder."
+msgstr "Actualisez le dossier."
+
 msgid "Move here?"
 msgstr "Bouge ici?"
 
@@ -8655,7 +8685,7 @@ msgid "Move to this location?"
 msgstr "Aller à cet endroit?"
 
 msgid "Copy here?"
-msgstr "Copiez ici?"
+msgstr "Copier ici?"
 
 msgid "Copy to this location?"
 msgstr "Copier à cet endroit?"
@@ -8698,6 +8728,36 @@ msgstr "Dernier accès"
 
 msgid "Last modified"
 msgstr "Dernière modification"
+
+msgid "Database name"
+msgstr "Nom de la base de données"
+
+msgid "Enter in the database name that you want this file restored to."
+msgstr "Entrez le nom de la base de données à laquelle vous souhaitez restaurer ce fichier."
+
+msgid "This will overwrite the data stored in this database if it already exits."
+msgstr "Cela écrasera les données stockées dans cette base de données si elle existe déjà."
+
+msgid "Database Username"
+msgstr "Nom de base de données"
+
+msgid "Enter in a mysql username to access the database."
+msgstr "Entrez un nom d'utilisateur mysql pour accéder à la base de données."
+
+msgid "This mysql user will be created if it does not already exist."
+msgstr "Cet utilisateur mysql sera créé s'il n'existe pas déjà."
+
+msgid "This field can be left blank to use an existing mysql username and password that has already been set for this database."
+msgstr "Ce champ peut être laissé vide pour utiliser un nom d'utilisateur mysql existant et un mot de passe qui a déjà été défini pour cette base de données."
+
+msgid "Database Password"
+msgstr "Mot de passe"
+
+msgid "Enter in a mysql password to access the database."
+msgstr "Entrez un mot de passe mysql pour accéder à la base de données."
+
+msgid "Restore SQL"
+msgstr "Restaurer SQL"
 
 msgid "Basic Permissions"
 msgstr "Autorisations de base"
@@ -8746,39 +8806,6 @@ msgstr "Un article portant ce nom existe déjà."
 
 msgid "Files in this folder are not allowed to be edited."
 msgstr "Les fichiers de ce dossier ne peuvent pas être modifiés."
-
-msgid "Process ID"
-msgstr "ID de processus"
-
-msgid "Connection"
-msgstr "Connexion"
-
-msgid "Protocol Version"
-msgstr "Version du protocole"
-
-msgid "Additional"
-msgstr "Supplémentaire"
-
-msgid "Machine"
-msgstr "Machine"
-
-msgid "Day of Month"
-msgstr "Jour du mois"
-
-msgid "UID"
-msgstr "UID"
-
-msgid "Deny Mode"
-msgstr "Refuser le mode"
-
-msgid "R/W"
-msgstr "R / W"
-
-msgid "Oplock"
-msgstr "Oplock"
-
-msgid "Sharepath"
-msgstr "Sharepath"
 
 msgid "New Exam Account"
 msgstr "Nouveau compte d'examen"
@@ -8852,8 +8879,11 @@ msgstr "Suppression de l'accès SSH"
 msgid "Removing Moodle"
 msgstr "Supprimer Moodle"
 
-msgid "Removing Owncloud"
-msgstr "Suppression de Owncloud"
+msgid "Removing Nextcloud"
+msgstr "Suppression de Nextcloud"
+
+msgid "Removing Savapage"
+msgstr "Supprimer Savapage"
 
 msgid "Removing Gitlab"
 msgstr "Supprimer Gitlab"
@@ -8919,7 +8949,7 @@ msgid "Encryption Key"
 msgstr "Clé de cryptage"
 
 msgid "This is the encryption key that is used for encrypting your backups. You should keep this key safe to ensure that you can restore from the backup."
-msgstr "C'est la clé de cryptage utilisée pour crypter vos sauvegardes. Vous devriez garder cette clé en sécurité pour vous assurer que vous pouvez restaurer à partir de la sauvegarde."
+msgstr "C'est la clé de cryptage utilisée pour crypter vos sauvegardes. Vous devez conserver cette clé en toute sécurité pour vous assurer que vous pouvez restaurer à partir de la sauvegarde."
 
 msgid "Choose the time interval beteween full backups."
 msgstr "Choisissez l'intervalle de temps entre les sauvegardes complètes."
@@ -8961,7 +8991,7 @@ msgid "Reboot in progress"
 msgstr "Redémarrer en cours"
 
 msgid "Wake on lan packet sent to"
-msgstr "Réveiller sur le paquet LAN envoyé à"
+msgstr "Réveillez-vous sur le paquet LAN envoyé à"
 
 msgid "Enter in a username or choose a group from the dropdown list."
 msgstr "Entrez un nom d'utilisateur ou choisissez un groupe dans la liste déroulante."
@@ -9182,14 +9212,23 @@ msgstr "Mot de passe modifié en dernier"
 msgid "The date that the password was last changed for this user."
 msgstr "La date à laquelle le mot de passe a été modifié pour la dernière fois pour cet utilisateur."
 
-msgid "Common Name"
-msgstr "Nom commun"
-
 msgid "Given Name"
 msgstr "Prénom"
 
 msgid "Display Name"
 msgstr "Afficher un nom"
+
+msgid "Room Number"
+msgstr "Numéro de chambre"
+
+msgid "Telephone Number"
+msgstr "Numéro de téléphone"
+
+msgid "Fax Number"
+msgstr "Numéro de fax"
+
+msgid "Mobile Number"
+msgstr "Numéro de portable"
 
 msgid "E-Mail address"
 msgstr "Adresse e-mail"
@@ -9284,9 +9323,6 @@ msgstr "Vous ne pouvez pas configurer un proxy inverse sur le serveur principal.
 msgid "Modifying shorewall rules to allow ports 80 and 443."
 msgstr "Modification des règles de shorewall pour autoriser les ports 80 et 443."
 
-msgid "Checking for modules"
-msgstr "Vérification des modules"
-
 msgid "The upload file process has been overwritten by another admin user."
 msgstr "Le processus de téléchargement du fichier a été remplacé par un autre utilisateur admin."
 
@@ -9347,8 +9383,8 @@ msgstr "Aucune règle de spam personnalisée n'a été ajoutée."
 msgid "Summary"
 msgstr "Résumé"
 
-msgid "CPU Usage"
-msgstr "L'utilisation du processeur"
+msgid "Elapsed"
+msgstr "Elapsed"
 
 msgid "Samba Status"
 msgstr "Statut de Samba"
@@ -9533,6 +9569,9 @@ msgstr "Mot de passe complexe"
 msgid "If a password has to contain upper and lower case characters and numbers."
 msgstr "Si un mot de passe doit contenir des majuscules et minuscules et des chiffres."
 
+msgid "Enrollment number as username."
+msgstr "Numéro d'inscription en tant que nom d'utilisateur."
+
 msgid "Choose the default username style."
 msgstr "Choisissez le style de nom d'utilisateur par défaut."
 
@@ -9631,6 +9670,12 @@ msgstr "Lecteur de carte"
 
 msgid "Choose the group that you want to allow access to the folder."
 msgstr "Choisissez le groupe auquel vous voulez autoriser l'accès au dossier."
+
+msgid "Add group"
+msgstr "Ajouter un groupe"
+
+msgid "Add another group."
+msgstr "Ajouter un autre groupe"
 
 msgid "Add share"
 msgstr "Ajouter un partage"
@@ -9755,6 +9800,15 @@ msgstr "Afficher les groupes de filtres"
 msgid "View the filter groups."
 msgstr "Voir les groupes de filtres"
 
+msgid "Monday to Friday"
+msgstr "lundi à vendredi"
+
+msgid "Friday to Monday"
+msgstr "Du vendredi au lundi"
+
+msgid "Saturday and Sunday"
+msgstr "samedi et dimanche"
+
 msgid "This shows the internet filter groups that are available and the groups that are assigned to them."
 msgstr "Cela affiche les groupes de filtres Internet disponibles et les groupes qui leur sont affectés."
 
@@ -9766,6 +9820,9 @@ msgstr "Ajouter un nouveau groupe de filtres"
 
 msgid "Assigned Groups"
 msgstr "Groupes attribués"
+
+msgid "Times"
+msgstr "Fois"
 
 msgid "Default Filter Group"
 msgstr "Groupe de filtres par défaut"
@@ -9790,6 +9847,24 @@ msgstr "Êtes-vous sûr de vouloir supprimer ce groupe de filtres?"
 
 msgid "This allows you assign user groups to filter groups. Groups that are not assigned to a filter group are automatically assigned to the default filter group."
 msgstr "Cela vous permet d'attribuer des groupes d'utilisateurs pour filtrer les groupes. Les groupes qui ne sont pas affectés à un groupe de filtres sont automatiquement affectés au groupe de filtres par défaut."
+
+msgid "Filter Name"
+msgstr "Nom du filtre"
+
+msgid "Add Filter Fallback Time"
+msgstr "Ajouter un temps de repli du filtre"
+
+msgid "Start Time"
+msgstr "Heure de début"
+
+msgid "End Time"
+msgstr "Heure de fin"
+
+msgid "Fallback filter"
+msgstr "Filtre de repli"
+
+msgid "Assigned Filter Group Fallback Times"
+msgstr "Temps de repli du groupe de filtres affectés"
 
 msgid "Filter Group Options"
 msgstr "Options du groupe de filtres"
@@ -9920,12 +9995,6 @@ msgstr "Ouverture des ports"
 msgid "Allowing ntlm auth for mschapV2"
 msgstr "Autoriser ntlm auth pour mschapV2"
 
-msgid "Kanboard Project Management"
-msgstr "Gestion de projet Kanboard"
-
-msgid "Kanboard has been installed and can be accessed from"
-msgstr "Kanboard a été installé et peut être consulté à partir de"
-
 msgid "Copying start menu to"
 msgstr "Copier le menu de démarrage vers"
 
@@ -9946,6 +10015,9 @@ msgstr "ID de courrier"
 
 msgid "Recipient"
 msgstr "Bénéficiaire"
+
+msgid "Errors"
+msgstr "les erreurs"
 
 msgid "Delete E-Mail"
 msgstr "Supprimer l'e-mail"
@@ -10574,9 +10646,6 @@ msgstr "Images de l'utilisateur"
 msgid "Network Monitoring"
 msgstr "Surveillance du réseau"
 
-msgid "OCS-Inventory"
-msgstr "OCS-Inventaire"
-
 msgid "Logs"
 msgstr "Journaux"
 
@@ -10609,6 +10678,9 @@ msgstr "Changer le mot de passe d'un utilisateur"
 
 msgid "Add a new user to the syatem"
 msgstr "Ajouter un nouvel utilisateur au système"
+
+msgid "This will show the LDAP information for that user and allow you to change the username, firstname, surname, and primary group."
+msgstr "Cela affichera les informations LDAP pour cet utilisateur et vous permettra de changer le nom d'utilisateur, le prénom, le nom de famille et le groupe principal."
 
 msgid "Ban a user from logging into the system"
 msgstr "Interdire à un utilisateur de se connecter au système"
@@ -10832,6 +10904,9 @@ msgstr "Configurez un serveur pour utiliser un proxy en amont."
 msgid "Upload Moodle Theme"
 msgstr "Télécharger le thème Moodle"
 
+msgid "Update Collabora Office to the latest version."
+msgstr "Mettre à jour Collabora Office vers la dernière version."
+
 msgid "Configure the NTP settings for your servers."
 msgstr "Configurez les paramètres NTP pour vos serveurs."
 
@@ -10936,6 +11011,9 @@ msgstr "Afficher les connexions client à un serveur"
 
 msgid "Show the domain information."
 msgstr "Afficher les informations sur le domaine"
+
+msgid "OCS-Inventory"
+msgstr "OCS-Inventaire"
 
 msgid "Show client locations."
 msgstr "Afficher les emplacements des clients"
@@ -11061,7 +11139,7 @@ msgid "E-Mail relay"
 msgstr "Relais E-Mail"
 
 msgid "Configure the E-Mail server to send out going E-Mail via an E-Mail relay."
-msgstr "Configurez le serveur de messagerie pour qu'il envoie des courriers électroniques via un relais E-mail."
+msgstr "Configurez le serveur de messagerie pour qu'il envoie des courriers électroniques via un relais E-Mail."
 
 msgid "Add E-Mails or domains to a whitelist that bypasses spam checks."
 msgstr "Ajoutez des courriels ou des domaines à une liste blanche qui contourne les contrôles antispam."
@@ -11079,7 +11157,7 @@ msgid "Configure custom spam rules."
 msgstr "Configurer des règles de spam personnalisées"
 
 msgid "Search E-Mail Logs"
-msgstr "Rechercher les journaux EMail"
+msgstr "Rechercher des journaux de courrier électronique"
 
 msgid "Search the E-Mail logs for details of E-Mails sent or received."
 msgstr "Recherchez dans les journaux de courrier électronique les détails des courriers électroniques envoyés ou reçus."
@@ -11146,6 +11224,9 @@ msgstr "Configurez les sites de proxy inverse."
 
 msgid "Creating an SSL certificate"
 msgstr "Créer un certificat SSL"
+
+msgid "Restarting nginx to apply the ssl certificate"
+msgstr "Redémarrage de nginx pour appliquer le certificat SSL"
 
 msgid "Enabling Certificate"
 msgstr "Certificat d'habilitation"

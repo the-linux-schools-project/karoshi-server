@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Karoshi Server\n"
 "Report-Msgid-Bugs-To: mpsharrad@karoshi.org.uk\n"
-"POT-Creation-Date: 2017-11-05 06:22+0000\n"
+"POT-Creation-Date: 2018-03-30 14:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-msgid "Updating repositories"
-msgstr "Oppdaterer lagre"
-
-msgid "Installing"
-msgstr "installere"
-
-msgid "Adding Docker Repository"
-msgstr "Legge til Docker Repository"
 
 msgid "Extracting Nextcloud"
 msgstr "Ekstrahering av Nextcloud"
@@ -152,6 +143,9 @@ msgstr "Ingen voluminformasjon"
 msgid "Activating"
 msgstr "aktivering"
 
+msgid "Installing"
+msgstr "installere"
+
 msgid "Checking for users"
 msgstr "Sjekker for brukere"
 
@@ -188,6 +182,9 @@ msgstr "Startminneskap"
 msgid "Starting SOGo"
 msgstr "Starte SOGo"
 
+msgid "Starting MySQL"
+msgstr "Starter MySQL"
+
 msgid "Starting Postfix"
 msgstr "Starter Postfix"
 
@@ -207,7 +204,7 @@ msgid "SOGo has been installed and can be accessed from"
 msgstr "SOGo er installert og kan nås fra"
 
 msgid "System Status"
-msgstr "Systemstatus"
+msgstr "System status"
 
 msgid "Pass"
 msgstr "Passere"
@@ -289,6 +286,9 @@ msgstr "Vennligst logg inn og endre dette passordet umiddelbart."
 
 msgid "Setup Airprint"
 msgstr "Oppsett Lufttrykk"
+
+msgid "Updating repositories"
+msgstr "Oppdaterer lagre"
 
 msgid "Installing Avahi Daemon"
 msgstr "Installere Avahi Daemon"
@@ -389,7 +389,7 @@ msgstr "Se jobber"
 msgid "Clear Queue"
 msgstr "Klar kø"
 
-msgid "No Printer queues have been added"
+msgid "No printer queues have been added"
 msgstr "Ingen skriverkøer er blitt lagt til"
 
 msgid "Creating the xerte database in mysql"
@@ -422,11 +422,8 @@ msgstr "Teknisk støtte"
 msgid "Requests"
 msgstr "Forespørsler"
 
-msgid "Back"
-msgstr "Tilbake"
-
-msgid "All"
-msgstr "Alle"
+msgid "Menu"
+msgstr "Meny"
 
 msgid "There are no new requests to view."
 msgstr "Det er ingen nye forespørsler om å vise."
@@ -494,6 +491,9 @@ msgstr "Søk Karoshi Web Management"
 msgid "Set Default Page"
 msgstr "Angi standard side"
 
+msgid "Back"
+msgstr "Tilbake"
+
 msgid "Choose the default page that you want to have for this section of the web management."
 msgstr "Velg standard side som du vil ha for denne delen av webbehandlingen."
 
@@ -535,9 +535,6 @@ msgstr "tilbakestille"
 
 msgid "Client Internet Controls"
 msgstr "Client Internet Controls"
-
-msgid "Menu"
-msgstr "Meny"
 
 msgid "Choose the location that you want to allow or deny internet access for."
 msgstr "Velg plasseringen du vil tillate eller nekte internettilgang for."
@@ -1169,6 +1166,9 @@ msgstr "Brukertall"
 msgid "Type"
 msgstr "Type"
 
+msgid "All"
+msgstr "Alle"
+
 msgid "Associated groups"
 msgstr "Tilknyttede grupper"
 
@@ -1216,6 +1216,9 @@ msgstr "Dette vil nullstille låsforsøkene for en bruker etter for mange pålog
 
 msgid "Enter in the username that you want to reset the user lockout for."
 msgstr "Skriv inn i brukernavnet som du vil tilbakestille brukerens lockout for."
+
+msgid "User Photo"
+msgstr "Brukerfoto"
 
 msgid "Setup VPN Server"
 msgstr "Oppsett VPN Server"
@@ -1299,7 +1302,7 @@ msgid "Enter in the code displayed on the page to confirm this action."
 msgstr "Skriv inn koden som vises på siden for å bekrefte denne handlingen."
 
 msgid "Search E-Mail logs"
-msgstr "Søk EMail logger"
+msgstr "Søk i e-postlogger"
 
 msgid "Choose the date that you want to search the logs for."
 msgstr "Velg datoen du vil søke i loggene for."
@@ -1835,6 +1838,9 @@ msgstr "UPS er lagt til."
 msgid "The UPS could not be contacted on that port."
 msgstr "UPS-en kunne ikke kontaktes på den porten."
 
+msgid "Activate Changes"
+msgstr "Aktiver endringer"
+
 msgid "Add Monitors"
 msgstr "Legg til skjermer"
 
@@ -1939,9 +1945,6 @@ msgstr "Konfigurer DHCP"
 
 msgid "Delete DHCP bans"
 msgstr "Slett DHCP-forbud"
-
-msgid "Activate Changes"
-msgstr "Aktiver endringer"
 
 msgid "Host name"
 msgstr "Vertsnavn"
@@ -2134,18 +2137,6 @@ msgstr "Velg ikonene du vil laste opp."
 
 msgid "Icon"
 msgstr "Ikon"
-
-msgid "Change Primary Group"
-msgstr "Endre hovedgruppe"
-
-msgid "Edit User"
-msgstr "Rediger bruker"
-
-msgid "Enter in a username that you want to change the primary group for."
-msgstr "Skriv inn et brukernavn du vil endre hovedgruppen for."
-
-msgid "The user home area will be moved to the new group location."
-msgstr "Brukerhjemmet blir flyttet til den nye gruppenes plassering."
 
 msgid "Exam Accounts - Reset Passwords"
 msgstr "Eksamenkontoer - Tilbakestill passord"
@@ -2684,11 +2675,17 @@ msgstr "Klienttilkoblinger"
 msgid "No option."
 msgstr "Ingen mulighet."
 
+msgid "Hostname, Mac Address, TCPIP Address"
+msgstr "Vertsnavn, Mac-adresse, TCPIP-adresse"
+
 msgid "DHCP Reservations"
 msgstr "DHCP-reservasjoner"
 
-msgid "Hostname, Mac Address, TCPIP Address"
-msgstr "Vertsnavn, Mac-adresse, TCPIP-adresse"
+msgid "View and edit DHCP Reservations"
+msgstr "Se og rediger DHCP-reservasjoner"
+
+msgid "Reservations"
+msgstr "Reservasjoner"
 
 msgid "CSV file format"
 msgstr "CSV filformat"
@@ -2776,6 +2773,9 @@ msgstr "Alle servere"
 
 msgid "Create ZFS Raid"
 msgstr "Lag ZFS Raid"
+
+msgid "Select a server."
+msgstr "Velg en server."
 
 msgid "ZFS Status"
 msgstr "ZFS-status"
@@ -3342,7 +3342,7 @@ msgid "Server Information"
 msgstr "Serverinformasjon"
 
 msgid "Disk drives"
-msgstr "Diskstasjoner"
+msgstr "Harddisker"
 
 msgid "CPU usage"
 msgstr "CPU bruk"
@@ -3560,6 +3560,15 @@ msgstr "Dette gjør at du kan endre tillatelser på webapplikasjoner for å till
 msgid "Incorrect droptype"
 msgstr "Feil droptype"
 
+msgid "CPU Usage"
+msgstr "CPU bruk"
+
+msgid "Samba information"
+msgstr "Samba informasjon"
+
+msgid "Hard disk usage"
+msgstr "Bruk av harddisken"
+
 msgid "Update Moodle"
 msgstr "Oppdater Moodle"
 
@@ -3680,14 +3689,20 @@ msgstr "Slett en ny skriverkø."
 msgid "Assigned Printers"
 msgstr "Tilordnede skrivere"
 
-msgid "View Assigned Printers"
-msgstr "Se tilordnede skrivere"
+msgid "View Assigned Printers."
+msgstr "Se tilordnede skrivere."
 
 msgid "Edit PPD"
 msgstr "Rediger PPD"
 
 msgid "Edit a printer driver."
 msgstr "Rediger en skriverdriver."
+
+msgid "Windows printer drivers."
+msgstr "Windows skriverdrivere."
+
+msgid "Windows Drivers"
+msgstr "Windows-drivere"
 
 msgid "Configure printing with Savapage."
 msgstr "Konfigurer utskrift med Savapage."
@@ -3919,6 +3934,9 @@ msgstr "Tilbakekalle Client VPN-sertifikat"
 
 msgid "Un-Revoke Client VPN Certificate"
 msgstr "Un-Revoke Client VPN-sertifikat"
+
+msgid "Add a comment to a VPN account"
+msgstr "Legg til en kommentar til en VPN-konto"
 
 msgid "Download Client VPN Certificate"
 msgstr "Last ned Client VPN-sertifikat"
@@ -4275,7 +4293,7 @@ msgid "View Radius Access Points."
 msgstr "Se Radius Access Points."
 
 msgid "Allow all"
-msgstr "Tillat alt"
+msgstr "Tillat alle"
 
 msgid "Allow all groups."
 msgstr "Tillat alle grupper."
@@ -4359,22 +4377,13 @@ msgid "Add a UPS"
 msgstr "Legg til en UPS"
 
 msgid "User Information"
-msgstr "Brukerinformasjon"
+msgstr "brukerinformasjon"
 
 msgid "Select user"
 msgstr "Velg bruker"
 
 msgid "Select the user you want to view."
 msgstr "Velg brukeren du vil vise."
-
-msgid "Change Username"
-msgstr "Endre brukernavn"
-
-msgid "Change the username for this user."
-msgstr "Endre brukernavnet for denne brukeren."
-
-msgid "Change the primary group for this user."
-msgstr "Endre hovedgruppen for denne brukeren."
 
 msgid "Change the groups that this user is a member of."
 msgstr "Endre gruppene som denne brukeren er medlem av."
@@ -4463,17 +4472,17 @@ msgstr "Du har ikke skrevet inn et navn for dette varselet."
 msgid "An E-Mail alert has been sent."
 msgstr "En e-postvarsling er sendt."
 
+msgid "Choose the printer you want to delete."
+msgstr "Velg skriveren du vil slette."
+
 msgid "Add Printers"
 msgstr "Legg til skrivere"
 
 msgid "Add a network printer queue."
 msgstr "Legg til en nettverksskriverkø."
 
-msgid "There are no printer queues to delete."
-msgstr "Det er ingen skriverkøer å slette."
-
-msgid "Please choose the printer you want to delete."
-msgstr "Vennligst velg skriveren du vil slette."
+msgid "There are no printer queues to delete"
+msgstr "Det er ingen skriverkøer å slette"
 
 msgid "Requested Deleted Users"
 msgstr "Forespurt slettede brukere"
@@ -4644,7 +4653,7 @@ msgid "Choose location."
 msgstr "Velg sted."
 
 msgid "Allow All"
-msgstr "Tillat alt"
+msgstr "Tillat alle"
 
 msgid "Allow internet access for all assets."
 msgstr "Tillat Internett-tilgang for alle aktiver."
@@ -4814,6 +4823,9 @@ msgstr "E-postvarsler"
 msgid "View and add E-Mail Alerts"
 msgstr "Se og legg til e-postvarsler"
 
+msgid "View Assigned Printers"
+msgstr "Se tilordnede skrivere"
+
 msgid "This shows the printers that have been assigned to locations."
 msgstr "Dette viser skriverne som er tilordnet steder."
 
@@ -4834,6 +4846,9 @@ msgstr "Standardskriver"
 
 msgid "Remove Printer"
 msgstr "Fjern skriveren"
+
+msgid "No Printers have been assigned"
+msgstr "Ingen skrivere har blitt tildelt"
 
 msgid "Locations are used to assign printers."
 msgstr "Steder brukes til å tilordne skrivere."
@@ -4946,11 +4961,17 @@ msgstr "OpenVPN Server"
 msgid "Unflags this server as an OpenVPN server. Stops openvpn from running on the server."
 msgstr "Unflags denne serveren som en OpenVPN-server. Stopper openvpn fra å kjøre på serveren."
 
-msgid "Owncloud Server"
-msgstr "Owncloud Server"
+msgid "Nextcloud Server"
+msgstr "Nextcloud Server"
 
-msgid "Unflags this server as an Owncloud server. Deletes all owncloud files and user data."
-msgstr "Unflags denne serveren som en Owncloud server. Sletter all owncloud-filer og brukerdata."
+msgid "Unflags this server as an Nextcloud server. Deletes all owncloud files and user data."
+msgstr "Unflags denne serveren som en Nextcloud-server. Sletter all owncloud-filer og brukerdata."
+
+msgid "Savapage"
+msgstr "Savapage"
+
+msgid "Removes the Savapage data folder. Unflags this server as Savapage server. Stops Savapage from running."
+msgstr "Fjerner Savapage data mappen. Unflags denne serveren som Savapage server. Stopper Savapage fra å kjøre."
 
 msgid "Federated Server"
 msgstr "Federated Server"
@@ -5017,30 +5038,6 @@ msgstr "Legg til en DNS-sone"
 
 msgid "View server DNS Settings"
 msgstr "Se server DNS-innstillinger"
-
-msgid "Change a Username"
-msgstr "Endre et brukernavn"
-
-msgid "The new username must not be blank."
-msgstr "Det nye brukernavnet må ikke være tomt."
-
-msgid "The new username is already in use."
-msgstr "Det nye brukernavnet er allerede i bruk."
-
-msgid "You have not entered in a forename."
-msgstr "Du har ikke skrevet inn et fornavn."
-
-msgid "You have not entered in a surname."
-msgstr "Du har ikke skrevet inn etternavn."
-
-msgid "You cannot change that username."
-msgstr "Du kan ikke endre det brukernavnet."
-
-msgid "You cannot change the name of a system user."
-msgstr "Du kan ikke endre navnet til en systembruker."
-
-msgid "There was a problem changing the username."
-msgstr "Det oppsto et problem med å endre brukernavnet."
 
 msgid "Apply Self Signed SSL Certificate"
 msgstr "Bruk SSL-sertifikat som er selvsignert"
@@ -5115,7 +5112,7 @@ msgid "All locations"
 msgstr "Alle steder"
 
 msgid "Software Package"
-msgstr "Programvarepakke"
+msgstr "Software pakke"
 
 msgid "Bulk user actions"
 msgstr "Bulk bruker handlinger"
@@ -5408,6 +5405,9 @@ msgstr "Bruker eller Primærgruppe"
 msgid "Change User Password"
 msgstr "Endre brukerpassord"
 
+msgid "Password length required:"
+msgstr "Krav på passord:"
+
 msgid "Change at next logon"
 msgstr "Endre ved neste pålogging"
 
@@ -5475,7 +5475,7 @@ msgid "Enter in the address of the mail server that you want to send the email t
 msgstr "Skriv inn adressen til e-postserveren du vil sende e-posten til."
 
 msgid "Banned E-mail Domains"
-msgstr "Bannede e-postdomener"
+msgstr "Bannrede e-postdomener"
 
 msgid "Any E-mail domains shown in the list below are either allowed and do not have any DNS checks placed on them or banned from sending E-Mails to your server."
 msgstr "Eventuelle e-postdomener som vises i listen nedenfor, er enten tillatt og har ingen DNS-sjekker plassert på dem eller forbudt fra å sende e-post til serveren din."
@@ -5538,7 +5538,7 @@ msgid "Disable accounting for this printer queue."
 msgstr "Deaktiver bokføring av denne skriverkøen."
 
 msgid "Change Theme"
-msgstr "Bytt tema"
+msgstr "Endre tema"
 
 msgid "Current theme"
 msgstr "Nåværende tema"
@@ -5585,6 +5585,15 @@ msgstr "Skriv inn et brukernavn"
 msgid "Primary group from CSV"
 msgstr "Primærgruppe fra CSV"
 
+msgid "Update Collabora Office"
+msgstr "Oppdater Collabora Office"
+
+msgid "This will update Collabora Office to the latest version."
+msgstr "Dette vil oppdatere Collabora Office til den nyeste versjonen."
+
+msgid "Collabora has now been updated"
+msgstr "Collabora har nå blitt oppdatert"
+
 msgid "Setup Print Server"
 msgstr "Oppsett utskriftsserver"
 
@@ -5619,7 +5628,7 @@ msgid "Roaming Profile"
 msgstr "Roaming-profil"
 
 msgid "Choose the profile action you want to carry out."
-msgstr "Velg profilhandlingen du vil utføre."
+msgstr "Velg profilaktiviteten du vil utføre."
 
 msgid "Leave this blank if you want to enter in a username."
 msgstr "La dette være tomt hvis du vil skrive inn et brukernavn."
@@ -6092,8 +6101,8 @@ msgstr "09arnoldu"
 msgid "arnoldu"
 msgstr "arnoldu"
 
-msgid "Enrollment number as username."
-msgstr "Registreringsnummer som brukernavn."
+msgid "Enrollment number"
+msgstr "Registreringsnummer"
 
 msgid "Enter the firstname for this user."
 msgstr "Skriv inn fornavn for denne brukeren."
@@ -6118,6 +6127,9 @@ msgstr "Bare medlemmer av itadmin og de tekniske gruppene får administrator til
 
 msgid "Choose the username style you require."
 msgstr "Velg brukernavnet stilen du trenger."
+
+msgid "Click on the image to upload a JPG image for this user."
+msgstr "Klikk på bildet for å laste opp et JPG-bilde for denne brukeren."
 
 msgid "Record Incident"
 msgstr "Record Incident"
@@ -6359,6 +6371,9 @@ msgstr "Velg bruker"
 msgid "Choose a user to view."
 msgstr "Velg en bruker å vise."
 
+msgid "Edit User"
+msgstr "Rediger bruker"
+
 msgid "Edit this user."
 msgstr "Rediger denne brukeren."
 
@@ -6391,18 +6406,6 @@ msgstr "Gjeldende backup server"
 
 msgid "Un-assign"
 msgstr "Un-assign"
-
-msgid "You cannot change the primary group for a system user."
-msgstr "Du kan ikke endre hovedgruppen for en systembruker."
-
-msgid "The new primary group must not be blank."
-msgstr "Den nye primærgruppen må ikke være tom."
-
-msgid "The new primary group does not exist."
-msgstr "Den nye primærgruppen eksisterer ikke."
-
-msgid "Primary group changed for"
-msgstr "Primærgruppe endret for"
 
 msgid "The user cannot be blank."
 msgstr "Brukeren kan ikke være tom."
@@ -6509,8 +6512,8 @@ msgstr "Skjermnavnet kan ikke være tomt."
 msgid "The mail address cannot be blank."
 msgstr "E-postadressen kan ikke være tom."
 
-msgid "information changed."
-msgstr "informasjon endret."
+msgid "The new username must not be blank."
+msgstr "Det nye brukernavnet må ikke være tomt."
 
 msgid "You have not chosen an action."
 msgstr "Du har ikke valgt en handling."
@@ -6578,6 +6581,12 @@ msgstr "Vennligst bruk denne funksjonen med forsiktighet."
 msgid "Run Command"
 msgstr "Kjør kommandoen"
 
+msgid "This page shows the status of your ZFS raid array. You can also add and remove drives from the raid array here."
+msgstr "Denne siden viser statusen for ZFS raid array. Du kan også legge til og fjerne stasjoner fra raid array her."
+
+msgid "Select a server"
+msgstr "Velg en server"
+
 msgid "Choose the date that you want to view the email statistics for."
 msgstr "Velg datoen du vil vise e-poststatistikken for."
 
@@ -6592,6 +6601,9 @@ msgstr "advarsler"
 
 msgid "Quick Links"
 msgstr "Hurtigkoblinger"
+
+msgid "Change Username"
+msgstr "Endre brukernavn"
 
 msgid "Update logs"
 msgstr "Oppdater logger"
@@ -6630,7 +6642,7 @@ msgid "UPS"
 msgstr "UPS"
 
 msgid "Banned E-Mail domains"
-msgstr "Bannrede e-postdomener"
+msgstr "Bannede e-postdomener"
 
 msgid "Whitelists"
 msgstr "hvitelister"
@@ -6818,30 +6830,6 @@ msgstr "SSL-sertifikatet er installert."
 msgid "The Commercial SSl Certificate has now been created. Please proceed to step two."
 msgstr "Det kommersielle SSl-sertifikatet er nå opprettet. Vennligst fortsett til trinn to."
 
-msgid "Edit the user's information."
-msgstr "Rediger brukerens informasjon."
-
-msgid "Current Username"
-msgstr "Nåværende brukernavn"
-
-msgid "Enter in the username that you want to change."
-msgstr "Skriv inn brukernavnet du vil endre."
-
-msgid "New username"
-msgstr "Nytt brukernavn"
-
-msgid "Enter in the new username for this user."
-msgstr "Skriv inn det nye brukernavnet for denne brukeren."
-
-msgid "New forename"
-msgstr "Nytt fornavn"
-
-msgid "New surname"
-msgstr "Nytt etternavn"
-
-msgid "Current username"
-msgstr "Nåværende brukernavn"
-
 msgid "Upload a Moodle Theme"
 msgstr "Last opp et Moodle-tema"
 
@@ -6852,7 +6840,7 @@ msgid "Setup Printers"
 msgstr "Oppsettskrivere"
 
 msgid "If you have not already done so you may want to add a printer server to your network so that you can control printing for your clients."
-msgstr "Hvis du ikke allerede har gjort det, vil du kanskje legge til en skriverserver i nettverket ditt slik at du kan kontrollere utskrift for kundene dine."
+msgstr "Hvis du ikke allerede har gjort det, vil du kanskje legge til en skriverserver i nettverket ditt slik at du kan kontrollere utskrift for dine kunder."
 
 msgid "The show servers link below will show all available servers. Choose the server that you want to add the printer module to by clicking on the add role button."
 msgstr "Viseserverene koblingen nedenfor viser alle tilgjengelige servere. Velg serveren du vil legge til skrivermodulen til, ved å klikke på add-role-knappen."
@@ -6862,12 +6850,6 @@ msgstr "Kontroll skrivere"
 
 msgid "Enter in the settings that you want to use for your client devices."
 msgstr "Skriv inn innstillingene du vil bruke for klientenhetene dine."
-
-msgid "View and edit DHCP Reservations"
-msgstr "Se og rediger DHCP-reservasjoner"
-
-msgid "Reservations"
-msgstr "Reservasjoner"
 
 msgid "DNS Servers"
 msgstr "DNS-servere"
@@ -7019,6 +7001,12 @@ msgstr "TCPIP-adressen var ikke i listen."
 msgid "The list is empty. All TCPIP addresses are allowed."
 msgstr "Listen er tom. Alle TCPIP-adresser er tillatt."
 
+msgid "stopping"
+msgstr "stoppe"
+
+msgid "starting"
+msgstr "starter"
+
 msgid "User Connection Logs"
 msgstr "Brukerforbindelseslogger"
 
@@ -7166,9 +7154,6 @@ msgstr "Denne modulen kan bare brukes til hovedserveren eller en ekstra domeneko
 msgid "Nextcloud"
 msgstr "Nextcloud"
 
-msgid "Nextcloud Server"
-msgstr "Nextcloud Server"
-
 msgid "This will provide a cloud file storage and home access system for web access to files."
 msgstr "Dette vil gi en skyfiloppbevaring og hjemmegangssystem for tilgang til filer til filer."
 
@@ -7234,9 +7219,6 @@ msgstr "Dette vil sette opp Gitlab-modulen."
 
 msgid "This will setup the Gitlab Server."
 msgstr "Dette vil sette opp Gitlab Server."
-
-msgid "Savapage"
-msgstr "Savapage"
 
 msgid "This module can only be applied to a server that already has the print server module applied."
 msgstr "Denne modulen kan bare brukes på en server som allerede har utskriftsservermodulen brukt."
@@ -7704,7 +7686,7 @@ msgid "Add Assets"
 msgstr "Legg til eiendeler"
 
 msgid "User Settings"
-msgstr "Brukerinnstillinger"
+msgstr "Brukerinstillinger"
 
 msgid "Record User Incident"
 msgstr "Registrer brukerhendelse"
@@ -8150,8 +8132,8 @@ msgstr "intern tilgang"
 msgid "external access"
 msgstr "ekstern tilgang"
 
-msgid "Port 50002 needs a client certificate available in the itadmin share."
-msgstr "Port 50002 trenger et klientsertifikat tilgjengelig i itadmin-delen."
+msgid "Port '"
+msgstr "Havn '"
 
 msgid "Staff"
 msgstr "Personale"
@@ -8180,8 +8162,8 @@ msgstr "Serverdataene er ikke angitt."
 msgid "The description data is not set."
 msgstr "Beskrivelsesdataene er ikke angitt."
 
-msgid "Incorrect MD5 checksum for this patch."
-msgstr "Feil MD5 kontrollsum for denne oppdateringen."
+msgid "Incorrect checksum for this patch."
+msgstr "Feil sjekksum for denne oppdateringen."
 
 msgid "There is no signature file for this patch."
 msgstr "Det er ingen signaturfil for denne oppdateringen."
@@ -8621,6 +8603,39 @@ msgstr "E-postadresse eller domene"
 msgid "Enter in the E-Mail address or domain that you want to add to the whitelist."
 msgstr "Skriv inn i e-postadressen eller -domenet du vil legge til i hvitelisten."
 
+msgid "Process ID"
+msgstr "Prosess ID"
+
+msgid "Connection"
+msgstr "Forbindelse"
+
+msgid "Protocol Version"
+msgstr "Protokollversjon"
+
+msgid "Additional"
+msgstr "Ytterligere"
+
+msgid "Machine"
+msgstr "Maskin"
+
+msgid "Day of Month"
+msgstr "Dag i måneden"
+
+msgid "UID"
+msgstr "UID"
+
+msgid "Deny Mode"
+msgstr "Nekte modus"
+
+msgid "R/W"
+msgstr "R / W"
+
+msgid "Oplock"
+msgstr "Oplock"
+
+msgid "Sharepath"
+msgstr "Sharepath"
+
 msgid "Go up one directory."
 msgstr "Gå opp en katalog."
 
@@ -8647,6 +8662,21 @@ msgstr "Ny fil"
 
 msgid "Create a new file."
 msgstr "Opprett en ny fil."
+
+msgid "Upload a File"
+msgstr "Last opp en fil"
+
+msgid "Upload a file."
+msgstr "Last opp en fil."
+
+msgid "Upload File"
+msgstr "Last opp fil"
+
+msgid "Refresh"
+msgstr "Forfriske"
+
+msgid "Refresh the folder."
+msgstr "Oppdater mappen."
 
 msgid "Move here?"
 msgstr "Flytt her?"
@@ -8699,6 +8729,36 @@ msgstr "Sist åpnet"
 msgid "Last modified"
 msgstr "Sist endret"
 
+msgid "Database name"
+msgstr "Database navn"
+
+msgid "Enter in the database name that you want this file restored to."
+msgstr "Skriv inn i databasenavnet som du vil at denne filen skal gjenopprettes til."
+
+msgid "This will overwrite the data stored in this database if it already exits."
+msgstr "Dette vil overskrive dataene som er lagret i denne databasen hvis den allerede eksisterer."
+
+msgid "Database Username"
+msgstr "Database Brukernavn"
+
+msgid "Enter in a mysql username to access the database."
+msgstr "Skriv inn et mysql brukernavn for å få tilgang til databasen."
+
+msgid "This mysql user will be created if it does not already exist."
+msgstr "Denne mysql-brukeren vil bli opprettet hvis den ikke allerede eksisterer."
+
+msgid "This field can be left blank to use an existing mysql username and password that has already been set for this database."
+msgstr "Dette feltet kan stå tomt for å bruke et eksisterende mysql brukernavn og passord som allerede er angitt for denne databasen."
+
+msgid "Database Password"
+msgstr "Database passord"
+
+msgid "Enter in a mysql password to access the database."
+msgstr "Skriv inn et mysql passord for å få tilgang til databasen."
+
+msgid "Restore SQL"
+msgstr "Gjenopprett SQL"
+
 msgid "Basic Permissions"
 msgstr "Grunnleggende tillatelser"
 
@@ -8746,39 +8806,6 @@ msgstr "Et element med dette navnet eksisterer allerede."
 
 msgid "Files in this folder are not allowed to be edited."
 msgstr "Filer i denne mappen kan ikke redigeres."
-
-msgid "Process ID"
-msgstr "Prosess ID"
-
-msgid "Connection"
-msgstr "Forbindelse"
-
-msgid "Protocol Version"
-msgstr "Protokollversjon"
-
-msgid "Additional"
-msgstr "Ytterligere"
-
-msgid "Machine"
-msgstr "Maskin"
-
-msgid "Day of Month"
-msgstr "Dag i måneden"
-
-msgid "UID"
-msgstr "UID"
-
-msgid "Deny Mode"
-msgstr "Nekte modus"
-
-msgid "R/W"
-msgstr "R / W"
-
-msgid "Oplock"
-msgstr "Oplock"
-
-msgid "Sharepath"
-msgstr "Sharepath"
 
 msgid "New Exam Account"
 msgstr "Ny eksamenskonto"
@@ -8852,8 +8879,11 @@ msgstr "Fjerner ssh-tilgang."
 msgid "Removing Moodle"
 msgstr "Fjerner Moodle"
 
-msgid "Removing Owncloud"
-msgstr "Fjerner Owncloud"
+msgid "Removing Nextcloud"
+msgstr "Fjerner Nextcloud"
+
+msgid "Removing Savapage"
+msgstr "Fjerner Savapage"
 
 msgid "Removing Gitlab"
 msgstr "Fjerning av Gitlab"
@@ -9182,14 +9212,23 @@ msgstr "Passord sist endret"
 msgid "The date that the password was last changed for this user."
 msgstr "Datoen som passordet ble sist endret for denne brukeren."
 
-msgid "Common Name"
-msgstr "Vanlig navn"
-
 msgid "Given Name"
 msgstr "Fornavn"
 
 msgid "Display Name"
 msgstr "Visningsnavn"
+
+msgid "Room Number"
+msgstr "Romnummer"
+
+msgid "Telephone Number"
+msgstr "Telefonnummer"
+
+msgid "Fax Number"
+msgstr "Faksnummer"
+
+msgid "Mobile Number"
+msgstr "Mobilnummer"
 
 msgid "E-Mail address"
 msgstr "Epostadresse"
@@ -9225,7 +9264,7 @@ msgid "Select the drives that you want to be added to the raid array."
 msgstr "Velg de stasjonene du vil bli lagt til i raid-arrayen."
 
 msgid "Drives will only be shown if they are currently not mounted and are not already being used in a raid."
-msgstr "Disker vises kun hvis de ikke er montert for øyeblikket og ikke allerede brukes i et raid."
+msgstr "Drev vil bare bli vist hvis de ikke er montert for øyeblikket og ikke allerede brukes i et raid."
 
 msgid "Spare drives can be added after the raid has been created."
 msgstr "Spare-stasjoner kan legges til etter at raidet er opprettet."
@@ -9283,9 +9322,6 @@ msgstr "Du kan ikke sette opp en omvendt proxy på hovedserveren."
 
 msgid "Modifying shorewall rules to allow ports 80 and 443."
 msgstr "Endring av shorewall-regler for å tillate portene 80 og 443."
-
-msgid "Checking for modules"
-msgstr "Sjekker etter moduler"
 
 msgid "The upload file process has been overwritten by another admin user."
 msgstr "Opplastingsprofilprosessen er overskrevet av en annen admin bruker."
@@ -9347,8 +9383,8 @@ msgstr "Ingen egendefinerte spamregler er lagt til."
 msgid "Summary"
 msgstr "Sammendrag"
 
-msgid "CPU Usage"
-msgstr "CPU bruk"
+msgid "Elapsed"
+msgstr "forløpt"
 
 msgid "Samba Status"
 msgstr "Samba Status"
@@ -9533,6 +9569,9 @@ msgstr "Passord Kompleksitet"
 msgid "If a password has to contain upper and lower case characters and numbers."
 msgstr "Hvis et passord skal inneholde store og små bokstaver og tall."
 
+msgid "Enrollment number as username."
+msgstr "Registreringsnummer som brukernavn."
+
 msgid "Choose the default username style."
 msgstr "Velg standard brukernavn stil."
 
@@ -9631,6 +9670,12 @@ msgstr "Kartstasjon"
 
 msgid "Choose the group that you want to allow access to the folder."
 msgstr "Velg gruppen du vil tillate tilgang til mappen."
+
+msgid "Add group"
+msgstr "Legg til gruppe"
+
+msgid "Add another group."
+msgstr "Legg til en annen gruppe."
 
 msgid "Add share"
 msgstr "Legg til deling"
@@ -9755,6 +9800,15 @@ msgstr "Se filtergrupper"
 msgid "View the filter groups."
 msgstr "Se filtergruppene."
 
+msgid "Monday to Friday"
+msgstr "mandag til fredag"
+
+msgid "Friday to Monday"
+msgstr "Fredag ​​til mandag"
+
+msgid "Saturday and Sunday"
+msgstr "lørdag og søndag"
+
 msgid "This shows the internet filter groups that are available and the groups that are assigned to them."
 msgstr "Dette viser internettfiltergruppene som er tilgjengelige og gruppene som er tildelt dem."
 
@@ -9766,6 +9820,9 @@ msgstr "Legg til en ny filtergruppe."
 
 msgid "Assigned Groups"
 msgstr "Tilordnede grupper"
+
+msgid "Times"
+msgstr "ganger"
 
 msgid "Default Filter Group"
 msgstr "Standardfiltergruppe"
@@ -9790,6 +9847,24 @@ msgstr "Er du sikker på at du vil slette denne filtergruppen?"
 
 msgid "This allows you assign user groups to filter groups. Groups that are not assigned to a filter group are automatically assigned to the default filter group."
 msgstr "Dette lar deg tildele brukergrupper å filtrere grupper. Grupper som ikke er tildelt en filtergruppe, tilordnes automatisk til standardfiltergruppen."
+
+msgid "Filter Name"
+msgstr "Filternavn"
+
+msgid "Add Filter Fallback Time"
+msgstr "Legg til Filter Fallback Time"
+
+msgid "Start Time"
+msgstr "Starttid"
+
+msgid "End Time"
+msgstr "Sluttid"
+
+msgid "Fallback filter"
+msgstr "Fallback filter"
+
+msgid "Assigned Filter Group Fallback Times"
+msgstr "Tilordnet filtergruppe Fallback Times"
 
 msgid "Filter Group Options"
 msgstr "Alternativer for filtergruppe"
@@ -9920,12 +9995,6 @@ msgstr "Åpning av porter"
 msgid "Allowing ntlm auth for mschapV2"
 msgstr "Tillater ntlm auth for mschapV2"
 
-msgid "Kanboard Project Management"
-msgstr "Kanboard Prosjektledelse"
-
-msgid "Kanboard has been installed and can be accessed from"
-msgstr "Kanboard er installert og kan nås fra"
-
 msgid "Copying start menu to"
 msgstr "Kopierer startmenyen til"
 
@@ -9946,6 +10015,9 @@ msgstr "Post-ID"
 
 msgid "Recipient"
 msgstr "Mottaker"
+
+msgid "Errors"
+msgstr "feil"
 
 msgid "Delete E-Mail"
 msgstr "Slett e-post"
@@ -10479,7 +10551,7 @@ msgid "Last Name"
 msgstr "Etternavn"
 
 msgid "Password changed"
-msgstr "Passord endret"
+msgstr "passord endret"
 
 msgid "Account Expires"
 msgstr "Kontoen utløper"
@@ -10574,9 +10646,6 @@ msgstr "Brukerbilder"
 msgid "Network Monitoring"
 msgstr "Nettverksovervåking"
 
-msgid "OCS-Inventory"
-msgstr "OCS-Varelager"
-
 msgid "Logs"
 msgstr "logger"
 
@@ -10609,6 +10678,9 @@ msgstr "Endre brukerens passord."
 
 msgid "Add a new user to the syatem"
 msgstr "Legg til en ny bruker i systemet"
+
+msgid "This will show the LDAP information for that user and allow you to change the username, firstname, surname, and primary group."
+msgstr "Dette vil vise LDAP-informasjonen for den brukeren og tillate deg å endre brukernavn, fornavn, etternavn og hovedgruppe."
 
 msgid "Ban a user from logging into the system"
 msgstr "Forby en bruker fra å logge inn i systemet"
@@ -10832,6 +10904,9 @@ msgstr "Konfigurer en server for å bruke en proxy på oppstrøms."
 msgid "Upload Moodle Theme"
 msgstr "Last opp Moodle Theme"
 
+msgid "Update Collabora Office to the latest version."
+msgstr "Oppdater Collabora Office til den nyeste versjonen."
+
 msgid "Configure the NTP settings for your servers."
 msgstr "Konfigurer NTP-innstillingene for serverne dine."
 
@@ -10936,6 +11011,9 @@ msgstr "Vis klienttilkoblinger til en server."
 
 msgid "Show the domain information."
 msgstr "Vis domeneinformasjonen."
+
+msgid "OCS-Inventory"
+msgstr "OCS-Varelager"
 
 msgid "Show client locations."
 msgstr "Vis klientsteder."
@@ -11079,7 +11157,7 @@ msgid "Configure custom spam rules."
 msgstr "Konfigurer egendefinerte spamregler."
 
 msgid "Search E-Mail Logs"
-msgstr "Søk e-postlogger"
+msgstr "Søk i e-postlogger"
 
 msgid "Search the E-Mail logs for details of E-Mails sent or received."
 msgstr "Søk i e-postloggene for detaljer om e-post sendt eller mottatt."
@@ -11146,6 +11224,9 @@ msgstr "Konfigurer omvendte proxy-nettsteder."
 
 msgid "Creating an SSL certificate"
 msgstr "Opprette et SSL-sertifikat"
+
+msgid "Restarting nginx to apply the ssl certificate"
+msgstr "Startes på nytt nginx for å bruke ssl-sertifikatet"
 
 msgid "Enabling Certificate"
 msgstr "Aktiverer sertifikat"
