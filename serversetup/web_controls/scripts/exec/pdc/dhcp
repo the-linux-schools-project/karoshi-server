@@ -291,6 +291,17 @@ touch /etc/dhcp/dhcpd_client_boot.conf
 echo 'include "/etc/dhcp/dhcpd_reservations.conf";'  >> "$DHCPCONFPATH"
 echo 'include "/etc/dhcp/dhcpd_client_boot.conf";'  >> "$DHCPCONFPATH"
 
+#Configure shorewall
+RESTARTSHOREWALL=no
+if [[ $(grep -c DHCP-Server /etc/shorewall/rules) = 0 ]]
+then
+	RESTARTSHOREWALL=yes
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'cACCEPT	net	fw	tcp	67	-#DHCP-Server' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+fi
+
+
 #Configure failover dhcp between servers
 if [ ! -z "$SECONDARYSERVER" ]
 then
@@ -312,12 +323,6 @@ then
 		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 	fi
 
-	if [ "$RESTARTSHOREWALL" = yes ]
-	then
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
-		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
-	fi
-
 	#Copy dhcp config files to the secondary server
 	scp /etc/dhcp/dhcpd_secondary.conf root@"$SECONDARYSERVER":/etc/dhcp
 	scp /etc/dhcp/dhcpd.conf root@"$SECONDARYSERVER":/etc/dhcp
@@ -327,6 +332,13 @@ then
 	ssh -o PasswordAuthentication=no -o ConnectTimeout=3 "$SECONDARYSERVER" '
 	source /opt/karoshi/serversetup/variables/distro
 	RESTARTSHOREWALL=no
+	if [ $(grep -c DHCP-Server /etc/shorewall/rules) = 0 ]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=$(grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM""cACCEPT	net	fw	tcp	67	-#DHCP-Server" /etc/shorewall/rules
+		echo "#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" >> /etc/shorewall/rules
+	fi
 	if [ $(grep -c DHCP-failover /etc/shorewall/rules) = 0 ]
 	then
 		RESTARTSHOREWALL=yes
@@ -358,6 +370,12 @@ then
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/dhcp
 	'
 
+fi
+
+if [ "$RESTARTSHOREWALL" = yes ]
+then
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
 #Restart DHCP
