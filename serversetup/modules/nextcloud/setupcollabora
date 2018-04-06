@@ -41,7 +41,7 @@ if [ "$?" != 0 ]
 then
 	Message=$"There was a problem installing Docker"
 	show_progress_info
-	exit
+	exit 101
 fi
 [ "$Output" = html ] && echo '</pre>'
 
