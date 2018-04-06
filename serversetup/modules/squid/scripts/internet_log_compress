@@ -47,9 +47,9 @@ then
 				#Get number of sites visted for user
 				LOGLENGTH=$(wc -l /opt/karoshi/logs/internetlogs/"$LOG_DATE/users/$USERLOG"  | cut -d' ' -f1)
 
-				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'$USERLOG'</td><td style="vertical-align: top;">'$LOGLENGTH'</td></tr>' >> /opt/karoshi/logs/internetlogs/$LOG_DATE/global_user_usage1
+				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'"$USERLOG"'</td><td style="vertical-align: top;">'"$LOGLENGTH"'</td></tr>' >> /opt/karoshi/logs/internetlogs/"$LOG_DATE"/global_user_usage1
 
-				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'$LOGLENGTH'</td><td style="vertical-align: top;">'$LOG_DATE'</td></tr>' >> /opt/karoshi/logs/internetlogs/user_usage/$USERLOG
+				echo '<tr><td><form action="dg_view_user_logs.cgi" method="post"><button class="info" name="_ViewLogs_" value="_ACTION_DATE_'"$LOG_DATE"'_USERNAME_'"$USERLOG"'_"><img src="/images/submenus/internet/user_log.png" alt="'$"View log"'"><span>View log - '"$USERLOG"'</span><br></button></form></td><td style="vertical-align: top;">'"$LOGLENGTH"'</td><td style="vertical-align: top;">'"$LOG_DATE"'</td></tr>' >> /opt/karoshi/logs/internetlogs/user_usage/"$USERLOG"
 
 
 			fi
