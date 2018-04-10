@@ -83,17 +83,26 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 
 </tr></tbody></table>
 <br>
-<b>'$"CSV file format"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"''
+<b>'$"CSV file format without the first row as headers"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"''
 [ "$PASSWORDCOMPLEXITY" = on ] && echo '. '$"Upper and lower case characters and numbers are required."''
 echo '<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>
-        <table class="standard">
-        <tr>
-            <td style="width: 180px;">'$"Upload CSV file"'
-            </td>
-            <td>
-                <INPUT TYPE="FILE"  NAME="file-to-upload-01" SIZE="35">
-        </td></tr>
-        </table>
+
+<br><b>'$"CSV file format with the first row as headers"'</b><br><br>
+<b>'$"Example"'</b><br><br>
+surname,forename,password,enrolment-number<br>
+Jones,John,hello123,JJ1<br>
+Wilson,Mark,foobar123,MW1<br>
+May,Amy,marmaduke,AM1<br><br>
+'$"Possible column headers are"' forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password<br><br>
+
+<table class="standard">
+<tr>
+    <td style="width: 180px;">'$"Upload CSV file"'
+    </td>
+    <td>
+        <INPUT TYPE="FILE"  NAME="file-to-upload-01" SIZE="35">
+</td></tr>
+</table>
   
 <br><br>
 <input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset">

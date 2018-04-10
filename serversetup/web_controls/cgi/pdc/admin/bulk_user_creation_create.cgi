@@ -33,59 +33,56 @@
 ############################
 
 STYLESHEET=defaultstyle.css
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
+[ -f /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER" ] && source /opt/karoshi/web_controls/user_prefs/"$REMOTE_USER"
 
 ############################
 #Show page
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation"'</title></head><link rel="stylesheet" href="/css/'$STYLESHEET'?d='$VERSION'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Bulk User Creation"'</title><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox"><div class="sectiontitle">'$"Bulk User Creation"'</div><br>'
+echo '<div id="actionbox3"><div id="titlebox"><div class="sectiontitle">'$"Bulk User Creation"'</div></div><div id="infobox">'
 #########################
 #Get data input
 #########################
-TCPIP_ADDR=$REMOTE_ADDR
-DATA=`cat | tr -cd 'A-Za-z0-9\._:\-'`
+DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
 END_POINT=7
-#Assign USERNAMESTYLE
+function get_data {
 COUNTER=2
-while [ $COUNTER -le $END_POINT ]
+DATAENTRY=""
+while [[ $COUNTER -le $END_POINT ]]
 do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = USERNAMESTYLEcheck ]
+	DATAHEADER=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
+	if [[ "$DATAHEADER" = "$DATANAME" ]]
 	then
-		let COUNTER=$COUNTER+1
-		USER_STYLE=`echo $DATA | cut -s -d'_' -f$COUNTER`
+		let COUNTER="$COUNTER"+1
+		DATAENTRY=$(echo "$DATA" | cut -s -d'_' -f"$COUNTER")
 		break
 	fi
 	let COUNTER=$COUNTER+1
 done
-#Assign GROUP
-COUNTER=2
-while [ $COUNTER -le $END_POINT ]
-do
-	DATAHEADER=`echo $DATA | cut -s -d'_' -f$COUNTER`
-	if [ `echo $DATAHEADER'check'` = GROUPcheck ]
-	then
-		let COUNTER=$COUNTER+1
-		PRI_GROUP=`echo $DATA | cut -s -d'_' -f$COUNTER`
-		break
-	fi
-	let COUNTER=$COUNTER+1
-done
+}
 
-Checksum=`sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1`
+#Assign USERNAMESTYLE
+DATANAME=USERNAMESTYLE
+get_data
+USERNAMESTYLE="$DATAENTRY"
+
+#Assign GROUP
+DATANAME=GROUP
+get_data
+PRI_GROUP="$DATAENTRY"
+
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/bulk_user_creation_create.cgi | cut -d' ' -f1)
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo 'window.location = "/cgi-bin/admin/bulk_user_creation_upload_fm.cgi";'
 echo '</script>'
 echo "</div></body></html>"
@@ -94,14 +91,14 @@ exit
 
 function show_status2 {
 echo '<SCRIPT language="Javascript">'
-echo 'alert("'$MESSAGE'")';
+echo 'alert("'"$MESSAGE"'")';
 echo '</script>'
 }
 
 #########################
 #Check https access
 #########################
-if [ https_$HTTPS != https_on ]
+if [ https_"$HTTPS" != https_on ]
 then
 	export MESSAGE=$"You must access this page via https."
 	show_status
@@ -115,7 +112,7 @@ then
 	show_status
 fi
 
-if [ `grep -c ^$REMOTE_USER: /opt/karoshi/web_controls/web_access_admin` != 1 ]
+if [[ $(grep -c ^"$REMOTE_USER": /opt/karoshi/web_controls/web_access_admin) != 1 ]]
 then
 	MESSAGE=$"You must be a Karoshi Management User to complete this action."
 	show_status
@@ -125,7 +122,7 @@ fi
 #Check data
 #########################
 #Check to see that user style is not blank
-if [ -z "$USER_STYLE" ]
+if [ -z "$USERNAMESTYLE" ]
 then
 	MESSAGE=$"The user style must not be blank."
 	show_status
@@ -137,7 +134,7 @@ then
 	show_status
 fi
 #Check to see that userstyle is correct
-if [ $USER_STYLE != userstyleS1 ] && [ $USER_STYLE != userstyleS2 ] && [ $USER_STYLE != userstyleS3 ] && [ $USER_STYLE != userstyleS4 ] && [ $USER_STYLE != userstyleS5 ] && [ $USER_STYLE != userstyleS6 ] && [ $USER_STYLE != userstyleS7 ] && [ $USER_STYLE != userstyleS8 ] && [ $USER_STYLE != userstyleS9 ] && [ $USER_STYLE != userstyleS10 ]
+if [ "$USERNAMESTYLE" != userstyleS1 ] && [ "$USERNAMESTYLE" != userstyleS2 ] && [ "$USERNAMESTYLE" != userstyleS3 ] && [ "$USERNAMESTYLE" != userstyleS4 ] && [ "$USERNAMESTYLE" != userstyleS5 ] && [ "$USERNAMESTYLE" != userstyleS6 ] && [ "$USERNAMESTYLE" != userstyleS7 ] && [ "$USERNAMESTYLE" != userstyleS8 ] && [ "$USERNAMESTYLE" != userstyleS9 ] && [ "$USERNAMESTYLE" != userstyleS10 ]
 then
 	MESSAGE=$"Incorrect username style."
 	show_status
@@ -147,15 +144,15 @@ function datacheck {
 CREATEUSER=yes
 if [ -z "$FORENAME" ]
 then
-	echo $"Line": $COUNTER - $"Blank forename""<br>"
+	echo $"Line"": $COUNTER - "$"Blank forename""<br>"
 	CREATEUSER=no
 fi
 if [ -z "$SURNAME" ]
 then
-	echo $"Line": $COUNTER - $"Blank surname""<br>"
+	echo $"Line"": $COUNTER - "$"Blank surname""<br>"
 	CREATEUSER=no
 fi
-if [ $USER_STYLE = userstyleS9 ]
+if [ "$USERNAMESTYLE" = userstyleS9 ]
 then
 	if [ -z "$ENROLMENT_NO" ]
 	then
@@ -163,7 +160,7 @@ then
 		CREATEUSER=no
 	fi
 fi
-if [ $USER_STYLE = userstyleS10 ]
+if [ "$USERNAMESTYLE" = userstyleS10 ]
 then
 	if [ -z "$USERNAME" ]
 	then
@@ -173,19 +170,19 @@ then
 fi
 
 #Check that the username is 20 characters or less
-USERNAMELENGTH=${#USERNAME}  
-if [ $USERNAMELENGTH -gt 20 ]
+USERNAMELENGTH="${#USERNAME}"  
+if [ "$USERNAMELENGTH" -gt 20 ]
 then
-	echo $"Line": $COUNTER - $USERNAME $"The username is greater than 20 characters""<br>"
+	echo $"Line"": $COUNTER - $USERNAME "$"The username is greater than 20 characters""<br>"
 	CREATEUSER=no
 fi
 
 
-if [ $PRI_GROUP = getgroupfromcsv ]
+if [ "$PRI_GROUP" = getgroupfromcsv ]
 then
 	if [ -z "$USERPGROUP" ]
 	then
-		echo $"Line": $COUNTER - $"Blank Primary Group""<br>"
+		echo $"Line"": $COUNTER - "$"Blank Primary Group""<br>"
 		CREATEUSER=no
 	fi
 fi
@@ -194,7 +191,7 @@ source /opt/karoshi/server_network/security/password_settings
 #Create a new password if it is blank
 if [ -z "$PASSWORD" ]
 then
-	if [ $PASSWORDCOMPLEXITY = on ]
+	if [ "$PASSWORDCOMPLEXITY" = on ]
 	then
 		PASSWORD=$(openssl rand -base64 24 | head -c"$MINPASSWORDLENGTH" 2>/dev/null)
 		PASSWORD=$(urlencode -m "$PASSWORD")
@@ -220,21 +217,20 @@ else
 		CHARCHECK=ok
 
 		#Check that the password has a combination of characters and numbers
-		if [ `echo "$RAWPASSWORD"'1' | tr -cd '0-9\n'` = 1 ]
+		if [[ $(echo "$RAWPASSWORD"'1' | tr -cd '0-9\n') = 1 ]]
 		then
 			CHARCHECK=fail
 		fi
-		if [ `echo "$RAWPASSWORD"'A' | tr -cd 'A-Za-z\n'` = A ]
+		if [[ $(echo "$RAWPASSWORD"'A' | tr -cd 'A-Za-z\n') = A ]]
 		then
 			CHARCHECK=fail
 		fi
 
-		if [ `echo "$RAWPASSWORD"'A' | tr -cd 'A-Z\n'` = A ]
+		if [[ $(echo "$RAWPASSWORD"'A' | tr -cd 'A-Z\n') = A ]]
 		then
 			CASECHECK=fail
-			CASECHECK2=$"Failed"
 		fi
-		if [ `echo "$RAWPASSWORD"'a' | tr -cd 'a-z\n'` = a ]
+		if [[ $(echo "$RAWPASSWORD"'a' | tr -cd 'a-z\n') = a ]]
 		then
 			CASECHECK=fail
 		fi
@@ -259,161 +255,194 @@ fi
 [ -d /var/www/karoshi/bulk_user_creation ] || mkdir -p /var/www/karoshi/bulk_user_creation
 chmod 0700 /var/www/karoshi/
 chmod 0700 /var/www/karoshi/bulk_user_creation
-if [ `dir /var/www/karoshi/bulk_user_creation --format=single-column | wc -l` != 1 ]
+if [[ $(dir /var/www/karoshi/bulk_user_creation --format=single-column | wc -l) != 1 ]]
 then
 	MESSAGE=$"File upload error."
 	show_status
 fi
-CSVFILE=`ls /var/www/karoshi/bulk_user_creation`
+CSVFILE=$(ls /var/www/karoshi/bulk_user_creation)
 echo >> /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 sed -i '/^$/d' /var/www/karoshi/bulk_user_creation/"$CSVFILE"
-CSVFILE_LINES=`cat /var/www/karoshi/bulk_user_creation/"$CSVFILE" | wc -l`
+CSVFILE_LINES=$(wc -l < /var/www/karoshi/bulk_user_creation/"$CSVFILE")
 [ -f /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv ] && rm -f /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
 
 #Convert Windows line returns
 dos2unix /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 
-COUNTER=1
-while [ $COUNTER -le $CSVFILE_LINES ]
+#Check if the first row contain column headers
+#Possible headers are: forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password
+if [[ $(sed -n 1,1p  /var/www/karoshi/bulk_user_creation/"$CSVFILE" | grep -ic 'forename\|surname') -gt 0 ]]
+then
+	UseHeaders=yes
+	HeaderData=$(sed -n 1,1p  /var/www/karoshi/bulk_user_creation/"$CSVFILE" | sed 's/,/\n/g')
+	COUNTER=2
+	ForenameCol=$(echo -e "$HeaderData" | grep -in forename | cut -d: -f1)
+	SurnameCol=$(echo -e "$HeaderData" | grep -in surname | cut -d: -f1)
+	EnrolmentCol=$(echo -e "$HeaderData" | grep -in enrolment-number | cut -d: -f1)
+	UsernameCol=$(echo -e "$HeaderData" | grep -in username | cut -d: -f1)
+	PrimaryGroupCol=$(echo -e "$HeaderData" | grep -in primary-group | cut -d: -f1)
+	SecondaryGroupsCol=$(echo -e "$HeaderData" | grep -in secondary-groups | cut -d: -f1)
+	ChangePasswordOnLogonCol=$(echo -e "$HeaderData" | grep -in change-password-on-logon | cut -d: -f1)
+	PasswordCol=$(echo -e "$HeaderData" | grep -in password | cut -d: -f1)
+else
+	UseHeaders=no
+	COUNTER=1
+	ForenameCol=1
+	SurnameCol=2
+	EnrolmentCol=3
+	UsernameCol=4
+	PrimaryGroupCol=5
+	SecondaryGroupsCol=6
+	ChangePasswordOnLogonCol=7
+	PasswordCol=8
+fi
+
+while [ "$COUNTER" -le "$CSVFILE_LINES" ]
 do
-	FORENAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f1 | tr -cd 'A-Za-z0-9,'`
-	SURNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f2 | tr -cd 'A-Za-z0-9,'`
-	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3 | tr -cd 'A-Za-z0-9,-'`
-	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 | tr -cd 'A-Za-z0-9,-'`
-	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 | tr -cd 'A-Za-z0-9,-'`
-	USERSGROUPS=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 | tr -cd 'A-Za-z0-9,:-'`
-	NEXTLOGON=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 | tr -cd 'A-Za-z0-9,-'`
-	PASSWORD=$(urlencode -m `sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f8-`)
-	datacheck
-	if [ $CREATEUSER = no ]
+	FORENAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$ForenameCol" | tr -cd 'A-Za-z0-9,')
+	SURNAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$SurnameCol" | tr -cd 'A-Za-z0-9,')
+	[ ! -z "$EnrolmentCol" ] && ENROLMENT_NO=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$EnrolmentCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$UsernameCol" ] && USERNAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$UsernameCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$PrimaryGroupCol" ] && USERPGROUP=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$PrimaryGroupCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$SecondaryGroupsCol" ] && USERSGROUPS=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$SecondaryGroupsCol" | tr -cd 'A-Za-z0-9,:-')
+	[ ! -z "$ChangePasswordOnLogonCol" ] && NEXTLOGON=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$ChangePasswordOnLogonCol" | tr -cd 'A-Za-z0-9,-')
+	if [ "$UseHeaders" = yes ]
 	then
-		MESSAGE=`echo $"The CSV file you have chosen is not formatted correctly."`
+		[ ! -z "$PasswordCol" ] && PASSWORD=$(urlencode -m "$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$PasswordCol")")
+	else
+		[ ! -z "$PasswordCol" ] && PASSWORD=$(urlencode -m "$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$PasswordCol"-)")
+	fi
+	datacheck
+	if [ "$CREATEUSER" = no ]
+	then
+		MESSAGE=$"The CSV file you have chosen is not formatted correctly."
 		show_status
 	fi
-	echo "$FORENAME","$SURNAME","$PASSWORD","$ENROLMENT_NO","$USERNAME",$USERPGROUP,$USERSGROUPS,$NEXTLOGON >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
-	let COUNTER=$COUNTER+1
+	echo "$FORENAME,$SURNAME,$PASSWORD,$ENROLMENT_NO,$USERNAME,$USERPGROUP,$USERSGROUPS,$NEXTLOGON" >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
+	let COUNTER="$COUNTER"+1
 done
 rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 
 function create_username {
 datacheck
-if [ $CREATEUSER = no ]
+if [ "$CREATEUSER" = no ]
 then
-	MESSAGE=`echo $"CSV file error."`
+	MESSAGE=$"CSV file error."
 	show_status
 fi
 
-if [ $USER_STYLE = userstyleS2 ]
+if [ "$USERNAMESTYLE" = userstyleS2 ]
 then
-	USERNAME=$YEARSUFFIX$DUPLICATECOUNTER${FORENAME:0:1}$SURNAME
-elif [ $USER_STYLE = userstyleS3 ]
+	USERNAME="$YEARSUFFIX$DUPLICATECOUNTER${FORENAME:0:1}$SURNAME"
+elif [ "$USERNAMESTYLE" = userstyleS3 ]
 then
-	USERNAME=$SURNAME${FORENAME:0:1}$YEARSUFFIX$DUPLICATECOUNTER
-elif [ $USER_STYLE = userstyleS4 ]
+	USERNAME="$SURNAME${FORENAME:0:1}$YEARSUFFIX$DUPLICATECOUNTER"
+elif [ "$USERNAMESTYLE" = userstyleS4 ]
 then
-	USERNAME=$FORENAME.$SURNAME$YEARSUFFIX$DUPLICATECOUNTER
-elif [ $USER_STYLE = userstyleS5 ]
+	USERNAME="$FORENAME.$SURNAME$YEARSUFFIX$DUPLICATECOUNTER"
+elif [ "$USERNAMESTYLE" = userstyleS5 ]
 then
 	USERNAME=$SURNAME.$FORENAME$YEARSUFFIX$DUPLICATECOUNTER
-elif [ $USER_STYLE = userstyleS6 ]
+elif [ "$USERNAMESTYLE" = userstyleS6 ]
 then
-	USERNAME=$YEARSUFFIX$DUPLICATECOUNTER$SURNAME${FORENAME:0:1}
-elif [ $USER_STYLE = userstyleS7 ]
+	USERNAME="$YEARSUFFIX$DUPLICATECOUNTER$SURNAME${FORENAME:0:1}"
+elif [ "$USERNAMESTYLE" = userstyleS7 ]
 then
-	USERNAME=$YEARSUFFIX$DUPLICATECOUNTER$FORENAME${SURNAME:0:1}
-elif [ $USER_STYLE = userstyleS8 ]
+	USERNAME="$YEARSUFFIX$DUPLICATECOUNTER$FORENAME${SURNAME:0:1}"
+elif [ "$USERNAMESTYLE" = userstyleS8 ]
 then
-	SURNAMECOUNT=${#SURNAME}
+	SURNAMECOUNT="${#SURNAME}"
 	[ -z "$DUPLICATECOUNTER" ] && DUPLICATECOUNTER=1
-	if [ $DUPLICATECOUNTER -le $SURNAMECOUNT ]
+	if [ "$DUPLICATECOUNTER" -le "$SURNAMECOUNT" ]
 	then
 		COUNTER2=""
 		USERNAME=$FORENAME${SURNAME:0:$DUPLICATECOUNTER}
 	else
 		[ -z "$COUNTER2" ] && COUNTER2=1
-		USERNAME=$FORENAME${SURNAME:0:$DUPLICATECOUNTER}$COUNTER2
-		let COUNTER2=$COUNTER2+1
+		USERNAME="$FORENAME${SURNAME:0:$DUPLICATECOUNTER}$COUNTER2"
+		let COUNTER2="$COUNTER2"+1
 	fi
-elif [ $USER_STYLE = userstyleS9 ]
+elif [ "$USERNAMESTYLE" = userstyleS9 ]
 then
 	if [ -z "$DUPLICATECOUNTER" ]
 	then
-		USERNAME=$ENROLMENT_NO
+		USERNAME="$ENROLMENT_NO"
 	else
-		USERNAME=$ENROLMENT_NO.$DUPLICATECOUNTER
+		USERNAME="$ENROLMENT_NO.$DUPLICATECOUNTER"
 	fi
-elif [ $USER_STYLE = userstyleS10 ]
+elif [ "$USERNAMESTYLE" = userstyleS10 ]
 then
-		USERNAME=$USERNAME$DUPLICATECOUNTER	
+		USERNAME="$USERNAME$DUPLICATECOUNTER"
 else
-	USERNAME=${FORENAME:0:1}$SURNAME$YEARSUFFIX$DUPLICATECOUNTER
+	USERNAME="${FORENAME:0:1}$SURNAME$YEARSUFFIX$DUPLICATECOUNTER"
 fi
-USERNAME=`echo $USERNAME | tr '[A-Z]' '[a-z]'`
+USERNAME=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]')
 }
 
 #Create CSVfile with information
 
-source /opt/karoshi/server_network/group_information/$PRI_GROUP
+source /opt/karoshi/server_network/group_information/"$PRI_GROUP"
 source /opt/karoshi/web_controls/version
 CSVFILE=karoshi_web_user_create.csv
-CSVFILE_LINES=`cat /var/www/karoshi/bulk_user_creation/"$CSVFILE" | wc -l`
+CSVFILE_LINES=$(wc -l < /var/www/karoshi/bulk_user_creation/"$CSVFILE")
 COUNTER=1
 
-tr -d '\r' < /var/www/karoshi/bulk_user_creation/"$CSVFILE" > /var/www/karoshi/bulk_user_creation/"$CSVFILE".$$
+tr -d '\r' < /var/www/karoshi/bulk_user_creation/"$CSVFILE" > /var/www/karoshi/bulk_user_creation/"$CSVFILE.$$"
 rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
-mv /var/www/karoshi/bulk_user_creation/"$CSVFILE".$$ /var/www/karoshi/bulk_user_creation/"$CSVFILE"
+mv /var/www/karoshi/bulk_user_creation/"$CSVFILE.$$" /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 
 #Show users to create
-
-while [ $COUNTER -le $CSVFILE_LINES ]
+echo "<ul>"
+while [ "$COUNTER" -le "$CSVFILE_LINES" ]
 do
-	FORENAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f1 | sed 's/ //g'`
-	SURNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f2  | sed 's/ //g'`
-	PASSWORD=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3`
-	ENROLMENT_NO=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 |  sed 's/ //g'`
-	USERNAME=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 |  sed 's/ //g'`
-	USERPGROUP=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 |  sed 's/ //g'`
-	USERSGROUPS=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 |  sed 's/ //g'`
-	NEXTLOGON=`sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f8 |  sed 's/ //g'`
+	FORENAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f1 | sed 's/ //g')
+	SURNAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f2  | sed 's/ //g')
+	PASSWORD=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f3)
+	ENROLMENT_NO=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f4 |  sed 's/ //g')
+	USERNAME=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f5 |  sed 's/ //g')
+	USERPGROUP=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 |  sed 's/ //g')
+	USERSGROUPS=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 |  sed 's/ //g')
+	NEXTLOGON=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f8 |  sed 's/ //g')
 	DUPLICATECOUNTER=""
 	create_username
 	DUPLICATE_CHECK=yes
 	#Check that no duplicate usernames exist
-	while [ $DUPLICATE_CHECK = yes ]
+	while [ "$DUPLICATE_CHECK" = yes ]
 	do
 		id -u "$USERNAME" 1>/dev/null 2>/dev/null
-		if [ $? = 0 ]
+		if [ "$?" = 0 ]
 		then
 			[ -z "$DUPLICATECOUNTER" ] && DUPLICATECOUNTER=1
-			echo $USERNAME - $"This username is already in use.""<br>"
+			echo "$USERNAME - "$"This username is already in use.""<br>"
 			create_username
-			let DUPLICATECOUNTER=$DUPLICATECOUNTER+1
+			let DUPLICATECOUNTER="$DUPLICATECOUNTER"+1
 		else
 			DUPLICATE_CHECK=no
 			break
 		fi
-		[ $DUPLICATECOUNTER = 50000 ] && break
+		[ "$DUPLICATECOUNTER" = 50000 ] && break
 	done
 
 
-	if [ $DUPLICATE_CHECK = no ]
+	if [ "$DUPLICATE_CHECK" = no ]
 	then
 		datacheck
-		if [ $CREATEUSER = yes ]
+		if [ "$CREATEUSER" = yes ]
 		then
-			echo $"Creating" "$USERNAME" - "$FORENAME" "$SURNAME"'<br><br>'
-			if [ $PRI_GROUP = getgroupfromcsv ]
+			echo "<li>"$"Creating" "$USERNAME - $FORENAME $SURNAME</li>"
+			if [ "$PRI_GROUP" = getgroupfromcsv ]
 			then
-				USERGROUP=$USERPGROUP
+				USERGROUP="$USERPGROUP"
 			else
-				USERGROUP=$PRI_GROUP
+				USERGROUP="$PRI_GROUP"
 			fi
 
-			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USER_STYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USERNAMESTYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
 	fi
-	let COUNTER=$COUNTER+1
+	let COUNTER="$COUNTER"+1
 done
+echo "</ul>"
 [ -f /var/www/karoshi/bulk_user_creation/"$CSVFILE" ] && rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 MESSAGE=$"Bulk user creation completed."
 show_status
