@@ -93,7 +93,7 @@ surname,forename,password,enrolment-number<br>
 Jones,John,hello123,JJ1<br>
 Wilson,Mark,foobar123,MW1<br>
 May,Amy,marmaduke,AM1<br><br>
-'$"Possible column headers are"' forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password<br><br>
+'$"Possible column headers are"' forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password<br><br><br>
 
 <table class="standard">
 <tr>

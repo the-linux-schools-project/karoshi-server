@@ -71,8 +71,34 @@ echo '
 <body onLoad="start()"><div id="pagecontainer">'
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
-echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post"><div class="sectiontitle">'$"Bulk User Creation"'</div>
-  <br>
+
+WIDTH=100
+ICON1=/images/submenus/user/bulk_user_creation.png
+ICON2=/images/submenus/user/users.png
+
+echo '<div id="actionbox3"><div id="titlebox"><form action="/cgi-bin/admin/bulk_user_creation_create.cgi" method="post">
+
+<div class="sectiontitle">'$"Bulk User Creation"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Upload_CSV#Username_Styles_and_Primary_Group"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style and primary group for the users you want to create."'</span></a></div>
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Bulk User Creation"'">
+			<span>'$"Create user accounts from a CSV file."'</span><br>
+			'$"Bulk User Creation"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Import Enrollment Numbers"'">
+			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
+			'$"Import Enrollment Numbers"'
+		</button>
+	</td>
+
+</tr></tbody></table><br>
+
 '$"Select the following options to create your users"':<br>
   <br>'
 
@@ -89,14 +115,14 @@ echo '<table class="standard" style="text-align: left;" >
         <td style="width: 150px;">
 '$"Username"'</td><td>
 <select name="_USERNAMESTYLE_" style="width: 200px;">
-        <option value="userstyleS1" '"$SELECT1"'>'$"Style"' 1: '$"astudent09"'</option>
-        <option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09astudent"'</option>
-        <option value="userstyleS3" '"$SELECT3"'>'$"Style"' 3: '$"studenta09"'</option>
-        <option value="userstyleS4" '"$SELECT4"'>'$"Style"' 4: '$"arnold.student09"'</option>
-        <option value="userstyleS5" '"$SELECT5"'>'$"Style"' 5: '$"student.arnold09"'</option>
-        <option value="userstyleS6" '"$SELECT6"'>'$"Style"' 6: '$"09studenta"'</option>
-        <option value="userstyleS7" '"$SELECT7"'>'$"Style"' 7: '$"09arnolds"'</option>
-        <option value="userstyleS8" '"$SELECT8"'>'$"Style"' 8: '$"arnolds"'</option>
+        <option value="userstyleS1" '"$SELECT1"'>'$"Style"' 1: '$"auser09"'</option>
+        <option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09auser"'</option>
+        <option value="userstyleS3" '"$SELECT3"'>'$"Style"' 3: '$"usera09"'</option>
+        <option value="userstyleS4" '"$SELECT4"'>'$"Style"' 4: '$"arnold.user09"'</option>
+        <option value="userstyleS5" '"$SELECT5"'>'$"Style"' 5: '$"user.arnold09"'</option>
+        <option value="userstyleS6" '"$SELECT6"'>'$"Style"' 6: '$"09usera"'</option>
+        <option value="userstyleS7" '"$SELECT7"'>'$"Style"' 7: '$"09arnoldu"'</option>
+        <option value="userstyleS8" '"$SELECT8"'>'$"Style"' 8: '$"arnoldu"'</option>
         <option value="userstyleS9" '"$SELECT9"'>'$"Style"' 9: '$"Enrollment number as username"'</option>
 	<option value="userstyleS10" '"$SELECT10"'>'$"Style"' 10: '$"Enter a username"'</option>
 </select></td></tr>

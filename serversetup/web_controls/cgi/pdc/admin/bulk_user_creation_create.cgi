@@ -325,6 +325,7 @@ rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 
 function create_username {
 datacheck
+source /opt/karoshi/server_network/group_information/"$USERGROUP"
 if [ "$CREATEUSER" = no ]
 then
 	MESSAGE=$"CSV file error."
@@ -381,7 +382,6 @@ USERNAME=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]')
 
 #Create CSVfile with information
 
-source /opt/karoshi/server_network/group_information/"$PRI_GROUP"
 source /opt/karoshi/web_controls/version
 CSVFILE=karoshi_web_user_create.csv
 CSVFILE_LINES=$(wc -l < /var/www/karoshi/bulk_user_creation/"$CSVFILE")
@@ -404,6 +404,14 @@ do
 	USERSGROUPS=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 |  sed 's/ //g')
 	NEXTLOGON=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f8 |  sed 's/ //g')
 	DUPLICATECOUNTER=""
+
+	if [ "$PRI_GROUP" = getgroupfromcsv ]
+	then
+		USERGROUP="$USERPGROUP"
+	else
+		USERGROUP="$PRI_GROUP"
+	fi
+
 	create_username
 	DUPLICATE_CHECK=yes
 	#Check that no duplicate usernames exist
@@ -413,7 +421,7 @@ do
 		if [ "$?" = 0 ]
 		then
 			[ -z "$DUPLICATECOUNTER" ] && DUPLICATECOUNTER=1
-			echo "$USERNAME - "$"This username is already in use.""<br>"
+			echo "<li>$USERNAME - "$"This username is already in use.""</li>"
 			create_username
 			let DUPLICATECOUNTER="$DUPLICATECOUNTER"+1
 		else
@@ -430,12 +438,6 @@ do
 		if [ "$CREATEUSER" = yes ]
 		then
 			echo "<li>"$"Creating" "$USERNAME - $FORENAME $SURNAME</li>"
-			if [ "$PRI_GROUP" = getgroupfromcsv ]
-			then
-				USERGROUP="$USERPGROUP"
-			else
-				USERGROUP="$PRI_GROUP"
-			fi
 
 			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USERNAMESTYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
