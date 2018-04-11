@@ -49,7 +49,7 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-')
 #########################
 #Assign data to variables
 #########################
-END_POINT=4
+END_POINT=7
 function get_data {
 COUNTER=2
 DATAENTRY=""

@@ -43,7 +43,17 @@ fi
 ############################
 echo "Content-type: text/html"
 echo ""
-echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script></head><body><div id="pagecontainer">'
+echo '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>'$"Staff Restrictions"'</title><meta http-equiv="REFRESH" content="'"$TIMEOUT"'; URL=/cgi-bin/admin/logout.cgi"><link rel="stylesheet" href="/css/'"$STYLESHEET"'?d='"$VERSION"'"><script src="/all/stuHover.js" type="text/javascript"></script>
+<script src="/all/js/jquery.js"></script>
+<script src="/all/js/jquery.tablesorter/jquery.tablesorter.js"></script>
+<script id="js">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter(); 
+    } 
+);
+</script>
+</head><body><div id="pagecontainer">'
 
 function show_status {
 echo '<SCRIPT language="Javascript">'
@@ -82,7 +92,7 @@ echo '<form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post"><div i
 echo '<table class="standard" style="text-align: left; height: 20px;" >'
 echo '<tbody>'
 echo '<tr><td style="width: 180px;">'$"Add staff name"'</td><td><input name="_STAFFNAME_" size="25" type="text"></td><td><a class="info" href="javascript:void(0)"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter in the usernames of any members of staff that you do not want to be able to access the staff section of the web management."'</span></a></td></tr>'
-echo '</tbody></table>'
+echo '</tbody></table><br><input value="Submit" type="submit"></form><br><br><form action="/cgi-bin/admin/staff_restrictions2.cgi" method="post">'
 
 if [ -f /opt/karoshi/web_controls/staff_restrictions.txt ]
 then
@@ -90,21 +100,30 @@ then
 else
 	STAFF_COUNT=0
 fi
+
+ICON1=/images/submenus/file/delete.png
+
 #Show restricted staff list
 if [ "$STAFF_COUNT" -gt 0 ]
 then
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 150px;"><b>'$"Retricted Staff"'</b></td><td><b>Remove</b></td></tr></tbody></table><br>
-	<table class="standard" style="text-align: left; width: 334px;" ><tbody>'
+	echo '<table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+	<tr><th style="width: 300px;"><b>'$"Restricted Staff"'</b></th><th style="width: 100px;"><b>Remove</b></th></tr></thead><tbody>'
 	COUNTER=1
 	while [ "$COUNTER" -le "$STAFF_COUNT" ]
 	do
 		STAFFNAME=$(sed -n $COUNTER,$COUNTER'p' /opt/karoshi/web_controls/staff_restrictions.txt)
-		echo '<tr><td style="width: 150px;">'"$STAFFNAME"'</td><td><input type="radio" name="_DELETE_" value="'"$STAFFNAME"'"><br></td></tr>'
+		echo '<tr><td>'"$STAFFNAME"'</td><td>
+
+		<button class="info" name="_DeleteUser_" value="_STAFFNAME_'$STAFFNAME'_DELETE_'$STAFFNAME'_">
+			<img src="'"$ICON1"'" alt="'$"Remove"'">
+			<span>'$"Remove"' '"$STAFFNAME"'</span><br>
+		</button>
+
+		</td></tr>'
 		let COUNTER="$COUNTER"+1
 	done
 	echo '</tbody></table>'
 fi
 
-echo '<br><input value="Submit" type="submit"> <input value="Reset" type="reset"></div></div></form></div></body></html>'
+echo '</div></div></form></div></body></html>'
 exit
