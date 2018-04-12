@@ -97,7 +97,6 @@ fun TextYOffset() {
 
     if (y < progress_indicator.y + progress_indicator.height)
         return progress_indicator.y + progress_indicator.height;
-    y=y-250;
     return y;
 }
 
@@ -164,9 +163,8 @@ fun StringToInteger (str) {
 # New background colour
 # #2c001e --> 0.16, 0.00, 0.12
 #
-Window.SetBackgroundTopColor (0.156, 0.156, 0.156);     # Nice colour on top of the screen fading to
-Window.SetBackgroundBottomColor (0.00, 0.44, 0.72);  # an equally nice colour on the bottom
-
+Window.SetBackgroundTopColor (0.003, 0.294, 0.482);     # Nice colour on top of the screen fading to
+Window.SetBackgroundBottomColor (0.003, 0.024, 0.039);  # an equally nice colour on the bottom
 bits_per_pixel = Window.GetBitsPerPixel ();
 if (bits_per_pixel == 4) {
     logo_filename = "karoshi_logo16.png";
@@ -186,7 +184,7 @@ logo.sprite.SetImage (logo.image);
 logo.width = logo.image.GetWidth ();
 logo.height = logo.image.GetHeight ();
 logo.x = Window.GetX () + Window.GetWidth () / 2 - logo.width  / 2;
-logo.y = Window.GetY () + Window.GetHeight () / 2 - (logo.height / 1.8);
+logo.y = Window.GetY () + Window.GetHeight () / 2 - logo.height;
 logo.z = 1000;
 logo.sprite.SetX (logo.x);
 logo.sprite.SetY (logo.y);
@@ -209,7 +207,7 @@ progress_indicator.bullet_height = progress_indicator.bullet_off.GetHeight ();
 progress_indicator.bullet_hspacing = progress_indicator.bullet_width * 1.1;
 progress_indicator.width = progress_indicator.bullet_width * 5;
 progress_indicator.height = progress_indicator.bullet_height;
-progress_indicator.y = logo.y + (logo.height / 2);
+progress_indicator.y = logo.y + logo.height + (logo.height / 4);
 progress_indicator.x = Window.GetX () + Window.GetWidth () / 2 - progress_indicator.width / 2; # logo.x + 26;
 
 # use a fixed string with ascending and descending stems to calibrate the
