@@ -53,9 +53,52 @@ echo '
 
 #Generate navigation bar
 /opt/karoshi/web_controls/generate_navbar_admin
+
+WIDTH=100
+ICON1=/images/submenus/user/bulk_user_creation.png
+ICON2=/images/submenus/user/password.png
+ICON3=/images/submenus/user/users.png
+ICON4=/images/submenus/user/password.png
+
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/user_image_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
-<div class="sectiontitle">'$"Upload User Image"'</div>
-<P>
+
+<div class="sectiontitle">'$"Import User Image"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=User_Images"><img class="images" alt="" src="/images/help/info.png"><span>'$"This allows you to upload user images that can be used to identify your users."'</span></a></div>
+
+<table class="tablesorter"><tbody><tr>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="bulk_user_creation_upload_fm.cgi" name="_BulkUserCreation_" value="_">
+			<img src="'"$ICON1"'" alt="'$"Bulk User Creation"'">
+			<span>'$"Create user accounts from a CSV file."'</span><br>
+			'$"Bulk User Creation"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="bulk_user_creation_view_passwords_fm.cgi" name="_ViewNewPasswords_" value="_">
+			<img src="'"$ICON2"'" alt="'$"View New Passwords"'">
+			<span>'$"View the passwords set for newly created accounts."'</span><br>
+			'$"View New Passwords"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
+			<img src="'"$ICON3"'" alt="'$"Import Enrollment Numbers"'">
+			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
+			'$"Import Enrollment Numbers"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="csv_set_passwords_fm.cgi" name="_SetUserPasswords_" value="_">
+			<img src="'"$ICON4"'" alt="'$"Set User Passwords"'">
+			<span>'$"Set User Passwords."'</span><br>
+			'$"Set User Passwords"'
+		</button>
+	</td>
+
+</tr></tbody></table><br>
         
         <table class="standard">
         <tr>

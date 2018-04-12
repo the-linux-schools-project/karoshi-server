@@ -270,7 +270,7 @@ CSVFILE_LINES=$(wc -l < /var/www/karoshi/bulk_user_creation/"$CSVFILE")
 dos2unix /var/www/karoshi/bulk_user_creation/"$CSVFILE"
 
 #Check if the first row contain column headers
-#Possible headers are: forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password
+#Possible headers are: forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,room-number,telephone-number,fax-number,mobile-number,password
 if [[ $(sed -n 1,1p  /var/www/karoshi/bulk_user_creation/"$CSVFILE" | grep -ic 'forename\|surname') -gt 0 ]]
 then
 	UseHeaders=yes
@@ -283,7 +283,13 @@ then
 	PrimaryGroupCol=$(echo -e "$HeaderData" | grep -in primary-group | cut -d: -f1)
 	SecondaryGroupsCol=$(echo -e "$HeaderData" | grep -in secondary-groups | cut -d: -f1)
 	ChangePasswordOnLogonCol=$(echo -e "$HeaderData" | grep -in change-password-on-logon | cut -d: -f1)
+	RoomNumberCol=$(echo -e "$HeaderData" | grep -in room-number | cut -d: -f1)
+	TelephoneNumberCol=$(echo -e "$HeaderData" | grep -in telephone-number | cut -d: -f1)
+	FaxNumberCol=$(echo -e "$HeaderData" | grep -in fax-number | cut -d: -f1)
+	MobileNumberCol=$(echo -e "$HeaderData" | grep -in mobile-number | cut -d: -f1)
 	PasswordCol=$(echo -e "$HeaderData" | grep -in password | cut -d: -f1)
+
+
 else
 	UseHeaders=no
 	COUNTER=1
@@ -294,7 +300,11 @@ else
 	PrimaryGroupCol=5
 	SecondaryGroupsCol=6
 	ChangePasswordOnLogonCol=7
-	PasswordCol=8
+	RoomNumberCol=8
+	TelephoneNumberCol=9
+	FaxNumberCol=10
+	MobileNumberCol=11
+	PasswordCol=12
 fi
 
 while [ "$COUNTER" -le "$CSVFILE_LINES" ]
@@ -306,6 +316,13 @@ do
 	[ ! -z "$PrimaryGroupCol" ] && USERPGROUP=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$PrimaryGroupCol" | tr -cd 'A-Za-z0-9,-')
 	[ ! -z "$SecondaryGroupsCol" ] && USERSGROUPS=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$SecondaryGroupsCol" | tr -cd 'A-Za-z0-9,:-')
 	[ ! -z "$ChangePasswordOnLogonCol" ] && NEXTLOGON=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$ChangePasswordOnLogonCol" | tr -cd 'A-Za-z0-9,-')
+
+	[ ! -z "$RoomNumberCol" ] && ROOMNUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$RoomNumberCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$TelephoneNumberCol" ] && TELEPHONENUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$TelephoneNumberCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$FaxNumberCol" ] && FAXNUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$FaxNumberCol" | tr -cd 'A-Za-z0-9,-')
+	[ ! -z "$MobileNumberCol" ] && MOBILENUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$MobileNumberCol" | tr -cd 'A-Za-z0-9,-')
+
+
 	if [ "$UseHeaders" = yes ]
 	then
 		[ ! -z "$PasswordCol" ] && PASSWORD=$(urlencode -m "$(sed -n $COUNTER,$COUNTER'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f"$PasswordCol")")
@@ -318,7 +335,7 @@ do
 		MESSAGE=$"The CSV file you have chosen is not formatted correctly."
 		show_status
 	fi
-	echo "$FORENAME,$SURNAME,$PASSWORD,$ENROLMENT_NO,$USERNAME,$USERPGROUP,$USERSGROUPS,$NEXTLOGON" >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
+	echo "$FORENAME,$SURNAME,$PASSWORD,$ENROLMENT_NO,$USERNAME,$USERPGROUP,$USERSGROUPS,$NEXTLOGON,$ROOMNUMBER,$TELEPHONENUMBER,$FAXNUMBER,$MOBILENUMBER" >> /var/www/karoshi/bulk_user_creation/karoshi_web_user_create.csv
 	let COUNTER="$COUNTER"+1
 done
 rm -f /var/www/karoshi/bulk_user_creation/"$CSVFILE"
@@ -403,6 +420,11 @@ do
 	USERPGROUP=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f6 |  sed 's/ //g')
 	USERSGROUPS=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f7 |  sed 's/ //g')
 	NEXTLOGON=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f8 |  sed 's/ //g')
+	ROOMNUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f9 |  sed 's/ //g')
+	TELEPHONENUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f10 |  sed 's/ //g')
+	FAXNUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f11 |  sed 's/ //g')
+	MOBILENUMBER=$(sed -n "$COUNTER","$COUNTER"'p' /var/www/karoshi/bulk_user_creation/"$CSVFILE" | cut -s -d, -f12 |  sed 's/ //g')
+
 	DUPLICATECOUNTER=""
 
 	if [ "$PRI_GROUP" = getgroupfromcsv ]
@@ -439,7 +461,7 @@ do
 		then
 			echo "<li>"$"Creating" "$USERNAME - $FORENAME $SURNAME</li>"
 
-			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USERNAMESTYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
+			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FORENAME:$SURNAME:$USERNAME:$PASSWORD:$USERGROUP:$USERNAMESTYLE:$ENROLMENT_NO:$REQUESTFILE:bulkusercreation:$NEXTLOGON:$ROOMNUMBER:$TELEPHONENUMBER:$FAXNUMBER:$MOBILENUMBER:$USERSGROUPS:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 		fi
 	fi
 	let COUNTER="$COUNTER"+1

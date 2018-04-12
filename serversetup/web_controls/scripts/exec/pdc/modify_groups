@@ -217,7 +217,7 @@ then
 		USERNAME="${USERLIST[$COUNTER]}"
 		if [[ $(echo "$EXCEPTIONLIST" | grep -c -w "$USERNAME") = 0 ]]
 		then
-			echo "<ul><li<Deleting $USERNAME</li></ul>"
+			echo "<ul><li><Deleting $USERNAME</li></ul>"
 			echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$USERNAME:$DOMAINPASSWORD:$REQUESTFILE:$ARCHIVE:" | /opt/karoshi/web_controls/exec/delete_user
 		fi
 		let COUNTER="$COUNTER"+1

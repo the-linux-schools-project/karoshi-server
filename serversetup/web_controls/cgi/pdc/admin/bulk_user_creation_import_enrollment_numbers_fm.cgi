@@ -56,6 +56,8 @@ echo '
 WIDTH=100
 ICON1=/images/submenus/user/bulk_user_creation.png
 ICON2=/images/submenus/user/password.png
+ICON3=/images/submenus/user/users.png
+ICON4=/images/submenus/user/password.png
 
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_import_enrollment_numbers.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 <div class="sectiontitle">'$"Import Enrollment Numbers or staff codes"' <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Import_Enrolment_Numbers"><img class="images" alt="" src="/images/help/info.png"><span>'$"username, enrollment number or staff code"'</span></a></div>
@@ -74,6 +76,22 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 			<img src="'"$ICON2"'" alt="'$"View New Passwords"'">
 			<span>'$"View the passwords set for newly created accounts."'</span><br>
 			'$"View New Passwords"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="user_image_upload_fm.cgi" name="_ImportUserImages_" value="_">
+			<img src="'"$ICON3"'" alt="'$"Import User Images"'">
+			<span>'$"Import user images for your user accounts."'</span><br>
+			'$"Import User Images"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="csv_set_passwords_fm.cgi" name="_SetUserPasswords_" value="_">
+			<img src="'"$ICON4"'" alt="'$"Set User Passwords"'">
+			<span>'$"Set User Passwords."'</span><br>
+			'$"Set User Passwords"'
 		</button>
 	</td>
 

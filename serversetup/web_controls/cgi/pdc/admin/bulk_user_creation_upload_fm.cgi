@@ -58,7 +58,9 @@ source /opt/karoshi/server_network/security/password_settings
 
 WIDTH=100
 ICON1=/images/submenus/user/password.png
-ICON2=/images/submenus/user/users.png
+ICON2=/images/submenus/user/user_image.png
+ICON3=/images/submenus/user/users.png
+ICON4=/images/submenus/user/password.png
 
 echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creation_upload.cgi" METHOD="POST"><div id="actionbox3"><div id="titlebox">
 
@@ -74,16 +76,32 @@ echo '<FORM ENCTYPE="multipart/form-data" ACTION="/cgi-bin/admin/bulk_user_creat
 	</td>
 
 	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="user_image_upload_fm.cgi" name="_ImportUserImages_" value="_">
+			<img src="'"$ICON2"'" alt="'$"Import User Images"'">
+			<span>'$"Import user images for your user accounts."'</span><br>
+			'$"Import User Images"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
 		<button class="info infonavbutton" formaction="bulk_user_creation_import_enrollment_numbers_fm.cgi" name="_ImportEnrollmentNumbers_" value="_">
-			<img src="'"$ICON2"'" alt="'$"Import Enrollment Numbers"'">
+			<img src="'"$ICON3"'" alt="'$"Import Enrollment Numbers"'">
 			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
 			'$"Import Enrollment Numbers"'
 		</button>
 	</td>
 
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="csv_set_passwords_fm.cgi" name="_SetUserPasswords_" value="_">
+			<img src="'"$ICON4"'" alt="'$"Set User Passwords"'">
+			<span>'$"Set User Passwords."'</span><br>
+			'$"Set User Passwords"'
+		</button>
+	</td>
+
 </tr></tbody></table>
 <br>
-<b>'$"CSV file format without the first row as headers"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), password - optional"''
+<b>'$"CSV file format without the first row as headers"'</b><br><br>'$"Forename, surname, enrolment number or staff code - optional, username - optional, primary group - optional, secondary groups separated by colons - optional, change password on first logon - optional (y/n), room-number - optional, telephone-number - optional, fax-number - optional, mobile-number - optional, password - optional"''
 [ "$PASSWORDCOMPLEXITY" = on ] && echo '. '$"Upper and lower case characters and numbers are required."''
 echo '<br><br><b>'$"Example"'</b><br><br>John,Jones,16-089,,,letme-in<br><br>
 
@@ -93,7 +111,7 @@ surname,forename,password,enrolment-number<br>
 Jones,John,hello123,JJ1<br>
 Wilson,Mark,foobar123,MW1<br>
 May,Amy,marmaduke,AM1<br><br>
-'$"Possible column headers are"' forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon,password<br><br><br>
+'$"Possible column headers are"' forename, surname, enrolment-number, username, primary-group, secondary-groups, change-password-on-logon, room-number, telephone-number, fax-number, mobile-number,password<br><br><br>
 
 <table class="standard">
 <tr>

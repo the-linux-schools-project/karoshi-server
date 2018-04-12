@@ -362,8 +362,49 @@ else
         <td><input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
 
+	if [ "$INSTALL_TYPE" != home ]
+	then
+		echo '	<tr>'
+	else
+		echo '	<tr style="display:none;">'
+	fi
+	echo '<td>'$"Room Number"'</td>
+        <td><input tabindex= "6" value="'"$ROOMNUMBER"'" name="____ROOMNUMBER____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The room number for the user. This field can be left blank."'</span></a></td></tr>'
+
+	if [ "$INSTALL_TYPE" != home ]
+	then
+		echo '	<tr>'
+	else
+		echo '	<tr style="display:none;">'
+	fi
+	echo '<td>'$"Telephone Number"'</td>
+        <td><input tabindex= "7" value="'"$TELEPHONENUMBER"'" name="____TELEPHONENUMBER____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The telephone number for the user. This field can be left blank."'</span></a></td></tr>'
+
+	if [ "$INSTALL_TYPE" != home ]
+	then
+		echo '	<tr>'
+	else
+		echo '	<tr style="display:none;">'
+	fi
+	echo '<td>'$"Fax Number"'</td>
+        <td><input tabindex= "8" value="'"$FAXNUMBER"'" name="____FAXNUMBER____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The fax number for the user. This field can be left blank."'</span></a></td></tr>'
+
+	if [ "$INSTALL_TYPE" != home ]
+	then
+		echo '	<tr>'
+	else
+		echo '	<tr style="display:none;">'
+	fi
+	echo '<td>'$"Mobile Number"'</td>
+        <td><input tabindex= "9" value="'"$MOBILENUMBER"'" name="____MOBILENUMBER____" style="width: 200px;" size="20" type="text"></td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The mobile number for the user. This field can be left blank."'</span></a></td></tr>'
+
+
 	echo '<tr><td>'$"Change at next logon"'</td><td>
-	<select  tabindex= "6" name="____NEXTLOGON____" style="width: 200px;">
+	<select  tabindex= "10" name="____NEXTLOGON____" style="width: 200px;">
 	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
 	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
 	</select>
@@ -371,15 +412,15 @@ else
 	<tr><td>'$"Primary group"'</td><td>'
 	if [ -z "$FILE" ]
 	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="11" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
 	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="7" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
+		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="12" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
 	fi
 	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
 	<tr>
         <td>'$"Username style"'</td>
         <td>
-        <select  tabindex= "8" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
+        <select  tabindex= "13" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
         <option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>'
         [ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09auser"'</option>'
         echo '<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>

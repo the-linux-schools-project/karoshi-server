@@ -54,7 +54,9 @@ echo '
 
 WIDTH=100
 ICON1=/images/submenus/user/bulk_user_creation.png
-ICON2=/images/submenus/user/password.png
+ICON2=/images/submenus/user/users.png
+ICON3=/images/submenus/user/users.png
+ICON4=/images/submenus/user/password.png
 
 echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method="post"><div id="actionbox3"><div id="titlebox">
 
@@ -74,6 +76,22 @@ echo '<form action="/cgi-bin/admin/bulk_user_creation_view_passwords.cgi" method
 			<img src="'"$ICON2"'" alt="'$"Import enrollment numbers"'">
 			<span>'$"Import enrollment numbers for your user accounts."'</span><br>
 			'$"Import enrollment numbers"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="user_image_upload_fm.cgi" name="_ImportUserImages_" value="_">
+			<img src="'"$ICON3"'" alt="'$"Import User Images"'">
+			<span>'$"Import user images for your user accounts."'</span><br>
+			'$"Import User Images"'
+		</button>
+	</td>
+
+	<td style="vertical-align: top; height: 30px; white-space: nowrap; min-width: '"$WIDTH"'px; text-align:center;">
+		<button class="info infonavbutton" formaction="csv_set_passwords_fm.cgi" name="_SetUserPasswords_" value="_">
+			<img src="'"$ICON4"'" alt="'$"Set User Passwords"'">
+			<span>'$"Set User Passwords."'</span><br>
+			'$"Set User Passwords"'
 		</button>
 	</td>
 

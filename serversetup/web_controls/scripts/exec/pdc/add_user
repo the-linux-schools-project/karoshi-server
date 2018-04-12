@@ -86,6 +86,7 @@ then
 	echo "$(date): add_user - no data" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 	exit 101
 fi
+
 REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
 REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
 RemoteCheckSum=$(echo "$DATA" | cut -s -d: -f3)
@@ -99,7 +100,12 @@ ENROLLMENTNUMBER=$(echo "$DATA" | cut -s -d: -f10)
 REQUESTFILE=$(echo "$DATA" | cut -s -d: -f11)
 BULKUSERCREATION=$(echo "$DATA" | cut -s -d: -f12)
 NEXTLOGON=$(echo "$DATA" | cut -s -d: -f13)
-USERSGROUPS=$(echo "$DATA" | cut -s -d: -f14-)
+ROOMNUMBER=$(echo "$DATA" | cut -s -d: -f14 | sed 's/+/ /g' | tr -cd "A-Za-z0-9 ")
+TELEPHONENUMBER=$(echo "$DATA" | cut -s -d: -f15 | sed 's/+/ /g' | tr -cd "0-9 ")
+FAXNUMBER=$(echo "$DATA" | cut -s -d: -f16 | sed 's/+/ /g' | tr -cd "0-9 ")
+MOBILENUMBER=$(echo "$DATA" | cut -s -d: -f17 | sed 's/+/ /g' | tr -cd "0-9 ")
+USERSGROUPS=$(echo "$DATA" | cut -s -d: -f18-)
+
 ########################
 #Check data
 ########################
@@ -301,26 +307,18 @@ fi
 
 #Get samba 4 database password
 LDAPPASS=$(sed -n 1,1p /etc/ldap.secret)
-
+USERDN="dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE"
 #Change primarygroupid and add unixhomedirectory - have to use ldapmodify at this time since samba-tool does not seem to have this option!
 #This is hideous why cant samba4 ldap do this all in one go??
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-add: objectclass
-objectclass: posixaccount
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo -e "$USERDN\nchangetype: modify\nadd: objectclass\nobjectclass: posixaccount\n-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 PRIGROUPID=$(getent group "$PRIMARYGROUP" | cut -d: -f3)
 
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-add: gidnumber
-gidnumber: $PRIGROUPID
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+echo -e "$USERDN\nchangetype: modify\nadd: gidnumber\ngidnumber: $PRIGROUPID\n-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
 UIDNUMBER=$(getent passwd "$NEWUSERNAME" | cut -d: -f3)
 
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
+echo -e "$USERDN
 changetype: modify
 add: uidnumber
 uidnumber: $UIDNUMBER
@@ -343,22 +341,34 @@ unixhomedirectory: $HOMEPATH/$NEWUSERNAME
 
 if [ ! -z "$ENROLLMENTNUMBER" ]
 then
-#Add in employee number if it has been set
-echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-add: employeeNumber
-employeeNumber: $ENROLLMENTNUMBER
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	#Add in employee number if it has been set
+	echo -e "$USERDN\nchangetype: modify\nadd: employeeNumber\nemployeeNumber: $ENROLLMENTNUMBER\n-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 fi
 
 #Set password to never expire
 if [ "$PASSWORD_EXPIRY" = no ]
 then
-	echo -e "dn: CN=$NEWUSERNAME,OU=$PRIMARYGROUP,OU=$SUBUNIT,OU=People,$LDAPBASE
-changetype: modify
-replace: useraccountcontrol
-useraccountcontrol: 66048
--" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	echo -e "$USERDN\nchangetype: modify\nreplace: useraccountcontrol\nuseraccountcontrol: 66048\n-" | ldapmodify -x -D "CN=Administrator,CN=Users,$LDAPBASE" -w "$LDAPPASS" 1>/dev/null 2>>"/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+fi
+
+if [ ! -z "$ROOMNUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: roomnumber\nroomnumber: $ROOMNUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$TELEPHONENUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: telephonenumber\ntelephonenumber: $TELEPHONENUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$FAXNUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: facsimiletelephonenumber\nfacsimiletelephonenumber: $FAXNUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
+fi
+
+if [ ! -z "$MOBILENUMBER" ]
+then
+	echo -e "$USERDN\nchangetype: modify\nreplace: mobile\nmobile: $MOBILENUMBER\n-" | ldapmodify -x -w "$LDAPPASS" -D "cn=Administrator,cn=Users,$LDAPBASE" 1>/dev/null
 fi
 
 CREATE_USER_STATUS="$?"

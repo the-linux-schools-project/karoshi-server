@@ -82,7 +82,7 @@ DATA=$(cat | tr -cd 'A-Za-z0-9\._:\-%*+-' | sed 's/*/%1123/g' | sed 's/____/QUAD
 #########################
 #Assign data to variables
 #########################
-END_POINT=23
+END_POINT=27
 function get_data {
 COUNTER=2
 DATAENTRY=""
@@ -148,6 +148,26 @@ REQUESTFILE="$DATAENTRY"
 DATANAME=NEXTLOGON
 get_data
 NEXTLOGON="$DATAENTRY"
+
+#Assign ROOMNUMBER
+DATANAME=ROOMNUMBER
+get_data
+ROOMNUMBER="$DATAENTRY"
+
+#Assign TELEPHONENUMBER
+DATANAME=TELEPHONENUMBER
+get_data
+TELEPHONENUMBER="$DATAENTRY"
+
+#Assign FAXNUMBER
+DATANAME=FAXNUMBER
+get_data
+FAXNUMBER="$DATAENTRY"
+
+#Assign MOBILENUMBER
+DATANAME=MOBILENUMBER
+get_data
+MOBILENUMBER="$DATAENTRY"
 
 STARTCGI=add_user_fm.cgi
 [ ! -z "$REQUESTFILE" ] && STARTCGI=request_new_users_fm.cgi
@@ -489,6 +509,11 @@ then
 	<input name="____USERNAMESTYLE____" value="'"$USERNAMESTYLE"'" type="hidden">
 	<input name="____USERNAME____" value="'"$USERNAME"'" type="hidden">
 	<input name="____ENROLLMENTNUMBER____" value="'"$ENROLLMENTNUMBER"'" type="hidden">
+	<input name="____ROOMNUMBER____" value="'"$ROOMNUMBER"'" type="hidden">
+	<input name="____TELEPHONENUMBER____" value="'"$TELEPHONENUMBER"'" type="hidden">
+	<input name="____FAXNUMBER____" value="'"$FAXNUMBER"'" type="hidden">
+	<input name="____MOBILENUMBER____" value="'"$MOBILENUMBER"'" type="hidden">
+
 	'"$INITUSERNAME"' - '$"This user already exists."'<br><br>'$"Create user"' '"$USERNAME"'?<br><br>
 	<input value="'$"Submit"'" class="button" type="submit">
 	</form></div></div></body></html>'
@@ -496,7 +521,8 @@ then
 else
 	Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/add_user.cgi | cut -d' ' -f1)
 	#Add user
-	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:" | sudo -H /opt/karoshi/web_controls/exec/add_user
+
+	echo "$REMOTE_USER:$REMOTE_ADDR:$Checksum:$FIRSTNAME:$SURNAME:$USERNAME:$PASSWORD1:$GROUP:$USERNAMESTYLE:$ENROLLMENTNUMBER:$REQUESTFILE::$NEXTLOGON:$ROOMNUMBER:$TELEPHONENUMBER:$FAXNUMBER:$MOBILENUMBER:" | sudo -H /opt/karoshi/web_controls/exec/add_user
 EXEC_STATUS="$?"
 	MESSAGE=''$"Forename":' '"${FIRSTNAME^}"'\n'$"Surname"': '"${SURNAME^}"'\n'$"Username"': '"$USERNAME"'\n'$"Created with primary group"' '"$GROUP"'.'
 	if [ "$EXEC_STATUS" = 101 ]
