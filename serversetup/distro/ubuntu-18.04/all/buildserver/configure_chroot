@@ -80,9 +80,9 @@ sleep 1
 
 apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 
-echo -e "\nChroot: Installing python-software-properties\n"
+echo -e "\nChroot: Installing software-properties-common\n"
 sleep 1	
-apt-get install --yes software-properties-common python-software-properties 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+apt-get install --yes software-properties-common 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
  
 echo -e "\nChroot: Installing wget\n"
