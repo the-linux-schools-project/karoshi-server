@@ -170,10 +170,12 @@ apt-get install -y sope4.9-gdl1-mysql
 function install_dm {
 echo -e "\nInstalling lightdm display manager\n"
 sleep 1
-apt-get -y install --no-install-recommends gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+#apt-get -y install --no-install-recommends gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+apt-get -y install gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.
+read pause
 #Configure lightdm to auto login the karoshi user
-cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
-cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
+#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
+#cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
 
 #Add the karoshi user to the nopasswdlogin group. 
 usermod -a -G nopasswdlogin karoshi
