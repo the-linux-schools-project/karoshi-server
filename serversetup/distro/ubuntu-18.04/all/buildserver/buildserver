@@ -90,16 +90,16 @@ function create_karoshi_user {
 getent passwd karoshi 1>/dev/null
 if [ $? != 0 ]
 then
-	echo -e "Creating karoshi user\n"
+	echo -e "Creating karoshi user\n" | tee -a /var/log/karoshi_build.log
 	sleep 1
 	useradd -d /opt/karoshi/karoshi_user -s /bin/bash -m karoshi
 	#Set password to karoshi
-	echo -e "\nSetting karoshi user password to karoshi\n"
+	echo -e "\nSetting karoshi user password to karoshi\n" | tee -a /var/log/karoshi_build.log
 	sleep 1
 	echo -e "karoshi\nkaroshi\n" | passwd karoshi
 
 	#Extract karoshi home area
-	echo -e "\nExtracting karoshi home area folder\n"
+	echo -e "\nExtracting karoshi home area folder\n" | tee -a /var/log/karoshi_build.log
 	sleep 1
 	cd /
 	tar -xvzf /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/karoshi_user.tar.gz
@@ -127,7 +127,7 @@ chmod 0755 /opt/karoshi/karoshi_user/.local/share/applications/synaptic.desktop
 
 function add_repos {
 #Add sogo remastersys, monitoriz,yad, and zfs repositories
-echo -e "\nAdding SOGo, monitorix, yad, and zfs repositories\n"
+echo -e "\nAdding SOGo, monitorix, yad, and zfs repositories\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 
 apt-key adv --keyserver keys.gnupg.net --recv-key 0x810273C4
@@ -148,7 +148,7 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8E250180
 }
 
 function update_repos {
-echo -e "\nUpdating repositories\n"
+echo -e "\nUpdating repositories\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 apt-get update
 }
@@ -168,11 +168,10 @@ apt-get install -y sope4.9-gdl1-mysql
 }
 
 function install_dm {
-echo -e "\nInstalling lightdm display manager\n"
+echo -e "\nInstalling lightdm display manager\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 #apt-get -y install --no-install-recommends gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 apt-get -y install gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.
-read pause
 #Configure lightdm to auto login the karoshi user
 #cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
 #cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
@@ -183,14 +182,14 @@ usermod -a -G nopasswdlogin karoshi
 
 function install_xfce4 {
 #Install xfce4
-echo -e "\nInstalling xfce4\n"
+echo -e "\nInstalling xfce4\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 apt-get -y install --no-install-recommends xfce4 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 sleep 1
 }
 
 function install_remastersys {
-echo -e "\nInstalling remastersys\n"
+echo -e "\nInstalling remastersys\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 apt-get -y install --no-install-recommends remastersys remastersys-gui 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 }
@@ -208,7 +207,7 @@ then
 else
 	for package in $extrapackages
 	do
-		echo -e "\nInstalling $package\n"
+		echo -e "\nInstalling $package\n" | tee -a /var/log/karoshi_build.log
 		sleep 1
 		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 		if [ $? != 0 ]
@@ -238,12 +237,12 @@ then
 else
 	for package in $packages
 	do
-		echo -e "\nInstalling $package\n"
+		echo -e "\nInstalling $package\n" | tee -a /var/log/karoshi_build.log
 		sleep 1
 		apt-get -y install "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 		if [ "$?" != 0 ]
 		then
-			echo "$package: There was a problem installing this package. Press return to continue."
+			echo "$package: There was a problem installing this package. Press return to continue." | tee -a /var/log/karoshi_build.log
 			[ "$AUTO" = no ] && read pause
 		fi
 	done
@@ -270,12 +269,12 @@ chmod 0550 /etc/sudoers
 }
 
 function turn_off_services {
-echo -e "\nStopping Services\n"
+echo -e "\nStopping Services\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 services="apache apache_karoshi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
 for service in $services
 do
-	echo -e "\nSetting $service to stop on boot\n"
+	echo -e "\nSetting $service to stop on boot\n" | tee -a /var/log/karoshi_build.log
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/stoponboot/"$service"
 done
 }
@@ -284,7 +283,7 @@ function turn_on_services {
 services="cron"
 for service in $services
 do
-	echo -e "\nSetting $service to start on boot\n"
+	echo -e "\nSetting $service to start on boot\n" | tee -a /var/log/karoshi_build.log
 	/opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/startonboot/"$service"
 done
 }
@@ -313,14 +312,14 @@ cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgro
 cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
 
 #Configure Plymouth
-echo -e "\nAdding karoshi-logo theme to plymouth.\n"
+echo -e "\nAdding karoshi-logo theme to plymouth.\n" | tee -a /var/log/karoshi_build.log
 cp -f -R /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/plymouth/karoshi-logo /usr/share/plymouth/themes/
 update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth /usr/share/plymouth/themes/karoshi-logo/karoshi-logo.plymouth 100
 update-alternatives --config default.plymouth
 #Get selection number for karoshi theme
 SELECT=$(update-alternatives --list default.plymouth | grep -n karoshi-logo | cut -d: -f1)
 #Set karoshi theme as the default theme
-echo -e "\nSetting karoshi-logo theme as the default theme for plymouth.\n"
+echo -e "\nSetting karoshi-logo theme as the default theme for plymouth.\n" | tee -a /var/log/karoshi_build.log
 echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karoshi-logo
 
 #Load modules for initramfs
@@ -331,9 +330,9 @@ echo -e "$SELECT\n" | update-alternatives --config default.plymouth | grep karos
 update-initramfs -u
 
 #Configure grub
-echo -e "\nConfiguring grub2.\n"
+echo -e "\nConfiguring grub2.\n" | tee -a /var/log/karoshi_build.log
 cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/grub /etc/default/grub
-echo -e "\nUpdating grub2.\n"
+echo -e "\nUpdating grub2.\n" | tee -a /var/log/karoshi_build.log
 update-grub
 }
 
@@ -341,12 +340,12 @@ function remove_software {
 
 for package in $removepackages
 do
-	echo -e "\nRemoving $package\n"
+	echo -e "\nRemoving $package\n" | tee -a /var/log/karoshi_build.log 
 	sleep 1
 	apt-get -y purge "$package" 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 	if [ $? != 0 ]
 	then
-		echo "$package": There was a problem removing this package. Press return to continue.
+		echo "$package": There was a problem removing this package. Press return to continue. | tee -a /var/log/karoshi_build.log
 		[ $AUTO = no ] && read pause
 	fi
 done
@@ -356,6 +355,7 @@ echo nameserver 8.8.8.8 > /etc/resolv.conf
 }
 
 function tidy_packages {
+echo -e "\nAuto removing un-needed packages\n" | tee -a /var/log/karoshi_build.log
 apt-get -y autoremove 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 }
 
@@ -376,7 +376,7 @@ sed -i 's/^console output/#console output/g' /etc/init/rc-sysinit.conf
 touch /etc/printcap
 
 #Update freshclam
-echo -e "\nRunning freshclam\n"
+echo -e "\nRunning freshclam\n" | tee -a /var/log/karoshi_build.log
 freshclam
 
 #Remove staff group

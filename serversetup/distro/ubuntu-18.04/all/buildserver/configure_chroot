@@ -37,7 +37,7 @@ export DEBIAN_FRONTEND=noninteractive
 function check_status {
 if [ $? != 0 ]
 then
-	echo -e "\nChroot: There was a problem installing packages for the live system\n\nPress a key to continue.\n"
+	echo -e "\nChroot: There was a problem installing packages for the live system\n\nPress a key to continue.\n" | tee -a /var/log/karoshi_build.log
 	read pause
 fi
 }
@@ -46,12 +46,12 @@ fi
 dpkg --configure -a
 check_status
 
-echo -e "Chroot: updating apt\n"
+echo -e "Chroot: updating apt\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get update
 check_status
 
-echo -e "\nChroot: installing dbus\n"
+echo -e "\nChroot: installing dbus\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes dbus 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
@@ -60,37 +60,37 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 dpkg-divert --local --rename --add /sbin/initctl
 
 #Install Packages needed for the live system
-echo -e "\nChroot: Installing packages for the live system\n"
+echo -e "\nChroot: Installing packages for the live system\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes ubuntu-minimal casper lupin-casper ubiquity-casper ubiquity-slideshow-ubuntu 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
-echo -e "\nChroot: Installing discover and os-prober\n"
+echo -e "\nChroot: Installing discover and os-prober\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes discover os-prober 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
-echo -e "\nChroot: Installing linux-generic\n"
+echo -e "\nChroot: Installing linux-generic\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes linux-generic 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
 
-echo -e "\nChroot: Installing grub2 and plymouth-x11\n"
+echo -e "\nChroot: Installing grub2 and plymouth-x11\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 
 apt-get install --yes grub-pc grub-pc-bin grub2-common grub-common grub-gfxpayload-lists plymouth-x11 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 
-echo -e "\nChroot: Installing software-properties-common\n"
+echo -e "\nChroot: Installing software-properties-common\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes software-properties-common 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
  
-echo -e "\nChroot: Installing wget\n"
+echo -e "\nChroot: Installing wget\n" | tee -a /var/log/karoshi_build.log
 sleep 1	
 apt-get install --yes wget
 check_status
 
-echo -e "\nChroot: Installing ubiquity-frontend-gtk\n"
+echo -e "\nChroot: Installing ubiquity-frontend-gtk\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 apt-get install --yes ubiquity-frontend-gtk 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
 check_status
