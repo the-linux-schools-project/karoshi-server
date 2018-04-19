@@ -117,7 +117,8 @@ then
 fi
 
 #Create synaptic-warning
-cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/synaptic-warning /usr/bin
+[ ! -d /opt/kararoshi/karoshimanagement/ ] && mkdir -p /opt/kararoshi/karoshimanagement/
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/scripts/synaptic-warning /opt/kararoshi/karoshimanagement/
 
 [ ! -d /opt/karoshi/karoshi_user/.local/share/applications ] && mkdir -p /opt/karoshi/karoshi_user/.local/share/applications
 cp -f /opt/karoshi/serversetup/all/synaptic/synaptic.desktop /opt/karoshi/karoshi_user/.local/share/applications/
@@ -171,7 +172,8 @@ function install_dm {
 echo -e "\nInstalling lightdm display manager\n" | tee -a /var/log/karoshi_build.log
 sleep 1
 #apt-get -y install --no-install-recommends gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
-apt-get -y install gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.
+apt-get -y install --no-install-recommends lightdm lightdm-gtk-greeter 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.log
+#apt-get -y install --no-install-recommends gdm3 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.
 #Configure lightdm to auto login the karoshi user
 #cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm.conf /etc/lightdm/
 #cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/
@@ -309,6 +311,7 @@ su karoshi -c "xfconf-query -c xsettings -p /Net/ThemeName -s Clearlooks"
 #Copy in backgrounds
 [ ! -d /usr/share/backgrounds/karoshi ] && mkdir -p /usr/share/backgrounds/karoshi
 cp -f /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/backgrounds/karoshi/
+cp -r /opt/karoshi/serversetup/all/backgrounds/background.png /usr/share/xfce4/backdrops/xubuntu-bionic.png
 cp -f /opt/karoshi/serversetup/all/backgrounds/bootmenu.png /usr/share/backgrounds/karoshi/
 
 #Configure Plymouth
