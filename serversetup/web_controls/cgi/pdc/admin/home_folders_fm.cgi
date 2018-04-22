@@ -104,7 +104,7 @@ echo '
 </div><div id="infobox">
 
 <table id="myTable" class="tablesorter" style="text-align: left; height: 91px;" >
-<thead><tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 180px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td><b>'$"Change"'</b></td></tr>
+<thead><tr><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 140px;"><b>'$"Change"'</b></td><th style="width: 140px;"><b>'$"Primary Group"'</b></th><th style="width: 180px;"><b>'$"Server"'</b></th><td style="width: 140px;"<b>'$"Change"'</b></td></tr>
 </thead><tbody>
 '
 START_LINE=yes

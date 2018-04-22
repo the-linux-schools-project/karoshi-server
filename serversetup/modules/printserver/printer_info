@@ -52,7 +52,6 @@ TESTMSG=$"Test"
 JOBSMSG=$"Jobs"
 CLEARMSG=$"Clear"
 VIEWMSG=$"View"
-TABLECLASS=headings
 WIDTH1=200
 WIDTH2=80
 
@@ -74,7 +73,6 @@ then
 	#JOBSMSG=""
 	CLEARMSG=""
 	VIEWMSG=""
-	TABLECLASS=mobileheadings
 	WIDTH1=80
 	WIDTH2=35
 	echo '<div id="mobileactionbox">'
@@ -118,7 +116,6 @@ then
 		DATE_MONTH=$(echo "$JOB_INFO" | cut -d: -f5)
 		DATE_DAY2=$(echo "$JOB_INFO" | cut -d: -f6)
 		DATE_TIME=$(echo "$JOB_INFO" | cut -d: -f7-8)
-		DATE_YEAR=$(echo "$JOB_INFO" | cut -d: -f10)
 		let QUEUE_COUNTER2="$QUEUE_COUNTER"+1
 		#Show print job information
 		if [ "$MOBILE" = yes ]
@@ -305,13 +302,17 @@ then
 	else
 		echo '<ul><li>'$"No printer queues have been added"'</ul></li>'
 		sleep 3
+		
 		#There are no printer queues so redirect to add printer queue
-		echo "<form action=\"printers_add_fm.cgi\" method=\"post\" id=\"printersadd\">
+		if [ "$VIEWMODE" != staff ]
+		then
+			echo "<form action=\"printers_add_fm.cgi\" method=\"post\" id=\"printersadd\">
 <input type=\"hidden\" name=\"_SERVERNAME_$SERVERNAME2""_SERVERTYPE_$SERVERTYPE""_SERVERMASTER_$SERVERMASTER""_\" value=\"\">
 </form>
 <script>
 document.getElementById('printersadd').submit();
 </script>"
+		fi
 	fi
 	#Reload the page every 3 minutes
 	echo '<form id="refresh_form" action="printers.cgi" method="post"><input type="hidden" name="_ReloadPage_" value="_"> </form>
