@@ -109,9 +109,10 @@ echo timeout:1 >> /etc/resolv.conf
 echo "$NETMASK" > /var/lib/samba/netlogon/domain_information/netmask
 echo "$GATEWAY" > /var/lib/samba/netlogon/domain_information/gateway
 
-ifdown --force -a
 #Kill any dhcp clients
 killall dhclient
+timeout 10 ifdown --force -a
+
 ##########################
 #Configure a standard network card
 ##########################
@@ -133,7 +134,7 @@ then
 	echo "	gateway $GATEWAY" >> /etc/network/interfaces
 	echo "	dns-nameservers $NAMESERVER" >> /etc/network/interfaces
 
-	ifup -a
+	timeout 10 ifup -a
 
 	#Check dns server
 	dnscheck
@@ -151,8 +152,10 @@ then
 	echo "$(date): Setting up a bonded network $BONDMODE" >> /opt/karoshi/serversetup/install_log
 	CARD=bond0
 	log_card_settngs
+	#Kill any dhcp clients
+	killall dhclient
 	#Stop networking
-	ifdown --force -a
+	timeout 10 ifdown --force -a
 	if [ "$BONDMODE" = mode0 ]
 	then
 		#Create /etc/network/interfaces
@@ -323,10 +326,7 @@ then
 	modprobe bonding
 	[[ $(grep -c bonding /etc/modules) = 0 ]] && echo bonding >> /etc/modules
 
-	#Kill any dhcp clients
-	killall dhclient
-
-	ifup -a
+	timeout 10 ifup -a
 
 	#Check dns
 	dnscheck
