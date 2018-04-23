@@ -4,89 +4,52 @@ UPDATEREPO=no
 INSTALLAVAHI=no
 INSTALLPYTHONCUPS=no
 
-[ -f /opt/karoshi/web_controls/user_prefs/$REMOTE_USER ] && source /opt/karoshi/web_controls/user_prefs/$REMOTE_USER
-TEXTDOMAIN=karoshi-server
-
-#Make sure avahi daemon and python cups are installed
-which avahi-daemon 1>/dev/null
-if [ $? != 0 ]
-then
-	UPDATEREPO=yes
-	INSTALLAVAHI=yes
-fi
-
-which python-cups 1>/dev/null
-if [ $? != 0 ]
-then
-	UPDATEREPO=yes
-	INSTALLPYTHONCUPS=yes
-fi
-
-if [ "$UPDATEREPO" = yes ]
-then
-	echo '<ul><li>'$"Updating repositories"'</ul></li>'
-	apt-get update
-fi
-
-if [ "$INSTALLAVAHI" = yes ]
-then
-	echo '<ul><li>'$"Installing Avahi Daemon"'</ul></li>'
-	apt-get install -y avahi-daemon
-	cp -f /opt/karoshi/serversetup/distro/ubuntu/scripts/initdscripts/avahi-daemon /etc/init.d/
-fi
-
-if [ "$INSTALLPYTHONCUPS" = yes ]
-then
-	echo '<ul><li>'$"Installing python-cups"'</ul></li>'
-	apt-get install -y python-cups python3-cups python3-cupshelpers
-fi
-
 RESTARTSHOREWALL=no
 #Open ports for avahi and cups
-if [ $(grep -c cups /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c cups /etc/shorewall/rules) = 0 ]]
 then
 	RESTARTSHOREWALL=yes
 	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp,udp 631</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp,udp'	'631'	'-'#'cups /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	631	-#cups' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
-if [ $(grep -c avahi /etc/shorewall/rules) = 0 ]
+if [[ $(grep -c avahi /etc/shorewall/rules) = 0 ]]
 then
 	RESTARTSHOREWALL=yes
 	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp,udp 5353</li></ul>'
-	LINENUM=`grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1`
-	sed -i $LINENUM'c'\ACCEPT'	'net'	'fw'	'tcp,udp'	'5353'	'-'#'avahi /etc/shorewall/rules
-	echo '#'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE >> /etc/shorewall/rules
+	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+	sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	5353	-#avahi' /etc/shorewall/rules
+	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
 fi
 
 if [ "$RESTARTSHOREWALL" = yes ]
 then
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
 fi
 
-#Configure cups for airprint
+#"Configure cups for airprint"
 echo "image/urf urf string(0,UNIRAST<00>)" > /usr/share/cups/mime/airprint.types
 echo "image/urf application/pdf 100 pdftoraster" > /usr/share/cups/mime/airprint.convs
 
 #Restart avahi
 source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/control_services/avahi_start 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
 
 #Set avahi to start on boot
-/opt/karoshi/serversetup/distro/$DISTROCHOICE/scripts/startonboot/avahi
+/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/avahi
 
 #Enable access to cups
 sed -i 's/Listen localhost:631/Listen *:631/g' /etc/cups/cupsd.conf
 
-if [ $(grep -c "Allow @LOCAL" /etc/cups/cupsd.conf) = 0 ]
+if [[ $(grep -c "Allow @LOCAL" /etc/cups/cupsd.conf) = 0 ]]
 then
-	LINENUM=`grep -n 'Restrict access to the server...' /etc/cups/cupsd.conf | cut -d: -f1`
+	LINENUM=$(grep -n 'Restrict access to the server...' /etc/cups/cupsd.conf | cut -d: -f1)
 	let LINENUM="$LINENUM"+1
-	sed -i ''$LINENUM'a Allow @LOCAL' /etc/cups/cupsd.conf
+	sed -i ''"$LINENUM"'a Allow @LOCAL' /etc/cups/cupsd.conf
 fi
 
