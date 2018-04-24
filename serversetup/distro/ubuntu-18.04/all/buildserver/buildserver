@@ -67,7 +67,7 @@ TURN_ON_SERVICES=yes
 REBOOT=yes
 
 #Main list of packages to install (apart from samba4 and SOGo which are compiled).
-packages="glusterfs-server apache2 php libapache2-mod-auth-kerb libssl-dev apache2-utils mariadb-server php-mysql php-ldap php-sqlite3 php-pear php-cli php-common php-imap php-curl php-fpm php-gd php-intl php-xml php-xmlrpc php-mbstring php-zip php-gd php-curl postfix postfix-ldap postfwd mb2md clamav clamav-daemon clamav-freshclam memcached php-memcached dovecot-core dovecot-gssapi dovecot-imapd  dovecot-managesieved dovecot-sieve squid3 squid-deb-proxy shorewall mon isc-dhcp-server openvpn openvpn-auth-ldap cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client  redis-server rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp freeradius freeradius-krb5 libawl-php php-soap php-apcu php-redis acl samba php-smbclient dnsmasq nginx icecast2 bind9 e2guardian avahi-daemon"
+packages="glusterfs-server apache2 php libapache2-mod-auth-kerb libssl-dev apache2-utils mariadb-server php-mysql php-ldap php-sqlite3 php-pear php-cli php-common php-imap php-curl php-fpm php-gd php-intl php-xml php-xmlrpc php-mbstring php-zip php-gd php-curl postfix postfix-ldap postfwd mb2md clamav clamav-daemon clamav-freshclam memcached php-memcached dovecot-core dovecot-gssapi dovecot-imapd  dovecot-managesieved dovecot-sieve squid3 squid-deb-proxy shorewall mon isc-dhcp-server openvpn openvpn-auth-ldap cups printer-driver-hpijs printer-driver-hpcups ghostscript-cups printer-driver-gutenprint ghostscript-cups tftpd-hpa nfs-kernel-server openssh-server openssh-client  redis-server rsync unison squashfs-tools zip unzip libarchive-zip-perl perl nut-server spamassassin ntp freeradius freeradius-krb5 libawl-php php-soap php-apcu php-redis acl samba php-smbclient dnsmasq nginx icecast2 bind9 e2guardian avahi-daemon vsftpd"
 
 #Utilities and other extras to install.
 extrapackages="nano apache2-suexec-pristine wakeonlan git xarchiver nmap easy-rsa libmime-lite-perl libfile-type-perl hpijs-ppds hp-ppd openprinting-ppds printer-driver-cjet cups-bsd brother-lpr-drivers-ac brother-lpr-drivers-bh7 brother-lpr-drivers-extra brother-lpr-drivers-laser brother-lpr-drivers-laser1 brother-lpr-drivers-mfc9420cn smartmontools libnet-snmp-perl snmp fonts-liberation ipcalc libnss3-tools nslcd fail2ban ldap-utils shimmer-themes gtk2-engines light-themes mate-icon-theme tango-icon-theme firefox xscreensaver virtualbox-guest-x11 virtualbox-guest-dkms yad gedit synaptic plymouth plymouth-label zip unzip unrar bleachbit links gnome-terminal libgtk2.0-bin sshfs ifenslave libtommath1 language-pack-nl firefox-locale-nl language-pack-de firefox-locale-de language-pack-pl firefox-locale-pl language-pack-fr firefox-locale-fr language-pack-sv firefox-locale-sv language-pack-da firefox-locale-da language-pack-fi firefox-locale-fi language-pack-es firefox-locale-es language-pack-it firefox-locale-it language-pack-pt firefox-locale-pt language-pack-cs firefox-locale-cs language-pack-el firefox-locale-el language-pack-ru firefox-locale-ru language-pack-nb firefox-locale-nb language-pack-zh-hans firefox-locale-zh-hans language-pack-ko firefox-locale-ko language-pack-id firefox-locale-id language-pack-ar firefox-locale-ar language-pack-hu language-pack-hu firefox-locale-hu language-pack-he firefox-locale-he language-pack-cy firefox-locale-cy language-pack-en language-pack-hi firefox-locale-hi fonts-nanum-coding fonts-gargi hdparm printer-driver-escpr krb5-user dnsutils winbind rng-tools sshpass gridsite-clients qrencode dos2unix mdadm busybox-static pyzor razor systemd-sysv minidlna smbclient attr lnav xfce4-genmon-plugin inotify-tools quota apt-transport-https ca-certificates curl ntpdate lshw antiword gettext menu python-cups"
@@ -273,7 +273,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n" | tee -a /var/log/karoshi_build.log
 sleep 1
-services="apache apache_karoshi avahi-daemon bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind"
+services="apache apache_karoshi avahi-daemon bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind vsftpd"
 for service in $services
 do
 	echo -e "\nSetting $service to stop on boot\n" | tee -a /var/log/karoshi_build.log
@@ -363,6 +363,9 @@ apt-get -y autoremove 1>> /var/log/karoshi_build.log 2>> /var/log/karoshi_build.
 }
 
 function configure_system {
+
+#Configure vsftpd
+/opt/karoshi/serversetup/distro/ubuntu-18.04/all/buildserver/configfiles/vsftpd.conf /etc/
 
 #Configure MariaDB
 cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/mariadb/50-server.cnf /etc/mysql/mariadb.conf.d/
