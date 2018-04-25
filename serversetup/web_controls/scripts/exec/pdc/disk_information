@@ -127,13 +127,15 @@ then
 	WIDTH2=40
 	WIDTH3=100
 	WIDTH4=250
+	WIDTH5=372
 	TABLECLASS=tablesorter
 else
-	MULTI=5
+	MULTI=1
 	WIDTH1=180
 	WIDTH2=86
 	WIDTH3=180
 	WIDTH4=500
+	WIDTH5=702
 	TABLECLASS=tablesorter
 fi
 echo "$(date): disk_information - checking $INFO for $KAROSHI_SERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
@@ -151,7 +153,7 @@ then
 	#Get partition info
 	DISKINFO=$(df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5)
 	MOUNTCOUNT=$(echo -e "$DISKINFO" | wc -l)
-	echo "<table class=\"$TABLECLASS\" style=\"text-align: left;\"><tbody>
+	echo "<table class=\"$TABLECLASS\" style=\"width:$WIDTH5\px; text-align: left;\"><tbody>
 	<tr><td style=\"width: $WIDTH1\px\";\"><b>Mount point</b></td>"
 	[ "$MOBILE" = no ] && echo '<td style="width: '"$WIDTH2"'px;"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>'
 	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
@@ -407,7 +409,7 @@ then
 	#Get partition info
 	DISKINFO=`df -h -l | sed 1d | sed "s/ * / /g" | sort -b -k5n,5`
 	MOUNTCOUNT=`echo -e "$DISKINFO" | wc -l`
-	echo "<table class=\"'"$TABLECLASS"'\" style=\"text-align: left;\"><tbody>
+	echo "<table class=\"'"$TABLECLASS"'\" style=\"width:'"$WIDTH5"'\px; text-align: left;\"><tbody>
 	<tr><td style=\"width: '"$WIDTH1"'px;\"><b>Mount point</b></td>"
 	[ '"$MOBILE"' = no ] && echo "<td style=\"width: '"$WIDTH2"'px;\"><b>File System</b></td><td><b>Size</b></td><td><b>Used</b></td>"
 	echo "<td><b>Avail</b></td><td><b>%Use</b></td><td></td></tr>"
