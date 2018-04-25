@@ -742,7 +742,7 @@ then
 
 		if [ $FILEACTION = ENTER ]
 		then
-			echo "<button class=\"'$INFOCLASS1'\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"$ICON1\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
+			echo "<button class=\"'$INFOCLASS1'\" name=\"_Enter_\" value=\"_ACTION_ENTER_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON1'\" alt=\"'$"Enter"'\"><span>'$"Enter"'<br>$FILENAME<br></span></button>"
 		else
 			echo "<button class=\"'$INFOCLASS1'\" name=\"_Edit_\" value=\"_ACTION_EDIT_SERVERTYPE_'$SERVERTYPE'_SERVERNAME_'$SERVERNAME'_LOCATION_$FILE2"_"\"><img src=\"'$ICON10'\" alt=\"'$"Edit"'\"><span>'$"Edit"'<br>$FILENAME<br></span></button>"
 		fi

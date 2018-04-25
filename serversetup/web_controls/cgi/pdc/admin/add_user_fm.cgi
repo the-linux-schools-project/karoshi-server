@@ -231,7 +231,28 @@ document.myform.____USERNAMESTYLE____.options[5]=new Option("" + usernameValue, 
 fi
 echo '}
 </script>
-</head><body onLoad="rewriteselect(); start();"><div id="pagecontainer">'
+</head><body onLoad="rewriteselect(); start();">
+
+<script>
+function showRow(rowId) {
+for (var i = 1; i <= 5; i++) {
+	document.getElementById(rowId+i).style.display = "";
+    }
+}
+
+function hideRow(rowId) {
+for (var i = 1; i <= 5; i++) {
+	document.getElementById(rowId+i).style.display = "none";
+    }
+}
+
+function hideLink(linkId) {
+    document.getElementById(linkId).style.display = "none";
+}
+</script>
+<div id="pagecontainer">
+
+'
 #########################
 #Get data input
 #########################
@@ -338,6 +359,18 @@ then
 		<div><iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="136" height="165" scrolling="no" frameborder="0"></iframe></div><br>'
 else
 
+
+	echo '<button type="button" id="ToggleAdvanced" class="info" onclick="showRow('\''advanced'\'');">
+	<img src="/images/submenus/internet/detailed_logs.png" alt="'$"Advanced"'">
+	<span>'$"Show advanced fields."'</span><br>
+	</button>
+
+	<button type="button" id="ToggleBasic" class="info" onclick="hideRow('\''advanced'\'');">
+	<img src="/images/submenus/internet/normal_logs.png" alt="'$"Basic"'">
+	<span>'$"Hide advanced fields."'</span><br>
+	</button>
+	'
+
 	echo '<table class="standard" style="text-align: left;" ><tbody>
 	<tr><td style="width: 180px;">'$"Forename"'</td>
         <td><input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
@@ -350,55 +383,24 @@ else
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
 	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
 	echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>'
-
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo '	<tr>'
-	else
-		echo '	<tr style="display:none;">'
-	fi
-	echo '<td>'$"Enrolment number / staff code"'</td>
+      <tr><td>'$"Confirm Password"'</td><td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
+	<tr id="advanced1" style="display:none;"><td>'$"Enrolment number / staff code"'</td>
         <td><input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
 
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo '	<tr>'
-	else
-		echo '	<tr style="display:none;">'
-	fi
-	echo '<td>'$"Room Number"'</td>
+	<tr id="advanced2" style="display:none;"><td>'$"Room Number"'</td>
         <td><input tabindex= "6" value="'"$ROOMNUMBER"'" name="____ROOMNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The room number for the user. This field can be left blank."'</span></a></td></tr>'
-
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo '	<tr>'
-	else
-		echo '	<tr style="display:none;">'
-	fi
-	echo '<td>'$"Telephone Number"'</td>
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The room number for the user. This field can be left blank."'</span></a></td></tr>
+	
+	<tr id="advanced3" style="display:none;"><td>'$"Telephone Number"'</td>
         <td><input tabindex= "7" value="'"$TELEPHONENUMBER"'" name="____TELEPHONENUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The telephone number for the user. This field can be left blank."'</span></a></td></tr>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The telephone number for the user. This field can be left blank."'</span></a></td></tr>
 
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo '	<tr>'
-	else
-		echo '	<tr style="display:none;">'
-	fi
-	echo '<td>'$"Fax Number"'</td>
+	<tr id="advanced4" style="display:none;"><td>'$"Fax Number"'</td>
         <td><input tabindex= "8" value="'"$FAXNUMBER"'" name="____FAXNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The fax number for the user. This field can be left blank."'</span></a></td></tr>'
+	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The fax number for the user. This field can be left blank."'</span></a></td></tr>
 
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo '	<tr>'
-	else
-		echo '	<tr style="display:none;">'
-	fi
-	echo '<td>'$"Mobile Number"'</td>
+	<tr id="advanced5" style="display:none;"><td>'$"Mobile Number"'</td>
         <td><input tabindex= "9" value="'"$MOBILENUMBER"'" name="____MOBILENUMBER____" style="width: 200px;" size="20" type="text"></td>
 	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The mobile number for the user. This field can be left blank."'</span></a></td></tr>'
 
