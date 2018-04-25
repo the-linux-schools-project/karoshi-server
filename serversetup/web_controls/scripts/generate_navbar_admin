@@ -438,12 +438,16 @@ echo '				<li><a href="/cgi-bin/admin/client_wireless_settings_fm.cgi">'$"Client
 #Printers
 if [ "$PRINTERCTRL" = yes ]
 then
-echo '	<li class="top"><a href="/cgi-bin/admin/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
+	echo '<li class="top"><a href="/cgi-bin/admin/printers.cgi" id="Printer" class="top_link"><span class="down">'$"Printer"'</span></a>
 		<ul class="sub">
 			<li><a href="/cgi-bin/admin/printers.cgi">'$"Manage Print Queues"'</a></li><!-- '$"View the status of the printer queues."' -->
 			<li><a href="/cgi-bin/admin/printers_add_fm.cgi">'$"Add Network Printer"'</a></li><!-- '$"Add a network printer queue."' -->
-			<li><a href="/cgi-bin/admin/printers_delete.cgi">'$"Delete Network Printer"'</a></li><!-- '$"Delete a network printer queue."' -->
-			<li><a href="http://savapage:8631/admin" target="_blank">Savapage</a></li><!-- '$"Configure Savapage."' -->
+			<li><a href="/cgi-bin/admin/printers_delete.cgi">'$"Delete Network Printer"'</a></li><!-- '$"Delete a network printer queue."' -->'
+	if [ "$SAVAPAGECTRL" = yes ]
+	then				
+		echo '	<li><a href="http://savapage:8631/admin" target="_blank">Savapage</a></li><!-- '$"Configure Savapage."' -->'
+	fi
+	echo '
 			<li><a href="/cgi-bin/admin/printers_view_assigned_fm.cgi">'$"View Assigned Printers"'</a></li><!-- '$"View assigned printers."' -->
 			<li><a href="/cgi-bin/admin/printer_driver_gen.cgi">'$"Windows Printer Drivers"'</a></li><!-- '$"Generate Windows printer drivers."' -->
 		</ul>

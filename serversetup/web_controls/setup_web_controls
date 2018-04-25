@@ -888,6 +888,9 @@ OCSCTRL=no
 PRINTERCTRL=no
 [ -f /opt/karoshi/server_network/printserver ] && PRINTERCTRL=yes
 
+SAVAPAGECTRL=no
+[ -f /opt/karoshi/server_network/savapage_server ] && SAVAPAGECTRL=yes
+
 RADIUSCTRL=no
 [ -f /opt/karoshi/server_network/radius_server ] && RADIUSCTRL=yes
 
@@ -929,16 +932,13 @@ echo MOODLECTRL=$MOODLECTRL >> /opt/karoshi/server_network/web_controls/menusett
 echo NEXTCLOUDCTRL=$NEXTCLOUDCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo OCSCTRL=$OCSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo PRINTERCTRL=$PRINTERCTRL >> /opt/karoshi/server_network/web_controls/menusettings
+echo SAVAPAGECTRL=$SAVAPAGECTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo RADIUSCTRL=$RADIUSCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo REVERSEPROXYCTRL=$REVERSEPROXYCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo SHELLCTRL=$SHELLCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo STAFFCTRL=$STAFFCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo VPNCTRL=$VPNCTRL >> /opt/karoshi/server_network/web_controls/menusettings
 echo WEBCTRL=$WEBCTRL >> /opt/karoshi/server_network/web_controls/menusettings
-
-
-
-
 
 ###########################
 #Check for updates

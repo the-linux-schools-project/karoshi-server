@@ -135,6 +135,7 @@ fi
 echo $"Savapage""<br>" > /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
 echo '<a href="http://savapage.'"$REALM"':8631" target="_blank">http://savapage.'"$REALM"':8631</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
 echo '<a href="http://savapage.'"$REALM"':8631/admin" target="_blank">http://savapage.'"$REALM"':8631/admin</a><br>' >> /opt/karoshi/server_network/servers/"$SERVERNAME"/savapage
+echo "$SERVERNAME" > /opt/karoshi/server_network/savapage_server
 
 #Add savapage ppd to netlogon
 cp -f /opt/karoshi/server_network/printserver /var/lib/samba/netlogon/savapage
