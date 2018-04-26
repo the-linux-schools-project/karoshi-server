@@ -170,12 +170,9 @@ if (selectedstyle == "userstyleS9") {
 
 if (selectedstyle == "userstyleS10") {
 	var el = document.getElementById("extraoptions1");
-el.innerHTML = "Username";'
-if [ "$MOBILE" = yes ]
-then
-	echo '<br>'
-fi
-	echo  'var el = document.getElementById("extraoptions2");'
+el.innerHTML = "Username";
+
+var el = document.getElementById("extraoptions2");'
 
 if [ "$MOBILE" = no ]
 then
@@ -232,28 +229,6 @@ fi
 echo '}
 </script>
 </head><body onLoad="rewriteselect(); start();">
-
-<script>
-function showRow(rowId) {
-for (var i = 1; i <= 5; i++) {
-	document.getElementById(rowId+i).style.display = "";
-    }
-}
-
-function hideRow(rowId) {
-for (var i = 1; i <= 5; i++) {
-	document.getElementById(rowId+i).style.display = "none";
-    }
-}
-
-function hideLink(linkId) {
-    document.getElementById(linkId).style.display = "none";
-}
-
-function showLink(linkId) {
-    document.getElementById(linkId).style.display = "";
-}
-</script>
 <div id="pagecontainer">
 
 '
@@ -284,13 +259,17 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 	<div class="expanded">
 	<span>'$"Add a New User"'</span>
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
-</div></div>
+</div></div><div id="mobileactionbox">
 '
 	IMAGE1=/images/submenus/file/movedownm.png
 	IMAGE2=/images/submenus/file/moveupm.png
+	TABLECLASS=mobilestandard
+	ROWCOUNT=14
 else
 	IMAGE1=/images/submenus/file/movedown.png
 	IMAGE2=/images/submenus/file/moveup.png
+	TABLECLASS=standard
+	ROWCOUNT=7
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Add a New User"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add new users to your system."'</span></a></td></tr></tbody></table><br>'
 fi
@@ -316,139 +295,164 @@ then
 	fi
 fi
 
-if [ "$MOBILE" = yes ]
-then
-	echo '<div id="mobileactionbox">'
-	echo ''$"Forename"'<br>
-	<input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>
-	'$"Surname"'<br>
-	<input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>
-	'$"Password"'<br>
-	<input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px; height: 30px; text-align: center;" size="20" type="password"><br>
-	'$"Confirm Password"'<br>
-	<input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px; height: 30px; text-align: center;" size="20" type="password"><br>'
+echo '
+<script>
+function showRow(rowId) {
+for (var i = 1; i <= '"$ROWCOUNT"'; i++) {
+	document.getElementById(rowId+i).style.display = "";
+    }
+}
 
-	if [ "$INSTALL_TYPE" != home ]
-	then
-		echo ''$"Enrolment number / staff code"'<br>
-		<input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px; height: 30px; text-align: center;" size="20" type="text"><br>'
-	fi
+function hideRow(rowId) {
+for (var i = 1; i <= '"$ROWCOUNT"'; i++) {
+	document.getElementById(rowId+i).style.display = "none";
+    }
+}
 
-	echo '	'$"Change at next logon"'<br>
-	<select tabindex= "6" name="____NEXTLOGON____" style="width: 200px; height: 30px; text-align: center;">
-	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
-	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
-	</select><br>'
-	
-	echo ''$"Primary group"'<br>'
-	if [ -z "$FILE" ]
-	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/style="width: 200px;">/style="width: 200px; height: 30px; text-align: center;" onClick="rewriteselect();">/g' | sed 's/_GROUP_/____GROUP____/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<option><\/option>/<option required="required" selected="selected">'"$GROUP"'<\/option>/g' | sed 's/_GROUP_/____GROUP____/g'
-	fi
-	echo '<br>
-	'$"Username style"'<br>
-	  <select name="____USERNAMESTYLE____" style="width: 200px; height: 30px; text-align: center;" onClick="rewriteselect();">
-		<option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>
-		<option value="userstyleS2" '"$SELECT2"'>'$"09auser"'</option>
-		<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
-		<option value="userstyleS4" '"$SELECT4"'>'$"arnold.user09"'</option>
-		<option value="userstyleS5" '"$SELECT5"'>'$"user.arnold09"'</option>
-		<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>
-		<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>
-		<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>
-		<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number"'</option>
-		<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
-		</select><br>
-		<span id="extraoptions1"></span>
-		<span id="extraoptions2"></span>
-		'$"User Photo"'<br>
-		<div><iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="136" height="165" scrolling="no" frameborder="0"></iframe></div><br>'
-else
+function hideLink(linkId) {
+    document.getElementById(linkId).style.display = "none";
+}
+
+function showLink(linkId) {
+    document.getElementById(linkId).style.display = "";
+}
+</script>
 
 
-	echo '<button style="display: yes;" type="button" id="ToggleAdvanced" class="info" onclick="showRow('\''advanced'\''); showLink('\'ToggleBasic\''); hideLink('\'ToggleAdvanced\'');">
-	<img src="'"$IMAGE1"'" alt="'$"Advanced"'">
-	<span>'$"Show advanced fields."'</span><br>
-	</button>
+<button style="display: yes;" type="button" id="ToggleAdvanced" class="info" onclick="showRow('\''advanced'\''); showLink('\'ToggleBasic\''); hideLink('\'ToggleAdvanced\'');">
+<img src="'"$IMAGE1"'" alt="'$"Advanced"'">
+<span>'$"Show advanced fields."'</span><br>
+</button>
 
-	<button style="display: none;" type="button" id="ToggleBasic" class="info" onclick="hideRow('\''advanced'\''); showLink('\'ToggleAdvanced\''); hideLink('\'ToggleBasic\'');">
-	<img src="'"$IMAGE2"'" alt="'$"Basic"'">
-	<span>'$"Hide advanced fields."'</span><br>
-	</button>
-	'
+<button style="display: none;" type="button" id="ToggleBasic" class="info" onclick="hideRow('\''advanced'\''); showLink('\'ToggleAdvanced\''); hideLink('\'ToggleBasic\'');">
+<img src="'"$IMAGE2"'" alt="'$"Basic"'">
+<span>'$"Hide advanced fields."'</span><br>
+</button>
+'
 
-	echo '<table class="standard" style="text-align: left;" ><tbody>
-	<tr><td style="width: 180px;">'$"Forename"'</td>
-        <td><input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
-	<tr><td>'$"Surname"'</td>
-        <td><input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
-	<tr><td>'$"Password"'</td><td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
+echo '<table class="'"$TABLECLASS"'" style="text-align: left;" ><tbody>
+<tr><td style="width: 180px;">'$"Forename"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td><input required="required" tabindex= "1" value="'"$FORENAME"'" name="____FIRSTNAME____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the firstname for this user."'</span></a></td></tr>
+
+<tr><td>'$"Surname"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td><input required="required" tabindex= "2" value="'"$SURNAME"'" name="____SURNAME____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter the surname for this user."'</span></a></td></tr>
+
+<tr><td>'$"Password"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "3" name="____PASSWORD1____" style="width: 200px;" size="20" type="password"></td><td>
 <a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Enter a password and confirm it in the box below."'<br><br>'$"The following special characters are allowed"'<br><br> space !	&quot;	# 	$	%	&amp; 	(	) 	*	+	, 	-	.	/ 	:
 ;	&lt;	=	&gt;	?	@ 	[	\	]	^	_	` 	{	|	}	~	~<br><br>'
-	[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
-	echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a></td></tr>
-      <tr><td>'$"Confirm Password"'</td><td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
-	<tr id="advanced1" style="display:none;"><td>'$"Enrolment number / staff code"'</td>
-        <td><input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
 
-	<tr id="advanced2" style="display:none;"><td>'$"Room Number"'</td>
-        <td><input tabindex= "6" value="'"$ROOMNUMBER"'" name="____ROOMNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The room number for the user. This field can be left blank."'</span></a></td></tr>
-	
-	<tr id="advanced3" style="display:none;"><td>'$"Telephone Number"'</td>
-        <td><input tabindex= "7" value="'"$TELEPHONENUMBER"'" name="____TELEPHONENUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The telephone number for the user. This field can be left blank."'</span></a></td></tr>
+[ "$PASSWORDCOMPLEXITY" = on ] && echo ''$"Upper and lower case characters and numbers are required."'<br><br>'
 
-	<tr id="advanced4" style="display:none;"><td>'$"Fax Number"'</td>
-        <td><input tabindex= "8" value="'"$FAXNUMBER"'" name="____FAXNUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The fax number for the user. This field can be left blank."'</span></a></td></tr>
+echo ''$"The Minimum password length is "''"$MINPASSLENGTH"'.<br></span></a></td></tr>
 
-	<tr id="advanced5" style="display:none;"><td>'$"Mobile Number"'</td>
-        <td><input tabindex= "9" value="'"$MOBILENUMBER"'" name="____MOBILENUMBER____" style="width: 200px;" size="20" type="text"></td>
-	<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The mobile number for the user. This field can be left blank."'</span></a></td></tr>'
+<tr><td>'$"Confirm Password"'</td>'
 
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
 
-	echo '<tr><td>'$"Change at next logon"'</td><td>
-	<select  tabindex= "10" name="____NEXTLOGON____" style="width: 200px;">
-	<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
-	<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
-	</select>
-	</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
-	<tr><td>'$"Primary group"'</td><td>'
-	if [ -z "$FILE" ]
-	then
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="11" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
-	else
-		/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="12" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
-	fi
-	echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
-	<tr>
-        <td>'$"Username style"'</td>
-        <td>
-        <select  tabindex= "13" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
-        <option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>'
-        [ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09auser"'</option>'
-        echo '<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
-        <option value="userstyleS4" '"$SELECT4"'>'$"arnold.user09"'</option>
-        <option value="userstyleS5" '"$SELECT5"'>'$"user.arnold09"'</option>'
-	[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>'
-	[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>'
-        echo '<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>'
-        [ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number as username"'</option>'
-	echo '<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
-	</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
-	<tr><td><span id="extraoptions1"></span></td><td><span id="extraoptions2"></span></td><td></td></tr>
-	<tr><td style="vertical-align:top">'$"User Photo"'</td><td>
-	<iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="135" height="165" scrolling="no" style="overflow:hidden; border: none;"></iframe>
-	</td><td style="vertical-align:top"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the image to upload a JPG image for this user."'<br><br>'$"User images default to width 120px height 150px."'</span></a></td></tr>
-	</tbody></table><br>
-	'
+echo '<td><input required="required" pattern=".{'"$MINPASSLENGTH"',128}" title="'$"Password length required:"' '"$MINPASSLENGTH"'" tabindex= "4" name="____PASSWORD2____" style="width: 200px;" size="20" type="password"></td><td></td></tr>
+
+<tr id="advanced1" style="display:none;"><td>'$"User code"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced8" style="display:none;">'
+
+echo '<td><input tabindex= "5" value="'"$ENROLLMENTNUMBER"'" name="____ENROLLMENTNUMBER____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Student enrolment number or staff code. This field can be left blank."'</span></a></td></tr>
+
+<tr id="advanced2" style="display:none;"><td>'$"Room Number"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced9" style="display:none;">'
+
+echo '<td><input tabindex= "6" value="'"$ROOMNUMBER"'" name="____ROOMNUMBER____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The room number for the user. This field can be left blank."'</span></a></td></tr>
+
+<tr id="advanced3" style="display:none;"><td>'$"Telephone Number"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced10" style="display:none;">'
+
+echo '<td><input tabindex= "7" value="'"$TELEPHONENUMBER"'" name="____TELEPHONENUMBER____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The telephone number for the user. This field can be left blank."'</span></a></td></tr>
+
+<tr id="advanced4" style="display:none;"><td>'$"Fax Number"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced11" style="display:none;">'
+
+echo '<td><input tabindex= "8" value="'"$FAXNUMBER"'" name="____FAXNUMBER____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The fax number for the user. This field can be left blank."'</span></a></td></tr>
+
+<tr id="advanced5" style="display:none;"><td>'$"Mobile Number"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced12" style="display:none;">'
+
+echo '<td><input tabindex= "9" value="'"$MOBILENUMBER"'" name="____MOBILENUMBER____" style="width: 200px;" size="20" type="text"></td>
+<td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The mobile number for the user. This field can be left blank."'</span></a></td></tr>
+
+<tr id="advanced6" style="display:none;"><td>'$"Change at next logon"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced13" style="display:none;">'
+
+echo '<td>
+<select  tabindex= "10" name="____NEXTLOGON____" style="width: 200px;">
+<option value="y" '"$NEXTLOGON1"'>'$"Yes"'</option>
+<option value="n" '"$NEXTLOGON2"'>'$"No"'</option>
+</select>
+</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"This will force the user to change their password at next logon."'</span></a></td></tr>
+<tr><td>'$"Primary group"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td>'
+if [ -z "$FILE" ]
+then
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="11" name="____GROUP____"/g'| sed 's/style="width: 200px;">/style="width: 200px;" onClick="rewriteselect();">/g'
+else
+	/opt/karoshi/web_controls/group_dropdown_list | sed 's/<select name="_GROUP_"/<select tabindex="12" name="____GROUP____"/g' | sed 's/<option><\/option>/<option selected="selected">'"$GROUP"'<\/option>/g'
 fi
+echo '</td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"The groups give different levels of access."' '$"The itadmin group is for the network administrator."' '$"Only members of itadmin and the tech groups gain administrator access to windows computers joined to the domain."'</span></a></td></tr>
+
+<tr><td>'$"Username style"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td><select  tabindex= "13" name="____USERNAMESTYLE____" style="width: 200px;" onClick="rewriteselect();">
+<option value="userstyleS1" '"$SELECT1"'>'$"auser09"'</option>'
+[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS2" '"$SELECT2"'>'$"Style"' 2: '$"09auser"'</option>'
+echo '<option value="userstyleS3" '"$SELECT3"'>'$"usera09"'</option>
+<option value="userstyleS4" '"$SELECT4"'>'$"arnold.user09"'</option>
+<option value="userstyleS5" '"$SELECT5"'>'$"user.arnold09"'</option>'
+[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS6" '"$SELECT6"'>'$"09usera"'</option>'
+[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS7" '"$SELECT7"'>'$"09arnoldu"'</option>'
+echo '<option value="userstyleS8" '"$SELECT8"'>'$"arnoldu"'</option>'
+[ "$INSTALL_TYPE" = education ] && echo '<option value="userstyleS9" '"$SELECT9"'>'$"Enrollment number as username"'</option>'
+echo '<option value="userstyleS10" '"$SELECT10"'>'$"Enter a username"'</option>
+</select></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Username_Styles"><img class="images" alt="" src="/images/help/info.png"><span>'$"Choose the username style you require."'</span></a></td></tr>
+
+<tr><td><span id="extraoptions1"></span></td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr>'
+
+echo '<td><span id="extraoptions2"></span></td><td></td></tr>
+<tr id="advanced7" style="display:none; vertical-align:top;"><td>'$"User Photo"'</td>'
+
+[ "$MOBILE" = yes ] && echo '</tr><tr id="advanced14" style="display:none;">'
+
+echo '<td>
+<iframe src="/cgi-bin/admin/add_user_upload_image_fm.cgi" width="135" height="165" scrolling="no" style="overflow:hidden; border: none;"></iframe>
+</td><td style="vertical-align:top"><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User#Detailed_Explanation"><img class="images" alt="" src="/images/help/info.png"><span>'$"Click on the image to upload a JPG image for this user."'<br><br>'$"User images default to width 120px height 150px."'</span></a></td></tr>
+</tbody></table><br>
+'
+
 echo '<input value="'$"Submit"'" class="button" type="submit"> <input value="'$"Reset"'" class="button" type="reset"></div>'
 
 [ "$MOBILE" = no ] && echo '</div>'
