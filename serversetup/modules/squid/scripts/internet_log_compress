@@ -28,6 +28,7 @@ EPOCH_TODAY=$(date +%s)
 let ONEDAY=60*60*24
 let EPOCH_YESTERDAY="$EPOCH_TODAY-$ONEDAY"
 LOG_DATE=$(date +%d-%m-%Y -d @"$EPOCH_YESTERDAY")
+KeepLogsFor=162 #Number of days to keep internet logs for before deleting them.
 #################################
 #Compress all internet logs in yesterdays log folder
 #################################
@@ -126,5 +127,8 @@ then
 	tar --force-local -z -c -f machines_detailed.tar.gz machines_detailed
 	[ "$?" = 0 ] && rm -f -R /opt/karoshi/logs/internetlogs/"$LOG_DATE"/machines_detailed/
 fi
+
+#Remove logs older than n days. 
+find /opt/karoshi/logs/internetlogs/* -type d -ctime +"$KeepLogsFor" | xargs rm -rf
 
 exit
