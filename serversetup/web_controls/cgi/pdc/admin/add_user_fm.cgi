@@ -249,6 +249,10 @@ for (var i = 1; i <= 5; i++) {
 function hideLink(linkId) {
     document.getElementById(linkId).style.display = "none";
 }
+
+function showLink(linkId) {
+    document.getElementById(linkId).style.display = "";
+}
 </script>
 <div id="pagecontainer">
 
@@ -282,7 +286,11 @@ echo '<div style="float: center" id="my_menu" class="sdmenu">
 <a href="/cgi-bin/admin/mobile_menu.cgi">'$"Menu"'</a>
 </div></div>
 '
+	IMAGE1=/images/submenus/file/movedownm.png
+	IMAGE2=/images/submenus/file/moveupm.png
 else
+	IMAGE1=/images/submenus/file/movedown.png
+	IMAGE2=/images/submenus/file/moveup.png
 	echo '<div id="'$DIV_ID'"><div id="titlebox"><table class="standard" style="text-align: left;" ><tbody>
 <tr><td><div class="sectiontitle">'$"Add a New User"'</div></td><td><a class="info" target="_blank" href="http://www.linuxschools.com/karoshi/documentation/wiki/index.php?title=Add_User"><img class="images" alt="" src="/images/help/info.png"><span>'$"Add new users to your system."'</span></a></td></tr></tbody></table><br>'
 fi
@@ -360,13 +368,13 @@ then
 else
 
 
-	echo '<button type="button" id="ToggleAdvanced" class="info" onclick="showRow('\''advanced'\'');">
-	<img src="/images/submenus/internet/detailed_logs.png" alt="'$"Advanced"'">
+	echo '<button style="display: yes;" type="button" id="ToggleAdvanced" class="info" onclick="showRow('\''advanced'\''); showLink('\'ToggleBasic\''); hideLink('\'ToggleAdvanced\'');">
+	<img src="'"$IMAGE1"'" alt="'$"Advanced"'">
 	<span>'$"Show advanced fields."'</span><br>
 	</button>
 
-	<button type="button" id="ToggleBasic" class="info" onclick="hideRow('\''advanced'\'');">
-	<img src="/images/submenus/internet/normal_logs.png" alt="'$"Basic"'">
+	<button style="display: none;" type="button" id="ToggleBasic" class="info" onclick="hideRow('\''advanced'\''); showLink('\'ToggleAdvanced\''); hideLink('\'ToggleBasic\'');">
+	<img src="'"$IMAGE2"'" alt="'$"Basic"'">
 	<span>'$"Hide advanced fields."'</span><br>
 	</button>
 	'
