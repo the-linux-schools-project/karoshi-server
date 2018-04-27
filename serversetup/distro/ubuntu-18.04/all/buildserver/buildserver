@@ -454,7 +454,7 @@ then
 	rm -f /etc/apache2/conf-enabled/SOGo.conf
 fi
 #Configure php
-cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/php.ini /etc/php/7.0/apache2/
+cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/php.ini /etc/php/7.2/apache2/
 
 #Configure proxy_html.conf
 cp -f /opt/karoshi/serversetup/distro/"$DistroVersion"/all/buildserver/configfiles/proxy_html.conf /etc/apache2/mods-available/
