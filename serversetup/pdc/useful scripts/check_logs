@@ -24,7 +24,7 @@ do
 		UPTIME=$(cut -d. -f1 < /proc/uptime)
 
 		DO_CHECK=yes
-		#Disable uptime if the server has been up for less than 6 minutes
+		#Disable uptime if the server has been up for less than 5 minutes
 		if [ "$UPTIME" -lt 300 ]
 		then
 			DO_CHECK=no
@@ -69,7 +69,7 @@ do
 		UPTIME=$(cat /proc/uptime | cut -d. -f1)
 
 		DO_CHECK=yes
-		#Disable uptime if the server has been up for less than 6 minutes
+		#Disable uptime if the server has been up for less than 5 minutes
 		if [ "$UPTIME" -lt 300 ]
 		then
 			DO_CHECK=no

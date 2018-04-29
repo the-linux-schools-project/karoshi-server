@@ -1,0 +1,312 @@
+#!/bin/bash
+#Copyright (C) 2018  The karoshi Team
+
+#This file is part of Karoshi Server.
+#
+#Karoshi Server is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#Karoshi Server is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with Karoshi Server.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+#The Karoshi Team can be contacted at: 
+#mpsharrad@karoshi.org.uk
+#jsharrad@karoshi.org.uk
+
+#
+#Website: http://www.karoshi.org.uk
+LOG_DATE=$(date +%F)
+[ -z "$LOG_DATE" ] && exit
+
+########################
+#Check md5checksum
+########################
+if ! test -f /opt/karoshi/web_controls/checksums/admin_checksums/printers_airprint_cgi
+then
+	echo "$(date): printers_airprint - No Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+source /opt/karoshi/web_controls/checksums/admin_checksums/printers_airprint_cgi
+Checksum=$(sha256sum /var/www/cgi-bin_karoshi/admin/printers_airprint.cgi | cut -d' ' -f1)
+[ -z "$Checksum" ] && Checksum=not_set
+if [ "$Checksum"'check' != "$printers_airprint_cgi"'check' ]
+then
+	echo "$(date): printers_airprint - Incorrect Checksum" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+########################
+#Get variables
+########################
+numArgs=$#
+if [ "$numArgs" != 1 ]
+then
+	echo "$(date): printers_airprint - incorrect number of arguments" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+REMOTE_USER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f2)
+RemoteCheckSum=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f3)
+MOBILE=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f4)
+PRINTER=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f5)
+ACTION=$(echo "$*" | tr -cd 'A-Za-z0-9\._:\-' | cut -s -d: -f6)
+
+########################
+#Check data
+########################
+if [ "$RemoteCheckSum"'check' != "$Checksum"'check' ]
+then
+	echo "$(date): printers_airprint - Not called by printers.cgi" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_USER" ]
+then
+	echo "$(date): printers_airprint - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ ! -f /opt/karoshi/server_network/printserver ]
+then
+	echo "$(date): printers_airprint - no print server has been set up." >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo "$(date): printers_airprint - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+if [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_admin) != 1 ]] && [[ $(grep -c ^"$REMOTE_USER:" /opt/karoshi/web_controls/web_access_tech) != 1 ]]
+then
+	echo "$(date): printers_airprint - access denied to $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+ICON1=/images/submenus/printer/enable_printer.png
+ICON2=/images/submenus/printer/disable_printer.png
+WIDTH1=330
+WIDTH2=100
+if [ "$MOBILE" = yes ]
+then
+	ICON1=/images/submenus/printer/enable_printerm.png
+	ICON2=/images/submenus/printer/disable_printerm.png
+	WIDTH1=160
+	WIDTH2=130
+fi
+
+PRINTSERVER=$(sed -n 1,1p /opt/karoshi/server_network/printserver)
+
+if [ "$ACTION" = enableairprint ] || [ "$ACTION" = disableairprint ]
+then
+	echo "$(date): printers_airprint - $ACTION airprint on $PRINTSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
+	then
+		/opt/karoshi/serversetup/modules/printserver/setupairprint "$ACTION"
+	else
+		scp /opt/karoshi/serversetup/modules/printserver/setupairprint root@"$PRINTSERVER":/opt/karoshi/serversetup/modules/printserver/
+		ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
+		/opt/karoshi/serversetup/modules/printserver/setupairprint "'"$ACTION"'"
+		'
+	fi
+fi
+
+if [ "$ACTION" = disable ]
+then
+	echo "$(date): printers_airprint - disabling $PRINTER on $PRINTSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
+	then
+		[ ! -d /opt/karoshi/server_network/printers/airprint/disabled_printers ] && mkdir -p /opt/karoshi/server_network/printers/airprint/disabled_printers
+		touch /opt/karoshi/server_network/printers/airprint/disabled_printers/"$PRINTER"
+		if [ -f /etc/avahi/services/AirPrint-"$PRINTER".service ]
+		then
+			rm -f /etc/avahi/services/AirPrint-"$PRINTER".service
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_reload 1>/dev/null
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
+		[ ! -d /opt/karoshi/server_network/printers/airprint/disabled_printers ] && mkdir -p /opt/karoshi/server_network/printers/airprint/disabled_printers
+		touch /opt/karoshi/server_network/printers/airprint/disabled_printers/"'"$PRINTER"'"
+		if [ -f /etc/avahi/services/AirPrint-"'"$PRINTER"'".service ]
+		then
+			rm -f /etc/avahi/services/AirPrint-"'"$PRINTER"'".service
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_reload 1>/dev/null
+		fi
+		'
+	fi
+fi
+
+if [ "$ACTION" = enable ]
+then
+	echo "$(date): printers_airprint - enabling $PRINTER on $PRINTSERVER by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
+	then
+		[ -f /opt/karoshi/server_network/printers/airprint/disabled_printers/"$PRINTER" ] && rm -f /opt/karoshi/server_network/printers/airprint/disabled_printers/"$PRINTER"
+		if [ ! -f /etc/avahi/services/AirPrint-"$PRINTER".service ]
+		then
+			cd /etc/avahi/services
+			/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_reload 1>/dev/null
+		fi
+	else
+		ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
+		[ -f /opt/karoshi/server_network/printers/airprint/disabled_printers/"'"$PRINTER"'" ] && rm -f /opt/karoshi/server_network/printers/airprint/disabled_printers/"'"$PRINTER"'"
+		if [ ! -f /etc/avahi/services/AirPrint-"'"$PRINTER"'".service ]
+		then
+			cd /etc/avahi/services
+			/opt/karoshi/serversetup/modules/printserver/airprint-generate.py
+			source /opt/karoshi/serversetup/variables/distro
+			/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_reload 1>/dev/null
+		fi
+		'
+	fi
+fi
+
+#Show airprint cups status
+
+echo '<form action="/cgi-bin/admin/printers_airprint.cgi" name="AirPrintStatus" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: '"$WIDTH1"'px;"><b>'$"AirPrint"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+
+if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
+then
+	AiPrintStatus=enabled
+	#Check shorewall for cups and avahi
+	[[ $(grep -c "#cups" /etc/shorewall/rules) = 0 ]] && AiPrintStatus=disabled
+	[[ $(grep -c "#avahi" /etc/shorewall/rules) = 0 ]] && AiPrintStatus=disabled
+	#Check cups for airprint
+	[ ! -f /usr/share/cups/mime/airprint.types ] && AiPrintStatus=disabled
+	[ ! -f /usr/share/cups/mime/airprint.convs ] && AiPrintStatus=disabled
+	#Check avahi is running
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_status 1>/dev/null
+	[ "$?" != 0 ]  && AiPrintStatus=disabled
+
+
+	if [ "$AiPrintStatus" = enabled ]
+	then
+		ACTION1=disableairprint
+		ICON=$ICON1
+		ACTIONMSG=''$"Disable"' AirPrint' 
+	else
+		ACTION1=enableairprint
+		ICON="$ICON2"
+		ACTIONMSG=''$"Enable"' AirPrint'
+	fi
+	echo '<tr><td style="height: 35px;">Avahi</td><td>
+	<button class="info" name="____AirPrintStatus____" value="____ACTION____'"$ACTION1"'____">
+		<img src="'"$ICON"'" alt="'"$ACTIONMSG"'">
+		<span>'"$ACTIONMSG"'</span>
+	</button>
+	</td></tr>
+	'
+
+else
+	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
+	AiPrintStatus=enabled
+	#Check shorewall for cups and avahi
+	[[ $(grep -c "#cups" /etc/shorewall/rules) = 0 ]] && AiPrintStatus=disabled
+	[[ $(grep -c "#avahi" /etc/shorewall/rules) = 0 ]] && AiPrintStatus=disabled
+	#Check cups for airprint
+	[ ! -f /usr/share/cups/mime/airprint.types ] && AiPrintStatus=disabled
+	[ ! -f /usr/share/cups/mime/airprint.convs ] && AiPrintStatus=disabled
+	#Check avahi is running
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_status 1>/dev/null
+	[ "$?" != 0 ]  && AiPrintStatus=disabled
+
+	if [ "$AiPrintStatus" = enabled ]
+	then
+		ACTION1=disableairprint
+		ICON="'"$ICON1"'"
+		ACTIONMSG="'$"Disable"' AirPrint"
+	else
+		ACTION1=enableairprint
+		ICON="'"$ICON2"'"
+		ACTIONMSG="'$"Enable"' AirPrint"
+	fi
+
+	echo "<tr><td style=\"height: 35px;\">Avahi</td><td>
+	<button class=\"info\" name=\"____AirPrintStatus____\" value=\"____ACTION____$ACTION1""____\">
+		<img src=\"$ICON\" alt=\"$ACTIONMSG\">
+		<span>$ACTIONMSG</span>
+	</button>
+	</td></tr>"
+	'
+fi
+
+echo '</tbody></table></form>'
+
+
+
+#Show airprint print queue status
+
+echo '<form action="/cgi-bin/admin/printers_airprint.cgi" name="AirPrintQueueStatus" method="post"><table id="myTable" class="tablesorter" style="text-align: left;" ><thead>
+<tr><th style="width: '"$WIDTH1"'px;"><b>'$"Print Queue"'</b></th><th style="width: '"$WIDTH2"'px;"><b>'$"Status"'</b></th></tr></thead><tbody>'
+
+if [[ "$PRINTSERVER" = $(hostname-fqdn) ]]
+then
+	for PRINTQUEUE in $(lpstat -a | cut -d" " -f1)
+	do
+		echo '<tr><td style="height: 35px;">'"$PRINTQUEUE"'</td><td>'
+
+		if [ -f /etc/avahi/services/AirPrint-"$PRINTQUEUE".service ]
+		then
+			ACTION1=disable
+			ICON=$ICON1
+			ACTIONMSG=''$"Disable"' AirPrint.'
+		else
+			ACTION1=enable
+			ICON=$ICON2
+			ACTIONMSG=''$"Enable"' AirPrint'
+		fi
+
+		echo '
+		<button class="info" name="____PrinterAirprint____" value="____ACTION____'"$ACTION1"'____PRINTER____'"$PRINTQUEUE"'____">
+		<img src="'"$ICON"'" alt="'"$PRINTQUEUE"' '"$ACTIONMSG"'">
+		<span>'"$PRINTQUEUE"'<br>'"$ACTIONMSG"'</span>
+		</button>
+		'
+
+		echo '</td></tr>'
+	done
+else
+	ssh -x -o PasswordAuthentication=no "$PRINTSERVER" '
+	for PRINTQUEUE in $(lpstat -a | cut -d" " -f1)
+	do
+		echo "<tr><td style=\"height: 35px;\">$PRINTQUEUE</td><td>"
+
+		if [ -f /etc/avahi/services/AirPrint-"$PRINTQUEUE".service ]
+		then
+			ACTION1=disable
+			ICON='"$ICON1"'
+			ACTIONMSG="'$"Disable"' AirPrint"
+		else
+			ACTION1=enable
+			ICON='"$ICON2"'
+			ACTIONMSG="'$"Enable"' AirPrint"
+		fi
+
+		echo "
+		<button class=\"info\" name=\"____PrinterAirprint____\" value=\"____ACTION____$ACTION1""____PRINTER____$PRINTQUEUE""____\">
+		<img src=\"$ICON\" alt=\"$PRINTQUEUE '"$ACTIONMSG"'\">
+		<span>$PRINTQUEUE<br>"$ACTIONMSG"</span>
+		</button>
+		"
+
+		echo "</td></tr>"
+	done
+	'
+fi
+echo '</tbody></table></form>'
+

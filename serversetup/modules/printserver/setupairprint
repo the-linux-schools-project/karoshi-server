@@ -1,55 +1,111 @@
 #!/bin/bash
-echo '<ul><li>'$"Setup Airprint"'</ul></li>'
-UPDATEREPO=no
-INSTALLAVAHI=no
-INSTALLPYTHONCUPS=no
 
-RESTARTSHOREWALL=no
-#Open ports for avahi and cups
-if [[ $(grep -c cups /etc/shorewall/rules) = 0 ]]
-then
-	RESTARTSHOREWALL=yes
-	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp,udp 631</li></ul>'
-	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
-	sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	631	-#cups' /etc/shorewall/rules
-	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
-fi
 
-if [[ $(grep -c avahi /etc/shorewall/rules) = 0 ]]
-then
-	RESTARTSHOREWALL=yes
-	echo '<ul><li>'$"The following extra ports are being allowed"' - tcp,udp 5353</li></ul>'
-	LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
-	sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	5353	-#avahi' /etc/shorewall/rules
-	echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
-fi
+ACTION=$(echo "$1" | tr -cd 'a-z')
 
-if [ "$RESTARTSHOREWALL" = yes ]
+[ -z "$ACTION" ] && ACTION=disableairprint
+
+#Backup cupds.conf
+TODAY=$(date +%F)
+cp -f /etc/cups/cupsd.conf "/etc/cups/cupsd-$TODAY.$$.conf"
+
+if [ "$ACTION" = enableairprint ]
 then
+	#Chec for software 
+
+	RESTARTSHOREWALL=no
+	#Open ports for avahi and cups
+	if [[ $(grep -c cups /etc/shorewall/rules) = 0 ]]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	631	-#cups' /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	fi
+
+	if [[ $(grep -c avahi /etc/shorewall/rules) = 0 ]]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=$(grep -n 'LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"'c\ACCEPT	net	fw	tcp,udp	5353	-#avahi' /etc/shorewall/rules
+		echo '#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE' >> /etc/shorewall/rules
+	fi
+
+	if [ "$RESTARTSHOREWALL" = yes ]
+	then
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+
+	#Configure cups for airprint
+	echo "image/urf urf string(0,UNIRAST<00>)" > /usr/share/cups/mime/airprint.types
+	echo "image/urf application/pdf 100 pdftoraster" > /usr/share/cups/mime/airprint.convs
+
+	#Restart avahi
 	source /opt/karoshi/serversetup/variables/distro
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
-	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
+
+	#Set avahi to start on boot
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/avahi
+
+	#Enable access to cups
+	sed -i 's/Listen localhost:631/Listen *:631/g' /etc/cups/cupsd.conf
+
+	if [[ $(grep -c "Allow @LOCAL" /etc/cups/cupsd.conf) = 0 ]]
+	then
+		LINENUM=$(grep -n 'Restrict access to the server...' /etc/cups/cupsd.conf | cut -d: -f1)
+		let LINENUM="$LINENUM"+1
+		sed -i ''"$LINENUM"'a Allow @LOCAL' /etc/cups/cupsd.conf
+	fi
 fi
 
-#"Configure cups for airprint"
-echo "image/urf urf string(0,UNIRAST<00>)" > /usr/share/cups/mime/airprint.types
-echo "image/urf application/pdf 100 pdftoraster" > /usr/share/cups/mime/airprint.convs
-
-#Restart avahi
-source /opt/karoshi/serversetup/variables/distro
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_start 1>/dev/null
-
-#Set avahi to start on boot
-/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/startonboot/avahi
-
-#Enable access to cups
-sed -i 's/Listen localhost:631/Listen *:631/g' /etc/cups/cupsd.conf
-
-if [[ $(grep -c "Allow @LOCAL" /etc/cups/cupsd.conf) = 0 ]]
+if [ "$ACTION" = disableairprint ]
 then
-	LINENUM=$(grep -n 'Restrict access to the server...' /etc/cups/cupsd.conf | cut -d: -f1)
-	let LINENUM="$LINENUM"+1
-	sed -i ''"$LINENUM"'a Allow @LOCAL' /etc/cups/cupsd.conf
+	RESTARTSHOREWALL=no
+	#Close ports for avahi and cups
+	if [[ $(grep -c '#cups' /etc/shorewall/rules) -gt  0 ]]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=$(grep -n '#cups' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"d /etc/shorewall/rules
+	fi
+
+	if [[ $(grep -c "#avahi" /etc/shorewall/rules) -gt 0 ]]
+	then
+		RESTARTSHOREWALL=yes
+		LINENUM=$(grep -n '#avahi' /etc/shorewall/rules | cut -d: -f1)
+		sed -i "$LINENUM"d /etc/shorewall/rules
+	fi
+
+	if [ "$RESTARTSHOREWALL" = yes ]
+	then
+		source /opt/karoshi/serversetup/variables/distro
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_stop 1>/dev/null
+		/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/shorewall_start 1>/dev/null
+	fi
+
+	#Remove cups configuration for airprint
+	[ -f /usr/share/cups/mime/airprint.types ] && rm -f /usr/share/cups/mime/airprint.types
+	[ -f /usr/share/cups/mime/airprint.convs ] && rm -f /usr/share/cups/mime/airprint.convs
+
+	#Stop avahi
+	source /opt/karoshi/serversetup/variables/distro
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/avahi_stop 1>/dev/null
+
+	#Set avahi not to stop on boot
+	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/stoponboot/avahi
+
+	#Disable access to cups
+	sed -i 's/Listen *:631/Listen localhost:631/g' /etc/cups/cupsd.conf
+
+	if [[ $(grep -c "Allow @LOCAL" /etc/cups/cupsd.conf) -gt 0 ]]
+	then
+		LINENUM=$(grep -n 'Allow @LOCAL' /etc/cups/cupsd.conf | cut -d: -f1)
+		sed -i "$LINENUM"d /etc/cups/cupsd.conf
+	fi
 fi
+
+
 
