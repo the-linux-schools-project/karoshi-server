@@ -140,8 +140,8 @@ echo "EMAILSERVER=$MAILSERVER" >> /opt/karoshi/server_network/mon/email_alerts/"
 ##########################
 MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
 
-if [ "$MONITORING_SERVER" != $(hostname-fqdn) ]
+if [[ "$MONITORING_SERVER" != $(hostname-fqdn) ]]
 then
-	rsync -a /opt/karoshi/server_network/mon/email_alerts/  root@"$MONITORING_SERVER":/opt/karoshi/server_network/mon/
+	rsync -a /opt/karoshi/server_network/mon/email_alerts  root@"$MONITORING_SERVER":/opt/karoshi/server_network/mon/
 fi
 

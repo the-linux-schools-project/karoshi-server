@@ -91,11 +91,18 @@ MONITORING_SERVER=$(sed -n 1,1p /opt/karoshi/server_network/monitoringserver)
 if [[ "$MONITORING_SERVER" = $(hostname-fqdn) ]]
 then
 	cp -f /opt/karoshi/server_network/mon/mon.cf /etc/mon/
-	if [ ! -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
-	then
-		mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
-		chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
-	fi
+
+	#Make sure we have a log folder for each monitoring group
+	for GROUPNAME in $(grep ^watch /etc/mon/mon.cf | cut -d" " -f2)
+	do
+		if [ ! -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
+		then
+			mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+			chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+			chmod 0750 /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+		fi
+	done
+
 	source /opt/karoshi/serversetup/variables/distro
 	#Restart Mon
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null
@@ -105,11 +112,18 @@ then
 else
 	scp -o PasswordAuthentication=no -o ConnectTimeout=3 /opt/karoshi/server_network/mon/mon.cf root@"$MONITORING_SERVER":/etc/mon/ 2>&1
 	ssh -x -o PasswordAuthentication=no -o ConnectTimeout=3 "$MONITORING_SERVER" '
-	if [ ! -d /opt/karoshi/server_network/mon/events/'"$GROUPNAME"' ]
-	then
-		mkdir -p /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
-		chown mon /opt/karoshi/server_network/mon/events/'"$GROUPNAME"'
-	fi
+
+	#Make sure we have a log folder for each monitoring group
+	for GROUPNAME in $(grep ^watch /etc/mon/mon.cf | cut -d" " -f2)
+	do
+		if [ ! -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
+		then
+			mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+			chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+			chmod 0750 /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+		fi
+	done
+
 	source /opt/karoshi/serversetup/variables/distro
 	#Restart Mon
 	/opt/karoshi/serversetup/distro/"$DISTROCHOICE"/scripts/control_services/mon_stop 1>/dev/null

@@ -156,7 +156,7 @@ then
 	PORTS="80,443"
 fi
 
-if [ "$MOD_SHOREWAL" = yes ]
+if [ "$MOD_SHOREWALL" = yes ]
 then
 	echo "<ul><li>"'$"Modifying shorewall rules to allow ports 80 and 443."'"</li></ul>"
 	LINENUM=`grep -n "LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE" /etc/shorewall/rules | cut -d: -f1`

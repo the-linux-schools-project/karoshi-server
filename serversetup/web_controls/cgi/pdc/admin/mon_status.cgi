@@ -55,6 +55,17 @@ $(document).ready(function()
         $("#myTable").tablesorter(); 
     } 
 );
+
+$(document).ready(function() 
+    { 
+        $("#myTable1").tablesorter({
+	headers: {
+	3: { sorter: "ipAddress" },
+    		}
+		});
+    } 
+);
+
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1"> <!--480-->'
 

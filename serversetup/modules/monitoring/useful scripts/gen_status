@@ -561,15 +561,15 @@ then
 	<a href="#hide1" class="button hide" id="hide1">'$"Show"'</a>
 	<a href="#show1" class="button show" id="show1">'$"Hide"'</a>
 	<br><div class="list"><br>
-	<table class="standard" style="text-align: left;"><tbody>
-	<tr><td style="width: 130px;"><b>Host Group</b></td><td style="width: 100px;"><b>Monitor</b></td>
-	<td style="width: 100px;"><b>Time</b></td><td><b>IP Addresses</b></td></tr>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
+	<table class="tablesorter" style="text-align: left;"><thead>
+	<tr><th style="width: 110px;"><b>Host Group</b></th><th style="width: 100px;"><b>Monitor</b></th>
+	<th style="width: 100px;"><b>Time</b></th><th style="width: 100px;"><b>TCP/IP</b></th></tr></thead><tbody>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
 	echo '<br><div class="row"><b>'$"Network Events"'</b>
 	<a href="#hide1" class="button hide" id="hide1" style="width: 70px; height: 30px;">'$"Show"'</a>
 	<a href="#show1" class="button show" id="show1" style="width: 70px; height: 30px;">'$"Hide"'</a>
 	<br><div class="list"><br>
-	<table class="mobilestandard" style="text-align: left;"><tbody>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
+	<table id="myTable1" class="mobilestandard" style="text-align: left;"><tbody>' >> /opt/karoshi/server_network/mon/mon_mobile_data_html_temp
 
 	for eventdata in $EVENTS
 	do
