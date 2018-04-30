@@ -341,10 +341,7 @@ sed -i "s/X-YOURDOMAIN-COM/X-$REALM/g" /etc/MailScanner/spam.assassin.prefs.conf
 #Check for spamassassin config file
 if [ ! -f /etc/MailScanner/spam.assassin.prefs.conf ]
 then
-	if [ - f/etc/MailScanner/spam.assassin.prefs.conf ]
-	then
-		ln -s /etc/MailScanner/spam.assassin.prefs.conf /etc/MailScanner/spamassassin.conf
-	fi
+	ln -s /etc/MailScanner/spamassassin.conf /etc/MailScanner/spam.assassin.prefs.conf
 fi
 
 #Link Mailscanner spamassasin

@@ -130,7 +130,11 @@ fi
 #Log custom monitor addition
 echo "$(date): monitors_add - Adding $GROUPNAME by $REMOTE_USER from $REMOTE_ADDR" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
 
-[ -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ] || mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+if [ -d /opt/karoshi/server_network/mon/events/"$GROUPNAME" ]
+then
+	mkdir -p /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+	chown mon /opt/karoshi/server_network/mon/events/"$GROUPNAME"
+fi
 ################################
 #Create mon file for this custom group
 ################################

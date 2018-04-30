@@ -273,7 +273,7 @@ chmod 0550 /etc/sudoers
 function turn_off_services {
 echo -e "\nStopping Services\n" | tee -a /var/log/karoshi_build.log
 sleep 1
-services="apache apache_karoshi avahi-daemon bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind vsftpd"
+services="apache apache_karoshi avahi bind clamd cron cups dhcp dns docker dovecot e2guardian fail2ban glusterfs icecast mailscanner memcached minidlna mon monitorix mysql nfs nginx nslcd nut openvpn postfix postfwd portmap proftpd radius redis rpcbind samba sogo squid squiddebproxy ssh tftpd xinetd dnsmasq winbind vsftpd"
 for service in $services
 do
 	echo -e "\nSetting $service to stop on boot\n" | tee -a /var/log/karoshi_build.log
@@ -601,7 +601,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 add-apt-repository "deb https://download.docker.com/linux/ubuntu bionic stable"
 
 apt-get update
-apt-get -y install docker-ce
+apt-get -y install docker.io
 }
 
 function reboot_server {
