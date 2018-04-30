@@ -1,1 +1,77 @@
-/opt/karoshi/serversetup/distro/ubuntu/scripts/radiussslcert
+#!/bin/bash
+LOG_DATE=$(date +%F)
+
+source /opt/karoshi/serversetup/variables/distro
+source /opt/karoshi/server_network/domain_information/domain_name
+
+#Assign variables
+read DATA
+DATA=$(echo "$DATA" | tr -cd 'A-Za-z0-9\._:\-')
+[ -z "$DATA" ] && exit 101
+
+REMOTE_USER=$(echo "$DATA" | cut -s -d: -f1)
+REMOTE_ADDR=$(echo "$DATA" | cut -s -d: -f2)
+DOMAIN=$(echo "$DATA" | cut -s -d: -f3)
+
+if [ -z "$REMOTE_USER" ]
+then
+	echo "$(date): radiussslcert - Blank remote user" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$REMOTE_ADDR" ]
+then
+	echo "$(date): radiussslcert - Blank remote tcpip address" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+if [ -z "$DOMAIN" ]
+then
+	echo "$(date): radiussslcert - Blank domain from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+	exit 101
+fi
+
+echo "$(date): radiussslcert - creating a certificate for $DOMAIN from $REMOTE_ADDR by $REMOTE_USER" >> "/opt/karoshi/logs/karoshi_web_management/$LOG_DATE"
+
+#Fallback incase LANG variable is not set 
+if [ -z "$LANG" ]
+then
+	source /etc/default/locale
+fi
+
+COUNTRY=$(echo "$LANG" | cut -d_ -f2 | cut -d. -f1)
+STATE=$(cut -d/ -f1 < /etc/timezone)
+CITY=$(cut -d/ -f2 < /etc/timezone)
+NAME="$HOSTNAME"
+EMAILADDRESS=administrator@"$REALM"
+
+rm -f /etc/ssl/root-ca/index.txt
+touch /etc/ssl/root-ca/index.txt
+
+SigningPassword=$(sed -n 1,1p /etc/ssl/root-ca/signingpassword.secret)
+
+#Revoke the existing certificate.
+[ -d /etc/ssl/radius/radius.pem ] && openssl ca -revoke radius.pem -passin pass:"$SigningPassword"
+
+#Clear existing keys
+[ ! -d /etc/ssl/radius ] && mkdir /etc/ssl/radius
+[ -f /etc/ssl/radius/radius.key ] && rm -f /etc/ssl/radius/radius.key
+[ -f /etc/ssl/radius/radius.pem ] && rm -f /etc/ssl/radius/radius.pem
+[ -f /etc/ssl/radius/radius.req ] && rm -f /etc/ssl/radius/radius.req
+
+cd /etc/ssl/radius
+echo -e "$COUNTRY\n$STATE\n$CITY\n$NAME\n$DOMAIN\n$DOMAIN\n$EMAILADDRESS\nradius\n" | openssl req -newkey rsa:4096 -days 3650 -keyout radius.key -nodes -out radius.req
+
+chmod 0600 /etc/ssl/radius/radius.key
+chmod 0600 /etc/ssl/radius/radius.req
+
+#Create client pem
+openssl ca -passin pass:"$SigningPassword" -days 3650 -batch -out radius.pem -infiles radius.req 
+chmod 0600 /etc/ssl/radius/radius.pem
+chown freerad /etc/ssl/radius/radius.key
+chown freerad /etc/ssl/radius/radius.pem
+chown freerad /etc/ssl/radius/radius.req
+
+
+#Create diffie Helman
+[ -f /etc/ssl/radius/dh_4096.pem ] && rm -f etc/ssl/radius/dh_4096.pem
+openssl genpkey -genparam -algorithm DH -out /etc/ssl/radius/dh_4096.pem 4096 
+
