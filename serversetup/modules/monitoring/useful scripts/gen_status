@@ -561,7 +561,7 @@ then
 	<a href="#hide1" class="button hide" id="hide1">'$"Show"'</a>
 	<a href="#show1" class="button show" id="show1">'$"Hide"'</a>
 	<br><div class="list"><br>
-	<table class="tablesorter" style="text-align: left;"><thead>
+	<table id="myTable1" class="tablesorter" style="text-align: left;"><thead>
 	<tr><th style="width: 110px;"><b>Host Group</b></th><th style="width: 100px;"><b>Monitor</b></th>
 	<th style="width: 100px;"><b>Time</b></th><th style="width: 100px;"><b>TCP/IP</b></th></tr></thead><tbody>' >> /opt/karoshi/server_network/mon/mon_data_html_temp
 
